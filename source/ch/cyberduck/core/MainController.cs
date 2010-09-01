@@ -27,8 +27,10 @@ using ch.cyberduck.core.aquaticprime;
 using ch.cyberduck.core.i18n;
 using ch.cyberduck.core.sftp;
 using ch.cyberduck.ui;
+using Ch.Cyberduck.ui.controller;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Controller.Growl;
+using Ch.Cyberduck.ui.winforms;
 using Ch.Cyberduck.Ui.Winforms;
 using Ch.Cyberduck.Ui.Winforms.Serializer;
 using Ch.Cyberduck.Ui.Winforms.Taskdialog;
@@ -158,7 +160,7 @@ namespace Ch.Cyberduck.Core
                                                         "The application %@ has recently crashed. To help improve it, you can send the crash log to the author.",
                                                         "Crash").Replace("%@",
                                                                          Preferences.instance().getProperty(
-                                                                             "application")),
+                                                                             "application.name")),
                                                     null, null, null, Locale.localizedString("Send", "Crash") + "|" +
                                                                       Locale.localizedString("Don't Send", "Crash"),
                                                     false,
@@ -175,7 +177,7 @@ namespace Ch.Cyberduck.Core
                 Utils.MultipartFormDataPost(
                     Preferences.instance().getProperty("website.crash") + String.Format("?revision={0}&os={1}",
                                                                                         revision, Environment.OSVersion),
-                    String.Format("{0} ({1})", Preferences.instance().getProperty("application"), revision),
+                    String.Format("{0} ({1})", Preferences.instance().getProperty("application.name"), revision),
                     postParameters);
             }
 
@@ -237,7 +239,7 @@ namespace Ch.Cyberduck.Core
         {
             IsSingleInstance = true;
             // Needed for multiple SDI because no form is the main form
-            ShutdownStyle = ShutdownMode.AfterAllFormsClose;
+            ShutdownStyle = ShutdownMode.AfterAllFormsClose;            
             EnableVisualStyles = true;
         }
 
@@ -310,6 +312,9 @@ namespace Ch.Cyberduck.Core
         private void ApplicationDidFinishLaunching(object sender, StartupEventArgs e)
         {
             Logger.debug("ApplicationDidFinishLaunching");
+
+            UpdateController.Instance.CheckForUpdatesIfNecessary();
+
             if (Preferences.instance().getBoolean("queue.openByDefault"))
             {
                 TransferController.Instance.View.Show();
@@ -455,6 +460,12 @@ namespace Ch.Cyberduck.Core
         public static bool ApplicationShouldTerminate()
         {
             Logger.debug("ApplicationShouldTerminate");
+            // Check if the automatic updater wants to install an update
+            if (UpdateController.Instance.AboutToInstallUpdate)
+            {
+                return true;
+            }
+
             // Determine if there are any running transfers
             bool terminate = TransferController.ApplicationShouldTerminate();
             if (!terminate)

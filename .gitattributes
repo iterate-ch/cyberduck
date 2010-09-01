@@ -2150,6 +2150,7 @@ source/ch/cyberduck/ui/controller/IProgressView.cs -text
 source/ch/cyberduck/ui/controller/IPromptView.cs -text
 source/ch/cyberduck/ui/controller/ITransferPromptView.cs -text
 source/ch/cyberduck/ui/controller/ITransferView.cs -text
+source/ch/cyberduck/ui/controller/IUpdateView.cs -text
 source/ch/cyberduck/ui/controller/IView.cs -text
 source/ch/cyberduck/ui/controller/IconCache.cs -text
 source/ch/cyberduck/ui/controller/InfoController.cs -text
@@ -2177,6 +2178,7 @@ source/ch/cyberduck/ui/controller/TransferPromptController.cs -text
 source/ch/cyberduck/ui/controller/TransferPromptModel.cs -text
 source/ch/cyberduck/ui/controller/TreeBrowserModel.cs -text
 source/ch/cyberduck/ui/controller/TreePathReference.cs -text
+source/ch/cyberduck/ui/controller/UpdateController.cs -text
 source/ch/cyberduck/ui/controller/UploadPromptController.cs -text
 source/ch/cyberduck/ui/controller/UploadPromptModel.cs -text
 source/ch/cyberduck/ui/controller/UserPreferences.cs -text
@@ -2248,6 +2250,9 @@ source/ch/cyberduck/ui/winforms/TransferForm.resx -text
 source/ch/cyberduck/ui/winforms/TransferPromptForm.Designer.cs -text
 source/ch/cyberduck/ui/winforms/TransferPromptForm.cs -text
 source/ch/cyberduck/ui/winforms/TransferPromptForm.resx -text
+source/ch/cyberduck/ui/winforms/UpdateForm.Designer.cs -text
+source/ch/cyberduck/ui/winforms/UpdateForm.cs -text
+source/ch/cyberduck/ui/winforms/UpdateForm.resx -text
 source/ch/cyberduck/ui/winforms/UserDefaultsDateFormatter.cs -text
 source/ch/cyberduck/ui/winforms/commondialog/CustomOpenFileFolderDialog.csproj -text
 source/ch/cyberduck/ui/winforms/commondialog/InternalErrorException.cs -text

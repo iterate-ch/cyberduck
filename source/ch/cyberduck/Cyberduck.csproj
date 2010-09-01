@@ -66,7 +66,8 @@
     </StartupObject>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AutomaticUpdater">
+    <Reference Include="AutomaticUpdater, Version=2.6.3.0, Culture=neutral, PublicKeyToken=d2050be9b2e72e40, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\lib\AutomaticUpdater.dll</HintPath>
     </Reference>
     <Reference Include="core, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -161,7 +162,15 @@
     <Compile Include="core\MainController.cs" />
     <Compile Include="core\Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ui\controller\IUpdateView.cs" />
     <Compile Include="ui\controller\threading\InfoBackgroundAction.cs" />
+    <Compile Include="ui\controller\UpdateController.cs" />
+    <Compile Include="ui\winforms\UpdateForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ui\winforms\UpdateForm.Designer.cs">
+      <DependentUpon>UpdateForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="ui\winforms\UserDefaultsDateFormatter.cs" />
     <EmbeddedResource Include="ResourcesBundle.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -248,11 +257,12 @@
       <DependentUpon>TransferPromptForm.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    
     <!-- add localizations -->
-    <EmbeddedResource Include="../../../*.lproj/*.strings;../../../*.lproj/*.txt"/>
+    <EmbeddedResource Include="../../../*.lproj/*.strings;../../../*.lproj/*.txt" />
+    <EmbeddedResource Include="ui\winforms\UpdateForm.resx">
+      <DependentUpon>UpdateForm.cs</DependentUpon>
+    </EmbeddedResource>
     <!-- end localizations -->
-    
     <None Include="App.config" />
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>

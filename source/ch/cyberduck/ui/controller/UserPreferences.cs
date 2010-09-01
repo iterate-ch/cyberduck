@@ -50,7 +50,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 return Path.Combine(Environment.GetFolderPath(
                     Environment.SpecialFolder.ApplicationData),
-                                    instance().getProperty("application"));
+                                    instance().getProperty("application.name"));
             }
         }
 
@@ -63,7 +63,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 return Path.Combine(Environment.GetFolderPath(
                     Environment.SpecialFolder.LocalApplicationData),
-                                    instance().getProperty("application"));
+                                    instance().getProperty("application.name"));
             }
         }
 
@@ -111,6 +111,15 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 string[] versionParts = Application.ProductVersion.Split('.');
                 return versionParts[2];
+            }
+        }
+
+        private static string ApplicationVersion
+        {
+            get
+            {
+                string[] versionParts = Application.ProductVersion.Split('.');
+                return String.Format("{0}.{1} ({2})", versionParts[0], versionParts[1], versionParts[2]);
             }
         }
 
@@ -228,8 +237,8 @@ namespace Ch.Cyberduck.Ui.Controller
 
         protected override void setDefaults()
         {
-            defaults.put("application", Application.ProductName);
-            defaults.put("application.version", Application.ProductVersion);
+            defaults.put("application.name", Application.ProductName);
+            defaults.put("application.version", ApplicationVersion);
             defaults.put("application.revision", ApplicationRevision);
             defaults.put("application.language", GetDefaultLanguage());
             defaults.put("application.language.custom", false.ToString());
@@ -237,6 +246,8 @@ namespace Ch.Cyberduck.Ui.Controller
             base.setDefaults();
 
             defaults.put("application.support.path", RoamingApplicationDataPath);
+            defaults.put("update.check.last", "0");
+            
             defaults.put("queue.download.folder", DefaultDownloadPath);
 
             //defaults.put("logging", "debug");
