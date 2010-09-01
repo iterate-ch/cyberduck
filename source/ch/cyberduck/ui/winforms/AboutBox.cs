@@ -18,12 +18,13 @@
 using System;
 using System.Diagnostics;
 using System.Drawing;
-using System.IO;
 using System.Reflection;
 using ch.cyberduck;
+using ch.cyberduck.core;
 using Ch.Cyberduck.Core;
 using ch.cyberduck.core.i18n;
 using Ch.Cyberduck.Ui.Controller;
+using Path = System.IO.Path;
 
 namespace Ch.Cyberduck.Ui.Winforms
 {
@@ -36,7 +37,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             Text = String.Format("About {0}", AssemblyTitle);
             logoPictureBox.Image = IconCache.Instance.IconForName("cyberduck", 128);
             labelProductName.Text = AssemblyProduct;
-            labelVersion.Text = String.Format("Version {0}", AssemblyVersion);
+            labelVersion.Text = String.Format("Version {0}", Preferences.instance().getProperty("application.version"));
             labelCopyright.Text = Locale.localizedString("NSHumanReadableCopyright", "InfoPlist");
 
             Font bigBoldFont = new Font(Font.FontFamily, Font.Size + 4, FontStyle.Bold);
@@ -67,11 +68,6 @@ namespace Ch.Cyberduck.Ui.Winforms
                 }
                 return Path.GetFileNameWithoutExtension(Assembly.GetExecutingAssembly().CodeBase);
             }
-        }
-
-        public string AssemblyVersion
-        {
-            get { return Assembly.GetExecutingAssembly().GetName().Version.ToString(); }
         }
 
         public string AssemblyDescription

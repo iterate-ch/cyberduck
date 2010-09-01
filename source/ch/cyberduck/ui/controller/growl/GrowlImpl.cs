@@ -25,7 +25,7 @@ namespace Ch.Cyberduck.Ui.Controller.Growl
 {
     internal class GrowlImpl : ch.cyberduck.ui.growl.Growl
     {
-        private readonly Application _app = new Application(Preferences.instance().getProperty("application"))
+        private readonly Application _app = new Application(Preferences.instance().getProperty("application.name"))
                                                 {
                                                     Icon = IconCache.Instance.IconForName("cyberduck", 48)
                                                 };

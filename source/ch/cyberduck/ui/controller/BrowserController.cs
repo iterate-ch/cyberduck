@@ -2620,7 +2620,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                                    {
                                                        _controller.View.WindowTitle =
                                                            ch.cyberduck.core.Preferences.instance().getProperty(
-                                                               "application");
+                                                               "application.name");
                                                    }
                                                    _controller.View.SecureConnectionVisible = false;
                                                    _controller.UpdateStatusLabel();
