@@ -60,8 +60,8 @@ public class MainApplication {
             {
                 FinderLocal.register();
                 UserDefaultsPreferences.register();
-                Protocol.register();                       
                 BundleLocale.register();
+                Protocol.register();
                 GrowlNative.registerImpl();
                 NativeLicense.register();
 
