@@ -152,7 +152,7 @@
         </scp>
         <!-- Changelog Release - version.cyberduck.ch -->
         <scp file="${build}/update/changelog.wys"
-             todir="dkocher@version.cyberduck.ch:./version.cyberduck.ch/windows/nightly"
+             todir="dkocher@version.cyberduck.ch:./version.cyberduck.ch/nightly"
              keyfile="${user.home}/.ssh/version.cyberduck.ch-rsa"
              passphrase="">
         </scp>
