@@ -1535,7 +1535,7 @@ public class InfoController extends ToolbarWindowController {
         else {
             this.updateField(webUrlField, Locale.localizedString("Unknown"));
             controller.background(new BrowserBackgroundAction(controller) {
-                AbstractPath.DescriptiveUrl url;
+                String url;
 
                 public void run() {
                     for(Path next : files) {
@@ -1545,12 +1545,12 @@ public class InfoController extends ToolbarWindowController {
 
                 @Override
                 public void cleanup() {
-                    if(StringUtils.isNotBlank(url.getUrl())) {
+                    if(StringUtils.isNotBlank(url)) {
                         webUrlField.setAttributedStringValue(
                                 HyperlinkAttributedStringFactory.create(
-                                        NSMutableAttributedString.create(url.getUrl(), TRUNCATE_MIDDLE_ATTRIBUTES), url.getUrl())
+                                        NSMutableAttributedString.create(url, TRUNCATE_MIDDLE_ATTRIBUTES), url)
                         );
-                        webUrlField.setToolTip(url.getHelp());
+                        webUrlField.setToolTip(Locale.localizedString("Open in Web Browser"));
                     }
                 }
             });
@@ -1779,7 +1779,7 @@ public class InfoController extends ToolbarWindowController {
                                             NSMutableAttributedString.create(torrent.getUrl(), TRUNCATE_MIDDLE_ATTRIBUTES),
                                             torrent.getUrl())
                             );
-                            s3torrentUrlField.setToolTip(torrent.getHelp());
+                            s3torrentUrlField.setToolTip(Locale.localizedString("Open in Web Browser"));
                         }
                     }
                 }
