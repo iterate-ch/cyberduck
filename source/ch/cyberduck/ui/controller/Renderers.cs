@@ -23,6 +23,7 @@ using System.Globalization;
 using System.Windows.Forms.VisualStyles;
 using BrightIdeasSoftware;
 using ch.cyberduck;
+using Ch.Cyberduck.Core;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -851,21 +852,32 @@ namespace Ch.Cyberduck.Ui.Controller
     public class BrowserRenderer : TreeListView.TreeRenderer
     {
         // see http://stackoverflow.com/questions/3014816/visualstylerenderer-and-themes-winforms
-        private static readonly VisualStyleRenderer ClosedGlyphRenderer =
-            new VisualStyleRenderer(VisualStyleElement.CreateElement("Explorer::TreeView", 2, 1));
+        private static readonly VisualStyleRenderer ClosedGlyphRenderer;
+        private static readonly VisualStyleRenderer OpenedGlyphRenderer;
 
-        private static readonly VisualStyleRenderer OpenedGlyphRenderer =
-            new VisualStyleRenderer(VisualStyleElement.CreateElement("Explorer::TreeView", 2, 2));
+        static BrowserRenderer()
+        {
+            if (Utils.IsVistaOrLater)
+            {
+                ClosedGlyphRenderer = new VisualStyleRenderer(VisualStyleElement.CreateElement("Explorer::TreeView", 2, 1));
+                OpenedGlyphRenderer = new VisualStyleRenderer(VisualStyleElement.CreateElement("Explorer::TreeView", 2, 2));
+            }
+        }
 
         public BrowserRenderer()
         {
-            IsShowLines = false;
+            IsShowLines = false;            
         }
 
         protected override void DrawExpansionGlyph(Graphics g, Rectangle r, bool isExpanded)
         {
-            VisualStyleRenderer renderer = isExpanded ? OpenedGlyphRenderer : ClosedGlyphRenderer;
-            renderer.DrawBackground(g, r);
+            if (Utils.IsVistaOrLater){
+                VisualStyleRenderer renderer = isExpanded ? OpenedGlyphRenderer : ClosedGlyphRenderer;
+                renderer.DrawBackground(g, r);
+            } else
+            {
+                base.DrawExpansionGlyph(g, r, isExpanded);
+            }
         }
     }
 

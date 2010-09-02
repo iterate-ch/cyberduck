@@ -155,6 +155,7 @@
     <Compile Include="core\NativeConstants.cs" />
     <Compile Include="core\NativeListEnumerator.cs" />
     <Compile Include="core\NativeMethods.cs" />
+    <Compile Include="core\OSVersion.cs" />
     <Compile Include="core\RFC2253.cs" />
     <Compile Include="core\SerializableDictionary.cs" />
     <Compile Include="core\Utils.cs" />

@@ -43,6 +43,8 @@ namespace Ch.Cyberduck.Core
         private static readonly LRUCache<string, string> defaultApplicationCache = new LRUCache<string, string>(100);
         public static Encoding encoding = Encoding.UTF8;
 
+        public static readonly bool IsVistaOrLater = OperatingSystemVersion.Current >= OSVersionInfo.Vista;
+
         public static bool StartProcess(string filename, string args)
         {
             try

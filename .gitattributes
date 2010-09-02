@@ -2041,6 +2041,7 @@ source/ch/cyberduck/core/NativeConstants.cs -text
 source/ch/cyberduck/core/NativeListEnumerator.cs -text
 source/ch/cyberduck/core/NativeMethods.cs -text
 source/ch/cyberduck/core/NaturalOrderComparator.java -text
+source/ch/cyberduck/core/OSVersion.cs -text
 source/ch/cyberduck/core/Program.cs -text
 source/ch/cyberduck/core/Protocol.java -text
 source/ch/cyberduck/core/RFC2253.cs -text

@@ -73,7 +73,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             browser.DropSink = new ExpandingDropSink();
             browser.DragSource = new DragSource(this);
             browser.ShowImagesOnSubItems = true;
-            //browser.TreeColumnRenderer = new BrowserRenderer();
+            browser.TreeColumnRenderer = new BrowserRenderer();
             browser.SelectedRowDecoration = new ExplorerRowBorderDecoration();
             browser.ItemsChanged += (sender, args) => ItemsChanged();
 
