@@ -787,6 +787,7 @@ img/arrowUpBlack.tiff -text svneol=unset#image/tiff
 img/arrowUpBlack16.tiff -text svneol=unset#image/tiff
 img/azure-icon.png -text svneol=unset#image/png
 img/azure.icns -text
+img/azure.ico -text
 img/bandwidth.tiff -text svneol=unset#image/tiff
 img/book.tiff -text svneol=unset#image/tiff
 img/bookmark.png -text svneol=unset#image/png
