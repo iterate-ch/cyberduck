@@ -40,9 +40,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.MessageFormat;
 import java.text.ParseException;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Rackspace Cloud Files Implementation
@@ -404,9 +402,9 @@ public class CFPath extends CloudPath {
      * @return Publicy accessible URL of given object
      */
     @Override
-    public DescriptiveUrl toHttpURL() {
+    public String toHttpURL() {
         final Distribution distribution
                 = this.getSession().readDistribution(this.getContainerName(), Distribution.DOWNLOAD);
-        return new DescriptiveUrl(distribution.getUrl(this.getKey()));
+        return distribution.getUrl(this.getKey());
     }
 }

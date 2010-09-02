@@ -898,6 +898,8 @@ public abstract class Path extends AbstractPath implements Serializable {
     }
 
     /**
+     * URL pointing to the resource using the protocol of the current session.
+     *
      * @return Null if there is a encoding failure
      */
     @Override
@@ -910,7 +912,7 @@ public abstract class Path extends AbstractPath implements Serializable {
      * @return The URL accessible with HTTP using the
      *         hostname configuration from the bookmark
      */
-    public DescriptiveUrl toHttpURL() {
+    public String toHttpURL() {
         return this.toHttpURL(this.getHost().getWebURL());
     }
 
@@ -919,7 +921,7 @@ public abstract class Path extends AbstractPath implements Serializable {
      * @return The HTTP accessible URL of this path including the default path
      *         prepended from the bookmark
      */
-    protected DescriptiveUrl toHttpURL(String hostname) {
+    protected String toHttpURL(String hostname) {
         String absolute = encode(this.getAbsolute());
         if(StringUtils.isNotBlank(this.getHost().getDefaultPath())) {
             if(absolute.startsWith(this.getHost().getDefaultPath())) {
@@ -929,29 +931,42 @@ public abstract class Path extends AbstractPath implements Serializable {
         if(!absolute.startsWith(String.valueOf(DELIMITER))) {
             absolute = DELIMITER + absolute;
         }
-        return new DescriptiveUrl(hostname + absolute);
+        return hostname + absolute;
     }
 
     /**
+     * URL that requires authentication in the web browser.
+     *
      * @return Empty.
      */
     public DescriptiveUrl toAuthenticatedUrl() {
         return new DescriptiveUrl(null, null);
     }
 
+    /**
+     * Includes both native protocol and HTTP URLs
+     *
+     * @return A list of URLs pointing to the resource.
+     * @see #getHttpURLs()
+     */
     public List<DescriptiveUrl> getURLs() {
         List<DescriptiveUrl> list = this.getHttpURLs();
-        list.add(0, new DescriptiveUrl(this.toURL(), MessageFormat.format(Locale.localizedString("{0} URL"),
-                this.getHost().getProtocol().getScheme().toUpperCase())));
+        DescriptiveUrl url = new DescriptiveUrl(this.toURL(), MessageFormat.format(Locale.localizedString("{0} URL"),
+                this.getHost().getProtocol().getScheme().toUpperCase()));
+        if(!list.contains(url)) {
+            list.add(0, url);
+        }
         return list;
     }
 
     /**
-     * @return All possible URLs to the same resource.
+     * URLs to open in web browser.
+     *
+     * @return All possible URLs to the same resource that can be opened in a web browser.
      */
     public List<DescriptiveUrl> getHttpURLs() {
         return new ArrayList<DescriptiveUrl>(Arrays.asList(
-                new DescriptiveUrl(this.toHttpURL().getUrl(), MessageFormat.format(Locale.localizedString("{0} URL"), "HTTP")))
+                new DescriptiveUrl(this.toHttpURL(), MessageFormat.format(Locale.localizedString("{0} URL"), "HTTP")))
         );
     }
 

@@ -353,7 +353,7 @@ public class DAVPath extends Path {
     }
 
     @Override
-    public DescriptiveUrl toHttpURL() {
-        return new DescriptiveUrl(this.toURL());
+    public String toHttpURL() {
+        return this.toURL();
     }
 }

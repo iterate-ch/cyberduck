@@ -914,7 +914,7 @@ public class GDPath extends Path {
     }
 
     @Override
-    public DescriptiveUrl toHttpURL() {
-        return new DescriptiveUrl(this.getDocumentUri(), this.getHost().getProtocol().getDescription());
+    public String toHttpURL() {
+        return this.getDocumentUri();
     }
 }

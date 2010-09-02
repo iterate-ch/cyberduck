@@ -644,24 +644,20 @@ public class AzurePath extends CloudPath {
 
     @Override
     public String toURL() {
-        return this.toHttpURL().getUrl();
-    }
-
-    @Override
-    public DescriptiveUrl toHttpURL() {
         try {
             IBlobContainer container = this.getSession().getContainer(this.getContainerName());
             if(this.isContainer()) {
-                return new DescriptiveUrl(container.getContainerUri().toString());
+                return container.getContainerUri().toString();
             }
-            return new DescriptiveUrl(container.getBlobProperties(this.getKey()).getUri().toString());
+            return container.getBlobProperties(this.getKey()).getUri().toString();
         }
         catch(IOException e) {
             log.error(e.getMessage());
         }
-        return super.toHttpURL();
+        return super.toURL();
     }
 
+    @Override
     public DescriptiveUrl toSignedUrl() {
         ResourceType type;
         if(this.isContainer()) {

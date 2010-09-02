@@ -1020,19 +1020,28 @@ public class S3Path extends CloudPath {
         }
     }
 
+    /**
+     * Overwritten to provide publicy accessible URL of given object
+     *
+     * @return Using scheme from protocol
+     */
     @Override
-    public DescriptiveUrl toHttpURL() {
-        return new DescriptiveUrl(this.toURL());
+    public String toURL() {
+        return this.toURL(this.getHost().getProtocol().getScheme());
     }
 
     /**
      * Overwritten to provide publicy accessible URL of given object
      *
-     * @return
+     * @return Plain HTTP link
      */
     @Override
-    public String toURL() {
-        StringBuilder url = new StringBuilder(Protocol.S3.getScheme());
+    public String toHttpURL() {
+        return this.toURL(Protocol.S3.getScheme());
+    }
+
+    public String toURL(String scheme) {
+        StringBuilder url = new StringBuilder(scheme);
         url.append("://");
         if(this.isRoot()) {
             url.append(this.getHost().getHostname());
@@ -1059,6 +1068,7 @@ public class S3Path extends CloudPath {
      *
      * @return A signed URL with a limited validity over time.
      */
+    @Override
     public DescriptiveUrl toSignedUrl() {
         Calendar expiry = Calendar.getInstance();
         expiry.add(Calendar.SECOND, Preferences.instance().getInteger("s3.url.expire.seconds"));

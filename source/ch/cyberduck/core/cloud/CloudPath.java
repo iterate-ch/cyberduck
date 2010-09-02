@@ -146,6 +146,15 @@ public abstract class CloudPath extends Path {
     @Override
     public abstract AttributedList<Path> list();
 
+    public DescriptiveUrl toSignedUrl() {
+        return new DescriptiveUrl(null, null);
+    }
+
+    /**
+     * Including URLs to CDN.
+     *
+     * @return
+     */
     @Override
     public List<DescriptiveUrl> getHttpURLs() {
         List<DescriptiveUrl> urls = new ArrayList<DescriptiveUrl>(Arrays.asList(

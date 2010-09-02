@@ -80,7 +80,7 @@ public class IDiskPath extends DAVPath {
      * @return A URL to either <code>homepage.mac.com</code> or <code>web.me.com</code>
      */
     @Override
-    public DescriptiveUrl toHttpURL() {
+    public String toHttpURL() {
         final String member = this.getHost().getCredentials().getUsername();
 
         // Maps to http://homepage.mac.com/<member>
@@ -93,15 +93,15 @@ public class IDiskPath extends DAVPath {
         String absolute = this.getAbsolute();
         if(absolute.startsWith(homepage)) {
             absolute = absolute.substring(homepage.length());
-            return new DescriptiveUrl("http://homepage.mac.com/" + member + absolute);
+            return "http://homepage.mac.com/" + member + absolute;
         }
         if(absolute.startsWith(gallery)) {
             absolute = absolute.substring(gallery.length());
-            return new DescriptiveUrl("http://gallery.me.com/" + member + absolute);
+            return "http://gallery.me.com/" + member + absolute;
         }
         if(absolute.startsWith(sites)) {
             absolute = absolute.substring(sites.length());
-            return new DescriptiveUrl("http://web.me.com/" + member + absolute);
+            return "http://web.me.com/" + member + absolute;
         }
         return super.toHttpURL();
     }
