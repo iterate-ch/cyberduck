@@ -56,7 +56,6 @@ import java.net.URL;
 import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.List;
 
 public class GDPath extends Path {
@@ -579,23 +578,6 @@ public class GDPath extends Path {
         return children;
     }
 
-    private void filter(List<DocumentListEntry> entries) {
-        for(Iterator<DocumentListEntry> iter = entries.iterator(); iter.hasNext();) {
-            DocumentListEntry entry = iter.next();
-            if(!entry.getParentLinks().isEmpty()) {
-                for(Link link : entry.getParentLinks()) {
-                    if(!this.getName().equals(link.getTitle())) {
-                        iter.remove();
-                    }
-                    break;
-                }
-            }
-            else if(!this.isRoot()) {
-                iter.remove();
-            }
-        }
-    }
-
     /**
      * @param query
      * @return
@@ -604,99 +586,98 @@ public class GDPath extends Path {
      */
     private AttributedList<Path> list(DocumentQuery query) throws ServiceException, IOException {
         final AttributedList<Path> children = new AttributedList<Path>();
-
-        DocumentListFeed feed = new DocumentListFeed();
         DocumentListFeed pager = this.getSession().getClient().getFeed(query, DocumentListFeed.class);
         do {
-            feed.getEntries().addAll(pager.getEntries());
-            if(null == pager.getNextLink()) {
-                break;
-            }
-            pager = this.getSession().getClient().getFeed(new URL(pager.getNextLink().getHref()), DocumentListFeed.class);
-        }
-        while(pager.getEntries().size() > 0);
-        this.filter(feed.getEntries());
-        for(final DocumentListEntry entry : feed.getEntries()) {
-            log.debug("Resource:" + entry.getResourceId());
-            final String type = entry.getType();
-            GDPath path = new GDPath(this.getSession(), entry.getTitle().getPlainText(),
-                    FolderEntry.LABEL.equals(type) ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
-            path.setParent(this);
-            path.setDocumentType(type);
-            if(!entry.getParentLinks().isEmpty()) {
-                path.setPath(entry.getParentLinks().iterator().next().getTitle(), entry.getTitle().getPlainText());
-            }
-            // Download URL
-            path.setExportUri(((OutOfLineContent) entry.getContent()).getUri());
-            // Link to Google Docs Editor
-            path.setDocumentUri(entry.getDocumentLink().getHref());
-            path.setResourceId(entry.getResourceId());
-            // Add unique document ID as checksum
-            path.attributes().setChecksum(entry.getEtag());
-            if(null != entry.getMediaSource()) {
-                path.attributes().setSize(entry.getMediaSource().getContentLength());
-            }
-            if(entry.getQuotaBytesUsed() > 0) {
-                path.attributes().setSize(entry.getQuotaBytesUsed());
-            }
-            final DateTime lastViewed = entry.getLastViewed();
-            if(lastViewed != null) {
-                path.attributes().setAccessedDate(lastViewed.getValue());
-            }
-            LastModifiedBy lastModifiedBy = entry.getLastModifiedBy();
-            if(lastModifiedBy != null) {
-                path.attributes().setOwner(lastModifiedBy.getName());
-            }
-            final DateTime updated = entry.getUpdated();
-            if(updated != null) {
-                path.attributes().setModificationDate(updated.getValue());
-            }
-            if(children.contains(path.getReference())) {
-                // Google Docs allows files to be named the same. Not really a duplicate.
-                path.attributes().setDuplicate(true);
-                path.setReference(null);
-            }
-            // Add to listing
-            children.add(path);
-            if(path.attributes().isFile()) {
-                // Fetch revisions
-                if(Preferences.instance().getBoolean("google.docs.revisions.enable")) {
-                    try {
-                        final List<RevisionEntry> revisions = this.getSession().getClient().getFeed(
-                                new URL(path.getRevisionsFeed()), RevisionFeed.class).getEntries();
-                        Collections.sort(revisions, new Comparator<RevisionEntry>() {
-                            public int compare(RevisionEntry o1, RevisionEntry o2) {
-                                return o1.getUpdated().compareTo(o2.getUpdated());
+            for(final DocumentListEntry entry : pager.getEntries()) {
+                log.debug("Resource:" + entry.getResourceId());
+                final String type = entry.getType();
+                GDPath path = new GDPath(this.getSession(), entry.getTitle().getPlainText(),
+                        FolderEntry.LABEL.equals(type) ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
+                path.setParent(this);
+                path.setDocumentType(type);
+                if(!entry.getParentLinks().isEmpty()) {
+                    path.setPath(entry.getParentLinks().iterator().next().getTitle(), entry.getTitle().getPlainText());
+                }
+                // Download URL
+                path.setExportUri(((OutOfLineContent) entry.getContent()).getUri());
+                // Link to Google Docs Editor
+                path.setDocumentUri(entry.getDocumentLink().getHref());
+                path.setResourceId(entry.getResourceId());
+                // Add unique document ID as checksum
+                path.attributes().setChecksum(entry.getEtag());
+                if(null != entry.getMediaSource()) {
+                    path.attributes().setSize(entry.getMediaSource().getContentLength());
+                }
+                if(entry.getQuotaBytesUsed() > 0) {
+                    path.attributes().setSize(entry.getQuotaBytesUsed());
+                }
+                final DateTime lastViewed = entry.getLastViewed();
+                if(lastViewed != null) {
+                    path.attributes().setAccessedDate(lastViewed.getValue());
+                }
+                LastModifiedBy lastModifiedBy = entry.getLastModifiedBy();
+                if(lastModifiedBy != null) {
+                    path.attributes().setOwner(lastModifiedBy.getName());
+                }
+                final DateTime updated = entry.getUpdated();
+                if(updated != null) {
+                    path.attributes().setModificationDate(updated.getValue());
+                }
+                if(children.contains(path.getReference())) {
+                    // Google Docs allows files to be named the same. Not really a duplicate.
+                    path.attributes().setDuplicate(true);
+                    path.setReference(null);
+                }
+                // Add to listing
+                children.add(path);
+                if(path.attributes().isFile()) {
+                    // Fetch revisions
+                    if(Preferences.instance().getBoolean("google.docs.revisions.enable")) {
+                        try {
+                            final List<RevisionEntry> revisions = this.getSession().getClient().getFeed(
+                                    new URL(path.getRevisionsFeed()), RevisionFeed.class).getEntries();
+                            Collections.sort(revisions, new Comparator<RevisionEntry>() {
+                                public int compare(RevisionEntry o1, RevisionEntry o2) {
+                                    return o1.getUpdated().compareTo(o2.getUpdated());
+                                }
+                            });
+                            int i = 0;
+                            for(RevisionEntry revisionEntry : revisions) {
+                                GDPath revision = new GDPath(this.getSession(), revisionEntry.getTitle().getPlainText(),
+                                        FolderEntry.LABEL.equals(type) ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
+                                revision.setParent(this);
+                                revision.setDocumentType(type);
+                                revision.setExportUri(((OutOfLineContent) revisionEntry.getContent()).getUri());
+                                final long size = ((OutOfLineContent) revisionEntry.getContent()).getLength();
+                                if(size > 0) {
+                                    revision.attributes().setSize(size);
+                                }
+                                revision.attributes().setOwner(revisionEntry.getModifyingUser().getName());
+                                revision.attributes().setModificationDate(revisionEntry.getUpdated().getValue());
+                                // Versioning is enabled if non null.
+                                revision.attributes().setVersionId(revisionEntry.getVersionId());
+                                revision.attributes().setChecksum(revisionEntry.getEtag());
+                                revision.attributes().setRevision(++i);
+                                revision.attributes().setDuplicate(true);
+                                // Add to listing
+                                children.add(revision);
                             }
-                        });
-                        int i = 0;
-                        for(RevisionEntry revisionEntry : revisions) {
-                            GDPath revision = new GDPath(this.getSession(), revisionEntry.getTitle().getPlainText(),
-                                    FolderEntry.LABEL.equals(type) ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
-                            revision.setParent(this);
-                            revision.setDocumentType(type);
-                            revision.setExportUri(((OutOfLineContent) revisionEntry.getContent()).getUri());
-                            final long size = ((OutOfLineContent) revisionEntry.getContent()).getLength();
-                            if(size > 0) {
-                                revision.attributes().setSize(size);
-                            }
-                            revision.attributes().setOwner(revisionEntry.getModifyingUser().getName());
-                            revision.attributes().setModificationDate(revisionEntry.getUpdated().getValue());
-                            // Versioning is enabled if non null.
-                            revision.attributes().setVersionId(revisionEntry.getVersionId());
-                            revision.attributes().setChecksum(revisionEntry.getEtag());
-                            revision.attributes().setRevision(++i);
-                            revision.attributes().setDuplicate(true);
-                            // Add to listing
-                            children.add(revision);
                         }
-                    }
-                    catch(NotImplementedException e) {
-                        log.error("No revisions available:" + e.getMessage());
+                        catch(NotImplementedException e) {
+                            log.error("No revisions available:" + e.getMessage());
+                        }
                     }
                 }
             }
+            Link next = pager.getNextLink();
+            if(null == next) {
+                // No link to next page.
+                break;
+            }
+            // More pages available
+            pager = this.getSession().getClient().getFeed(new URL(next.getHref()), DocumentListFeed.class);
         }
+        while(pager.getEntries().size() > 0);
         return children;
     }
 
