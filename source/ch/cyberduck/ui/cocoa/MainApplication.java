@@ -18,10 +18,7 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Keychain;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.SystemConfigurationProxy;
-import ch.cyberduck.core.SystemConfigurationReachability;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.aquaticprime.NativeLicense;
 import ch.cyberduck.ui.cocoa.application.NSApplication;
 import ch.cyberduck.ui.cocoa.foundation.NSAutoreleasePool;
@@ -63,6 +60,7 @@ public class MainApplication {
             {
                 FinderLocal.register();
                 UserDefaultsPreferences.register();
+                Protocol.register();                       
                 BundleLocale.register();
                 GrowlNative.registerImpl();
                 NativeLicense.register();

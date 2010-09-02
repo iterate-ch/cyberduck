@@ -966,7 +966,10 @@ public abstract class Protocol {
         }
     };
 
-    static {
+    /**
+     *
+     */
+    public static void register() {
         if(Preferences.instance().getBoolean("protocol.ftp.enable")) {
             SessionFactory.addFactory(
                     Protocol.FTP, FTPSession.factory());
