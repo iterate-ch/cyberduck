@@ -144,6 +144,20 @@ namespace Ch.Cyberduck {
             }
         }
         
+        internal static System.Drawing.Icon azure {
+            get {
+                object obj = ResourceManager.GetObject("azure", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap azure_icon {
+            get {
+                object obj = ResourceManager.GetObject("azure-icon", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         internal static System.Drawing.Bitmap bandwidth {
             get {
                 object obj = ResourceManager.GetObject("bandwidth", resourceCulture);
