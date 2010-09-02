@@ -2704,6 +2704,7 @@ www/help/th/.htaccess -text
 www/help/tr/.htaccess -text
 www/help/zh_CN/.htaccess -text
 www/help/zh_TW/.htaccess -text
+www/update/changelog-nightly.wyp -text
 www/update/changelog.html -text
 www/update/changelog.rss -text
 www/update/changelog.txt -text

@@ -112,7 +112,7 @@
 
     <target name="release" depends="clean, version">
         <property name="setup.file"
-                  location="${build}/${app.name} Installer-${cyberduck.version.major}.${cyberduck.version.minor}.exe"/>
+                  location="${build}/${app.name}-Installer-${cyberduck.version.major}.${cyberduck.version.minor}.exe"/>
         <antcall target="package">
             <param name="changelog.wyp" value="${www.update}/changelog.wyp"/>
         </antcall>
@@ -136,9 +136,9 @@
 
     <target name="nightly" depends="clean, version">
         <property name="setup.file"
-                  location="${build}/${app.name} Installer-${cyberduck.version.major}.${cyberduck.version.minor}.${svn.revision}.exe"/>
+                  location="${build}/${app.name}-Installer-${cyberduck.version.major}.${cyberduck.version.minor}.${svn.revision}.exe"/>
         <antcall target="package">
-            <param name="changelog.wyp" value="${www.update}/nightly/changelog.wyp"/>
+            <param name="changelog.wyp" value="${www.update}/changelog-nightly.wyp"/>
         </antcall>
         <scp file="${setup.file}"
              todir="dkocher@update.cyberduck.ch:./update.cyberduck.ch/windows/nightly"
@@ -152,7 +152,7 @@
         </scp>
         <!-- Changelog Release - version.cyberduck.ch -->
         <scp file="${build}/update/changelog.wys"
-             todir="dkocher@version.cyberduck.ch:./version.cyberduck.ch/nightly"
+             todir="dkocher@version.cyberduck.ch:./version.cyberduck.ch/windows/nightly"
              keyfile="${user.home}/.ssh/version.cyberduck.ch-rsa"
              passphrase="">
         </scp>
@@ -172,7 +172,7 @@
         </replace>
 
         <!-- copy wyUpdate project over to the build directory -->
-        <copy file="${changelog.wyp}" todir="${build}" overwrite="true"/>
+        <copy file="${changelog.wyp}" tofile="${build}/changelog.wyp"  overwrite="true"/>
 
         <exec executable="${wybuild.home}/wybuild.exe" failonerror="true">
             <arg value="${build}/changelog.wyp"/>
