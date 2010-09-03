@@ -65,8 +65,13 @@ public class Speedometer {
             // number of seconds data was actually transferred
             double elapsedSeconds = (System.currentTimeMillis() - timestamp) / 1000;
             if(elapsedSeconds > 1) {
-                // bytes per second
-                return (float) ((bytesTransferred - initialBytesTransferred) / (elapsedSeconds));
+                double bytes = bytesTransferred - initialBytesTransferred;
+                // The throughput is usually measured in bits per second
+                if(Preferences.instance().getBoolean("queue.transferspeed.bits")) {
+                    double bits = bytes * 8;
+                    return (float) (bits / (elapsedSeconds));
+                }
+                return (float) (bytes / (elapsedSeconds));
             }
         }
         return -1;
@@ -99,7 +104,7 @@ public class Speedometer {
                     if(size > -1) {
                         b.append(", ");
                     }
-                    b.append(Status.getSizeAsString(speed));
+                    b.append(Status.getSpeedAsString(speed));
                     b.append("/sec");
                     if(size > 0) {
                         b.append(", ");

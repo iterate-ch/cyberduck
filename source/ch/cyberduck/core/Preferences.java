@@ -430,6 +430,8 @@ public abstract class Preferences {
         options.append(100 * Status.MEGA).append(",");
         defaults.put("queue.bandwidth.options", options.toString());
 
+        defaults.put("queue.transferspeed.bits", String.valueOf(false));
+
         /**
          * Bandwidth throttle upload stream
          */

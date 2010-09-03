@@ -67,25 +67,38 @@ public class Status {
      * @return The size of the file using BigDecimal.ROUND_HALF_UP rounding
      */
     public static String getSizeAsString(double size) {
+        return getSizeAsString(size, true);
+    }
+
+    /**
+     * @param size
+     * @param bytes Report file size as bytes or bits.
+     * @return
+     */
+    public static String getSizeAsString(double size, boolean bytes) {
         if(-1 == size) {
             return Locale.localizedString("Unknown size");
         }
         if(size < KILO) {
-            return (int) size + " B";
+            return (int) size + (bytes ? " B" : " bit");
         }
         if(size < MEGA) {
             return new BigDecimal(size).divide(new BigDecimal(KILO),
                     1,
-                    BigDecimal.ROUND_DOWN).toString() + " KB";
+                    BigDecimal.ROUND_DOWN).toString() + (bytes ? " KB" : " kbit");
         }
         if(size < GIGA) {
             return new BigDecimal(size).divide(new BigDecimal(MEGA),
                     1,
-                    BigDecimal.ROUND_DOWN).toString() + " MB";
+                    BigDecimal.ROUND_DOWN).toString() + (bytes ? " MB" : " Mbit");
         }
         return new BigDecimal(size).divide(new BigDecimal(GIGA),
                 1,
-                BigDecimal.ROUND_DOWN).toString() + " GB";
+                BigDecimal.ROUND_DOWN).toString() + (bytes ? " GB" : " Gbit");
+    }
+
+    public static String getSpeedAsString(double size) {
+        return getSizeAsString(size, false);
     }
 
     /**
