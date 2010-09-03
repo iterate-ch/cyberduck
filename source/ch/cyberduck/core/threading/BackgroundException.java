@@ -191,7 +191,7 @@ public class BackgroundException extends Exception {
             if(!this.getSession().equals(other.getSession())) {
                 return false;
             }
-            if(null == this.getPath() && null == other.getPath()) {
+            if(null == this.getPath() || null == other.getPath()) {
                 return this.getCause().getMessage().equals(other.getCause().getMessage());
             }
             if(!this.getPath().equals(other.getPath())) {
