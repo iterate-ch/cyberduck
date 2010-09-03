@@ -366,7 +366,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     selected = Workdir;
                 }
-                return selected.toHttpURL().getUrl();
+                return selected.toHttpURL();
             }
         }
 

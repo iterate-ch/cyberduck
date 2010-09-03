@@ -1903,7 +1903,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private class WebUrlBackgroundAction : BrowserBackgroundAction
         {
             private readonly InfoController _infoController;
-            private AbstractPath.DescriptiveUrl _url;
+            private String _url;
 
             public WebUrlBackgroundAction(BrowserController browserController, InfoController infoController)
                 : base(browserController)
@@ -1922,10 +1922,10 @@ namespace Ch.Cyberduck.Ui.Controller
 
             public override void cleanup()
             {
-                if (Utils.IsNotBlank(_url.getUrl()))
+                if (Utils.IsNotBlank(_url))
                 {
-                    _infoController.View.WebUrl = _url.getUrl();
-                    _infoController.View.WebUrlTooltip = _url.getUrl();
+                    _infoController.View.WebUrl = _url;
+                    _infoController.View.WebUrlTooltip = _url;
                 }
                 _infoController.AttachGeneralHandlers();
             }
