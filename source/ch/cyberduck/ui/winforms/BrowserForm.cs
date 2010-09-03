@@ -309,9 +309,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                 {
                     dialog.Path = root;
                 }
-                //todo übersetzung fehlt wohl noch
-                string selectText = Locale.localizedString("Select");
-
+                string selectText = Locale.localizedString("Choose");
                 string canelText = Locale.localizedString("Cancel");
 
                 dialog.FileNameLabel = selectText + ":";
