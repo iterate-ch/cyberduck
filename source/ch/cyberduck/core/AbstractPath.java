@@ -334,9 +334,9 @@ public abstract class AbstractPath {
     public abstract void copy(AbstractPath copy);
 
     public static class DescriptiveUrl {
-        private String url;
+        private String url = "";
 
-        private String help;
+        private String help = "";
 
         public DescriptiveUrl(String url) {
             this(url, Locale.localizedString("Open in Web Browser"));
@@ -353,6 +353,14 @@ public abstract class AbstractPath {
 
         public String getHelp() {
             return help;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if(obj instanceof DescriptiveUrl) {
+                return this.getUrl().equals(((DescriptiveUrl) obj).getUrl());
+            }
+            return false;
         }
     }
 }
