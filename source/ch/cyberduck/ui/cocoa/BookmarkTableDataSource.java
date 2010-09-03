@@ -316,6 +316,17 @@ public class BookmarkTableDataSource extends ListDataSource {
         NSPasteboard draggingPasteboard = draggingInfo.draggingPasteboard();
         log.debug("tableViewAcceptDrop:" + row);
         final AbstractHostCollection source = this.getSource();
+        if(draggingPasteboard.availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.StringPboardType)) != null) {
+            String o = draggingPasteboard.stringForType(NSPasteboard.StringPboardType);
+            if(o != null) {
+                final Host h = Host.parse(o);
+                source.add(row.intValue(), h);
+                view.selectRowIndexes(NSIndexSet.indexSetWithIndex(row), false);
+                view.scrollRowToVisible(row);
+                return true;
+            }
+            return false;
+        }
         if(draggingPasteboard.availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.FilenamesPboardType)) != null) {
             // We get a drag from another application e.g. Finder.app proposing some files
             NSArray filesList = Rococoa.cast(draggingPasteboard.propertyListForType(NSPasteboard.FilenamesPboardType), NSArray.class);// get the filenames from pasteboard
@@ -370,17 +381,6 @@ public class BookmarkTableDataSource extends ListDataSource {
                         view.scrollRowToVisible(row);
                     }
                 }
-                return true;
-            }
-            return false;
-        }
-        if(draggingPasteboard.availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.StringPboardType)) != null) {
-            String o = draggingPasteboard.stringForType(NSPasteboard.StringPboardType);
-            if(o != null) {
-                final Host h = Host.parse(o);
-                source.add(row.intValue(), h);
-                view.selectRowIndexes(NSIndexSet.indexSetWithIndex(row), false);
-                view.scrollRowToVisible(row);
                 return true;
             }
             return false;
