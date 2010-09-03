@@ -48,7 +48,6 @@ namespace Ch.Cyberduck.Ui.Controller
         private readonly BrowserController _controller;
         private readonly string _multipleFilesString = "(" + Locale.localizedString("Multiple files") + ")";
         private readonly IList<string> _roots = new List<string>();
-        private readonly string _unknownString = Locale.localizedString("Unknown");
         private BindingList<UserAndRoleEntry> _acl = new BindingList<UserAndRoleEntry>();
         private List<Path> _files;
         private BindingList<CustomHeader> _metadata = new BindingList<CustomHeader>();
@@ -911,7 +910,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     View.Kind = file.kind();
                     if (-1 == file.attributes().getModificationDate())
                     {
-                        View.Modified = _unknownString;
+                        View.Modified = Locale.localizedString("Unknown");
                     }
                     else
                     {
@@ -920,7 +919,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     }
                     if (-1 == file.attributes().getCreationDate())
                     {
-                        View.Created = _unknownString;
+                        View.Created = Locale.localizedString("Unknown");
                     }
                     else
                     {
@@ -947,10 +946,10 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             DetachS3Handlers();
 
-            View.BucketLocation = _unknownString;
-            View.BucketLoggingTooltip = _unknownString;
-            View.S3PublicUrl = _unknownString;
-            View.S3TorrentUrl = _unknownString;
+            View.BucketLocation = Locale.localizedString("Unknown");
+            View.BucketLoggingTooltip = Locale.localizedString("Unknown");
+            View.S3PublicUrl = Locale.localizedString("None");
+            View.S3TorrentUrl = Locale.localizedString("None");
 
 
             IList<string> classes = new List<string>();
@@ -1058,13 +1057,12 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             DetachDistributionHandlers();
 
-            View.DistributionStatus = _unknownString;
-            View.DistributionUrl = _unknownString;
-            View.DistributionStatus = _unknownString;
-            View.DistributionCname = _unknownString;
+            View.DistributionStatus = Locale.localizedString("Unknown");
+            View.DistributionUrl = Locale.localizedString("None");
+            View.DistributionCname = Locale.localizedString("None");
 
             KeyValuePair<string, Distribution.Method> unknownEntry =
-                new KeyValuePair<string, Distribution.Method>(_unknownString, null);
+                new KeyValuePair<string, Distribution.Method>(Locale.localizedString("Unknown"), null);
             IList<KeyValuePair<string, Distribution.Method>> methods = new List
                 <KeyValuePair<string, Distribution.Method>>
                                                                            {
@@ -1072,7 +1070,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                                                            };
             View.PopulateDistributionDeliveryMethod(methods);
 
-            _roots.Add(_unknownString);
+            _roots.Add(Locale.localizedString("Unknown"));
             View.PopulateDefaultRoot(_roots);
 
             if (ToggleDistributionSettings(false))
@@ -1098,8 +1096,8 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             DetachPermissionHandlers();
 
-            View.Permissions = _unknownString;
-            View.OctalPermissions = _unknownString;
+            View.Permissions = Locale.localizedString("Unknown");
+            View.OctalPermissions = Locale.localizedString("Unknown");
 
             if (TogglePermissionSettings(false))
             {
@@ -1162,7 +1160,7 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             else
             {
-                View.WebUrl = _unknownString;
+                View.WebUrl = Locale.localizedString("Unknown");
                 _controller.Background(new WebUrlBackgroundAction(_controller, this));
             }
         }
@@ -1767,7 +1765,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     {
                         if (String.IsNullOrEmpty(checksum.attributes().getChecksum()))
                         {
-                            _infoController.View.Checksum = _infoController._unknownString;
+                            _infoController.View.Checksum = Locale.localizedString("Unknown");
                         }
                         else
                         {
