@@ -125,4 +125,14 @@ public abstract class AbstractKeychain {
      * @return
      */
     public abstract boolean displayCertificates(X509Certificate[] certificates);
+
+    /**
+     * Prompt user for client certificate
+     *
+     * @param prompt Display in certificate choose prompt
+     * @return Null if no certificate selected
+     */
+    public X509Certificate chooseCertificate(String[] issuers, String prompt) {
+        return null;
+    }
 }

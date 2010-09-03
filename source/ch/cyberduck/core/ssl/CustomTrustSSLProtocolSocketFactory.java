@@ -20,10 +20,7 @@ package ch.cyberduck.core.ssl;
 
 import org.apache.log4j.Logger;
 
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
+import javax.net.ssl.*;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
@@ -48,8 +45,17 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
      * @param trust Verifiying trusts in system settings
      */
     public CustomTrustSSLProtocolSocketFactory(X509TrustManager trust) {
+        this(trust, null);
+    }
+
+    /**
+     * @param trust Verifiying trusts in system settings
+     * @param key   Key manager for client certificate selection
+     */
+    public CustomTrustSSLProtocolSocketFactory(X509TrustManager trust, X509KeyManager key) {
         try {
             context = SSLContext.getInstance("SSL");
+            context.init(new KeyManager[]{key}, new TrustManager[]{trust}, null);
             context.init(null, new TrustManager[]{trust}, null);
             if(log.isDebugEnabled()) {
                 log.debug("Using SSL context:" + context);
@@ -62,6 +68,7 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
         catch(KeyManagementException e) {
             throw new RuntimeException(e);
         }
+
     }
 
     public SSLContext getSSLContext() {

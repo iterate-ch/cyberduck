@@ -23,9 +23,17 @@ import ch.cyberduck.core.i18n.Locale;
 
 import org.apache.log4j.Logger;
 
+import java.io.IOException;
+import java.net.Socket;
+import java.security.*;
+import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Enumeration;
+import java.util.List;
 
 /**
  * @version $Id$
@@ -68,5 +76,132 @@ public class KeychainX509TrustManager extends AbstractX509TrustManager {
             throw new CertificateException(
                     Locale.localizedString("No trusted certificate found", "Status"));
         }
+    }
+
+    private static KeyStore store;
+
+    private KeyStore init() {
+        if(null == store) {
+            try {
+                // Get the key manager factory for the default algorithm.
+                store = KeyStore.getInstance("KeychainStore", "Apple");
+                // Load default key store
+                store.load(null, null);
+            }
+            catch(CertificateException e) {
+                log.error(e.getMessage());
+            }
+            catch(NoSuchAlgorithmException e) {
+                log.error(e.getMessage());
+            }
+            catch(KeyStoreException e) {
+                log.error(e.getMessage());
+            }
+            catch(IOException e) {
+                log.error(e.getMessage());
+            }
+            catch(NoSuchProviderException e) {
+                log.error(e.getMessage());
+            }
+        }
+        return store;
+    }
+
+    @Override
+    public String chooseClientAlias(String[] keyType, Principal[] issuers, Socket socket) {
+        try {
+            KeyStore store = this.init();
+            // List of issuer distinguished name
+            List<String> list = new ArrayList<String>();
+            Enumeration<String> aliases = store.aliases();
+            while(aliases.hasMoreElements()) {
+                String alias = aliases.nextElement();
+                log.info("Alias in Keychain:" + alias);
+                if(store.isKeyEntry(alias)) {
+                    log.info("Private key for alias:" + alias);
+                    continue;
+                }
+                if(store.isCertificateEntry(alias)) {
+                    Certificate cert = store.getCertificate(alias);
+                    if(null == cert) {
+                        log.warn("Failed to retrieve certificate for alias:" + alias);
+                        continue;
+                    }
+                    if(cert instanceof X509Certificate) {
+                        if(Arrays.asList(issuers).contains(((X509Certificate) cert).getIssuerX500Principal())) {
+                            list.add(((X509Certificate) cert).getIssuerX500Principal().getName());
+                        }
+                    }
+                }
+            }
+            X509Certificate cert = KeychainFactory.instance().chooseCertificate(list.toArray(new String[list.size()]),
+                    MessageFormat.format(Locale.localizedString("Select the certificate to use when connecting to {0}."), this.getHostname()));
+            if(null == cert) {
+                log.info("No certificate selected for hostname:" + this.getHostname());
+                return null;
+            }
+            String alias = store.getCertificateAlias(cert);
+            log.info("Certificate alias choosen:" + alias);
+            return alias;
+        }
+        catch(KeyStoreException e) {
+            log.error("Keystore not loaded:" + e.getMessage());
+        }
+        return null;
+    }
+
+    @Override
+    public X509Certificate[] getCertificateChain(String alias) {
+        try {
+            KeyStore store = this.init();
+            List<X509Certificate> result = new ArrayList<X509Certificate>();
+            Certificate[] chain = store.getCertificateChain(alias);
+            if(null == chain) {
+                log.warn("No certificate chain for alias:" + alias);
+            }
+            else {
+                for(Certificate cert : chain) {
+                    if(cert instanceof X509Certificate) {
+                        result.add((X509Certificate) cert);
+                    }
+                }
+            }
+            if(result.isEmpty()) {
+                log.warn("No certificate chain for alias:" + alias);
+                Certificate cert = store.getCertificate(alias);
+                if(cert instanceof X509Certificate) {
+                    result.add((X509Certificate) cert);
+                }
+            }
+            return result.toArray(new X509Certificate[result.size()]);
+        }
+        catch(KeyStoreException e) {
+            log.error("Keystore not loaded:" + e.getMessage());
+        }
+        return null;
+    }
+
+    @Override
+    public PrivateKey getPrivateKey(String alias) {
+        KeyStore store = this.init();
+        try {
+            if(store.isKeyEntry(alias)) {
+                Key key = store.getKey(alias, "null".toCharArray());
+                if(key instanceof PrivateKey) {
+                    return (PrivateKey) key;
+                }
+            }
+        }
+        catch(KeyStoreException e) {
+            log.error("Keystore not loaded:" + e.getMessage());
+        }
+        catch(NoSuchAlgorithmException e) {
+            log.error(e.getMessage());
+        }
+        catch(UnrecoverableKeyException e) {
+            log.error(e.getMessage());
+        }
+        log.warn("No private key for alias:" + alias);
+        return null;
     }
 }

@@ -20,7 +20,10 @@ package ch.cyberduck.core;
 
 import org.apache.log4j.Logger;
 
+import java.io.ByteArrayInputStream;
 import java.security.cert.CertificateEncodingException;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 
 /**
@@ -147,14 +150,14 @@ public class Keychain extends AbstractKeychain {
         if(!loadNative()) {
             return false;
         }
-        return this.isTrusted(hostname, this.getEncoded(certs));
+        return this.isTrustedNative(hostname, this.getEncoded(certs));
     }
 
     /**
      * @param certificates An array containing byte[] certificates
      * @return
      */
-    private native boolean isTrusted(String hostname, Object[] certificates);
+    private native boolean isTrustedNative(String hostname, Object[] certificates);
 
     /**
      * @param certificates
@@ -165,12 +168,42 @@ public class Keychain extends AbstractKeychain {
         if(!loadNative()) {
             return false;
         }
-        return this.displayCertificates(this.getEncoded(certificates));
+        return this.displayCertificatesNative(this.getEncoded(certificates));
     }
 
     /**
      * @param certificates An array containing byte[] certificates
      * @return
      */
-    private native boolean displayCertificates(Object[] certificates);
+    private native boolean displayCertificatesNative(Object[] certificates);
+
+    @Override
+    public synchronized X509Certificate chooseCertificate(String[] issuers, String prompt) {
+        if(!loadNative()) {
+            return null;
+        }
+        byte[] cert = this.chooseCertificateNative(issuers, prompt);
+        if(null == cert) {
+            log.info("No certificate selected");
+            return null;
+        }
+        try {
+            CertificateFactory factory = CertificateFactory.getInstance("X.509");
+            X509Certificate selected = (X509Certificate) factory.generateCertificate(new ByteArrayInputStream(cert));
+            if(log.isDebugEnabled()) {
+                log.info("Selected certificate:" + selected);
+            }
+            return selected;
+        }
+        catch(CertificateException e) {
+            log.error(e.getMessage());
+        }
+        return null;
+    }
+
+    /**
+     * @param prompt
+     * @return
+     */
+    private native byte[] chooseCertificateNative(String[] issuers, String prompt);
 }
