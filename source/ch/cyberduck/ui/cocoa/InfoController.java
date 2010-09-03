@@ -493,21 +493,17 @@ public class InfoController extends ToolbarWindowController {
     public static final String HEADER_ACL_GRANTEE_COLUMN = "GRANTEE";
     public static final String HEADER_ACL_PERMISSION_COLUMN = "PERMISSION";
 
-    private final NSComboBoxCell permissionCellPrototype = NSComboBoxCell.comboBoxCell();
+    private final NSComboBoxCell aclPermissionCellPrototype = NSComboBoxCell.comboBoxCell();
 
     public void setAclTable(final NSTableView t) {
         this.aclTable = t;
         this.aclTable.setAllowsMultipleSelection(true);
-        this.permissionCellPrototype.setFont(NSFont.systemFontOfSize(NSFont.smallSystemFontSize()));
-        this.permissionCellPrototype.setControlSize(NSCell.NSSmallControlSize);
-        this.permissionCellPrototype.setCompletes(false);
-        this.permissionCellPrototype.setBordered(false);
-        this.permissionCellPrototype.setButtonBordered(false);
-        for(Acl.Role permission : controller.getSession().getAvailableAclRoles()) {
-            this.permissionCellPrototype.addItemWithObjectValue(
-                    NSString.stringWithString(permission.getName()));
-        }
-        this.aclTable.tableColumnWithIdentifier(HEADER_ACL_PERMISSION_COLUMN).setDataCell(permissionCellPrototype);
+        this.aclPermissionCellPrototype.setFont(NSFont.systemFontOfSize(NSFont.smallSystemFontSize()));
+        this.aclPermissionCellPrototype.setControlSize(NSCell.NSSmallControlSize);
+        this.aclPermissionCellPrototype.setCompletes(false);
+        this.aclPermissionCellPrototype.setBordered(false);
+        this.aclPermissionCellPrototype.setButtonBordered(false);
+        this.aclTable.tableColumnWithIdentifier(HEADER_ACL_PERMISSION_COLUMN).setDataCell(aclPermissionCellPrototype);
         this.aclTable.setDataSource((aclTableModel = new ListDataSource() {
             /**
              * @param view
@@ -1903,6 +1899,10 @@ public class InfoController extends ToolbarWindowController {
         this.setAcl(Collections.<Acl.UserAndRole>emptyList());
         aclUrlField.setStringValue(Locale.localizedString("None"));
         if(this.toggleAclSettings(false)) {
+            this.aclPermissionCellPrototype.removeAllItems();
+            for(Acl.Role permission : controller.getSession().getAvailableAclRoles(files)) {
+                this.aclPermissionCellPrototype.addItemWithObjectValue(NSString.stringWithString(permission.getName()));
+            }
             if(this.numberOfFiles() > 1) {
                 aclUrlField.setStringValue("(" + Locale.localizedString("Multiple files") + ")");
                 aclUrlField.setToolTip("");

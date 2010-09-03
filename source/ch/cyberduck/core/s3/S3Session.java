@@ -1174,7 +1174,7 @@ public class S3Session extends CloudSession implements SSLSession {
     }
 
     @Override
-    public List<Acl.Role> getAvailableAclRoles() {
+    public List<Acl.Role> getAvailableAclRoles(List<Path> files) {
         return Arrays.asList(new Acl.Role(org.jets3t.service.acl.Permission.PERMISSION_FULL_CONTROL.toString()),
                 new Acl.Role(org.jets3t.service.acl.Permission.PERMISSION_READ.toString()),
                 new Acl.Role(org.jets3t.service.acl.Permission.PERMISSION_WRITE.toString()),

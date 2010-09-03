@@ -623,7 +623,7 @@ public class AzureSession extends CloudSession implements SSLSession {
      * @return
      */
     @Override
-    public List<Acl.Role> getAvailableAclRoles() {
+    public List<Acl.Role> getAvailableAclRoles(List<Path> files) {
         return Arrays.asList(AzurePath.PUBLIC_ACL.getRole(), AzurePath.PRIVATE_ACL.getRole());
 //        return Arrays.asList(new Acl.Role(SharedAccessPermissions.toString(SharedAccessPermissions.RL)),
 //                new Acl.Role(SharedAccessPermissions.toString(SharedAccessPermissions.RW)),

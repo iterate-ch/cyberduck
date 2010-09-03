@@ -664,7 +664,7 @@ public abstract class Session implements TranscriptListener {
      *
      * @return A list of role names.
      */
-    public List<Acl.Role> getAvailableAclRoles() {
+    public List<Acl.Role> getAvailableAclRoles(List<Path> files) {
         return Collections.emptyList();
     }
 

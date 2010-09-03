@@ -19,21 +19,16 @@ package ch.cyberduck.core.gstorage;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Acl;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Session;
-import ch.cyberduck.core.SessionFactory;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.cloud.Distribution;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.s3.S3Session;
 
 import org.jets3t.service.Jets3tProperties;
+import org.jets3t.service.acl.Permission;
 import org.jets3t.service.model.S3Object;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 /**
  * Google Storage for Developers is a new service for developers to store and
@@ -155,10 +150,22 @@ public class GSSession extends S3Session {
     }
 
     @Override
-    public List<Acl.Role> getAvailableAclRoles() {
-        return Arrays.asList(new Acl.Role(org.jets3t.service.acl.Permission.PERMISSION_FULL_CONTROL.toString()),
-                new Acl.Role(org.jets3t.service.acl.Permission.PERMISSION_READ.toString()),
-                new Acl.Role(org.jets3t.service.acl.Permission.PERMISSION_WRITE.toString()));
+    public List<Acl.Role> getAvailableAclRoles(List<Path> files) {
+        List<Acl.Role> roles = new ArrayList<Acl.Role>(Arrays.asList(
+                new Acl.Role(org.jets3t.service.acl.Permission.PERMISSION_FULL_CONTROL.toString()),
+                new Acl.Role(Permission.PERMISSION_READ.toString()))
+        );
+        for(Path file : files) {
+            if(file.attributes().isVolume()) {
+                // When applied to a bucket, this permission lets a user create objects, overwrite objects, and
+                // delete objects in a bucket. This permission also lets a user list the contents of a bucket.
+                // You cannot apply this permission to objects because bucket ACLs control who can upload,
+                // overwrite, and delete objects. Also, you must grant READ permission if you grant WRITE permission.
+                roles.add(new Acl.Role(Permission.PERMISSION_WRITE.toString()));
+                break;
+            }
+        }
+        return roles;
     }
 
     @Override

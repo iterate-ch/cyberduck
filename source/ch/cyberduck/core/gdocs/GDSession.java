@@ -192,7 +192,7 @@ public class GDSession extends Session {
     }
 
     @Override
-    public List<Acl.Role> getAvailableAclRoles() {
+    public List<Acl.Role> getAvailableAclRoles(List<Path> files) {
         return Arrays.asList(new Acl.Role(AclRole.OWNER.getValue()), new Acl.Role(AclRole.READER.getValue()),
                 new Acl.Role(AclRole.WRITER.getValue()), new Acl.Role(AclRole.PEEKER.getValue()));
     }
