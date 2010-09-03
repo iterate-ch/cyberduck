@@ -4,7 +4,6 @@
 //
 #define IDD_CustomOpenDialog            101
 #define IDI_ICON1                       105
-#define IDI_ICON2                       106
 #define ID_SELECT                       1001
 #define ID_CUSTOM_CANCEL                1002
 
