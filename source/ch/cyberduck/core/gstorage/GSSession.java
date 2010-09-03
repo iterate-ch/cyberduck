@@ -32,6 +32,7 @@ import org.jets3t.service.model.S3Object;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -127,6 +128,11 @@ public class GSSession extends S3Session {
     @Override
     public List<Acl.User> getAvailableAclUsers() {
         final List<Acl.User> users = super.getAvailableAclUsers();
+        for(Iterator<Acl.User> iter = users.iterator(); iter.hasNext();) {
+            if(iter.next() instanceof Acl.EmailUser) {
+                iter.remove();
+            }
+        }
         users.add(new Acl.EmailUser() {
             @Override
             public String getPlaceholder() {
