@@ -188,21 +188,22 @@ namespace Ch.Cyberduck.Core
         {
             LicenseImpl.Register();
             Proxy.Register();
+            LocalImpl.Register();
             LocaleImpl.Register();
             UserPreferences.Register();
-            LocalImpl.Register();
+            Protocol.register();
             Keychain.Register();
             PlistWriter.Register();
             PlistSerializer.Register();
             PlistDeserializer.Register();
-            HostPlistReader.Register();
+            HostPlistReader.Register();            
             TransferPlistReader.Register();
             TcpReachability.Register();
             GrowlImpl.Register();
             TreePathReference.Register();
             LoginController.Register();
             HostKeyController.Register();
-            UserDefaultsDateFormatter.Register();
+            UserDefaultsDateFormatter.Register();            
         }
 
         private static void LoadCollections()
