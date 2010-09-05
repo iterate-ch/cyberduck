@@ -1798,35 +1798,29 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     IInfoView view = _infoController.View;
                     ICollection<Permission> permissions = Utils.ConvertFromJavaList<Permission>((List) obj);
+                    bool overwrite = true;
                     foreach (Permission permission in permissions)
                     {
-                        view.OwnerRead = GetCheckboxState(view.OwnerRead, view.OwnerReadEnabled,
+                        view.OwnerRead = GetCheckboxState(view.OwnerRead, overwrite,
                                                             permission.getOwnerPermissions()[Permission.READ]);
-                        view.OwnerWrite = GetCheckboxState(view.OwnerWrite, view.OwnerWriteEnabled,
+                        view.OwnerWrite = GetCheckboxState(view.OwnerWrite, overwrite,
                                                             permission.getOwnerPermissions()[Permission.WRITE]);
-                        view.OwnerExecute = GetCheckboxState(view.OwnerExecute, view.OwnerExecuteEnabled,
+                        view.OwnerExecute = GetCheckboxState(view.OwnerExecute, overwrite,
                                                               permission.getOwnerPermissions()[Permission.EXECUTE]);
-                        view.GroupRead = GetCheckboxState(view.GroupRead, view.GroupReadEnabled,
+                        view.GroupRead = GetCheckboxState(view.GroupRead, overwrite,
                                                            permission.getGroupPermissions()[Permission.READ]);
-                        view.GroupWrite = GetCheckboxState(view.GroupWrite, view.GroupWriteEnabled,
+                        view.GroupWrite = GetCheckboxState(view.GroupWrite, overwrite,
                                                             permission.getGroupPermissions()[Permission.WRITE]);
-                        view.GroupExecute = GetCheckboxState(view.GroupExecute, view.GroupExecuteEnabled,
+                        view.GroupExecute = GetCheckboxState(view.GroupExecute, overwrite,
                                                               permission.getGroupPermissions()[Permission.EXECUTE]);
-                        view.OtherRead = GetCheckboxState(view.OtherRead, view.OtherReadEnabled,
+                        view.OtherRead = GetCheckboxState(view.OtherRead, overwrite,
                                                            permission.getOtherPermissions()[Permission.READ]);
-                        view.OtherWrite = GetCheckboxState(view.OtherWrite, view.OtherWriteEnabled,
+                        view.OtherWrite = GetCheckboxState(view.OtherWrite, overwrite,
                                                             permission.getOtherPermissions()[Permission.WRITE]);
-                        view.OtherExecute = GetCheckboxState(view.OtherExecute, view.OtherExecuteEnabled,
+                        view.OtherExecute = GetCheckboxState(view.OtherExecute, overwrite,
                                                               permission.getOtherPermissions()[Permission.EXECUTE]);
-                        view.OwnerReadEnabled = true;
-                        view.OwnerWriteEnabled = true;
-                        view.OwnerExecuteEnabled = true;
-                        view.GroupReadEnabled = true;
-                        view.GroupWriteEnabled = true;
-                        view.GroupExecuteEnabled = true;
-                        view.OtherReadEnabled = true;
-                        view.OtherWriteEnabled = true;
-                        view.OtherExecuteEnabled = true;                        
+
+                        overwrite = false;
                     }
 
                     if (permissions.Count > 1 )
@@ -1843,14 +1837,14 @@ namespace Ch.Cyberduck.Ui.Controller
                     _infoController.TogglePermissionSettings(true);
                 }
 
-                private static CheckState GetCheckboxState(CheckState state, bool enabled, bool condition)
+                private static CheckState GetCheckboxState(CheckState state, bool overwrite, bool condition)
                 {
                     // Gets the state which can be CheckState.Checked, CheckState.Unchecked, or CheckState.Indeterminate.
-                    if ((state == CheckState.Unchecked || !enabled) && !condition)
+                    if ((state == CheckState.Unchecked || overwrite) && !condition)
                     {
                         return CheckState.Unchecked;
                     }
-                    if ((state == CheckState.Checked || !enabled) && condition)
+                    if ((state == CheckState.Checked || overwrite) && condition)
                     {
                         return CheckState.Checked;
                     }

@@ -1563,18 +1563,22 @@ public class InfoController extends ToolbarWindowController {
             controller.background(new WorkerBackgroundAction<List<Permission>>(controller, new ReadPermissionWorker(files) {
                 @Override
                 public void cleanup(List<Permission> permissions) {
+                    boolean overwrite = true;
                     for(Permission permission : permissions) {
-                        updateCheckbox(ownerr, permission.getOwnerPermissions()[Permission.READ]);
-                        updateCheckbox(ownerw, permission.getOwnerPermissions()[Permission.WRITE]);
-                        updateCheckbox(ownerx, permission.getOwnerPermissions()[Permission.EXECUTE]);
+                        updateCheckbox(ownerr, overwrite, permission.getOwnerPermissions()[Permission.READ]);
+                        updateCheckbox(ownerw, overwrite, permission.getOwnerPermissions()[Permission.WRITE]);
+                        updateCheckbox(ownerx, overwrite, permission.getOwnerPermissions()[Permission.EXECUTE]);
 
-                        updateCheckbox(groupr, permission.getGroupPermissions()[Permission.READ]);
-                        updateCheckbox(groupw, permission.getGroupPermissions()[Permission.WRITE]);
-                        updateCheckbox(groupx, permission.getGroupPermissions()[Permission.EXECUTE]);
+                        updateCheckbox(groupr, overwrite, permission.getGroupPermissions()[Permission.READ]);
+                        updateCheckbox(groupw, overwrite, permission.getGroupPermissions()[Permission.WRITE]);
+                        updateCheckbox(groupx, overwrite, permission.getGroupPermissions()[Permission.EXECUTE]);
 
-                        updateCheckbox(otherr, permission.getOtherPermissions()[Permission.READ]);
-                        updateCheckbox(otherw, permission.getOtherPermissions()[Permission.WRITE]);
-                        updateCheckbox(otherx, permission.getOtherPermissions()[Permission.EXECUTE]);
+                        updateCheckbox(otherr, overwrite, permission.getOtherPermissions()[Permission.READ]);
+                        updateCheckbox(otherw, overwrite, permission.getOtherPermissions()[Permission.WRITE]);
+                        updateCheckbox(otherx, overwrite, permission.getOtherPermissions()[Permission.EXECUTE]);
+
+                        // For more than one file selected, take into account permissions of previous file
+                        overwrite = false;
                     }
                     final int count = permissions.size();
                     if(count > 1) {
@@ -1590,16 +1594,18 @@ public class InfoController extends ToolbarWindowController {
                 }
 
                 /**
-                 * @param checkbox
-                 * @param condition
+                 *
+                 * @param checkbox The checkbox to update
+                 * @param overwrite Overwrite previous state
+                 * @param on Set the checkbox to on state
                  */
-                private void updateCheckbox(NSButton checkbox, boolean condition) {
+                private void updateCheckbox(NSButton checkbox, boolean overwrite, boolean on) {
                     // Sets the cell's state to value, which can be NSCell.NSOnState, NSCell.NSOffState, or NSCell.MixedState.
                     // If necessary, this method also redraws the receiver.
-                    if((checkbox.state() == NSCell.NSOffState || !checkbox.isEnabled()) && !condition) {
+                    if((checkbox.state() == NSCell.NSOffState || overwrite) && !on) {
                         checkbox.setState(NSCell.NSOffState);
                     }
-                    else if((checkbox.state() == NSCell.NSOnState || !checkbox.isEnabled()) && condition) {
+                    else if((checkbox.state() == NSCell.NSOnState || overwrite) && on) {
                         checkbox.setState(NSCell.NSOnState);
                     }
                     else {
