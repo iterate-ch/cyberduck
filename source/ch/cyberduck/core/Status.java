@@ -98,7 +98,7 @@ public class Status {
     }
 
     public static String getSpeedAsString(double size) {
-        return getSizeAsString(size, false);
+        return getSizeAsString(size, true);
     }
 
     /**
