@@ -494,11 +494,11 @@ public class SFTPPath extends Path {
                                     SFTPv3Client.SSH_FXF_CREAT | SFTPv3Client.SSH_FXF_TRUNC | SFTPv3Client.SSH_FXF_WRITE, attrs);
                         }
                     }
-                    catch(SFTPException e) {
+                    catch(SFTPException ignore) {
                         // We might not be able to change the attributes if we are
                         // not the owner of the file; but then we still want to proceed as we
                         // might have group write privileges
-                        log.warn(e.getMessage());
+                        log.warn(ignore.getMessage());
 
                         if(status().isResume() && this.exists()) {
                             handle = this.getSession().sftp().openFile(this.getAbsolute(),
@@ -529,8 +529,14 @@ public class SFTPPath extends Path {
                 this.upload(out, in, throttle, listener);
 
                 if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
-                    this.writeModificationDateImpl(this.attributes().getModificationDate(),
-                            this.attributes().getCreationDate());
+                    try {
+                        this.writeModificationDateImpl(this.attributes().getModificationDate(),
+                                this.attributes().getCreationDate());
+                    }
+                    catch(SFTPException ignore) {
+                        // We might not be able to change the attributes if we are not the owner of the file
+                        log.warn(ignore.getMessage());
+                    }
                 }
             }
         }
