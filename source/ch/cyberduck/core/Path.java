@@ -928,9 +928,7 @@ public abstract class Path extends AbstractPath implements Serializable {
                 absolute = absolute.substring(this.getHost().getDefaultPath().length());
             }
         }
-        if(!absolute.startsWith(String.valueOf(DELIMITER))) {
-            absolute = DELIMITER + absolute;
-        }
+        absolute = normalize(absolute);
         return hostname + absolute;
     }
 
