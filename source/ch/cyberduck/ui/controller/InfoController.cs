@@ -418,7 +418,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void PopulateAclRoles()
         {
-            IList<string> roles = Utils.ConvertFromJavaList(_controller.getSession().getAvailableAclRoles(),
+            IList<string> roles = Utils.ConvertFromJavaList(_controller.getSession().getAvailableAclRoles(Utils.ConvertToJavaList(Files)),
                                                             item => ((Acl.Role)
                                                                      item).
                                                                         getName());
