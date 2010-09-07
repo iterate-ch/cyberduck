@@ -687,6 +687,8 @@ public class FTPPath extends Path {
             }
         }
         this.attributes().clear(false, false, true, false);
+        // This will force a directory listing to parse the permissions again.
+        this.getParent().invalidate();
     }
 
     @Override
@@ -704,6 +706,8 @@ public class FTPPath extends Path {
                 this.getName(), DateFormatterFactory.instance().getShortFormat(modified)));
         this.getSession().getClient().mfmt(modified, created, this.getName());
         this.attributes().clear(true, false, false, false);
+        // This will force a directory listing to parse the timestamp again if MDTM is not supported.
+        this.getParent().invalidate();
     }
 
     @Override
