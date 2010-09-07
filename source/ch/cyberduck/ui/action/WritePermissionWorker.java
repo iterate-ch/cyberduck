@@ -59,7 +59,24 @@ public abstract class WritePermissionWorker extends Worker<Permission> {
                 break;
             }
             if(recursive || !next.attributes().getPermission().equals(permission)) {
-                next.writeUnixPermission(permission, recursive);
+                if(next.attributes().isFile() && recursive) {
+                    // Do not write executable bit for files if not already set when recursively updating directory.
+                    // See #1787
+                    Permission modified = new Permission(permission);
+                    if(!next.attributes().getPermission().getOwnerPermissions()[Permission.EXECUTE]) {
+                        modified.getOwnerPermissions()[Permission.EXECUTE] = false;
+                    }
+                    if(!next.attributes().getPermission().getGroupPermissions()[Permission.EXECUTE]) {
+                        modified.getGroupPermissions()[Permission.EXECUTE] = false;
+                    }
+                    if(!next.attributes().getPermission().getOtherPermissions()[Permission.EXECUTE]) {
+                        modified.getOtherPermissions()[Permission.EXECUTE] = false;
+                    }
+                    next.writeUnixPermission(modified, recursive);
+                }
+                else {
+                    next.writeUnixPermission(permission, recursive);
+                }
             }
         }
         return permission;

@@ -656,24 +656,7 @@ public class FTPPath extends Path {
                 this.getName(), perm.getOctalString()));
 
         if(attributes().isFile() && !attributes().isSymbolicLink()) {
-            if(recursive) {
-                // Do not write executable bit for files if not already set when recursively updating directory.
-                // See #1787
-                Permission modified = new Permission(perm);
-                if(!attributes().getPermission().getOwnerPermissions()[Permission.EXECUTE]) {
-                    modified.getOwnerPermissions()[Permission.EXECUTE] = false;
-                }
-                if(!attributes().getPermission().getGroupPermissions()[Permission.EXECUTE]) {
-                    modified.getGroupPermissions()[Permission.EXECUTE] = false;
-                }
-                if(!attributes().getPermission().getOtherPermissions()[Permission.EXECUTE]) {
-                    modified.getOtherPermissions()[Permission.EXECUTE] = false;
-                }
-                this.getSession().getClient().chmod(modified.getOctalString(), this.getAbsolute());
-            }
-            else {
-                this.getSession().getClient().chmod(perm.getOctalString(), this.getAbsolute());
-            }
+            this.getSession().getClient().chmod(perm.getOctalString(), this.getAbsolute());
         }
         else if(attributes().isDirectory()) {
             this.getSession().getClient().chmod(perm.getOctalString(), this.getAbsolute());

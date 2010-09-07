@@ -258,6 +258,10 @@ public class SFTPPath extends Path {
         }
     }
 
+    protected void writeAttributes(SFTPv3FileAttributes attributes) throws IOException {
+        this.getSession().sftp().setstat(this.getAbsolute(), attributes);
+    }
+
     @Override
     public void readSize() {
         try {
@@ -309,7 +313,7 @@ public class SFTPPath extends Path {
 
             SFTPv3FileAttributes attr = new SFTPv3FileAttributes();
             attr.uid = new Integer(owner);
-            this.getSession().sftp().setstat(this.getAbsolute(), attr);
+            this.writeAttributes(attr);
             if(this.attributes().isDirectory()) {
                 if(recursive) {
                     for(AbstractPath child : this.children()) {
@@ -335,7 +339,7 @@ public class SFTPPath extends Path {
 
             SFTPv3FileAttributes attr = new SFTPv3FileAttributes();
             attr.gid = new Integer(group);
-            this.getSession().sftp().setstat(this.getAbsolute(), attr);
+            this.writeAttributes(attr);
             if(this.attributes().isDirectory()) {
                 if(recursive) {
                     for(AbstractPath child : this.children()) {
@@ -368,25 +372,8 @@ public class SFTPPath extends Path {
                 this.getName(), perm.getOctalString()));
 
         SFTPv3FileAttributes attr = new SFTPv3FileAttributes();
-        if(recursive && this.attributes().isFile()) {
-            // Do not write executable bit for files if not already set when recursively updating directory.
-            // See #1787
-            Permission modified = new Permission(perm);
-            if(!this.attributes().getPermission().getOwnerPermissions()[Permission.EXECUTE]) {
-                modified.getOwnerPermissions()[Permission.EXECUTE] = false;
-            }
-            if(!this.attributes().getPermission().getGroupPermissions()[Permission.EXECUTE]) {
-                modified.getGroupPermissions()[Permission.EXECUTE] = false;
-            }
-            if(!this.attributes().getPermission().getOtherPermissions()[Permission.EXECUTE]) {
-                modified.getOtherPermissions()[Permission.EXECUTE] = false;
-            }
-            attr.permissions = modified.getOctalNumber();
-        }
-        else {
-            attr.permissions = perm.getOctalNumber();
-        }
-        this.getSession().sftp().setstat(getAbsolute(), attr);
+        attr.permissions = perm.getOctalNumber();
+        this.writeAttributes(attr);
         if(this.attributes().isDirectory()) {
             if(recursive) {
                 for(AbstractPath child : this.children()) {
@@ -418,7 +405,7 @@ public class SFTPPath extends Path {
         // We must both set the accessed and modified time. See AttribFlags.SSH_FILEXFER_ATTR_V3_ACMODTIME
         attrs.atime = t;
         attrs.mtime = t;
-        this.getSession().sftp().setstat(this.getAbsolute(), attrs);
+        this.writeAttributes(attrs);
         this.attributes().clear(true, false, false, false);
     }
 
@@ -538,6 +525,17 @@ public class SFTPPath extends Path {
                         log.warn(ignore.getMessage());
                     }
                 }
+                if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
+                    try {
+                        // Even if specified above when creating the file handle, we still need to update the
+                        // permissions after the upload. SSH_FXP_OPEN does not support setting
+                        // attributes in version 4 or lower.
+                        this.writeUnixPermissionImpl(this.attributes().getPermission(), false);
+                    }
+                    catch(SFTPException ignore) {
+                        log.warn(ignore.getMessage());
+                    }
+                }
             }
         }
         catch(IOException e) {
@@ -566,9 +564,18 @@ public class SFTPPath extends Path {
                         this.getName()));
 
                 SFTPv3FileAttributes attr = new SFTPv3FileAttributes();
-                attr.permissions = new Permission(Preferences.instance().getInteger("queue.upload.permissions.file.default")).getOctalNumber();
+                Permission permission = new Permission(Preferences.instance().getInteger("queue.upload.permissions.file.default"));
+                attr.permissions = permission.getOctalNumber();
                 this.getSession().sftp().createFile(this.getAbsolute(), attr);
-
+                try {
+                    // Even if specified above when creating the file handle, we still need to update the
+                    // permissions after the creating the file. SSH_FXP_OPEN does not support setting
+                    // attributes in version 4 or lower.
+                    this.writeUnixPermissionImpl(permission, false);
+                }
+                catch(SFTPException ignore) {
+                    log.warn(ignore.getMessage());
+                }
                 // The directory listing is no more current
                 this.getParent().invalidate();
             }
