@@ -20,11 +20,15 @@ package ch.cyberduck.core.importer;
  */
 
 import ch.cyberduck.core.AbstractHostCollection;
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.ui.cocoa.odb.EditorFactory;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+
+import java.text.MessageFormat;
 
 /**
  * @version $Id:$
@@ -70,5 +74,12 @@ public abstract class ThirdpartyBookmarkCollection extends AbstractHostCollectio
 
     public String getConfiguration() {
         return "bookmark.import." + this.getBundleIdentifier();
+    }
+
+    @Override
+    public boolean add(Host bookmark) {
+        bookmark.setComment(MessageFormat.format(Locale.localizedString("Imported from {0}", "Configuration"),
+                this.getName()));
+        return super.add(bookmark);
     }
 }
