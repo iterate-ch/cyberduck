@@ -1536,12 +1536,12 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
     public void quickConnectWillPopUp(NSNotification notification) {
         int size = BookmarkCollection.defaultCollection().size();
-        this.quickConnectPopup.setNumberOfVisibleItems(size > 10 ? new NSInteger(10) : new NSInteger(size));
+        quickConnectPopup.setNumberOfVisibleItems(size > 10 ? new NSInteger(10) : new NSInteger(size));
     }
 
     @Action
-    public void quickConnectSelectionChanged(final NSControl sender) {
-        String input = (sender).stringValue();
+    public void quickConnectSelectionChanged(final ID sender) {
+        String input = quickConnectPopup.stringValue();
         if(StringUtils.isBlank(input)) {
             return;
         }
