@@ -8,7 +8,11 @@ Changelog. Last modified: $Date$
 - [Feature] Version for Microsoft Windows XP, Windows Vista & Windows 7.
 - [Feature] Connecting to Windows Azure Blob Storage (Azure) (#3938)
 
-3.6 (Sep-05-2010) [http://trac.cyberduck.ch/milestone/3.6]
+3.6.1 (Sep-07-2010) [http://trac.cyberduck.ch/milestone/3.6.1]
+- [Bugfix] Permissions reset (FTP) (#5132)
+- [Bugfix] Failure reading symbolic link target for directories (SFTP) (#5141)
+
+3.6 (Sep-06-2010) [http://trac.cyberduck.ch/milestone/3.6]
 - [Feature] Connecting to Google Storage (Google Storage)
 - [Feature] Edit Access Control List (ACL) (#3191) (S3, Google Storage, Google Docs)
 - [Feature] Enable Bucket Versioning (#4511) (S3)
