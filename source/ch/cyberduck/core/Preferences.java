@@ -630,7 +630,8 @@ public abstract class Preferences {
         /**
          * Warning when opening connections sending credentials in plaintext
          */
-        defaults.put("connection.unsecure.warning", String.valueOf(true));
+        defaults.put("connection.unsecure.warning", String.valueOf(false));
+        defaults.put("connection.unsecure.switch", String.valueOf(true));
 
         /**
          * Transfer read buffer size

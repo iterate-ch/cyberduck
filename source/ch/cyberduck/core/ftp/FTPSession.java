@@ -377,6 +377,17 @@ public class FTPSession extends Session implements SSLSession {
      */
     private boolean auth;
 
+    private boolean unsecureswitch =
+            Preferences.instance().getBoolean("connection.unsecure.switch");
+
+    public boolean isUnsecureswitch() {
+        return unsecureswitch;
+    }
+
+    public void setUnsecureswitch(boolean unsecureswitch) {
+        this.unsecureswitch = unsecureswitch;
+    }
+
     /**
      * Propose protocol change if AUTH TLS is available.
      *
@@ -387,7 +398,7 @@ public class FTPSession extends Session implements SSLSession {
     @Override
     protected void warn(LoginController login, Credentials credentials) throws IOException {
         Host host = this.getHost();
-        if(this.isUnsecurewarning()
+        if(this.isUnsecureswitch()
                 && !credentials.isAnonymousLogin()
                 && !host.getProtocol().isSecure()
                 && !Preferences.instance().getBoolean("connection.unsecure." + host.getHostname())
@@ -405,7 +416,7 @@ public class FTPSession extends Session implements SSLSession {
             }
             finally {
                 // Do not warn again upon subsequent login
-                this.setUnsecurewarning(false);
+                this.setUnsecureswitch(false);
             }
             // Protocol switch
             host.setProtocol(Protocol.FTP_TLS);
