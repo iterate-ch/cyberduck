@@ -39,8 +39,13 @@
                        regexp="([\d]+).*"
                        select="\1"/>
 
+        <propertyregex property="minor"
+                       input="${cyberduck.version.minor}.0"
+                       regexp="(\d\.\d)(\.\d)?"
+                       select="\1"/>                
+                  
         <property name="version"
-                  value="${cyberduck.version.major}.${cyberduck.version.minor}.${svn.revision.stripped}.${build.number}"/>
+                  value="${cyberduck.version.major}.${minor}.${svn.revision.stripped}"/>
         <property name="shortversion"
                   value="${cyberduck.version.major}.${cyberduck.version.minor} (${svn.revision.stripped})"/>
     </target>
