@@ -2076,7 +2076,10 @@ source/ch/cyberduck/core/http/HTTPSession.java -text
 source/ch/cyberduck/core/http/StickyHostConfiguration.java -text
 source/ch/cyberduck/core/idisk/IDiskPath.java -text
 source/ch/cyberduck/core/idisk/IDiskSession.java -text
+source/ch/cyberduck/core/importer/CDTransmitImporter.h -text
+source/ch/cyberduck/core/importer/CDTransmitImporter.m -text
 source/ch/cyberduck/core/importer/ThirdpartyBookmarkCollection.java -text
+source/ch/cyberduck/core/importer/TransmitBookmarkCollection.java -text
 source/ch/cyberduck/core/s3/S3Path.java -text
 source/ch/cyberduck/core/s3/S3Session.java -text
 source/ch/cyberduck/core/sftp/HostKeyController.java -text
@@ -2105,6 +2108,8 @@ source/ch/cyberduck/ui/cocoa/application/NSDockTile.java -text
 source/ch/cyberduck/ui/cocoa/delegate/CopyURLMenuDelegate.java -text
 source/ch/cyberduck/ui/cocoa/delegate/OpenURLMenuDelegate.java -text
 source/ch/cyberduck/ui/cocoa/delegate/URLMenuDelegate.java -text
+source/ch/cyberduck/ui/cocoa/foundation/NSCoder.java -text
+source/ch/cyberduck/ui/cocoa/foundation/NSKeyedUnarchiver.java -text
 source/ch/cyberduck/ui/cocoa/quicklook/QLPreviewPanel.h -text
 source/ch/cyberduck/ui/cocoa/quicklook/QuickLook.h -text
 source/ch/cyberduck/ui/cocoa/quicklook/QuickLook.m -text
