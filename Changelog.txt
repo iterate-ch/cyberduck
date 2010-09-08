@@ -4,9 +4,14 @@ http://cyberduck.ch/
 
 Changelog. Last modified: $Date$
 
-4.0 (Sep-30-2010) [http://trac.cyberduck.ch/milestone/4.0]
+4.0 [http://trac.cyberduck.ch/milestone/4.0]
 - [Feature] Version for Microsoft Windows XP, Windows Vista & Windows 7.
 - [Feature] Connecting to Windows Azure Blob Storage (Azure) (#3938)
+
+3.6.2 (Sep-20-2010) [http://trac.cyberduck.ch/milestone/3.6.2]
+- [Bugfix] Files pasted upload to parent directory (#5155)
+- [Feature] Display hidden files in upload prompt (#1243)
+- [Feature] Import Transmit favorites (#3073)
 
 3.6.1 (Sep-07-2010) [http://trac.cyberduck.ch/milestone/3.6.1]
 - [Bugfix] Permissions reset (FTP) (#5132)
