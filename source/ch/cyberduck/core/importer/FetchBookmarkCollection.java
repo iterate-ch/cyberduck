@@ -50,14 +50,17 @@ public class FetchBookmarkCollection extends ThirdpartyBookmarkCollection {
     protected void parse(Local file) {
         NSDictionary serialized = NSDictionary.dictionaryWithContentsOfFile(file.getAbsolute());
         if(null == serialized) {
+            log.error("Invalid bookmark file:" + file);
             return;
         }
         NSDictionary dict = new PlistDeserializer(serialized).objectForKey("Shortcuts v2");
         if(null == dict) {
+            log.error("Invalid bookmark file:" + file);
             return;
         }
         dict = new PlistDeserializer(dict).objectForKey("Shortcuts");
         if(null == dict) {
+            log.error("Invalid bookmark file:" + file);
             return;
         }
         List<NSDictionary> shortcuts = new PlistDeserializer(dict).listForKey("Shortcuts");

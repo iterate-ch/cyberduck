@@ -50,6 +50,7 @@ public class FlowBookmarkCollection extends ThirdpartyBookmarkCollection {
     protected void parse(Local file) {
         NSDictionary serialized = NSDictionary.dictionaryWithContentsOfFile(file.getAbsolute());
         if(null == serialized) {
+            log.error("Invalid bookmark file:" + file);
             return;
         }
         this.parse(serialized);

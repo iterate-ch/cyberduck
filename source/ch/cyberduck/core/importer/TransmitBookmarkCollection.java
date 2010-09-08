@@ -48,6 +48,7 @@ public class TransmitBookmarkCollection extends ThirdpartyBookmarkCollection {
     protected void parse(Local file) {
         NSDictionary serialized = NSDictionary.dictionaryWithContentsOfFile(file.getAbsolute());
         if(null == serialized) {
+            log.error("Invalid bookmark file:" + file);
             return;
         }
         // Adds a class translation mapping to NSKeyedUnarchiver whereby objects encoded with a given class name
