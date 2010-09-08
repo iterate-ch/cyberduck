@@ -218,9 +218,9 @@ public class SFTPSession extends Session {
                 // If the private key is passphrase protected then ask for the passphrase
                 CharArrayWriter privatekey = new CharArrayWriter();
                 IOUtils.copy(new FileReader(new File(identity.getAbsolute())), privatekey);
-                String passphrase;
+                String passphrase = null;
                 if(PEMDecoder.isPEMEncrypted(privatekey.toCharArray())) {
-                    passphrase = KeychainFactory.instance().getPassword("SSHKeychain", identity.toURL());
+                    passphrase = KeychainFactory.instance().getPassword("SSHKeychain", identity.getAbbreviatedPath());
                     if(StringUtils.isEmpty(passphrase)) {
                         controller.prompt(host.getProtocol(), credentials,
                                 Locale.localizedString("Private key password protected", "Credentials"),
@@ -228,12 +228,9 @@ public class SFTPSession extends Session {
                                         + " (" + identity + ")");
                         passphrase = credentials.getPassword();
                         if(credentials.isUseKeychain()) {
-                            KeychainFactory.instance().addPassword("SSHKeychain", identity.toURL(), passphrase);
+                            KeychainFactory.instance().addPassword("SSHKeychain", identity.getAbbreviatedPath(), passphrase);
                         }
                     }
-                }
-                else {
-                    passphrase = privatekey.toString();
                 }
                 try {
                     return this.getClient().authenticateWithPublicKey(credentials.getUsername(),
