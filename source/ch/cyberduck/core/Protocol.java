@@ -975,7 +975,7 @@ public abstract class Protocol {
     };
 
     /**
-     *
+     * Statically register protocol implementations.
      */
     public static void register() {
         if(Preferences.instance().getBoolean("protocol.ftp.enable")) {
@@ -1066,7 +1066,11 @@ public abstract class Protocol {
     }
 
     public static List<Protocol> getKnownProtocols() {
-        return SessionFactory.getRegisteredProtocols();
+        List<Protocol> list = SessionFactory.getRegisteredProtocols();
+        if(list.isEmpty()) {
+            throw new RuntimeException("No protocols configured");
+        }
+        return list;
     }
 
     /**
