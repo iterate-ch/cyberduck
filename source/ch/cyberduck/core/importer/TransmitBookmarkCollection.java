@@ -102,10 +102,10 @@ public class TransmitBookmarkCollection extends ThirdpartyBookmarkCollection {
         else if("SFTP".equals(protocolstring)) {
             protocol = Protocol.SFTP;
         }
-        else if("FTPTLS (FTP with TLS/SSL)".equals(protocolstring)) {
+        else if("FTPTLS".equals(protocolstring)) {
             protocol = Protocol.FTP_TLS;
         }
-        else if("FTPSSL (FTP with implicit SSL)".equals(protocolstring)) {
+        else if("FTPSSL".equals(protocolstring)) {
             protocol = Protocol.FTP_TLS;
         }
         else if("S3".equals(protocolstring)) {
