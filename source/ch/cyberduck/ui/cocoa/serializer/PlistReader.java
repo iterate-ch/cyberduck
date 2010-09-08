@@ -29,15 +29,22 @@ import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
 import org.rococoa.Rococoa;
 
+import org.apache.log4j.Logger;
+
 /**
  * @version $Id$
  * @param <S>
  */
 public abstract class PlistReader<S extends Serializable> implements Reader<S> {
+    private static Logger log = Logger.getLogger(PlistReader.class);
 
     public Collection<S> readCollection(Local file) {
         final Collection<S> c = new Collection<S>();
         NSArray list = NSArray.arrayWithContentsOfFile(file.getAbsolute());
+        if(null == list) {
+            log.error("Invalid bookmark file:" + file);
+            return c;
+        }
         final NSEnumerator i = list.objectEnumerator();
         NSObject next;
         while(((next = i.nextObject()) != null)) {
@@ -53,11 +60,14 @@ public abstract class PlistReader<S extends Serializable> implements Reader<S> {
      */
     public S read(Local file) {
         NSDictionary dict = NSDictionary.dictionaryWithContentsOfFile(file.getAbsolute());
+        if(null == dict) {
+            log.error("Invalid bookmark file:" + file);
+            return null;
+        }
         return this.deserialize(dict);
     }
 
     /**
-     *
      * @param dict
      * @return
      */
