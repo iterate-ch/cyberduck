@@ -2643,6 +2643,8 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
     private NSOpenPanel uploadPanel;
 
+    private NSButton uploadPanelHiddenFilesCheckbox;
+
     @Action
     public void uploadButtonClicked(final ID sender) {
         uploadPanel = NSOpenPanel.openPanel();
@@ -2651,11 +2653,25 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         uploadPanel.setCanChooseFiles(true);
         uploadPanel.setAllowsMultipleSelection(true);
         uploadPanel.setPrompt(Locale.localizedString("Upload"));
+        if(uploadPanel.respondsToSelector(Foundation.selector("setShowsHiddenFiles:"))) {
+            uploadPanelHiddenFilesCheckbox = NSButton.buttonWithFrame(new NSRect(0, 0));
+            uploadPanelHiddenFilesCheckbox.setTitle(Locale.localizedString("Show Hidden Files"));
+            uploadPanelHiddenFilesCheckbox.setTarget(this.id());
+            uploadPanelHiddenFilesCheckbox.setAction(Foundation.selector("uploadPanelSetShowHiddenFiles:"));
+            uploadPanelHiddenFilesCheckbox.setButtonType(NSButton.NSSwitchButton);
+            uploadPanelHiddenFilesCheckbox.setState(NSCell.NSOffState);
+            uploadPanelHiddenFilesCheckbox.sizeToFit();
+            uploadPanel.setAccessoryView(uploadPanelHiddenFilesCheckbox);
+        }
         uploadPanel.beginSheetForDirectory(lastSelectedUploadDirectory, //trying to be smart
                 null, this.window,
                 this.id(),
                 Foundation.selector("uploadPanelDidEnd:returnCode:contextInfo:"),
                 null);
+    }
+
+    public void uploadPanelSetShowHiddenFiles(ID sender) {
+        uploadPanel.setShowsHiddenFiles(uploadPanelHiddenFilesCheckbox.state() == NSCell.NSOnState);
     }
 
     public void uploadPanelDidEnd_returnCode_contextInfo(NSOpenPanel sheet, int returncode, ID contextInfo) {
@@ -2683,6 +2699,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         }
         lastSelectedUploadDirectory = new File(sheet.filename()).getParent();
         uploadPanel = null;
+        uploadPanelHiddenFilesCheckbox = null;
     }
 
     /**

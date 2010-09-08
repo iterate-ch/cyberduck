@@ -27,6 +27,7 @@ import org.rococoa.ObjCClass;
 import org.rococoa.Selector;
 
 /// <i>native declaration : :14</i>
+
 public abstract class NSOpenPanel extends NSSavePanel {
     static final _Class CLASS = org.rococoa.Rococoa.createClass("NSOpenPanel", _Class.class);
 
@@ -101,6 +102,13 @@ public abstract class NSOpenPanel extends NSSavePanel {
      * <i>native declaration : :34</i>
      */
     public abstract void setCanChooseFiles(boolean flag);
+
+    /**
+     * Private
+     *
+     * @param show
+     */
+    public abstract void setShowsHiddenFiles(boolean show);
 
     /**
      * <i>from NSOpenPanelRuntime native declaration : :40</i><br>

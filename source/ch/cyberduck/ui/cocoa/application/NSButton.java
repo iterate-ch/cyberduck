@@ -61,6 +61,7 @@ public abstract class NSButton extends NSControl {
         NSButton alloc();
     }
 
+    @Override
     public abstract NSButton initWithFrame(NSRect frameRect);
 
     /**
@@ -208,12 +209,6 @@ public abstract class NSButton extends NSControl {
      * <i>native declaration : :40</i>
      */
     public abstract void highlight(boolean flag);
-
-    /**
-     * Original signature : <code>BOOL performKeyEquivalent(NSEvent*)</code><br>
-     * <i>native declaration : :41</i>
-     */
-    public abstract boolean performKeyEquivalent(NSEvent key);
 
     /**
      * Original signature : <code>void setTitleWithMnemonic(NSString*)</code><br>
