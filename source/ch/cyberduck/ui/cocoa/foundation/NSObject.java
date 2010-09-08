@@ -19,6 +19,12 @@ package ch.cyberduck.ui.cocoa.foundation;
  * dkocher@cyberduck.ch
  */
 
+import org.rococoa.Selector;
+
 /// <i>native declaration : :14</i>
 public abstract class NSObject extends org.rococoa.cocoa.foundation.NSObject {
+
+    public abstract boolean respondsToSelector(Selector sel);
+
+    public abstract NSObject performSelector(Selector sel);
 }
