@@ -3007,7 +3007,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 final List<Path> roots = new Collection<Path>();
                 for(int i = 0; i < elements.count().intValue(); i++) {
                     Path p = PathFactory.createPath(session,
-                            workdir.getParent().getAbsolute(),
+                            workdir.getAbsolute(),
                             LocalFactory.createLocal(elements.objectAtIndex(new NSUInteger(i)).toString()));
                     roots.add(p);
                 }
