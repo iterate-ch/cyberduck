@@ -1,4 +1,4 @@
-﻿// 
+// 
 // Copyright (c) 2010 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
@@ -44,6 +44,7 @@ using StructureMap;
 using ArrayList = java.util.ArrayList;
 using Collection = ch.cyberduck.core.Collection;
 using Console = System.Console;
+using DataObject = System.Windows.Forms.DataObject;
 using Locale = ch.cyberduck.core.i18n.Locale;
 using Object = System.Object;
 using Path = ch.cyberduck.core.Path;
@@ -51,6 +52,7 @@ using Process = System.Diagnostics.Process;
 using String = System.String;
 using StringBuilder = System.Text.StringBuilder;
 using Thread = System.Threading.Thread;
+using Timer = System.Threading.Timer;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -275,6 +277,11 @@ namespace Ch.Cyberduck.Ui.Controller
             //hostCollection.addListener(this);
             View.ViewClosedEvent += delegate { bookmarkCollection.removeListener(this); };
             View.SetBookmarkModel(bookmarkCollection);
+        }
+
+        private void View_Download()
+        {
+            Download(SelectedPaths);
         }
 
         private bool View_ValidateRevertFile()
@@ -830,7 +837,7 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             else if (selected.attributes().isFile() || View.SelectedPaths.Count > 1)
             {
-                if (ch.cyberduck.core.Preferences.instance().getBoolean("browser.doubleclick.edit"))
+                if (Preferences.instance().getBoolean("browser.doubleclick.edit"))
                 {
                     View_EditEvent();
                 }
@@ -839,6 +846,35 @@ namespace Ch.Cyberduck.Ui.Controller
                     View_Download();
                 }
             }
+        }
+
+        /// <summary>
+        /// Download to default download directory.
+        /// </summary>
+        /// <param name="downloads"></param>
+        public void Download(List<Path> downloads)
+        {
+            Download(downloads, null);
+        }
+
+        public void Download(List<Path> downloads, Local downloadFolder)
+        {
+            Session session = getTransferSession();
+            List roots = new Collection();
+            foreach (Path selected in SelectedPaths)
+            {
+                Path path = PathFactory.createPath(session, selected.getAsDictionary());
+                if (null == downloadFolder)
+                {
+                    path.setLocal(null);
+                } else
+                {
+                    path.setLocal(LocalFactory.createLocal(downloadFolder, path.getName()));
+                }                
+                roots.add(path);
+            }
+            Transfer q = new DownloadTransfer(roots);
+            transfer(q);
         }
 
         private void View_GotoFolder()
@@ -1333,11 +1369,10 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             IList selectedObjects = listView.SelectedObjects;
             IList<VirtualFileDataObject.FileDescriptor> d = new List<VirtualFileDataObject.FileDescriptor>();
-            //todo pathreference
-            foreach (Path p in selectedObjects)
+            foreach (TreePathReference p in selectedObjects)
             {
-                DownloadTransfer temp = new DownloadTransfer(p);
-                List<Path> files = GetPathsRecursive(p, temp);
+                DownloadTransfer temp = new DownloadTransfer(p.Unique);
+                List<Path> files = GetPathsRecursive(p.Unique, temp);
                 foreach (var file in files)
                 {
                     Path file1 = file;
@@ -1381,7 +1416,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private void View_Dropped(OlvDropEventArgs e)
         {
             Path destination = e.DropTargetItem != null
-                                   ? (Path) e.DropTargetItem.RowObject
+                                   ? ((TreePathReference) e.DropTargetItem.RowObject).Unique
                                    : Workdir;
             if (IsMounted())
             {
@@ -1424,7 +1459,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     if (e.DropTargetItem != null)
                     {
                         // Dragging over file or folder
-                        if (((Path) e.DropTargetItem.RowObject).attributes().isDirectory())
+                        if ((((TreePathReference) e.DropTargetItem.RowObject)).Unique.attributes().isDirectory())
                         {
                             e.Effect = DragDropEffects.Copy;
                         }
@@ -1662,33 +1697,13 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
-        /// <summary>
-        /// Download button clicked or double click inside browser
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void View_Download()
-        {
-            Session session = getTransferSession();
-            Debug.WriteLine("============= new TransferSession created(): " + (session == _session));
-            List roots = new Collection();
-            foreach (Path selected in SelectedPaths)
-            {
-                Path path = PathFactory.createPath(session, selected.getAsDictionary());
-                path.setLocal(null);
-                roots.add(path);
-            }
-            Transfer q = new DownloadTransfer(roots);
-            transfer(q);
-        }
-
         public Session getSession()
         {
             return _session;
         }
 
         /// <summary>
-        /// Trasnfers the files either using the queue or using
+        /// Transfers the files either using the queue or using
         /// the browser session if #connection.pool.max is 1
         /// </summary>
         /// <param name="transfer"></param>
@@ -1714,7 +1729,6 @@ namespace Ch.Cyberduck.Ui.Controller
         /// <param name="workdir"></param>
         public void transfer(Transfer transfer, Path workdir)
         {
-            Debug.WriteLine("transfer(Transfer transfer, Path workdir)");
             UploadTransferAdapter transferAdapter = new UploadTransferAdapter(this, transfer, workdir, true);
             transfer.addListener(transferAdapter);
             this.transfer(transfer);
@@ -1722,8 +1736,6 @@ namespace Ch.Cyberduck.Ui.Controller
 
         protected void transfer(Transfer transfer, bool useBrowserConnection, TransferPrompt prompt)
         {
-            Debug.WriteLine("transfer(Transfer transfer, bool useBrowserConnection, TransferPrompt prompt):" +
-                            useBrowserConnection);
             if (useBrowserConnection)
             {
                 TransferAdapter transferAdapter = new TransferAdapter(this, transfer, getTimerPool());
@@ -3038,32 +3050,35 @@ namespace Ch.Cyberduck.Ui.Controller
             private readonly BrowserController _controller;
             private readonly Speedometer _meter;
             private readonly ScheduledExecutorService _timerPool; //todo gibt es .NET Alternative?
-            private long _delay;
-            private long _period = 500; //in milliseconds
+            private const long Delay = 0;
+            private const long Period = 500; //in milliseconds
+            private readonly Timer _timer;
 
-            /**
-            * Timer to update the progress indicator
-            */
-            private ScheduledFuture _progressTimer; //todo gibt es .NET Alternative?
+            private void timerCallback(object state)
+            {
+                _controller.Invoke(delegate
+                                       {
+                                           _controller.View.StatusLabel = _meter.getProgress();   
+                                       });
+            }
 
             public TransferAdapter(BrowserController controller, Transfer transfer, ScheduledExecutorService timerPool)
             {
                 _meter = new Speedometer(transfer);
                 _controller = controller;
                 _timerPool = timerPool;
+                _timer = new Timer(timerCallback, null, Timeout.Infinite, Period);
             }
 
             public override void willTransferPath(Path path)
             {
                 _meter.reset();
-                _progressTimer = _timerPool.scheduleAtFixedRate(new ProgressTimerRunnable(_controller, _meter), _delay,
-                                                                _period,
-                                                                TimeUnit.MILLISECONDS);
+                _timer.Change(Delay, Period);
             }
 
             public override void didTransferPath(Path path)
             {
-                _progressTimer.cancel(false);
+                _timer.Change(Timeout.Infinite, Period);
                 _meter.reset();
             }
 
@@ -3071,7 +3086,6 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 _meter.reset();
             }
-
 
             internal class ProgressTimerRunnable : Runnable
             {
@@ -3091,7 +3105,6 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
             }
         }
-
 
         private class TransferBrowserBackgrounAction : BrowserBackgroundAction
         {
@@ -3118,7 +3131,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
             public override void cleanup()
             {
-                Log.debug("cleanup: " + getActivity());
+                Log.debug("cleanup: " + getActivity());                
                 BrowserController.UpdateStatusLabel();
                 _callback();
             }
@@ -3126,7 +3139,8 @@ namespace Ch.Cyberduck.Ui.Controller
             public override void cancel()
             {
                 Log.debug("cancel: " + getActivity());
-                //throw new NotImplementedException();
+                _transfer.cancel();
+                base.cancel();
             }
 
             public override string getActivity()
