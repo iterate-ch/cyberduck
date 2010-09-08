@@ -157,7 +157,7 @@ public abstract class Protocol {
      */
     public boolean validate(Credentials credentials) {
         return StringUtils.isNotBlank(credentials.getUsername())
-                && StringUtils.isNotBlank(credentials.getPassword());
+                && StringUtils.isNotEmpty(credentials.getPassword());
     }
 
     /**
@@ -189,6 +189,14 @@ public abstract class Protocol {
         @Override
         public boolean isEncodingConfigurable() {
             return true;
+        }
+
+        @Override
+        public boolean validate(Credentials credentials) {
+            if(credentials.isPublicKeyAuthentication()) {
+                return StringUtils.isNotBlank(credentials.getUsername());
+            }
+            return super.validate(credentials);
         }
     };
 
