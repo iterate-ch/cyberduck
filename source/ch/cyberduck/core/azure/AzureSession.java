@@ -23,10 +23,16 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.core.cloud.CloudSession;
 import ch.cyberduck.core.cloud.Distribution;
 import ch.cyberduck.core.i18n.Locale;
-import ch.cyberduck.core.ssl.*;
+import ch.cyberduck.core.ssl.AbstractX509TrustManager;
+import ch.cyberduck.core.ssl.IgnoreX509TrustManager;
+import ch.cyberduck.core.ssl.KeychainX509TrustManager;
+import ch.cyberduck.core.ssl.SSLSession;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.http.*;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpEntityEnclosingRequest;
+import org.apache.http.HttpRequest;
+import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.log4j.Logger;
@@ -87,7 +93,7 @@ public class AzureSession extends CloudSession implements SSLSession {
     }
 
     @Override
-    public void writeDistribution(boolean enabled, String container, Distribution.Method method, 
+    public void writeDistribution(boolean enabled, String container, Distribution.Method method,
                                   String[] cnames, boolean logging, String defaultRootObject) {
         throw new UnsupportedOperationException();
     }
@@ -641,7 +647,12 @@ public class AzureSession extends CloudSession implements SSLSession {
         return false;
     }
 
-
+    /**
+     * Creating files is only possible inside a container.
+     *
+     * @param workdir The workdir to create query
+     * @return Fals if directory is root.
+     */
     @Override
     public boolean isCreateFileSupported(Path workdir) {
         return !workdir.isRoot();
