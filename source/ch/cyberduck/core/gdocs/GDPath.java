@@ -468,7 +468,7 @@ public class GDPath extends Path {
                                 this.getName()));
                         status().setResume(false);
 
-                        String feed = ((GDPath) this.getParent()).getFolderFeed().toString();
+                        String feed = ((GDPath) this.getParent()).getFolderFeed();
                         StringBuilder url = new StringBuilder(feed);
                         if(this.isOcrSupported()) {
                             // Image file type
