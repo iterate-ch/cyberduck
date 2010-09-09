@@ -7,6 +7,7 @@ Changelog. Last modified: $Date$
 4.0 [http://trac.cyberduck.ch/milestone/4.0]
 - [Feature] Version for Microsoft Windows XP, Windows Vista & Windows 7.
 - [Feature] Connecting to Windows Azure Blob Storage (Azure) (#3938)
+- [Bugfix] Uploading .xlsx or .docx documents fails with permission error (#5169) (Google Docs)
 
 3.6.2 (Sep-20-2010) [http://trac.cyberduck.ch/milestone/3.6.2]
 - [Bugfix] Files pasted upload to parent directory (#5155)
