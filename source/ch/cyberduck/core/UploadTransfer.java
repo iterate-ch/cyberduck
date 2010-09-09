@@ -183,21 +183,11 @@ public class UploadTransfer extends Transfer {
                 }
             }
             if(file.getSession().isTimestampSupported()) {
-                if(file.exists()) {
-                    // Do not overwrite timestamp for existing file.
-                    if(file.attributes().getModificationDate() == -1) {
-                        if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
-                            file.readTimestamp();
-                        }
-                    }
-                }
-                else {
-                    if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
-                        // Read timestamps from local file
-                        file.attributes().setModificationDate(file.getLocal().attributes().getModificationDate());
-                        file.attributes().setCreationDate(file.getLocal().attributes().getCreationDate());
-                        file.attributes().setAccessedDate(file.getLocal().attributes().getAccessedDate());
-                    }
+                if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
+                    // Read timestamps from local file
+                    file.attributes().setModificationDate(file.getLocal().attributes().getModificationDate());
+                    file.attributes().setCreationDate(file.getLocal().attributes().getCreationDate());
+                    file.attributes().setAccessedDate(file.getLocal().attributes().getAccessedDate());
                 }
             }
             if(file.attributes().isFile()) {
