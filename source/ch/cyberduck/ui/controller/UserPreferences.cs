@@ -245,16 +245,18 @@ namespace Ch.Cyberduck.Ui.Controller
 
             base.setDefaults();
 
+            defaults.put("protocol.azure.tls.enable", true.ToString());
             defaults.put("application.support.path", RoamingApplicationDataPath);
             defaults.put("update.check.last", "0");
             
             defaults.put("queue.download.folder", DefaultDownloadPath);
+            defaults.put("queue.upload.permissions.useDefault", true.ToString());
+            defaults.put("queue.upload.changePermissions", true.ToString());
 
             //defaults.put("logging", "debug");
             defaults.put("logging", "info");
             //defaults.put("logging", "info");
             defaults.put("connection.host.max", "-1");
-
             defaults.put("ssh.knownhosts", Path.Combine(RoamingApplicationDataPath, "known_hosts"));
 
             //default browser toolbar set
@@ -280,7 +282,7 @@ namespace Ch.Cyberduck.Ui.Controller
             defaults.put("transfer.toolbar.cleanup", false.ToString());
             defaults.put("transfer.toolbar.log", false.ToString());
             defaults.put("transfer.toolbar.open", true.ToString());
-            defaults.put("transfer.toolbar.show", true.ToString());
+            defaults.put("transfer.toolbar.show", true.ToString());            
         }
 
         public string GetDefaultLanguage()
