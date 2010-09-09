@@ -296,6 +296,7 @@ public class InfoController extends ToolbarWindowController {
                 @Override
                 public void cleanup() {
                     toggleS3Settings(true);
+                    initS3();
                 }
 
                 @Override
@@ -331,6 +332,7 @@ public class InfoController extends ToolbarWindowController {
                 @Override
                 public void cleanup() {
                     toggleS3Settings(true);
+                    initS3();
                 }
 
                 @Override
@@ -367,6 +369,7 @@ public class InfoController extends ToolbarWindowController {
                 @Override
                 public void cleanup() {
                     toggleS3Settings(true);
+                    initS3();
                 }
             });
         }
@@ -398,6 +401,7 @@ public class InfoController extends ToolbarWindowController {
                 @Override
                 public void cleanup() {
                     toggleS3Settings(true);
+                    initS3();
                 }
             });
         }
