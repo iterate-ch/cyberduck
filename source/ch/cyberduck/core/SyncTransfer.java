@@ -226,6 +226,12 @@ public class SyncTransfer extends Transfer {
         }
         for(Path child : children) {
             this.setStatus(child);
+            if(child.getSession().isTimestampSupported()) {
+                if(child instanceof FTPPath) {
+                    // Make sure we have a UTC timestamp
+                    child.readTimestamp();
+                }
+            }
         }
         return new AttributedList<Path>(children);
     }
@@ -453,7 +459,7 @@ public class SyncTransfer extends Transfer {
     private Comparison compareTimestamp(Path p) {
         log.debug("compareTimestamp:" + p);
         if(p.getSession().isTimestampSupported()) {
-            if(p.attributes().getModificationDate() == -1 || p instanceof FTPPath) {
+            if(p.attributes().getModificationDate() == -1) {
                 // Make sure we have a UTC timestamp
                 p.readTimestamp();
             }
