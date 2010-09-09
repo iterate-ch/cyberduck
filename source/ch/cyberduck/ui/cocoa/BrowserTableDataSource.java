@@ -242,8 +242,10 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
     public NSUInteger draggingSourceOperationMaskForLocal(boolean local) {
         log.debug("draggingSourceOperationMaskForLocal:" + local);
         if(local) {
+            // Move or copy within the browser
             return new NSUInteger(NSDraggingInfo.NSDragOperationMove.intValue() | NSDraggingInfo.NSDragOperationCopy.intValue());
         }
+        // Copy to a thirdparty application or drag to trash to delete
         return new NSUInteger(NSDraggingInfo.NSDragOperationCopy.intValue() | NSDraggingInfo.NSDragOperationDelete.intValue());
     }
 
@@ -274,6 +276,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
         }
         if(draggingInfo.draggingPasteboard().availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.URLPboardType)) != null) {
             NSObject o = draggingInfo.draggingPasteboard().propertyListForType(NSPasteboard.URLPboardType);
+            // Mount .webloc URLs dragged to browser window
             if(o != null) {
                 final NSArray elements = Rococoa.cast(o, NSArray.class);
                 for(int i = 0; i < elements.count().intValue(); i++) {
@@ -324,9 +327,11 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
     public NSUInteger validateDrop(NSTableView view, Path destination, NSInteger row, NSDraggingInfo info) {
         if(controller.isMounted()) {
             if(null == destination) {
+                log.warn("Dragging destination is null.");
                 return NSDraggingInfo.NSDragOperationNone;
             }
             if(!controller.getSession().isCreateFileSupported(destination)) {
+                // Creating files is not supported for example in root of cloud storage accounts.
                 return NSDraggingInfo.NSDragOperationNone;
             }
             if(info.draggingPasteboard().availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.FilenamesPboardType)) != null) {
@@ -342,6 +347,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
             if(o != null) {
                 NSArray elements = Rococoa.cast(o, NSArray.class);
                 for(int i = 0; i < elements.count().intValue(); i++) {
+                    // Validate if .webloc URLs dragged to browser window have a known protocol
                     if(Protocol.isURL(elements.objectAtIndex(new NSUInteger(i)).toString())) {
                         // Passing a value of –1 for row, and NSTableViewDropOn as the operation causes the
                         // entire table view to be highlighted rather than a specific row.
@@ -350,13 +356,16 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                     }
                 }
             }
+            log.warn("URL dragging pasteboard is empty.");
             return NSDraggingInfo.NSDragOperationNone;
         }
         if(controller.isMounted()) {
             if(null == destination) {
+                log.warn("Dragging destination is null.");
                 return NSDraggingInfo.NSDragOperationNone;
             }
             if(PathPasteboard.getPasteboard(controller.getSession()).isEmpty()) {
+                log.warn("No files in pasteboard for session:" + controller.getSession());
                 return NSDraggingInfo.NSDragOperationNone;
             }
             for(Path next : PathPasteboard.getPasteboard(controller.getSession())) {
@@ -502,7 +511,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                     }
                     super.fireDidTransferPath(path);
                 }
-            }, dock, dock ? new TransferPrompt() {
+            }, dock ? new TransferPrompt() {
                 public TransferAction prompt() {
                     return TransferAction.ACTION_OVERWRITE;
                 }
