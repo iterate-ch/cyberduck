@@ -26,9 +26,11 @@ namespace ch.cyberduck.ui.controller
 {
     public delegate void VoidHandler();
 
-    public delegate void DragHandler(ObjectListView list, VirtualFileDataObject data);
+    public delegate System.Windows.Forms.DataObject DragHandler(ObjectListView list);
+    public delegate void EndDragHandler(System.Windows.Forms.DataObject data);
 
     public delegate void DropHandler(OlvDropEventArgs dropArgs);
+    public delegate void ModelDropHandler(ModelDropEventArgs dropArgs);
 
     public delegate bool RenamePathname(Path path, string newName);
 

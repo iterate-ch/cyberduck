@@ -2031,6 +2031,7 @@ source/ch/cyberduck/core/AbstractLoginController.java -text
 source/ch/cyberduck/core/CollectionListener.java -text
 source/ch/cyberduck/core/Commands.cs -text
 source/ch/cyberduck/core/DelegateOutputStream.cs -text
+source/ch/cyberduck/core/DragDropLib.cs -text
 source/ch/cyberduck/core/GlobalKeyboardHook.cs -text
 source/ch/cyberduck/core/HistoryCollection.java -text
 source/ch/cyberduck/core/HostKeyControllerFactory.java -text

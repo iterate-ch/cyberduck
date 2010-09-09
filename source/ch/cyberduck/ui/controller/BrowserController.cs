@@ -1,4 +1,4 @@
-// 
+﻿// 
 // Copyright (c) 2010 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
@@ -16,7 +16,6 @@
 // yves@cyberduck.ch
 // 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Diagnostics;
@@ -28,22 +27,17 @@ using BrightIdeasSoftware;
 using ch.cyberduck.core;
 using Ch.Cyberduck.Core;
 using ch.cyberduck.core.io;
-using ch.cyberduck.core.sftp;
 using ch.cyberduck.core.ssl;
 using ch.cyberduck.core.threading;
 using ch.cyberduck.ui.controller;
 using Ch.Cyberduck.Ui.Controller.Threading;
 using Ch.Cyberduck.Ui.Winforms.Taskdialog;
-using java.io;
 using java.lang;
 using java.security.cert;
 using java.util;
-using java.util.concurrent;
 using org.apache.log4j;
 using StructureMap;
-using ArrayList = java.util.ArrayList;
 using Collection = ch.cyberduck.core.Collection;
-using Console = System.Console;
 using DataObject = System.Windows.Forms.DataObject;
 using Locale = ch.cyberduck.core.i18n.Locale;
 using Object = System.Object;
@@ -51,7 +45,6 @@ using Path = ch.cyberduck.core.Path;
 using Process = System.Diagnostics.Process;
 using String = System.String;
 using StringBuilder = System.Text.StringBuilder;
-using Thread = System.Threading.Thread;
 using Timer = System.Threading.Timer;
 
 namespace Ch.Cyberduck.Ui.Controller
@@ -74,6 +67,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private readonly Comparator _comparator = new NullComparator();
         private readonly List<Path> _forwardHistory = new List<Path>();
         private InfoController _inspector;
+        private BrowserView _lastBookmarkView = BrowserView.Bookmark;
         private ConnectionListener _listener;
 
         /*
@@ -84,6 +78,9 @@ namespace Ch.Cyberduck.Ui.Controller
         private bool _sessionShouldBeConnected;
         private bool _showHiddenFiles;
         private Path _workdir;
+        private String dropFolder;
+
+        private FileSystemWatcher watcher;
 
         public BrowserController(IBrowserView view)
         {
@@ -106,8 +103,11 @@ namespace Ch.Cyberduck.Ui.Controller
             View.ShowTransfers += View_ShowTransfers;
 
             View.CanDrop += View_CanDrop;
+            View.ModelCanDrop += View_ModelCanDrop;
             View.Dropped += View_Dropped;
+            View.ModelDropped += View_ModelDropped;
             View.Drag += View_Drag;
+            View.EndDrag += View_EndDrag;
             View.SearchFieldChanged += View_SearchFieldChanged;
 
 
@@ -254,7 +254,7 @@ namespace Ch.Cyberduck.Ui.Controller
             PopulateEncodings();
             UpdateOpenIcon();
 
-            View.ToolbarVisible = ch.cyberduck.core.Preferences.instance().getBoolean("browser.toolbar");
+            View.ToolbarVisible = Preferences.instance().getBoolean("browser.toolbar");
 
             //todo
             View.GetEditors += delegate { return new List<string> {"TODO"}; };
@@ -270,89 +270,13 @@ namespace Ch.Cyberduck.Ui.Controller
             //View.ViewClosingEvent += View_ClosingEvent;
             View.Exit += View_Exit;
 
-            View.LogDrawerVisible = ch.cyberduck.core.Preferences.instance().getBoolean("browser.logDrawer.isOpen");
+            View.LogDrawerVisible = Preferences.instance().getBoolean("browser.logDrawer.isOpen");
 
             BookmarkCollection bookmarkCollection = BookmarkCollection.defaultCollection();
             //todo eigene ListenerKlasse muss her
             //hostCollection.addListener(this);
             View.ViewClosedEvent += delegate { bookmarkCollection.removeListener(this); };
             View.SetBookmarkModel(bookmarkCollection);
-        }
-
-        private void View_Download()
-        {
-            Download(SelectedPaths);
-        }
-
-        private bool View_ValidateRevertFile()
-        {
-            if (IsMounted() && SelectedPaths.Count == 1)
-            {
-                return getSession().isRevertSupported();
-            }
-            return false;
-        }
-
-        private void View_RevertFile()
-        {
-            RevertPath(SelectedPath);
-        }
-
-        private void RevertPath(Path selected)
-        {
-            Background(new RevertPathAction(this, selected));
-        }
-
-        private class RevertPathAction : BrowserBackgroundAction
-        {
-            private readonly Path _selected;
-
-            public RevertPathAction(BrowserController controller, Path selected) : base(controller)
-            {
-                _selected = selected;
-            }
-
-            public override void run()
-            {
-                if (isCanceled())
-                {
-                    return;
-                }
-                _selected.revert();
-            }
-
-            public override void cleanup()
-            {
-                BrowserController.RefreshObject(_selected);
-            }
-
-            public override string getActivity()
-            {
-                return String.Format(Locale.localizedString("Reverting {0}", "Status"), _selected.getName());
-            }
-        }
-
-        private BrowserView _lastBookmarkView = BrowserView.Bookmark;
-        private void View_ToggleBookmarks()
-        {
-            if (View.CurrentView == BrowserView.File)
-            {
-                View.CurrentView = _lastBookmarkView;
-            } else
-            {
-                _lastBookmarkView = View.CurrentView;
-                View.CurrentView = BrowserView.File;
-            }
-        }
-
-        private bool View_ValidateSearchFieled()
-        {
-            return IsMounted() || View.CurrentView != BrowserView.File;
-        }
-
-        private bool View_ValidatePathsCombobox()
-        {
-            return IsMounted();
         }
 
         public BrowserController()
@@ -477,6 +401,151 @@ namespace Ch.Cyberduck.Ui.Controller
                 AsyncDelegate mainAction = delegate { View.AddTranscriptEntry(request, transcript); };
                 Invoke(mainAction);
             }
+        }
+
+        private void View_ModelCanDrop(ModelDropEventArgs args)
+        {
+            if (IsMounted())
+            {
+                Path destination;
+
+                switch (args.DropTargetLocation)
+                {
+                    case DropTargetLocation.Item:
+                        destination = ((TreePathReference) args.DropTargetItem.RowObject).Unique;
+                        if (!destination.attributes().isDirectory())
+                        {
+                            //dragging over file
+                            destination = destination.getParent();
+                        }
+                        break;
+                    case DropTargetLocation.Background:
+                        destination = Workdir;
+                        break;
+                    default:
+                        destination = null;
+                        break;
+                }
+
+                // Do not allow dragging onto myself.
+                foreach (TreePathReference tpath in args.SourceModels)
+                {
+                    Path p = tpath.Unique;
+                    if (!p.attributes().isDirectory())
+                    {
+                        p = p.getParent();
+                    }
+                    if (p.equals(destination))
+                    {
+                        args.Effect = DragDropEffects.None;
+                        args.DropTargetLocation = DropTargetLocation.None;
+                        return;
+                    }
+                }
+                if (Workdir == destination)
+                {
+                    args.DropTargetLocation = DropTargetLocation.Background;
+                }
+                else if (null != destination)
+                {
+                    args.DropTargetItem = args.ListView.ModelToItem(new TreePathReference(destination));
+                }
+            }
+        }
+
+        /// <summary>
+        /// A file dragged within the browser has been received
+        /// </summary>
+        /// <param name="dropargs"></param>
+        private void View_ModelDropped(ModelDropEventArgs dropargs)
+        {
+            Path destination;
+            switch (dropargs.DropTargetLocation)
+            {
+                case DropTargetLocation.Item:
+                    destination = ((TreePathReference) dropargs.DropTargetItem.RowObject).Unique;
+                    break;
+                case DropTargetLocation.Background:
+                    destination = Workdir;
+                    break;
+                default:
+                    destination = null;
+                    break;
+            }
+
+            if (null != destination)
+            {
+                IDictionary<Path, Path> files = new Dictionary<Path, Path>();
+                if (dropargs.Effect == DragDropEffects.Move)
+                {
+                    foreach (TreePathReference reference in dropargs.SourceModels)
+                    {
+                        Path next = reference.Unique;
+                        Path renamed = PathFactory.createPath(getSession(), destination.getAbsolute(), next.getName(),
+                                                              next.attributes().getType());
+                        files.Add(next, renamed);
+                    }
+                    RenamePaths(files);
+                }
+                if (dropargs.Effect == DragDropEffects.Copy)
+                {
+                    foreach (TreePathReference reference in dropargs.SourceModels)
+                    {
+                        Path next = reference.Unique;
+                        Path copy = PathFactory.createPath(getSession(), next.getAsDictionary());
+                        copy.setPath(destination.getAbsolute(), next.getName());
+                        files.Add(next, copy);
+                    }
+                    DuplicatePaths(files, false);
+                }
+            }
+        }
+
+        private void View_Download()
+        {
+            Download(SelectedPaths);
+        }
+
+        private bool View_ValidateRevertFile()
+        {
+            if (IsMounted() && SelectedPaths.Count == 1)
+            {
+                return getSession().isRevertSupported();
+            }
+            return false;
+        }
+
+        private void View_RevertFile()
+        {
+            RevertPath(SelectedPath);
+        }
+
+        private void RevertPath(Path selected)
+        {
+            Background(new RevertPathAction(this, selected));
+        }
+
+        private void View_ToggleBookmarks()
+        {
+            if (View.CurrentView == BrowserView.File)
+            {
+                View.CurrentView = _lastBookmarkView;
+            }
+            else
+            {
+                _lastBookmarkView = View.CurrentView;
+                View.CurrentView = BrowserView.File;
+            }
+        }
+
+        private bool View_ValidateSearchFieled()
+        {
+            return IsMounted() || View.CurrentView != BrowserView.File;
+        }
+
+        private bool View_ValidatePathsCombobox()
+        {
+            return IsMounted();
         }
 
         private void View_ItemsChanged()
@@ -620,9 +689,9 @@ namespace Ch.Cyberduck.Ui.Controller
                 host =
                     new Host(
                         Protocol.forName(
-                            ch.cyberduck.core.Preferences.instance().getProperty("connection.protocol.default")),
-                        ch.cyberduck.core.Preferences.instance().getProperty("connection.hostname.default"),
-                        ch.cyberduck.core.Preferences.instance().getInteger("connection.port.default"));
+                            Preferences.instance().getProperty("connection.protocol.default")),
+                        Preferences.instance().getProperty("connection.hostname.default"),
+                        Preferences.instance().getInteger("connection.port.default"));
             }
             ToggleView(BrowserView.Bookmark);
             _bookmarkModel.Filter = null;
@@ -867,10 +936,11 @@ namespace Ch.Cyberduck.Ui.Controller
                 if (null == downloadFolder)
                 {
                     path.setLocal(null);
-                } else
+                }
+                else
                 {
                     path.setLocal(LocalFactory.createLocal(downloadFolder, path.getName()));
-                }                
+                }
                 roots.add(path);
             }
             Transfer q = new DownloadTransfer(roots);
@@ -905,7 +975,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private void View_ToggleLogDrawer()
         {
             View.LogDrawerVisible = !View.LogDrawerVisible;
-            ch.cyberduck.core.Preferences.instance().setProperty("browser.logDrawer.isOpen", View.LogDrawerVisible);
+            Preferences.instance().setProperty("browser.logDrawer.isOpen", View.LogDrawerVisible);
         }
 
         private void View_ShowHiddenFiles()
@@ -917,7 +987,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private void View_ToggleToolbar()
         {
             View.ToolbarVisible = !View.ToolbarVisible;
-            ch.cyberduck.core.Preferences.instance().setProperty("browser.toolbar", View.ToolbarVisible);
+            Preferences.instance().setProperty("browser.toolbar", View.ToolbarVisible);
         }
 
         private bool View_ValidatePaste()
@@ -1139,15 +1209,17 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 Session session = getTransferSession();
                 Utils.ApplyPerItemForwardDelegate<Path> apply = delegate(Path item)
-                                                             {
-                                                                 Path path = PathFactory.createPath(session,
-                                                                                                    item.getAsDictionary
-                                                                                                        ());
-                                                                 path.setLocal(LocalFactory.createLocal(folderName,
-                                                                                                        path.getLocal().
-                                                                                                            getName()));
-                                                                 return path;
-                                                             };
+                                                                    {
+                                                                        Path path = PathFactory.createPath(session,
+                                                                                                           item.
+                                                                                                               getAsDictionary
+                                                                                                               ());
+                                                                        path.setLocal(
+                                                                            LocalFactory.createLocal(folderName,
+                                                                                                     path.getLocal().
+                                                                                                         getName()));
+                                                                        return path;
+                                                                    };
                 Transfer q = new DownloadTransfer(Utils.ConvertToJavaList(SelectedPaths, apply));
                 transfer(q);
             }
@@ -1313,135 +1385,96 @@ namespace Ch.Cyberduck.Ui.Controller
             return false;
         }
 
-        public static List<Path> GetPathsRecursive(Path p, DownloadTransfer t)
+        //temporary store the drop folder        
+
+        private DataObject View_Drag(ObjectListView listView)
         {
-            List<Path> result = new List<Path>();
-            Stack<Path> stack = new Stack<Path>();
-            //bool failure = false;
-
-            // Add initial path
-            stack.Push(p);
-
-            while (stack.Count > 0)
+            string tfile = System.IO.Path.Combine(System.IO.Path.GetTempPath(),
+                                                  Guid.NewGuid().ToString());
+            using (File.Create(tfile))
             {
-                Path dir = stack.Pop();
-                if (dir.attributes().isDirectory())
+                FileInfo tmpFile = new FileInfo(tfile);
+                tmpFile.Attributes |= FileAttributes.Hidden;
+                tmpFile.Attributes |= FileAttributes.System; //good idea?
+            }
+
+            DriveInfo[] allDrives = DriveInfo.GetDrives();
+            foreach (DriveInfo d in allDrives)
+            {
+                if (d.IsReady && d.DriveType != DriveType.CDRom)
                 {
-                    dir.status().reset();
-                    AttributedList children = t.children(dir);
-                    if (!children.attributes().isReadable())
-                    {
-                        //failure = true;
-                    }
-                    foreach (Path child in children)
-                    {
-                        if (child.attributes().isDirectory())
-                        {
-                            stack.Push(child);
-                        }
-                        else
-                        {
-                            result.Add(child);
-                        }
-                    }
-                    t.getSession().cache().remove(dir.getReference());
-                }
-                else
-                {
-                    result.Add(dir);
+                    FileSystemWatcher watcher = new FileSystemWatcher(@d.Name, System.IO.Path.GetFileName(tfile));
+                    watcher.IncludeSubdirectories = true;
+                    watcher.EnableRaisingEvents = true;
+                    watcher.Created += delegate(object sender, FileSystemEventArgs args)
+                                           {
+                                               dropFolder = System.IO.Path.GetDirectoryName(args.FullPath);
+                                               Invoke(
+                                                   () => Download(SelectedPaths, LocalFactory.createLocal(dropFolder)));
+                                               watcher.Dispose();
+                                           };
                 }
             }
-            return result;
+            DataObject data = new DataObject(DataFormats.FileDrop, new[] {tfile});
+            return data;
         }
 
-        private string GetPathRelativeToWorkDir(Path p)
+        private void View_EndDrag(DataObject data)
         {
-            string abs = p.getAbsolute();
-            string work = Workdir.getAbsolute();
-            if (abs.StartsWith(work))
+            string tmpFile = data.GetFileDropList()[0];
+            if (File.Exists(tmpFile))
             {
-                return abs.Substring(work.Length + 1);
+                File.Delete(tmpFile);
             }
-            return abs;
-        }
-
-        private void View_Drag(ObjectListView listView, VirtualFileDataObject data)
-        {
-            IList selectedObjects = listView.SelectedObjects;
-            IList<VirtualFileDataObject.FileDescriptor> d = new List<VirtualFileDataObject.FileDescriptor>();
-            foreach (TreePathReference p in selectedObjects)
+            if (null != dropFolder)
             {
-                DownloadTransfer temp = new DownloadTransfer(p.Unique);
-                List<Path> files = GetPathsRecursive(p.Unique, temp);
-                foreach (var file in files)
+                string tmpDestFile = System.IO.Path.Combine(dropFolder, System.IO.Path.GetFileName(tmpFile));
+                if (File.Exists(tmpDestFile))
                 {
-                    Path file1 = file;
-                    //todo "Drag'n'Drop transfer" should be localized
-                    d.Add(new VirtualFileDataObject.FileDescriptor
-                              {
-                                  Name = GetPathRelativeToWorkDir(file1),
-                                  StreamContents = stream =>
-                                                       {
-                                                           DelegateOutputStream os =
-                                                               new DelegateOutputStream(
-                                                                   stream);
-                                                           file1.setLocal(
-                                                               new StreamLocal(
-                                                                   "Drag'n'Drop transfer",
-                                                                   new BufferedOutputStream(
-                                                                       os)));
-                                                           DownloadTransfer t =
-                                                               new DownloadTransfer(file1);
-                                                           PollableTransferListener l =
-                                                               new PollableTransferListener();
-                                                           t.addListener(l);
-                                                           transfer(t);
-                                                           WaitForTrue(
-                                                               () => l.TransferDidEnd, 100);
-                                                       }
-                              });
+                    File.Delete(tmpDestFile);
                 }
-            }
-            data.SetData(d);
-        }
-
-        private static void WaitForTrue(WaitMethod method, int rate)
-        {
-            while (!method())
-            {
-                Thread.Sleep(rate);
             }
         }
 
         private void View_Dropped(OlvDropEventArgs e)
         {
-            Path destination = e.DropTargetItem != null
-                                   ? ((TreePathReference) e.DropTargetItem.RowObject).Unique
-                                   : Workdir;
-            if (IsMounted())
+            if (IsMounted() && e.DataObject is DataObject && ((DataObject) e.DataObject).ContainsFileDropList())
             {
-                if (e.DataObject is DataObject && ((DataObject) e.DataObject).ContainsFileDropList())
+                Path destination;
+                switch (e.DropTargetLocation)
                 {
-                    DataObject dobj = ((DataObject) e.DataObject);
-                    StringCollection fileList = dobj.GetFileDropList();
-                    List roots = new Collection();
+                    case DropTargetLocation.Item:
+                        destination = ((TreePathReference) e.DropTargetItem.RowObject).Unique;
+                        break;
+                    case DropTargetLocation.Background:
+                        destination = Workdir;
+                        break;
+                    default:
+                        destination = null;
+                        break;
+                }
+
+                StringCollection dropList = (e.DataObject as DataObject).GetFileDropList();
+                if (dropList.Count > 0)
+                {
+                    IList<Path> roots = new List<Path>();
                     Session session = getTransferSession();
-                    foreach (string file in fileList)
+                    foreach (string file in dropList)
                     {
                         Path p = PathFactory.createPath(session, destination.getAbsolute(),
                                                         LocalFactory.createLocal(file));
-                        roots.add(p);
+                        roots.Add(p);
                     }
                     UploadDroppedPath(roots, destination);
                 }
             }
         }
 
-        public void UploadDroppedPath(List roots, Path destination)
+        public void UploadDroppedPath(IList<Path> roots, Path destination)
         {
             if (IsMounted())
             {
-                UploadTransfer q = new UploadTransfer(roots);
+                UploadTransfer q = new UploadTransfer(Utils.ConvertToJavaList(roots));
                 if (q.numberOfRoots() > 0)
                 {
                     transfer(q, destination);
@@ -1449,54 +1482,53 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
-        private void View_CanDrop(OlvDropEventArgs e)
+        /// <summary>
+        /// Check if we accept drag operation from external program
+        /// </summary>
+        /// <param name="args"></param>
+        private void View_CanDrop(OlvDropEventArgs args)
         {
-            if (IsMounted())
+            args.Effect = DragDropEffects.None;
+            if (IsMounted() && !(args.DataObject is OLVDataObject))
             {
-                if (e.DataObject is DataObject && ((DataObject) e.DataObject).ContainsFileDropList())
+                if (args.DataObject is DataObject && ((DataObject) args.DataObject).ContainsFileDropList())
                 {
-                    // Dragging from external application
-                    if (e.DropTargetItem != null)
+                    args.Effect = DragDropEffects.Copy;
+
+                    Path destination;
+                    switch (args.DropTargetLocation)
                     {
-                        // Dragging over file or folder
-                        if ((((TreePathReference) e.DropTargetItem.RowObject)).Unique.attributes().isDirectory())
-                        {
-                            e.Effect = DragDropEffects.Copy;
-                        }
-                        else
-                        {
-                            e.Effect = DragDropEffects.None;
-                        }
-                        return;
+                        case DropTargetLocation.Item:
+                            destination = ((TreePathReference) args.DropTargetItem.RowObject).Unique;
+                            if (!destination.attributes().isDirectory())
+                            {
+                                //dragging over file
+                                destination = destination.getParent();
+                            }
+                            break;
+                        case DropTargetLocation.Background:
+                            destination = Workdir;
+                            break;
+                        default:
+                            destination = null;
+                            break;
+                    }
+                    if (Workdir == destination)
+                    {
+                        args.DropTargetLocation = DropTargetLocation.Background;
+                        (args.DataObject as DataObject).SetDropDescription((DropImageType) args.Effect,
+                                                                           "Copy to working directory", null);
+                            //todo needs localization
+                    }
+                    else if (null != destination)
+                    {
+                        args.DropTargetItem = args.ListView.ModelToItem(new TreePathReference(destination));
+                        (args.DataObject as DataObject).SetDropDescription((DropImageType) args.Effect, "Copy to %1",
+                                                                           destination.getName());
+                            //todo needs localization
                     }
                 }
-
-                if (PathClipboard.GetClipboard(getSession().getHost()).Count > 0 ||
-                    (e.DataObject is DataObject && ((DataObject) e.DataObject).ContainsFileDropList()))
-                {
-                    if (e.DropTargetItem != null)
-                    {
-                        // Dragging over file or folder
-                    }
-                    else
-                    {
-                        // Dragging over empty rows
-                    }
-                }
             }
-
-
-            if (e.DropTargetItem != null)
-            {
-                Console.WriteLine("InBrowser");
-            }
-
-            if (e.DataObject is DataObject && ((DataObject) e.DataObject).ContainsFileDropList())
-            {
-                e.Effect = DragDropEffects.Copy;
-            }
-
-            e.Effect = DragDropEffects.None;
         }
 
         private void View_ShowTransfers()
@@ -1509,7 +1541,7 @@ namespace Ch.Cyberduck.Ui.Controller
             List<Path> selected = SelectedPaths;
             if (selected.Count > 0)
             {
-                if (ch.cyberduck.core.Preferences.instance().getBoolean("browser.info.isInspector"))
+                if (Preferences.instance().getBoolean("browser.info.isInspector"))
                 {
                     if (null == _inspector || _inspector.View.IsDisposed)
                     {
@@ -1558,12 +1590,12 @@ namespace Ch.Cyberduck.Ui.Controller
                     }
                 }
             }
-            View.EditIcon = IconCache.Instance.IconForName("pencil", 32);           
+            View.EditIcon = IconCache.Instance.IconForName("pencil", 32);
         }
 
         private void UpdateOpenIcon()
         {
-           View.OpenIcon = IconCache.Instance.GetDefaultBrowserIcon();
+            View.OpenIcon = IconCache.Instance.GetDefaultBrowserIcon();
         }
 
         private void View_BrowserSelectionChanged()
@@ -1573,7 +1605,7 @@ namespace Ch.Cyberduck.Ui.Controller
             // update inspector content if available
             List<Path> selectedPaths = SelectedPaths;
 
-            if (ch.cyberduck.core.Preferences.instance().getBoolean("browser.info.isInspector"))
+            if (Preferences.instance().getBoolean("browser.info.isInspector"))
             {
                 if (_inspector != null && _inspector.Visible)
                 {
@@ -1738,7 +1770,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             if (useBrowserConnection)
             {
-                TransferAdapter transferAdapter = new TransferAdapter(this, transfer, getTimerPool());
+                TransferAdapter transferAdapter = new TransferAdapter(this, transfer);
                 transfer.addListener(transferAdapter);
                 //todo hmm, bleiben hier nicht alle Transfer aktiv (gc kann nicht abräumen wegen delegate)???
                 //todo Memory Leak?
@@ -1928,7 +1960,9 @@ namespace Ch.Cyberduck.Ui.Controller
                 if (!path.attributes().isDirectory())
                 {
                     View.RefreshBrowserObject(new TreePathReference(path.getParent()));
-                } else {
+                }
+                else
+                {
                     View.RefreshBrowserObject(new TreePathReference(path));
                 }
             }
@@ -2074,7 +2108,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             if (IsConnected() || IsActivityRunning())
             {
-                if (ch.cyberduck.core.Preferences.instance().getBoolean("browser.confirmDisconnect"))
+                if (Preferences.instance().getBoolean("browser.confirmDisconnect"))
                 {
                     DialogResult r =
                         View.MessageBox(
@@ -2254,7 +2288,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             if (selected.Count > 0)
             {
-                if (ch.cyberduck.core.Preferences.instance().getBoolean("browser.confirmMove"))
+                if (Preferences.instance().getBoolean("browser.confirmMove"))
                 {
                     StringBuilder alertText = new StringBuilder(
                         Locale.localizedString("Do you want to move the selected files?"));
@@ -2631,7 +2665,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                                    if (!_controller.IsMounted())
                                                    {
                                                        _controller.View.WindowTitle =
-                                                           ch.cyberduck.core.Preferences.instance().getProperty(
+                                                           Preferences.instance().getProperty(
                                                                "application.name");
                                                    }
                                                    _controller.View.SecureConnectionVisible = false;
@@ -2749,7 +2783,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
             public override void cleanup()
             {
-                if (ch.cyberduck.core.Preferences.instance().getBoolean("browser.disconnect.showBookmarks"))
+                if (Preferences.instance().getBoolean("browser.disconnect.showBookmarks"))
                 {
                     BrowserController.ToggleView(BrowserView.Bookmark);
                 }
@@ -3018,56 +3052,53 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
-/*
-        private class TransferBackgroundAction : BrowserBackgroundAction
+        private class RevertPathAction : BrowserBackgroundAction
         {
-            public override void run()
+            private readonly Path _selected;
+
+            public RevertPathAction(BrowserController controller, Path selected) : base(controller)
             {
-                throw new NotImplementedException();
+                _selected = selected;
             }
 
-            public override void cancel()
+            public override void run()
             {
-                throw new NotImplementedException();
+                if (isCanceled())
+                {
+                    return;
+                }
+                _selected.revert();
+            }
+
+            public override void cleanup()
+            {
+                BrowserController.RefreshObject(_selected);
             }
 
             public override string getActivity()
             {
-                throw new NotImplementedException();
-            }
-
-            protected override Session getSession()
-            {
-                throw new NotImplementedException();
+                return String.Format(Locale.localizedString("Reverting {0}", "Status"), _selected.getName());
             }
         }
-    }
-
- */
 
         internal class TransferAdapter : ch.cyberduck.core.TransferAdapter
         {
-            private readonly BrowserController _controller;
-            private readonly Speedometer _meter;
-            private readonly ScheduledExecutorService _timerPool; //todo gibt es .NET Alternative?
             private const long Delay = 0;
             private const long Period = 500; //in milliseconds
+            private readonly BrowserController _controller;
+            private readonly Speedometer _meter;
             private readonly Timer _timer;
 
-            private void timerCallback(object state)
-            {
-                _controller.Invoke(delegate
-                                       {
-                                           _controller.View.StatusLabel = _meter.getProgress();   
-                                       });
-            }
-
-            public TransferAdapter(BrowserController controller, Transfer transfer, ScheduledExecutorService timerPool)
+            public TransferAdapter(BrowserController controller, Transfer transfer)
             {
                 _meter = new Speedometer(transfer);
                 _controller = controller;
-                _timerPool = timerPool;
                 _timer = new Timer(timerCallback, null, Timeout.Infinite, Period);
+            }
+
+            private void timerCallback(object state)
+            {
+                _controller.Invoke(delegate { _controller.View.StatusLabel = _meter.getProgress(); });
             }
 
             public override void willTransferPath(Path path)
@@ -3131,7 +3162,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
             public override void cleanup()
             {
-                Log.debug("cleanup: " + getActivity());                
+                Log.debug("cleanup: " + getActivity());
                 BrowserController.UpdateStatusLabel();
                 _callback();
             }

@@ -149,6 +149,7 @@
     <Compile Include="core\collections\LRUCache.cs" />
     <Compile Include="core\Commands.cs" />
     <Compile Include="core\DelegateOutputStream.cs" />
+    <Compile Include="core\DragDropLib.cs" />
     <Compile Include="core\GlobalKeyboardHook.cs" />
     <Compile Include="core\HostnameVerifier.cs" />
     <Compile Include="core\ListAdapter.cs" />
