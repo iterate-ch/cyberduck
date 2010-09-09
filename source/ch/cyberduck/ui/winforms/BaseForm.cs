@@ -32,7 +32,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 {
     public partial class BaseForm : Form, IView
     {
-        private static readonly Logger Log = Logger.getLogger(typeof (BaseForm).Name);
+        //private static readonly Logger Log = Logger.getLogger(typeof (BaseForm).Name);
         protected Commands Commands = new Commands();
         private bool _releaseWhenClose = true;
 
@@ -77,7 +77,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                                {                                   
                                    if (!_releaseWhenClose && args.CloseReason == CloseReason.UserClosing)
                                    {
-                                       Log.debug("Cancel close event");
+                                       //Log.debug("Cancel close event");
                                        args.Cancel = true;
                                        Hide();
                                        return;

@@ -20,6 +20,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Security.AccessControl;
 using ch.cyberduck.core;
 using Ch.Cyberduck.Core;
 using java.util;
@@ -146,7 +147,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public override void trash()
         {
-            ; //todo in den kuebel
+            throw new InvalidOperationException();
             //http://social.msdn.microsoft.com/forums/en-US/netfxbcl/thread/f2411a7f-34b6-4f30-a25f-9d456fe1c47b/
             //http://stackoverflow.com/questions/222463/is-it-possible-with-java-to-delete-to-the-recycle-bin
         }
@@ -179,21 +180,9 @@ namespace Ch.Cyberduck.Ui.Controller
             ;
         }
 
-        public override Attributes attributes()
-        {
-            //todo was müssen wir hier machen?
-            return base.attributes();
-        }
-
         public override void setPath(string name)
         {
             base.setPath(name.Replace('/', '\\'));
-        }
-
-        public override string toURL()
-        {
-			//Todo. Return file:// URL.
-            return getAbsolute();
         }
 
         public static void Register()

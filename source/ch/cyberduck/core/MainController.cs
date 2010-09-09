@@ -26,11 +26,8 @@ using ch.cyberduck.core;
 using ch.cyberduck.core.aquaticprime;
 using ch.cyberduck.core.i18n;
 using ch.cyberduck.core.sftp;
-using ch.cyberduck.ui;
-using Ch.Cyberduck.ui.controller;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Controller.Growl;
-using Ch.Cyberduck.ui.winforms;
 using Ch.Cyberduck.Ui.Winforms;
 using Ch.Cyberduck.Ui.Winforms.Serializer;
 using Ch.Cyberduck.Ui.Winforms.Taskdialog;
@@ -87,7 +84,7 @@ namespace Ch.Cyberduck.Core
             AppDomain.CurrentDomain.UnhandledException += UnhandledExceptionHandler;
 
              */
-             
+
             ConfigureLogging();
             LoadCollections();
 
@@ -196,14 +193,14 @@ namespace Ch.Cyberduck.Core
             PlistWriter.Register();
             PlistSerializer.Register();
             PlistDeserializer.Register();
-            HostPlistReader.Register();            
+            HostPlistReader.Register();
             TransferPlistReader.Register();
             TcpReachability.Register();
             GrowlImpl.Register();
             TreePathReference.Register();
             LoginController.Register();
             HostKeyController.Register();
-            UserDefaultsDateFormatter.Register();            
+            UserDefaultsDateFormatter.Register();
         }
 
         private static void LoadCollections()
@@ -240,7 +237,7 @@ namespace Ch.Cyberduck.Core
         {
             IsSingleInstance = true;
             // Needed for multiple SDI because no form is the main form
-            ShutdownStyle = ShutdownMode.AfterAllFormsClose;            
+            ShutdownStyle = ShutdownMode.AfterAllFormsClose;
             EnableVisualStyles = true;
         }
 

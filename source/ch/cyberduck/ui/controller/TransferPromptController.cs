@@ -19,7 +19,6 @@ using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
 using ch.cyberduck.core;
-using Ch.Cyberduck.Core;
 using ch.cyberduck.core.i18n;
 using ch.cyberduck.ui;
 using ch.cyberduck.ui.controller;
@@ -37,24 +36,18 @@ namespace Ch.Cyberduck.Ui.Controller
         private readonly WindowController _parent;
 
         protected internal TransferAction Action =
-            TransferAction.forName(ch.cyberduck.core.Preferences.instance().getProperty("queue.prompt.action.default"));
+            TransferAction.forName(Preferences.instance().getProperty("queue.prompt.action.default"));
 
         protected TransferPromptModel TransferPromptModel;
-        private readonly StatusLabelProgressListener _progressListener;
+        private StatusLabelProgressListener _progressListener;
 
         protected TransferPromptController(WindowController parent, Transfer transfer)
         {
             View = ObjectFactory.GetInstance<ITransferPromptView>();
             _parent = parent;
             Transfer = transfer;
-            Transfer.getSession().addProgressListener(_progressListener = new StatusLabelProgressListener(this));                                                       
 
             PopulateActions();
-        }
-
-        protected override void Invalidate()
-        {
-            Transfer.getSession().removeProgressListener(_progressListener);
         }
 
         public virtual TransferAction prompt()
@@ -71,14 +64,17 @@ namespace Ch.Cyberduck.Ui.Controller
 
             AsyncDelegate wireAction = delegate
                                            {
+                                               Transfer.getSession().addProgressListener(
+                                                   _progressListener = new StatusLabelProgressListener(this));
+
                                                View.ToggleDetailsEvent += View_ToggleDetailsEvent;
                                                View.DetailsVisible =
-                                                   ch.cyberduck.core.Preferences.instance().getBoolean(
+                                                   Preferences.instance().getBoolean(
                                                        "transfer.toggle.details");
 
                                                View.ChangedActionEvent += View_ChangedActionEvent;
                                                View.ChangedSelectionEvent += View_ChangedSelectionEvent;
-                                               
+
                                                View.ModelCanExpandDelegate(TransferPromptModel.CanExpand);
                                                View.ModelChildrenGetterDelegate(TransferPromptModel.ChildrenGetter);
                                                View.ModelCheckStateGetter = TransferPromptModel.GetCheckState;
@@ -94,7 +90,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
 //                                               View.ItemsChanged += UpdateStatusLabel;
                                                View.SetModel(TransferPromptModel.GetEnumerator());
-                                               
+
                                                DialogResult result = View.ShowDialog(_parent.View);
 
                                                if (result == DialogResult.Cancel)
@@ -104,8 +100,12 @@ namespace Ch.Cyberduck.Ui.Controller
                                            };
 
             _parent.Invoke(wireAction);
-            Console.WriteLine("Selected action: " + Action);
             return Action;
+        }
+
+        protected override void Invalidate()
+        {
+            Transfer.getSession().removeProgressListener(_progressListener);
         }
 
         public void UpdateStatusLabel()
@@ -116,7 +116,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private void View_ToggleDetailsEvent()
         {
             View.DetailsVisible = !View.DetailsVisible;
-            ch.cyberduck.core.Preferences.instance().setProperty("transfer.toggle.details", View.DetailsVisible);
+            Preferences.instance().setProperty("transfer.toggle.details", View.DetailsVisible);
         }
 
         private void View_ChangedSelectionEvent()
@@ -144,7 +144,9 @@ namespace Ch.Cyberduck.Ui.Controller
                         }
                         else
                         {
-                            View.LocalFileModificationDate = DateFormatterFactory.instance().getLongFormat(selected.getLocal().attributes().getModificationDate());
+                            View.LocalFileModificationDate =
+                                DateFormatterFactory.instance().getLongFormat(
+                                    selected.getLocal().attributes().getModificationDate());
                         }
                     }
                     else
@@ -170,7 +172,9 @@ namespace Ch.Cyberduck.Ui.Controller
                         }
                         else
                         {
-                            View.RemoteFileModificationDate = DateFormatterFactory.instance().getLongFormat(selected.attributes().getModificationDate());
+                            View.RemoteFileModificationDate =
+                                DateFormatterFactory.instance().getLongFormat(
+                                    selected.attributes().getModificationDate());
                         }
                     }
                     else
@@ -196,7 +200,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 return;
             }
 
-            ch.cyberduck.core.Preferences.instance().setProperty("queue.prompt.action.default", selected.toString());
+            Preferences.instance().setProperty("queue.prompt.action.default", selected.toString());
 
             Action = selected;
             Transfer.cache().clear();
@@ -226,7 +230,7 @@ namespace Ch.Cyberduck.Ui.Controller
             TransferAction defaultAction
                 =
                 TransferAction.forName(
-                    ch.cyberduck.core.Preferences.instance().getProperty("queue.prompt.action.default"));
+                    Preferences.instance().getProperty("queue.prompt.action.default"));
             View.SelectedAction = defaultAction;
             Action = defaultAction;
         }

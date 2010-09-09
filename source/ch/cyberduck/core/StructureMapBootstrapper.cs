@@ -15,9 +15,7 @@
 // Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
 // 
-using Ch.Cyberduck.ui.controller;
 using Ch.Cyberduck.Ui.Controller;
-using Ch.Cyberduck.ui.winforms;
 using Ch.Cyberduck.Ui.Winforms;
 using StructureMap;
 
@@ -46,11 +44,11 @@ namespace Ch.Cyberduck.Core
                                              x.For<IDuplicateFilePromptView>().Singleton().Use<DuplicateFilePromptForm>();
                                              x.For<IMessageBoxView>().Singleton().Use<MessageBoxDialog>();
                                              x.For<IPreferencesView>().Singleton().Use<PreferencesForm>();
-                                             x.For<IDonationView>().Singleton().Use<DonationForm>();                                             
-                                             
+                                             x.For<IDonationView>().Singleton().Use<DonationForm>();
+
                                              // might be a singleton
                                              x.For<IUpdateView>().Use<UpdateForm>();
-                                                                                          
+
                                              //x.For<ITransferView>().TheDefault.Is.Object(MockRepository.GenerateMock<ITransferView>()); 
                                              //x.For<IProgressView>().TheDefault.Is.Object(MockRepository.GenerateMock<IProgressView>()); 
 

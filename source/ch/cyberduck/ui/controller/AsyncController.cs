@@ -15,8 +15,6 @@
 // Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
 // 
-using System;
-using System.Threading;
 using ch.cyberduck.core.threading;
 using ch.cyberduck.ui;
 using Ch.Cyberduck.Ui.Controller.Threading;
@@ -26,20 +24,19 @@ namespace Ch.Cyberduck.Ui.Controller
     public abstract class AsyncController : AbstractController
     {
         public delegate void AsyncDelegate();
+
         public delegate void SyncDelegate();
 
         public virtual IView View { get; set; }
 
         public void Background(AsyncDelegate del, AsyncDelegate cleanup)
         {
-            Console.WriteLine("Background(AsyncDelegate del, AsyncDelegate cleanup)");
             // Move to background thread
             background(new AsyncDelegateBackgroundAction(del, cleanup));
         }
 
         public void Background(BackgroundAction backgroundAction)
-        {            
-            Console.WriteLine("Background(BackgroundAction backgroundAction):" +backgroundAction.getActivity());
+        {
             // Move to background thread
             background(backgroundAction);
         }
@@ -56,7 +53,7 @@ namespace Ch.Cyberduck.Ui.Controller
         }
 
         public override void invoke(MainAction mainAction, bool wait)
-        {            
+        {
             if (View.InvokeRequired)
             {
                 View.Invoke(new AsyncDelegate(mainAction.run), null);

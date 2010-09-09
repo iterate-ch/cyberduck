@@ -17,10 +17,9 @@
 // 
 using System;
 using ch.cyberduck.core;
-using Ch.Cyberduck.Ui.Controller;
 using StructureMap;
 
-namespace Ch.Cyberduck.ui.controller
+namespace Ch.Cyberduck.Ui.Controller
 {
     internal class UpdateController : WindowController<IUpdateView>
     {

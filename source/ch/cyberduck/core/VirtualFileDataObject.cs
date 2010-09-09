@@ -504,7 +504,7 @@ namespace Ch.Cyberduck.Core
                                   lindex = -1,
                                   tymed = TYMED.TYMED_HGLOBAL
                               };
-
+            
             _dataObjects.Add(o);
         }
 
@@ -949,7 +949,7 @@ namespace Ch.Cyberduck.Core
         /// <summary>
         /// Provides access to Win32-level constants, structures, and functions.
         /// </summary>
-        private static class NativeMethods
+        internal static class NativeMethods
         {
             public const string CFSTR_FILECONTENTS = "FileContents";
             public const string CFSTR_FILEDESCRIPTORW = "FileGroupDescriptorW";

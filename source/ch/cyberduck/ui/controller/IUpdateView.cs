@@ -15,9 +15,7 @@
 // Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
 // 
-using Ch.Cyberduck.Ui.Controller;
-
-namespace Ch.Cyberduck.ui.controller
+namespace Ch.Cyberduck.Ui.Controller
 {
     public interface IUpdateView : IView
     {
