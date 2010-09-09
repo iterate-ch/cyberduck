@@ -1,6 +1,6 @@
 ﻿using Ch.Cyberduck.Ui.Winforms.Controls;
 
-namespace Ch.Cyberduck.ui.winforms
+namespace Ch.Cyberduck.Ui.Winforms
 {
     partial class UpdateForm
     {

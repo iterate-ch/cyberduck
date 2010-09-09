@@ -16,17 +16,15 @@
 // yves@cyberduck.ch
 // 
 using System;
-using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 using ch.cyberduck.core;
+using Ch.Cyberduck.Core;
 using ch.cyberduck.core.i18n;
-using Ch.Cyberduck.ui.controller;
 using Ch.Cyberduck.Ui.Controller;
-using Ch.Cyberduck.Ui.Winforms;
 using wyDay.Controls;
 
-namespace Ch.Cyberduck.ui.winforms
+namespace Ch.Cyberduck.Ui.Winforms
 {
     public partial class UpdateForm : BaseForm, IUpdateView
     {
@@ -34,9 +32,7 @@ namespace Ch.Cyberduck.ui.winforms
         {
             InitializeComponent();
 
-            Closing += delegate {
-                               updater.Cancel();
-                           };
+            Closing += delegate { updater.Cancel(); };
 
             ConfigureUpdater();
 
@@ -51,7 +47,7 @@ namespace Ch.Cyberduck.ui.winforms
 
             //force handle creation to make the updater work
             IntPtr intPtr = Handle;
-            OnLoad(new EventArgs());            
+            OnLoad(new EventArgs());
         }
 
         public override string[] BundleNames
@@ -80,6 +76,13 @@ namespace Ch.Cyberduck.ui.winforms
             get { return updater.UpdateStepOn == UpdateStepOn.UpdateReadyToInstall; }
         }
 
+        public static void SetButtonShield(Button btn, bool showShield)
+        {
+            btn.FlatStyle = FlatStyle.System;
+            // BCM_SETSHIELD = 0x0000160C
+            NativeMethods.SendMessage(btn.Handle, 0x160C, 0, showShield ? 1 : 0);
+        }
+
         private void ConfigureUpdater()
         {
             //updater.DaysBetweenChecks = 500;
@@ -94,6 +97,10 @@ namespace Ch.Cyberduck.ui.winforms
                                                laterButton.Visible = true;
                                                installButton.Text = Locale.localizedString("Install and Relaunch",
                                                                                            "Sparkle");
+                                               if (Utils.IsVistaOrLater)
+                                               {
+                                                   SetButtonShield(installButton, true);
+                                               }
 
                                                tableLayoutPanel.RowStyles[7].SizeType = SizeType.Percent;
                                                tableLayoutPanel.RowStyles[7].Height = 100;
@@ -156,6 +163,10 @@ namespace Ch.Cyberduck.ui.winforms
 
             updater.BeforeChecking += delegate
                                           {
+                                              if (Utils.IsVistaOrLater)
+                                              {
+                                                  SetButtonShield(installButton, false);
+                                              }
                                               laterButton.Visible = false;
                                               installButton.Text = Locale.localizedString("OK");
                                               progressBar.Style = ProgressBarStyle.Marquee;
