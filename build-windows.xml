@@ -26,7 +26,7 @@
     <property name="setup" value="${home}/setup"/>
     <property name="nsis.home" value="${env.ProgramFiles(x86)}/NSIS"/>
     <property name="winsdk.home" value="${env.ProgramFiles(x86)}/Microsoft SDKs/Windows/v7.0A/Bin"/>
-    <property name="ikvm.home" value="c:/workspace/ikvm-0.42.0.3"/>
+    <property name="ikvm.home" value="c:/workspace/ikvm-0.44.0.5"/>
     <property name="wybuild.home" value="${env.ProgramFiles(x86)}/wyBuild"/>
 
     <taskdef resource="net/sf/antcontrib/antcontrib.properties"/>
