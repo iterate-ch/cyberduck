@@ -1374,8 +1374,8 @@ lib/log4j.xml -text
 lib/mail-1.4.3.jar -text
 lib/mime.types -text
 lib/nunit.framework.dll -text
-lib/slf4j-api-1.5.6.jar -text
-lib/slf4j-log4j12-1.5.6.jar -text
+lib/slf4j-api-1.6.1.jar -text
+lib/slf4j-log4j12-1.6.1.jar -text
 lv.lproj/Alert.nib/classes.nib -text
 lv.lproj/Alert.nib/info.nib -text
 lv.lproj/Alert.nib/keyedobjects.nib -text
