@@ -207,13 +207,31 @@ namespace Ch.Cyberduck.Ui.Controller
         event VoidHandler ShowTransfers;
         event VoidHandler ShowCertificate;
 
-        // Drag'n'Drop events
-        event DropHandler CanDrop;
-        event ModelDropHandler ModelCanDrop;
-        event DropHandler Dropped;
-        event ModelDropHandler ModelDropped;
-        event DragHandler Drag;
-        event EndDragHandler EndDrag;
+        #region Drag'n'Drop
+
+        #region Browser events
+
+        event DropHandler BrowserCanDrop;
+        event ModelDropHandler BrowserModelCanDrop;
+        event DropHandler BrowserDropped;
+        event ModelDropHandler BrowserModelDropped;
+        event DragHandler BrowserDrag;
+        event EndDragHandler BrowserEndDrag;
+
+        #endregion
+
+        #region Bookmarks events
+
+        event DropHandler HostCanDrop;
+        event ModelDropHandler HostModelCanDrop;
+        event DropHandler HostDropped;
+        event ModelDropHandler HostModelDropped;
+        event DragHandler HostDrag;
+        event EndDragHandler HostEndDrag;
+
+        #endregion
+
+        #endregion
 
         void SetBrowserModel(IEnumerable<TreePathReference> model);
         void RefreshBrowserObject(TreePathReference path);

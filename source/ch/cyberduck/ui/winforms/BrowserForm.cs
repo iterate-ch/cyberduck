@@ -71,8 +71,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             browser.LabelEdit = true;
             browser.AllowDrop = true;
 
-            browser.DropSink = new ExpandingDropSink(this);
-            browser.DragSource = new DragSource(this);
+            browser.DropSink = new ExpandingBrowserDropSink(this);
+            browser.DragSource = new BrowserDragSource(this);
 
             browser.ShowImagesOnSubItems = true;
             browser.TreeColumnRenderer = new BrowserRenderer();
@@ -146,10 +146,10 @@ namespace Ch.Cyberduck.Ui.Winforms
         public event VoidHandler HistoryForward;
         public event VoidHandler EditEvent;
         public event VoidHandler ShowInspector;
-        public event DropHandler CanDrop;
-        public event ModelDropHandler ModelCanDrop;
-        public event DropHandler Dropped;
-        public event ModelDropHandler ModelDropped;
+        public event DropHandler BrowserCanDrop;
+        public event ModelDropHandler BrowserModelCanDrop;
+        public event DropHandler BrowserDropped;
+        public event ModelDropHandler BrowserModelDropped;
         public event ValidateCommand ValidateNewFile;
         public event RenamePathname RenameFile;
         public event ValidateCommand ValidateRenameFile;
@@ -189,8 +189,14 @@ namespace Ch.Cyberduck.Ui.Winforms
         public event VoidHandler BrowserSelectionChanged;
         public event VoidHandler PathSelectionChanged;
         public event VoidHandler ShowTransfers;
-        public event DragHandler Drag;
-        public event EndDragHandler EndDrag;
+        public event DragHandler BrowserDrag;
+        public event EndDragHandler BrowserEndDrag;
+        public event DropHandler HostCanDrop;
+        public event ModelDropHandler HostModelCanDrop;
+        public event DropHandler HostDropped;
+        public event ModelDropHandler HostModelDropped;
+        public event DragHandler HostDrag;
+        public event EndDragHandler HostEndDrag;
         public event VoidHandler NewFolder;
         public event ValidateCommand ValidateNewFolder;
         public event EditorsHandler GetEditors;
@@ -1022,6 +1028,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             l.MultiSelect = true;
             l.HeaderStyle = ColumnHeaderStyle.None;
             l.HideSelection = false;
+            l.AllowDrop = true;
+            l.DropSink = new HostDropSink(this);
+            l.DragSource = new HostDragSource(this);
 
             BookmarkRenderer bookmarkRenderer = new BookmarkRenderer();
             Font smallerFont = new Font(bookmarkListView.Font.FontFamily, bookmarkListView.Font.Size - 1);
@@ -1523,29 +1532,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             BrowserSelectionChanged();
         }
 
-        private void browser_CanDrop(object sender, OlvDropEventArgs e)
-        {
-            //CanDrop(e);            
-
-
-//            DropTargetHelper.DragOver(new Point(e.MouseLocation.X, e.MouseLocation.Y), e.Effect);
-
-
-            if (e.Effect == DragDropEffects.Copy)
-            {
-//                (e.DataObject as DataObject).SetDropDescription((DropImageType)e.Effect, "Copy to %1", ((TreePathReference) e.DropTargetItem.RowObject).Unique.getName());
-            }
-            else
-            {
-//                (e.DataObject as DataObject).SetDropDescription((DropImageType)e.Effect, "Choose a valid folder", String.Empty);
-            }
-        }
-
-        private void browser_Dropped(object sender, OlvDropEventArgs e)
-        {
-            Dropped(e);
-        }
-
         private void browser_AfterLabelEdit(object sender, LabelEditEventArgs e)
         {
             bool c = RenameFile(((TreePathReference) browser.GetModelObject(e.Item)).Unique, e.Label);
@@ -1750,20 +1736,11 @@ namespace Ch.Cyberduck.Ui.Winforms
             ShowCertificate();
         }
 
-        private void browser_DragDrop(object sender, DragEventArgs e)
-        {
-        }
-
-        private void browser_DragEnter(object sender, DragEventArgs e)
-        {
-            //DropTargetHelper.DragEnter(browser, e.Data, new Point(e.X, e.Y), e.Effect, "Copy to %1", "Here");
-        }
-
-        private class DragSource : SimpleDragSource
+        private class BrowserDragSource : SimpleDragSource
         {
             private readonly BrowserForm _form;
 
-            public DragSource(BrowserForm _form)
+            public BrowserDragSource(BrowserForm _form)
             {
                 this._form = _form;
             }
@@ -1775,28 +1752,26 @@ namespace Ch.Cyberduck.Ui.Winforms
 
             public override object StartDrag(ObjectListView olv, MouseButtons button, OLVListItem item)
             {
-                DataObject t = _form.Drag(olv);
-                //return base.StartDrag(olv, button, item);
+                DataObject t = _form.BrowserDrag(olv);
                 OLVDataObject data = new OLVDataObject(olv);
                 data.SetData(DataFormats.FileDrop, new[] {t.GetFileDropList()[0]});
                 return data;
-                //return _form.Drag(olv);                 
             }
 
             public override void EndDrag(object dragObject, DragDropEffects effect)
             {
                 base.EndDrag(dragObject, effect);
-                _form.EndDrag(dragObject as DataObject);
+                _form.BrowserEndDrag(dragObject as DataObject);
             }
         }
 
-        private class ExpandingDropSink : SimpleDropSink
+        private class ExpandingBrowserDropSink : SimpleDropSink
         {
             private readonly BrowserForm _form;
             private readonly Timer _timer = new Timer();
             private object _currentDropTarget;
 
-            public ExpandingDropSink(BrowserForm form)
+            public ExpandingBrowserDropSink(BrowserForm form)
             {
                 _form = form;
                 _timer.Tick += delegate
@@ -1821,9 +1796,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             /// </summary>
             /// <param name="g"></param>
             /// <param name="bounds"></param>
-            protected virtual void DrawFeedbackBackgroundTarget(Graphics g, Rectangle bounds)
+            protected override void DrawFeedbackBackgroundTarget(Graphics g, Rectangle bounds)
             {
-                float penWidth = 5.0f;
+                float penWidth = 4.0f;
                 Rectangle r = bounds;
                 r.Inflate((int) -penWidth/2, (int) -penWidth/2);
                 using (Pen p = new Pen(Color.FromArgb(128, FeedbackColor), penWidth))
@@ -1838,7 +1813,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             protected override void OnCanDrop(OlvDropEventArgs args)
             {
                 base.OnCanDrop(args);
-                _form.CanDrop(args);
+                _form.BrowserCanDrop(args);
             }
 
             public override void Enter(DragEventArgs e)
@@ -1877,7 +1852,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                 }
                 else
                 {
-                    _form.ModelCanDrop(args);
+                    _form.BrowserModelCanDrop(args);
                 }
                 args.Handled = true;
             }
@@ -1886,7 +1861,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             {
                 DropTargetHelper.Drop(args.DataObject as DataObject,
                                       new Point(args.MouseLocation.X, args.MouseLocation.Y), DragDropEffects.None);
-                _form.Dropped(args);
+                _form.BrowserDropped(args);
             }
 
             protected override void OnModelDropped(ModelDropEventArgs args)
@@ -1894,7 +1869,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                 base.OnModelDropped(args);
                 if (!args.Handled)
                 {
-                    _form.ModelDropped(args);
+                    _form.BrowserModelDropped(args);
                 }
                 args.Handled = true;
             }
@@ -1980,6 +1955,151 @@ namespace Ch.Cyberduck.Ui.Winforms
                 else
                 {
                     base.OnRenderButtonBackground(e);
+                }
+            }
+        }
+
+        private class HostDragSource : SimpleDragSource
+        {
+            private readonly BrowserForm _form;
+
+            public HostDragSource(BrowserForm _form)
+            {
+                this._form = _form;
+            }
+
+            public override DragDropEffects GetAllowedEffects(object data)
+            {
+                return DragDropEffects.Copy | DragDropEffects.Move;
+            }
+
+            public override object StartDrag(ObjectListView olv, MouseButtons button, OLVListItem item)
+            {
+                DataObject t = _form.HostDrag(olv);
+                OLVDataObject data = new OLVDataObject(olv);
+                data.SetData(DataFormats.FileDrop, new[] {t.GetFileDropList()[0]});
+                return data;
+            }
+
+            public override void EndDrag(object dragObject, DragDropEffects effect)
+            {
+                base.EndDrag(dragObject, effect);
+                _form.HostEndDrag(dragObject as DataObject);
+            }
+        }
+
+        private class HostDropSink : SimpleDropSink
+        {
+            private readonly BrowserForm _form;
+
+            public HostDropSink(BrowserForm form)
+            {
+                _form = form;
+                CanDropOnBackground = true;
+                CanDropBetween = true;
+                FeedbackColor = Color.LightBlue;
+            }
+
+            /// <summary>
+            /// Gets or sets whether this sink allows model objects to be dragged from other lists
+            /// </summary>
+            public bool AcceptExternal { get; set; }
+
+            /// <summary>
+            /// Draw the feedback that shows that the background is the target
+            /// </summary>
+            /// <param name="g"></param>
+            /// <param name="bounds"></param>
+            protected override void DrawFeedbackBackgroundTarget(Graphics g, Rectangle bounds)
+            {
+                float penWidth = 4.0f;
+                Rectangle r = bounds;
+                r.Inflate((int) -penWidth/2, (int) -penWidth/2);
+                using (Pen p = new Pen(Color.FromArgb(128, FeedbackColor), penWidth))
+                {
+                    using (GraphicsPath path = GetRoundedRect(r, 30.0f))
+                    {
+                        g.DrawPath(p, path);
+                    }
+                }
+            }
+
+            protected override void OnCanDrop(OlvDropEventArgs args)
+            {
+                base.OnCanDrop(args);
+                _form.HostCanDrop(args);
+            }
+
+            public override void Enter(DragEventArgs e)
+            {
+                base.Enter(e);
+
+                if (!(e.Data is OLVDataObject))
+                {
+                    DropTargetHelper.DragEnter(_form.browser, e.Data, new Point(e.X, e.Y), e.Effect, "Copy to %1",
+                                               "Here"); //todo needs to be localized
+                }
+            }
+
+            public override void Leave()
+            {
+                base.Leave();
+                DropTargetHelper.DragLeave(_form);
+            }
+
+            protected override void OnModelCanDrop(ModelDropEventArgs args)
+            {
+                //todo reordering bookmarks
+                base.OnModelCanDrop(args);
+
+                args.DropTargetLocation = DropTargetLocation.None;
+                args.Effect = DragDropEffects.None;
+
+                args.Handled = true; // OnCanDrop is not being called anymore
+
+                /*
+                if (args.Handled)
+                    return;
+
+                args.Effect = CalculateStandardDropActionFromKeys();
+
+                // Don't allow drops from other list, if that's what's configured
+                if (!AcceptExternal && args.SourceListView != ListView)
+                {
+                    args.Effect = DragDropEffects.None;
+                    args.DropTargetLocation = DropTargetLocation.None;
+                    //args.InfoMessage = "This browser doesn't accept drops from other browser";                    
+                }
+                else
+                {
+                    _form.BrowserModelCanDrop(args);
+                }
+                args.Handled = true;*/
+            }
+
+            protected override void OnDropped(OlvDropEventArgs args)
+            {
+                DropTargetHelper.Drop(args.DataObject as DataObject,
+                                      new Point(args.MouseLocation.X, args.MouseLocation.Y), DragDropEffects.None);
+                _form.HostDropped(args);
+            }
+
+            protected override void OnModelDropped(ModelDropEventArgs args)
+            {
+                base.OnModelDropped(args);
+                if (!args.Handled)
+                {
+                    _form.BrowserModelDropped(args);
+                }
+                args.Handled = true;
+            }
+
+            public override void Over(DragEventArgs e)
+            {
+                base.Over(e);
+                if (!(e.Data is OLVDataObject))
+                {
+                    DropTargetHelper.DragOver(new Point(e.X, e.Y), e.Effect);
                 }
             }
         }

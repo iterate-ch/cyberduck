@@ -27,6 +27,7 @@ using BrightIdeasSoftware;
 using ch.cyberduck.core;
 using Ch.Cyberduck.Core;
 using ch.cyberduck.core.io;
+using ch.cyberduck.core.serializer;
 using ch.cyberduck.core.ssl;
 using ch.cyberduck.core.threading;
 using ch.cyberduck.ui.controller;
@@ -78,7 +79,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private bool _sessionShouldBeConnected;
         private bool _showHiddenFiles;
         private Path _workdir;
-        private String dropFolder;
+        private String dropFolder; // holds the drop folder of the current drag operation
 
         private FileSystemWatcher watcher;
 
@@ -102,12 +103,16 @@ namespace Ch.Cyberduck.Ui.Controller
 
             View.ShowTransfers += View_ShowTransfers;
 
-            View.CanDrop += View_CanDrop;
-            View.ModelCanDrop += View_ModelCanDrop;
-            View.Dropped += View_Dropped;
-            View.ModelDropped += View_ModelDropped;
-            View.Drag += View_Drag;
-            View.EndDrag += View_EndDrag;
+            View.BrowserCanDrop += View_BrowserCanDrop;
+            View.HostCanDrop += View_HostCanDrop;
+            View.BrowserModelCanDrop += View_BrowserModelCanDrop;
+            View.BrowserDropped += View_BrowserDropped;
+            View.HostDropped += View_HostDropped;
+            View.BrowserModelDropped += View_BrowserModelDropped;
+            View.BrowserDrag += View_BrowserDrag;
+            View.HostDrag += View_HostDrag;
+            View.BrowserEndDrag += View_BrowserEndDrag;
+            View.HostEndDrag += View_HostEndDrag;
             View.SearchFieldChanged += View_SearchFieldChanged;
 
 
@@ -403,7 +408,226 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
-        private void View_ModelCanDrop(ModelDropEventArgs args)
+        private void View_HostDropped(OlvDropEventArgs e)
+        {
+            if (e.DataObject is DataObject && ((DataObject) e.DataObject).ContainsFileDropList())
+            {
+                DataObject data = (DataObject) e.DataObject;
+
+                if (e.DropTargetLocation == DropTargetLocation.Item)
+                {
+                    foreach (string file in data.GetFileDropList())
+                    {
+                        //check if we received at least one non-duck file
+                        if (!".duck".Equals(System.IO.Path.GetExtension(file)))
+                        {
+                            // The bookmark this file has been dropped onto
+                            Host destination = (Host) e.DropTargetItem.RowObject;
+                            IList<Path> roots = new List<Path>();
+                            Session session = null;
+                            foreach (string upload in data.GetFileDropList())
+                            {
+                                if (null == session)
+                                {
+                                    session = SessionFactory.createSession(destination);
+                                }
+                                // Upload to the remote host this bookmark points to
+                                roots.Add(PathFactory.createPath(session,
+                                                                 destination.getDefaultPath(),
+                                                                 LocalFactory.createLocal(upload)));
+                            }
+                            if (roots.Count > 0)
+                            {
+                                UploadTransfer q = new UploadTransfer(Utils.ConvertToJavaList(roots));
+                                // If anything has been added to the queue, then process the queue
+                                if (q.numberOfRoots() > 0)
+                                {
+                                    TransferController.Instance.StartTransfer(q);
+                                }
+                            }
+                        }
+                    }
+                    return;
+                }
+
+                if (e.DropTargetLocation == DropTargetLocation.AboveItem)
+                {
+                    Host destination = (Host) e.DropTargetItem.RowObject;
+                    foreach (string file in data.GetFileDropList())
+                    {
+                        _bookmarkModel.Source.add(_bookmarkModel.Source.indexOf(destination),
+                                                  HostReaderFactory.instance().read(LocalFactory.createLocal(file)));
+                    }
+                }
+                if (e.DropTargetLocation == DropTargetLocation.BelowItem)
+                {
+                    Host destination = (Host) e.DropTargetItem.RowObject;
+                    foreach (string file in data.GetFileDropList())
+                    {
+                        _bookmarkModel.Source.add(_bookmarkModel.Source.indexOf(destination) + 1,
+                                                  HostReaderFactory.instance().read(LocalFactory.createLocal(file)));
+                    }
+                }
+                if (e.DropTargetLocation == DropTargetLocation.Background)
+                {
+                    foreach (string file in data.GetFileDropList())
+                    {
+                        _bookmarkModel.Source.add(HostReaderFactory.instance().read(LocalFactory.createLocal(file)));
+                    }
+                }
+            }
+        }
+
+        private void View_HostCanDrop(OlvDropEventArgs args)
+        {
+            if (!_bookmarkModel.Source.allowsEdit())
+            {
+                // Do not allow drags for non writable collections
+                args.Effect = DragDropEffects.None;
+                args.DropTargetLocation = DropTargetLocation.None;
+                return;
+            }
+
+            DataObject dataObject = (DataObject) args.DataObject;
+            if (dataObject.ContainsFileDropList())
+            {
+                //check if all files are .duck files
+                foreach (string file in dataObject.GetFileDropList())
+                {
+                    string ext = System.IO.Path.GetExtension(file);
+                    if (!".duck".Equals(ext))
+                    {
+                        //if at least one non-duck file we prepare for uploading
+                        args.Effect = DragDropEffects.Copy;
+                        if (args.DropTargetLocation == DropTargetLocation.Item)
+                        {
+                            Host destination = (Host) args.DropTargetItem.RowObject;
+                            (args.DataObject as DataObject).SetDropDescription((DropImageType) args.Effect,
+                                                                               "Upload to %1",
+                                                                               destination.getNickname());
+                        }
+                        args.DropTargetLocation = DropTargetLocation.Item;
+                        return;
+                    }
+                }
+
+                //at least one .duck file
+                args.Effect = DragDropEffects.Copy;
+                if (args.DropTargetLocation == DropTargetLocation.Item)
+                {
+                    args.DropTargetLocation = DropTargetLocation.Background;
+                }
+                return;
+            }
+            args.Effect = DragDropEffects.None;
+        }
+
+        private void View_HostEndDrag(DataObject data)
+        {
+            RemoveTemporaryFiles(data);
+        }
+
+        private string CreateAndWatchTemporaryFile(FileSystemEventHandler del)
+        {
+            string tfile = System.IO.Path.Combine(System.IO.Path.GetTempPath(),
+                                                  Guid.NewGuid().ToString());
+            using (File.Create(tfile))
+            {
+                FileInfo tmpFile = new FileInfo(tfile);
+                tmpFile.Attributes |= FileAttributes.Hidden;
+                tmpFile.Attributes |= FileAttributes.System; //good idea?
+            }
+
+            DriveInfo[] allDrives = DriveInfo.GetDrives();
+            foreach (DriveInfo d in allDrives)
+            {
+                if (d.IsReady && d.DriveType != DriveType.CDRom)
+                {
+                    FileSystemWatcher watcher = new FileSystemWatcher(@d.Name, System.IO.Path.GetFileName(tfile));
+                    watcher.IncludeSubdirectories = true;
+                    watcher.EnableRaisingEvents = true;
+                    watcher.Created += del;
+                    watcher.Created += delegate { watcher.Dispose(); };
+                }
+            }
+            return tfile;
+        }
+
+        private DataObject View_HostDrag(ObjectListView list)
+        {
+            DataObject data = new DataObject(DataFormats.FileDrop, new[]
+                                                                       {
+                                                                           CreateAndWatchTemporaryFile(
+                                                                               delegate(object sender,
+                                                                                        FileSystemEventArgs args)
+                                                                                   {
+                                                                                       Invoke(delegate
+                                                                                                  {
+                                                                                                      dropFolder =
+                                                                                                          System.IO.Path
+                                                                                                              .
+                                                                                                              GetDirectoryName
+                                                                                                              (
+                                                                                                                  args.
+                                                                                                                      FullPath);
+                                                                                                      foreach (
+                                                                                                          Host host in
+                                                                                                              View.
+                                                                                                                  SelectedBookmarks
+                                                                                                          )
+                                                                                                      {
+                                                                                                          string
+                                                                                                              filename =
+                                                                                                                  host.
+                                                                                                                      getNickname
+                                                                                                                      () +
+                                                                                                                  ".duck";
+                                                                                                          foreach (
+                                                                                                              char c in
+                                                                                                                  System
+                                                                                                                      .
+                                                                                                                      IO
+                                                                                                                      .
+                                                                                                                      Path
+                                                                                                                      .
+                                                                                                                      GetInvalidFileNameChars
+                                                                                                                      ()
+                                                                                                              )
+                                                                                                          {
+                                                                                                              filename =
+                                                                                                                  filename
+                                                                                                                      .
+                                                                                                                      Replace
+                                                                                                                      (
+                                                                                                                          c
+                                                                                                                              .
+                                                                                                                              ToString
+                                                                                                                              (),
+                                                                                                                          "");
+                                                                                                          }
+
+                                                                                                          Local file =
+                                                                                                              LocalFactory
+                                                                                                                  .
+                                                                                                                  createLocal
+                                                                                                                  (
+                                                                                                                      dropFolder,
+                                                                                                                      filename);
+                                                                                                          HostWriterFactory
+                                                                                                              .instance()
+                                                                                                              .
+                                                                                                              write(
+                                                                                                                  host,
+                                                                                                                  file);
+                                                                                                      }
+                                                                                                  });
+                                                                                   }
+                                                                               )
+                                                                       });
+            return data;
+        }
+
+        private void View_BrowserModelCanDrop(ModelDropEventArgs args)
         {
             if (IsMounted())
             {
@@ -423,20 +647,37 @@ namespace Ch.Cyberduck.Ui.Controller
                         destination = Workdir;
                         break;
                     default:
-                        destination = null;
-                        break;
+                        args.Effect = DragDropEffects.None;
+                        args.DropTargetLocation = DropTargetLocation.None;
+                        return;
                 }
 
-                // Do not allow dragging onto myself.
-                foreach (TreePathReference tpath in args.SourceModels)
+                if (!getSession().isCreateFileSupported(destination))
                 {
-                    Path p = tpath.Unique;
-                    if (!p.attributes().isDirectory())
+                    args.Effect = DragDropEffects.None;
+                    args.DropTargetLocation = DropTargetLocation.None;
+                    return;
+                }
+                foreach (TreePathReference sourceTreePath in args.SourceModels)
+                {
+                    Path sourcePath = sourceTreePath.Unique;
+                    if (sourcePath.attributes().isDirectory() && sourcePath.equals(destination))
                     {
-                        p = p.getParent();
+                        // Do not allow dragging onto myself.
+                        args.Effect = DragDropEffects.None;
+                        args.DropTargetLocation = DropTargetLocation.None;
+                        return;
                     }
-                    if (p.equals(destination))
+                    if (sourcePath.attributes().isDirectory() && destination.isChild(sourcePath))
                     {
+                        // Do not allow dragging a directory into its own containing items
+                        args.Effect = DragDropEffects.None;
+                        args.DropTargetLocation = DropTargetLocation.None;
+                        return;
+                    }
+                    if (sourcePath.attributes().isFile() && sourcePath.getParent().equals(destination))
+                    {
+                        // Moving file to the same destination makes no sense
                         args.Effect = DragDropEffects.None;
                         args.DropTargetLocation = DropTargetLocation.None;
                         return;
@@ -446,7 +687,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     args.DropTargetLocation = DropTargetLocation.Background;
                 }
-                else if (null != destination)
+                else
                 {
                     args.DropTargetItem = args.ListView.ModelToItem(new TreePathReference(destination));
                 }
@@ -457,7 +698,7 @@ namespace Ch.Cyberduck.Ui.Controller
         /// A file dragged within the browser has been received
         /// </summary>
         /// <param name="dropargs"></param>
-        private void View_ModelDropped(ModelDropEventArgs dropargs)
+        private void View_BrowserModelDropped(ModelDropEventArgs dropargs)
         {
             Path destination;
             switch (dropargs.DropTargetLocation)
@@ -1385,58 +1626,58 @@ namespace Ch.Cyberduck.Ui.Controller
             return false;
         }
 
-        //temporary store the drop folder        
-
-        private DataObject View_Drag(ObjectListView listView)
+        private DataObject View_BrowserDrag(ObjectListView listView)
         {
-            string tfile = System.IO.Path.Combine(System.IO.Path.GetTempPath(),
-                                                  Guid.NewGuid().ToString());
-            using (File.Create(tfile))
-            {
-                FileInfo tmpFile = new FileInfo(tfile);
-                tmpFile.Attributes |= FileAttributes.Hidden;
-                tmpFile.Attributes |= FileAttributes.System; //good idea?
-            }
-
-            DriveInfo[] allDrives = DriveInfo.GetDrives();
-            foreach (DriveInfo d in allDrives)
-            {
-                if (d.IsReady && d.DriveType != DriveType.CDRom)
-                {
-                    FileSystemWatcher watcher = new FileSystemWatcher(@d.Name, System.IO.Path.GetFileName(tfile));
-                    watcher.IncludeSubdirectories = true;
-                    watcher.EnableRaisingEvents = true;
-                    watcher.Created += delegate(object sender, FileSystemEventArgs args)
-                                           {
-                                               dropFolder = System.IO.Path.GetDirectoryName(args.FullPath);
-                                               Invoke(
-                                                   () => Download(SelectedPaths, LocalFactory.createLocal(dropFolder)));
-                                               watcher.Dispose();
-                                           };
-                }
-            }
-            DataObject data = new DataObject(DataFormats.FileDrop, new[] {tfile});
+            DataObject data = new DataObject(DataFormats.FileDrop, new[]
+                                                                       {
+                                                                           CreateAndWatchTemporaryFile(
+                                                                               delegate(object sender,
+                                                                                        FileSystemEventArgs args)
+                                                                                   {
+                                                                                       dropFolder =
+                                                                                           System.IO.Path.
+                                                                                               GetDirectoryName(
+                                                                                                   args.FullPath);
+                                                                                       Invoke(
+                                                                                           () =>
+                                                                                           Download(SelectedPaths,
+                                                                                                    LocalFactory.
+                                                                                                        createLocal(
+                                                                                                            dropFolder)));
+                                                                                   }
+                                                                               )
+                                                                       });
             return data;
         }
 
-        private void View_EndDrag(DataObject data)
+        private void RemoveTemporaryFiles(DataObject data)
         {
-            string tmpFile = data.GetFileDropList()[0];
-            if (File.Exists(tmpFile))
+            if (data.ContainsFileDropList())
             {
-                File.Delete(tmpFile);
-            }
-            if (null != dropFolder)
-            {
-                string tmpDestFile = System.IO.Path.Combine(dropFolder, System.IO.Path.GetFileName(tmpFile));
-                if (File.Exists(tmpDestFile))
+                foreach (string tmpFile in data.GetFileDropList())
                 {
-                    File.Delete(tmpDestFile);
+                    if (File.Exists(tmpFile))
+                    {
+                        File.Delete(tmpFile);
+                    }
+                    if (null != dropFolder)
+                    {
+                        string tmpDestFile = System.IO.Path.Combine(dropFolder, System.IO.Path.GetFileName(tmpFile));
+                        if (File.Exists(tmpDestFile))
+                        {
+                            File.Delete(tmpDestFile);
+                        }
+                    }
                 }
             }
         }
 
-        private void View_Dropped(OlvDropEventArgs e)
+        private void View_BrowserEndDrag(DataObject data)
+        {
+            RemoveTemporaryFiles(data);
+        }
+
+        private void View_BrowserDropped(OlvDropEventArgs e)
         {
             if (IsMounted() && e.DataObject is DataObject && ((DataObject) e.DataObject).ContainsFileDropList())
             {
@@ -1486,7 +1727,7 @@ namespace Ch.Cyberduck.Ui.Controller
         /// Check if we accept drag operation from external program
         /// </summary>
         /// <param name="args"></param>
-        private void View_CanDrop(OlvDropEventArgs args)
+        private void View_BrowserCanDrop(OlvDropEventArgs args)
         {
             args.Effect = DragDropEffects.None;
             if (IsMounted() && !(args.DataObject is OLVDataObject))
@@ -1518,14 +1759,14 @@ namespace Ch.Cyberduck.Ui.Controller
                         args.DropTargetLocation = DropTargetLocation.Background;
                         (args.DataObject as DataObject).SetDropDescription((DropImageType) args.Effect,
                                                                            "Copy to working directory", null);
-                            //todo needs localization
+                        //todo needs localization
                     }
                     else if (null != destination)
                     {
                         args.DropTargetItem = args.ListView.ModelToItem(new TreePathReference(destination));
                         (args.DataObject as DataObject).SetDropDescription((DropImageType) args.Effect, "Copy to %1",
                                                                            destination.getName());
-                            //todo needs localization
+                        //todo needs localization
                     }
                 }
             }
