@@ -18,16 +18,16 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.PreferencesFactory;
 import ch.cyberduck.ui.cocoa.foundation.*;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 import org.rococoa.Rococoa;
 import org.rococoa.cocoa.foundation.NSInteger;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -62,8 +62,19 @@ public class UserDefaultsPreferences extends Preferences {
     public String getDefault(final String property) {
         NSObject value = props.objectForKey(property);
         if(null == value) {
-            return super.getDefault(property);
+            // Lookup in the default map
+            String s = super.getDefault(property);
+            if(null == s) {
+                // Missing in default. Lookup in Info.plist
+                NSObject plist = NSBundle.mainBundle().infoDictionary().objectForKey(property);
+                if(null == plist) {
+                    return null;
+                }
+                return plist.toString();
+            }
+            return s;
         }
+        // Customized property found
         return value.toString();
     }
 
@@ -200,6 +211,7 @@ public class UserDefaultsPreferences extends Preferences {
 
     /**
      * Convert collection
+     *
      * @param list
      * @return
      */
