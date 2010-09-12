@@ -163,13 +163,15 @@ public class AzurePath extends CloudPath {
                 properties.setMetadata(collection);
                 container.updateBlobMetadata(properties);
             }
-            this.attributes().clear(false, false, false, true);
         }
         catch(StorageException e) {
             this.error("Cannot write file attributes", e);
         }
         catch(IOException e) {
             this.error("Cannot write file attributes", e);
+        }
+        finally {
+            this.attributes().clear(false, false, false, true);
         }
     }
 

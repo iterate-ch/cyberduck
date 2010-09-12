@@ -654,24 +654,27 @@ public class FTPPath extends Path {
     private void writeUnixPermissionImpl(Permission perm, boolean recursive) throws IOException {
         this.getSession().message(MessageFormat.format(Locale.localizedString("Changing permission of {0} to {1}", "Status"),
                 this.getName(), perm.getOctalString()));
-
-        if(attributes().isFile() && !attributes().isSymbolicLink()) {
-            this.getSession().getClient().chmod(perm.getOctalString(), this.getAbsolute());
-        }
-        else if(attributes().isDirectory()) {
-            this.getSession().getClient().chmod(perm.getOctalString(), this.getAbsolute());
-            if(recursive) {
-                for(AbstractPath child : this.children()) {
-                    if(!this.getSession().isConnected()) {
-                        break;
+        try {
+            if(attributes().isFile() && !attributes().isSymbolicLink()) {
+                this.getSession().getClient().chmod(perm.getOctalString(), this.getAbsolute());
+            }
+            else if(attributes().isDirectory()) {
+                this.getSession().getClient().chmod(perm.getOctalString(), this.getAbsolute());
+                if(recursive) {
+                    for(AbstractPath child : this.children()) {
+                        if(!this.getSession().isConnected()) {
+                            break;
+                        }
+                        ((FTPPath) child).writeUnixPermissionImpl(perm, recursive);
                     }
-                    ((FTPPath) child).writeUnixPermissionImpl(perm, recursive);
                 }
             }
         }
-        this.attributes().clear(false, false, true, false);
-        // This will force a directory listing to parse the permissions again.
-        this.getParent().invalidate();
+        finally {
+            this.attributes().clear(false, false, true, false);
+            // This will force a directory listing to parse the permissions again.
+            this.getParent().invalidate();
+        }
     }
 
     @Override
@@ -687,10 +690,14 @@ public class FTPPath extends Path {
     private void writeModificationDateImpl(long modified, long created) throws IOException {
         this.getSession().message(MessageFormat.format(Locale.localizedString("Changing timestamp of {0} to {1}", "Status"),
                 this.getName(), DateFormatterFactory.instance().getShortFormat(modified)));
-        this.getSession().getClient().mfmt(modified, created, this.getName());
-        this.attributes().clear(true, false, false, false);
-        // This will force a directory listing to parse the timestamp again if MDTM is not supported.
-        this.getParent().invalidate();
+        try {
+            this.getSession().getClient().mfmt(modified, created, this.getName());
+        }
+        finally {
+            this.attributes().clear(true, false, false, false);
+            // This will force a directory listing to parse the timestamp again if MDTM is not supported.
+            this.getParent().invalidate();
+        }
     }
 
     @Override

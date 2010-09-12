@@ -347,13 +347,15 @@ public class S3Path extends CloudPath {
                 target.replaceAllMetadata(new HashMap<String, Object>(meta));
                 this.getSession().getClient().updateObjectMetadata(this.getContainerName(), target);
                 target.setMetadataComplete(false);
-                this.attributes().clear(false, false, false, true);
             }
             catch(S3ServiceException e) {
                 this.error("Cannot write file attributes", e);
             }
             catch(IOException e) {
                 this.error("Cannot write file attributes", e);
+            }
+            finally {
+                this.attributes().clear(false, false, false, true);
             }
         }
     }
@@ -812,13 +814,17 @@ public class S3Path extends CloudPath {
      * @param acl The updated access control list.
      */
     protected void writeAcl(AccessControlList acl, boolean recursive) throws IOException, S3ServiceException {
-        if(this.isContainer()) {
-            this.getSession().getClient().putBucketAcl(this.getContainerName(), acl);
+        try {
+            if(this.isContainer()) {
+                this.getSession().getClient().putBucketAcl(this.getContainerName(), acl);
+            }
+            else if(attributes().isFile()) {
+                this.getSession().getClient().putObjectAcl(this.getContainerName(), this.getKey(), acl);
+            }
         }
-        else if(attributes().isFile()) {
-            this.getSession().getClient().putObjectAcl(this.getContainerName(), this.getKey(), acl);
+        finally {
+            this.attributes().clear(false, false, true, false);
         }
-        this.attributes().clear(false, false, true, false);
         if(attributes().isDirectory()) {
             if(recursive) {
                 for(AbstractPath child : this.children()) {

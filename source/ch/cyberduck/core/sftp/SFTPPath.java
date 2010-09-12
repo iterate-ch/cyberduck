@@ -371,20 +371,24 @@ public class SFTPPath extends Path {
         this.getSession().message(MessageFormat.format(Locale.localizedString("Changing permission of {0} to {1}", "Status"),
                 this.getName(), perm.getOctalString()));
 
-        SFTPv3FileAttributes attr = new SFTPv3FileAttributes();
-        attr.permissions = perm.getOctalNumber();
-        this.writeAttributes(attr);
-        if(this.attributes().isDirectory()) {
-            if(recursive) {
-                for(AbstractPath child : this.children()) {
-                    if(!this.getSession().isConnected()) {
-                        break;
+        try {
+            SFTPv3FileAttributes attr = new SFTPv3FileAttributes();
+            attr.permissions = perm.getOctalNumber();
+            this.writeAttributes(attr);
+            if(this.attributes().isDirectory()) {
+                if(recursive) {
+                    for(AbstractPath child : this.children()) {
+                        if(!this.getSession().isConnected()) {
+                            break;
+                        }
+                        ((SFTPPath) child).writeUnixPermissionImpl(perm, recursive);
                     }
-                    ((SFTPPath) child).writeUnixPermissionImpl(perm, recursive);
                 }
             }
         }
-        this.attributes().clear(false, false, true, false);
+        finally {
+            this.attributes().clear(false, false, true, false);
+        }
     }
 
     @Override
@@ -400,13 +404,17 @@ public class SFTPPath extends Path {
     private void writeModificationDateImpl(long modified, long created) throws IOException {
         this.getSession().message(MessageFormat.format(Locale.localizedString("Changing timestamp of {0} to {1}", "Status"),
                 this.getName(), DateFormatterFactory.instance().getShortFormat(modified)));
-        SFTPv3FileAttributes attrs = new SFTPv3FileAttributes();
-        int t = (int) (modified / 1000);
-        // We must both set the accessed and modified time. See AttribFlags.SSH_FILEXFER_ATTR_V3_ACMODTIME
-        attrs.atime = t;
-        attrs.mtime = t;
-        this.writeAttributes(attrs);
-        this.attributes().clear(true, false, false, false);
+        try {
+            SFTPv3FileAttributes attrs = new SFTPv3FileAttributes();
+            int t = (int) (modified / 1000);
+            // We must both set the accessed and modified time. See AttribFlags.SSH_FILEXFER_ATTR_V3_ACMODTIME
+            attrs.atime = t;
+            attrs.mtime = t;
+            this.writeAttributes(attrs);
+        }
+        finally {
+            this.attributes().clear(true, false, false, false);
+        }
     }
 
     @Override
