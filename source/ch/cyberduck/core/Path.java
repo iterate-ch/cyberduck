@@ -326,6 +326,7 @@ public abstract class Path extends AbstractPath implements Serializable {
         }
         if(Preferences.instance().getBoolean("path.normalize.unicode")) {
             if(!Normalizer.isNormalized(normalized, Normalizer.NFC, Normalizer.UNICODE_3_2)) {
+                // Canonical decomposition followed by canonical composition (default)
                 normalized = Normalizer.normalize(normalized, Normalizer.NFC, Normalizer.UNICODE_3_2);
             }
         }
