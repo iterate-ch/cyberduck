@@ -1076,11 +1076,20 @@ public class S3Path extends CloudPath {
      */
     @Override
     public DescriptiveUrl toSignedUrl() {
+        return toSignedUrl(Preferences.instance().getInteger("s3.url.expire.seconds"));
+    }
+
+    /**
+     * @param seconds Expire after seconds elapsed
+     * @return
+     */
+    private DescriptiveUrl toSignedUrl(int seconds) {
         Calendar expiry = Calendar.getInstance();
-        expiry.add(Calendar.SECOND, Preferences.instance().getInteger("s3.url.expire.seconds"));
+        expiry.add(Calendar.SECOND, seconds);
         return new DescriptiveUrl(this.createSignedUrl(Preferences.instance().getInteger("s3.url.expire.seconds")),
-                MessageFormat.format(Locale.localizedString("Expires on {0}", "S3"),
-                        DateFormatterFactory.instance().getLongFormat(expiry.getTimeInMillis()))
+                MessageFormat.format(Locale.localizedString("{0} URL"), Locale.localizedString("Signed"))
+                        + " (" + MessageFormat.format(Locale.localizedString("Expires on {0}", "S3") + ")",
+                        DateFormatterFactory.instance().getShortFormat(expiry.getTimeInMillis()))
         );
     }
 
@@ -1140,10 +1149,18 @@ public class S3Path extends CloudPath {
     @Override
     public List<DescriptiveUrl> getHttpURLs() {
         List<DescriptiveUrl> urls = super.getHttpURLs();
-        DescriptiveUrl signed = this.toSignedUrl();
-        if(StringUtils.isNotBlank(signed.getUrl())) {
-            urls.add(new DescriptiveUrl(signed.getUrl(),
-                    MessageFormat.format(Locale.localizedString("{0} URL"), Locale.localizedString("Signed"))));
+        DescriptiveUrl hour = this.toSignedUrl(60 * 60);
+        if(StringUtils.isNotBlank(hour.getUrl())) {
+            urls.add(hour);
+        }
+        // Default signed URL expiring in 24 hours.
+        DescriptiveUrl day = this.toSignedUrl(Preferences.instance().getInteger("s3.url.expire.seconds"));
+        if(StringUtils.isNotBlank(day.getUrl())) {
+            urls.add(day);
+        }
+        DescriptiveUrl week = this.toSignedUrl(7 * 24 * 60 * 60);
+        if(StringUtils.isNotBlank(week.getUrl())) {
+            urls.add(week);
         }
         DescriptiveUrl torrent = this.toTorrentUrl();
         if(StringUtils.isNotBlank(torrent.getUrl())) {
