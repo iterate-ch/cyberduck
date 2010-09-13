@@ -479,6 +479,10 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         this.donateButton.sizeToFit();
     }
 
+    public NSButton getDonateButton() {
+        return donateButton;
+    }
+
     private void addDonateWindowTitle() {
         NSView view = this.window().contentView().superview();
         NSSize bounds = view.frame().size;

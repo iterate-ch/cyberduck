@@ -424,6 +424,9 @@ public class MainController extends BundleController implements NSApplication.De
                     alert.setAlertStyle(NSAlert.NSInformationalAlertStyle);
                     if(alert.runModal() == SheetCallback.DEFAULT_OPTION) {
                         f.copy(LocalFactory.createLocal(Preferences.instance().getProperty("application.support.path"), f.getName()));
+                        for(BrowserController c : MainController.getBrowsers()) {
+                            c.getDonateButton().removeFromSuperview();
+                        }
                     }
                 }
                 else {
