@@ -691,6 +691,9 @@ public abstract class Preferences {
         defaults.put("update.check", String.valueOf(true));
         final int DAY = 60 * 60 * 24;
         defaults.put("update.check.interval", String.valueOf(DAY)); // periodic update check in seconds
+        defaults.put("update.feed.release", "http://version.cyberduck.ch/changelog.rss");
+        defaults.put("update.feed.beta", "http://version.cyberduck.ch/beta/changelog.rss");
+        defaults.put("update.feed.nightly", "http://version.cyberduck.ch/nightly/changelog.rss");
 
         defaults.put("terminal.bundle.identifier", "com.apple.Terminal");
         defaults.put("terminal.command", "do script \"{0}\"");
