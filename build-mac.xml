@@ -70,28 +70,20 @@
                 <include name="**/MacOS/*"/>
             </fileset>
         </chmod>
-    </target>
-
-    <target name="package" depends="build, timestamp, revision">
-        <echo message="_TIMESTAMP_=${touch.time}"/>
         <echo message="_VERSION_=${cyberduck.version.major}.${cyberduck.version.minor}"/>
         <echo message="_REVISION_=${svn.revision}"/>
-        <echo message="_SPARKLEFEED_=${sparkle.feed}"/>
         <replace dir="${app.bundle}" summary="true" encoding="UTF-8">
-            <include name="**/InfoPlist.strings"/>
             <include name="**/Info.plist"/>
-            <replacefilter token="_SPARKLEFEED_" value="${sparkle.feed}"/>
-            <replacefilter token="_TIMESTAMP_" value="${touch.time}"/>
             <replacefilter token="_REVISION_" value="${svn.revision}"/>
             <replacefilter token="_VERSION_" value="${cyberduck.version.major}.${cyberduck.version.minor}"/>
         </replace>
-        <replace dir="${app.bundle}" summary="true" encoding="UTF-16">
-            <include name="**/InfoPlist.strings"/>
+    </target>
+
+    <target name="package" depends="build, timestamp">
+        <echo message="_SPARKLEFEED_=${sparkle.feed}"/>
+        <replace dir="${app.bundle}" summary="true" encoding="UTF-8">
             <include name="**/Info.plist"/>
             <replacefilter token="_SPARKLEFEED_" value="${sparkle.feed}"/>
-            <replacefilter token="_TIMESTAMP_" value="${touch.time}"/>
-            <replacefilter token="_REVISION_" value="${svn.revision}"/>
-            <replacefilter token="_VERSION_" value="${cyberduck.version.major}.${cyberduck.version.minor}"/>
         </replace>
 
         <antcall target="codesign"/>
