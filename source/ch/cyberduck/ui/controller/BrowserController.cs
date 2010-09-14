@@ -1,4 +1,4 @@
-﻿// 
+﻿//
 // Copyright (c) 2010 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
@@ -922,6 +922,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     selected = Workdir;
                     host = new Host(_session.getHost().getAsDictionary());
+                    host.setUuid(null);
                     host.setDefaultPath(selected.getAbsolute());
                 }
             }

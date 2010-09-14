@@ -1643,6 +1643,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         final Host selected = bookmarkModel.getSource().get(bookmarkTable.selectedRow().intValue());
         this.toggleBookmarks(true);
         final Host duplicate = new Host(selected.getAsDictionary());
+        // Make sure a new UUID is asssigned for duplicate
         duplicate.setUuid(null);
         this.addBookmark(duplicate);
         BookmarkController c = BookmarkController.Factory.create(duplicate);
@@ -1660,22 +1661,24 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
     @Action
     public void addBookmarkButtonClicked(final ID sender) {
-        final Host item;
+        final Host bookmark;
         if(this.isMounted()) {
             Path selected = this.getSelectedPath();
             if(null == selected || !selected.attributes().isDirectory()) {
                 selected = this.workdir();
             }
-            item = new Host(this.session.getHost().getAsDictionary());
-            item.setDefaultPath(selected.getAbsolute());
+            bookmark = new Host(this.session.getHost().getAsDictionary());
+            // Make sure a new UUID is asssigned for duplicate
+            bookmark.setUuid(null);
+            bookmark.setDefaultPath(selected.getAbsolute());
         }
         else {
-            item = new Host(Protocol.forName(Preferences.instance().getProperty("connection.protocol.default")),
+            bookmark = new Host(Protocol.forName(Preferences.instance().getProperty("connection.protocol.default")),
                     Preferences.instance().getProperty("connection.hostname.default"),
                     Preferences.instance().getInteger("connection.port.default"));
         }
         this.toggleBookmarks(true);
-        this.addBookmark(item);
+        this.addBookmark(bookmark);
     }
 
     private void addBookmark(Host item) {
