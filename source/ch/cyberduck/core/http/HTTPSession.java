@@ -99,6 +99,7 @@ public abstract class HTTPSession extends Session implements SSLSession {
             protected HttpParams createHttpParams() {
                 final HttpParams params = new BasicHttpParams();
                 HttpProtocolParams.setVersion(params, org.apache.http.HttpVersion.HTTP_1_1);
+                HttpProtocolParams.setContentCharset(params, HTTPSession.this.getEncoding());
                 HttpProtocolParams.setUseExpectContinue(params, true);
                 HttpConnectionParams.setTcpNoDelay(params, true);
                 HttpConnectionParams.setSoTimeout(params, timeout());
