@@ -3050,7 +3050,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 identity ? "-i " + this.getSession().getHost().getCredentials().getIdentity().getAbsolute() : "",
                 this.getSession().getHost().getCredentials().getUsername(),
                 this.getSession().getHost().getHostname(),
-                this.getSession().getHost().getPort(), workdir);
+                String.valueOf(this.getSession().getHost().getPort()), workdir);
         log.info("SSH Command:" + ssh);
         // Escape 
         ssh = StringUtils.replace(ssh, "\\", "\\\\");
