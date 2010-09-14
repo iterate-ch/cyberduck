@@ -202,7 +202,7 @@
         <delete dir="${build}"/>
     </target>
 
-    <target name="manifest" description="Create a manifest used in the jar files">
+    <target name="manifest" depends="revision" description="Create a manifest used in the jar files">
         <manifest file="${build}/MANIFEST.MF">
             <attribute name="Built-By" value="${user.name}"/>
             <attribute name="Specification-Title" value="${app.name}"/>
