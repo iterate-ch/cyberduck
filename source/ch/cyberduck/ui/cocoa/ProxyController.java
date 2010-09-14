@@ -134,9 +134,16 @@ public class ProxyController extends AbstractController {
             return;
         }
         final ActionOperationBatcher autorelease = this.getBatcher();
-        //Defer to main thread
-        Foundation.runOnMainThread(runnable, wait);
-        autorelease.operate();
+        try {
+            //Defer to main thread
+            Foundation.runOnMainThread(runnable, wait);
+        }
+        catch(Throwable e) {
+            log.error("Excpetion running task on main thread:" + e.getMessage(), e);
+        }
+        finally {
+            autorelease.operate();
+        }
     }
 
     /**

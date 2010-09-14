@@ -22,10 +22,14 @@ package ch.cyberduck.ui.cocoa.threading;
 import ch.cyberduck.ui.action.Worker;
 import ch.cyberduck.ui.cocoa.BrowserController;
 
+import org.apache.log4j.Logger;
+
 /**
  * @version $Id:$
  */
 public class WorkerBackgroundAction<T> extends BrowserBackgroundAction {
+    private static Logger log = Logger.getLogger(WorkerBackgroundAction.class);
+
     private Worker<T> worker;
 
     private T result;
@@ -41,6 +45,10 @@ public class WorkerBackgroundAction<T> extends BrowserBackgroundAction {
 
     @Override
     public void cleanup() {
+        if(null == result) {
+            log.error("No result for worker:" + this.toString());
+            return;
+        }
         worker.cleanup(result);
     }
 

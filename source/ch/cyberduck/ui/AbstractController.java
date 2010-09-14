@@ -71,6 +71,9 @@ public abstract class AbstractController implements Controller {
                             runnable.run();
                         }
                     }
+                    catch(Throwable e) {
+                        log.error("Excpetion running background task:" + e.getMessage(), e);
+                    }
                     finally {
                         // Increase the run counter
                         runnable.finish();
