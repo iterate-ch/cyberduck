@@ -247,7 +247,9 @@ public class BookmarkTableDataSource extends ListDataSource {
     }
 
     @Override
-    public NSUInteger tableView_validateDrop_proposedRow_proposedDropOperation(NSTableView view, NSDraggingInfo draggingInfo, NSInteger index, NSUInteger operation) {
+    public NSUInteger tableView_validateDrop_proposedRow_proposedDropOperation(NSTableView view,
+                                                                               NSDraggingInfo draggingInfo,
+                                                                               NSInteger row, NSUInteger operation) {
         NSPasteboard draggingPasteboard = draggingInfo.draggingPasteboard();
         if(!this.getSource().allowsEdit()) {
             // Do not allow drags for non writable collections
@@ -257,7 +259,7 @@ public class BookmarkTableDataSource extends ListDataSource {
             String o = draggingPasteboard.stringForType(NSPasteboard.StringPboardType);
             if(o != null) {
                 if(Protocol.isURL(o)) {
-                    view.setDropRow(index, NSTableView.NSTableViewDropAbove);
+                    view.setDropRow(row, NSTableView.NSTableViewDropAbove);
                     return NSDraggingInfo.NSDragOperationCopy;
                 }
             }
@@ -270,13 +272,14 @@ public class BookmarkTableDataSource extends ListDataSource {
                 for(int i = 0; i < elements.count().intValue(); i++) {
                     String file = elements.objectAtIndex(new NSUInteger(i)).toString();
                     if(file.endsWith(".duck")) {
-                        //allow file drags if bookmark file even if list is empty
+                        // Allow drag if at least one file is a serialized bookmark
+                        view.setDropRow(row, NSTableView.NSTableViewDropAbove);
                         return NSDraggingInfo.NSDragOperationCopy;
                     }
                 }
-                if(index.intValue() > -1 && index.intValue() < view.numberOfRows().intValue()) {
+                if(row.intValue() > -1) {
                     //only allow other files if there is at least one bookmark
-                    view.setDropRow(index, NSTableView.NSTableViewDropOn);
+                    view.setDropRow(row, NSTableView.NSTableViewDropOn);
                     return NSDraggingInfo.NSDragOperationCopy;
                 }
             }
@@ -287,7 +290,7 @@ public class BookmarkTableDataSource extends ListDataSource {
                 NSArray elements = Rococoa.cast(o, NSArray.class);
                 for(int i = 0; i < elements.count().intValue(); i++) {
                     if(Protocol.isURL(elements.objectAtIndex(new NSUInteger(i)).toString())) {
-                        view.setDropRow(index, NSTableView.NSTableViewDropAbove);
+                        view.setDropRow(row, NSTableView.NSTableViewDropAbove);
                         return NSDraggingInfo.NSDragOperationCopy;
                     }
                 }
@@ -295,8 +298,8 @@ public class BookmarkTableDataSource extends ListDataSource {
             return NSDraggingInfo.NSDragOperationNone;
         }
         if(!HostPasteboard.getPasteboard().isEmpty()) {
-            if(index.intValue() > -1 && index.intValue() < view.numberOfRows().intValue()) {
-                view.setDropRow(index, NSTableView.NSTableViewDropAbove);
+            if(row.intValue() > -1) {
+                view.setDropRow(row, NSTableView.NSTableViewDropAbove);
                 // We accept any file promise within the bounds
                 return NSDraggingInfo.NSDragOperationMove;
             }
@@ -312,7 +315,8 @@ public class BookmarkTableDataSource extends ListDataSource {
      *      Invoked by view when the mouse button is released over a table view that previously decided to allow a drop.
      */
     @Override
-    public boolean tableView_acceptDrop_row_dropOperation(NSTableView view, NSDraggingInfo draggingInfo, NSInteger row, NSUInteger operation) {
+    public boolean tableView_acceptDrop_row_dropOperation(NSTableView view, NSDraggingInfo draggingInfo,
+                                                          NSInteger row, NSUInteger operation) {
         NSPasteboard draggingPasteboard = draggingInfo.draggingPasteboard();
         log.debug("tableViewAcceptDrop:" + row);
         final AbstractHostCollection source = this.getSource();
@@ -337,12 +341,6 @@ public class BookmarkTableDataSource extends ListDataSource {
                 String filename = filesList.objectAtIndex(new NSUInteger(i)).toString();
                 if(filename.endsWith(".duck")) {
                     // Adding a previously exported bookmark file from the Finder
-                    if(row.intValue() < 0) {
-                        row = new NSInteger(0);
-                    }
-                    if(row.intValue() > view.numberOfRows().intValue()) {
-                        row = new NSInteger(view.numberOfRows().intValue());
-                    }
                     source.add(row.intValue(), HostReaderFactory.instance().read(LocalFactory.createLocal(filename)));
                     view.selectRowIndexes(NSIndexSet.indexSetWithIndex(row), false);
                     view.scrollRowToVisible(row);
