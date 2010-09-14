@@ -75,7 +75,8 @@ public class BrowserListViewModel extends BrowserTableDataSource implements NSTa
             Path destination = controller.workdir();
             final int draggingColumn = view.columnAtPoint(draggingInfo.draggingLocation()).intValue();
             if(0 == draggingColumn || 1 == draggingColumn) {
-                if(row.intValue() != -1 && row.intValue() < view.numberOfRows().intValue()) {
+                // Allow drags to icon and filename column
+                if(row.intValue() != -1) {
                     Path p = this.children(this.controller.workdir()).get(row.intValue());
                     if(p.attributes().isDirectory()) {
                         destination = p;
@@ -92,7 +93,7 @@ public class BrowserListViewModel extends BrowserTableDataSource implements NSTa
                                                           NSInteger row, NSUInteger operation) {
         if(controller.isMounted()) {
             Path destination = controller.workdir();
-            if(row.intValue() != -1 && row.intValue() < view.numberOfRows().intValue()) {
+            if(row.intValue() != -1) {
                 destination = this.children(this.controller.workdir()).get(row.intValue());
             }
             return super.acceptDrop(view, destination, draggingInfo);

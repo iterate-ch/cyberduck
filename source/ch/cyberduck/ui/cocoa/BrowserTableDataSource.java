@@ -377,8 +377,8 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                     // Do not allow dragging a directory into its own containing items
                     return NSDraggingInfo.NSDragOperationNone;
                 }
-                if(next.getParent().equals(destination)) {
-                    // Moving to the same destination makes no sense
+                if(next.attributes().isFile() && next.getParent().equals(destination)) {
+                    // Moving a file to the same destination makes no sense
                     return NSDraggingInfo.NSDragOperationNone;
                 }
             }
