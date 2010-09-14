@@ -193,20 +193,38 @@ public class GDSession extends Session {
 
     @Override
     public List<Acl.Role> getAvailableAclRoles(List<Path> files) {
-        return Arrays.asList(new Acl.Role(AclRole.OWNER.getValue()), new Acl.Role(AclRole.READER.getValue()),
-                new Acl.Role(AclRole.WRITER.getValue()), new Acl.Role(AclRole.PEEKER.getValue()));
+        return Arrays.asList(new Acl.Role(AclRole.READER.getValue()),
+                new Acl.Role(AclRole.WRITER.getValue())
+        );
     }
 
     @Override
     public List<Acl.User> getAvailableAclUsers() {
-        //        AclScope.Type.DEFAULT
-        //        AclScope.Type.USER
-        //        AclScope.Type.GROUP
-        //        AclScope.Type.DOMAIN
         return Arrays.asList(
-                new Acl.CanonicalUser("DEFAULT".toLowerCase()),
-                new Acl.EmailUser("USER".toLowerCase()),
-                new Acl.DomainUser("DOMAIN".toLowerCase()),
-                new Acl.GroupUser("GROUP".toLowerCase()));
+                new Acl.EmailUser("") {
+                    @Override
+                    public String getPlaceholder() {
+                        return Locale.localizedString("Google Email Address", "Google");
+                    }
+                },
+                new Acl.DomainUser("") {
+                    @Override
+                    public String getPlaceholder() {
+                        return Locale.localizedString("Google Apps Domain", "Google");
+                    }
+                },
+                new Acl.GroupUser("", true) {
+                    @Override
+                    public String getPlaceholder() {
+                        return Locale.localizedString("Google Group Email Address", "Google");
+                    }
+                },
+                new Acl.CanonicalUser(Locale.localizedString("Public", "Google"), false) {
+                    @Override
+                    public String getPlaceholder() {
+                        return Locale.localizedString("Public", "Google");
+                    }
+                }
+        );
     }
 }

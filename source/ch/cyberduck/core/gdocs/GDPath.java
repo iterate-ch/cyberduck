@@ -279,76 +279,116 @@ public class GDPath extends Path {
             this.getSession().check();
             this.getSession().message(MessageFormat.format(Locale.localizedString("Getting permission of {0}", "Status"),
                     this.getName()));
-            try {
-                Acl acl = new Acl();
-                AclFeed feed = this.getSession().getClient().getFeed(new URL(this.getAclFeed()), AclFeed.class);
-                for(AclEntry entry : feed.getEntries()) {
-                    AclScope scope = entry.getScope();
-                    AclScope.Type type = scope.getType();
-                    AclRole role = entry.getRole();
-                    if(type.equals(AclScope.Type.DEFAULT)) {
-                        acl.addAll(new Acl.CanonicalUser(scope.getValue()), new Acl.Role(role.getValue()));
-                    }
-                    if(type.equals(AclScope.Type.USER)) {
-                        acl.addAll(new Acl.CanonicalUser(scope.getValue()), new Acl.Role(role.getValue()));
-                    }
-                    if(type.equals(AclScope.Type.DOMAIN)) {
-                        acl.addAll(new Acl.DomainUser(scope.getValue()), new Acl.Role(role.getValue()));
-                    }
-                    if(type.equals(AclScope.Type.GROUP)) {
-                        acl.addAll(new Acl.GroupUser(scope.getValue()), new Acl.Role(role.getValue()));
-                    }
+            Acl acl = new Acl();
+            AclFeed feed = this.getSession().getClient().getFeed(new URL(this.getAclFeed()), AclFeed.class);
+            for(AclEntry entry : feed.getEntries()) {
+                AclScope scope = entry.getScope();
+                AclScope.Type type = scope.getType();
+                AclRole role = entry.getRole();
+                if(type.equals(AclScope.Type.USER)) {
+                    // Only editable if not owner of document. Changing owner is not supported.
+                    acl.addAll(new Acl.EmailUser(scope.getValue(), !role.getValue().equals(AclRole.OWNER.getValue())),
+                            new Acl.Role(role.getValue()));
                 }
-                this.attributes().setAcl(acl);
+                else if(type.equals(AclScope.Type.DOMAIN)) {
+                    // Google Apps Domain grant.
+                    acl.addAll(new Acl.DomainUser(scope.getValue()), new Acl.Role(role.getValue()));
+                }
+                else if(type.equals(AclScope.Type.GROUP)) {
+                    // Google Group email grant
+                    acl.addAll(new Acl.GroupUser(scope.getValue(), true), new Acl.Role(role.getValue()));
+                }
+                else if(type.equals(AclScope.Type.DEFAULT)) {
+                    // Value of scope is null. Default access for non authenticated
+                    // users. Publicly shared with all users.
+                    acl.addAll(new Acl.CanonicalUser(AclScope.Type.DEFAULT.name(), Locale.localizedString("Public"), false),
+                            new Acl.Role(role.getValue()));
+                }
+                else {
+                    log.warn("Unsupported scope:" + type);
+                }
             }
-            catch(ServiceException e) {
-                throw new IOException(e.getMessage());
-            }
+            this.attributes().setAcl(acl);
         }
         catch(IOException e) {
+            this.error("Cannot read file attributes", e);
+        }
+        catch(ServiceException e) {
             this.error("Cannot read file attributes", e);
         }
     }
 
     @Override
     public void writeAcl(Acl acl, boolean recursive) {
-        for(Acl.User user : acl.keySet()) {
-            if(!user.isValid()) {
-                continue;
-            }
-            AclScope scope;
-            if(user instanceof Acl.EmailUser) {
-                scope = new AclScope(AclScope.Type.USER, user.getIdentifier());
-            }
-            else if(user instanceof Acl.GroupUser) {
-                scope = new AclScope(AclScope.Type.GROUP, user.getIdentifier());
-            }
-            else if(user instanceof Acl.DomainUser) {
-                scope = new AclScope(AclScope.Type.DOMAIN, user.getIdentifier());
-            }
-            else {
-                scope = new AclScope(AclScope.Type.DEFAULT, user.getIdentifier());
-            }
-            for(Acl.Role role : acl.get(user)) {
-                if(!role.isValid()) {
+        try {
+            // Delete all previous ACLs before inserting updated set.
+            AclFeed feed = this.getSession().getClient().getFeed(new URL(this.getAclFeed()), AclFeed.class);
+            for(AclEntry entry : feed.getEntries()) {
+                if(entry.getRole().toString().equals(AclRole.OWNER.toString())) {
+                    // Do not remove owner of document
                     continue;
                 }
-                AclEntry entry = new AclEntry();
-                entry.setScope(scope);
-                entry.setRole(new AclRole(role.getName()));
-                try {
-                    try {
-                        this.getSession().getClient().insert(new URL(this.getAclFeed()), entry);
-                    }
-                    catch(ServiceException e) {
-                        throw new IOException(e.getMessage());
+                entry.delete();
+            }
+            for(Acl.User user : acl.keySet()) {
+                if(!user.isValid()) {
+                    continue;
+                }
+                if(!user.isEditable()) {
+                    continue;
+                }
+                // The API supports sharing permissions on multiple levels. These values
+                // correspond to the <gAcl:scope> type attribute
+                AclScope scope = null;
+                if(user instanceof Acl.EmailUser) {
+                    // a user's email address. Creating an ACL entry that shares a document or folder with users will notify 
+                    // relevant users via email that they have new access to the document or folder
+                    scope = new AclScope(AclScope.Type.USER, user.getIdentifier());
+                }
+                else if(user instanceof Acl.GroupUser) {
+                    // a Google Group email address
+                    scope = new AclScope(AclScope.Type.GROUP, user.getIdentifier());
+                }
+                else if(user instanceof Acl.DomainUser) {
+                    // a Google Apps domain.
+                    scope = new AclScope(AclScope.Type.DOMAIN, user.getIdentifier());
+                }
+                else if(user instanceof Acl.CanonicalUser) {
+                    if(user.getIdentifier().equals(AclScope.Type.DEFAULT.name())) {
+                        // Publicly shared with all users
+                        scope = new AclScope(AclScope.Type.DEFAULT, null);
                     }
                 }
-                catch(IOException e) {
-                    this.error("Cannot change permissions", e);
+                if(null == scope) {
+                    log.warn("Unsupported scope:" + user);
+                    continue;
+                }
+                for(Acl.Role role : acl.get(user)) {
+                    if(!role.isValid()) {
+                        continue;
+                    }
+                    AclEntry entry = new AclEntry();
+                    entry.setScope(scope);
+                    entry.setRole(new AclRole(role.getName()));
+                    // Insert updated ACL entry for scope
+                    this.getSession().getClient().insert(new URL(this.getAclFeed()), entry);
                 }
             }
+        }
+        catch(IOException e) {
+            this.error("Cannot change permissions", e);
+        }
+        catch(ServiceException e) {
+            this.error("Cannot change permissions", e);
+        }
+        finally {
             this.attributes().clear(false, false, true, false);
+        }
+        if(attributes().isDirectory()) {
+            if(recursive) {
+                // All child objects of the folder reflect will reflect the new
+                // sharing permission regardless.
+            }
         }
     }
 

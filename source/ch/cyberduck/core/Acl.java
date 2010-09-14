@@ -257,6 +257,10 @@ public class Acl extends HashMap<Acl.User, Set<Acl.Role>> {
             super(identifier, true);
         }
 
+        public EmailUser(String identifier, boolean editable) {
+            super(identifier, editable);
+        }
+
         @Override
         public String getPlaceholder() {
             return Locale.localizedString("Email Address", "S3");
