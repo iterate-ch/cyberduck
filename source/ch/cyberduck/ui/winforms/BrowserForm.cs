@@ -2052,12 +2052,10 @@ namespace Ch.Cyberduck.Ui.Winforms
                 //todo reordering bookmarks
                 base.OnModelCanDrop(args);
 
-                args.DropTargetLocation = DropTargetLocation.None;
                 args.Effect = DragDropEffects.None;
 
-                args.Handled = true; // OnCanDrop is not being called anymore
-
-                /*
+                //args.Handled = true; // OnCanDrop is not being called anymore
+                                
                 if (args.Handled)
                     return;
 
@@ -2072,9 +2070,9 @@ namespace Ch.Cyberduck.Ui.Winforms
                 }
                 else
                 {
-                    _form.BrowserModelCanDrop(args);
+                    _form.HostModelCanDrop(args);
                 }
-                args.Handled = true;*/
+                args.Handled = true;
             }
 
             protected override void OnDropped(OlvDropEventArgs args)
@@ -2089,7 +2087,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                 base.OnModelDropped(args);
                 if (!args.Handled)
                 {
-                    _form.BrowserModelDropped(args);
+                    _form.HostModelDropped(args);
                 }
                 args.Handled = true;
             }
