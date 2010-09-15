@@ -61,6 +61,7 @@
 	[_favorites release];
 	[super dealloc];
 }
+
 -(id)initWithCoder:(NSKeyedUnarchiver*)unarchiver{
 	self = [self init];
 	
