@@ -27,6 +27,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private UpdateController()
         {
+            View = ObjectFactory.GetInstance<IUpdateView>();
         }
 
         public static UpdateController Instance
@@ -61,7 +62,6 @@ namespace Ch.Cyberduck.Ui.Controller
         /// <param name="background">true if you want to perform the update check in the background.</param>
         public void ForceCheckForUpdates(bool background)
         {
-            View = ObjectFactory.GetInstance<IUpdateView>();
             View.CheckForUpdates(background);
             Preferences.instance().setProperty("update.check.last", DateTime.Now.Ticks);
         }
