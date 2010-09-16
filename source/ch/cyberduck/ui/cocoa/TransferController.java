@@ -44,6 +44,7 @@ import org.rococoa.cocoa.foundation.NSUInteger;
 import org.apache.log4j.Logger;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 
@@ -846,15 +847,14 @@ public class TransferController extends WindowController implements NSToolbar.De
     @Action
     public void paste(final ID sender) {
         log.debug("paste");
-        final Map<Session, PathPasteboard> pasteboards = PathPasteboard.allPasteboards();
-        for(PathPasteboard pasteboard : pasteboards.values()) {
+        for(PathPasteboard pasteboard : PathPasteboard.allPasteboards()) {
             if(pasteboard.isEmpty()) {
                 continue;
             }
             TransferCollection.instance().add(new DownloadTransfer(pasteboard.copy()));
             this.reloadData();
+            pasteboard.clear();
         }
-        pasteboards.clear();
     }
 
     @Action
@@ -1072,9 +1072,9 @@ public class TransferController extends WindowController implements NSToolbar.De
     public boolean validateMenuItem(NSMenuItem item) {
         final Selector action = item.action();
         if(action.equals(Foundation.selector("paste:"))) {
-            final Map<Session, PathPasteboard> pasteboards = PathPasteboard.allPasteboards();
-            if(!pasteboards.isEmpty() && pasteboards.size() == 1) {
-                for(PathPasteboard pasteboard : pasteboards.values()) {
+            final List<PathPasteboard> pasteboards = PathPasteboard.allPasteboards();
+            if(pasteboards.size() == 1) {
+                for(PathPasteboard pasteboard : pasteboards) {
                     if(pasteboard.size() == 1) {
                         item.setTitle(Locale.localizedString("Paste") + " \"" + pasteboard.get(0).getName() + "\"");
                     }

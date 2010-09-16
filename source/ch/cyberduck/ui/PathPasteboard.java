@@ -60,14 +60,18 @@ public class PathPasteboard extends Collection<Path> implements Pasteboard<Path>
     /**
      * @return
      */
-    public static Map<Session, PathPasteboard> allPasteboards() {
-        return instances;
+    public static List<PathPasteboard> allPasteboards() {
+        return new ArrayList<PathPasteboard>(instances.values());
     }
 
     private Session session;
 
     private PathPasteboard(Session session) {
         this.session = session;
+    }
+
+    public Session getSession() {
+        return session;
     }
 
     /**

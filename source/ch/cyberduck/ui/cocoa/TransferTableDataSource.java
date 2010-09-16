@@ -37,6 +37,7 @@ import org.apache.log4j.Logger;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -189,11 +190,11 @@ public class TransferTableDataSource extends ListDataSource {
             }
             return false;
         }
-        final Map<Session, PathPasteboard> pasteboards = PathPasteboard.allPasteboards();
+        final List<PathPasteboard> pasteboards = PathPasteboard.allPasteboards();
         if(pasteboards.isEmpty()) {
             return false;
         }
-        for(PathPasteboard pasteboard : pasteboards.values()) {
+        for(PathPasteboard pasteboard : pasteboards) {
             if(pasteboard.isEmpty()) {
                 continue;
             }
