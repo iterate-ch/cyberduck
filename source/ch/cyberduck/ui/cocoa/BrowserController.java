@@ -2299,8 +2299,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             boolean duplicate = false;
             for(Path n : normalized) {
                 if(f.isChild(n)) {
-                    // The selected file is a child of a directory
-                    // already included for deletion
+                    // The selected file is a child of a directory already included for deletion
                     duplicate = true;
                     break;
                 }
