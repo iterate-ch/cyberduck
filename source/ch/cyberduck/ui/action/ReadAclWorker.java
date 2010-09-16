@@ -30,11 +30,11 @@ import java.util.List;
 /**
  * @version $Id:$
  */
-public abstract class AclWorker extends Worker<List<Acl.UserAndRole>> {
+public abstract class ReadAclWorker extends Worker<List<Acl.UserAndRole>> {
 
     private List<Path> files;
 
-    public AclWorker(List<Path> files) {
+    public ReadAclWorker(List<Path> files) {
         this.files = files;
     }
 

@@ -688,26 +688,15 @@ public class InfoController extends ToolbarWindowController {
 
     private void aclInputDidEndEditing() {
         if(this.toggleAclSettings(false)) {
-            controller.background(new BrowserBackgroundAction(controller) {
-
-                public void run() {
-                    for(Path next : files) {
-                        next.writeAcl(new Acl(acl.toArray(new Acl.UserAndRole[acl.size()])), true);
-                    }
-                }
-
-                @Override
-                public void cleanup() {
-                    toggleAclSettings(true);
-                    initAcl();
-                }
-
-                @Override
-                public String getActivity() {
-                    return MessageFormat.format(Locale.localizedString("Changing permission of {0} to {1}", "Status"),
-                            this.toString(files), acl);
-                }
-            });
+            controller.background(new WorkerBackgroundAction<Acl>(controller,
+                    new WriteAclWorker(files, new Acl(acl.toArray(new Acl.UserAndRole[acl.size()])), true) {
+                        @Override
+                        public void cleanup(Acl permission) {
+                            toggleAclSettings(true);
+                            initAcl();
+                        }
+                    })
+            );
         }
     }
 
@@ -1928,7 +1917,7 @@ public class InfoController extends ToolbarWindowController {
                     }
                 }
             }
-            controller.background(new WorkerBackgroundAction<List<Acl.UserAndRole>>(controller, new AclWorker(files) {
+            controller.background(new WorkerBackgroundAction<List<Acl.UserAndRole>>(controller, new ReadAclWorker(files) {
                 @Override
                 public void cleanup(List<Acl.UserAndRole> updated) {
                     setAcl(updated);
