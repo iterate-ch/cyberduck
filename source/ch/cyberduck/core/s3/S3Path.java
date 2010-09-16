@@ -633,26 +633,27 @@ public class S3Path extends CloudPath {
 
             final S3Object[] objects = chunk.getObjects();
             for(S3Object object : objects) {
-                final S3Path path = (S3Path) PathFactory.createPath(this.getSession(), bucket,
+                final S3Path p = (S3Path) PathFactory.createPath(this.getSession(), bucket,
                         object.getKey(), Path.FILE_TYPE);
-                path.setParent(this);
-                if(path.getAbsolute().equals(this.getAbsolute())) {
+                p.setParent(this);
+                if(!p.isChild(this)) {
                     // #Workaround for key that end with /. Refer to #3347.
+                    log.warn("Skipping object " + object.getKey());
                     continue;
                 }
-                path.attributes().setSize(object.getContentLength());
-                path.attributes().setModificationDate(object.getLastModifiedDate().getTime());
-                path.attributes().setOwner(this.getContainer().attributes().getOwner());
+                p.attributes().setSize(object.getContentLength());
+                p.attributes().setModificationDate(object.getLastModifiedDate().getTime());
+                p.attributes().setOwner(this.getContainer().attributes().getOwner());
                 if(0 == object.getContentLength()) {
-                    final S3Object details = path.getDetails();
+                    final S3Object details = p.getDetails();
                     if(Mimetypes.MIMETYPE_JETS3T_DIRECTORY.equals(details.getContentType())) {
-                        path.attributes().setType(Path.DIRECTORY_TYPE);
-                        path.attributes().setPlaceholder(true);
+                        p.attributes().setType(Path.DIRECTORY_TYPE);
+                        p.attributes().setPlaceholder(true);
                     }
                 }
-                path.attributes().setStorageClass(object.getStorageClass());
-                path.attributes().setVersionId(object.getVersionId());
-                children.add(path);
+                p.attributes().setStorageClass(object.getStorageClass());
+                p.attributes().setVersionId(object.getVersionId());
+                children.add(p);
             }
             final String[] prefixes = chunk.getCommonPrefixes();
             for(String common : prefixes) {
