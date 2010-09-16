@@ -18,17 +18,18 @@ package ch.cyberduck.ui.cocoa.threading;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.threading.DefaultMainAction;
+import ch.cyberduck.core.threading.ControllerMainAction;
 import ch.cyberduck.ui.cocoa.WindowController;
 
 /**
  * @version $Id$
  */
-public abstract class WindowMainAction extends DefaultMainAction {
+public abstract class WindowMainAction extends ControllerMainAction {
 
     private WindowController controller;
 
     public WindowMainAction(WindowController c) {
+        super(c);
         this.controller = c;
     }
 

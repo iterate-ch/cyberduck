@@ -26,4 +26,16 @@ public abstract class DefaultMainAction extends MainAction {
     public boolean isValid() {
         return true;
     }
+
+    private Object lock = new Object();
+
+    /**
+     * No synchronization by default.
+     *
+     * @return
+     */
+    @Override
+    public Object lock() {
+        return lock;
+    }
 }

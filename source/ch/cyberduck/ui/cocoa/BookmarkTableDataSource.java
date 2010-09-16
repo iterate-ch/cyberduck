@@ -33,6 +33,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.foundation.NSString;
 import ch.cyberduck.ui.cocoa.foundation.NSURL;
 
+import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 import org.apache.commons.lang.CharUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -83,7 +84,7 @@ public class BookmarkTableDataSource extends ListDataSource {
 
             public void collectionItemRemoved(Host item) {
                 cache.clear();
-                invoke(new DefaultMainAction() {
+                invoke(new WindowMainAction(controller) {
                     public void run() {
                         controller.reloadBookmarks();
                     }
@@ -98,7 +99,7 @@ public class BookmarkTableDataSource extends ListDataSource {
                 // Delay to 1 second. When typing changes we don't have to save every iteration.
                 delayed = getTimerPool().schedule(new Runnable() {
                     public void run() {
-                        controller.invoke(new DefaultMainAction() {
+                        controller.invoke(new WindowMainAction(controller) {
                             public void run() {
                                 controller.reloadBookmarks();
                                 source.save();

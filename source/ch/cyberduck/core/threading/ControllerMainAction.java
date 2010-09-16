@@ -1,7 +1,7 @@
 package ch.cyberduck.core.threading;
 
 /*
- *  Copyright (c) 2007 David Kocher. All rights reserved.
+ *  Copyright (c) 2010 David Kocher. All rights reserved.
  *  http://cyberduck.ch/
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -18,18 +18,29 @@ package ch.cyberduck.core.threading;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.ui.AbstractController;
+
 /**
- * Action to be run on the main thread
- *
  * @version $Id$
  */
-public abstract class MainAction implements Runnable {
+public abstract class ControllerMainAction extends MainAction {
+
+    private AbstractController controller;
+
+    public ControllerMainAction(AbstractController c) {
+        this.controller = c;
+    }
 
     /**
-     * @return False if the action should not be run anymore because the parent container has
-     * been invalidated in the mean time.
+     * @return True if hte window is still on screen
      */
-    public abstract boolean isValid();
+    @Override
+    public boolean isValid() {
+        return true;
+    }
 
-    public abstract Object lock();    
+    @Override
+    public Object lock() {
+        return controller;
+    }
 }

@@ -18,10 +18,7 @@ package ch.cyberduck.ui;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.threading.BackgroundAction;
-import ch.cyberduck.core.threading.DefaultMainAction;
-import ch.cyberduck.core.threading.MainAction;
-import ch.cyberduck.core.threading.ThreadPool;
+import ch.cyberduck.core.threading.*;
 
 import org.apache.log4j.Logger;
 
@@ -38,7 +35,7 @@ public abstract class AbstractController implements Controller {
      * @param runnable The action to execute
      */
     public void invoke(MainAction runnable) {
-        this.invoke(runnable, true);
+        this.invoke(runnable, false);
     }
 
     /**
@@ -78,7 +75,7 @@ public abstract class AbstractController implements Controller {
                         // Increase the run counter
                         runnable.finish();
                         // Invoke the cleanup on the main thread to let the action synchronize the user interface
-                        invoke(new DefaultMainAction() {
+                        invoke(new ControllerMainAction(AbstractController.this) {
                             public void run() {
                                 runnable.cleanup();
                             }
