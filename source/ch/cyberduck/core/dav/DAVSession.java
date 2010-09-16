@@ -90,7 +90,7 @@ public class DAVSession extends HTTPSession implements SSLSession {
                 trustManager = new IgnoreX509TrustManager();
             }
             else {
-                trustManager = new KeychainX509TrustManager(host.getHostname());
+                trustManager = new KeychainX509TrustManager(host.getHostname(true));
             }
         }
         return trustManager;

@@ -239,12 +239,14 @@ JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_Keychain_isTrustedNative(JNIEn
 	SecPolicySearchRef searchRef = NULL;
 	err = SecPolicySearchCreate(CSSM_CERT_X_509v3, &CSSMOID_APPLE_TP_SSL, NULL, &searchRef);
 	if(err != noErr) {
+        NSLog(@"Error creating policy");
 		return FALSE;
 	}
 	// Retrieves a policy object for the next policy matching specified search criteria.
 	SecPolicyRef policyRef = NULL;
 	err = SecPolicySearchCopyNext(searchRef, &policyRef);
 	if(err != noErr) {
+        NSLog(@"Error retrieving policy");
 		if(searchRef) {
 			CFRelease(searchRef);
 		}
@@ -257,10 +259,16 @@ JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_Keychain_isTrustedNative(JNIEn
 	    return FALSE;
 	}
 	NSString *hostname = convertToNSString(env, jHostname);
+	// Returns NULL if the receiver cannot be losslessly converted to encoding.
+	char *cHostname = [hostname cStringUsingEncoding:NSASCIIStringEncoding];
+	if(!cHostname) {
+        NSLog(@"Error adding hostname to SSL options");
+	    return FALSE;
+	}
 	CSSM_APPLE_TP_SSL_OPTIONS ssloptions = {
 		.Version = CSSM_APPLE_TP_SSL_OPTS_VERSION,
-		.ServerNameLen = [hostname length],
-		.ServerName = [hostname cStringUsingEncoding:NSASCIIStringEncoding],
+		.ServerNameLen = strlen(cHostname),
+		.ServerName = cHostname,
 		.Flags = 0
 	};
 	CSSM_DATA customCssmData = {
@@ -269,6 +277,7 @@ JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_Keychain_isTrustedNative(JNIEn
 	};
 	err = SecPolicySetValue(policyRef, &customCssmData);
 	if(err != noErr) {
+        NSLog(@"Error setting policy for evaluating trust");
 		if(policyRef) {
 			CFRelease(policyRef);
 		}
@@ -278,6 +287,7 @@ JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_Keychain_isTrustedNative(JNIEn
 	SecTrustRef trustRef = NULL;
 	err = SecTrustCreateWithCertificates((CFArrayRef)certificates, policyRef, &trustRef);
 	if(err != noErr) {
+        NSLog(@"Error creating trust");
 		if(policyRef) {
 			CFRelease(policyRef);
 		}
@@ -286,6 +296,7 @@ JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_Keychain_isTrustedNative(JNIEn
 	SecTrustResultType trustResult;
 	err = SecTrustEvaluate(trustRef, &trustResult);
 	if(err != noErr) {
+        NSLog(@"Error evaluating trust");
 		if(policyRef) {
 			CFRelease(policyRef);
 		}
