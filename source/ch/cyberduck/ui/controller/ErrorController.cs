@@ -16,18 +16,8 @@
 // yves@cyberduck.ch
 // 
 using System.Collections.Generic;
-using ch.cyberduck.core.i18n;
+using ch.cyberduck.core;
 using ch.cyberduck.core.threading;
-using ch.ethz.ssh2.sftp;
-using com.enterprisedt.net.ftp;
-using com.rackspacecloud.client.cloudfiles;
-using java.io;
-using java.lang;
-using java.net;
-using org.apache.commons.httpclient;
-using org.apache.commons.lang;
-using org.jets3t.service;
-using Exception = System.Exception;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -41,7 +31,7 @@ namespace Ch.Cyberduck.Ui.Controller
             View.ModelErrorMessageGetter =
                 delegate(object rowObject)
                     {
-                        BackgroundException failure = (BackgroundException)rowObject;
+                        BackgroundException failure = (BackgroundException) rowObject;
                         return GetReadableTitle(failure) + ": " + failure.getMessage();
                     };
 
@@ -60,7 +50,7 @@ namespace Ch.Cyberduck.Ui.Controller
             bool log = !string.IsNullOrEmpty(transcript);
             View.Transcript = transcript;
             View.TranscriptVisible = log &&
-                                     ch.cyberduck.core.Preferences.instance().getBoolean("alert.toggle.transcript");
+                                     Preferences.instance().getBoolean("alert.toggle.transcript");
             View.TranscriptEnabled = log;
             View.ToggleTranscriptEvent += View_ToggleTranscriptEvent;
         }
@@ -68,7 +58,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private void View_ToggleTranscriptEvent()
         {
             View.TranscriptVisible = !View.TranscriptVisible;
-            ch.cyberduck.core.Preferences.instance().setProperty("alert.toggle.transcript", View.TranscriptVisible);
+            Preferences.instance().setProperty("alert.toggle.transcript", View.TranscriptVisible);
         }
 
         private string GetReadableTitle(BackgroundException e)

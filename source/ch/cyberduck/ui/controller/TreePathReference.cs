@@ -63,13 +63,13 @@ namespace Ch.Cyberduck.Ui.Controller
             //-> equality checks for getOwner/getGroup would break sync browser            
 
             return base.equals(other) &&
-                       _reference.attributes().Equals(((TreePathReference) other)._reference.attributes());
+                   _reference.attributes().Equals(((TreePathReference) other)._reference.attributes());
         }
 
         private class Factory : PathReferenceFactory
         {
             protected override object create()
-            {                
+            {
                 throw new NotImplementedException("Please provide a parameter");
             }
 

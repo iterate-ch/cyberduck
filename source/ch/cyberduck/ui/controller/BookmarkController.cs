@@ -21,13 +21,11 @@ using System.Drawing;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading;
-using ch.cyberduck;
 using ch.cyberduck.core;
 using Ch.Cyberduck.Core;
-using Ch.Cyberduck.Ui.Winforms.Controls;
-using Ch.Cyberduck.Ui.Winforms.Serializer;
 using ch.cyberduck.core.i18n;
 using ch.cyberduck.core.threading;
+using Ch.Cyberduck.Ui.Winforms.Controls;
 using com.enterprisedt.net.ftp;
 using java.lang;
 using org.apache.commons.lang;
@@ -74,7 +72,7 @@ namespace Ch.Cyberduck.Ui.Controller
             _ticklerFavicon = new Timer(OnFavicon, null, Timeout.Infinite, Timeout.Infinite);
 
             View.ToggleOptions += View_ToggleOptions;
-            View.OptionsVisible = ch.cyberduck.core.Preferences.instance().getBoolean("bookmark.toggle.options");
+            View.OptionsVisible = Preferences.instance().getBoolean("bookmark.toggle.options");
 
             Init();
         }
@@ -106,7 +104,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             _ticklerRechability.Change(Timeout.Infinite, Timeout.Infinite);
             _ticklerFavicon.Change(Timeout.Infinite, Timeout.Infinite);
-            ch.cyberduck.core.Preferences.instance().setProperty("bookmark.toggle.options", View.OptionsVisible);
+            Preferences.instance().setProperty("bookmark.toggle.options", View.OptionsVisible);
             BookmarkCollection.defaultCollection().removeListener(_bookmarkCollectionListener);
             base.Invalidate();
         }
@@ -250,7 +248,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void UpdateFavicon()
         {
-            if (ch.cyberduck.core.Preferences.instance().getBoolean("bookmark.favicon.download"))
+            if (Preferences.instance().getBoolean("bookmark.favicon.download"))
             {
                 // Delay to 2 second. When typing changes we don't have to check the reachbility for each stroke.
                 _ticklerFavicon.Change(2000, Timeout.Infinite);
@@ -307,7 +305,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_ChangedProtocolEvent()
         {
-            Log.debug("protocolSelectionChanged");                      
+            Log.debug("protocolSelectionChanged");
             Protocol selected = View.SelectedProtocol;
             _host.setPort(selected.getDefaultPort());
             if (_host.getProtocol().getDefaultHostname().Equals(_host.getHostname()))
@@ -320,7 +318,7 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             if (selected.equals(Protocol.IDISK))
             {
-                String member = ch.cyberduck.core.Preferences.instance().getProperty("iToolsMember");
+                String member = Preferences.instance().getProperty("iToolsMember");
                 if (StringUtils.isNotEmpty(member))
                 {
                     // Account name configured in System Preferences
@@ -430,14 +428,14 @@ namespace Ch.Cyberduck.Ui.Controller
             if (View.AnonymousChecked)
             {
                 View.UsernameEnabled = false;
-                View.Username = ch.cyberduck.core.Preferences.instance().getProperty("connection.login.anon.name");
+                View.Username = Preferences.instance().getProperty("connection.login.anon.name");
                 View.PasswordEnabled = false;
-                View.Password = ch.cyberduck.core.Preferences.instance().getProperty("connection.login.anon.pass");
+                View.Password = Preferences.instance().getProperty("connection.login.anon.pass");
             }
             else
             {
                 View.UsernameEnabled = true;
-                View.Username = ch.cyberduck.core.Preferences.instance().getProperty("connection.login.name");
+                View.Username = Preferences.instance().getProperty("connection.login.name");
                 View.PasswordEnabled = true;
                 View.Password = String.Empty;
             }
@@ -446,7 +444,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public void ReadPasswordFromKeychain()
         {
-            if (ch.cyberduck.core.Preferences.instance().getBoolean("connection.login.useKeychain"))
+            if (Preferences.instance().getBoolean("connection.login.useKeychain"))
             {
                 if (string.IsNullOrEmpty(View.Hostname))
                 {
@@ -603,7 +601,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
                 else
                 {
-                    if (ch.cyberduck.core.Preferences.instance().getBoolean("ftp.timezone.auto"))
+                    if (Preferences.instance().getBoolean("ftp.timezone.auto"))
                     {
                         View.SelectedTimezone = Auto;
                     }
@@ -611,7 +609,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     {
                         View.SelectedTimezone =
                             TimeZone.getTimeZone(
-                                ch.cyberduck.core.Preferences.instance().getProperty("ftp.timezone.default")).getID();
+                                Preferences.instance().getProperty("ftp.timezone.default")).getID();
                     }
                 }
             }

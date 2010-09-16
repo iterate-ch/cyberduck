@@ -319,16 +319,17 @@ namespace Ch.Cyberduck.Core
             }
 
             if (Preferences.instance().getBoolean("browser.serialize"))
-            {
-                _bc.Background(() => _sessions.load(), delegate
-                                                           {
-                                                               foreach (
-                                                                   Host host in
-                                                                       _sessions)
-                                                               {
-                                                                   NewBrowser().Mount(host);
-                                                               }
-                                                           });
+            {                
+                _bc.Background(delegate { _sessions.load(); },
+                               delegate
+                                   {
+                                       foreach (
+                                           Host host in
+                                               _sessions)
+                                       {
+                                           NewBrowser().Mount(host);
+                                       }
+                                   });
             }
             //All collections has been already loaded in the main thread, no BackgroundAction as in
             //the java version. There is no measurable performance gain to use a BackgroundAction. At

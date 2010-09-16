@@ -15,7 +15,6 @@
 // Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
 // 
-using System;
 using System.Collections.Generic;
 using ch.cyberduck.core;
 using Ch.Cyberduck.Ui.Controller;
