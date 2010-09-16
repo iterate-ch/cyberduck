@@ -185,22 +185,25 @@ public class FTPControlSocket {
      */
     public void logout() {
         try {
-            if(writer != null)
+            if(writer != null) {
                 writer.close();
+            }
         }
         catch(IOException e) {
             ; //ignore
         }
         try {
-            if(reader != null)
+            if(reader != null) {
                 reader.close();
+            }
         }
         catch(IOException e) {
             ; //ignore
         }
         try {
-            if(controlSocket != null)
+            if(controlSocket != null) {
                 controlSocket.close();
+            }
         }
         catch(IOException e) {
             ; //ignore
@@ -294,7 +297,7 @@ public class FTPControlSocket {
      * Sets the data port on the server, i.e. sends a PORT
      * command
      *
-     * @param host   the local host the server will connect to
+     * @param host the local host the server will connect to
      * @param port the port number to connect to
      */
     protected void setDataPort(InetAddress host, short port)
@@ -321,7 +324,6 @@ public class FTPControlSocket {
     }
 
     /**
-     *
      * @param host
      * @param port
      * @throws IOException
@@ -362,56 +364,30 @@ public class FTPControlSocket {
     }
 
     /**
+     * Tells the server to listen for a connection attempt rather than initiating it
      *
      * @return
      * @throws IOException
+     * @throws FTPException
      */
     protected FTPDataSocket createDataSocketPASV() throws IOException {
-        // PASSIVE command - tells the server to listen for
-        // a connection attempt rather than initiating it
         FTPReply replyObj = sendCommand("PASV");
         validateReply(replyObj, "227");
         String reply = replyObj.getReplyText();
 
-        // The reply to PASV is in the form:
-        // 227 Entering Passive Mode (h1,h2,h3,h4,p1,p2).
-        // where h1..h4 are the IP address to connect and
-        // p1,p2 the port number
-        // Example:
-        // 227 Entering Passive Mode (128,3,122,1,15,87).
-        // NOTE: PASV command in IBM/Mainframe returns the string
-        // 227 Entering Passive Mode 128,3,122,1,15,87	(missing
-        // brackets)
-        //
-        // Improvement: The first digit found after the reply code
-        // is considered start of IP. End of IP can be EOL or random
-        // characters. Should take care of all PASV reponse lines,
-        // right?
-
-        int parts[] = this.parsePASVResponse(reply);
-
-        // assemble the IP address
-        // we try connecting, so we don't bother checking digits etc
-        String ipAddress = parts[0] + "." + parts[1] + "." +
-                parts[2] + "." + parts[3];
-
-        // assemble the port number
-        int port = (parts[4] << 8) + parts[5];
-
+        int port = this.parsePASVResponse(reply);
         try {
-            if(InetAddress.getByName(ipAddress).isSiteLocalAddress()) {
-                // Do not trust a local address; may be a misconfigured router
-                return new FTPPassiveDataSocket(SocketFactory.getDefault().createSocket(controlSocket.getInetAddress(), port));
-            }
-            return new FTPPassiveDataSocket(SocketFactory.getDefault().createSocket(ipAddress, port));
+            // Connect to port number returned by PASV
+            return new FTPPassiveDataSocket(
+                    SocketFactory.getDefault().createSocket(controlSocket.getInetAddress().getHostAddress(), port));
         }
-        catch (ConnectException e) {
-            // See #15353
+        catch(ConnectException e) {
+            log.error("Failed to open socket to " + controlSocket.getInetAddress().getHostAddress() + ":" + port);
             throw new FTPException(e.getMessage());
-		}
+        }
     }
 
-    protected int[] parsePASVResponse(String reply) throws FTPException {
+    protected int parsePASVResponse(String reply) throws FTPException {
         // extract the IP data string from between the brackets
         int startIP = reply.indexOf('(');
         int endIP = reply.indexOf(')');
@@ -419,19 +395,22 @@ public class FTPControlSocket {
         // if didn't find start bracket, figure out where it should have been
         if(startIP < 0) {
             startIP = 0;
-            while(startIP < reply.length() && !Character.isDigit(reply.charAt(startIP)))
+            while(startIP < reply.length() && !Character.isDigit(reply.charAt(startIP))) {
                 startIP++;
+            }
             startIP--; // go back so this is where the '(' should be
         }
 
         // if didn't find end bracket, set to end of reply
         if(endIP < 0) {
             endIP = reply.length() - 1;
-            while(endIP > 0 && !Character.isDigit(reply.charAt(endIP)))
+            while(endIP > 0 && !Character.isDigit(reply.charAt(endIP))) {
                 endIP--;
+            }
             endIP++; // go forward so this is where the ')' should be
-            if(endIP >= reply.length())
+            if(endIP >= reply.length()) {
                 reply += ")";
+            }
         }
 
         String ipData = reply.substring(startIP + 1, endIP).trim();
@@ -445,8 +424,9 @@ public class FTPControlSocket {
         for(int i = 0; i < len && partCount <= 6; i++) {
 
             char ch = ipData.charAt(i);
-            if(Character.isDigit(ch))
+            if(Character.isDigit(ch)) {
                 buf.append(ch);
+            }
             else if(ch != ',' && ch != ' ') {
                 throw new FTPException("Malformed PASV reply: " + reply);
             }
@@ -462,7 +442,9 @@ public class FTPControlSocket {
                 }
             }
         }
-        return parts;
+
+        // assemble the port number
+        return (parts[4] << 8) + parts[5];
     }
 
     /**
@@ -482,7 +464,6 @@ public class FTPControlSocket {
     }
 
     /**
-     *
      * @param reply
      * @return Port number to connect
      */
@@ -541,21 +522,25 @@ public class FTPControlSocket {
             throws IOException {
 
         String line = reader.readLine();
-        while(line != null && line.length() == 0)
+        while(line != null && line.length() == 0) {
             line = reader.readLine();
+        }
 
-        if(line == null)
+        if(line == null) {
             throw new FTPNullReplyException();
+        }
 
         this.log(line, false);
 
-        if(line.length() < 3)
+        if(line.length() < 3) {
             throw new IOException("Short reply received");
+        }
 
         String replyCode = line.substring(0, 3);
         StringBuilder reply = new StringBuilder("");
-        if(line.length() > 3)
+        if(line.length() > 3) {
             reply.append(line.substring(4));
+        }
 
         Vector dataLines = null;
 
@@ -566,11 +551,13 @@ public class FTPControlSocket {
             boolean complete = false;
             while(!complete) {
                 line = reader.readLine();
-                if(line == null)
+                if(line == null) {
                     throw new FTPNullReplyException();
+                }
 
-                if(line.length() == 0)
+                if(line.length() == 0) {
                     continue;
+                }
 
                 log(line, false);
 
@@ -612,8 +599,9 @@ public class FTPControlSocket {
 
         FTPReply replyObj = new FTPReply(reply);
 
-        if(validateReplyCode(replyObj, expectedReplyCode))
+        if(validateReplyCode(replyObj, expectedReplyCode)) {
             return replyObj;
+        }
 
         // if unexpected reply, throw an exception
         throw new FTPException(replyObj);
@@ -651,9 +639,11 @@ public class FTPControlSocket {
     public FTPReply validateReply(FTPReply reply, String[] expectedReplyCodes)
             throws FTPException {
 
-        for(int i = 0; i < expectedReplyCodes.length; i++)
-            if(validateReplyCode(reply, expectedReplyCodes[i]))
+        for(int i = 0; i < expectedReplyCodes.length; i++) {
+            if(validateReplyCode(reply, expectedReplyCodes[i])) {
                 return reply;
+            }
+        }
 
         // got this far, not recognised
         throw new FTPException(reply);
@@ -671,8 +661,9 @@ public class FTPControlSocket {
      */
     public FTPReply validateReply(FTPReply reply, String expectedReplyCode)
             throws FTPException {
-        if(validateReplyCode(reply, expectedReplyCode))
+        if(validateReplyCode(reply, expectedReplyCode)) {
             return reply;
+        }
 
         // got this far, not recognised
         throw new FTPException(reply);
@@ -702,8 +693,9 @@ public class FTPControlSocket {
      * @param msg message to log
      */
     protected void log(String msg, boolean command) {
-        if(msg.startsWith("PASS"))
+        if(msg.startsWith("PASS")) {
             msg = "PASS ********";
+        }
         if(listener != null) {
             if(command) {
                 listener.logCommand(msg);

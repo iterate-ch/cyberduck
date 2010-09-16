@@ -97,57 +97,33 @@ public class FTPSControlSocket extends FTPControlSocket {
         return super.createDataSocketActive();
     }
 
+    /**
+     * Tells the server to listen for a connection attempt rather than initiating it
+     * @return
+     * @throws IOException
+     * @throws FTPException
+     */
     @Override
     protected FTPDataSocket createDataSocketPASV() throws IOException, FTPException {
         if(secure) {
-            // PASSIVE command - tells the server to listen for
-            // a connection attempt rather than initiating it
             FTPReply replyObj = sendCommand("PASV");
             validateReply(replyObj, "227");
             String reply = replyObj.getReplyText();
 
-            // The reply to PASV is in the form:
-            // 227 Entering Passive Mode (h1,h2,h3,h4,p1,p2).
-            // where h1..h4 are the IP address to connect and
-            // p1,p2 the port number
-            // Example:
-            // 227 Entering Passive Mode (128,3,122,1,15,87).
-            // NOTE: PASV command in IBM/Mainframe returns the string
-            // 227 Entering Passive Mode 128,3,122,1,15,87	(missing
-            // brackets)
-            //
-            // Improvement: The first digit found after the reply code
-            // is considered start of IP. End of IP can be EOL or random
-            // characters. Should take care of all PASV reponse lines,
-            // right?
-
-            int parts[] = this.parsePASVResponse(reply);
-
-            // assemble the IP address
-            // we try connecting, so we don't bother checking digits etc
-            String ipAddress = parts[0] + "." + parts[1] + "." +
-                    parts[2] + "." + parts[3];
-
-            // assemble the port number
-            int port = (parts[4] << 8) + parts[5];
-
+            int port = this.parsePASVResponse(reply);
             try {
-                if(InetAddress.getByName(ipAddress).isSiteLocalAddress()) {
-                    // Do not trust a local address; may be a misconfigured router
-                    return new FTPPassiveDataSocket(
-                            factory.createSocket(controlSocket.getInetAddress().getHostAddress(), port)
-                    );
-                }
-
-                // create the socket
-                return new FTPPassiveDataSocket(factory.createSocket(ipAddress, port));
+                // Connect to port number returned by PASV
+                return new FTPPassiveDataSocket(
+                        factory.createSocket(controlSocket.getInetAddress().getHostAddress(), port));
             }
             catch(ConnectException e) {
-                // See #15353
+                log.error("Failed to open socket to " + controlSocket.getInetAddress().getHostAddress() + ":" + port);
                 throw new FTPException(e.getMessage());
             }
         }
-        return super.createDataSocketPASV();
+        else {
+            return super.createDataSocketPASV();
+        }
     }
 
     @Override
@@ -162,6 +138,8 @@ public class FTPSControlSocket extends FTPControlSocket {
             return new FTPPassiveDataSocket(
                     factory.createSocket(controlSocket.getInetAddress().getHostAddress(), port));
         }
-        return super.createDataSocketEPSV();
+        else {
+            return super.createDataSocketEPSV();
+        }
     }
 }
