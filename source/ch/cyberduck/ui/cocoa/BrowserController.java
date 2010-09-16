@@ -2969,13 +2969,15 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
     @Action
     public void cut(final ID sender) {
+        PathPasteboard pasteboard = PathPasteboard.getPasteboard(this.getSession());
+        pasteboard.clear();
         for(Path selected : this.getSelectedPaths()) {
             // Writing data for private use when the item gets dragged to the transfer queue.
-            PathPasteboard.getPasteboard(this.getSession()).add(selected);
+            pasteboard.add(selected);
         }
-        final NSPasteboard pasteboard = NSPasteboard.generalPasteboard();
-        pasteboard.declareTypes(NSArray.arrayWithObject(NSString.stringWithString(NSPasteboard.StringPboardType)), null);
-        if(!pasteboard.setStringForType(this.getSelectedPath().getAbsolute(), NSPasteboard.StringPboardType)) {
+        final NSPasteboard clipboard = NSPasteboard.generalPasteboard();
+        clipboard.declareTypes(NSArray.arrayWithObject(NSString.stringWithString(NSPasteboard.StringPboardType)), null);
+        if(!clipboard.setStringForType(this.getSelectedPath().getAbsolute(), NSPasteboard.StringPboardType)) {
             log.error("Error writing absolute path of selected item to NSPasteboard.StringPboardType.");
         }
     }
