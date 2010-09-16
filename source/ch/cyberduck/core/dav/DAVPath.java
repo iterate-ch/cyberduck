@@ -166,14 +166,17 @@ public class DAVPath extends Path {
             WebdavResource[] resources = this.getSession().getClient().listWebdavResources();
 
             for(final WebdavResource resource : resources) {
-                boolean collection = false;
-                if(null != resource.getResourceType()) {
-                    collection = resource.getResourceType().isCollection();
+                if(null == resource.getResourceType()) {
+                    log.warn("Skipping unknown resource type:" + resource);
+                    continue;
                 }
                 Path p = PathFactory.createPath(this.getSession(), resource.getPath(),
-                        collection ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
+                        resource.getResourceType().isCollection() ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
                 p.setParent(this);
-
+                if(!p.isChild(this)) {
+                    log.warn("Skipping invalid resource:" + resource);
+                    continue;
+                }
                 p.attributes().setOwner(resource.getOwner());
                 if(resource.getGetLastModified() > 0) {
                     p.attributes().setModificationDate(resource.getGetLastModified());

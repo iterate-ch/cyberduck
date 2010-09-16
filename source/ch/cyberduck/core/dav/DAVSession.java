@@ -144,10 +144,6 @@ public class DAVSession extends HTTPSession implements SSLSession {
 
         WebdavResource.setDefaultAction(WebdavResource.BASIC);
 
-        if(null == this.getClient().getResourceType() || !this.getClient().getResourceType().isCollection()) {
-            throw new IOException("Listing directory failed");
-        }
-
         this.fireConnectionDidOpenEvent();
     }
 
