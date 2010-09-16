@@ -530,6 +530,9 @@ public abstract class Session implements TranscriptListener {
             listener.connectionWillOpen();
         }
 
+        // Update status flag
+        opening = true;
+
         // Configuring proxy if any
         ProxyFactory.instance().configure(host);
 
@@ -565,6 +568,9 @@ public abstract class Session implements TranscriptListener {
 
         // Update last accessed timestamp
         host.setTimestamp(new Date());
+
+        // Update status flag
+        opening = false;
     }
 
     /**
