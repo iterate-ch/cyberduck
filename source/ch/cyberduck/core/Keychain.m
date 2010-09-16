@@ -206,6 +206,7 @@ NSArray* CreateCertificatesFromData(JNIEnv *env, jobjectArray jCertificates) {
         jbyteArray jCertificate = (jbyteArray)(*env)->GetObjectArrayElement(env, jCertificates, i);
 		SecCertificateRef ref = CreateCertificateFromData(env, jCertificate);
 		if(NULL == ref) {
+            NSLog(@"Error creating certificate from ASN.1 DER");
 			continue;
 		}
         [result addObject:(id)ref];
@@ -252,6 +253,9 @@ JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_Keychain_isTrustedNative(JNIEn
 	if(searchRef) {
 		CFRelease(searchRef);
 	}
+	if(!policyRef) {
+	    return FALSE;
+	}
 	NSString *hostname = convertToNSString(env, jHostname);
 	CSSM_APPLE_TP_SSL_OPTIONS ssloptions = {
 		.Version = CSSM_APPLE_TP_SSL_OPTS_VERSION,
@@ -264,6 +268,12 @@ JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_Keychain_isTrustedNative(JNIEn
 		.Data = (uint8*)&ssloptions
 	};
 	err = SecPolicySetValue(policyRef, &customCssmData);
+	if(err != noErr) {
+		if(policyRef) {
+			CFRelease(policyRef);
+		}
+		return FALSE;
+	}
 	// Creates a trust management object based on certificates and policies.
 	SecTrustRef trustRef = NULL;
 	err = SecTrustCreateWithCertificates((CFArrayRef)certificates, policyRef, &trustRef);
