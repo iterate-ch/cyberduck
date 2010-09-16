@@ -32,6 +32,8 @@ public abstract class AbstractController implements Controller {
     private static Logger log = Logger.getLogger(AbstractController.class);
 
     /**
+     * Does not wait for main action to return.
+     *
      * @param runnable The action to execute
      */
     public void invoke(MainAction runnable) {
