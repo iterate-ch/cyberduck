@@ -219,13 +219,15 @@ public class MainController extends BundleController implements NSApplication.De
         this.urlMenu = urlMenu;
         this.urlMenuDelegate = new CopyURLMenuDelegate() {
             @Override
-            protected Path getSelectedPath() {
+            protected List<Path> getSelected() {
                 final List<BrowserController> browsers = MainController.getBrowsers();
                 for(BrowserController controller : browsers) {
                     if(controller.window().isKeyWindow()) {
-                        Path selected = controller.getSelectedPath();
-                        if(null == selected) {
-                            return controller.workdir();
+                        List<Path> selected = controller.getSelectedPaths();
+                        if(selected.isEmpty()) {
+                            if(controller.isMounted()) {
+                                selected.add(controller.workdir());
+                            }
                         }
                         return selected;
                     }
@@ -244,13 +246,15 @@ public class MainController extends BundleController implements NSApplication.De
         this.openUrlMenu = openUrlMenu;
         this.openUrlMenuDelegate = new OpenURLMenuDelegate() {
             @Override
-            protected Path getSelectedPath() {
+            protected List<Path> getSelected() {
                 final List<BrowserController> browsers = MainController.getBrowsers();
                 for(BrowserController controller : browsers) {
                     if(controller.window().isKeyWindow()) {
-                        Path selected = controller.getSelectedPath();
-                        if(null == selected) {
-                            return controller.workdir();
+                        List<Path> selected = controller.getSelectedPaths();
+                        if(selected.isEmpty()) {
+                            if(controller.isMounted()) {
+                                selected.add(controller.workdir());
+                            }
                         }
                         return selected;
                     }

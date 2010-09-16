@@ -59,7 +59,7 @@ public abstract class URLMenuDelegate extends AbstractMenuDelegate {
     /**
      * @return Path selected in the browser or current working directory.
      */
-    protected abstract Path getSelectedPath();
+    protected abstract List<Path> getSelected();
 
     /**
      * @return
@@ -74,34 +74,34 @@ public abstract class URLMenuDelegate extends AbstractMenuDelegate {
     protected abstract String getLabel();
 
     public NSInteger numberOfItemsInMenu(NSMenu menu) {
-        Path path = this.getSelectedPath();
-        if(null == path) {
+        List<Path> path = this.getSelected();
+        if(path.isEmpty()) {
             return new NSInteger(1);
         }
         return new NSInteger(this.getURLs(path).size() * 2);
     }
 
-    protected List<AbstractPath.DescriptiveUrl> getURLs(Path file) {
-        return file.getURLs();
+    protected List<AbstractPath.DescriptiveUrl> getURLs(List<Path> selected) {
+        return selected.iterator().next().getURLs();
     }
 
     @Override
     public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, NSInteger index, boolean cancel) {
         item.setTarget(this.id());
-        Path path = this.getSelectedPath();
+        List<Path> selected = this.getSelected();
         if(0 == index.intValue()) {
             this.setShortcut(item, this.getKeyEquivalent(), this.getModifierMask());
         }
         else {
             this.clearShortcut(item);
         }
-        if(null == path) {
+        if(selected.isEmpty()) {
             item.setTitle(MessageFormat.format(Locale.localizedString("{0} URL"), Locale.localizedString("Unknown")));
             item.setAction(null);
             item.setImage(null);
         }
         else {
-            AbstractPath.DescriptiveUrl url = this.getURLs(path).get(index.intValue() / 2);
+            AbstractPath.DescriptiveUrl url = this.getURLs(selected).get(index.intValue() / 2);
             item.setRepresentedObject(url.getUrl());
             boolean label = index.intValue() % 2 == 0;
             if(label) {
@@ -128,7 +128,7 @@ public abstract class URLMenuDelegate extends AbstractMenuDelegate {
 
     @Override
     public boolean validateMenuItem(NSMenuItem item) {
-        if(null == this.getSelectedPath()) {
+        if(this.getSelected().isEmpty()) {
             return false;
         }
         final Selector action = item.action();

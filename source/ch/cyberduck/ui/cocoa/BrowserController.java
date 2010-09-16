@@ -594,10 +594,12 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         this.urlMenu = urlMenu;
         this.urlMenuDelegate = new CopyURLMenuDelegate() {
             @Override
-            protected Path getSelectedPath() {
-                Path selected = BrowserController.this.getSelectedPath();
-                if(null == selected) {
-                    return BrowserController.this.workdir();
+            protected List<Path> getSelected() {
+                List<Path> selected = BrowserController.this.getSelectedPaths();
+                if(selected.isEmpty()) {
+                    if(BrowserController.this.isMounted()) {
+                        selected.add(BrowserController.this.workdir());
+                    }
                 }
                 return selected;
             }
@@ -613,10 +615,12 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         this.openUrlMenu = openUrlMenu;
         this.openUrlMenuDelegate = new OpenURLMenuDelegate() {
             @Override
-            protected Path getSelectedPath() {
-                Path selected = BrowserController.this.getSelectedPath();
-                if(null == selected) {
-                    return BrowserController.this.workdir();
+            protected List<Path> getSelected() {
+                List<Path> selected = BrowserController.this.getSelectedPaths();
+                if(selected.isEmpty()) {
+                    if(BrowserController.this.isMounted()) {
+                        selected.add(BrowserController.this.workdir());
+                    }
                 }
                 return selected;
             }
@@ -1646,8 +1650,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         // Make sure a new UUID is asssigned for duplicate
         duplicate.setUuid(null);
         this.addBookmark(duplicate);
-        BookmarkController c = BookmarkController.Factory.create(duplicate);
-        c.window().makeKeyAndOrderFront(null);
     }
 
     @Outlet

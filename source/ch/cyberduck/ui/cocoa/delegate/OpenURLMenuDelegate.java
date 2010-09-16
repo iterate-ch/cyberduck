@@ -53,9 +53,15 @@ public abstract class OpenURLMenuDelegate extends URLMenuDelegate {
         return Locale.localizedString("Open");
     }
 
+    /**
+     * Only select URLs with http://
+     *
+     * @param selected
+     * @return
+     */
     @Override
-    protected List<AbstractPath.DescriptiveUrl> getURLs(Path file) {
-        return file.getHttpURLs();
+    protected List<AbstractPath.DescriptiveUrl> getURLs(List<Path> selected) {
+        return selected.iterator().next().getHttpURLs();
     }
 
     @Action
