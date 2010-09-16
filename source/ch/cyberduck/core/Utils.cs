@@ -349,18 +349,21 @@ namespace Ch.Cyberduck.Core
         /// <returns>null if not found</returns>
         private static string GetEditCommand(RegistryKey root)
         {
-            using (var editSk = root.OpenSubKey("shell\\edit\\command"))
+            if (null != root)
             {
-                if (null != editSk)
+                using (var editSk = root.OpenSubKey("shell\\edit\\command"))
                 {
-                    return (string) editSk.GetValue("");
-                }
-
-                using (var openSk = root.OpenSubKey("shell\\open\\command"))
-                {
-                    if (null != openSk)
+                    if (null != editSk)
                     {
-                        return (string) openSk.GetValue("");
+                        return (string) editSk.GetValue("");
+                    }
+
+                    using (var openSk = root.OpenSubKey("shell\\open\\command"))
+                    {
+                        if (null != openSk)
+                        {
+                            return (string) openSk.GetValue("");
+                        }
                     }
                 }
             }
