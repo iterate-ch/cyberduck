@@ -815,18 +815,32 @@ public abstract class Path extends AbstractPath implements Serializable {
         try {
             this.setLocal(local);
             DownloadTransfer download = new DownloadTransfer(this);
+            download.addListener(new TransferAdapter() {
+                @Override
+                public void transferDidEnd() {
+                    Path.this.getSession().message(Locale.localizedString("Download complete", "Growl"));
+                }
+            });
             download.start(new TransferPrompt() {
                 public TransferAction prompt() {
                     return TransferAction.ACTION_OVERWRITE;
                 }
             }, options);
-            ((Path) copy).setLocal(local);
-            UploadTransfer upload = new UploadTransfer(((Path) copy));
-            upload.start(new TransferPrompt() {
-                public TransferAction prompt() {
-                    return TransferAction.ACTION_OVERWRITE;
-                }
-            }, options);
+            if(download.isComplete()) {
+                ((Path) copy).setLocal(local);
+                UploadTransfer upload = new UploadTransfer(((Path) copy));
+                upload.addListener(new TransferAdapter() {
+                    @Override
+                    public void transferDidEnd() {
+                        Path.this.getSession().message(Locale.localizedString("Upload complete", "Growl"));
+                    }
+                });
+                upload.start(new TransferPrompt() {
+                    public TransferAction prompt() {
+                        return TransferAction.ACTION_OVERWRITE;
+                    }
+                }, options);
+            }
         }
         finally {
             local.delete();
