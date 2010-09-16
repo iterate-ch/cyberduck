@@ -157,31 +157,28 @@ public class BrowserOutlineViewModel extends BrowserTableDataSource implements N
             if(null != item) {
                 destination = controller.lookup(new OutlinePathReference(item));
             }
-            if(!PathPasteboard.getPasteboard(controller.getSession()).isEmpty()
-                    || draggingInfo.draggingPasteboard().availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.FilenamesPboardType)) != null) {
-                if(null == destination) {
-                    // Dragging over empty rows
-                    outlineView.setDropItem(null, NSOutlineView.NSOutlineViewDropOnItemIndex);
-                    return super.validateDrop(outlineView, controller.workdir(), row, draggingInfo);
+            if(null == destination) {
+                // Dragging over empty rows
+                outlineView.setDropItem(null, NSOutlineView.NSOutlineViewDropOnItemIndex);
+                return super.validateDrop(outlineView, controller.workdir(), row, draggingInfo);
+            }
+            else {
+                // Dragging over file or folder
+                final int draggingColumn = outlineView.columnAtPoint(draggingInfo.draggingLocation()).intValue();
+                if(0 == draggingColumn && destination.attributes().isDirectory()) {
+                    // Drop target is directory
+                    outlineView.setDropItem(destination.<NSObject>getReference().unique(), NSOutlineView.NSOutlineViewDropOnItemIndex);
+                    return super.validateDrop(outlineView, destination, row, draggingInfo);
                 }
                 else {
-                    // Dragging over file or folder
-                    final int draggingColumn = outlineView.columnAtPoint(draggingInfo.draggingLocation()).intValue();
-                    if(0 == draggingColumn && destination.attributes().isDirectory()) {
-                        // Drop target is directory
-                        outlineView.setDropItem(destination.<NSObject>getReference().unique(), NSOutlineView.NSOutlineViewDropOnItemIndex);
-                        return super.validateDrop(outlineView, destination, row, draggingInfo);
-                    }
-                    else {
-                        for(Path next : PathPasteboard.getPasteboard(controller.getSession())) {
-                            if(destination.equals(next)) {
-                                // Do not allow dragging onto myself. Fix #4320
-                                return NSDraggingInfo.NSDragOperationNone;
-                            }
+                    for(Path next : PathPasteboard.getPasteboard(controller.getSession())) {
+                        if(destination.equals(next)) {
+                            // Do not allow dragging onto myself. Fix #4320
+                            return NSDraggingInfo.NSDragOperationNone;
                         }
-                        outlineView.setDropItem(null, NSOutlineView.NSOutlineViewDropOnItemIndex);
-                        return super.validateDrop(outlineView, controller.workdir(), row, draggingInfo);
                     }
+                    outlineView.setDropItem(null, NSOutlineView.NSOutlineViewDropOnItemIndex);
+                    return super.validateDrop(outlineView, controller.workdir(), row, draggingInfo);
                 }
             }
         }

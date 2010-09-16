@@ -229,8 +229,8 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
      * @see NSDraggingSource
      */
     public boolean ignoreModifierKeysWhileDragging() {
-        // If this method is not implemented or returns false,
-        // the user can tailor the drag operation by holding down a modifier key during the drag.
+        // If this method is not implemented or returns false, the user can tailor the drag operation by
+        // holding down a modifier key during the drag.
         return false;
     }
 
@@ -249,11 +249,31 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
         return new NSUInteger(NSDraggingInfo.NSDragOperationCopy.intValue() | NSDraggingInfo.NSDragOperationDelete.intValue());
     }
 
-    public boolean acceptDrop(NSTableView view, final Path destination, NSDraggingInfo draggingInfo) {
+    /**
+     * @param view
+     * @param destination A directory or null to mount an URL
+     * @param info
+     * @return
+     */
+    public boolean acceptDrop(NSTableView view, final Path destination, NSDraggingInfo info) {
         log.debug("acceptDrop:" + destination);
+        if(info.draggingPasteboard().availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.URLPboardType)) != null) {
+            NSObject o = info.draggingPasteboard().propertyListForType(NSPasteboard.URLPboardType);
+            // Mount .webloc URLs dragged to browser window
+            if(o != null) {
+                final NSArray elements = Rococoa.cast(o, NSArray.class);
+                for(int i = 0; i < elements.count().intValue(); i++) {
+                    if(Protocol.isURL(elements.objectAtIndex(new NSUInteger(i)).toString())) {
+                        controller.mount(Host.parse(elements.objectAtIndex(new NSUInteger(i)).toString()));
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
         if(controller.isMounted()) {
-            if(draggingInfo.draggingPasteboard().availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.FilenamesPboardType)) != null) {
-                NSObject o = draggingInfo.draggingPasteboard().propertyListForType(NSPasteboard.FilenamesPboardType);
+            if(info.draggingPasteboard().availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.FilenamesPboardType)) != null) {
+                NSObject o = info.draggingPasteboard().propertyListForType(NSPasteboard.FilenamesPboardType);
                 // A file drag has been received by another application; upload to the dragged directory
                 if(o != null) {
                     final NSArray elements = Rococoa.cast(o, NSArray.class);
@@ -273,76 +293,47 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                 }
                 return false;
             }
-        }
-        if(draggingInfo.draggingPasteboard().availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.URLPboardType)) != null) {
-            NSObject o = draggingInfo.draggingPasteboard().propertyListForType(NSPasteboard.URLPboardType);
-            // Mount .webloc URLs dragged to browser window
-            if(o != null) {
-                final NSArray elements = Rococoa.cast(o, NSArray.class);
-                for(int i = 0; i < elements.count().intValue(); i++) {
-                    if(Protocol.isURL(elements.objectAtIndex(new NSUInteger(i)).toString())) {
-                        controller.mount(Host.parse(elements.objectAtIndex(new NSUInteger(i)).toString()));
-                        return true;
-                    }
-                }
-                return false;
-            }
-        }
-        if(controller.isMounted()) {
             final PathPasteboard pasteboard = PathPasteboard.getPasteboard(controller.getSession());
-            if(!pasteboard.isEmpty()) {
-                // A file dragged within the browser has been received
-                if((draggingInfo.draggingSourceOperationMask().intValue() & NSDraggingInfo.NSDragOperationMove.intValue())
-                        == NSDraggingInfo.NSDragOperationMove.intValue()) {
-                    // The file should be renamed
-                    final Map<Path, Path> files = new HashMap<Path, Path>();
-                    for(Path next : pasteboard) {
-                        Path renamed = PathFactory.createPath(controller.getSession(),
-                                destination.getAbsolute(), next.getName(), next.attributes().getType());
-                        files.put(next, renamed);
-                    }
-                    pasteboard.clear();
-                    controller.renamePaths(files);
-                    return true;
+            // A file dragged within the browser has been received
+            if(info.draggingSourceOperationMask().intValue() == NSDraggingInfo.NSDragOperationCopy.intValue()) {
+                // The file should be duplicated
+                final Map<Path, Path> files = new HashMap<Path, Path>();
+                for(Path next : pasteboard) {
+                    final Path copy = PathFactory.createPath(controller.getSession(), next.getAsDictionary());
+                    copy.setPath(destination.getAbsolute(), next.getName());
+                    files.put(next, copy);
                 }
-                if(draggingInfo.draggingSourceOperationMask().intValue() == NSDraggingInfo.NSDragOperationCopy.intValue()) {
-                    // The file should be duplicated
-                    final Map<Path, Path> files = new HashMap<Path, Path>();
-                    for(Path next : pasteboard) {
-                        final Path copy = PathFactory.createPath(controller.getSession(), next.getAsDictionary());
-                        copy.setPath(destination.getAbsolute(), next.getName());
-                        files.put(next, copy);
-                    }
-                    pasteboard.clear();
-                    controller.duplicatePaths(files, false);
-                    return true;
-                }
-                return false;
+                pasteboard.clear();
+                controller.duplicatePaths(files, false);
+                return true;
             }
-            return false;
+            else if((info.draggingSourceOperationMask().intValue() & NSDraggingInfo.NSDragOperationMove.intValue())
+                    == NSDraggingInfo.NSDragOperationMove.intValue()) {
+                // The file should be renamed
+                final Map<Path, Path> files = new HashMap<Path, Path>();
+                for(Path next : pasteboard) {
+                    Path renamed = PathFactory.createPath(controller.getSession(),
+                            destination.getAbsolute(), next.getName(), next.attributes().getType());
+                    files.put(next, renamed);
+                }
+                pasteboard.clear();
+                controller.renamePaths(files);
+                return true;
+            }
         }
         return false;
     }
 
+    /**
+     * @param view
+     * @param destination A directory or null to mount an URL
+     * @param row
+     * @param info
+     * @return
+     */
     public NSUInteger validateDrop(NSTableView view, Path destination, NSInteger row, NSDraggingInfo info) {
-        if(controller.isMounted()) {
-            if(null == destination) {
-                log.warn("Dragging destination is null.");
-                return NSDraggingInfo.NSDragOperationNone;
-            }
-            if(!controller.getSession().isCreateFileSupported(destination)) {
-                // Creating files is not supported for example in root of cloud storage accounts.
-                return NSDraggingInfo.NSDragOperationNone;
-            }
-            if(info.draggingPasteboard().availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.FilenamesPboardType)) != null) {
-                if(destination.attributes().isDirectory()) {
-                    this.setDropRowAndDropOperation(view, destination, row);
-                    return NSDraggingInfo.NSDragOperationCopy;
-                }
-                return NSDraggingInfo.NSDragOperationNone;
-            }
-        }
         if(info.draggingPasteboard().availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.URLPboardType)) != null) {
+            // Dragging URLs to mount new session
             NSObject o = info.draggingPasteboard().propertyListForType(NSPasteboard.URLPboardType);
             if(o != null) {
                 NSArray elements = Rococoa.cast(o, NSArray.class);
@@ -354,6 +345,9 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                         view.setDropRow(new NSInteger(-1), NSTableView.NSTableViewDropOn);
                         return NSDraggingInfo.NSDragOperationCopy;
                     }
+                    else {
+                        log.warn("Protocol not supported for URL:" + elements.objectAtIndex(new NSUInteger(i)).toString());
+                    }
                 }
             }
             log.warn("URL dragging pasteboard is empty.");
@@ -364,10 +358,22 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                 log.warn("Dragging destination is null.");
                 return NSDraggingInfo.NSDragOperationNone;
             }
+            // Files dragged form other application
+            if(info.draggingPasteboard().availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.FilenamesPboardType)) != null) {
+                if(destination.attributes().isDirectory()) {
+                    if(controller.getSession().isCreateFileSupported(destination)) {
+                        // Creating files is not supported for example in root of cloud storage accounts.
+                        this.setDropRowAndDropOperation(view, destination, row);
+                        return NSDraggingInfo.NSDragOperationCopy;
+                    }
+                }
+                return NSDraggingInfo.NSDragOperationNone;
+            }
             if(PathPasteboard.getPasteboard(controller.getSession()).isEmpty()) {
                 log.warn("No files in pasteboard for session:" + controller.getSession());
                 return NSDraggingInfo.NSDragOperationNone;
             }
+            // Files dragged from browser
             for(Path next : PathPasteboard.getPasteboard(controller.getSession())) {
                 if(destination.equals(next)) {
                     // Do not allow dragging onto myself
@@ -383,14 +389,18 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                 }
             }
             log.debug("Operation Mask:" + info.draggingSourceOperationMask().intValue());
-            if(destination.attributes().isDirectory()) {
-                this.setDropRowAndDropOperation(view, destination, row);
-                if(info.draggingSourceOperationMask().intValue() == NSDraggingInfo.NSDragOperationCopy.intValue()) {
+            this.setDropRowAndDropOperation(view, destination, row);
+            if(info.draggingSourceOperationMask().intValue() == NSDraggingInfo.NSDragOperationCopy.intValue()) {
+                // Explicit copy requested if drag operation is already NSDragOperationCopy. User is pressing the option key.
+                if(controller.getSession().isCreateFileSupported(destination)) {
                     return NSDraggingInfo.NSDragOperationCopy;
                 }
-                if(controller.getSession().isRenameSupported(destination)) {
-                    return NSDraggingInfo.NSDragOperationMove;
-                }
+                // Target file system does not support creating files.
+                return NSDraggingInfo.NSDragOperationNone;
+            }
+            // Defaulting to move
+            if(controller.getSession().isRenameSupported(destination)) {
+                return NSDraggingInfo.NSDragOperationMove;
             }
         }
         return NSDraggingInfo.NSDragOperationNone;
