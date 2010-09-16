@@ -15,6 +15,7 @@
 // Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
 // 
+using System;
 using ch.cyberduck.core.threading;
 using ch.cyberduck.ui;
 using Ch.Cyberduck.Ui.Controller.Threading;
@@ -41,10 +42,15 @@ namespace Ch.Cyberduck.Ui.Controller
             background(backgroundAction);
         }
 
+        public void Invoke(AsyncDelegate del, bool wait)
+        {
+            ControllerMainAction mainAction = new SimpleDefaultMainAction(this, del);
+            invoke(mainAction, wait);
+        }
+
         public void Invoke(AsyncDelegate del)
         {
-            DefaultMainAction mainAction = new SimpleDefaultMainAction(del);
-            invoke(mainAction);
+            Invoke(del, false);
         }
 
         public void Invoke(MainAction mainAction)
@@ -54,13 +60,28 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public override void invoke(MainAction mainAction, bool wait)
         {
-            if (View.InvokeRequired)
+            try
             {
-                View.Invoke(new AsyncDelegate(mainAction.run), null);
+                if (View.InvokeRequired)
+                {
+                    if (wait)
+                    {
+                        View.Invoke(new AsyncDelegate(mainAction.run), null);
+                    }
+                    else
+                    {
+                        View.BeginInvoke(new AsyncDelegate(mainAction.run), null);
+                    }
+                }
+                else
+                {
+                    mainAction.run();
+                }
             }
-            else
+            catch (ObjectDisposedException)
             {
-                mainAction.run();
+                //happens because there is no synchronization between the lifecycle of a form and callbacks of background threads.
+                //catch silently
             }
         }
 

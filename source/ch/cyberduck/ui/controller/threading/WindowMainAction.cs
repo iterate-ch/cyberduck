@@ -15,13 +15,15 @@
 // Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
 // 
+using ch.cyberduck.core.threading;
+
 namespace Ch.Cyberduck.Ui.Controller.Threading
 {
-    public abstract class WindowMainAction : ch.cyberduck.core.threading.DefaultMainAction
+    public abstract class WindowMainAction : ControllerMainAction
     {
         private readonly WindowController _controller;
 
-        protected WindowMainAction(WindowController c)
+        protected WindowMainAction(WindowController c) : base(c)
         {
             _controller = c;
         }

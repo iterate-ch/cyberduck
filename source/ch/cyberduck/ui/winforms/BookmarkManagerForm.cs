@@ -122,6 +122,8 @@ namespace Ch.Cyberduck.Ui.Winforms
         public event ValidateCommand ValidateEditBookmark;
         public event VoidHandler DeleteBookmark;
         public event ValidateCommand ValidateDeleteBookmark;
+        public event VoidHandler DuplicateBookmark;
+        public event ValidateCommand ValidateDuplicateBookmark;
 
         public AspectGetterDelegate BookmarkImageNameGetter
         {

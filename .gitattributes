@@ -2252,9 +2252,6 @@ source/ch/cyberduck/ui/winforms/PromptForm.cs -text
 source/ch/cyberduck/ui/winforms/PromptForm.resx -text
 source/ch/cyberduck/ui/winforms/ToolbarBaseForm.Designer.cs -text
 source/ch/cyberduck/ui/winforms/ToolbarBaseForm.cs -text
-source/ch/cyberduck/ui/winforms/TranscriptForm.Designer.cs -text
-source/ch/cyberduck/ui/winforms/TranscriptForm.cs -text
-source/ch/cyberduck/ui/winforms/TranscriptForm.resx -text
 source/ch/cyberduck/ui/winforms/TransferForm.Designer.cs -text
 source/ch/cyberduck/ui/winforms/TransferForm.cs -text
 source/ch/cyberduck/ui/winforms/TransferForm.resx -text

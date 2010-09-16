@@ -51,6 +51,7 @@ namespace Ch.Cyberduck.Ui.Controller
         event ValidateCommand ValidateEditBookmark;
         event VoidHandler DeleteBookmark;
         event ValidateCommand ValidateDeleteBookmark;
-
+        event VoidHandler DuplicateBookmark;
+        event ValidateCommand ValidateDuplicateBookmark;       
     }
 }

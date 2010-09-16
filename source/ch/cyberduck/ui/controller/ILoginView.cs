@@ -19,7 +19,7 @@ using System;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
-    public interface ILoginView
+    public interface ILoginView : IView
     {
         // Properties
         string Title { set; }

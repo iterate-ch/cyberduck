@@ -85,7 +85,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                                    FormClosingEventHandler closingEvent = ViewClosingEvent;
                                    if (null != closingEvent) ViewClosingEvent(sender, args);
                                };
-
+            
             Disposed += delegate
                             {
                                 VoidHandler disposedEvent = ViewDisposedEvent;
@@ -177,6 +177,11 @@ namespace Ch.Cyberduck.Ui.Winforms
         public new bool IsDisposed
         {
             get { return base.IsDisposed; }
+        }
+
+        public new bool Disposing
+        {
+            get { return base.Disposing; }
         }
 
         public new void Show()

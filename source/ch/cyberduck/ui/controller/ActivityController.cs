@@ -17,9 +17,9 @@
 // 
 using System;
 using System.Collections;
-using System.Windows.Forms;
 using ch.cyberduck.core;
 using ch.cyberduck.core.threading;
+using Ch.Cyberduck.Ui.Controller.Threading;
 using org.apache.log4j;
 using StructureMap;
 
@@ -119,7 +119,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 _controller.Invoke(new RemoveTaskAction(_controller, action));
             }
 
-            private class AddTaskAction : Threading.WindowMainAction
+            private class AddTaskAction : WindowMainAction
             {
                 private static readonly Logger Log = Logger.getLogger(typeof (AddTaskAction).Name);
                 private readonly BackgroundAction _action;
@@ -139,7 +139,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
             }
 
-            private class RemoveTaskAction : Threading.WindowMainAction
+            private class RemoveTaskAction : WindowMainAction
             {
                 private static readonly Logger Log = Logger.getLogger(typeof (AddTaskAction).Name);
                 private readonly BackgroundAction _action;

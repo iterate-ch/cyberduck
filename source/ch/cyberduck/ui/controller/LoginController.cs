@@ -29,14 +29,9 @@ namespace Ch.Cyberduck.Ui.Controller
     {
         private static readonly Logger Log = Logger.getLogger(typeof (LoginController).Name);
 
-        private ILoginView _view;
-        private Protocol _protocol;
         private Credentials _credentials;
-
-        public static void Register()
-        {
-            LoginControllerFactory.addFactory(ch.cyberduck.core.Factory.NATIVE_PLATFORM, new Factory());
-        }
+        private Protocol _protocol;
+        private ILoginView _view;
 
         private LoginController(ILoginView view)
         {
@@ -50,6 +45,11 @@ namespace Ch.Cyberduck.Ui.Controller
             set { _view = value; }
         }
 
+        public static void Register()
+        {
+            LoginControllerFactory.addFactory(ch.cyberduck.core.Factory.NATIVE_PLATFORM, new Factory());
+        }
+
         private void View_ChangedPkCheckboxEvent(object sender, EventArgs e)
         {
             //todo implement!
@@ -59,15 +59,13 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             if (_view.AnonymousChecked)
             {
-                _credentials.setUsername(
-                    ch.cyberduck.core.Preferences.instance().getProperty("connection.login.anon.name"));
-                _credentials.setPassword(
-                    ch.cyberduck.core.Preferences.instance().getProperty("connection.login.anon.pass"));
+                _credentials.setUsername(Preferences.instance().getProperty("connection.login.anon.name"));
+                _credentials.setPassword(Preferences.instance().getProperty("connection.login.anon.pass"));
             }
             else
             {
                 _credentials.setUsername(
-                    ch.cyberduck.core.Preferences.instance().getProperty("connection.login.name"));
+                    Preferences.instance().getProperty("connection.login.name"));
                 _credentials.setPassword(null);
             }
             _view.Username = _credentials.getUsername();
@@ -91,7 +89,8 @@ namespace Ch.Cyberduck.Ui.Controller
             Update();
         }
 
-        public override void warn(String title, String message, String defaultButton, String otherButton, String preference)
+        public override void warn(String title, String message, String defaultButton, String otherButton,
+                                  String preference)
         {
             //todo implement, z.B. bei unsecure connection obwohl secure möglich wäre
             Log.debug("Warn called");
@@ -117,14 +116,14 @@ namespace Ch.Cyberduck.Ui.Controller
             _view.UsernameLabel = protocol.getUsernamePlaceholder();
             _view.PasswordLabel = protocol.getPasswordPlaceholder();
             _view.SavePasswordChecked =
-                ch.cyberduck.core.Preferences.instance().getBoolean("connection.login.useKeychain") &&
-                ch.cyberduck.core.Preferences.instance().getBoolean("connection.login.addKeychain");
+                Preferences.instance().getBoolean("connection.login.useKeychain") &&
+                Preferences.instance().getBoolean("connection.login.addKeychain");
 
             Update();
 
             ShowViewDelegate showView = delegate
                                             {
-                                                if (DialogResult.Cancel == ShowView())
+                                                if (DialogResult.Cancel == _view.ShowDialog())
                                                 {
                                                     throw new LoginCanceledException();
                                                 }
@@ -135,13 +134,8 @@ namespace Ch.Cyberduck.Ui.Controller
             Form parent = MainController.Application.ActiveMainForm;
             lock (parent)
             {
-                parent.Invoke(showView);
+                parent.Invoke(showView, true);
             }
-        }
-
-        public DialogResult ShowView()
-        {
-            return ((Form) _view).ShowDialog();
         }
 
         private void InitEventHandlers()
@@ -174,8 +168,6 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
-        private delegate void ShowViewDelegate();
-
         private class Factory : LoginControllerFactory
         {
             protected override object create()
@@ -193,5 +185,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 return new LoginController(ObjectFactory.GetInstance<ILoginView>());
             }
         }
+
+        private delegate void ShowViewDelegate();
     }
 }

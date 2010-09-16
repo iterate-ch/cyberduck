@@ -98,8 +98,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                                    Action = TransferAction.ACTION_CANCEL;
                                                }
                                            };
-
-            _parent.Invoke(wireAction);
+            _parent.Invoke(wireAction, true);
             return Action;
         }
 

@@ -15,11 +15,9 @@
 // Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
 // 
-using System.Collections;
 using System.Collections.Generic;
 using BrightIdeasSoftware;
 using ch.cyberduck.core;
-using Ch.Cyberduck.Core;
 using ch.cyberduck.ui.controller;
 using Ch.Cyberduck.Ui.Winforms.Controls;
 
@@ -35,15 +33,8 @@ namespace Ch.Cyberduck.Ui.Controller
         string RemoteFileUrl { set; }
         string RemoteFileSize { set; }
         string RemoteFileModificationDate { set; }
-        void SetModel(IEnumerable<TreePathReference> model);
-        void RefreshBrowserObject(TreePathReference reference);
         bool DetailsVisible { set; get; }
         int NumberOfFiles { get; }
-
-        void PopulateActions(IDictionary<TransferAction, string> actions);
-
-        void ModelCanExpandDelegate(TreeListView.CanExpandGetterDelegate canExpandDelegate);
-        void ModelChildrenGetterDelegate(TreeListView.ChildrenGetterDelegate childrenGetterDelegate);
 
         CheckStateGetterDelegate ModelCheckStateGetter { set; }
         CheckStatePutterDelegate ModelCheckStateSetter { set; }
@@ -55,6 +46,13 @@ namespace Ch.Cyberduck.Ui.Controller
         ImageGetterDelegate ModelCreateGetter { set; }
         ImageGetterDelegate ModelSyncGetter { set; }
         MulticolorTreeListView.ActiveGetterDelegate ModelActiveGetter { set; }
+        string StatusLabel { set; }
+        void SetModel(IEnumerable<TreePathReference> model);
+        void RefreshBrowserObject(TreePathReference reference);
+        void PopulateActions(IDictionary<TransferAction, string> actions);
+
+        void ModelCanExpandDelegate(TreeListView.CanExpandGetterDelegate canExpandDelegate);
+        void ModelChildrenGetterDelegate(TreeListView.ChildrenGetterDelegate childrenGetterDelegate);
 
         event VoidHandler ChangedActionEvent;
         event VoidHandler ChangedSelectionEvent;
@@ -63,8 +61,6 @@ namespace Ch.Cyberduck.Ui.Controller
         //todo might be pulled out into a separate interface. same for toggledetails.
         void StartActivityAnimation();
         void StopActivityAnimation();
-
-        string StatusLabel { set; }
 
         // mainly used to detect a change of displayed items to update the status label
         event VoidHandler ItemsChanged;

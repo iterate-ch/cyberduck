@@ -176,7 +176,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                           _controller.SetProgressText();
                                           _controller.SetStatusText();
                                       };
-                _controller.invoke(new SimpleDefaultMainAction(d));
+                _controller.invoke(new SimpleDefaultMainAction(_controller, d));
             }
 
             public override void transferDidEnd()
@@ -194,7 +194,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                           //todo
                                           //filesPopup.itemAtIndex(new NSInteger(0)).setEnabled(transfer.getRoot().getLocal().exists());
                                       };
-                _controller.invoke(new SimpleDefaultMainAction(d));
+                _controller.invoke(new SimpleDefaultMainAction(_controller, d));
             }
 
             public override void willTransferPath(Path path)
@@ -248,7 +248,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                                   }
                                               }
                                           };
-                    _controller.Invoke(new SimpleDefaultMainAction(d));
+                    _controller.Invoke(new SimpleDefaultMainAction(_controller, d));
                 }
             }
         }
@@ -267,7 +267,7 @@ namespace Ch.Cyberduck.Ui.Controller
             public void message(string msg)
             {
                 _controller._messageText = msg;
-                SimpleDefaultMainAction action = new SimpleDefaultMainAction(delegate
+                SimpleDefaultMainAction action = new SimpleDefaultMainAction(_controller, delegate
                                                                      {
                                                                          Log.info("message() invoked: " + this);
                                                                          _controller.SetMessageText();

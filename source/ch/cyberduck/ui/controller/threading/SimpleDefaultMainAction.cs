@@ -15,13 +15,17 @@
 // Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
 // 
+using ch.cyberduck.core.threading;
+using ch.cyberduck.ui;
+
 namespace Ch.Cyberduck.Ui.Controller.Threading
 {
-    public class SimpleDefaultMainAction : ch.cyberduck.core.threading.DefaultMainAction
+    public class SimpleDefaultMainAction : ControllerMainAction
     {
         private readonly AsyncController.AsyncDelegate _background;
 
-        public SimpleDefaultMainAction(AsyncController.AsyncDelegate main)
+        public SimpleDefaultMainAction(AbstractController controller, AsyncController.AsyncDelegate main)
+            : base(controller)
         {
             _background = main;
         }

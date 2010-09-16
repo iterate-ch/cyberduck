@@ -79,7 +79,7 @@ namespace Ch.Cyberduck.Ui.Controller.Threading
                                            // Re-run the action with the previous lock used
                                            _controller.background(this);
                                        }
-                                   });
+                                   }, true);
         }
     }
 }

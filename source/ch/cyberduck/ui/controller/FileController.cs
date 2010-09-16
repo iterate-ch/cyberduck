@@ -17,7 +17,6 @@
 // 
 using System.Drawing;
 using System.Windows.Forms;
-using ch.cyberduck;
 using ch.cyberduck.core;
 
 namespace Ch.Cyberduck.Ui.Controller

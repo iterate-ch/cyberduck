@@ -15,7 +15,6 @@
 // Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
 // 
-using System;
 using System.Windows.Forms;
 using ch.cyberduck.core.threading;
 using Ch.Cyberduck.Ui.Winforms.Taskdialog;
@@ -41,8 +40,6 @@ namespace Ch.Cyberduck.Ui.Controller
     {
         private bool _invalidated;
 
-
-
         /// <summary>
         /// 
         /// </summary>
@@ -58,60 +55,9 @@ namespace Ch.Cyberduck.Ui.Controller
             set
             {
                 base.View = value;
-                //if (!Singleton)
-                {
-                    View.ViewClosingEvent += ViewClosingEvent;                    
-                    /*
-                    View.ViewClosedEvent += delegate
-                                                {
-                                                    Invalidate();
-                                                    _invalidated = true;
-                                                    Console.WriteLine("Invalidated!");
-                                                };
-                     */
-                    
-                    View.ViewDisposedEvent += delegate
-                                                  {
-                                                      //todo should be deregister delegate? wie oben? braucht wohl sowieso noch refactoring wegen threading issues
-                                                      Invalidate();
-                                                      _invalidated = true;
-                                                  };
-
-                }
+                View.ViewClosingEvent += ViewClosingEvent;
                 View.ReleaseWhenClose = !Singleton;
             }
-        }
-
-        private void ViewClosingEvent(object sender, FormClosingEventArgs args)
-        {            
-            if (View.ModalResult == DialogResult.Cancel)
-            {
-                args.Cancel = false;
-                return;
-            }
-
-            bool shouldClose = ViewShouldClose();            
-            args.Cancel = !shouldClose;
-            if (shouldClose)
-            {
-                //Invalidate();
-                //_invalidated = true;
-                View.ViewClosingEvent -= ViewClosingEvent;
-                //Console.WriteLine("Invalidated!");
-            }
-        }
-
-        protected void ForceCloseView()
-        {
-            Invalidate();
-            _invalidated = true;
-            View.ViewClosingEvent -= ViewClosingEvent;
-            View.Close();
-        }
-
-        public virtual bool ViewShouldClose()
-        {
-            return true;
         }
 
         public bool Invalidated
@@ -119,9 +65,10 @@ namespace Ch.Cyberduck.Ui.Controller
             get { return _invalidated; }
         }
 
+
         private bool IsInvokeAllowed
         {
-            get { return !_invalidated || Singleton; }
+            get { return !(View.IsDisposed || _invalidated); }
         }
 
         /// <summary>
@@ -132,12 +79,33 @@ namespace Ch.Cyberduck.Ui.Controller
             get { return false; }
         }
 
+        private void ViewClosingEvent(object sender, FormClosingEventArgs args)
+        {
+            if (View.ModalResult == DialogResult.Cancel)
+            {
+                args.Cancel = false;
+                return;
+            }
+
+            bool shouldClose = ViewShouldClose();
+            args.Cancel = !shouldClose;
+            if (shouldClose)
+            {
+                Invalidate();
+                _invalidated = true;
+                View.ViewClosingEvent -= ViewClosingEvent;
+            }
+        }
+
+        public virtual bool ViewShouldClose()
+        {
+            return true;
+        }
+
         public override void invoke(MainAction mainAction, bool wait)
         {
-            //Make sure that we can call invoke on the view
-            //todo klappt nicht immer, weil threaded und der zustand nach dem if (im falle von true) noch ändern kann :(
             if (IsInvokeAllowed)
-            {                
+            {
                 base.invoke(mainAction, wait);
             }
         }
