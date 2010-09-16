@@ -1979,6 +1979,30 @@ public class PreferencesController extends ToolbarWindowController {
     }
 
     @Outlet
+    private NSPopUpButton updateFeedPopup;
+
+    public void setUpdateFeedPopup(NSPopUpButton b) {
+        this.updateFeedPopup = b;
+        this.updateFeedPopup.removeAllItems();
+        this.updateFeedPopup.setAction(Foundation.selector("updateFeedPopupClicked:"));
+        this.updateFeedPopup.addItemWithTitle(Locale.localizedString("Release"));
+        this.updateFeedPopup.lastItem().setRepresentedObject(Preferences.instance().getProperty("update.feed.release"));
+        this.updateFeedPopup.addItemWithTitle(Locale.localizedString("Beta"));
+        this.updateFeedPopup.lastItem().setRepresentedObject(Preferences.instance().getProperty("update.feed.beta"));
+        this.updateFeedPopup.addItemWithTitle(Locale.localizedString("Snapshot Builds"));
+        this.updateFeedPopup.lastItem().setRepresentedObject(Preferences.instance().getProperty("update.feed.nightly"));
+        this.updateFeedPopup.selectItemAtIndex(this.updateFeedPopup.menu().indexOfItemWithRepresentedObject(
+                Preferences.instance().getProperty("SUFeedURL")
+        ));
+    }
+
+    @Action
+    public void updateFeedPopupClicked(NSPopUpButton sender) {
+        // Update sparkle feed property. Default is in Info.plist
+        Preferences.instance().setProperty("SUFeedURL", sender.selectedItem().representedObject());
+    }
+
+    @Outlet
     private NSPopUpButton defaultBucketLocation;
 
     public void setDefaultBucketLocation(NSPopUpButton b) {
