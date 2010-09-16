@@ -21,7 +21,6 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.serializer.HostReaderFactory;
 import ch.cyberduck.core.serializer.HostWriterFactory;
-import ch.cyberduck.core.threading.DefaultMainAction;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.application.NSImage;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
@@ -32,14 +31,16 @@ import ch.cyberduck.ui.cocoa.foundation.NSMutableDictionary;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.foundation.NSString;
 import ch.cyberduck.ui.cocoa.foundation.NSURL;
-
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
-import org.apache.commons.lang.CharUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+
 import org.rococoa.Rococoa;
 import org.rococoa.cocoa.foundation.*;
 
+import org.apache.commons.lang.CharUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -75,7 +76,7 @@ public class BookmarkTableDataSource extends ListDataSource {
 
             public void collectionItemAdded(Host item) {
                 cache.clear();
-                invoke(new DefaultMainAction() {
+                invoke(new WindowMainAction(controller) {
                     public void run() {
                         controller.reloadBookmarks();
                     }
@@ -247,16 +248,29 @@ public class BookmarkTableDataSource extends ListDataSource {
         return cached;
     }
 
+    /**
+     * Sets whether the use of modifier keys should have an effect on the type of operation performed.
+     *
+     * @return
+     * @see NSDraggingSource
+     */
+    @Override
+    public boolean ignoreModifierKeysWhileDragging() {
+        // If this method is not implemented or returns false, the user can tailor the drag operation by
+        // holding down a modifier key during the drag.
+        return false;
+    }
+
     @Override
     public NSUInteger tableView_validateDrop_proposedRow_proposedDropOperation(NSTableView view,
-                                                                               NSDraggingInfo draggingInfo,
+                                                                               NSDraggingInfo info,
                                                                                NSInteger row, NSUInteger operation) {
-        NSPasteboard draggingPasteboard = draggingInfo.draggingPasteboard();
+        NSPasteboard draggingPasteboard = info.draggingPasteboard();
         if(!this.getSource().allowsEdit()) {
             // Do not allow drags for non writable collections
             return NSDraggingInfo.NSDragOperationNone;
         }
-        if(draggingPasteboard.availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.StringPboardType)) != null) {
+        else if(draggingPasteboard.availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.StringPboardType)) != null) {
             String o = draggingPasteboard.stringForType(NSPasteboard.StringPboardType);
             if(o != null) {
                 if(Protocol.isURL(o)) {
@@ -266,7 +280,7 @@ public class BookmarkTableDataSource extends ListDataSource {
             }
             return NSDraggingInfo.NSDragOperationNone;
         }
-        if(draggingPasteboard.availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.FilenamesPboardType)) != null) {
+        else if(draggingPasteboard.availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.FilenamesPboardType)) != null) {
             NSObject o = draggingPasteboard.propertyListForType(NSPasteboard.FilenamesPboardType);
             if(o != null) {
                 NSArray elements = Rococoa.cast(o, NSArray.class);
@@ -278,14 +292,13 @@ public class BookmarkTableDataSource extends ListDataSource {
                         return NSDraggingInfo.NSDragOperationCopy;
                     }
                 }
-                if(row.intValue() > -1) {
-                    //only allow other files if there is at least one bookmark
-                    view.setDropRow(row, NSTableView.NSTableViewDropOn);
-                    return NSDraggingInfo.NSDragOperationCopy;
-                }
+                //only allow other files if there is at least one bookmark
+                view.setDropRow(row, NSTableView.NSTableViewDropOn);
+                return NSDraggingInfo.NSDragOperationCopy;
             }
+            return NSDraggingInfo.NSDragOperationNone;
         }
-        if(draggingPasteboard.availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.URLPboardType)) != null) {
+        else if(draggingPasteboard.availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.URLPboardType)) != null) {
             NSObject o = draggingPasteboard.propertyListForType(NSPasteboard.URLPboardType);
             if(o != null) {
                 NSArray elements = Rococoa.cast(o, NSArray.class);
@@ -298,41 +311,43 @@ public class BookmarkTableDataSource extends ListDataSource {
             }
             return NSDraggingInfo.NSDragOperationNone;
         }
-        if(!HostPasteboard.getPasteboard().isEmpty()) {
-            if(row.intValue() > -1) {
-                view.setDropRow(row, NSTableView.NSTableViewDropAbove);
-                // We accept any file promise within the bounds
-                return NSDraggingInfo.NSDragOperationMove;
+        else if(!HostPasteboard.getPasteboard().isEmpty()) {
+            view.setDropRow(row, NSTableView.NSTableViewDropAbove);
+            // We accept any file promise within the bounds
+            if(info.draggingSourceOperationMask().intValue() == NSDraggingInfo.NSDragOperationCopy.intValue()) {
+                return NSDraggingInfo.NSDragOperationCopy;
             }
+            return NSDraggingInfo.NSDragOperationMove;
         }
         return NSDraggingInfo.NSDragOperationNone;
     }
 
     /**
-     * @param draggingInfo contains details on this dragging operation.
-     * @param row          The proposed location is row and action is operation.
-     *                     The data source should incorporate the data from the dragging pasteboard at this time.
+     * @param info contains details on this dragging operation.
+     * @param row  The proposed location is row and action is operation.
+     *             The data source should incorporate the data from the dragging pasteboard at this time.
      * @see NSTableView.DataSource
      *      Invoked by view when the mouse button is released over a table view that previously decided to allow a drop.
      */
     @Override
-    public boolean tableView_acceptDrop_row_dropOperation(NSTableView view, NSDraggingInfo draggingInfo,
+    public boolean tableView_acceptDrop_row_dropOperation(NSTableView view, NSDraggingInfo info,
                                                           NSInteger row, NSUInteger operation) {
-        NSPasteboard draggingPasteboard = draggingInfo.draggingPasteboard();
+        NSPasteboard draggingPasteboard = info.draggingPasteboard();
         log.debug("tableViewAcceptDrop:" + row);
+        view.deselectAll(null);
         final AbstractHostCollection source = this.getSource();
         if(draggingPasteboard.availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.StringPboardType)) != null) {
             String o = draggingPasteboard.stringForType(NSPasteboard.StringPboardType);
-            if(o != null) {
-                final Host h = Host.parse(o);
-                source.add(row.intValue(), h);
-                view.selectRowIndexes(NSIndexSet.indexSetWithIndex(row), false);
-                view.scrollRowToVisible(row);
-                return true;
+            if(null == o) {
+                return false;
             }
-            return false;
+            final Host h = Host.parse(o);
+            source.add(row.intValue(), h);
+            view.selectRowIndexes(NSIndexSet.indexSetWithIndex(row), false);
+            view.scrollRowToVisible(row);
+            return true;
         }
-        if(draggingPasteboard.availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.FilenamesPboardType)) != null) {
+        else if(draggingPasteboard.availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.FilenamesPboardType)) != null) {
             // We get a drag from another application e.g. Finder.app proposing some files
             NSArray filesList = Rococoa.cast(draggingPasteboard.propertyListForType(NSPasteboard.FilenamesPboardType), NSArray.class);// get the filenames from pasteboard
             // If regular files are dropped, these will be uploaded to the dropped bookmark location
@@ -343,7 +358,7 @@ public class BookmarkTableDataSource extends ListDataSource {
                 if(filename.endsWith(".duck")) {
                     // Adding a previously exported bookmark file from the Finder
                     source.add(row.intValue(), HostReaderFactory.instance().read(LocalFactory.createLocal(filename)));
-                    view.selectRowIndexes(NSIndexSet.indexSetWithIndex(row), false);
+                    view.selectRowIndexes(NSIndexSet.indexSetWithIndex(row), true);
                     view.scrollRowToVisible(row);
                 }
                 else {
@@ -367,7 +382,7 @@ public class BookmarkTableDataSource extends ListDataSource {
             }
             return true;
         }
-        if(draggingPasteboard.availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.URLPboardType)) != null) {
+        else if(draggingPasteboard.availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.URLPboardType)) != null) {
             NSObject o = draggingPasteboard.propertyListForType(NSPasteboard.URLPboardType);
             if(o != null) {
                 NSArray elements = Rococoa.cast(o, NSArray.class);
@@ -376,7 +391,7 @@ public class BookmarkTableDataSource extends ListDataSource {
                     if(StringUtils.isNotBlank(url)) {
                         final Host h = Host.parse(url);
                         source.add(row.intValue(), h);
-                        view.selectRowIndexes(NSIndexSet.indexSetWithIndex(row), false);
+                        view.selectRowIndexes(NSIndexSet.indexSetWithIndex(row), true);
                         view.scrollRowToVisible(row);
                     }
                 }
@@ -384,12 +399,45 @@ public class BookmarkTableDataSource extends ListDataSource {
             }
             return false;
         }
-        if(!HostPasteboard.getPasteboard().isEmpty()) {
-            for(Host promisedDragBookmark : HostPasteboard.getPasteboard()) {
-                source.remove(source.indexOf(promisedDragBookmark));
-                source.add(row.intValue(), promisedDragBookmark);
-                view.selectRowIndexes(NSIndexSet.indexSetWithIndex(row), false);
-                view.scrollRowToVisible(row);
+        else if(!HostPasteboard.getPasteboard().isEmpty()) {
+            if(info.draggingSourceOperationMask().intValue() == NSDraggingInfo.NSDragOperationCopy.intValue()) {
+                List<Host> duplicates = new ArrayList<Host>();
+                for(Host bookmark : HostPasteboard.getPasteboard()) {
+                    final Host duplicate = new Host(bookmark.getAsDictionary());
+                    // Make sure a new UUID is asssigned for duplicate
+                    duplicate.setUuid(null);
+                    source.add(row.intValue(), duplicate);
+                    duplicates.add(duplicate);
+                }
+                for(Host bookmark : duplicates) {
+                    int index = source.indexOf(bookmark);
+                    view.selectRowIndexes(NSIndexSet.indexSetWithIndex(new NSInteger(index)), true);
+                    view.scrollRowToVisible(new NSInteger(index));
+                }
+            }
+            else {
+                int insert = row.intValue();
+                for(Host bookmark : HostPasteboard.getPasteboard()) {
+                    int previous = source.indexOf(bookmark);
+                    if(previous == insert) {
+                        // No need to move
+                        continue;
+                    }
+                    source.remove(previous);
+                    int moved;
+                    if(previous < insert) {
+                        moved = insert - 1;
+                    }
+                    else {
+                        moved = insert;
+                    }
+                    source.add(moved, bookmark);
+                }
+                for(Host bookmark : HostPasteboard.getPasteboard()) {
+                    int index = source.indexOf(bookmark);
+                    view.selectRowIndexes(NSIndexSet.indexSetWithIndex(new NSInteger(index)), true);
+                    view.scrollRowToVisible(new NSInteger(index));
+                }
             }
             return true;
         }
