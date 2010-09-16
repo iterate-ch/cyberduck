@@ -125,6 +125,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.newBookmarkToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteBookmarkToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editBookmarkToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.duplicateBookmarkToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator19 = new System.Windows.Forms.ToolStripSeparator();
             this.historyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.historyMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
@@ -210,6 +211,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.newBookmarkContextToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteBookmarkContextToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.editBookmarkContextToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.duplicateBookmarkToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.actionToolStrip = new System.Windows.Forms.ToolStrip();
             this.newBookmarkToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.editBookmarkToolStripButton = new System.Windows.Forms.ToolStripButton();
@@ -884,6 +886,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.newBookmarkToolStripMenuItem,
             this.deleteBookmarkToolStripMenuItem,
             this.editBookmarkToolStripMenuItem,
+            this.duplicateBookmarkToolStripMenuItem1,
             this.toolStripSeparator19,
             this.historyToolStripMenuItem,
             this.bonjourToolStripMenuItem,
@@ -896,44 +899,50 @@ namespace Ch.Cyberduck.Ui.Winforms
             // viewBookmarksToolStripMenuItem
             // 
             this.viewBookmarksToolStripMenuItem.Name = "viewBookmarksToolStripMenuItem";
-            this.viewBookmarksToolStripMenuItem.Size = new System.Drawing.Size(173, 22);
+            this.viewBookmarksToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
             this.viewBookmarksToolStripMenuItem.Text = "Toggle Bookmarks";
             this.viewBookmarksToolStripMenuItem.Click += new System.EventHandler(this.showBookmarks);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(170, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(178, 6);
             // 
             // newBookmarkToolStripMenuItem
             // 
             this.newBookmarkToolStripMenuItem.Name = "newBookmarkToolStripMenuItem";
-            this.newBookmarkToolStripMenuItem.Size = new System.Drawing.Size(173, 22);
+            this.newBookmarkToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
             this.newBookmarkToolStripMenuItem.Text = "New Bookmark";
             // 
             // deleteBookmarkToolStripMenuItem
             // 
             this.deleteBookmarkToolStripMenuItem.Name = "deleteBookmarkToolStripMenuItem";
-            this.deleteBookmarkToolStripMenuItem.Size = new System.Drawing.Size(173, 22);
+            this.deleteBookmarkToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
             this.deleteBookmarkToolStripMenuItem.Text = "Delete Bookmark";
             // 
             // editBookmarkToolStripMenuItem
             // 
             this.editBookmarkToolStripMenuItem.Name = "editBookmarkToolStripMenuItem";
-            this.editBookmarkToolStripMenuItem.Size = new System.Drawing.Size(173, 22);
+            this.editBookmarkToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
             this.editBookmarkToolStripMenuItem.Text = "Edit Bookmark";
+            // 
+            // duplicateBookmarkToolStripMenuItem1
+            // 
+            this.duplicateBookmarkToolStripMenuItem1.Name = "duplicateBookmarkToolStripMenuItem1";
+            this.duplicateBookmarkToolStripMenuItem1.Size = new System.Drawing.Size(181, 22);
+            this.duplicateBookmarkToolStripMenuItem1.Text = "Duplicate Bookmark";
             // 
             // toolStripSeparator19
             // 
             this.toolStripSeparator19.Name = "toolStripSeparator19";
-            this.toolStripSeparator19.Size = new System.Drawing.Size(170, 6);
+            this.toolStripSeparator19.Size = new System.Drawing.Size(178, 6);
             // 
             // historyToolStripMenuItem
             // 
             this.historyToolStripMenuItem.DropDown = this.historyMenuStrip;
             this.historyToolStripMenuItem.Image = global::Ch.Cyberduck.ResourcesBundle.history;
             this.historyToolStripMenuItem.Name = "historyToolStripMenuItem";
-            this.historyToolStripMenuItem.Size = new System.Drawing.Size(173, 22);
+            this.historyToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
             this.historyToolStripMenuItem.Text = "History";
             // 
             // historyMenuStrip
@@ -949,7 +958,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.bonjourToolStripMenuItem.Enabled = false;
             this.bonjourToolStripMenuItem.Image = global::Ch.Cyberduck.ResourcesBundle.rendezvous;
             this.bonjourToolStripMenuItem.Name = "bonjourToolStripMenuItem";
-            this.bonjourToolStripMenuItem.Size = new System.Drawing.Size(173, 22);
+            this.bonjourToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
             this.bonjourToolStripMenuItem.Text = "Bonjour";
             // 
             // bonjourMenuStrip
@@ -961,7 +970,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // toolStripSeparator36
             // 
             this.toolStripSeparator36.Name = "toolStripSeparator36";
-            this.toolStripSeparator36.Size = new System.Drawing.Size(170, 6);
+            this.toolStripSeparator36.Size = new System.Drawing.Size(178, 6);
             // 
             // windowToolStripMenuItem
             // 
@@ -1570,38 +1579,45 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.toolStripSeparator29,
             this.newBookmarkContextToolStripMenuItem1,
             this.deleteBookmarkContextToolStripMenuItem1,
-            this.editBookmarkContextToolStripMenuItem1});
+            this.editBookmarkContextToolStripMenuItem1,
+            this.duplicateBookmarkToolStripMenuItem});
             this.bookmarkContextMenuStrip.Name = "bookmarkContextMenuStrip";
-            this.bookmarkContextMenuStrip.Size = new System.Drawing.Size(168, 98);
+            this.bookmarkContextMenuStrip.Size = new System.Drawing.Size(182, 120);
             // 
             // connectBookmarkContextToolStripMenuItem
             // 
             this.connectBookmarkContextToolStripMenuItem.Name = "connectBookmarkContextToolStripMenuItem";
-            this.connectBookmarkContextToolStripMenuItem.Size = new System.Drawing.Size(167, 22);
+            this.connectBookmarkContextToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
             this.connectBookmarkContextToolStripMenuItem.Text = "Connect to server";
             // 
             // toolStripSeparator29
             // 
             this.toolStripSeparator29.Name = "toolStripSeparator29";
-            this.toolStripSeparator29.Size = new System.Drawing.Size(164, 6);
+            this.toolStripSeparator29.Size = new System.Drawing.Size(178, 6);
             // 
             // newBookmarkContextToolStripMenuItem1
             // 
             this.newBookmarkContextToolStripMenuItem1.Name = "newBookmarkContextToolStripMenuItem1";
-            this.newBookmarkContextToolStripMenuItem1.Size = new System.Drawing.Size(167, 22);
+            this.newBookmarkContextToolStripMenuItem1.Size = new System.Drawing.Size(181, 22);
             this.newBookmarkContextToolStripMenuItem1.Text = "New Bookmark";
             // 
             // deleteBookmarkContextToolStripMenuItem1
             // 
             this.deleteBookmarkContextToolStripMenuItem1.Name = "deleteBookmarkContextToolStripMenuItem1";
-            this.deleteBookmarkContextToolStripMenuItem1.Size = new System.Drawing.Size(167, 22);
+            this.deleteBookmarkContextToolStripMenuItem1.Size = new System.Drawing.Size(181, 22);
             this.deleteBookmarkContextToolStripMenuItem1.Text = "Delete Bookmark";
             // 
             // editBookmarkContextToolStripMenuItem1
             // 
             this.editBookmarkContextToolStripMenuItem1.Name = "editBookmarkContextToolStripMenuItem1";
-            this.editBookmarkContextToolStripMenuItem1.Size = new System.Drawing.Size(167, 22);
+            this.editBookmarkContextToolStripMenuItem1.Size = new System.Drawing.Size(181, 22);
             this.editBookmarkContextToolStripMenuItem1.Text = "Edit Bookmark";
+            // 
+            // duplicateBookmarkToolStripMenuItem
+            // 
+            this.duplicateBookmarkToolStripMenuItem.Name = "duplicateBookmarkToolStripMenuItem";
+            this.duplicateBookmarkToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
+            this.duplicateBookmarkToolStripMenuItem.Text = "Duplicate Bookmark";
             // 
             // actionToolStrip
             // 
@@ -1710,6 +1726,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             // treeColumnSize
             // 
+            this.treeColumnSize.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.treeColumnSize.Text = "Size";
             this.treeColumnSize.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             // 
@@ -2159,6 +2176,8 @@ namespace Ch.Cyberduck.Ui.Winforms
         private System.Windows.Forms.ToolStripProgressBar toolStripProgressBar;
         private System.Windows.Forms.ToolStripStatusLabel securityToolStripStatusLabel;
         private SearchTextBox searchTextBox;
+        private System.Windows.Forms.ToolStripMenuItem duplicateBookmarkToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem duplicateBookmarkToolStripMenuItem;
     }
 }
 

@@ -240,6 +240,8 @@ namespace Ch.Cyberduck.Ui.Winforms
         public event ValidateCommand ValidateEditBookmark;
         public event VoidHandler DeleteBookmark;
         public event ValidateCommand ValidateDeleteBookmark;
+        public event VoidHandler DuplicateBookmark;
+        public event ValidateCommand ValidateDuplicateBookmark;       
         public event EventHandler<ConnectBookmarkArgs> ConnectBookmark;
         public event ValidateCommand ValidateConnectBookmark;
         public event VoidHandler OpenWebUrl;
@@ -1015,7 +1017,12 @@ namespace Ch.Cyberduck.Ui.Winforms
                                  deleteBookmarkToolStripButton
                              },
                          (sender, args) => DeleteBookmark(), () => ValidateDeleteBookmark());
-            //todo da fehlen noch ein paar punkte
+            Commands.Add(new ToolStripItem[]
+                             {
+                                 duplicateBookmarkToolStripMenuItem1,
+                                 duplicateBookmarkToolStripMenuItem
+                             },
+                         (sender, args) => DuplicateBookmark(), () => ValidateDuplicateBookmark());
         }
 
         private void ConfigureBookmarkList(ObjectListView l, OLVColumn descColumn, OLVColumn imageColumn)
@@ -1181,7 +1188,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                              {
                                  activitiyToolStripMenuItem,
                              },
-                         (sender, args) => (ActivityController.Instance.View as Form).Show(), () => true);
+                         (sender, args) => ((Form) ActivityController.Instance.View).Show(), () => true);
             //todo muss ShowActivity() sein
             //(ActivityController.Instance.View as Form).Show();
         }

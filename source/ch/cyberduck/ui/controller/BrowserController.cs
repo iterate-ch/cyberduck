@@ -224,6 +224,8 @@ namespace Ch.Cyberduck.Ui.Controller
             View.ValidateEditBookmark += View_ValidateEditBookmark;
             View.DeleteBookmark += View_DeleteBookmark;
             View.ValidateDeleteBookmark += View_ValidateDeleteBookmark;
+            View.DuplicateBookmark += View_DuplicateBookmark;
+            View.ValidateDuplicateBookmark += View_ValidateDuplicateBookmark;
 
             #endregion
 
@@ -286,44 +288,55 @@ namespace Ch.Cyberduck.Ui.Controller
             View.SetBookmarkModel(bookmarkCollection);
         }
 
+        private bool View_ValidateDuplicateBookmark()
+        {
+            return _bookmarkModel.Source.allowsEdit() && View.SelectedBookmarks.Count == 0;
+        }
+
+        private void View_DuplicateBookmark()
+        {
+            ToggleView(BrowserView.Bookmark);
+            Host duplicate = new Host(View.SelectedBookmark.getAsDictionary());
+            // Make sure a new UUID is asssigned for duplicate
+            duplicate.setUuid(null);
+            AddBookmark(duplicate);
+        }
+
         private void View_HostModelDropped(ModelDropEventArgs dropargs)
         {
-            int destIndex;
-            switch (dropargs.DropTargetLocation)
+            int sourceIndex = _bookmarkModel.Source.indexOf(dropargs.SourceModels[0]);
+            int destIndex = dropargs.DropTargetIndex;
+            if (dropargs.DropTargetLocation == DropTargetLocation.BelowItem)
             {
-                case DropTargetLocation.AboveItem:
-                    destIndex = dropargs.DropTargetIndex;
-                    break;
-                case DropTargetLocation.BelowItem:
-                    destIndex = dropargs.DropTargetIndex + 1;
-                    break;
-                default:
-                    destIndex = -1;
-                    break;
+                destIndex++;
             }
-            if (destIndex >= 0)
-            {                
-                if (dropargs.Effect == DragDropEffects.Move)
+            if (dropargs.Effect == DragDropEffects.Copy)
+            {
+                Host host = new Host(((Host)dropargs.SourceModels[0]).getAsDictionary());
+                host.setUuid(null);
+                AddBookmark(host, destIndex);
+            }
+            if (dropargs.Effect == DragDropEffects.Move)
+            {
+                if (sourceIndex < destIndex)
                 {
-                    foreach (Host promisedDragBookmark in dropargs.SourceModels)
+                    destIndex--;
+                }
+                foreach (Host promisedDragBookmark in dropargs.SourceModels)
+                {
+                    _bookmarkModel.Source.remove(promisedDragBookmark);
+                    if (destIndex > _bookmarkModel.Source.size())
                     {
-                        _bookmarkModel.Source.remove(promisedDragBookmark);
-                        if (destIndex > _bookmarkModel.Source.size())
-                        {
-                            _bookmarkModel.Source.add(promisedDragBookmark);                            
-                        } else
-                        {
-                            _bookmarkModel.Source.add(destIndex, promisedDragBookmark);                            
-                        }                        
-                        //view.selectRowIndexes(NSIndexSet.indexSetWithIndex(row), false);
-                        //view.scrollRowToVisible(row);
+                        _bookmarkModel.Source.add(promisedDragBookmark);
                     }
+                    else
+                    {
+                        _bookmarkModel.Source.add(destIndex, promisedDragBookmark);
+                    }
+                    //view.selectRowIndexes(NSIndexSet.indexSetWithIndex(row), false);
+                    //view.scrollRowToVisible(row);
                 }
-                if (dropargs.Effect == DragDropEffects.Copy)
-                {
-                    //todo duplicate bookmark with drag'n'drop
-                }
-            }            
+            }
         }
 
         private void View_HostModelCanDrop(ModelDropEventArgs args)
@@ -338,8 +351,11 @@ namespace Ch.Cyberduck.Ui.Controller
             switch (args.DropTargetLocation)
             {
                 case DropTargetLocation.BelowItem:
-                case DropTargetLocation.AboveItem:
-                    args.Effect = DragDropEffects.Move;
+                case DropTargetLocation.AboveItem:                    
+                    if (args.SourceModels.Count > 1)
+                    {
+                        args.Effect = DragDropEffects.Move;
+                    }    
                     break;
                 default:
                     args.Effect = DragDropEffects.None;
@@ -998,15 +1014,31 @@ namespace Ch.Cyberduck.Ui.Controller
                         Preferences.instance().getInteger("connection.port.default"));
             }
             ToggleView(BrowserView.Bookmark);
+            AddBookmark(host);
+        }
+
+        private void AddBookmark(Host item)
+        {
+            AddBookmark(item, -1);
+        }
+
+        private void AddBookmark(Host item, int index)
+        {
             _bookmarkModel.Filter = null;
             //todo prüfen wieso das Adden so teuer ist. Wohl wegen den Listener. Aber welche?
-            _bookmarkModel.Source.Add(host);
+            if (index != -1)
+            {
+                _bookmarkModel.Source.add(index, item);
+            }
+            else
+            {
+                _bookmarkModel.Source.add(item);
+            }
+            View.SelectBookmark(item);
+            View.EnsureBookmarkVisible(item);
+            BookmarkController.Factory.Create(item).View.Show(View);
 
-            View.SelectBookmark(host);
-            View.EnsureBookmarkVisible(host);
-            BookmarkController.Factory.Create(host).View.Show(View);
-
-            //todo prüfen, ob Bookmark auch gespeichert wird
+            //todo prüfen, ob Bookmark auch gespeichert wird            
         }
 
         private void View_DeleteBookmark()
@@ -3515,12 +3547,12 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
-        private class UnmountAction : AbstractBackgroundAction
+        private class UnmountAction : BrowserBackgroundAction
         {
             private readonly CallbackDelegate _callback;
             private readonly BrowserController _controller;
 
-            public UnmountAction(BrowserController controller, CallbackDelegate callback)
+            public UnmountAction(BrowserController controller, CallbackDelegate callback) : base(controller)
             {
                 _controller = controller;
                 _callback = callback;
