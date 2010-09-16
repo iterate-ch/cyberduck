@@ -41,6 +41,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.text.MessageFormat;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -74,15 +75,17 @@ public abstract class URLMenuDelegate extends AbstractMenuDelegate {
     protected abstract String getLabel();
 
     public NSInteger numberOfItemsInMenu(NSMenu menu) {
-        List<Path> path = this.getSelected();
-        if(path.isEmpty()) {
+        List<Path> selected = this.getSelected();
+        if(selected.isEmpty()) {
             return new NSInteger(1);
         }
-        return new NSInteger(this.getURLs(path).size() * 2);
+        // Number of URLs for a single path
+        int urls = this.getURLs(selected.iterator().next()).size();
+        return new NSInteger(urls * 2);
     }
 
-    protected List<AbstractPath.DescriptiveUrl> getURLs(List<Path> selected) {
-        return selected.iterator().next().getURLs();
+    protected List<AbstractPath.DescriptiveUrl> getURLs(Path selected) {
+        return selected.getURLs();
     }
 
     @Override
@@ -101,19 +104,30 @@ public abstract class URLMenuDelegate extends AbstractMenuDelegate {
             item.setImage(null);
         }
         else {
-            AbstractPath.DescriptiveUrl url = this.getURLs(selected).get(index.intValue() / 2);
-            item.setRepresentedObject(url.getUrl());
+            final StringBuilder builder = new StringBuilder();
+            for(Iterator<Path> iter = selected.iterator(); iter.hasNext();) {
+                List<AbstractPath.DescriptiveUrl> urls = this.getURLs(iter.next());
+                AbstractPath.DescriptiveUrl url = urls.get(index.intValue() / 2);
+                builder.append(url.getUrl());
+                if(iter.hasNext()) {
+                    builder.append("\n");
+                }
+            }
+            String s = builder.toString();
             boolean label = index.intValue() % 2 == 0;
             if(label) {
                 item.setEnabled(true);
+                item.setImage(IconCache.iconNamed("site.tiff", 16));
                 item.setAction(Foundation.selector("urlClicked:"));
+                Iterator<Path> iter = selected.iterator();
+                AbstractPath.DescriptiveUrl url = this.getURLs(iter.next()).get(index.intValue() / 2);
+                item.setRepresentedObject(s);
                 item.setTitle(url.getHelp());
             }
             else {
-                item.setImage(IconCache.iconNamed("site.tiff", 16));
                 // Dummy menu item to preview URL only
-                if(StringUtils.isNotBlank(url.getUrl())) {
-                    item.setAttributedTitle(NSAttributedString.attributedStringWithAttributes(url.getUrl(), URL_FONT_ATTRIBUTES));
+                if(StringUtils.isNotBlank(s)) {
+                    item.setAttributedTitle(NSAttributedString.attributedStringWithAttributes(s, URL_FONT_ATTRIBUTES));
                 }
                 else {
                     item.setAttributedTitle(NSAttributedString.attributedStringWithAttributes(Locale.localizedString("Unknown"), URL_FONT_ATTRIBUTES));

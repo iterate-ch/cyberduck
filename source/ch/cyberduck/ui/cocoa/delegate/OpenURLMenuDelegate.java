@@ -27,8 +27,10 @@ import ch.cyberduck.ui.cocoa.BundleController;
 import ch.cyberduck.ui.cocoa.application.NSEvent;
 import ch.cyberduck.ui.cocoa.application.NSMenuItem;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import java.util.Collections;
 import java.util.List;
 
 
@@ -53,6 +55,11 @@ public abstract class OpenURLMenuDelegate extends URLMenuDelegate {
         return Locale.localizedString("Open");
     }
 
+    @Override
+    protected List<Path> getSelected() {
+        return Collections.emptyList();
+    }
+
     /**
      * Only select URLs with http://
      *
@@ -60,20 +67,15 @@ public abstract class OpenURLMenuDelegate extends URLMenuDelegate {
      * @return
      */
     @Override
-    protected List<AbstractPath.DescriptiveUrl> getURLs(List<Path> selected) {
-        return selected.iterator().next().getHttpURLs();
+    protected List<AbstractPath.DescriptiveUrl> getURLs(Path selected) {
+        return selected.getHttpURLs();
     }
 
     @Action
     @Override
     public void urlClicked(final NSMenuItem sender) {
-        this.open(sender.representedObject());
-    }
-
-    /**
-     * @param url
-     */
-    private void open(String url) {
-        BundleController.openUrl(url);
+        for(String url : StringUtils.split(sender.representedObject(), "\n")) {
+            BundleController.openUrl(url);
+        }
     }
 }

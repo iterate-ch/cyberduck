@@ -232,7 +232,7 @@ public class MainController extends BundleController implements NSApplication.De
                         return selected;
                     }
                 }
-                return null;
+                return Collections.emptyList();
             }
         };
         this.urlMenu.setDelegate(urlMenuDelegate.id());
@@ -259,7 +259,7 @@ public class MainController extends BundleController implements NSApplication.De
                         return selected;
                     }
                 }
-                return null;
+                return Collections.emptyList();
             }
         };
         this.openUrlMenu.setDelegate(openUrlMenuDelegate.id());
