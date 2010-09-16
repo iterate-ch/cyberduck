@@ -224,20 +224,28 @@ public abstract class AbstractPath {
     public abstract void setPath(String name);
 
     /**
-     * @param p
-     * @return true if p is a child of me in the path hierarchy
+     * @param directory
+     * @return true if this is a child of <code>p</code> in the path hierarchy
      */
-    public boolean isChild(AbstractPath p) {
-        if(this.attributes().isFile()) {
+    public boolean isChild(AbstractPath directory) {
+        if(directory.attributes().isFile()) {
             // If a file we don't have any children at all
             return false;
         }
-        if(this.getParent().equals(p.getParent())) {
+        if(this.isRoot()) {
+            // Root cannot be a child of any other path
+            return false;
+        }
+        if(directory.isRoot()) {
+            // Any other path is a child
+            return true;
+        }
+        if(this.getParent().equals(directory.getParent())) {
             // Cannot be a child if the same parent
             return false;
         }
         for(AbstractPath parent = this.getParent(); !parent.isRoot(); parent = parent.getParent()) {
-            if(parent.equals(p)) {
+            if(parent.equals(directory)) {
                 return true;
             }
         }
