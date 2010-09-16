@@ -24,6 +24,7 @@ import ch.cyberduck.core.cloud.CloudPath;
 import ch.cyberduck.core.i18n.Locale;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
 import java.text.MessageFormat;
 import java.util.HashMap;
@@ -34,6 +35,7 @@ import java.util.Map;
  * @version $Id:$
  */
 public abstract class WriteMetadataWorker extends Worker<Map<String, String>> {
+    private static Logger log = Logger.getLogger(WriteMetadataWorker.class);
 
     /**
      * Selected files.
@@ -67,6 +69,10 @@ public abstract class WriteMetadataWorker extends Worker<Map<String, String>> {
                     // Reset with previous value
                     updated.put(key, next.attributes().getMetadata().get(key));
                 }
+            }
+            if(updated.equals(next.attributes().getMetadata())) {
+                log.info("Skip writing equal metadata for " + next);
+                return metadata;
             }
             ((CloudPath) next).writeMetadata(updated);
         }
