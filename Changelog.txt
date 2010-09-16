@@ -7,12 +7,13 @@ Changelog. Last modified: $Date$
 4.0 [http://trac.cyberduck.ch/milestone/4.0]
 - [Feature] Version for Microsoft Windows XP, Windows Vista & Windows 7.
 - [Feature] Connecting to Windows Azure Blob Storage (Azure) (#3938)
-- [Bugfix] Uploading .xlsx or .docx documents fails with permission error (#5169) (Google Docs)
 
 3.6.2 (Sep-20-2010) [http://trac.cyberduck.ch/milestone/3.6.2]
 - [Bugfix] Files pasted upload to parent directory (#5155)
 - [Feature] Option to display hidden files in upload prompt (#1243)
 - [Feature] Import Transmit favorites (#3073)
+- [Feature] Copy and open multiple URLs (#5135)
+- [Bugfix] Uploading .xlsx or .docx documents fails with permission error (#5169) (Google Docs)
 - [Bugfix] Reading and writing ACLs (Google Docs)
 
 3.6.1 (Sep-07-2010) [http://trac.cyberduck.ch/milestone/3.6.1]
