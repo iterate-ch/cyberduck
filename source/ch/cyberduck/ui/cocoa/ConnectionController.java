@@ -150,6 +150,10 @@ public class ConnectionController extends SheetController {
                 // Was previously configured with a static configuration
                 pathField.setStringValue("");
             }
+            if(StringUtils.isNotBlank(protocol.getDefaultHostname())) {
+                // Prefill with default hostname
+                hostField.setStringValue(protocol.getDefaultHostname());
+            }
             usernameField.setEnabled(true);
             hostField.setEnabled(true);
             portField.setEnabled(true);
