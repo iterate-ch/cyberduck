@@ -23,6 +23,9 @@
 
 <project name="Cyberduck for Mac" basedir=".">
 
+    <property name="jdk.home" value="${user.home}/bin/1.5.0"/>
+    <!--<property name="jdk.home" value="/System/Library/Frameworks/JavaVM.framework/Versions/1.5"/>-->
+        
     <property name="app.bundle" value="${build.deploy}/${app.name}.app"/>
     <property name="app.contents" value="${app.bundle}/Contents"/>
     <property name="app.macos" location="${app.contents}/MacOS"/>
@@ -35,6 +38,12 @@
 
     <property name="spotlight" value="${home}/Spotlight Importer"/>
     <property name="build.spotlight" value="${spotlight}/build/${configuration}"/>
+
+    <path id="build.bootclasspath">
+        <pathelement location="${jdk.home}/Classes/classes.jar"/>
+        <pathelement location="${jdk.home}/Classes/jce.jar"/>
+        <pathelement location="${jdk.home}/Classes/jsse.jar"/>
+    </path>
 
     <target name="build" depends="archive, stub" description="Compile, jar and copy to application bundle">
         <copy todir="${app.java}">

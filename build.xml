@@ -46,10 +46,7 @@
     <property name="www" value="${home}/www"/>
     <property name="www.update" value="${www}/update"/>
     <property name="www.help" value="${www}/help"/>
-
-    <property name="jdk.home" value="${user.home}/bin/1.5.0"/>
-    <!--<property name="jdk.home" value="/System/Library/Frameworks/JavaVM.framework/Versions/1.5"/>-->
-
+    
     <condition property="platform" value="mac">
         <os family="mac"/>
     </condition>
@@ -77,12 +74,6 @@
         <fileset dir="${lib.ext}">
             <include name="*.jar"/>
         </fileset>
-    </path>
-
-    <path id="build.bootclasspath">
-        <pathelement location="${jdk.home}/Classes/classes.jar"/>
-        <pathelement location="${jdk.home}/Classes/jce.jar"/>
-        <pathelement location="${jdk.home}/Classes/jsse.jar"/>
     </path>
 
     <taskdef name="junit" classname="org.apache.tools.ant.taskdefs.optional.junit.JUnitTask">

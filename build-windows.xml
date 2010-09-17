@@ -23,6 +23,8 @@
 
 <project name="Cyberduck for Windows" basedir="." xmlns:dn="antlib:org.apache.ant.dotnet">
 
+    <property name="jdk.home" value="C:/Program Files/Java/jdk1.5.0_22"/>
+
     <property name="setup" value="${home}/setup"/>
     <property name="nsis.home" value="${env.ProgramFiles(x86)}/NSIS"/>
     <property name="winsdk.home" value="${env.ProgramFiles(x86)}/Microsoft SDKs/Windows/v7.0A/Bin"/>
@@ -31,6 +33,12 @@
 
     <taskdef resource="net/sf/antcontrib/antcontrib.properties"/>
     <taskdef name="ikvmc" classname="net.ikvm.ant.IkvmcTask"/>
+
+    <path id="build.bootclasspath">
+        <pathelement location="${jdk.home}/jre/lib/rt.jar"/>
+        <pathelement location="${jdk.home}/jre/lib/jce.jar"/>
+        <pathelement location="${jdk.home}/jre/lib/jsse.jar"/>
+    </path>
 
     <target name="version" depends="revision">
         <!-- remove any non-digits (e.g. a trailing M) from the current revision -->
@@ -42,8 +50,8 @@
         <propertyregex property="minor"
                        input="${cyberduck.version.minor}.0"
                        regexp="(\d\.\d)(\.\d)?"
-                       select="\1"/>                
-                  
+                       select="\1"/>
+
         <property name="version"
                   value="${cyberduck.version.major}.${minor}.${svn.revision.stripped}"/>
         <property name="shortversion"
@@ -68,8 +76,8 @@
         </dn:msbuild>
     </target>
 
-    <target name="dll" depends="archive" description="Convert core.jar and ui.jar to core.dll">
-        <ikvmc target="library" out="${build}/core.dll" home="${ikvm.home}" version="1.0.0.0" debug="false"
+    <target name="dll" depends="version, archive" description="Convert core.jar and ui.jar to core.dll">
+        <ikvmc target="library" out="${build}/core.dll" home="${ikvm.home}" version="${version}" debug="false"
                verbose="true">
             <fileset file="${build}/core.jar"/>
             <fileset file="${build}/ui.jar"/>
@@ -177,7 +185,7 @@
         </replace>
 
         <!-- copy wyUpdate project over to the build directory -->
-        <copy file="${changelog.wyp}" tofile="${build}/changelog.wyp"  overwrite="true"/>
+        <copy file="${changelog.wyp}" tofile="${build}/changelog.wyp" overwrite="true"/>
 
         <exec executable="${wybuild.home}/wybuild.exe" failonerror="true">
             <arg value="${build}/changelog.wyp"/>
