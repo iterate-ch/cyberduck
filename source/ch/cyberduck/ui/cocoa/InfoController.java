@@ -2106,7 +2106,7 @@ public class InfoController extends ToolbarWindowController {
         distributionCnameField.setEnabled(stop && enable);
         distributionCnameField.setEnabled(stop && enable);
         distributionDeliveryPopup.setEnabled(stop && enable);
-        distributionDefaultRootPopup.setEnabled(stop && enable
+        distributionDefaultRootPopup.setEnabled(stop && enable && session instanceof S3Session
                 && Distribution.DOWNLOAD.toString().equals(distributionDeliveryPopup.selectedItem().representedObject()));
         if(stop) {
             distributionProgress.stopAnimation(null);
