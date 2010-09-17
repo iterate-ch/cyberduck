@@ -242,7 +242,9 @@ namespace Ch.Cyberduck.Ui.Controller
             defaults.put("application.revision", ApplicationRevision);
             defaults.put("application.language", GetDefaultLanguage());
             defaults.put("application.language.custom", false.ToString());
-
+            defaults.put("bookmark.import.filezilla.location", Path.Combine(Environment.GetFolderPath(
+                Environment.SpecialFolder.ApplicationData), "FileZilla", "sitemanager.xml"));
+            
             base.setDefaults();
 
             defaults.put("protocol.azure.tls.enable", true.ToString());

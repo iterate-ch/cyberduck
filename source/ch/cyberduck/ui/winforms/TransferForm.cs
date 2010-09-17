@@ -345,7 +345,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             Commands.Add(new ToolStripItem[] {resumeToolStripButton}, (sender, args) => ResumeEvent(),
                          () => ValidateResumeEvent());
             Commands.Add(new ToolStripItem[] {reloadToolStripButton}, (sender, args) => ReloadEvent(),
-                         () => ValidateResumeEvent());
+                         () => ValidateReloadEvent());
             Commands.Add(new ToolStripItem[] {stopToolStripButton}, (sender, args) => StopEvent(),
                          () => ValidateStopEvent());
             Commands.Add(new ToolStripItem[] {removeToolStripButton}, (sender, args) => RemoveEvent(),

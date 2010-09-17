@@ -241,7 +241,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         public event VoidHandler DeleteBookmark;
         public event ValidateCommand ValidateDeleteBookmark;
         public event VoidHandler DuplicateBookmark;
-        public event ValidateCommand ValidateDuplicateBookmark;       
+        public event ValidateCommand ValidateDuplicateBookmark;
         public event EventHandler<ConnectBookmarkArgs> ConnectBookmark;
         public event ValidateCommand ValidateConnectBookmark;
         public event VoidHandler OpenWebUrl;
@@ -2062,7 +2062,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                 args.Effect = DragDropEffects.None;
 
                 //args.Handled = true; // OnCanDrop is not being called anymore
-                                
+
                 if (args.Handled)
                     return;
 

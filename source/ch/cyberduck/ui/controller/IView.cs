@@ -26,6 +26,7 @@ namespace Ch.Cyberduck.Ui.Controller
     {
         bool Visible { get; set; }
         bool ReleaseWhenClose { set; }
+        bool IsHandleCreated { get; }
         bool IsDisposed { get; }
         bool Disposing { get; }
         void Close();

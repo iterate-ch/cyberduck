@@ -25,6 +25,7 @@ using System.Windows.Forms;
 using ch.cyberduck.core;
 using ch.cyberduck.core.aquaticprime;
 using ch.cyberduck.core.i18n;
+using ch.cyberduck.core.importer;
 using ch.cyberduck.core.sftp;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Controller.Growl;
@@ -292,7 +293,7 @@ namespace Ch.Cyberduck.Core
             }
 
             // set up the main form.
-            _bc = NewBrowser(false, false);
+            _bc = NewBrowser(true, true);
             MainForm = _bc.View as Form;
 
             // then, run the the main form.
@@ -319,7 +320,7 @@ namespace Ch.Cyberduck.Core
             }
 
             if (Preferences.instance().getBoolean("browser.serialize"))
-            {                
+            {
                 _bc.Background(delegate { _sessions.load(); },
                                delegate
                                    {
@@ -331,9 +332,6 @@ namespace Ch.Cyberduck.Core
                                        }
                                    });
             }
-            //All collections has been already loaded in the main thread, no BackgroundAction as in
-            //the java version. There is no measurable performance gain to use a BackgroundAction. At
-            //least not in .NET. See #LoadCollections           
             if (Preferences.instance().getBoolean(
                 "browser.openUntitled"))
             {
@@ -343,12 +341,60 @@ namespace Ch.Cyberduck.Core
                 }
             }
             //Registering for Growl is an expensive operation. Takes up to 500ms on my machine.
-
-
-            //todo wieder einkommentieren, wenn threading probleme gelöst sind. so wirft es regelmässig fehler weil browserform.handle noch nicht erstellt ist wenn cleanup kommt.
-            //_bc.Background(() => ch.cyberduck.ui.growl.Growl.instance().register(), delegate {  });
+            _bc.Background(delegate { ch.cyberduck.ui.growl.Growl.instance().register(); }, delegate { });
 
             //todo add Bonjour initialization stuff            
+
+            // Import thirdparty bookmarks.
+            foreach (ThirdpartyBookmarkCollection c in GetThirdpartyBookmarks())
+            {
+                if (!Preferences.instance().getBoolean(c.getConfiguration()))
+                {
+                    if (!c.isInstalled())
+                    {
+                        Logger.info("No application installed for " + c.getBundleIdentifier());
+                        continue;
+                    }
+                    c.load();
+                    if (!c.isEmpty())
+                    {
+                        int r =
+                            cTaskDialog.ShowCommandBox(
+                                String.Format(Locale.localizedString("Import {0} Bookmarks", "Configuration"),
+                                              c.getName()),
+                                null,
+                                String.Format(
+                                    Locale.localizedString(
+                                        "{0} bookmarks found. Do you want to add these to your bookmarks?",
+                                        "Configuration"), c.size()),
+                                null,
+                                null,
+                                null, String.Format("{0}|{1}|{2}", Locale.localizedString("Import", "Configuration"),
+                                                    Locale.localizedString("Don't Ask Again", "Configuration"),
+                                                    Locale.localizedString("Cancel", "Configuration")),
+                                false,
+                                eSysIcons.Warning, eSysIcons.Warning);
+                        switch (r)
+                        {
+                            case 0:
+                                BookmarkCollection.defaultCollection().addAll(c);
+                                // Flag as imported
+                                Preferences.instance().setProperty(c.getConfiguration(), true);
+                                break;
+                            case 1: // Flag as imported
+                                Preferences.instance().setProperty(c.getConfiguration(), true);
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                }
+            }
+        }
+
+        private IList<ThirdpartyBookmarkCollection> GetThirdpartyBookmarks()
+        {
+            return new List<ThirdpartyBookmarkCollection> {new FilezillaBookmarkCollection()};
         }
 
         /// <summary>

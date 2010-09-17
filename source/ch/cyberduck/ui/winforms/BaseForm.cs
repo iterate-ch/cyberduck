@@ -20,13 +20,11 @@ using System.Collections;
 using System.Drawing;
 using System.Windows.Forms;
 using BrightIdeasSoftware;
-using ch.cyberduck;
 using Ch.Cyberduck.Core;
 using ch.cyberduck.core.i18n;
 using ch.cyberduck.ui.controller;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Winforms.Taskdialog;
-using org.apache.log4j;
 
 namespace Ch.Cyberduck.Ui.Winforms
 {
@@ -74,7 +72,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                         };
 
             FormClosing += delegate(object sender, FormClosingEventArgs args)
-                               {                                   
+                               {
                                    if (!_releaseWhenClose && args.CloseReason == CloseReason.UserClosing)
                                    {
                                        //Log.debug("Cancel close event");
@@ -85,7 +83,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                                    FormClosingEventHandler closingEvent = ViewClosingEvent;
                                    if (null != closingEvent) ViewClosingEvent(sender, args);
                                };
-            
+
             Disposed += delegate
                             {
                                 VoidHandler disposedEvent = ViewDisposedEvent;
@@ -105,7 +103,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         /// </summary>
         public virtual string[] BundleNames
         {
-            get { return new string[]{}; }
+            get { return new string[] {}; }
         }
 
         public DialogResult MessageBox(string title, string message, string content, eTaskDialogButtons buttons,

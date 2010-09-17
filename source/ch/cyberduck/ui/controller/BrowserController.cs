@@ -2257,9 +2257,12 @@ namespace Ch.Cyberduck.Ui.Controller
             if (null == directory)
             {
                 // Clear the browser view if no working directory is given
-                Workdir = null;
-                UpdateNavigationPaths();
-                ReloadData(false);
+                Invoke(delegate
+                           {
+                               Workdir = null;
+                               UpdateNavigationPaths();
+                               ReloadData(false);                               
+                           });
                 return;
             }
             Background(new WorkdirAction(this, directory, selected));
@@ -3680,8 +3683,6 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
             }
         }
-
-        private delegate bool WaitMethod();
 
         private class WorkdirAction : BrowserBackgroundAction
         {

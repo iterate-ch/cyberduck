@@ -62,6 +62,11 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             try
             {
+                if (!View.IsHandleCreated)
+                {
+                    return;
+                }
+
                 if (View.InvokeRequired)
                 {
                     if (wait)
@@ -81,7 +86,7 @@ namespace Ch.Cyberduck.Ui.Controller
             catch (ObjectDisposedException)
             {
                 //happens because there is no synchronization between the lifecycle of a form and callbacks of background threads.
-                //catch silently
+                //catch silently                
             }
         }
 

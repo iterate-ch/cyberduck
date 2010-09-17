@@ -20,10 +20,9 @@ using System.Collections.Generic;
 using System.Threading;
 using ch.cyberduck.core;
 using Ch.Cyberduck.Core;
-using Ch.Cyberduck.Ui.Winforms.Controls;
-using Ch.Cyberduck.Ui.Winforms.Serializer;
 using ch.cyberduck.core.i18n;
 using ch.cyberduck.core.threading;
+using Ch.Cyberduck.Ui.Winforms.Controls;
 using com.enterprisedt.net.ftp;
 using java.lang;
 using org.apache.log4j;
@@ -38,6 +37,10 @@ namespace Ch.Cyberduck.Ui.Controller
         private static readonly String Auto = Locale.localizedString("Auto");
         private static readonly String ConnectmodeActive = Locale.localizedString("Active");
         private static readonly String ConnectmodePassive = Locale.localizedString("Passive");
+
+        private static readonly IDictionary<WindowController, ConnectionController> Controllers =
+            new Dictionary<WindowController, ConnectionController>();
+
         private static readonly string Default = Locale.localizedString("Default");
         private static readonly Logger Log = Logger.getLogger(typeof (ConnectionController).Name);
 
@@ -46,53 +49,23 @@ namespace Ch.Cyberduck.Ui.Controller
         private readonly Object _syncRootReachability = new Object();
         private readonly Timer _ticklerRechability;
 
-        private static readonly IDictionary<WindowController, ConnectionController> Controllers = 
-            new Dictionary<WindowController, ConnectionController>();
-
-        public static ConnectionController Instance(WindowController parent)
-        {
-            ConnectionController c;
-            if (!Controllers.TryGetValue(parent, out c))
-            {
-                c =  new ConnectionController();
-                Controllers.Add(parent, c);
-                parent.View.ViewClosedEvent += delegate
-                                                     {
-                                                         Controllers.Remove(parent);
-                                                         //todo c muss wohl auch noch abgeräumt werden
-                                                     };                
-            }
-            return c;
-        }
-
         private ConnectionController(IConnectionView view)
         {
             View = view;
 
-            _ticklerRechability = new Timer(OnRechability, null, Timeout.Infinite, Timeout.Infinite);
+            _ticklerRechability = new Timer(OnReachability, null, Timeout.Infinite, Timeout.Infinite);
 
             View.ToggleOptions += View_ToggleOptions;
-            View.OptionsVisible = ch.cyberduck.core.Preferences.instance().getBoolean("connection.toggle.options");
-            View.ViewClosedEvent += delegate
-                                        {                                            
-                                            ch.cyberduck.core.Preferences.instance().setProperty("connection.toggle.options", View.OptionsVisible);
-                                        };
+            View.OptionsVisible = Preferences.instance().getBoolean("connection.toggle.options");
+            View.ViewClosedEvent +=
+                delegate { Preferences.instance().setProperty("connection.toggle.options", View.OptionsVisible); };
 
             Init();
         }
 
-        public override bool ViewShouldClose()
+        private ConnectionController()
+            : this(ObjectFactory.GetInstance<IConnectionView>())
         {
-            //todo mit SheetController/-Form und validate mit beep
-            if (Utils.IsBlank(View.Hostname))
-            {
-                return false;
-            }
-            if (Utils.IsBlank(View.Username))
-            {
-                return false;
-            }
-            return true;
         }
 
         public Host ConfiguredHost
@@ -144,9 +117,34 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
-        private ConnectionController()
-            : this(ObjectFactory.GetInstance<IConnectionView>())
+        public static ConnectionController Instance(WindowController parent)
         {
+            ConnectionController c;
+            if (!Controllers.TryGetValue(parent, out c))
+            {
+                c = new ConnectionController();
+                Controllers.Add(parent, c);
+                parent.View.ViewClosedEvent += delegate
+                                                   {
+                                                       Controllers.Remove(parent);
+                                                       //todo c muss wohl auch noch abgeräumt werden
+                                                   };
+            }
+            return c;
+        }
+
+        public override bool ViewShouldClose()
+        {
+            //todo mit SheetController/-Form und validate mit beep
+            if (Utils.IsBlank(View.Hostname))
+            {
+                return false;
+            }
+            if (Utils.IsBlank(View.Username))
+            {
+                return false;
+            }
+            return true;
         }
 
         private void Init()
@@ -154,13 +152,13 @@ namespace Ch.Cyberduck.Ui.Controller
             InitProtocols();
             InitConnectModes();
             InitEncodings();
-            
-            View.Username = ch.cyberduck.core.Preferences.instance().getProperty("connection.login.name");
+
+            View.Username = Preferences.instance().getProperty("connection.login.name");
             View.PkLabel = Locale.localizedString("No private key selected");
-            View.SavePasswordChecked = ch.cyberduck.core.Preferences.instance().getBoolean(
+            View.SavePasswordChecked = Preferences.instance().getBoolean(
                 "connection.login.useKeychain")
                                        &&
-                                       ch.cyberduck.core.Preferences.instance().getBoolean(
+                                       Preferences.instance().getBoolean(
                                            "connection.login.addKeychain");
             View.AnonymousChecked = false;
             View.PkCheckboxState = false;
@@ -182,7 +180,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_ChangedSavePasswordCheckboxEvent()
         {
-            ch.cyberduck.core.Preferences.instance().setProperty("connection.login.addKeychain", View.SavePasswordChecked);
+            Preferences.instance().setProperty("connection.login.addKeychain", View.SavePasswordChecked);
         }
 
         private void View_OpenUrl()
@@ -195,13 +193,14 @@ namespace Ch.Cyberduck.Ui.Controller
             if (View.AnonymousChecked)
             {
                 View.UsernameEnabled = false;
-                View.Username = ch.cyberduck.core.Preferences.instance().getProperty("connection.login.anon.name");
+                View.Username = Preferences.instance().getProperty("connection.login.anon.name");
                 View.PasswordEnabled = false;
                 View.Password = string.Empty;
-            } else
+            }
+            else
             {
                 View.UsernameEnabled = true;
-                View.Username = ch.cyberduck.core.Preferences.instance().getProperty("connection.login.name");
+                View.Username = Preferences.instance().getProperty("connection.login.name");
                 View.PasswordEnabled = true;
             }
             UpdateUrlLabel();
@@ -255,7 +254,8 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 View.PkCheckboxState = true;
                 View.PkLabel = host.getCredentials().getIdentity().toURL();
-            } else
+            }
+            else
             {
                 UpdateIdentity();
             }
@@ -266,7 +266,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public void ReadPasswordFromKeychain()
         {
-            if (ch.cyberduck.core.Preferences.instance().getBoolean("connection.login.useKeychain"))
+            if (Preferences.instance().getBoolean("connection.login.useKeychain"))
             {
                 if (string.IsNullOrEmpty(View.Hostname))
                 {
@@ -352,7 +352,7 @@ namespace Ch.Cyberduck.Ui.Controller
             //todo placeholder setzen bzw. label korrekt setzen je nach protokoll
             if (protocol.Equals(Protocol.IDISK))
             {
-                String member = ch.cyberduck.core.Preferences.instance().getProperty("iToolsMember");
+                String member = Preferences.instance().getProperty("iToolsMember");
                 if (!string.IsNullOrEmpty(member))
                 {
                     // Account name configured in System Preferences
@@ -375,7 +375,7 @@ namespace Ch.Cyberduck.Ui.Controller
             UpdateIdentity();
             UpdateUrlLabel();
 
-            OnRechability(null);
+            OnReachability(null);
         }
 
         private void UpdateUrlLabel()
@@ -430,7 +430,7 @@ namespace Ch.Cyberduck.Ui.Controller
             View.OptionsVisible = !View.OptionsVisible;
         }
 
-        private void OnRechability(object state)
+        private void OnReachability(object state)
         {
             Log.debug("OnRechability");
             background(new ReachabilityAction(this, View.Hostname));
@@ -453,10 +453,11 @@ namespace Ch.Cyberduck.Ui.Controller
                 if (!String.IsNullOrEmpty(_hostname))
                 {
                     _reachable = new Host(_hostname).isReachable();
-                } else
+                }
+                else
                 {
                     _reachable = false;
-                }                
+                }
             }
 
             public override void cleanup()

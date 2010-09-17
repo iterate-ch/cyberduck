@@ -735,17 +735,11 @@ namespace Ch.Cyberduck.Ui.Controller
                         int count = TransferCollection.instance().numberOfRunningTransfers();
                         if (0 == count)
                         {
-                            _controller.Invoke(delegate
-                                                   {
-                                                       _controller.View.TaskbarBadge(null);
-                                                   });
+                            _controller.Invoke(delegate { _controller.View.TaskbarBadge(null); });
                         }
                         else
                         {
-                            _controller.Invoke(delegate
-                                                   {
-                                                       _controller.View.TaskbarBadge(count.ToString());
-                                                   });                                                        
+                            _controller.Invoke(delegate { _controller.View.TaskbarBadge(count.ToString()); });
                         }
                     }
                 }
