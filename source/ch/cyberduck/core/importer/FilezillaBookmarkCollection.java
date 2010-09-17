@@ -49,6 +49,11 @@ public class FilezillaBookmarkCollection extends ThirdpartyBookmarkCollection {
     }
 
     @Override
+    public String getName() {
+        return "FileZilla";
+    }
+
+    @Override
     public Local getFile() {
         return LocalFactory.createLocal(Preferences.instance().getProperty("bookmark.import.filezilla.location"));
     }
