@@ -1,4 +1,4 @@
-﻿// 
+// 
 // Copyright (c) 2010 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
@@ -37,13 +37,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             ConfigureUpdater();
 
             pictureBox.Image = IconCache.Instance.IconForName("cyberduck", 64);
-            newVersionAvailableLabel.Text = Locale.localizedString("A new version of %@ is available!").Replace("%@",
-                                                                                                                Preferences
-                                                                                                                    .
-                                                                                                                    instance
-                                                                                                                    ().
-                                                                                                                    getProperty
-                                                                                                                    ("application.name"));
+            newVersionAvailableLabel.Text = Locale.localizedString("A new version of %@ is available!", "Sparkle").Replace("%@",
+                                                            Preferences.instance().getProperty("application.name"));
 
             //force handle creation to make the updater work
             IntPtr intPtr = Handle;
@@ -109,9 +104,8 @@ namespace Ch.Cyberduck.Ui.Winforms
                                                    Preferences.instance().getProperty("application.version");
                                                string newVersion = updater.Version;
 
-                                               //todo lookup string needs to be changed as soon as the Sparkle.string files are available
                                                versionLabel.Text = Locale.localizedString(
-                                                   "%1$@ %2$@ is now available (you have %3$@). Would you like to download it now?")
+                                                   "%1$@ %2$@ is now available (you have %3$@). Would you like to download it now?", "Sparkle")
                                                    .Replace("%1$@",
                                                             Preferences.instance
                                                                 ().getProperty
@@ -142,7 +136,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 
             updater.BeforeDownloading += (sender, args) =>
                                              {
-                                                 UpdateStatusLabel("Downloading new version.", false);
+                                                 UpdateStatusLabel(Locale.localizedString("Downloading update...", "Sparkle"), false);
                                                  progressBar.Style = ProgressBarStyle.Continuous;
                                                  progressBar.Value = 0;
                                                  progressBar.Visible = true;
@@ -157,7 +151,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             updater.ReadyToBeInstalled += delegate
                                               {
                                                   progressBar.Visible = false;
-                                                  statusLabel.Text = "Installing new version.";
+                                                  statusLabel.Text = Locale.localizedString("Installing update...", "Sparkle");
                                                   updater.InstallNow();
                                               };
 
@@ -168,7 +162,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                                                   SetButtonShield(installButton, false);
                                               }
                                               laterButton.Visible = false;
-                                              installButton.Text = Locale.localizedString("OK");
+                                              installButton.Text = Locale.localizedString("OK", "Sparkle");
                                               progressBar.Style = ProgressBarStyle.Marquee;
                                               progressBar.Visible = true;
                                           };
@@ -184,7 +178,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             }
             statusLabel.Visible = true;
             statusLabel.ForeColor = error ? Color.Red : Color.FromKnownColor(KnownColor.ControlText);
-            statusLabel.Text = error ? "Error: " + status : status;
+            statusLabel.Text = error ? Locale.localizedString("An error occurred during installation. Please try again later." + " ", "Sparkle")
+                                + status : status;
         }
 
         public void SetStatusChecking(bool checking)
