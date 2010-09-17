@@ -253,6 +253,8 @@ namespace Ch.Cyberduck.Ui.Controller
             defaults.put("queue.upload.permissions.useDefault", true.ToString());
             defaults.put("queue.upload.changePermissions", true.ToString());
 
+            defaults.put("queue.dock.badge", true.ToString());
+
             //defaults.put("logging", "debug");
             defaults.put("logging", "info");
             //defaults.put("logging", "info");

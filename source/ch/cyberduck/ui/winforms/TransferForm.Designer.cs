@@ -67,6 +67,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.transcriptBox = new System.Windows.Forms.RichTextBox();
             this.toolStrip.SuspendLayout();
             this.toolbarMenuStrip.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).BeginInit();
             this.splitContainer.Panel1.SuspendLayout();
             this.splitContainer.Panel2.SuspendLayout();
             this.splitContainer.SuspendLayout();
@@ -82,6 +83,15 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.toolStrip.ContextMenuStrip = this.toolbarMenuStrip;
             this.toolStrip.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
             this.toolStrip.ImageScalingSize = new System.Drawing.Size(32, 32);
+            this.toolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.resumeToolStripButton,
+            this.reloadToolStripButton,
+            this.stopToolStripButton,
+            this.removeToolStripButton,
+            this.cleanUptoolStripButton,
+            this.showToolStripButton,
+            this.openToolStripButton,
+            this.logToolStripButton});
             this.toolStrip.Location = new System.Drawing.Point(0, 0);
             this.toolStrip.Name = "toolStrip";
             this.toolStrip.Size = new System.Drawing.Size(541, 54);
@@ -212,6 +222,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.showToolStripButton.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
             this.showToolStripButton.AutoToolTip = false;
+            this.showToolStripButton.Image = global::Ch.Cyberduck.ResourcesBundle.reveal;
             this.showToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.showToolStripButton.Name = "showToolStripButton";
             this.showToolStripButton.Size = new System.Drawing.Size(40, 51);
@@ -255,7 +266,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.splitContainer.Panel2.Controls.Add(this.transcriptBox);
             this.splitContainer.Size = new System.Drawing.Size(541, 478);
-            this.splitContainer.SplitterDistance = 343;
+            this.splitContainer.SplitterDistance = 340;
             this.splitContainer.SplitterWidth = 5;
             this.splitContainer.TabIndex = 6;
             this.splitContainer.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.splitContainer_SplitterMoved);
@@ -267,7 +278,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel2.Location = new System.Drawing.Point(0, 0);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(541, 343);
+            this.panel2.Size = new System.Drawing.Size(541, 340);
             this.panel2.TabIndex = 7;
             // 
             // transferListView
@@ -286,7 +297,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.transferListView.Location = new System.Drawing.Point(0, 0);
             this.transferListView.Name = "transferListView";
             this.transferListView.RowHeight = 85;
-            this.transferListView.Size = new System.Drawing.Size(541, 299);
+            this.transferListView.Size = new System.Drawing.Size(541, 296);
             this.transferListView.TabIndex = 6;
             this.transferListView.UseCompatibleStateImageBehavior = false;
             this.transferListView.View = System.Windows.Forms.View.Details;
@@ -313,9 +324,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.tableLayoutPanel1.Controls.Add(this.label2, 1, 1);
             this.tableLayoutPanel1.Controls.Add(this.urlLabel, 2, 0);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 299);
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 296);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.Padding = new System.Windows.Forms.Padding(0, 3, 0, 0);
+            this.tableLayoutPanel1.Padding = new System.Windows.Forms.Padding(5, 5, 5, 0);
             this.tableLayoutPanel1.RowCount = 2;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
@@ -326,7 +337,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.bandwithSplitButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.bandwithSplitButton.ContextMenuStrip = this.bandwidthMenuStrip;
-            this.bandwithSplitButton.Location = new System.Drawing.Point(489, 12);
+            this.bandwithSplitButton.Location = new System.Drawing.Point(484, 13);
             this.bandwithSplitButton.Name = "bandwithSplitButton";
             this.tableLayoutPanel1.SetRowSpan(this.bandwithSplitButton, 2);
             this.bandwithSplitButton.Size = new System.Drawing.Size(49, 23);
@@ -342,7 +353,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             // fileIcon
             // 
-            this.fileIcon.Location = new System.Drawing.Point(3, 6);
+            this.fileIcon.Location = new System.Drawing.Point(8, 8);
             this.fileIcon.Name = "fileIcon";
             this.tableLayoutPanel1.SetRowSpan(this.fileIcon, 2);
             this.fileIcon.Size = new System.Drawing.Size(32, 32);
@@ -352,7 +363,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // queueSizeUpDown
             // 
             this.queueSizeUpDown.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.queueSizeUpDown.Location = new System.Drawing.Point(449, 12);
+            this.queueSizeUpDown.Location = new System.Drawing.Point(444, 13);
             this.queueSizeUpDown.Maximum = new decimal(new int[] {
             9,
             0,
@@ -377,9 +388,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             // label1
             // 
             this.label1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label1.Location = new System.Drawing.Point(43, 3);
+            this.label1.Location = new System.Drawing.Point(48, 5);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(94, 20);
+            this.label1.Size = new System.Drawing.Size(94, 19);
             this.label1.TabIndex = 0;
             this.label1.Text = "URL:";
             this.label1.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -388,17 +399,17 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.localLabel.AutoSize = true;
             this.localLabel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.localLabel.Location = new System.Drawing.Point(143, 23);
+            this.localLabel.Location = new System.Drawing.Point(148, 24);
             this.localLabel.Name = "localLabel";
-            this.localLabel.Size = new System.Drawing.Size(300, 21);
+            this.localLabel.Size = new System.Drawing.Size(290, 20);
             this.localLabel.TabIndex = 4;
             // 
             // label2
             // 
             this.label2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label2.Location = new System.Drawing.Point(43, 23);
+            this.label2.Location = new System.Drawing.Point(48, 24);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(94, 21);
+            this.label2.Size = new System.Drawing.Size(94, 20);
             this.label2.TabIndex = 1;
             this.label2.Text = "Local File:";
             this.label2.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -406,9 +417,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             // urlLabel
             // 
             this.urlLabel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.urlLabel.Location = new System.Drawing.Point(143, 3);
+            this.urlLabel.Location = new System.Drawing.Point(148, 5);
             this.urlLabel.Name = "urlLabel";
-            this.urlLabel.Size = new System.Drawing.Size(300, 20);
+            this.urlLabel.Size = new System.Drawing.Size(290, 19);
             this.urlLabel.TabIndex = 3;
             // 
             // transcriptBox
@@ -417,7 +428,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.transcriptBox.Location = new System.Drawing.Point(0, 0);
             this.transcriptBox.Name = "transcriptBox";
             this.transcriptBox.ReadOnly = true;
-            this.transcriptBox.Size = new System.Drawing.Size(541, 130);
+            this.transcriptBox.Size = new System.Drawing.Size(541, 133);
             this.transcriptBox.TabIndex = 1;
             this.transcriptBox.Text = "";
             // 
@@ -434,6 +445,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.toolbarMenuStrip.ResumeLayout(false);
             this.splitContainer.Panel1.ResumeLayout(false);
             this.splitContainer.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).EndInit();
             this.splitContainer.ResumeLayout(false);
             this.panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.transferListView)).EndInit();

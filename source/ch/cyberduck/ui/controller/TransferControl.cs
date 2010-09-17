@@ -19,7 +19,6 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
-using ch.cyberduck;
 using ch.cyberduck.ui.controller;
 using Ch.Cyberduck.Ui.Winforms.Taskdialog;
 

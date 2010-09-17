@@ -141,6 +141,12 @@
     <Reference Include="System.Security" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
+    <Reference Include="VistaBridgeLibrary">
+      <HintPath>..\..\..\lib\VistaBridgeLibrary.dll</HintPath>
+    </Reference>
+    <Reference Include="Windows7.DesktopIntegration">
+      <HintPath>..\..\..\lib\Windows7.DesktopIntegration.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="core\aquaticprime\LicenseVerifier.cs" />

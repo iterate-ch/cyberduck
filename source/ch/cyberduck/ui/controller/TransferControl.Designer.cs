@@ -65,7 +65,6 @@ namespace Ch.Cyberduck.Ui.Controller
             this.filesComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.filesComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.filesComboBox.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.filesComboBox.FormattingEnabled = true;
             this.filesComboBox.Location = new System.Drawing.Point(54, 6);
             this.filesComboBox.Name = "filesComboBox";

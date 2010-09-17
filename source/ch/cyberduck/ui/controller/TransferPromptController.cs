@@ -241,18 +241,18 @@ namespace Ch.Cyberduck.Ui.Controller
 
             if (transfer is DownloadTransfer)
             {
-                parent.Invoke(delegate { promptController = new DownloadPromptController(parent, transfer); });
+                parent.Invoke(delegate { promptController = new DownloadPromptController(parent, transfer); }, true);
                 return promptController;
             }
 
             if (transfer is UploadTransfer)
             {
-                parent.Invoke(delegate { promptController = new UploadPromptController(parent, transfer); });
+                parent.Invoke(delegate { promptController = new UploadPromptController(parent, transfer); }, true);
                 return promptController;
             }
             if (transfer is SyncTransfer)
             {
-                parent.Invoke(delegate { promptController = new SyncPromptController(parent, transfer); });
+                parent.Invoke(delegate { promptController = new SyncPromptController(parent, transfer); }, true);
                 return promptController;
             }
             throw new ArgumentException(transfer.toString());

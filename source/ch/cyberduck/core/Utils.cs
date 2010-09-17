@@ -44,6 +44,7 @@ namespace Ch.Cyberduck.Core
         public static Encoding encoding = Encoding.UTF8;
 
         public static readonly bool IsVistaOrLater = OperatingSystemVersion.Current >= OSVersionInfo.Vista;
+        public static readonly bool IsWin7OrLater = OperatingSystemVersion.Current >= OSVersionInfo.Win7;
 
         public static bool StartProcess(string filename, string args)
         {

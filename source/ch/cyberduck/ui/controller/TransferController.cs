@@ -20,11 +20,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Windows.Forms;
-using ch.cyberduck;
 using ch.cyberduck.core;
+using Ch.Cyberduck.Core;
 using ch.cyberduck.core.i18n;
 using ch.cyberduck.core.io;
-using ch.cyberduck.core.sftp;
 using Ch.Cyberduck.Ui.Controller.Threading;
 using Ch.Cyberduck.Ui.Winforms.Taskdialog;
 using org.apache.log4j;
@@ -81,7 +80,7 @@ namespace Ch.Cyberduck.Ui.Controller
             if (null != _instance)
             {
                 //Saving state of transfer window
-                ch.cyberduck.core.Preferences.instance().setProperty("queue.openByDefault", _instance.Visible);
+                Preferences.instance().setProperty("queue.openByDefault", _instance.Visible);
                 if (TransferCollection.instance().numberOfRunningTransfers() > 0)
                 {
                     DialogResult result = _instance.MessageBox(Locale.localizedString("Transfer in progress"),
@@ -121,9 +120,9 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             PopulateBandwithList();
 
-            View.TranscriptVisible = ch.cyberduck.core.Preferences.instance().getBoolean("queue.logDrawer.isOpen");
-            View.TranscriptHeight = ch.cyberduck.core.Preferences.instance().getInteger("queue.logDrawer.size.height");
-            View.QueueSize = ch.cyberduck.core.Preferences.instance().getInteger("queue.maxtransfers");
+            View.TranscriptVisible = Preferences.instance().getBoolean("queue.logDrawer.isOpen");
+            View.TranscriptHeight = Preferences.instance().getInteger("queue.logDrawer.size.height");
+            View.QueueSize = Preferences.instance().getInteger("queue.maxtransfers");
             View.BandwidthEnabled = false;
 
             View.SetModel(model);
@@ -152,13 +151,13 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_TranscriptHeightChangedEvent()
         {
-            ch.cyberduck.core.Preferences.instance().setProperty("queue.logDrawer.size.height", View.TranscriptHeight);
+            Preferences.instance().setProperty("queue.logDrawer.size.height", View.TranscriptHeight);
         }
 
         private void View_ToggleTranscriptEvent()
         {
             View.TranscriptVisible = !View.TranscriptVisible;
-            ch.cyberduck.core.Preferences.instance().setProperty("queue.logDrawer.isOpen", View.TranscriptVisible);
+            Preferences.instance().setProperty("queue.logDrawer.isOpen", View.TranscriptVisible);
         }
 
         private bool View_ValidateShowEvent()
@@ -262,7 +261,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                                {
                                                    return false;
                                                }
-                                               return transfer.isResumable();
+                                               return transfer.isResumable() && !transfer.isComplete();
                                            });
         }
 
@@ -288,7 +287,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_QueueSizeChangedEvent()
         {
-            ch.cyberduck.core.Preferences.instance().setProperty("queue.maxtransfers", View.QueueSize);
+            Preferences.instance().setProperty("queue.maxtransfers", View.QueueSize);
             lock (Queue.instance())
             {
                 Queue.instance().notify();
@@ -372,7 +371,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 View.Url = transfer.getRoot().toURL();
                 if (transfer.numberOfRoots() == 1)
                 {
-                    View.Local = transfer.getRoot().getLocal().getAbsolute();
+                    View.Local = transfer.getRoot().getLocal().toURL();
                 }
                 else
                 {
@@ -556,7 +555,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 AddTransfer(transfer);
             }
-            if (ch.cyberduck.core.Preferences.instance().getBoolean("queue.orderFrontOnStart"))
+            if (Preferences.instance().getBoolean("queue.orderFrontOnStart"))
             {
                 View.Show();
 
@@ -608,8 +607,6 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private class TransferBackgroundAction : AlertRepeatableBackgroundAction
         {
-            private static readonly Logger Log = Logger.getLogger(typeof (TransferBackgroundAction).Name);
-
             private readonly TransferController _controller;
             private readonly object _lock = new object();
             private readonly Transfer _transfer;
@@ -630,9 +627,11 @@ namespace Ch.Cyberduck.Ui.Controller
 
             public override bool prepare()
             {
-                //todo: check if we really need this adapter, since in java we only do some toolbar updates
-                //_listener = new SessionTransferAdapter(_controller);
-                //_transfer.addListener(_listener);
+                if (Utils.IsWin7OrLater)
+                {
+                    _listener = new TaskbarTransferAdapter(_controller);
+                    _transfer.addListener(_listener);
+                }
                 return base.prepare();
             }
 
@@ -659,11 +658,11 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     if (_transfer.isReset())
                     {
-                        if (ch.cyberduck.core.Preferences.instance().getBoolean("queue.removeItemWhenComplete"))
+                        if (Preferences.instance().getBoolean("queue.removeItemWhenComplete"))
                         {
                             _controller.RemoveTransfer(_transfer);
                         }
-                        if (ch.cyberduck.core.Preferences.instance().getBoolean("queue.orderBackOnStop"))
+                        if (Preferences.instance().getBoolean("queue.orderBackOnStop"))
                         {
                             if (!(TransferCollection.instance().numberOfRunningTransfers() > 0))
                             {
@@ -682,8 +681,9 @@ namespace Ch.Cyberduck.Ui.Controller
 
             public override void pause()
             {
-                Debug.WriteLine("TransferBackgroundAction.pause()");
                 _transfer.fireTransferQueued();
+                // Upon retry do not suggest to overwrite already completed items from the transfer
+                _resume = true;
                 base.pause();
                 _transfer.fireTransferResumed();
             }
@@ -692,7 +692,6 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 if ((_transfer.isRunning() || _transfer.isQueued()) && _transfer.isCanceled())
                 {
-                    Debug.WriteLine("TransferBackgroundAction.isCanceled:true");
                     return true;
                 }
                 return base.isCanceled();
@@ -708,6 +707,48 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 // No synchronization with other tasks
                 return _lock;
+            }
+
+            private class TaskbarTransferAdapter : TransferAdapter
+            {
+                private readonly TransferController _controller;
+
+                public TaskbarTransferAdapter(TransferController controller)
+                {
+                    _controller = controller;
+                }
+
+                public override void transferWillStart()
+                {
+                    Badge();
+                }
+
+                public override void transferDidEnd()
+                {
+                    Badge();
+                }
+
+                private void Badge()
+                {
+                    if (Preferences.instance().getBoolean("queue.dock.badge"))
+                    {
+                        int count = TransferCollection.instance().numberOfRunningTransfers();
+                        if (0 == count)
+                        {
+                            _controller.Invoke(delegate
+                                                   {
+                                                       _controller.View.TaskbarBadge(null);
+                                                   });
+                        }
+                        else
+                        {
+                            _controller.Invoke(delegate
+                                                   {
+                                                       _controller.View.TaskbarBadge(count.ToString());
+                                                   });                                                        
+                        }
+                    }
+                }
             }
         }
 

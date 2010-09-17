@@ -63,5 +63,6 @@ namespace Ch.Cyberduck.Ui.Controller
         event VoidHandler QueueSizeChangedEvent;
         
         void PopulateBandwidthList(IList<KeyValuePair<float, string>> throttles);
+        void TaskbarBadge(string text);
     }
 }
