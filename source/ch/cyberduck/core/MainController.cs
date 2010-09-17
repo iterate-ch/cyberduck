@@ -27,6 +27,7 @@ using ch.cyberduck.core.aquaticprime;
 using ch.cyberduck.core.i18n;
 using ch.cyberduck.core.importer;
 using ch.cyberduck.core.sftp;
+using ch.cyberduck.ui;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Controller.Growl;
 using Ch.Cyberduck.Ui.Winforms;
@@ -119,15 +120,7 @@ namespace Ch.Cyberduck.Core
                                                                        getInteger("uses") +
                                                                    1);
                                 // Shutdown thread pools
-                                //todo to be able to shutdown the timerpool properly make it a singleton
-                                //todo threading issues
-
-/*
-                                if (null != AbstractController.timerPool)
-                                {
-                                    AbstractController.timerPool.shutdownNow();
-                                }
- */
+                                AbstractController.getTimerPool().shutdownNow(); 
                                 ThreadPool.instance().shutdown();
                             };
         }

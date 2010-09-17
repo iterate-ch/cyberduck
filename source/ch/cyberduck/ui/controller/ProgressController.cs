@@ -200,7 +200,7 @@ namespace Ch.Cyberduck.Ui.Controller
             public override void willTransferPath(Path path)
             {
                 _controller._meter.reset();
-                _progressTimer = _controller.getTimerPool().scheduleAtFixedRate(new ProgressTimerRunnable(_controller),
+                _progressTimer = getTimerPool().scheduleAtFixedRate(new ProgressTimerRunnable(_controller),
                                                                                 Delay, Period, TimeUnit.MILLISECONDS);
             }
 

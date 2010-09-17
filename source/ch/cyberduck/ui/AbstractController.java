@@ -102,7 +102,7 @@ public abstract class AbstractController implements Controller {
     /**
      * @return
      */
-    protected ScheduledExecutorService getTimerPool() {
+    public static ScheduledExecutorService getTimerPool() {
         if(null == timerPool) {
             timerPool = Executors.newScheduledThreadPool(1);
         }
