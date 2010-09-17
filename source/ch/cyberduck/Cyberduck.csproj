@@ -543,8 +543,6 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
-    <Content Include="ui\winforms\taskdialog\green_arrow1.png" />
-    <Content Include="ui\winforms\taskdialog\green_arrow2.png" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="ui\winforms\commondialog\CustomOpenFileFolderDialog.csproj">

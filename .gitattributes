@@ -832,6 +832,8 @@ img/general.tiff -text svneol=unset#image/tiff
 img/google-icon.png -text svneol=unset#image/png
 img/google.icns -text
 img/google.ico -text
+img/greenArrow1.png -text
+img/greenArrow2.png -text
 img/history.tiff -text svneol=unset#image/tiff
 img/info.tiff -text svneol=unset#image/tiff
 img/language.tiff -text
@@ -2298,8 +2300,6 @@ source/ch/cyberduck/ui/winforms/taskdialog/cTaskDialog.cs -text
 source/ch/cyberduck/ui/winforms/taskdialog/frmTaskDialog.cs -text
 source/ch/cyberduck/ui/winforms/taskdialog/frmTaskDialog.designer.cs -text
 source/ch/cyberduck/ui/winforms/taskdialog/frmTaskDialog.resx -text
-source/ch/cyberduck/ui/winforms/taskdialog/green_arrow1.png -text
-source/ch/cyberduck/ui/winforms/taskdialog/green_arrow2.png -text
 source/com/snoize/SNDisclosableView.m -text
 source/de/zathras/UKCrashReporter.m -text
 source/de/zathras/UKSystemInfo.h -text
