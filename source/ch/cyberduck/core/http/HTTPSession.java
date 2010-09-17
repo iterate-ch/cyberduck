@@ -47,7 +47,6 @@ import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
 
-import javax.net.ssl.X509TrustManager;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
@@ -112,10 +111,12 @@ public abstract class HTTPSession extends Session implements SSLSession {
             protected ClientConnectionManager createClientConnectionManager() {
                 SchemeRegistry registry = new SchemeRegistry();
                 if(host.getProtocol().isSecure()) {
+                    SSLSocketFactory factory = new SSLSocketFactory(new CustomTrustSSLProtocolSocketFactory(
+                            getTrustManager()).getSSLContext());
+                    // We make sure to verify the hostname later using the trust manager
+                    factory.setHostnameVerifier(SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
                     registry.register(
-                            new Scheme(host.getProtocol().getScheme(),
-                                    new SSLSocketFactory(new CustomTrustSSLProtocolSocketFactory(
-                                            getTrustManager()).getSSLContext()), host.getPort()));
+                            new Scheme(host.getProtocol().getScheme(), factory, host.getPort()));
                 }
                 else {
                     registry.register(
