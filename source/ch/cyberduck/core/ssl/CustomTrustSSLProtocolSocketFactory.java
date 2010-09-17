@@ -56,7 +56,6 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
         try {
             context = SSLContext.getInstance("SSL");
             context.init(new KeyManager[]{key}, new TrustManager[]{trust}, null);
-            context.init(null, new TrustManager[]{trust}, null);
             if(log.isDebugEnabled()) {
                 log.debug("Using SSL context:" + context);
             }
@@ -68,7 +67,6 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
         catch(KeyManagementException e) {
             throw new RuntimeException(e);
         }
-
     }
 
     public SSLContext getSSLContext() {
