@@ -13,6 +13,7 @@ Changelog. Last modified: $Date$
 - [Feature] Option to display hidden files in upload prompt (#1243)
 - [Feature] Import Transmit favorites (#3073)
 - [Feature] Copy and open multiple URLs (#5135)
+- [Feature] Support for PuTTY private key format (SFTP)
 - [Bugfix] Uploading .xlsx or .docx documents fails with permission error (#5169) (Google Docs)
 - [Bugfix] Reading and writing ACLs (Google Docs)
 - [Bugfix] Interoperability with cPanel Web Disk (WebDAV) (#5188)
