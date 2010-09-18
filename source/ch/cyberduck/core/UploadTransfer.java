@@ -358,7 +358,20 @@ public class UploadTransfer extends Transfer {
 
     @Override
     protected void transfer(Path file) {
+        Permission perm = Permission.EMPTY;
         if(file.attributes().isFile()) {
+            if(this.getSession().isUnixPermissionsSupported()) {
+                if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
+                    if(file.exists()) {
+                        // Do not overwrite permissions for existing file.
+                        if(file.attributes().getPermission().equals(Permission.EMPTY)) {
+                            file.readUnixPermission();
+                        }
+                        perm = file.attributes().getPermission();
+                    }
+                }
+            }
+            // Transfer
             file.upload(bandwidth, new AbstractStreamListener() {
                 @Override
                 public void bytesSent(long bytes) {
@@ -375,16 +388,8 @@ public class UploadTransfer extends Transfer {
             ; // Currently handled in S3 only.
         }
         if(this.getSession().isUnixPermissionsSupported()) {
-            Permission perm = Permission.EMPTY;
-            if(file.exists()) {
-                // Do not overwrite permissions for existing file.
-                if(file.attributes().getPermission().equals(Permission.EMPTY)) {
-                    file.readUnixPermission();
-                }
-                perm = file.attributes().getPermission();
-            }
-            else {
-                if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
+            if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
+                if(perm.equals(Permission.EMPTY)) {
                     if(Preferences.instance().getBoolean("queue.upload.permissions.useDefault")) {
                         if(file.attributes().isFile()) {
                             perm = new Permission(
@@ -402,12 +407,12 @@ public class UploadTransfer extends Transfer {
                         }
                     }
                 }
-            }
-            if(perm.equals(Permission.EMPTY)) {
-                log.debug("Skip writing empty permissions for:" + this.toString());
-            }
-            else {
-                file.writeUnixPermission(perm, false);
+                if(perm.equals(Permission.EMPTY)) {
+                    log.debug("Skip writing empty permissions for:" + this.toString());
+                }
+                else {
+                    file.writeUnixPermission(perm, false);
+                }
             }
         }
         if(file.getSession().isTimestampSupported()) {
