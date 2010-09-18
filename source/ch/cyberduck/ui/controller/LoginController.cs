@@ -28,14 +28,16 @@ namespace Ch.Cyberduck.Ui.Controller
     public class LoginController : AbstractLoginController
     {
         private static readonly Logger Log = Logger.getLogger(typeof (LoginController).Name);
+        private readonly WindowController _parent;
 
         private Credentials _credentials;
         private Protocol _protocol;
         private ILoginView _view;
 
-        private LoginController(ILoginView view)
+        private LoginController(WindowController c)
         {
-            _view = view;
+            _parent = c;
+            _view = ObjectFactory.GetInstance<ILoginView>();
             InitEventHandlers();
         }
 
@@ -121,21 +123,18 @@ namespace Ch.Cyberduck.Ui.Controller
 
             Update();
 
-            ShowViewDelegate showView = delegate
-                                            {
-                                                if (DialogResult.Cancel == _view.ShowDialog())
-                                                {
-                                                    throw new LoginCanceledException();
-                                                }
-                                                credentials.setUsername(Utils.SafeString(_view.Username));
-                                                credentials.setPassword(Utils.SafeString(_view.Password));
-                                            };
-
-            Form parent = MainController.Application.ActiveMainForm;
-            lock (parent)
-            {
-                parent.Invoke(showView, true);
-            }
+            //workaround to make sure we are running on the Main Thread
+            Form f = MainController.Application.ActiveMainForm;
+            AsyncController.AsyncDelegate d = delegate
+                                                  {
+                                                      if (DialogResult.Cancel == _view.ShowDialog(f))
+                                                      {
+                                                          throw new LoginCanceledException();
+                                                      }
+                                                      credentials.setUsername(Utils.SafeString(_view.Username));
+                                                      credentials.setPassword(Utils.SafeString(_view.Password));
+                                                  };
+            f.Invoke(d);
         }
 
         private void InitEventHandlers()
@@ -172,20 +171,18 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             protected override object create()
             {
-                return new LoginController(ObjectFactory.GetInstance<ILoginView>());
+                return new LoginController(TransferController.Instance);
             }
 
             public override ch.cyberduck.core.LoginController create(Session s)
             {
-                return new LoginController(ObjectFactory.GetInstance<ILoginView>());
+                return new LoginController(TransferController.Instance);
             }
 
             public override ch.cyberduck.core.LoginController create(ch.cyberduck.ui.Controller c)
             {
-                return new LoginController(ObjectFactory.GetInstance<ILoginView>());
+                return new LoginController((WindowController) c);
             }
         }
-
-        private delegate void ShowViewDelegate();
     }
 }
