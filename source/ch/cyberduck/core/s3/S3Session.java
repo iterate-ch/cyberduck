@@ -257,7 +257,7 @@ public class S3Session extends CloudSession implements SSLSession {
      * @return
      */
     @Override
-    protected String getHostnameForContainer(String bucket) {
+    public String getHostnameForContainer(String bucket) {
         return ServiceUtils.generateS3HostnameForBucket(bucket,
                 configuration.getBoolProperty("s3service.disable-dns-buckets", false), this.getHost().getHostname());
     }
