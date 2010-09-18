@@ -29,7 +29,7 @@ namespace Ch.Cyberduck.Ui.Controller
     public class LocaleImpl : Locale
     {
         private static readonly Logger Log = Logger.getLogger(typeof (LocaleImpl).Name);
-        private static readonly Regex StringsRegex = new Regex("\"?(.*)\"? = \"(.*)\"", RegexOptions.Compiled);
+        private static readonly Regex StringsRegex = new Regex("\"?(.*?)\"? = \"(.*)\"", RegexOptions.Compiled);
 
         private readonly IDictionary<string, Dictionary<string, string>> _cache =
             new Dictionary<string, Dictionary<string, string>>();
@@ -44,24 +44,34 @@ namespace Ch.Cyberduck.Ui.Controller
             Stream stream =
                 asm.GetManifestResourceStream(string.Format("Ch.Cyberduck..........{0}.lproj.{1}.strings", _language,
                                                             bundle));
-            if (null != stream){
-            using (StreamReader file = new StreamReader(stream))
+            if (null == stream)
             {
-                Dictionary<string, string> bundleDict = new Dictionary<string, string>();
-                _cache[bundle] = bundleDict;
-                string line;
-                while ((line = file.ReadLine()) != null)
+                stream =
+                    asm.GetManifestResourceStream(
+                        string.Format(
+                            "Ch.Cyberduck..........lib.Sparkle.framework.Versions.A.Resources.{0}.lproj.Sparkle.strings",
+                            _language));
+            }
+            if (null != stream)
+            {
+                using (StreamReader file = new StreamReader(stream))
                 {
-                    if (StringsRegex.IsMatch(line))
+                    Dictionary<string, string> bundleDict = new Dictionary<string, string>();
+                    _cache[bundle] = bundleDict;
+                    string line;
+                    while ((line = file.ReadLine()) != null)
                     {
-                        Match match = StringsRegex.Match(line);
-                        string key = match.Groups[1].Value;
-                        string value = match.Groups[2].Value;
-                        bundleDict[key] = value;
+                        if (StringsRegex.IsMatch(line))
+                        {
+                            Match match = StringsRegex.Match(line);
+                            string key = match.Groups[1].Value;
+                            string value = match.Groups[2].Value;
+                            bundleDict[key] = value;
+                        }
                     }
                 }
             }
-            } else
+            else
             {
                 Log.error(String.Format("Bundle {0} not found", bundle));
             }
