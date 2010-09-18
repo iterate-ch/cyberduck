@@ -124,72 +124,6 @@ public class UploadTransfer extends Transfer {
 
         @Override
         public void prepare(Path file) {
-            if(file.getSession().isUnixPermissionsSupported()) {
-                if(file.exists()) {
-                    // Do not overwrite permissions for existing file.
-                    if(file.attributes().getPermission().equals(Permission.EMPTY)) {
-                        file.readUnixPermission();
-                    }
-                }
-                else {
-                    Permission perm = Permission.EMPTY;
-                    if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
-                        if(Preferences.instance().getBoolean("queue.upload.permissions.useDefault")) {
-                            if(file.attributes().isFile()) {
-                                perm = new Permission(
-                                        Preferences.instance().getInteger("queue.upload.permissions.file.default"));
-                            }
-                            else if(file.attributes().isDirectory()) {
-                                perm = new Permission(
-                                        Preferences.instance().getInteger("queue.upload.permissions.folder.default"));
-                            }
-                        }
-                        else {
-                            // Read permissions from local file
-                            perm = file.getLocal().attributes().getPermission();
-                        }
-                    }
-                    file.attributes().setPermission(perm);
-                }
-            }
-            if(file.getSession().isAclSupported()) {
-                if(file.exists()) {
-                    // Do not overwrite ACL for existing file.
-                    if(file.attributes().getAcl().equals(Acl.EMPTY)) {
-                        file.readAcl();
-                    }
-                }
-                else {
-                    Permission perm = Permission.EMPTY;
-                    if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
-                        if(Preferences.instance().getBoolean("queue.upload.permissions.useDefault")) {
-                            if(file.attributes().isFile()) {
-                                perm = new Permission(
-                                        Preferences.instance().getInteger("queue.upload.permissions.file.default"));
-                            }
-                            if(file.attributes().isDirectory()) {
-                                perm = new Permission(
-                                        Preferences.instance().getInteger("queue.upload.permissions.folder.default"));
-                            }
-                        }
-                        else {
-                            // Read permissions from local file
-                            perm = file.getLocal().attributes().getPermission();
-                        }
-                    }
-                    file.attributes().setAcl(file.getSession().getPublicAcl(file.getContainerName(),
-                            perm.getOtherPermissions()[Permission.READ],
-                            perm.getOtherPermissions()[Permission.WRITE]));
-                }
-            }
-            if(file.getSession().isTimestampSupported()) {
-                if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
-                    // Read timestamps from local file
-                    file.attributes().setModificationDate(file.getLocal().attributes().getModificationDate());
-                    file.attributes().setCreationDate(file.getLocal().attributes().getCreationDate());
-                    file.attributes().setAccessedDate(file.getLocal().attributes().getAccessedDate());
-                }
-            }
             if(file.attributes().isFile()) {
                 // Read file size
                 size += file.getLocal().attributes().getSize();
@@ -423,21 +357,67 @@ public class UploadTransfer extends Transfer {
     }
 
     @Override
-    protected void transfer(final Path p) {
-        if(p.attributes().isFile()) {
-            p.upload(bandwidth, new AbstractStreamListener() {
+    protected void transfer(Path file) {
+        if(file.attributes().isFile()) {
+            file.upload(bandwidth, new AbstractStreamListener() {
                 @Override
                 public void bytesSent(long bytes) {
                     transferred += bytes;
                 }
             });
         }
-        else if(p.attributes().isDirectory()) {
-            if(p.getSession().isCreateFolderSupported(p)) {
-                p.mkdir();
+        else if(file.attributes().isDirectory()) {
+            if(file.getSession().isCreateFolderSupported(file)) {
+                file.mkdir();
             }
         }
-        p.attributes().clear();
+        if(this.getSession().isAclSupported()) {
+            ; // Currently handled in S3 only.
+        }
+        if(this.getSession().isUnixPermissionsSupported()) {
+            Permission perm = Permission.EMPTY;
+            if(file.exists()) {
+                // Do not overwrite permissions for existing file.
+                if(file.attributes().getPermission().equals(Permission.EMPTY)) {
+                    file.readUnixPermission();
+                }
+                perm = file.attributes().getPermission();
+            }
+            else {
+                if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
+                    if(Preferences.instance().getBoolean("queue.upload.permissions.useDefault")) {
+                        if(file.attributes().isFile()) {
+                            perm = new Permission(
+                                    Preferences.instance().getInteger("queue.upload.permissions.file.default"));
+                        }
+                        else if(file.attributes().isDirectory()) {
+                            perm = new Permission(
+                                    Preferences.instance().getInteger("queue.upload.permissions.folder.default"));
+                        }
+                    }
+                    else {
+                        if(file.getLocal().exists()) {
+                            // Read permissions from local file
+                            perm = file.getLocal().attributes().getPermission();
+                        }
+                    }
+                }
+            }
+            if(perm.equals(Permission.EMPTY)) {
+                log.debug("Skip writing empty permissions for:" + this.toString());
+            }
+            else {
+                file.writeUnixPermission(perm, false);
+            }
+        }
+        if(file.getSession().isTimestampSupported()) {
+            if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
+                // Read timestamps from local file
+                file.writeTimestamp(file.getLocal().attributes().getCreationDate(),
+                        file.getLocal().attributes().getModificationDate(),
+                        file.getLocal().attributes().getAccessedDate());
+            }
+        }
     }
 
     @Override

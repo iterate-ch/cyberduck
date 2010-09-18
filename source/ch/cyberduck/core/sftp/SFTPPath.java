@@ -386,15 +386,19 @@ public class SFTPPath extends Path {
                 }
             }
         }
+        catch(SFTPException ignore) {
+            // We might not be able to change the attributes if we are not the owner of the file
+            log.warn(ignore.getMessage());
+        }
         finally {
             this.attributes().clear(false, false, true, false);
         }
     }
 
     @Override
-    public void writeTimestamp(long millis) {
+    public void writeTimestamp(long created, long modified, long accessed) {
         try {
-            this.writeModificationDateImpl(millis, millis);
+            this.writeModificationDateImpl(created, created);
         }
         catch(IOException e) {
             this.error("Cannot change timestamp", e);
@@ -411,6 +415,10 @@ public class SFTPPath extends Path {
             attrs.atime = t;
             attrs.mtime = t;
             this.writeAttributes(attrs);
+        }
+        catch(SFTPException ignore) {
+            // We might not be able to change the attributes if we are not the owner of the file
+            log.warn(ignore.getMessage());
         }
         finally {
             this.attributes().clear(true, false, false, false);
@@ -520,30 +528,7 @@ public class SFTPPath extends Path {
                             this.getParent().getAbsolute(),
                             "0" + this.attributes().getPermission().getOctalString());
                 }
-
                 this.upload(out, in, throttle, listener);
-
-                if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
-                    try {
-                        this.writeModificationDateImpl(this.attributes().getModificationDate(),
-                                this.attributes().getCreationDate());
-                    }
-                    catch(SFTPException ignore) {
-                        // We might not be able to change the attributes if we are not the owner of the file
-                        log.warn(ignore.getMessage());
-                    }
-                }
-                if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
-                    try {
-                        // Even if specified above when creating the file handle, we still need to update the
-                        // permissions after the upload. SSH_FXP_OPEN does not support setting
-                        // attributes in version 4 or lower.
-                        this.writeUnixPermissionImpl(this.attributes().getPermission(), false);
-                    }
-                    catch(SFTPException ignore) {
-                        log.warn(ignore.getMessage());
-                    }
-                }
             }
         }
         catch(IOException e) {

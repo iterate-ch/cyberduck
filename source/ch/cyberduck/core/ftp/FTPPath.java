@@ -402,14 +402,8 @@ public class FTPPath extends Path {
                 this.getSession().getClient().mkdir(this.getName());
                 if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
                     if(Preferences.instance().getBoolean("queue.upload.permissions.useDefault")) {
-                        try {
-                            this.writeUnixPermissionImpl(new Permission(
-                                    Preferences.instance().getInteger("queue.upload.permissions.folder.default")), false);
-                        }
-                        catch(FTPException ignore) {
-                            // CHMOD not supported
-                            log.warn(ignore.getMessage());
-                        }
+                        this.writeUnixPermissionImpl(new Permission(
+                                Preferences.instance().getInteger("queue.upload.permissions.folder.default")), false);
                     }
                 }
                 this.cache().put(this.getReference(), AttributedList.<Path>emptyList());
@@ -670,6 +664,10 @@ public class FTPPath extends Path {
                 }
             }
         }
+        catch(FTPException ignore) {
+            // CHMOD not supported
+            log.warn(ignore.getMessage());
+        }
         finally {
             this.attributes().clear(false, false, true, false);
             // This will force a directory listing to parse the permissions again.
@@ -678,20 +676,24 @@ public class FTPPath extends Path {
     }
 
     @Override
-    public void writeTimestamp(long millis) {
+    public void writeTimestamp(long created, long modified, long accessed) {
         try {
-            this.writeModificationDateImpl(millis, millis);
+            this.writeModificationDateImpl(created, modified);
         }
         catch(IOException e) {
             this.error("Cannot change timestamp", e);
         }
     }
 
-    private void writeModificationDateImpl(long modified, long created) throws IOException {
+    private void writeModificationDateImpl(long created, long modified) throws IOException {
         this.getSession().message(MessageFormat.format(Locale.localizedString("Changing timestamp of {0} to {1}", "Status"),
                 this.getName(), DateFormatterFactory.instance().getShortFormat(modified)));
         try {
             this.getSession().getClient().mfmt(modified, created, this.getName());
+        }
+        catch(FTPException ignore) {
+            //MFMT not supported; ignore
+            log.warn(ignore.getMessage());
         }
         finally {
             this.attributes().clear(true, false, false, false);
@@ -837,25 +839,6 @@ public class FTPPath extends Path {
                 }
                 else {
                     throw new FTPException("Transfer mode not set");
-                }
-                if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
-                    try {
-                        this.writeUnixPermissionImpl(this.attributes().getPermission(), false);
-                    }
-                    catch(FTPException ignore) {
-                        // CHMOD not supported
-                        log.warn(ignore.getMessage());
-                    }
-                }
-                if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
-                    try {
-                        this.writeModificationDateImpl(this.attributes().getModificationDate(),
-                                this.attributes().getCreationDate());
-                    }
-                    catch(FTPException ignore) {
-                        //MFMT not supported; ignore
-                        log.warn(ignore.getMessage());
-                    }
                 }
             }
         }
