@@ -175,7 +175,7 @@ namespace Ch.Cyberduck.Ui.Controller
             Assembly asm = Assembly.GetExecutingAssembly();
             string[] names = asm.GetManifestResourceNames();
             // the dots apparently come from the relative path in the msbuild file
-            Regex regex = new Regex("Ch.Cyberduck..........(.*).lproj.*");
+            Regex regex = new Regex("Ch.Cyberduck..........([^\\..]*).lproj.*"); //exclude Sparkle
             List<string> distinctNames = new List<string>();
             foreach (var name in names)
             {
