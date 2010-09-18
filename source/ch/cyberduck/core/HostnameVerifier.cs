@@ -78,7 +78,7 @@ namespace ch.cyberduck.core
 
                 java.util.Collection ext = javaCert.getSubjectAlternativeNames();
                 // subjectAltName
-                if (ext.size() > 0)
+                if (null != ext && ext.size() > 0)
                 {
                     for (Iterator i = ext.iterator(); i.hasNext();)
                     {
