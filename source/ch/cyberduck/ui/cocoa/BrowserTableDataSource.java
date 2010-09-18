@@ -269,7 +269,6 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                     }
                 }
             }
-            return false;
         }
         if(controller.isMounted()) {
             if(info.draggingPasteboard().availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.FilenamesPboardType)) != null) {
@@ -293,33 +292,41 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                 }
                 return false;
             }
-            final PathPasteboard pasteboard = PathPasteboard.getPasteboard(controller.getSession());
-            // A file dragged within the browser has been received
-            if(info.draggingSourceOperationMask().intValue() == NSDraggingInfo.NSDragOperationCopy.intValue()) {
-                // The file should be duplicated
-                final Map<Path, Path> files = new HashMap<Path, Path>();
-                for(Path next : pasteboard) {
-                    final Path copy = PathFactory.createPath(controller.getSession(), next.getAsDictionary());
-                    copy.setPath(destination.getAbsolute(), next.getName());
-                    files.put(next, copy);
+            List<PathPasteboard> pasteboards = PathPasteboard.allPasteboards();
+            for(PathPasteboard pasteboard : pasteboards) {
+                // A file dragged within the browser has been received
+                if(pasteboard.isEmpty()) {
+                    continue;
+                }
+                // Explicit copy requested by user.
+                boolean duplicate = info.draggingSourceOperationMask().intValue() == NSDraggingInfo.NSDragOperationCopy.intValue();
+                if(!pasteboard.getSession().equals(controller.getSession())) {
+                    // Drag to browser windows with different session
+                    duplicate = true;
+                }
+                if(duplicate) {
+                    // The file should be duplicated
+                    final Map<Path, Path> files = new HashMap<Path, Path>();
+                    for(Path next : pasteboard) {
+                        final Path copy = PathFactory.createPath(controller.getSession(), next.getAsDictionary());
+                        copy.setPath(destination.getAbsolute(), next.getName());
+                        files.put(next, copy);
+                    }
+                    controller.duplicatePaths(files, false);
+                }
+                else {
+                    // The file should be renamed
+                    final Map<Path, Path> files = new HashMap<Path, Path>();
+                    for(Path next : pasteboard) {
+                        Path renamed = PathFactory.createPath(controller.getSession(),
+                                destination.getAbsolute(), next.getName(), next.attributes().getType());
+                        files.put(next, renamed);
+                    }
+                    controller.renamePaths(files);
                 }
                 pasteboard.clear();
-                controller.duplicatePaths(files, false);
-                return true;
             }
-            else if((info.draggingSourceOperationMask().intValue() & NSDraggingInfo.NSDragOperationMove.intValue())
-                    == NSDraggingInfo.NSDragOperationMove.intValue()) {
-                // The file should be renamed
-                final Map<Path, Path> files = new HashMap<Path, Path>();
-                for(Path next : pasteboard) {
-                    Path renamed = PathFactory.createPath(controller.getSession(),
-                            destination.getAbsolute(), next.getName(), next.attributes().getType());
-                    files.put(next, renamed);
-                }
-                pasteboard.clear();
-                controller.renamePaths(files);
-                return true;
-            }
+            return true;
         }
         return false;
     }
@@ -351,7 +358,6 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                 }
             }
             log.warn("URL dragging pasteboard is empty.");
-            return NSDraggingInfo.NSDragOperationNone;
         }
         if(controller.isMounted()) {
             if(null == destination) {
@@ -360,18 +366,11 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
             }
             // Files dragged form other application
             if(info.draggingPasteboard().availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.FilenamesPboardType)) != null) {
-                if(destination.attributes().isDirectory()) {
-                    if(controller.getSession().isCreateFileSupported(destination)) {
-                        // Creating files is not supported for example in root of cloud storage accounts.
-                        this.setDropRowAndDropOperation(view, destination, row);
-                        return NSDraggingInfo.NSDragOperationCopy;
-                    }
+                if(controller.getSession().isCreateFileSupported(destination)) {
+                    // Creating files is not supported for example in root of cloud storage accounts.
+                    this.setDropRowAndDropOperation(view, destination, row);
+                    return NSDraggingInfo.NSDragOperationCopy;
                 }
-                return NSDraggingInfo.NSDragOperationNone;
-            }
-            if(PathPasteboard.getPasteboard(controller.getSession()).isEmpty()) {
-                log.warn("No files in pasteboard for session:" + controller.getSession());
-                return NSDraggingInfo.NSDragOperationNone;
             }
             // Files dragged from browser
             for(Path next : PathPasteboard.getPasteboard(controller.getSession())) {
@@ -399,8 +398,21 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                 return NSDraggingInfo.NSDragOperationNone;
             }
             // Defaulting to move
-            if(controller.getSession().isRenameSupported(destination)) {
-                return NSDraggingInfo.NSDragOperationMove;
+            List<PathPasteboard> pasteboards = PathPasteboard.allPasteboards();
+            for(PathPasteboard pasteboard : pasteboards) {
+                if(pasteboard.isEmpty()) {
+                    continue;
+                }
+                if(pasteboard.getSession().equals(controller.getSession())) {
+                    if(controller.getSession().isRenameSupported(destination)) {
+                        return NSDraggingInfo.NSDragOperationMove;
+                    }
+                    return NSDraggingInfo.NSDragOperationNone;
+                }
+                else {
+                    // If copying between sessions is supported
+                    // return NSDraggingInfo.NSDragOperationCopy;
+                }
             }
         }
         return NSDraggingInfo.NSDragOperationNone;
