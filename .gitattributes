@@ -2269,7 +2269,6 @@ source/ch/cyberduck/ui/winforms/UserDefaultsDateFormatter.cs -text
 source/ch/cyberduck/ui/winforms/commondialog/CustomOpenFileFolderDialog.csproj -text
 source/ch/cyberduck/ui/winforms/commondialog/InternalErrorException.cs -text
 source/ch/cyberduck/ui/winforms/commondialog/InteropUtil.cs -text
-source/ch/cyberduck/ui/winforms/commondialog/Properties/AssemblyInfo.cs -text
 source/ch/cyberduck/ui/winforms/commondialog/SelectFileAndFolderDialog.cs -text
 source/ch/cyberduck/ui/winforms/commondialog/res1.rc -text
 source/ch/cyberduck/ui/winforms/commondialog/resource.h -text
