@@ -441,6 +441,7 @@ public abstract class Transfer implements Serializable {
             transfer(p);
             // Post process of file
             filter.complete(p);
+            _current = null;
             // Notification
             this.fireDidTransferPath(p);
         }
