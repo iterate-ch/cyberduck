@@ -606,7 +606,7 @@ public class AzurePath extends CloudPath {
     }
 
     @Override
-    public void writeTimestamp(long millis) {
+    public void writeTimestamp(long created, long modified, long accessed) {
         throw new UnsupportedOperationException();
     }
 
