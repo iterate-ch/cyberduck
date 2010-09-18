@@ -252,8 +252,10 @@ public class SFTPSession extends Session {
                     if(success) {
                         if(credentials.isUseKeychain()) {
                             // Save passphrase of private key to keychain.
-                            KeychainFactory.instance().addPassword(this.getHostname(),
-                                    identity.getAbbreviatedPath(), passphrase);
+                            if(StringUtils.isNotEmpty(passphrase)) {
+                                KeychainFactory.instance().addPassword(this.getHostname(), identity.getAbbreviatedPath(),
+                                        passphrase);
+                            }
                         }
                     }
                     return success;
