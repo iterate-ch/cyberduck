@@ -90,7 +90,7 @@ public abstract class CloudSession extends HTTPSession {
      * @param hostname
      * @return
      */
-    protected String getContainerForHostname(String hostname) {
+    public String getContainerForHostname(String hostname) {
         if(hostname.equals(host.getProtocol().getDefaultHostname())) {
             return null;
         }
@@ -106,7 +106,7 @@ public abstract class CloudSession extends HTTPSession {
      * @param container
      * @return
      */
-    protected String getHostnameForContainer(String container) {
+    public String getHostnameForContainer(String container) {
         return container + "." + this.getHost().getHostname(true);
     }
 }
