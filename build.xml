@@ -162,6 +162,7 @@
                 <include name="ch/cyberduck/core/**/*.class"/>
                 <include name="org/w3c/**/*.class"/>
                 <include name="ch/ethz/ssh2/**/*.class"/>
+                <include name="org/kohsuke/putty/**/*.class"/>
                 <include name="org/spearce/jgit/**/*.class"/>
                 <include name="org/soyatec/**/*.class"/>
                 <include name="com/enterprisedt/**/*.class"/>
