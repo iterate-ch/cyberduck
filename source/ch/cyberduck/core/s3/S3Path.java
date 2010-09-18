@@ -489,7 +489,43 @@ public class S3Path extends CloudPath {
                 catch(NoSuchAlgorithmException e) {
                     log.error(e.getMessage());
                 }
-                Acl acl = this.attributes().getAcl();
+                Acl acl = Acl.EMPTY;
+                if(this.exists()) {
+                    // Do not overwrite ACL for existing file.
+                    if(this.attributes().getAcl().equals(Acl.EMPTY)) {
+                        this.readAcl();
+                    }
+                    acl = this.attributes().getAcl();
+                }
+                else {
+                    if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
+                        Permission perm = Permission.EMPTY;
+                        if(Preferences.instance().getBoolean("queue.upload.permissions.useDefault")) {
+                            if(this.attributes().isFile()) {
+                                perm = new Permission(
+                                        Preferences.instance().getInteger("queue.upload.permissions.this.default"));
+                            }
+                            if(this.attributes().isDirectory()) {
+                                perm = new Permission(
+                                        Preferences.instance().getInteger("queue.upload.permissions.folder.default"));
+                            }
+                        }
+                        else {
+                            if(this.getLocal().exists()) {
+                                // Read permissions from local file
+                                perm = this.getLocal().attributes().getPermission();
+                            }
+                        }
+                        if(perm.equals(Permission.EMPTY)) {
+                            log.debug("Skip writing empty permissions for:" + this.toString());
+                        }
+                        else {
+                            acl = this.getSession().getPublicAcl(this.getContainerName(),
+                                    perm.getOtherPermissions()[Permission.READ],
+                                    perm.getOtherPermissions()[Permission.WRITE]);
+                        }
+                    }
+                }
                 if(Acl.EMPTY.equals(acl)) {
                     // Owner gets FULL_CONTROL. No one else has access rights (default).
                     object.setAcl(AccessControlList.REST_CANNED_PRIVATE);
