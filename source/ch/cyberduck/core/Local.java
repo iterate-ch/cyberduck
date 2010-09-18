@@ -400,8 +400,8 @@ public abstract class Local extends AbstractPath {
     }
 
     @Override
-    public void writeTimestamp(long millis) {
-        if(!_impl.setLastModified(millis)) {
+    public void writeTimestamp(long created, long modified, long accessed) {
+        if(!_impl.setLastModified(modified)) {
             log.warn("Write modification date failed:" + this.getAbsolute());
         }
     }

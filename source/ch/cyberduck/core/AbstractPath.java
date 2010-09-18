@@ -312,10 +312,11 @@ public abstract class AbstractPath {
     public abstract void writeUnixPermission(Permission perm, boolean recursive);
 
     /**
-     * @param millis Milliseconds since 1970
-     * @see ch.cyberduck.core.Session#isTimestampSupported()
+     * @param created
+     *@param modified
+     * @param accessed @see ch.cyberduck.core.Session#isTimestampSupported()
      */
-    public abstract void writeTimestamp(long millis);
+    public abstract void writeTimestamp(long created, long modified, long accessed);
 
     /**
      * Remove this file from the remote host. Does not affect any corresponding local file

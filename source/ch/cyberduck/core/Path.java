@@ -444,7 +444,6 @@ public abstract class Path extends AbstractPath implements Serializable {
      */
     public abstract void readTimestamp();
 
-
     /**
      * Read the file permission of the file
      *

@@ -363,15 +363,17 @@ public class FinderLocal extends Local {
     /**
      * Write <code>NSFileModificationDate</code>.
      *
-     * @param millis Milliseconds since 1970
+     * @param created
+     * @param modified
+     * @param accessed
      */
     @Override
-    public void writeTimestamp(final long millis) {
+    public void writeTimestamp(final long created, long modified, long accessed) {
         new ProxyController().invoke(new DefaultMainAction() {
             public void run() {
                 boolean success = NSFileManager.defaultManager().setAttributes_ofItemAtPath_error(
                         NSDictionary.dictionaryWithObjectsForKeys(
-                                NSArray.arrayWithObject(NSDate.dateWithTimeIntervalSince1970(millis / 1000)),
+                                NSArray.arrayWithObject(NSDate.dateWithTimeIntervalSince1970(created / 1000)),
                                 NSArray.arrayWithObject(NSFileManager.NSFileModificationDate)),
                         _impl.getAbsolutePath(), null);
                 if(!success) {
