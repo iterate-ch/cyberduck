@@ -409,11 +409,8 @@ public class SyncTransfer extends Transfer {
      */
     public Comparison compare(Path p) {
         log.debug("compare:" + p);
-        Comparison result = COMPARISON_EQUAL;
         if(p.getLocal().exists() && p.exists()) {
-            if(p.attributes().isFile()) {
-                return this.compareTimestamp(p);
-            }
+            return this.compareTimestamp(p);
         }
         else if(p.exists()) {
             // Only the remote file exists
