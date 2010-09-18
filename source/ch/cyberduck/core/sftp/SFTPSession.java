@@ -30,6 +30,7 @@ import ch.ethz.ssh2.sftp.SFTPv3Client;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.kohsuke.putty.PuTTYKey;
 import org.spearce.jgit.transport.OpenSshConfig;
 
 import java.io.*;
@@ -215,26 +216,47 @@ public class SFTPSession extends Session {
         if(this.getClient().isAuthMethodAvailable(credentials.getUsername(), "publickey")) {
             if(credentials.isPublicKeyAuthentication()) {
                 final Local identity = credentials.getIdentity();
-                // If the private key is passphrase protected then ask for the passphrase
-                CharArrayWriter privatekey = new CharArrayWriter();
-                IOUtils.copy(new FileReader(new File(identity.getAbsolute())), privatekey);
                 String passphrase = null;
-                if(PEMDecoder.isPEMEncrypted(privatekey.toCharArray())) {
-                    passphrase = KeychainFactory.instance().getPassword("SSHKeychain", identity.getAbbreviatedPath());
+                CharArrayWriter privatekey = new CharArrayWriter();
+                if(PuTTYKey.isPuTTYKeyFile(identity.getInputStream())) {
+                    passphrase = KeychainFactory.instance().getPassword(this.getHostname(),
+                            identity.getAbbreviatedPath());
                     if(StringUtils.isEmpty(passphrase)) {
                         controller.prompt(host.getProtocol(), credentials,
                                 Locale.localizedString("Private key password protected", "Credentials"),
                                 Locale.localizedString("Enter the passphrase for the private key file", "Credentials")
                                         + " (" + identity + ")");
                         passphrase = credentials.getPassword();
-                        if(credentials.isUseKeychain()) {
-                            KeychainFactory.instance().addPassword("SSHKeychain", identity.getAbbreviatedPath(), passphrase);
+                    }
+                    PuTTYKey putty = new PuTTYKey(identity.getInputStream(), passphrase);
+                    IOUtils.copy(new StringReader(putty.toOpenSSH()), privatekey);
+                }
+                else {
+                    IOUtils.copy(new FileReader(identity.getAbsolute()), privatekey);
+                    if(PEMDecoder.isPEMEncrypted(privatekey.toCharArray())) {
+                        // If the private key is passphrase protected then ask for the passphrase
+                        passphrase = KeychainFactory.instance().getPassword(this.getHostname(),
+                                identity.getAbbreviatedPath());
+                        if(StringUtils.isEmpty(passphrase)) {
+                            controller.prompt(host.getProtocol(), credentials,
+                                    Locale.localizedString("Private key password protected", "Credentials"),
+                                    Locale.localizedString("Enter the passphrase for the private key file", "Credentials")
+                                            + " (" + identity + ")");
+                            passphrase = credentials.getPassword();
                         }
                     }
                 }
                 try {
-                    return this.getClient().authenticateWithPublicKey(credentials.getUsername(),
+                    boolean success = this.getClient().authenticateWithPublicKey(credentials.getUsername(),
                             privatekey.toCharArray(), passphrase);
+                    if(success) {
+                        if(credentials.isUseKeychain()) {
+                            // Save passphrase of private key to keychain.
+                            KeychainFactory.instance().addPassword(this.getHostname(),
+                                    identity.getAbbreviatedPath(), passphrase);
+                        }
+                    }
+                    return success;
                 }
                 catch(IOException e) {
                     if(e.getCause() instanceof PEMDecryptException) {

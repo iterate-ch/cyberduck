@@ -2307,6 +2307,9 @@ source/net/oofn/CTGradient.h -text
 source/net/oofn/CTGradient.m -text
 source/net/oofn/CTGradientView.h -text
 source/net/oofn/CTGradientView.m -text
+source/org/kohsuke/putty/DEREncoder.java -text
+source/org/kohsuke/putty/KeyReader.java -text
+source/org/kohsuke/putty/PuTTYKey.java -text
 sr.lproj/Alert.nib/classes.nib -text
 sr.lproj/Alert.nib/info.nib -text
 sr.lproj/Alert.nib/keyedobjects.nib -text
