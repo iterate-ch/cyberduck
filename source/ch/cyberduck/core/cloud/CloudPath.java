@@ -124,7 +124,7 @@ public abstract class CloudPath extends Path {
     public abstract void writeMetadata(Map<String, String> meta);
 
     @Override
-    public void writeTimestamp(long millis) {
+    public void writeTimestamp(long created, long modified, long accessed) {
         throw new UnsupportedOperationException();
     }
 

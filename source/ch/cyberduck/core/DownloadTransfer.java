@@ -382,7 +382,7 @@ public class DownloadTransfer extends Transfer {
             if(p.attributes().getModificationDate() != -1) {
                 long timestamp = p.attributes().getModificationDate();
                 log.info("Updating timestamp:" + local + "," + timestamp);
-                local.writeTimestamp(timestamp/*, this.getHost().getTimezone()*/);
+                local.writeTimestamp(-1, timestamp, -1);
             }
         }
     }

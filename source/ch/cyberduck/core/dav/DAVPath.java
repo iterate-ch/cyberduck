@@ -228,7 +228,7 @@ public class DAVPath extends Path {
     }
 
     @Override
-    public void writeTimestamp(long millis) {
+    public void writeTimestamp(long created, long modified, long accessed) {
         throw new UnsupportedOperationException();
     }
 
