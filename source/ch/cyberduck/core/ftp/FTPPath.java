@@ -651,6 +651,7 @@ public class FTPPath extends Path {
         try {
             if(attributes().isFile() && !attributes().isSymbolicLink()) {
                 this.getSession().getClient().chmod(perm.getOctalString(), this.getAbsolute());
+                this.attributes().setPermission(perm);
             }
             else if(attributes().isDirectory()) {
                 this.getSession().getClient().chmod(perm.getOctalString(), this.getAbsolute());
@@ -669,9 +670,9 @@ public class FTPPath extends Path {
             log.warn(ignore.getMessage());
         }
         finally {
-            this.attributes().clear(false, false, true, false);
-            // This will force a directory listing to parse the permissions again.
-            this.getParent().invalidate();
+            //this.attributes().clear(false, false, true, false);
+            ;// This will force a directory listing to parse the permissions again.
+            //this.getParent().invalidate();
         }
     }
 
@@ -690,15 +691,17 @@ public class FTPPath extends Path {
                 this.getName(), DateFormatterFactory.instance().getShortFormat(modified)));
         try {
             this.getSession().getClient().mfmt(modified, created, this.getName());
+            this.attributes().setModificationDate(modified);
+            this.attributes().setCreationDate(created);
         }
         catch(FTPException ignore) {
             //MFMT not supported; ignore
             log.warn(ignore.getMessage());
         }
         finally {
-            this.attributes().clear(true, false, false, false);
-            // This will force a directory listing to parse the timestamp again if MDTM is not supported.
-            this.getParent().invalidate();
+            //this.attributes().clear(true, false, false, false);
+            ;// This will force a directory listing to parse the timestamp again if MDTM is not supported.
+            //this.getParent().invalidate();
         }
     }
 
