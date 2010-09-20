@@ -50,28 +50,29 @@ import java.util.Map;
 public class PuTTYKey {
     private static final String PUTTY_SIGNATURE = "PuTTY-User-Key-File-";
 
-    private final byte[] privateKey;
-    private final byte[] publicKey;
+    private byte[] privateKey;
+    private byte[] publicKey;
+
+    private Map<String, String> payload
+            = new HashMap<String, String>();
 
     /**
      * For each line that looks like "Xyz: vvv", it will be stored in this map.
      */
-    private final Map<String, String> headers = new HashMap<String, String>();
+    private final Map<String, String> headers
+            = new HashMap<String, String>();
 
-    public PuTTYKey(File ppkFile, String passphrase) throws IOException {
-        this(new FileReader(ppkFile), passphrase);
+    public PuTTYKey(File ppkFile) throws IOException {
+        this(new FileReader(ppkFile));
     }
 
-    public PuTTYKey(InputStream in, String passphrase) throws IOException {
-        this(new InputStreamReader(in), passphrase);
+    public PuTTYKey(InputStream in) throws IOException {
+        this(new InputStreamReader(in));
     }
 
-    public PuTTYKey(Reader in, String passphrase) throws IOException {
+    public PuTTYKey(Reader in) throws IOException {
         BufferedReader r = new BufferedReader(in);
-
-        Map<String, String> payload = new HashMap<String, String>();
-
-        // parse the text into headers and payloads
+        // Parse the text into headers and payloads
         try {
             String headerName = null;
             String line;
@@ -96,26 +97,31 @@ public class PuTTYKey {
         finally {
             r.close();
         }
-
-        boolean encrypted = "aes256-cbc".equals(headers.get("Encryption"));
-
         publicKey = decodeBase64(payload.get("Public-Lines"));
-        byte[] privateLines = decodeBase64(payload.get("Private-Lines"));
+        privateKey = decodeBase64(payload.get("Private-Lines"));
+    }
 
-        if(encrypted) {
+    public boolean isEncrypted() {
+        return "aes256-cbc".equals(headers.get("Encryption"));
+    }
+
+    /**
+     * Decrypt private key
+     *
+     * @param passphrase
+     */
+    public void decrypt(String passphrase) throws IOException {
+        if(this.isEncrypted()) {
             AES aes = new AES();
             byte[] key = toKey(passphrase);
             aes.init(false, key);
             CBCMode cbc = new CBCMode(aes, new byte[16], false); // initial vector=0
-
-            byte[] out = new byte[privateLines.length];
-            for(int i = 0; i < privateLines.length / cbc.getBlockSize(); i++) {
-                cbc.transformBlock(privateLines, i * cbc.getBlockSize(), out, i * cbc.getBlockSize());
+            byte[] out = new byte[privateKey.length];
+            for(int i = 0; i < privateKey.length / cbc.getBlockSize(); i++) {
+                cbc.transformBlock(privateKey, i * cbc.getBlockSize(), out, i * cbc.getBlockSize());
             }
-            privateLines = out;
+            privateKey = out;
         }
-
-        this.privateKey = privateLines;
     }
 
     /**

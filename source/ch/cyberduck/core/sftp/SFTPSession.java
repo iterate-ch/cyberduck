@@ -219,16 +219,19 @@ public class SFTPSession extends Session {
                 String passphrase = null;
                 CharArrayWriter privatekey = new CharArrayWriter();
                 if(PuTTYKey.isPuTTYKeyFile(identity.getInputStream())) {
-                    passphrase = KeychainFactory.instance().getPassword(this.getHostname(),
-                            identity.getAbbreviatedPath());
-                    if(StringUtils.isEmpty(passphrase)) {
-                        controller.prompt(host.getProtocol(), credentials,
-                                Locale.localizedString("Private key password protected", "Credentials"),
-                                Locale.localizedString("Enter the passphrase for the private key file", "Credentials")
-                                        + " (" + identity + ")");
-                        passphrase = credentials.getPassword();
+                    PuTTYKey putty = new PuTTYKey(identity.getInputStream());
+                    if(putty.isEncrypted()) {
+                        passphrase = KeychainFactory.instance().getPassword(this.getHostname(),
+                                identity.getAbbreviatedPath());
+                        if(StringUtils.isEmpty(passphrase)) {
+                            controller.prompt(host.getProtocol(), credentials,
+                                    Locale.localizedString("Private key password protected", "Credentials"),
+                                    Locale.localizedString("Enter the passphrase for the private key file", "Credentials")
+                                            + " (" + identity + ")");
+                            passphrase = credentials.getPassword();
+                        }
+                        putty.decrypt(passphrase);
                     }
-                    PuTTYKey putty = new PuTTYKey(identity.getInputStream(), passphrase);
                     IOUtils.copy(new StringReader(putty.toOpenSSH()), privatekey);
                 }
                 else {
