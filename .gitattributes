@@ -1440,6 +1440,7 @@ lv.lproj/Info.nib/keyedobjects.nib -text
 lv.lproj/Info.strings -text svneol=unset#text/utf-16
 lv.lproj/InfoPlist.strings -text svneol=unset#text/utf-16
 lv.lproj/Keychain.strings -text svneol=unset#text/utf-16
+lv.lproj/License.strings -text svneol=unset#text/utf-16
 lv.lproj/License.txt -text
 lv.lproj/Localizable.strings -text svneol=unset#text/utf-16
 lv.lproj/Login.nib/classes.nib -text
