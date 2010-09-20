@@ -587,6 +587,7 @@ public abstract class Transfer implements Serializable {
     protected void clear(final TransferOptions options) {
         log.debug("clear:" + options);
         if(options.closeSession) {
+            // We have our own session independent of any browser.
             this.cache().clear();
         }
     }

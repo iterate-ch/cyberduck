@@ -168,7 +168,13 @@ public class UploadTransfer extends Transfer {
      * File listing cache for children of the root paths not part of the session cache because
      * they only exist on the local file system.
      */
-    private final Cache<Path> cache = new Cache<Path>();
+    private final Cache<Path> cache = new Cache<Path>() {
+        @Override
+        public void clear() {
+            super.clear();
+            getSession().cache().clear();
+        }
+    };
 
     @Override
     public Cache<Path> cache() {
