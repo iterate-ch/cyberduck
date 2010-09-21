@@ -19,7 +19,6 @@ using System;
 using System.Diagnostics;
 using System.Drawing;
 using System.Reflection;
-using ch.cyberduck;
 using ch.cyberduck.core;
 using Ch.Cyberduck.Core;
 using ch.cyberduck.core.i18n;

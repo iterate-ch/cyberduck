@@ -36,8 +36,10 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.labelCopyright = new System.Windows.Forms.Label();
             this.creditsRichTextBox = new Ch.Cyberduck.Ui.Winforms.Controls.ReadOnlyRichTextBox();
             this.ackButton = new System.Windows.Forms.Button();
+            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.tableLayoutPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.logoPictureBox)).BeginInit();
+            this.tableLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // tableLayoutPanel
@@ -49,7 +51,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.tableLayoutPanel.Controls.Add(this.labelVersion, 0, 2);
             this.tableLayoutPanel.Controls.Add(this.labelCopyright, 0, 4);
             this.tableLayoutPanel.Controls.Add(this.creditsRichTextBox, 0, 3);
-            this.tableLayoutPanel.Controls.Add(this.ackButton, 0, 6);
+            this.tableLayoutPanel.Controls.Add(this.tableLayoutPanel1, 0, 6);
             this.tableLayoutPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel.Name = "tableLayoutPanel";
@@ -104,7 +106,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.labelCopyright.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
             this.labelCopyright.AutoSize = true;
-            this.labelCopyright.Location = new System.Drawing.Point(7, 379);
+            this.labelCopyright.Location = new System.Drawing.Point(7, 382);
             this.labelCopyright.Margin = new System.Windows.Forms.Padding(7, 0, 3, 0);
             this.labelCopyright.MaximumSize = new System.Drawing.Size(0, 20);
             this.labelCopyright.Name = "labelCopyright";
@@ -122,21 +124,37 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.creditsRichTextBox.Location = new System.Drawing.Point(3, 212);
             this.creditsRichTextBox.Name = "creditsRichTextBox";
             this.creditsRichTextBox.ReadOnly = true;
-            this.creditsRichTextBox.Size = new System.Drawing.Size(342, 164);
+            this.creditsRichTextBox.Size = new System.Drawing.Size(342, 167);
             this.creditsRichTextBox.TabIndex = 22;
             this.creditsRichTextBox.Text = "";
             // 
             // ackButton
             // 
             this.ackButton.AutoSize = true;
-            this.ackButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.ackButton.Location = new System.Drawing.Point(13, 406);
-            this.ackButton.Margin = new System.Windows.Forms.Padding(13, 10, 3, 13);
+            this.ackButton.Location = new System.Drawing.Point(110, 0);
+            this.ackButton.Margin = new System.Windows.Forms.Padding(0, 0, 0, 0);
             this.ackButton.Name = "ackButton";
             this.ackButton.Size = new System.Drawing.Size(122, 25);
             this.ackButton.TabIndex = 23;
             this.ackButton.Text = "Acknowledgements";
             this.ackButton.UseVisualStyleBackColor = true;
+            // 
+            // tableLayoutPanel1
+            // 
+            this.tableLayoutPanel1.AutoSize = true;
+            this.tableLayoutPanel1.ColumnCount = 3;
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel1.Controls.Add(this.ackButton, 1, 0);
+            this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(3, 409);
+            this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(3, 10, 3, 10);
+            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
+            this.tableLayoutPanel1.RowCount = 1;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(342, 25);
+            this.tableLayoutPanel1.TabIndex = 24;
             // 
             // AboutBox
             // 
@@ -155,6 +173,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.tableLayoutPanel.ResumeLayout(false);
             this.tableLayoutPanel.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.logoPictureBox)).EndInit();
+            this.tableLayoutPanel1.ResumeLayout(false);
+            this.tableLayoutPanel1.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -168,5 +188,6 @@ namespace Ch.Cyberduck.Ui.Winforms
         private System.Windows.Forms.Label labelCopyright;
         private ReadOnlyRichTextBox creditsRichTextBox;
         private System.Windows.Forms.Button ackButton;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
     }
 }
