@@ -48,25 +48,16 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.defaultProtocolCombobox = new Ch.Cyberduck.Ui.Winforms.Controls.ImageComboBox();
             this.browserGroupbox = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.infoWindowCheckbox = new System.Windows.Forms.CheckBox();
+            this.showHiddenFilesCheckbox = new System.Windows.Forms.CheckBox();
+            this.returnKeyCheckbox = new System.Windows.Forms.CheckBox();
+            this.doubleClickEditorCheckbox = new System.Windows.Forms.CheckBox();
             this.saveWorkspaceCheckbox = new System.Windows.Forms.CheckBox();
             this.labelOpenEmtpyBrowser = new System.Windows.Forms.Label();
             this.connectBookmarkCombobox = new Ch.Cyberduck.Ui.Winforms.Controls.ImageComboBox();
             this.label4 = new System.Windows.Forms.Label();
             this.labelSaveWorkspace = new System.Windows.Forms.Label();
             this.newBrowserOnStartupCheckbox = new System.Windows.Forms.CheckBox();
-            this.managedBrowserPanel = new Ch.Cyberduck.Ui.Winforms.Controls.ManagedPanel();
-            this.tableLayoutPanelBrowser = new System.Windows.Forms.TableLayoutPanel();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
-            this.showHiddenFilesCheckbox = new System.Windows.Forms.CheckBox();
-            this.infoWindowCheckbox = new System.Windows.Forms.CheckBox();
-            this.doubleClickEditorCheckbox = new System.Windows.Forms.CheckBox();
-            this.returnKeyCheckbox = new System.Windows.Forms.CheckBox();
-            this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
-            this.alternatingRowsCheckbox = new System.Windows.Forms.CheckBox();
-            this.verticalLinesCheckbox = new System.Windows.Forms.CheckBox();
-            this.horizontalLinesCheckbox = new System.Windows.Forms.CheckBox();
             this.managedFtpPanel = new Ch.Cyberduck.Ui.Winforms.Controls.ManagedPanel();
             this.tableLayoutPanel20 = new System.Windows.Forms.TableLayoutPanel();
             this.groupBox17 = new System.Windows.Forms.GroupBox();
@@ -249,7 +240,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.uploadSkipRegexDefaultButton = new System.Windows.Forms.Button();
             this.toolStrip = new System.Windows.Forms.ToolStrip();
             this.generalButton = new System.Windows.Forms.ToolStripButton();
-            this.browserButton = new System.Windows.Forms.ToolStripButton();
             this.transfersButton = new System.Windows.Forms.ToolStripButton();
             this.editorButton = new System.Windows.Forms.ToolStripButton();
             this.ftpButton = new System.Windows.Forms.ToolStripButton();
@@ -267,12 +257,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.tableLayoutPanel2.SuspendLayout();
             this.browserGroupbox.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
-            this.managedBrowserPanel.SuspendLayout();
-            this.tableLayoutPanelBrowser.SuspendLayout();
-            this.groupBox2.SuspendLayout();
-            this.tableLayoutPanel3.SuspendLayout();
-            this.groupBox3.SuspendLayout();
-            this.tableLayoutPanel4.SuspendLayout();
             this.managedFtpPanel.SuspendLayout();
             this.tableLayoutPanel20.SuspendLayout();
             this.groupBox17.SuspendLayout();
@@ -367,7 +351,6 @@ namespace Ch.Cyberduck.Ui.Winforms
                         | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.panelManager.Controls.Add(this.managedGeneralPanel);
-            this.panelManager.Controls.Add(this.managedBrowserPanel);
             this.panelManager.Controls.Add(this.managedFtpPanel);
             this.panelManager.Controls.Add(this.managedSftpPanel);
             this.panelManager.Controls.Add(this.managedS3Panel);
@@ -379,9 +362,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.panelManager.Controls.Add(this.managedTransfersPanel);
             this.panelManager.Location = new System.Drawing.Point(12, 76);
             this.panelManager.Name = "panelManager";
-            this.panelManager.SelectedIndex = 10;
-            this.panelManager.SelectedPanel = this.managedTransfersPanel;
-            this.panelManager.Size = new System.Drawing.Size(751, 489);
+            this.panelManager.SelectedIndex = 0;
+            this.panelManager.SelectedPanel = this.managedGeneralPanel;
+            this.panelManager.Size = new System.Drawing.Size(668, 482);
             this.panelManager.TabIndex = 1;
             // 
             // managedGeneralPanel
@@ -414,7 +397,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.groupBox1.AutoSize = true;
             this.groupBox1.Controls.Add(this.tableLayoutPanel2);
             this.groupBox1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.groupBox1.Location = new System.Drawing.Point(3, 154);
+            this.groupBox1.Location = new System.Drawing.Point(3, 281);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(1, 181);
             this.groupBox1.TabIndex = 1;
@@ -553,7 +536,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.browserGroupbox.Dock = System.Windows.Forms.DockStyle.Fill;
             this.browserGroupbox.Location = new System.Drawing.Point(3, 3);
             this.browserGroupbox.Name = "browserGroupbox";
-            this.browserGroupbox.Size = new System.Drawing.Size(1, 145);
+            this.browserGroupbox.Size = new System.Drawing.Size(1, 272);
             this.browserGroupbox.TabIndex = 0;
             this.browserGroupbox.TabStop = false;
             this.browserGroupbox.Text = "Browser";
@@ -564,6 +547,10 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.tableLayoutPanel1.ColumnCount = 2;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 200F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 428F));
+            this.tableLayoutPanel1.Controls.Add(this.infoWindowCheckbox, 0, 8);
+            this.tableLayoutPanel1.Controls.Add(this.showHiddenFilesCheckbox, 0, 5);
+            this.tableLayoutPanel1.Controls.Add(this.returnKeyCheckbox, 0, 7);
+            this.tableLayoutPanel1.Controls.Add(this.doubleClickEditorCheckbox, 0, 6);
             this.tableLayoutPanel1.Controls.Add(this.saveWorkspaceCheckbox, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.labelOpenEmtpyBrowser, 0, 4);
             this.tableLayoutPanel1.Controls.Add(this.connectBookmarkCombobox, 1, 3);
@@ -574,14 +561,68 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.tableLayoutPanel1.Location = new System.Drawing.Point(3, 19);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.Padding = new System.Windows.Forms.Padding(5);
-            this.tableLayoutPanel1.RowCount = 5;
+            this.tableLayoutPanel1.RowCount = 9;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(0, 123);
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(0, 250);
             this.tableLayoutPanel1.TabIndex = 6;
+            // 
+            // infoWindowCheckbox
+            // 
+            this.infoWindowCheckbox.AutoSize = true;
+            this.tableLayoutPanel1.SetColumnSpan(this.infoWindowCheckbox, 2);
+            this.infoWindowCheckbox.Location = new System.Drawing.Point(8, 223);
+            this.infoWindowCheckbox.Name = "infoWindowCheckbox";
+            this.infoWindowCheckbox.Size = new System.Drawing.Size(257, 19);
+            this.infoWindowCheckbox.TabIndex = 3;
+            this.infoWindowCheckbox.Text = "Info window always shows current selection";
+            this.infoWindowCheckbox.UseVisualStyleBackColor = true;
+            this.infoWindowCheckbox.CheckedChanged += new System.EventHandler(this.infoWindowCheckbox_CheckedChanged);
+            // 
+            // showHiddenFilesCheckbox
+            // 
+            this.showHiddenFilesCheckbox.AutoSize = true;
+            this.tableLayoutPanel1.SetColumnSpan(this.showHiddenFilesCheckbox, 2);
+            this.showHiddenFilesCheckbox.Location = new System.Drawing.Point(8, 138);
+            this.showHiddenFilesCheckbox.Name = "showHiddenFilesCheckbox";
+            this.showHiddenFilesCheckbox.Padding = new System.Windows.Forms.Padding(0, 10, 0, 0);
+            this.showHiddenFilesCheckbox.Size = new System.Drawing.Size(119, 29);
+            this.showHiddenFilesCheckbox.TabIndex = 0;
+            this.showHiddenFilesCheckbox.Text = "Show hidden files";
+            this.showHiddenFilesCheckbox.UseVisualStyleBackColor = true;
+            this.showHiddenFilesCheckbox.CheckedChanged += new System.EventHandler(this.showHiddenFilesCheckbox_CheckedChanged);
+            // 
+            // returnKeyCheckbox
+            // 
+            this.returnKeyCheckbox.AutoSize = true;
+            this.tableLayoutPanel1.SetColumnSpan(this.returnKeyCheckbox, 2);
+            this.returnKeyCheckbox.Location = new System.Drawing.Point(8, 198);
+            this.returnKeyCheckbox.Name = "returnKeyCheckbox";
+            this.returnKeyCheckbox.Size = new System.Drawing.Size(244, 19);
+            this.returnKeyCheckbox.TabIndex = 2;
+            this.returnKeyCheckbox.Text = "Return key selects folder or file to rename";
+            this.returnKeyCheckbox.UseVisualStyleBackColor = true;
+            this.returnKeyCheckbox.CheckedChanged += new System.EventHandler(this.returnKeyCheckbox_CheckedChanged);
+            // 
+            // doubleClickEditorCheckbox
+            // 
+            this.doubleClickEditorCheckbox.AutoSize = true;
+            this.tableLayoutPanel1.SetColumnSpan(this.doubleClickEditorCheckbox, 2);
+            this.doubleClickEditorCheckbox.Location = new System.Drawing.Point(8, 173);
+            this.doubleClickEditorCheckbox.Name = "doubleClickEditorCheckbox";
+            this.doubleClickEditorCheckbox.Size = new System.Drawing.Size(236, 19);
+            this.doubleClickEditorCheckbox.TabIndex = 1;
+            this.doubleClickEditorCheckbox.Text = "Double click opens file in external editor";
+            this.doubleClickEditorCheckbox.UseVisualStyleBackColor = true;
+            this.doubleClickEditorCheckbox.CheckedChanged += new System.EventHandler(this.doubleClickEditorCheckbox_CheckedChanged);
             // 
             // saveWorkspaceCheckbox
             // 
@@ -659,174 +700,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.newBrowserOnStartupCheckbox.Text = "Open new browser window on startup";
             this.newBrowserOnStartupCheckbox.UseVisualStyleBackColor = true;
             this.newBrowserOnStartupCheckbox.CheckedChanged += new System.EventHandler(this.newBrowserOnStartupCheckbox_CheckedChanged);
-            // 
-            // managedBrowserPanel
-            // 
-            this.managedBrowserPanel.Controls.Add(this.tableLayoutPanelBrowser);
-            this.managedBrowserPanel.Location = new System.Drawing.Point(0, 0);
-            this.managedBrowserPanel.Name = "managedBrowserPanel";
-            this.managedBrowserPanel.Size = new System.Drawing.Size(0, 0);
-            this.managedBrowserPanel.Text = "managedPanel2";
-            // 
-            // tableLayoutPanelBrowser
-            // 
-            this.tableLayoutPanelBrowser.AutoSize = true;
-            this.tableLayoutPanelBrowser.ColumnCount = 1;
-            this.tableLayoutPanelBrowser.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanelBrowser.Controls.Add(this.groupBox2, 0, 0);
-            this.tableLayoutPanelBrowser.Controls.Add(this.groupBox3, 0, 1);
-            this.tableLayoutPanelBrowser.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanelBrowser.Location = new System.Drawing.Point(0, 0);
-            this.tableLayoutPanelBrowser.Name = "tableLayoutPanelBrowser";
-            this.tableLayoutPanelBrowser.RowCount = 3;
-            this.tableLayoutPanelBrowser.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanelBrowser.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanelBrowser.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanelBrowser.Size = new System.Drawing.Size(0, 0);
-            this.tableLayoutPanelBrowser.TabIndex = 0;
-            // 
-            // groupBox2
-            // 
-            this.groupBox2.AutoSize = true;
-            this.groupBox2.Controls.Add(this.tableLayoutPanel3);
-            this.groupBox2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.groupBox2.Location = new System.Drawing.Point(3, 3);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(1, 132);
-            this.groupBox2.TabIndex = 0;
-            this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "General";
-            // 
-            // tableLayoutPanel3
-            // 
-            this.tableLayoutPanel3.AutoSize = true;
-            this.tableLayoutPanel3.ColumnCount = 1;
-            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel3.Controls.Add(this.showHiddenFilesCheckbox, 0, 0);
-            this.tableLayoutPanel3.Controls.Add(this.infoWindowCheckbox, 0, 3);
-            this.tableLayoutPanel3.Controls.Add(this.doubleClickEditorCheckbox, 0, 1);
-            this.tableLayoutPanel3.Controls.Add(this.returnKeyCheckbox, 0, 2);
-            this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel3.Location = new System.Drawing.Point(3, 19);
-            this.tableLayoutPanel3.Name = "tableLayoutPanel3";
-            this.tableLayoutPanel3.Padding = new System.Windows.Forms.Padding(5);
-            this.tableLayoutPanel3.RowCount = 4;
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel3.Size = new System.Drawing.Size(0, 110);
-            this.tableLayoutPanel3.TabIndex = 4;
-            // 
-            // showHiddenFilesCheckbox
-            // 
-            this.showHiddenFilesCheckbox.AutoSize = true;
-            this.showHiddenFilesCheckbox.Location = new System.Drawing.Point(8, 8);
-            this.showHiddenFilesCheckbox.Name = "showHiddenFilesCheckbox";
-            this.showHiddenFilesCheckbox.Size = new System.Drawing.Size(1, 19);
-            this.showHiddenFilesCheckbox.TabIndex = 0;
-            this.showHiddenFilesCheckbox.Text = "Show hidden files";
-            this.showHiddenFilesCheckbox.UseVisualStyleBackColor = true;
-            this.showHiddenFilesCheckbox.CheckedChanged += new System.EventHandler(this.showHiddenFilesCheckbox_CheckedChanged);
-            // 
-            // infoWindowCheckbox
-            // 
-            this.infoWindowCheckbox.AutoSize = true;
-            this.infoWindowCheckbox.Location = new System.Drawing.Point(8, 83);
-            this.infoWindowCheckbox.Name = "infoWindowCheckbox";
-            this.infoWindowCheckbox.Size = new System.Drawing.Size(1, 19);
-            this.infoWindowCheckbox.TabIndex = 3;
-            this.infoWindowCheckbox.Text = "Info window always shows current selection";
-            this.infoWindowCheckbox.UseVisualStyleBackColor = true;
-            this.infoWindowCheckbox.CheckedChanged += new System.EventHandler(this.infoWindowCheckbox_CheckedChanged);
-            // 
-            // doubleClickEditorCheckbox
-            // 
-            this.doubleClickEditorCheckbox.AutoSize = true;
-            this.doubleClickEditorCheckbox.Location = new System.Drawing.Point(8, 33);
-            this.doubleClickEditorCheckbox.Name = "doubleClickEditorCheckbox";
-            this.doubleClickEditorCheckbox.Size = new System.Drawing.Size(1, 19);
-            this.doubleClickEditorCheckbox.TabIndex = 1;
-            this.doubleClickEditorCheckbox.Text = "Double click opens file in external editor";
-            this.doubleClickEditorCheckbox.UseVisualStyleBackColor = true;
-            this.doubleClickEditorCheckbox.CheckedChanged += new System.EventHandler(this.doubleClickEditorCheckbox_CheckedChanged);
-            // 
-            // returnKeyCheckbox
-            // 
-            this.returnKeyCheckbox.AutoSize = true;
-            this.returnKeyCheckbox.Location = new System.Drawing.Point(8, 58);
-            this.returnKeyCheckbox.Name = "returnKeyCheckbox";
-            this.returnKeyCheckbox.Size = new System.Drawing.Size(1, 19);
-            this.returnKeyCheckbox.TabIndex = 2;
-            this.returnKeyCheckbox.Text = "Return key selects folder or file to rename";
-            this.returnKeyCheckbox.UseVisualStyleBackColor = true;
-            this.returnKeyCheckbox.CheckedChanged += new System.EventHandler(this.returnKeyCheckbox_CheckedChanged);
-            // 
-            // groupBox3
-            // 
-            this.groupBox3.AutoSize = true;
-            this.groupBox3.Controls.Add(this.tableLayoutPanel4);
-            this.groupBox3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.groupBox3.Enabled = false;
-            this.groupBox3.Location = new System.Drawing.Point(3, 141);
-            this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(1, 90);
-            this.groupBox3.TabIndex = 1;
-            this.groupBox3.TabStop = false;
-            this.groupBox3.Text = "Appearance";
-            // 
-            // tableLayoutPanel4
-            // 
-            this.tableLayoutPanel4.AutoSize = true;
-            this.tableLayoutPanel4.ColumnCount = 1;
-            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel4.Controls.Add(this.alternatingRowsCheckbox, 0, 0);
-            this.tableLayoutPanel4.Controls.Add(this.verticalLinesCheckbox, 0, 2);
-            this.tableLayoutPanel4.Controls.Add(this.horizontalLinesCheckbox, 0, 1);
-            this.tableLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel4.Location = new System.Drawing.Point(3, 19);
-            this.tableLayoutPanel4.Name = "tableLayoutPanel4";
-            this.tableLayoutPanel4.Padding = new System.Windows.Forms.Padding(5);
-            this.tableLayoutPanel4.RowCount = 3;
-            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel4.Size = new System.Drawing.Size(0, 68);
-            this.tableLayoutPanel4.TabIndex = 7;
-            // 
-            // alternatingRowsCheckbox
-            // 
-            this.alternatingRowsCheckbox.AutoSize = true;
-            this.alternatingRowsCheckbox.Location = new System.Drawing.Point(8, 8);
-            this.alternatingRowsCheckbox.Name = "alternatingRowsCheckbox";
-            this.alternatingRowsCheckbox.Size = new System.Drawing.Size(1, 19);
-            this.alternatingRowsCheckbox.TabIndex = 4;
-            this.alternatingRowsCheckbox.Text = "Use alternating row background";
-            this.alternatingRowsCheckbox.UseVisualStyleBackColor = true;
-            this.alternatingRowsCheckbox.CheckedChanged += new System.EventHandler(this.alternatingRowsCheckbox_CheckedChanged);
-            // 
-            // verticalLinesCheckbox
-            // 
-            this.verticalLinesCheckbox.AutoSize = true;
-            this.verticalLinesCheckbox.Location = new System.Drawing.Point(8, 58);
-            this.verticalLinesCheckbox.Name = "verticalLinesCheckbox";
-            this.verticalLinesCheckbox.Size = new System.Drawing.Size(1, 19);
-            this.verticalLinesCheckbox.TabIndex = 6;
-            this.verticalLinesCheckbox.Text = "Vertical Lines";
-            this.verticalLinesCheckbox.UseVisualStyleBackColor = true;
-            this.verticalLinesCheckbox.CheckedChanged += new System.EventHandler(this.verticalLinesCheckbox_CheckedChanged);
-            // 
-            // horizontalLinesCheckbox
-            // 
-            this.horizontalLinesCheckbox.AutoSize = true;
-            this.horizontalLinesCheckbox.Location = new System.Drawing.Point(8, 33);
-            this.horizontalLinesCheckbox.Name = "horizontalLinesCheckbox";
-            this.horizontalLinesCheckbox.Size = new System.Drawing.Size(1, 19);
-            this.horizontalLinesCheckbox.TabIndex = 5;
-            this.horizontalLinesCheckbox.Text = "Horizontal Lines";
-            this.horizontalLinesCheckbox.UseVisualStyleBackColor = true;
-            this.horizontalLinesCheckbox.CheckedChanged += new System.EventHandler(this.horizontalLinesCheckbox_CheckedChanged);
             // 
             // managedFtpPanel
             // 
@@ -1931,7 +1804,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.tableLayoutPanel41.RowCount = 2;
             this.tableLayoutPanel41.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel41.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel41.Size = new System.Drawing.Size(751, 489);
+            this.tableLayoutPanel41.Size = new System.Drawing.Size(751, 515);
             this.tableLayoutPanel41.TabIndex = 0;
             // 
             // groupBox27
@@ -2088,7 +1961,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.transfersTabControl.Location = new System.Drawing.Point(0, 0);
             this.transfersTabControl.Name = "transfersTabControl";
             this.transfersTabControl.SelectedIndex = 0;
-            this.transfersTabControl.Size = new System.Drawing.Size(0, 0);
+            this.transfersTabControl.Size = new System.Drawing.Size(751, 515);
             this.transfersTabControl.TabIndex = 0;
             // 
             // tabPage1
@@ -2096,7 +1969,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.tabPage1.Controls.Add(this.tableLayoutPanel5);
             this.tabPage1.Location = new System.Drawing.Point(4, 27);
             this.tabPage1.Name = "tabPage1";
-            this.tabPage1.Size = new System.Drawing.Size(0, 0);
+            this.tabPage1.Size = new System.Drawing.Size(743, 484);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "General";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -2117,7 +1990,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel5.Size = new System.Drawing.Size(0, 0);
+            this.tableLayoutPanel5.Size = new System.Drawing.Size(743, 484);
             this.tableLayoutPanel5.TabIndex = 7;
             // 
             // groupBox6
@@ -2125,9 +1998,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.groupBox6.AutoSize = true;
             this.groupBox6.Controls.Add(this.tableLayoutPanel8);
             this.groupBox6.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.groupBox6.Location = new System.Drawing.Point(3, 293);
+            this.groupBox6.Location = new System.Drawing.Point(3, 257);
             this.groupBox6.Name = "groupBox6";
-            this.groupBox6.Size = new System.Drawing.Size(1, 90);
+            this.groupBox6.Size = new System.Drawing.Size(737, 90);
             this.groupBox6.TabIndex = 6;
             this.groupBox6.TabStop = false;
             this.groupBox6.Text = "Uploads";
@@ -2148,7 +2021,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.tableLayoutPanel8.RowCount = 2;
             this.tableLayoutPanel8.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel8.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel8.Size = new System.Drawing.Size(0, 68);
+            this.tableLayoutPanel8.Size = new System.Drawing.Size(731, 68);
             this.tableLayoutPanel8.TabIndex = 8;
             // 
             // label12
@@ -2188,9 +2061,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.groupBox5.AutoSize = true;
             this.groupBox5.Controls.Add(this.tableLayoutPanel7);
             this.groupBox5.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.groupBox5.Location = new System.Drawing.Point(3, 145);
+            this.groupBox5.Location = new System.Drawing.Point(3, 128);
             this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(1, 142);
+            this.groupBox5.Size = new System.Drawing.Size(737, 123);
             this.groupBox5.TabIndex = 5;
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "Downloads";
@@ -2218,7 +2091,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel7.Size = new System.Drawing.Size(0, 120);
+            this.tableLayoutPanel7.Size = new System.Drawing.Size(731, 101);
             this.tableLayoutPanel7.TabIndex = 10;
             // 
             // openAfterDownloadCheckbox
@@ -2247,7 +2120,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.label11.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(76, 68);
+            this.label11.Location = new System.Drawing.Point(76, 67);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(76, 15);
             this.label11.TabIndex = 5;
@@ -2278,7 +2151,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // duplicateDownloadOverwriteCheckbox
             // 
             this.duplicateDownloadOverwriteCheckbox.AutoSize = true;
-            this.duplicateDownloadOverwriteCheckbox.Location = new System.Drawing.Point(158, 93);
+            this.duplicateDownloadOverwriteCheckbox.Location = new System.Drawing.Point(158, 91);
             this.duplicateDownloadOverwriteCheckbox.Name = "duplicateDownloadOverwriteCheckbox";
             this.duplicateDownloadOverwriteCheckbox.Size = new System.Drawing.Size(200, 19);
             this.duplicateDownloadOverwriteCheckbox.TabIndex = 6;
@@ -2291,7 +2164,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.showDownloadFolderDialogButton.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.showDownloadFolderDialogButton.AutoSize = true;
             this.showDownloadFolderDialogButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.showDownloadFolderDialogButton.Location = new System.Drawing.Point(586, 33);
+            this.showDownloadFolderDialogButton.Location = new System.Drawing.Point(657, 33);
             this.showDownloadFolderDialogButton.Name = "showDownloadFolderDialogButton";
             this.showDownloadFolderDialogButton.Size = new System.Drawing.Size(66, 25);
             this.showDownloadFolderDialogButton.TabIndex = 8;
@@ -2306,7 +2179,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.groupBox29.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox29.Location = new System.Drawing.Point(3, 3);
             this.groupBox29.Name = "groupBox29";
-            this.groupBox29.Size = new System.Drawing.Size(1, 136);
+            this.groupBox29.Size = new System.Drawing.Size(737, 119);
             this.groupBox29.TabIndex = 7;
             this.groupBox29.TabStop = false;
             this.groupBox29.Text = "Transfers";
@@ -2331,7 +2204,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel6.Size = new System.Drawing.Size(0, 114);
+            this.tableLayoutPanel6.Size = new System.Drawing.Size(731, 97);
             this.tableLayoutPanel6.TabIndex = 0;
             // 
             // transfersToFrontCheckbox
@@ -2395,7 +2268,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.tabPage2.Controls.Add(this.tableLayoutPanel9);
             this.tabPage2.Location = new System.Drawing.Point(4, 27);
             this.tabPage2.Name = "tabPage2";
-            this.tabPage2.Size = new System.Drawing.Size(0, 0);
+            this.tabPage2.Size = new System.Drawing.Size(743, 484);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Permissions";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -2414,7 +2287,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.tableLayoutPanel9.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel9.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel9.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel9.Size = new System.Drawing.Size(0, 0);
+            this.tableLayoutPanel9.Size = new System.Drawing.Size(743, 484);
             this.tableLayoutPanel9.TabIndex = 2;
             // 
             // groupBox7
@@ -2425,7 +2298,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.groupBox7.Enabled = false;
             this.groupBox7.Location = new System.Drawing.Point(3, 3);
             this.groupBox7.Name = "groupBox7";
-            this.groupBox7.Size = new System.Drawing.Size(1, 181);
+            this.groupBox7.Size = new System.Drawing.Size(737, 181);
             this.groupBox7.TabIndex = 0;
             this.groupBox7.TabStop = false;
             this.groupBox7.Text = "Downloads";
@@ -2451,7 +2324,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.tableLayoutPanel10.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel10.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel10.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel10.Size = new System.Drawing.Size(0, 159);
+            this.tableLayoutPanel10.Size = new System.Drawing.Size(731, 159);
             this.tableLayoutPanel10.TabIndex = 16;
             this.tableLayoutPanel10.Visible = false;
             // 
@@ -2461,7 +2334,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.tableLayoutPanel10.SetColumnSpan(this.chmodDownloadCheckbox, 2);
             this.chmodDownloadCheckbox.Location = new System.Drawing.Point(8, 8);
             this.chmodDownloadCheckbox.Name = "chmodDownloadCheckbox";
-            this.chmodDownloadCheckbox.Size = new System.Drawing.Size(1, 19);
+            this.chmodDownloadCheckbox.Size = new System.Drawing.Size(133, 19);
             this.chmodDownloadCheckbox.TabIndex = 0;
             this.chmodDownloadCheckbox.Text = "Change permissions";
             this.chmodDownloadCheckbox.UseVisualStyleBackColor = true;
@@ -2475,7 +2348,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.chmodDownloadCustomRadioButton.Location = new System.Drawing.Point(8, 33);
             this.chmodDownloadCustomRadioButton.Name = "chmodDownloadCustomRadioButton";
             this.chmodDownloadCustomRadioButton.Padding = new System.Windows.Forms.Padding(20, 0, 0, 0);
-            this.chmodDownloadCustomRadioButton.Size = new System.Drawing.Size(1, 17);
+            this.chmodDownloadCustomRadioButton.Size = new System.Drawing.Size(251, 17);
             this.chmodDownloadCustomRadioButton.TabIndex = 1;
             this.chmodDownloadCustomRadioButton.TabStop = true;
             this.chmodDownloadCustomRadioButton.Text = "to the permissions of the remote file or folder";
@@ -2536,7 +2409,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.tableLayoutPanel11.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel11.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel11.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel11.Size = new System.Drawing.Size(1, 69);
+            this.tableLayoutPanel11.Size = new System.Drawing.Size(715, 69);
             this.tableLayoutPanel11.TabIndex = 4;
             // 
             // ownerDownloadLabel
@@ -2690,7 +2563,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.groupBox8.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox8.Location = new System.Drawing.Point(3, 190);
             this.groupBox8.Name = "groupBox8";
-            this.groupBox8.Size = new System.Drawing.Size(1, 181);
+            this.groupBox8.Size = new System.Drawing.Size(737, 181);
             this.groupBox8.TabIndex = 1;
             this.groupBox8.TabStop = false;
             this.groupBox8.Text = "Uploads";
@@ -2715,7 +2588,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.tableLayoutPanel12.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel12.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel12.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel12.Size = new System.Drawing.Size(0, 159);
+            this.tableLayoutPanel12.Size = new System.Drawing.Size(731, 159);
             this.tableLayoutPanel12.TabIndex = 16;
             // 
             // chmodUploadCheckbox
@@ -2725,7 +2598,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.chmodUploadCheckbox.Enabled = false;
             this.chmodUploadCheckbox.Location = new System.Drawing.Point(8, 8);
             this.chmodUploadCheckbox.Name = "chmodUploadCheckbox";
-            this.chmodUploadCheckbox.Size = new System.Drawing.Size(1, 19);
+            this.chmodUploadCheckbox.Size = new System.Drawing.Size(133, 19);
             this.chmodUploadCheckbox.TabIndex = 0;
             this.chmodUploadCheckbox.Text = "Change permissions";
             this.chmodUploadCheckbox.UseVisualStyleBackColor = true;
@@ -2739,7 +2612,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.chmodUploadCustomRadioButton.Location = new System.Drawing.Point(8, 33);
             this.chmodUploadCustomRadioButton.Name = "chmodUploadCustomRadioButton";
             this.chmodUploadCustomRadioButton.Padding = new System.Windows.Forms.Padding(20, 0, 0, 0);
-            this.chmodUploadCustomRadioButton.Size = new System.Drawing.Size(1, 17);
+            this.chmodUploadCustomRadioButton.Size = new System.Drawing.Size(240, 17);
             this.chmodUploadCustomRadioButton.TabIndex = 1;
             this.chmodUploadCustomRadioButton.TabStop = true;
             this.chmodUploadCustomRadioButton.Text = "to the permissions of the local file or folder";
@@ -2801,7 +2674,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.tableLayoutPanel13.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel13.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel13.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel13.Size = new System.Drawing.Size(1, 69);
+            this.tableLayoutPanel13.Size = new System.Drawing.Size(715, 69);
             this.tableLayoutPanel13.TabIndex = 4;
             // 
             // ownerUploadLabel
@@ -2953,7 +2826,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.tabPage3.Controls.Add(this.tableLayoutPanel14);
             this.tabPage3.Location = new System.Drawing.Point(4, 27);
             this.tabPage3.Name = "tabPage3";
-            this.tabPage3.Size = new System.Drawing.Size(743, 458);
+            this.tabPage3.Size = new System.Drawing.Size(743, 484);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Timestamps";
             this.tabPage3.UseVisualStyleBackColor = true;
@@ -2972,7 +2845,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.tableLayoutPanel14.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel14.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel14.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel14.Size = new System.Drawing.Size(743, 458);
+            this.tableLayoutPanel14.Size = new System.Drawing.Size(743, 484);
             this.tableLayoutPanel14.TabIndex = 2;
             // 
             // groupBox9
@@ -3056,7 +2929,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.tabPage4.Controls.Add(this.tableLayoutPanel17);
             this.tabPage4.Location = new System.Drawing.Point(4, 27);
             this.tabPage4.Name = "tabPage4";
-            this.tabPage4.Size = new System.Drawing.Size(743, 458);
+            this.tabPage4.Size = new System.Drawing.Size(743, 484);
             this.tabPage4.TabIndex = 3;
             this.tabPage4.Text = "Filter";
             this.tabPage4.UseVisualStyleBackColor = true;
@@ -3075,7 +2948,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.tableLayoutPanel17.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel17.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel17.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel17.Size = new System.Drawing.Size(743, 458);
+            this.tableLayoutPanel17.Size = new System.Drawing.Size(743, 484);
             this.tableLayoutPanel17.TabIndex = 3;
             // 
             // groupBox11
@@ -3221,7 +3094,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.toolStrip.ImageScalingSize = new System.Drawing.Size(32, 32);
             this.toolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.generalButton,
-            this.browserButton,
             this.transfersButton,
             this.editorButton,
             this.ftpButton,
@@ -3232,13 +3104,14 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.connectionButton,
             this.updateButton,
             this.languageButton});
+            this.toolStrip.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.HorizontalStackWithOverflow;
             this.toolStrip.Location = new System.Drawing.Point(0, 0);
             this.toolStrip.MinimumSize = new System.Drawing.Size(0, 69);
             this.toolStrip.Name = "toolStrip";
-            this.toolStrip.Size = new System.Drawing.Size(775, 69);
+            this.toolStrip.Size = new System.Drawing.Size(692, 69);
             this.toolStrip.TabIndex = 0;
             this.toolStrip.Text = "toolStrip1";
-            // 
+            //
             // generalButton
             // 
             this.generalButton.AutoToolTip = false;
@@ -3251,19 +3124,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.generalButton.Text = "General";
             this.generalButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
             this.generalButton.Click += new System.EventHandler(this.generalButton_Click);
-            // 
-            // browserButton
-            // 
-            this.browserButton.AutoToolTip = false;
-            this.browserButton.Image = global::Ch.Cyberduck.ResourcesBundle.browser;
-            this.browserButton.ImageAlign = System.Drawing.ContentAlignment.BottomCenter;
-            this.browserButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.browserButton.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
-            this.browserButton.Name = "browserButton";
-            this.browserButton.Size = new System.Drawing.Size(53, 69);
-            this.browserButton.Text = "Browser";
-            this.browserButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
-            this.browserButton.Click += new System.EventHandler(this.browserButton_Click);
             // 
             // transfersButton
             // 
@@ -3371,6 +3231,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.updateButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.updateButton.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
             this.updateButton.Name = "updateButton";
+            this.updateButton.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never;
             this.updateButton.Size = new System.Drawing.Size(49, 69);
             this.updateButton.Text = "Update";
             this.updateButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
@@ -3383,6 +3244,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.languageButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.languageButton.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
             this.languageButton.Name = "languageButton";
+            this.languageButton.Overflow = System.Windows.Forms.ToolStripItemOverflow.Never;
             this.languageButton.Size = new System.Drawing.Size(63, 69);
             this.languageButton.Text = "Language";
             this.languageButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
@@ -3393,7 +3255,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
-            this.ClientSize = new System.Drawing.Size(775, 579);
+            this.ClientSize = new System.Drawing.Size(692, 572);
             this.Controls.Add(this.panelManager);
             this.Controls.Add(this.toolStrip);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
@@ -3412,18 +3274,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.browserGroupbox.PerformLayout();
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
-            this.managedBrowserPanel.ResumeLayout(false);
-            this.managedBrowserPanel.PerformLayout();
-            this.tableLayoutPanelBrowser.ResumeLayout(false);
-            this.tableLayoutPanelBrowser.PerformLayout();
-            this.groupBox2.ResumeLayout(false);
-            this.groupBox2.PerformLayout();
-            this.tableLayoutPanel3.ResumeLayout(false);
-            this.tableLayoutPanel3.PerformLayout();
-            this.groupBox3.ResumeLayout(false);
-            this.groupBox3.PerformLayout();
-            this.tableLayoutPanel4.ResumeLayout(false);
-            this.tableLayoutPanel4.PerformLayout();
             this.managedFtpPanel.ResumeLayout(false);
             this.managedFtpPanel.PerformLayout();
             this.tableLayoutPanel20.ResumeLayout(false);
@@ -3587,7 +3437,6 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         private System.Windows.Forms.ToolStrip toolStrip;
         private System.Windows.Forms.ToolStripButton generalButton;
-        private System.Windows.Forms.ToolStripButton browserButton;
         private System.Windows.Forms.GroupBox browserGroupbox;
         private System.Windows.Forms.CheckBox saveWorkspaceCheckbox;
         private System.Windows.Forms.Label labelSaveWorkspace;
@@ -3612,16 +3461,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         private System.Windows.Forms.ToolStripButton bandwidthButton;
         private System.Windows.Forms.ToolStripButton connectionButton;
         private System.Windows.Forms.ImageList iconList;
-        private System.Windows.Forms.GroupBox groupBox2;
-        private System.Windows.Forms.CheckBox showHiddenFilesCheckbox;
-        private System.Windows.Forms.CheckBox returnKeyCheckbox;
-        private System.Windows.Forms.CheckBox doubleClickEditorCheckbox;
-        private System.Windows.Forms.CheckBox infoWindowCheckbox;
-        private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.GroupBox groupBox4;
-        private System.Windows.Forms.CheckBox verticalLinesCheckbox;
-        private System.Windows.Forms.CheckBox horizontalLinesCheckbox;
-        private System.Windows.Forms.CheckBox alternatingRowsCheckbox;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.ComboBox defaultEncodingCombobox;
         private System.Windows.Forms.TabControl transfersTabControl;
@@ -3727,7 +3567,6 @@ namespace Ch.Cyberduck.Ui.Winforms
         private System.Windows.Forms.Label label34;
         private PanelManager panelManager;
         private ManagedPanel managedGeneralPanel;
-        private ManagedPanel managedBrowserPanel;
         private ManagedPanel managedTransfersPanel;
         private ManagedPanel managedFtpPanel;
         private ManagedPanel managedSftpPanel;
@@ -3737,9 +3576,6 @@ namespace Ch.Cyberduck.Ui.Winforms
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanelGeneral;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanelBrowser;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel4;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel5;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel6;
         private System.Windows.Forms.Label label1;
@@ -3814,5 +3650,9 @@ namespace Ch.Cyberduck.Ui.Winforms
         private System.Windows.Forms.ComboBox languageComboBox;
         private System.Windows.Forms.Label label18;
         private System.Windows.Forms.GroupBox groupBox29;
+        private System.Windows.Forms.CheckBox infoWindowCheckbox;
+        private System.Windows.Forms.CheckBox showHiddenFilesCheckbox;
+        private System.Windows.Forms.CheckBox returnKeyCheckbox;
+        private System.Windows.Forms.CheckBox doubleClickEditorCheckbox;
     }
 }

@@ -33,6 +33,16 @@ namespace Ch.Cyberduck.Ui.Winforms
         {
             InitializeComponent();
 
+            Load += delegate
+                        {
+                            int newWidth = 10; // border etc.
+                            foreach (ToolStripItem item in toolStrip.Items)
+                            {
+                                newWidth += item.Size.Width + item.Margin.Left + item.Margin.Right;
+                            }
+                            Width = newWidth;
+                        };
+
             ftpButton.Image = IconCache.Instance.IconForName("ftp", 32);
             sftpButton.Image = IconCache.Instance.IconForName("sftp", 32);
             s3Button.Image = IconCache.Instance.IconForName("s3", 32);
@@ -175,20 +185,20 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public bool AlternatingRowBackground
         {
-            get { return alternatingRowsCheckbox.Checked; }
-            set { alternatingRowsCheckbox.Checked = value; }
+            get { return false; }
+            set { ; }
         }
 
         public bool HorizontalLines
         {
-            get { return horizontalLinesCheckbox.Checked; }
-            set { horizontalLinesCheckbox.Checked = value; }
+            get { return false; }
+            set { ; }
         }
 
         public bool VerticalLines
         {
-            get { return verticalLinesCheckbox.Checked; }
-            set { verticalLinesCheckbox.Checked = value; }
+            get { return false; }
+            set { ; }
         }
 
         public string DefaultEncoding
@@ -900,16 +910,6 @@ namespace Ch.Cyberduck.Ui.Winforms
                 DisableAll();
                 generalButton.Checked = true;
                 panelManager.SelectedPanel = managedGeneralPanel;
-            }
-        }
-
-        private void browserButton_Click(object sender, EventArgs e)
-        {
-            if (!browserButton.Checked)
-            {
-                DisableAll();
-                browserButton.Checked = true;
-                panelManager.SelectedPanel = managedBrowserPanel;
             }
         }
 
