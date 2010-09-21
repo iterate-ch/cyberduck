@@ -290,7 +290,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private bool View_ValidateDuplicateBookmark()
         {
-            return _bookmarkModel.Source.allowsEdit() && View.SelectedBookmarks.Count == 0;
+            return _bookmarkModel.Source.allowsEdit() && View.SelectedBookmarks.Count == 1;
         }
 
         private void View_DuplicateBookmark()
