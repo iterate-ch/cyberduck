@@ -239,7 +239,7 @@ public class PromptLoginController extends AbstractLoginController {
                     publicKeyPanel.setCanChooseDirectories(false);
                     publicKeyPanel.setCanChooseFiles(true);
                     publicKeyPanel.setAllowsMultipleSelection(false);
-                    publicKeyPanel.setMessage(Locale.localizedString("Select the private key in PEM format", "Credentials"));
+                    publicKeyPanel.setMessage(Locale.localizedString("Select the private key in PEM or PuTTY format", "Credentials"));
                     publicKeyPanel.setPrompt(Locale.localizedString("Choose"));
                     publicKeyPanel.beginSheetForDirectory(LocalFactory.createLocal("~/.ssh").getAbsolute(),
                             null, this.window(), this.id(),
