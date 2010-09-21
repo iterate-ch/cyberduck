@@ -25,6 +25,7 @@ using ch.cyberduck.core;
 using Ch.Cyberduck.Core;
 using ch.cyberduck.core.i18n;
 using ch.cyberduck.core.threading;
+using ch.cyberduck.ui.controller;
 using Ch.Cyberduck.Ui.Winforms.Controls;
 using com.enterprisedt.net.ftp;
 using java.lang;
@@ -34,7 +35,6 @@ using org.spearce.jgit.transport;
 using StructureMap;
 using Exception = System.Exception;
 using Object = java.lang.Object;
-using Process = System.Diagnostics.Process;
 using String = System.String;
 using TimeZone = java.util.TimeZone;
 
@@ -166,8 +166,20 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_ChangedPublicKeyCheckboxEvent()
         {
-            //todo pkCheckboxSelectionChanged
-            //todo pkSelectionPanelDidEnd_returnCode_contextInfo
+            if (View.PkCheckboxState)
+            {
+                string selectedKeyFile = UserPreferences.HomeFolder;
+                if (null != _host.getCredentials().getIdentity())
+                {
+                    selectedKeyFile = _host.getCredentials().getIdentity().getAbsolute();
+                }
+
+                View.ShowPrivateKeyBrowser(selectedKeyFile);
+            }
+            else
+            {
+                View_ChangedPrivateKey(this, new PrivateKeyArgs(null));
+            }
         }
 
         private void View_ChangedTransferEvent()
@@ -385,6 +397,9 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public void Init()
         {
+            //set default favicon
+            View.Favicon = IconCache.Instance.IconForName("site", 16);
+
             InitProtocols();
             InitConnectModes();
             InitEncodings();
@@ -402,6 +417,7 @@ namespace Ch.Cyberduck.Ui.Controller
             View.ChangedConnectModeEvent += View_ChangedConnectModeEvent;
             View.ChangedTransferEvent += View_ChangedTransferEvent;
             View.ChangedPublicKeyCheckboxEvent += View_ChangedPublicKeyCheckboxEvent;
+            View.ChangedPrivateKey += View_ChangedPrivateKey;
             View.ChangedAnonymousCheckboxEvent += View_ChangedAnonymousCheckboxEvent;
             View.ChangedNicknameEvent += View_ChangedNicknameEvent;
             View.ChangedWebURLEvent += View_ChangedWebURLEvent;
@@ -413,14 +429,21 @@ namespace Ch.Cyberduck.Ui.Controller
             View.OpenWebUrl += View_OpenWebUrl;
         }
 
+        private void View_ChangedPrivateKey(object sender, PrivateKeyArgs e)
+        {
+            _host.getCredentials().setIdentity(null == e.KeyFile ? null : LocalFactory.createLocal(e.KeyFile));
+            Update();
+            ItemChanged();
+        }
+
         private void View_OpenUrl()
         {
-            Process.Start(_host.toURL());
+            Utils.StartProcess(_host.toURL());
         }
 
         private void View_OpenDownloadFolderEvent()
         {
-            Process.Start(_host.getDownloadFolder().getAbsolute());
+            Utils.StartProcess(_host.getDownloadFolder().getAbsolute());
         }
 
         private void View_ChangedAnonymousCheckboxEvent()
@@ -577,11 +600,11 @@ namespace Ch.Cyberduck.Ui.Controller
                     View.SelectedConnectMode = ConnectmodeActive;
                 }
             }
-            View.PublicKeyFieldEnabled = _host.getProtocol().equals(Protocol.SFTP);
+            View.PkCheckboxEnabled = _host.getProtocol().equals(Protocol.SFTP);
             if (_host.getCredentials().isPublicKeyAuthentication())
             {
                 View.PkCheckboxState = true;
-                View.PkLabel = _host.getCredentials().getIdentity().toURL();
+                View.PkLabel = _host.getCredentials().getIdentity().getAbbreviatedPath();
             }
             else
             {
@@ -666,7 +689,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
                 else
                 {
-                    _controller.View.Favicon = ResourcesBundle.site;
+                    _controller.View.Favicon = IconCache.Instance.IconForName("site", 16);
                 }
             }
 

@@ -39,7 +39,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private string getPassword(Host host)
         {
-            string password = ch.cyberduck.core.Preferences.instance().getProperty(host.toURL());
+            string password = Preferences.instance().getProperty(host.toURL());
             if (null == password)
             {
                 return null;
@@ -58,14 +58,14 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             Host host = new Host(hostName);
             host.getCredentials().setUsername(user);
-            ch.cyberduck.core.Preferences.instance().setProperty(host.toURL(), DataProtector.Encrypt(password));
+            Preferences.instance().setProperty(host.toURL(), DataProtector.Encrypt(password));
         }
 
         public override void addPassword(String protocol, int port, String hostName, String user, String password)
         {
             Host host = new Host(Protocol.forScheme(protocol), hostName, port);
             host.getCredentials().setUsername(user);
-            ch.cyberduck.core.Preferences.instance().setProperty(host.toURL(), DataProtector.Encrypt(password));
+            Preferences.instance().setProperty(host.toURL(), DataProtector.Encrypt(password));
         }
 
         public override bool isTrusted(String hostName, X509Certificate[] certs)
@@ -101,16 +101,18 @@ namespace Ch.Cyberduck.Ui.Controller
                 while (true)
                 {
                     cTaskDialog.ForceEmulationMode = true;
-                    int r = cTaskDialog.ShowCommandBox(Locale.localizedString("This certificate is not valid", "Keychain"),
-                                                       null,
-                                                       errorFromChainStatus,
-                                                       null,
-                                                       null,
-                                                       Locale.localizedString("Always Trust", "Keychain"),
-                                                       Locale.localizedString("Continue", "Credentials") + "|" +
-                                                       Locale.localizedString("Disconnect") + "|" + Locale.localizedString("Show Certificate", "Keychain"),
-                                                       false,
-                                                       eSysIcons.Warning, eSysIcons.Warning);
+                    int r =
+                        cTaskDialog.ShowCommandBox(Locale.localizedString("This certificate is not valid", "Keychain"),
+                                                   null,
+                                                   errorFromChainStatus,
+                                                   null,
+                                                   null,
+                                                   Locale.localizedString("Always Trust", "Keychain"),
+                                                   Locale.localizedString("Continue", "Credentials") + "|" +
+                                                   Locale.localizedString("Disconnect") + "|" +
+                                                   Locale.localizedString("Show Certificate", "Keychain"),
+                                                   false,
+                                                   eSysIcons.Warning, eSysIcons.Warning);
                     if (r == 0)
                     {
                         if (cTaskDialog.VerificationChecked)
@@ -122,8 +124,8 @@ namespace Ch.Cyberduck.Ui.Controller
                             }
                             if (hostnameMismatch)
                             {
-                                ch.cyberduck.core.Preferences.instance().setProperty(hostName + ".certificate.accept",
-                                                                                     serverCert.SubjectName.Name);
+                                Preferences.instance().setProperty(hostName + ".certificate.accept",
+                                                                   serverCert.SubjectName.Name);
                             }
                         }
                         return true;
@@ -143,7 +145,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private bool CheckForException(string hostname, X509Certificate2 cert)
         {
-            string accCert = ch.cyberduck.core.Preferences.instance().getProperty(hostname + ".certificate.accept");
+            string accCert = Preferences.instance().getProperty(hostname + ".certificate.accept");
             if (Utils.IsNotBlank(accCert))
             {
                 return accCert.Equals(cert.SubjectName.Name);

@@ -16,6 +16,8 @@
 // yves@langisch.ch
 // 
 using System;
+using System.Drawing;
+using ch.cyberduck.ui.controller;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -25,24 +27,33 @@ namespace Ch.Cyberduck.Ui.Controller
         string Title { set; }
         string Message { set; }
         string Username { get; set; }
-        string Password { get; set; }
+        string Password { get; set; }        
+        Image DiskIcon { set; }
 
-        bool SavePasswordChecked { get; set; }
+        bool SavePasswordState { get; set; }
         bool SavePasswordEnabled { set; }
         bool UsernameEnabled { set; }
         bool PasswordEnabled { set; }
-        bool AnonymousChecked { get; set; }
-        bool PkCheckboxChecked { get; set; }
+        bool AnonymousState { get; set; }
+        bool AnonymousEnabled { set; }
+        bool PkCheckboxState { get; set; }
         bool PkCheckboxEnabled { set; }
+        string PkLabel { get; set; }
 
         string PasswordLabel { set; }
         string UsernameLabel { set; }
 
-        // Delegates
-        event EventHandler ChangedUsernameEvent;
-        event EventHandler ChangedPasswordEvent;
-        event EventHandler ChangedSavePasswordCheckboxEvent;
-        event EventHandler ChangedAnonymousCheckboxEvent;
-        event EventHandler ChangedPkCheckboxEvent;
+        void ShowPrivateKeyBrowser(string path);
+
+        #region Events
+
+        event VoidHandler ChangedUsernameEvent;
+        event VoidHandler ChangedPasswordEvent;
+        event VoidHandler ChangedSavePasswordCheckboxEvent;
+        event VoidHandler ChangedAnonymousCheckboxEvent;
+        event VoidHandler ChangedPkCheckboxEvent;
+        event EventHandler<PrivateKeyArgs> ChangedPrivateKey;
+
+        #endregion
     }
 }

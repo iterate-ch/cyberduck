@@ -1,4 +1,6 @@
-﻿using Ch.Cyberduck.Ui.Winforms.Controls;
+﻿using System;
+using ch.cyberduck.ui.controller;
+using Ch.Cyberduck.Ui.Winforms.Controls;
 
 namespace Ch.Cyberduck.Ui.Winforms
 {
@@ -60,8 +62,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.comboBoxConnectMode = new System.Windows.Forms.ComboBox();
             this.comboBoxEncoding = new System.Windows.Forms.ComboBox();
             this.checkBoxPKA = new System.Windows.Forms.CheckBox();
-            this.pkLabel = new System.Windows.Forms.Label();
+            this.pkLabel = new Ch.Cyberduck.Ui.Winforms.Controls.EllipsisLabel();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
+            this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.alertIcon)).BeginInit();
             this.optionsPanel.SuspendLayout();
@@ -311,7 +314,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.cancelButton.AutoSize = true;
             this.cancelButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.cancelButton.Location = new System.Drawing.Point(347, 3);
+            this.cancelButton.Location = new System.Drawing.Point(415, 3);
             this.cancelButton.Name = "cancelButton";
             this.cancelButton.Size = new System.Drawing.Size(53, 25);
             this.cancelButton.TabIndex = 43;
@@ -323,7 +326,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.connectButton.AutoSize = true;
             this.connectButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.connectButton.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.connectButton.Location = new System.Drawing.Point(406, 3);
+            this.connectButton.Location = new System.Drawing.Point(347, 3);
             this.connectButton.Name = "connectButton";
             this.connectButton.Size = new System.Drawing.Size(62, 25);
             this.connectButton.TabIndex = 44;
@@ -350,13 +353,11 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.optionsPanel.Name = "optionsPanel";
             this.optionsPanel.Padding = new System.Windows.Forms.Padding(10, 0, 10, 0);
             this.optionsPanel.RowCount = 5;
-            this.optionsPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 28F));
-            this.optionsPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 28F));
-            this.optionsPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 28F));
-            this.optionsPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 28F));
-            this.optionsPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 28F));
-            this.optionsPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.optionsPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.optionsPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.optionsPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.optionsPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.optionsPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.optionsPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.optionsPanel.Size = new System.Drawing.Size(481, 133);
             this.optionsPanel.TabIndex = 45;
             // 
@@ -375,7 +376,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.label2.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(93, 6);
+            this.label2.Location = new System.Drawing.Point(93, 7);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(34, 15);
             this.label2.TabIndex = 45;
@@ -397,7 +398,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.label3.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(38, 34);
+            this.label3.Location = new System.Drawing.Point(38, 35);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(89, 15);
             this.label3.TabIndex = 47;
@@ -411,7 +412,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.optionsPanel.SetColumnSpan(this.comboBoxConnectMode, 3);
             this.comboBoxConnectMode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBoxConnectMode.FormattingEnabled = true;
-            this.comboBoxConnectMode.Location = new System.Drawing.Point(133, 31);
+            this.comboBoxConnectMode.Location = new System.Drawing.Point(133, 32);
             this.comboBoxConnectMode.Name = "comboBoxConnectMode";
             this.comboBoxConnectMode.Size = new System.Drawing.Size(335, 23);
             this.comboBoxConnectMode.TabIndex = 48;
@@ -435,7 +436,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.checkBoxPKA.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.checkBoxPKA.AutoSize = true;
             this.optionsPanel.SetColumnSpan(this.checkBoxPKA, 3);
-            this.checkBoxPKA.Location = new System.Drawing.Point(133, 88);
+            this.checkBoxPKA.Location = new System.Drawing.Point(133, 86);
             this.checkBoxPKA.Name = "checkBoxPKA";
             this.checkBoxPKA.Size = new System.Drawing.Size(185, 19);
             this.checkBoxPKA.TabIndex = 51;
@@ -445,11 +446,15 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             // pkLabel
             // 
+            this.pkLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.pkLabel.AutoSize = true;
             this.optionsPanel.SetColumnSpan(this.pkLabel, 3);
-            this.pkLabel.Location = new System.Drawing.Point(133, 112);
+            this.pkLabel.Location = new System.Drawing.Point(150, 108);
+            this.pkLabel.Margin = new System.Windows.Forms.Padding(20, 0, 3, 0);
+            this.pkLabel.MinimumSize = new System.Drawing.Size(0, 25);
             this.pkLabel.Name = "pkLabel";
-            this.pkLabel.Size = new System.Drawing.Size(129, 15);
+            this.pkLabel.Size = new System.Drawing.Size(318, 25);
             this.pkLabel.TabIndex = 52;
             this.pkLabel.Text = "No private key selected";
             // 
@@ -459,10 +464,10 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel2.Controls.Add(this.cancelButton, 1, 0);
             this.tableLayoutPanel2.Controls.Add(this.separatorLine, 0, 2);
-            this.tableLayoutPanel2.Controls.Add(this.connectButton, 2, 0);
             this.tableLayoutPanel2.Controls.Add(this.toggleOptionsLabel, 0, 1);
+            this.tableLayoutPanel2.Controls.Add(this.cancelButton, 2, 0);
+            this.tableLayoutPanel2.Controls.Add(this.connectButton, 1, 0);
             this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Top;
             this.tableLayoutPanel2.Location = new System.Drawing.Point(0, 206);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
@@ -529,7 +534,9 @@ namespace Ch.Cyberduck.Ui.Winforms
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.ComboBox comboBoxEncoding;
         private System.Windows.Forms.CheckBox checkBoxPKA;
-        private System.Windows.Forms.Label pkLabel;
+        private EllipsisLabel pkLabel;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
+        private System.Windows.Forms.OpenFileDialog openFileDialog;
+        public event EventHandler<PrivateKeyArgs> ChangedPrivateKey;
     }
 }

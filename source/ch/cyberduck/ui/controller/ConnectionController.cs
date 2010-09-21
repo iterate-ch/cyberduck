@@ -15,17 +15,18 @@
 // Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
 // 
-using System;
 using System.Collections.Generic;
 using System.Threading;
 using ch.cyberduck.core;
 using Ch.Cyberduck.Core;
 using ch.cyberduck.core.i18n;
 using ch.cyberduck.core.threading;
+using ch.cyberduck.ui.controller;
 using Ch.Cyberduck.Ui.Winforms.Controls;
 using com.enterprisedt.net.ftp;
 using java.lang;
 using org.apache.log4j;
+using org.spearce.jgit.transport;
 using StructureMap;
 using Object = System.Object;
 using String = System.String;
@@ -173,9 +174,23 @@ namespace Ch.Cyberduck.Ui.Controller
             View.ChangedPublicKeyCheckboxEvent += View_ChangedPublicKeyCheckboxEvent;
             View.ChangedAnonymousCheckboxEvent += View_ChangedAnonymousCheckboxEvent;
             View.ChangedSavePasswordCheckboxEvent += View_ChangedSavePasswordCheckboxEvent;
+            View.ChangedPrivateKey += View_ChangedPrivateKey;
             View.OpenUrl += View_OpenUrl;
 
             View_ChangedProtocolEvent();
+        }
+
+        private void View_ChangedPrivateKey(object sender, PrivateKeyArgs e)
+        {
+            if (null != e.KeyFile)
+            {
+                View.PkLabel = e.KeyFile;
+                View.PasswordEnabled = false;
+            }
+            else
+            {
+                View.PkLabel = Locale.localizedString("No private key selected");
+            }
         }
 
         private void View_ChangedSavePasswordCheckboxEvent()
@@ -185,7 +200,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_OpenUrl()
         {
-            throw new NotImplementedException();
+            Utils.StartProcess(View.URL);
         }
 
         private void View_ChangedAnonymousCheckboxEvent()
@@ -208,8 +223,22 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_ChangedPublicKeyCheckboxEvent()
         {
-            //todo pkCheckboxSelectionChanged
-            //todo pkSelectionPanelDidEnd_returnCode_contextInfo
+            string s = Locale.localizedString("No private key selected");
+            if (View.PkCheckboxState)
+            {
+                string selectedKeyFile = UserPreferences.HomeFolder;
+                if (!s.Equals(View.PkLabel))
+                {
+                    selectedKeyFile = View.PkLabel;
+                }
+
+                View.PasswordEnabled = true;
+                View.ShowPrivateKeyBrowser(selectedKeyFile);
+            }
+            else
+            {
+                View_ChangedPrivateKey(this, new PrivateKeyArgs(null));
+            }
         }
 
         private void View_ChangedPathEvent()
@@ -224,7 +253,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_ChangedEncodingEvent()
         {
-            throw new NotImplementedException();
+            ;
         }
 
         private void View_ChangedServerEvent()
@@ -344,6 +373,12 @@ namespace Ch.Cyberduck.Ui.Controller
                     // Was previously configured with a static configuration
                     View.Path = string.Empty;
                 }
+                if (Utils.IsNotBlank(protocol.getDefaultHostname()))
+                {
+                    // Prefill with default hostname
+                    View.Hostname = protocol.getDefaultHostname();
+                }
+
                 View.UsernameEnabled = true;
                 View.HostFieldEnabled = true;
                 View.PortFieldEnabled = true;
@@ -398,7 +433,38 @@ namespace Ch.Cyberduck.Ui.Controller
         /// </summary>
         private void UpdateIdentity()
         {
-            //todo if we want to support PK-Authentication
+            View.PkCheckboxEnabled = View.SelectedProtocol == Protocol.SFTP;
+            if (View.SelectedProtocol == Protocol.SFTP)
+            {
+                if (Utils.IsNotBlank(View.Hostname))
+                {
+                    OpenSshConfig.Host entry = OpenSshConfig.create().lookup(View.Hostname);
+                    if (null != entry.getIdentityFile())
+                    {
+                        if (!View.PkCheckboxState)
+                        {
+                            // No previously manually selected key
+                            View.PkCheckboxState = true;
+                            View.PkLabel =
+                                LocalFactory.createLocal(entry.getIdentityFile().getAbsolutePath()).getAbbreviatedPath();
+                        }
+                    }
+                    else
+                    {
+                        View.PkCheckboxState = false;
+                        View.PkLabel = Locale.localizedString("No private key selected");
+                    }
+                    if (Utils.IsNotBlank(entry.getUser()))
+                    {
+                        View.Username = entry.getUser();
+                    }
+                }
+            }
+            else
+            {
+                View.PkCheckboxState = false;
+                View.PkLabel = Locale.localizedString("No private key selected");
+            }
         }
 
         private void InitEncodings()

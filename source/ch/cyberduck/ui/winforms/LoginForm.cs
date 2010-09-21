@@ -16,6 +16,10 @@
 // yves@cyberduck.ch
 // 
 using System;
+using System.Drawing;
+using System.Windows.Forms;
+using ch.cyberduck.core.i18n;
+using ch.cyberduck.ui.controller;
 using Ch.Cyberduck.Ui.Controller;
 
 namespace Ch.Cyberduck.Ui.Winforms
@@ -25,6 +29,12 @@ namespace Ch.Cyberduck.Ui.Winforms
         public LoginForm()
         {
             InitializeComponent();
+
+            openFileDialog.Title = Locale.localizedString("Select the private key in PEM or PuTTY format", "Credentials");
+
+            //todo localization
+            openFileDialog.Filter = "Private Key Files (*.pem;*.crt;*.ppk)|*.pem;*.crt;*.ppk|All Files (*.*)|*.*";
+            openFileDialog.FilterIndex = 1;
         }
 
         public string Title
@@ -49,7 +59,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             set { textBoxPassword.Text = value; }
         }
 
-        public bool SavePasswordChecked
+        public bool SavePasswordState
         {
             get { return checkBoxSavePassword.Checked; }
             set { checkBoxSavePassword.Checked = value; }
@@ -70,13 +80,13 @@ namespace Ch.Cyberduck.Ui.Winforms
             set { textBoxPassword.Enabled = value; }
         }
 
-        public bool AnonymousChecked
+        public bool AnonymousState
         {
             get { return checkBoxAnonymous.Checked; }
             set { checkBoxAnonymous.Checked = value; }
         }
 
-        public bool PkCheckboxChecked
+        public bool PkCheckboxState
         {
             get { return checkBoxPkAuthentication.Checked; }
             set { checkBoxPkAuthentication.Checked = value; }
@@ -85,6 +95,18 @@ namespace Ch.Cyberduck.Ui.Winforms
         public bool PkCheckboxEnabled
         {
             set { checkBoxPkAuthentication.Enabled = value; }
+        }
+
+        public string PkLabel
+        {
+            set
+            {
+                pkLabel.Text = value;
+                pkLabel.ForeColor = checkBoxPkAuthentication.Checked
+                                        ? Color.FromKnownColor(KnownColor.ControlText)
+                                        : Color.Gray;
+            }
+            get { return pkLabel.Text; }
         }
 
         public string PasswordLabel
@@ -97,35 +119,62 @@ namespace Ch.Cyberduck.Ui.Winforms
             set { labelUsername.Text = value; }
         }
 
-        public event EventHandler ChangedUsernameEvent;
-        public event EventHandler ChangedPasswordEvent;
-        public event EventHandler ChangedSavePasswordCheckboxEvent;
-        public event EventHandler ChangedAnonymousCheckboxEvent;
-        public event EventHandler ChangedPkCheckboxEvent;
+        public void ShowPrivateKeyBrowser(string path)
+        {
+            if (!Visible) return;
+
+            openFileDialog.InitialDirectory = path;
+            openFileDialog.FileName = String.Empty;
+            if (DialogResult.OK == openFileDialog.ShowDialog())
+            {
+                ChangedPrivateKey(this, new PrivateKeyArgs(openFileDialog.FileName));
+            }
+            else
+            {
+                ChangedPrivateKey(this, new PrivateKeyArgs(null));
+            }
+        }
+
+        public Image DiskIcon
+        {
+            set { diskPictureBox.Image = value; }
+        }
+
+        public bool AnonymousEnabled
+        {
+            set { checkBoxAnonymous.Enabled = value; }
+        }
+
+        public event VoidHandler ChangedUsernameEvent;
+        public event VoidHandler ChangedPasswordEvent;
+        public event VoidHandler ChangedSavePasswordCheckboxEvent;
+        public event VoidHandler ChangedAnonymousCheckboxEvent;
+        public event VoidHandler ChangedPkCheckboxEvent;
+        public event EventHandler<PrivateKeyArgs> ChangedPrivateKey;
 
         private void textBoxUsername_TextChanged(object sender, EventArgs e)
         {
-            ChangedUsernameEvent(this, EventArgs.Empty);
+            ChangedUsernameEvent();
         }
 
         private void textBoxPassword_TextChanged(object sender, EventArgs e)
         {
-            ChangedPasswordEvent(this, EventArgs.Empty);
+            ChangedPasswordEvent();
         }
 
         private void checkBoxSavePassword_CheckedChanged(object sender, EventArgs e)
         {
-            ChangedSavePasswordCheckboxEvent(this, EventArgs.Empty);
+            ChangedSavePasswordCheckboxEvent();
         }
 
         private void checkBoxAnonymous_CheckedChanged(object sender, EventArgs e)
         {
-            ChangedAnonymousCheckboxEvent(this, EventArgs.Empty);
+            ChangedAnonymousCheckboxEvent();
         }
 
         private void checkBoxPkAuthentication_CheckedChanged(object sender, EventArgs e)
         {
-            ChangedPkCheckboxEvent(this, EventArgs.Empty);
+            ChangedPkCheckboxEvent();
         }
     }
 }

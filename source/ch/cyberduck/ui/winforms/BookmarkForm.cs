@@ -43,6 +43,12 @@ namespace Ch.Cyberduck.Ui.Winforms
             toggleOptionsLabel.Text = "        " + Locale.localizedString("More Options", "Bookmark");
             toggleOptionsLabel.ImageIndex = (_expanded ? 1 : 4);
 
+            openFileDialog.Title = Locale.localizedString("Select the private key in PEM or PuTTY format", "Credentials");
+
+            //todo localization
+            openFileDialog.Filter = "Private Key Files (*.pem;*.crt;*.ppk)|*.pem;*.crt;*.ppk|All Files (*.*)|*.*";
+            openFileDialog.FilterIndex = 1;
+
             SetMinMaxSize(Height);
             ConfigureToggleOptions();
         }
@@ -50,6 +56,11 @@ namespace Ch.Cyberduck.Ui.Winforms
         public bool HostFieldEnabled
         {
             set { textBoxServer.Enabled = value; }
+        }
+
+        public override string[] BundleNames
+        {
+            get { return new[] {"Bookmark"}; }
         }
 
         public bool SavePasswordEnabled
@@ -95,6 +106,20 @@ namespace Ch.Cyberduck.Ui.Winforms
             }
         }
 
+        public void ShowPrivateKeyBrowser(string path)
+        {
+            openFileDialog.InitialDirectory = path;
+            openFileDialog.FileName = String.Empty;
+            if (DialogResult.OK == openFileDialog.ShowDialog())
+            {
+                ChangedPrivateKey(this, new PrivateKeyArgs(openFileDialog.FileName));
+            }
+            else
+            {
+                ChangedPrivateKey(this, new PrivateKeyArgs(null));
+            }
+        }
+
         public void PopulateTimezones(List<string> timezones)
         {
             comboBoxTimezone.DataSource = timezones;
@@ -133,6 +158,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         public event VoidHandler LaunchNetworkAssistantEvent = delegate { };
         public event VoidHandler OpenUrl = delegate { };
         public event VoidHandler ChangedSavePasswordCheckboxEvent = delegate { };
+        public event EventHandler<PrivateKeyArgs> ChangedPrivateKey = delegate { };
 
         public bool PortFieldEnabled
         {
@@ -149,7 +175,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             set { comboBoxEncoding.Enabled = value; }
         }
 
-        public bool PublicKeyFieldEnabled
+        public bool PkCheckboxEnabled
         {
             set { checkBoxPKA.Enabled = value; }
         }
@@ -162,7 +188,11 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public string PkLabel
         {
-            set { pkLabel.Text = value; }
+            set
+            {
+                pkLabel.Text = value;
+                pkLabel.ForeColor = checkBoxPKA.Checked ? Color.FromKnownColor(KnownColor.ControlText) : Color.Gray;
+            }
             get { return pkLabel.Text; }
         }
 
@@ -243,6 +273,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         public string URL
         {
             set { linkLabelURL.Text = value; }
+            get { return linkLabelURL.Text; }
         }
 
         public string Hostname
@@ -479,10 +510,5 @@ namespace Ch.Cyberduck.Ui.Winforms
             Border = 18
         }
         */
-
-        public override string[] BundleNames
-        {
-            get { return new[]{"Bookmark"}; }
-        }
     }
 }

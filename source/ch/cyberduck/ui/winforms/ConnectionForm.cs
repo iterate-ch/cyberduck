@@ -43,8 +43,19 @@ namespace Ch.Cyberduck.Ui.Winforms
             toggleOptionsLabel.Text = "        " + Locale.localizedString("More Options");
             toggleOptionsLabel.ImageIndex = (_expanded ? 1 : 4);
 
+            openFileDialog.Title = Locale.localizedString("Select the private key in PEM or PuTTY format", "Credentials");
+
+            //todo localization
+            openFileDialog.Filter = "Private Key Files (*.pem;*.crt;*.ppk)|*.pem;*.crt;*.ppk|All Files (*.*)|*.*";
+            openFileDialog.FilterIndex = 1;
+
             SetMinMaxSize(Height);
             ConfigureToggleOptions();
+        }
+
+        public override string[] BundleNames
+        {
+            get { return new[] {"Connection"}; }
         }
 
         public Image Favicon
@@ -111,6 +122,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         public string URL
         {
             set { linkLabelURL.Text = value; }
+            get { return linkLabelURL.Text; }
         }
 
         public string UsernamePlaceholder
@@ -182,8 +194,12 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public string PkLabel
         {
+            set
+            {
+                pkLabel.Text = value;
+                pkLabel.ForeColor = checkBoxPKA.Checked ? Color.FromKnownColor(KnownColor.ControlText) : Color.Gray;
+            }
             get { return pkLabel.Text; }
-            set { pkLabel.Text = value; }
         }
 
         public string UsernameLabel
@@ -202,7 +218,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             set { textBoxPort.Enabled = value; }
         }
 
-        public bool PublicKeyFieldEnabled
+        public bool PkCheckboxEnabled
         {
             set { checkBoxPKA.Enabled = value; }
         }
@@ -309,6 +325,20 @@ namespace Ch.Cyberduck.Ui.Winforms
             ;
         }
 
+        public void ShowPrivateKeyBrowser(string path)
+        {
+            openFileDialog.InitialDirectory = path;
+            openFileDialog.FileName = String.Empty;
+            if (DialogResult.OK == openFileDialog.ShowDialog())
+            {
+                ChangedPrivateKey(this, new PrivateKeyArgs(openFileDialog.FileName));
+            }
+            else
+            {
+                ChangedPrivateKey(this, new PrivateKeyArgs(null));
+            }
+        }
+
         public event VoidHandler ChangedEncodingEvent = delegate { };
         public event VoidHandler ChangedNicknameEvent = delegate { };
         public event VoidHandler ChangedTimezoneEvent = delegate { };
@@ -400,11 +430,6 @@ namespace Ch.Cyberduck.Ui.Winforms
         private void checkBoxPKA_CheckedChanged(object sender, EventArgs e)
         {
             ChangedPublicKeyCheckboxEvent();
-        }
-
-        public override string[] BundleNames
-        {
-            get { return new[]{"Connection"}; }
         }
     }
 }

@@ -15,10 +15,10 @@
 // Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
 // 
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using ch.cyberduck.core;
-using Ch.Cyberduck.Core;
 using ch.cyberduck.ui.controller;
 using Ch.Cyberduck.Ui.Winforms.Controls;
 
@@ -27,7 +27,7 @@ namespace Ch.Cyberduck.Ui.Controller
     public interface IBookmarkView : IView
     {
         // Properties
-        Image Favicon { set; }        
+        Image Favicon { set; }
 
         bool ConnectModeFieldEnabled { set; }
         bool EncodingFieldEnabled { set; }
@@ -35,11 +35,10 @@ namespace Ch.Cyberduck.Ui.Controller
         bool TimezoneFieldEnabled { set; }
         bool AlertIconEnabled { set; }
 
-        event VoidHandler ToggleOptions;
         bool OptionsVisible { get; set; }
 
         string Nickname { get; set; }
-        string URL { set; }
+        string URL { get; set; }
         string UsernamePlaceholder { set; }
         string DownloadFolder { set; }
         string SelectedConnectMode { get; set; }
@@ -51,13 +50,12 @@ namespace Ch.Cyberduck.Ui.Controller
         string Notes { get; set; }
         string SelectedTimezone { get; set; }
         string WindowTitle { set; }
-        // Public Key Checkbox
         bool PkCheckboxState { get; set; }
-        string PkLabel { get;  set; }
+        bool PkCheckboxEnabled { set; }
+        string PkLabel { get; set; }
         string UsernameLabel { set; }
-        bool HostFieldEnabled { get;  set; }
+        bool HostFieldEnabled { get; set; }
         bool PortFieldEnabled { set; }
-        bool PublicKeyFieldEnabled { set; }
         Protocol SelectedProtocol { get; set; }
         string Hostname { get; set; }
         string Port { get; set; }
@@ -70,6 +68,7 @@ namespace Ch.Cyberduck.Ui.Controller
         bool SavePasswordChecked { get; set; }
         bool SavePasswordEnabled { set; }
         bool AnonymousChecked { get; set; }
+        event VoidHandler ToggleOptions;
 
         void PopulateProtocols(List<KeyValueIconTriple<Protocol, string>> protocols);
         void PopulateEncodings(List<string> encodings);
@@ -78,6 +77,7 @@ namespace Ch.Cyberduck.Ui.Controller
         void PopulateTransferModes(List<string> transferModes);
 
         void ShowDownloadFolderBrowser(string path);
+        void ShowPrivateKeyBrowser(string path);
 
         // Delegates
         event VoidHandler ChangedEncodingEvent;
@@ -100,6 +100,8 @@ namespace Ch.Cyberduck.Ui.Controller
         event VoidHandler OpenWebUrl;
         event VoidHandler OpenDownloadFolderBrowserEvent;
         event VoidHandler OpenDownloadFolderEvent;
+
+        event EventHandler<PrivateKeyArgs> ChangedPrivateKey;
 
         //todo
         event VoidHandler LaunchNetworkAssistantEvent;

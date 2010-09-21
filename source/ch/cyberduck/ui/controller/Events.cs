@@ -117,5 +117,13 @@ namespace ch.cyberduck.ui.controller
         }
     }
 
+    public class PrivateKeyArgs : EventArgs
+    {
+        public readonly string KeyFile;
 
+        public PrivateKeyArgs(String keyFile)
+        {
+            KeyFile = keyFile;
+        }
+    }
 }
