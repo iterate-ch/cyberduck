@@ -20,7 +20,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
-using Ch.Cyberduck.Core;
 using ch.cyberduck.core.cloud;
 using ch.cyberduck.ui.controller;
 
@@ -35,8 +34,6 @@ namespace Ch.Cyberduck.Ui.Controller
         String ToolbarS3Label { set; }
         bool ToolbarPermissionsEnabled { set; }
         bool ToolbarMetadataEnabled { set; }
-
-        #region General
 
         Image FileIcon { set; }
         string Filename { set; get; }
@@ -56,12 +53,6 @@ namespace Ch.Cyberduck.Ui.Controller
         string Created { set; }
         string Modified { set; }
         string Checksum { set; }
-        event VoidHandler FilenameChanged;
-        event VoidHandler CalculateSize;
-
-        #endregion
-
-        #region Permissions
 
         CheckState OwnerRead { set; get; }
         bool OwnerReadEnabled { set; get; }
@@ -84,33 +75,17 @@ namespace Ch.Cyberduck.Ui.Controller
         bool RecursivePermissionsEnabled { set; }
         string OctalPermissions { get; set; }
         bool OctalPermissionsEnabled { set; }
-        List<InfoController.UserAndRoleEntry> SelectedAclEntries { get; } 
+
+        List<InfoController.UserAndRoleEntry> SelectedAclEntries { get; }
+        bool AclPanel { set; }
 
         BindingList<InfoController.UserAndRoleEntry> AclDataSource { set; }
         bool AclTableEnabled { set; }
         bool AclAddEnabled { set; }
         bool AclRemoveEnabled { set; }
-        void PopulateAclUsers(IDictionary<string, AsyncController.SyncDelegate> users);
-        void PopulateAclRoles(IList<string> roles);
         bool AclAnimationActive { set; }
-
-        event VoidHandler OwnerReadChanged;
-        event VoidHandler OwnerWriteChanged;
-        event VoidHandler OwnerExecuteChanged;
-        event VoidHandler GroupReadChanged;
-        event VoidHandler GroupWriteChanged;
-        event VoidHandler GroupExecuteChanged;
-        event VoidHandler OtherReadChanged;
-        event VoidHandler OtherWriteChanged;
-        event VoidHandler OtherExecuteChanged;
-        event VoidHandler ApplyRecursivePermissions;
-        event VoidHandler OctalPermissionsChanged;
-
-        event EventHandler<InfoHelpArgs> ShowHelp;
-
-        #endregion
-
-        #region Metadata
+        string AclUrl { set; }
+        string AclUrlTooltip { set; }
 
         bool MetadataTableEnabled { set; }
         bool MetadataAddEnabled { set; }
@@ -118,13 +93,7 @@ namespace Ch.Cyberduck.Ui.Controller
         bool MetadataAnimationActive { set; }
 
         BindingList<InfoController.CustomHeader> MetadataDataSource { set; }
-        void PopulateMetadata(IDictionary<string, AsyncController.SyncDelegate> metadata);
         List<InfoController.CustomHeader> SelectedMetadataEntries { get; }
-        void EditMetadataRow(string name, bool selectValue);
-
-        #endregion
-
-        #region Distribution (CDN)
 
         Distribution.Method DistributionDeliveryMethod { set; get; }
         bool DistributionDeliveryMethodEnabled { set; }
@@ -146,21 +115,6 @@ namespace Ch.Cyberduck.Ui.Controller
         string DistributionDefaultRoot { set; get; }
         bool DistributionDefaultRootEnabled { set; }
 
-        void PopulateDistributionDeliveryMethod(IList<KeyValuePair<string, Distribution.Method>> methods);
-        void PopulateDefaultRoot(IList<string> roots);
-
-        event VoidHandler DistributionDeliveryMethodChanged;
-        event VoidHandler DistributionEnabledChanged;
-        event VoidHandler DistributionLoggingChanged;
-        event VoidHandler DistributionCnameChanged;
-        event VoidHandler DistributionDefaultRootChanged;
-
-        #endregion
-
-        #region S3
-
-        void PopulateStorageClass(IList<string> classes);
-
         string BucketLocation { set; }
         string StorageClass { set; get; }
         bool StorageClassEnabled { set; }
@@ -177,12 +131,39 @@ namespace Ch.Cyberduck.Ui.Controller
         bool BucketVersioningEnabled { set; }
         bool BucketMfa { set; get; }
         bool BucketMfaEnabled { set; }
+        event VoidHandler FilenameChanged;
+        event VoidHandler CalculateSize;
+        event VoidHandler OwnerReadChanged;
+        event VoidHandler OwnerWriteChanged;
+        event VoidHandler OwnerExecuteChanged;
+        event VoidHandler GroupReadChanged;
+        event VoidHandler GroupWriteChanged;
+        event VoidHandler GroupExecuteChanged;
+        event VoidHandler OtherReadChanged;
+        event VoidHandler OtherWriteChanged;
+        event VoidHandler OtherExecuteChanged;
+        event VoidHandler ApplyRecursivePermissions;
+        event VoidHandler OctalPermissionsChanged;
+
+        event EventHandler<InfoHelpArgs> ShowHelp;
+        void PopulateAclUsers(IDictionary<string, AsyncController.SyncDelegate> users);
+        void PopulateAclRoles(IList<string> roles);
+        void PopulateMetadata(IDictionary<string, AsyncController.SyncDelegate> metadata);
+        void EditMetadataRow(string name, bool selectValue);
+        void PopulateDistributionDeliveryMethod(IList<KeyValuePair<string, Distribution.Method>> methods);
+        void PopulateDefaultRoot(IList<string> roots);
+
+        event VoidHandler DistributionDeliveryMethodChanged;
+        event VoidHandler DistributionEnabledChanged;
+        event VoidHandler DistributionLoggingChanged;
+        event VoidHandler DistributionCnameChanged;
+        event VoidHandler DistributionDefaultRootChanged;
+
+        void PopulateStorageClass(IList<string> classes);
 
         event VoidHandler BucketLoggingChanged;
         event VoidHandler StorageClassChanged;
         event VoidHandler BucketVersioningChanged;
         event VoidHandler BucketMfaChanged;
-
-        #endregion
     }
 }

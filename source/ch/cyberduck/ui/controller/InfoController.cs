@@ -68,54 +68,18 @@ namespace Ch.Cyberduck.Ui.Controller
             ConfigureToolbar();
             ConfigureHelp();
 
-            PopulateAclUsers();
-            PopulateAclRoles();
-            PopulateMetadata();
-            
+            if (_controller.getSession().isAclSupported())
+            {
+                PopulateAclUsers();
+                PopulateAclRoles();
+            }
+            if (_controller.getSession() is CloudSession &&
+                !_controller.getSession().getHost().getCredentials().isAnonymousLogin())
+            {
+                PopulateMetadata();
+            }
+
             Files = files;
-        }
-
-        private Map ConvertMetadataToMap()
-        {
-            TreeMap map = new TreeMap();
-            foreach (CustomHeader header in _metadata)
-            {
-                map.Add(header.Name, header.Value);
-            }
-            return map;
-        }
-
-        private void ConfigureToolbar()
-        {
-            Session session = _controller.getSession();
-            bool anonymous = session.getHost().getCredentials().isAnonymousLogin();
-
-            View.ToolbarDistributionImage = IconCache.Instance.GetProtocolImages(32).Images[
-                session.getHost().getProtocol().getIdentifier()];
-
-            if (session is S3Session)
-            {
-                // Set icon of cloud service provider
-                View.ToolbarS3Label = session.getHost().getProtocol().getName();
-                View.ToolbarS3Image = IconCache.Instance.GetProtocolImages(32).Images[
-                session.getHost().getProtocol().getIdentifier()];
-            } else
-            {
-                // Currently these settings are only available for Amazon S3
-                View.ToolbarS3Label = Protocol.S3.getName();
-                View.ToolbarS3Image = IconCache.Instance.GetProtocolImages(32).Images[Protocol.S3.disk()];
-                View.ToolbarDistributionImage = IconCache.Instance.GetProtocolImages(32).Images[Protocol.S3.disk()];
-            }
-
-            // Anonymous never has the right to updated permissions
-            View.ToolbarPermissionsEnabled = anonymous
-                                                 ? false
-                                                 : session.isAclSupported() || session.isUnixPermissionsSupported();
-            View.ToolbarDistributionEnabled = anonymous || !(session is CloudSession)
-                                                  ? false
-                                                  : ((CloudSession) session).getSupportedDistributionMethods().size() > 0;
-            View.ToolbarS3Enabled = session is S3Session ? !anonymous : false;
-            View.ToolbarMetadataEnabled = session is CloudSession ? !anonymous : false;
         }
 
         public override bool Singleton
@@ -173,12 +137,60 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
+        private Map ConvertMetadataToMap()
+        {
+            TreeMap map = new TreeMap();
+            foreach (CustomHeader header in _metadata)
+            {
+                map.Add(header.Name, header.Value);
+            }
+            return map;
+        }
+
+        private void ConfigureToolbar()
+        {
+            Session session = _controller.getSession();
+            bool anonymous = session.getHost().getCredentials().isAnonymousLogin();
+
+            View.ToolbarDistributionImage = IconCache.Instance.GetProtocolImages(32).Images[
+                session.getHost().getProtocol().getIdentifier()];
+
+            if (session is S3Session)
+            {
+                // Set icon of cloud service provider
+                View.ToolbarS3Label = session.getHost().getProtocol().getName();
+                View.ToolbarS3Image = IconCache.Instance.GetProtocolImages(32).Images[
+                    session.getHost().getProtocol().getIdentifier()];
+            }
+            else
+            {
+                // Currently these settings are only available for Amazon S3
+                View.ToolbarS3Label = Protocol.S3.getName();
+                View.ToolbarS3Image = IconCache.Instance.GetProtocolImages(32).Images[Protocol.S3.disk()];
+                View.ToolbarDistributionImage = IconCache.Instance.GetProtocolImages(32).Images[Protocol.S3.disk()];
+            }
+
+            //ACL or permission view
+            View.AclPanel = session.isAclSupported();
+
+            // Anonymous never has the right to update permissions
+            View.ToolbarPermissionsEnabled = anonymous
+                                                 ? false
+                                                 : session.isAclSupported() || session.isUnixPermissionsSupported();
+            View.ToolbarDistributionEnabled = anonymous || !(session is CloudSession)
+                                                  ? false
+                                                  : ((CloudSession) session).getSupportedDistributionMethods().size() >
+                                                    0;
+            View.ToolbarS3Enabled = session is S3Session ? !anonymous : false;
+            View.ToolbarMetadataEnabled = session is CloudSession ? !anonymous : false;
+        }
+
         /// <summary>
         /// Read custom metadata HTTP headers from cloud provider
         /// </summary>
         private void InitMetadata()
         {
-            SetMetadata(new List<InfoController.CustomHeader>());
+            SetMetadata(new List<CustomHeader>());
             if (ToggleMetadataSettings(false))
             {
                 _controller.Background(new ReadMetadataBackgroundAction(_controller, this));
@@ -218,42 +230,6 @@ namespace Ch.Cyberduck.Ui.Controller
             return enable;
         }
 
-        public class CustomHeader
-        {
-            private string _name;
-            private string _value;
-
-            public CustomHeader(string name, string value)
-            {
-                _name = name;
-                _value = value;
-            }
-
-            public string Name
-            {
-                get { return _name; }
-                set
-                {
-                    if (Utils.IsNotBlank(value))
-                    {
-                        _name = value;
-                    }
-                }
-            }
-
-            public string Value
-            {
-                get { return _value; }
-                set
-                {
-                    if (Utils.IsNotBlank(value))
-                    {
-                        _value = value;
-                    }
-                }
-            }
-        }
-
         private void SetMetadata(IList<CustomHeader> metadata)
         {
             _metadata = new BindingList<CustomHeader>(metadata);
@@ -284,7 +260,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                                      }
                                                      break;
                                              }
-                                         };            
+                                         };
         }
 
         /// <summary>
@@ -312,8 +288,8 @@ namespace Ch.Cyberduck.Ui.Controller
         private void AddMetadataItem(string name, string value, bool selectValue)
         {
             Log.debug("AddMetadataItem:" + name);
-            IList<InfoController.CustomHeader> l = new List<InfoController.CustomHeader>();
-            foreach (InfoController.CustomHeader pair in _metadata)
+            IList<CustomHeader> l = new List<CustomHeader>();
+            foreach (CustomHeader pair in _metadata)
             {
                 l.Add(pair);
             }
@@ -326,25 +302,25 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             IDictionary<string, SyncDelegate> metadata = new Dictionary<string, SyncDelegate>();
             metadata.Add(Locale.localizedString("Custom Header"),
-                        () => AddMetadataItem(Locale.localizedString("Unknown")));
+                         () => AddMetadataItem(Locale.localizedString("Unknown")));
             metadata.Add(Locale.localizedString("Cache-Control"),
-                        () =>
-                        AddMetadataItem("Cache-Control",
-                                        "public,max-age=" + Preferences.instance().getInteger("s3.cache.seconds")));
+                         () =>
+                         AddMetadataItem("Cache-Control",
+                                         "public,max-age=" + Preferences.instance().getInteger("s3.cache.seconds")));
             metadata.Add(Locale.localizedString("Expires"),
-                        delegate
-                            {
-                                DateTimeFormatInfo format = new CultureInfo("en-US").DateTimeFormat;
-                                DateTime expires =
-                                    DateTime.Now.AddSeconds(Preferences.instance().getInteger("s3.cache.seconds"));
-                                AddMetadataItem("Expires", expires.ToString("r", format));
-                            });
+                         delegate
+                             {
+                                 DateTimeFormatInfo format = new CultureInfo("en-US").DateTimeFormat;
+                                 DateTime expires =
+                                     DateTime.Now.AddSeconds(Preferences.instance().getInteger("s3.cache.seconds"));
+                                 AddMetadataItem("Expires", expires.ToString("r", format));
+                             });
             metadata.Add(Locale.localizedString("Pragma"),
-                        () => AddMetadataItem("Pragma", "", true));
+                         () => AddMetadataItem("Pragma", "", true));
             metadata.Add(Locale.localizedString("Content-Type"),
-                        () => AddMetadataItem("Content-Type", "", true));
+                         () => AddMetadataItem("Content-Type", "", true));
             metadata.Add(Locale.localizedString("Content-Encoding"),
-                        () => AddMetadataItem("Content-Encoding", "", true));
+                         () => AddMetadataItem("Content-Encoding", "", true));
 
             metadata.Add(Locale.localizedString("Remove"), RemoveMetadata);
 
@@ -353,8 +329,8 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void RemoveMetadata()
         {
-            List<InfoController.CustomHeader> entries = View.SelectedMetadataEntries;
-            foreach (InfoController.CustomHeader entry in entries)
+            List<CustomHeader> entries = View.SelectedMetadataEntries;
+            foreach (CustomHeader entry in entries)
             {
                 _metadata.Remove(entry);
             }
@@ -396,9 +372,31 @@ namespace Ch.Cyberduck.Ui.Controller
         private void InitAcl()
         {
             SetAcl(new List<UserAndRoleEntry>());
+            View.AclUrl = Locale.localizedString("None");
             if (ToggleAclSettings(false))
             {
-                _controller.Background(new FetchAclBackgroundAction(_controller, this));
+                if (NumberOfFiles > 1)
+                {
+                    View.AclUrl = _multipleFilesString;
+                    View.AclUrlTooltip = null;
+                }
+                else
+                {
+                    foreach (Path file in _files)
+                    {
+                        if (file.attributes().isFile())
+                        {
+                            AbstractPath.DescriptiveUrl url = file.toAuthenticatedUrl();
+
+                            if (Utils.IsNotBlank(url.getUrl()))
+                            {
+                                View.AclUrl = url.getUrl();
+                                View.AclUrlTooltip = url.getHelp();
+                            }
+                        }
+                    }
+                }
+                _controller.Background(new ReadAclBackgroundAction(_controller, this));
             }
         }
 
@@ -418,10 +416,11 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void PopulateAclRoles()
         {
-            IList<string> roles = Utils.ConvertFromJavaList(_controller.getSession().getAvailableAclRoles(Utils.ConvertToJavaList(Files)),
-                                                            item => ((Acl.Role)
-                                                                     item).
-                                                                        getName());
+            IList<string> roles =
+                Utils.ConvertFromJavaList(_controller.getSession().getAvailableAclRoles(Utils.ConvertToJavaList(Files)),
+                                          item => ((Acl.Role)
+                                                   item).
+                                                      getName());
             View.PopulateAclRoles(roles);
         }
 
@@ -454,7 +453,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                                 }
                                                 break;
                                         }
-                                    };            
+                                    };
         }
 
         /// <summary>
@@ -485,11 +484,11 @@ namespace Ch.Cyberduck.Ui.Controller
         }
 
         private void CalculateSize()
-        {            
+        {
             if (ToggleSizeSettings(false))
             {
                 _controller.background(new RecursiveSizeAction(_controller, this, _files));
-            }            
+            }
         }
 
         private void FilenameChanged()
@@ -524,14 +523,16 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void BucketLoggingChanged()
         {
-            if (ToggleS3Settings(false)){
+            if (ToggleS3Settings(false))
+            {
                 _controller.background(new SetBucketLoggingBackgroundAction(_controller, this));
             }
         }
 
         private void DistributionApply()
         {
-            if (ToggleDistributionSettings(false)){
+            if (ToggleDistributionSettings(false))
+            {
                 _controller.background(new WriteDistributionBackgroundAction(_controller, this, _files));
             }
         }
@@ -584,7 +585,8 @@ namespace Ch.Cyberduck.Ui.Controller
             View.DistributionLoggingEnabled = stop && enable;
             View.DistributionCnameEnabled = stop && enable;
             View.DistributionDeliveryMethodEnabled = stop && enable;
-            View.DistributionDefaultRootEnabled = stop && enable;
+            View.DistributionDefaultRootEnabled = stop && enable && session is S3Session &&
+                                                  View.DistributionDeliveryMethod == Distribution.DOWNLOAD;
             if (stop)
             {
                 View.DistributionAnimationActive = false;
@@ -850,7 +852,8 @@ namespace Ch.Cyberduck.Ui.Controller
         /// <param name="recursive"></param>
         private void ChangePermissions(Permission permission, bool recursive)
         {
-            if (TogglePermissionSettings(false)){
+            if (TogglePermissionSettings(false))
+            {
                 _controller.background(new WritePermissionBackgroundAction(_controller, this, permission, recursive));
             }
         }
@@ -986,7 +989,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                 classes.Remove(Locale.localizedString("Unknown"));
                                 View.StorageClass = Locale.localizedString(redundancy, "S3");
                             }
-                            CloudPath.DescriptiveUrl url = s3.toSignedUrl();
+                            AbstractPath.DescriptiveUrl url = s3.toSignedUrl();
                             if (null != url)
                             {
                                 View.S3PublicUrl = url.getUrl();
@@ -994,7 +997,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
                                 View.S3PublicUrlValidity = url.getHelp();
                             }
-                            CloudPath.DescriptiveUrl torrent = s3.toTorrentUrl();
+                            AbstractPath.DescriptiveUrl torrent = s3.toTorrentUrl();
                             if (null != torrent)
                             {
                                 View.S3TorrentUrl = torrent.getUrl();
@@ -1143,7 +1146,8 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 View.PermissionAnimationActive = false;
                 AttachPermissionHandlers();
-            } else if (enable)
+            }
+            else if (enable)
             {
                 View.PermissionAnimationActive = true;
             }
@@ -1220,63 +1224,6 @@ namespace Ch.Cyberduck.Ui.Controller
             View.FileSize = formatted.ToString();
         }
 
-        private class SetBucketLoggingBackgroundAction : BrowserBackgroundAction
-        {
-            private readonly InfoController _infoController;
-
-            public SetBucketLoggingBackgroundAction(BrowserController browserController, InfoController infoController) : base(browserController)
-            {
-                _infoController = infoController;
-            }
-
-            public override void run()
-            {
-                foreach (Path next in _infoController._files)
-                {
-                    string container = next.getContainerName();
-                    ((S3Session)BrowserController.getSession()).setLogging(container, _infoController.View.BucketLogging);
-                    break;
-                }
-            }
-
-            public override void cleanup()
-            {
-                _infoController.ToggleS3Settings(true);
-            }
-
-            public override string getActivity()
-            {
-                return String.Format(Locale.localizedString("Writing metadata of {0}", "Status"),
-                                     toString(Utils.ConvertToJavaList(_infoController.Files)));
-            }
-        }
-
-        private class SetBucketVersioningAndMfaBackgroundAction : BrowserBackgroundAction
-        {
-            private readonly InfoController _infoController;
-
-            public SetBucketVersioningAndMfaBackgroundAction(BrowserController browserController, InfoController infoController)
-                : base(browserController)
-            {
-                _infoController = infoController;
-            }
-
-            public override void run()
-            {
-                foreach (Path next in _infoController._files)
-                {
-                    string container = next.getContainerName();
-                    ((S3Session)BrowserController.getSession()).setVersioning(container, _infoController.View.BucketMfa, _infoController.View.BucketVersioning);
-                    break;
-                }
-            }
-
-            public override void cleanup()
-            {
-                _infoController.ToggleS3Settings(true);
-            }
-        }
-
         private class CacheControlBackgroundAction : BrowserBackgroundAction
         {
             private readonly string _cache;
@@ -1305,34 +1252,75 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
-        private class WritePermissionBackgroundAction : InfoBackgroundAction
+        private class ChecksumBackgroundAction : InfoBackgroundAction
         {
-            public WritePermissionBackgroundAction(BrowserController browserController, 
-                InfoController infoController, 
-                Permission permission, bool recursive) : base(browserController, 
-                new InnerWritePermissionWorker(infoController, 
-                    Utils.ConvertToJavaList(infoController._files), 
-                    permission, 
-                    recursive))
+            public ChecksumBackgroundAction(BrowserController browserController, InfoController infoController)
+                : base(
+                    browserController,
+                    new InnerChecksumWorker(infoController, Utils.ConvertToJavaList(infoController._files)))
             {
             }
 
-            private class InnerWritePermissionWorker : WritePermissionWorker
+            private class InnerChecksumWorker : ChecksumWorker
             {
                 private readonly InfoController _infoController;
 
-                public InnerWritePermissionWorker(InfoController infoController, 
-                    List files, 
-                    Permission permission, 
-                    bool recursive) : base(files, permission, recursive)
+                public InnerChecksumWorker(InfoController infoController, List files) : base(files)
                 {
                     _infoController = infoController;
                 }
 
                 public override void cleanup(object obj)
                 {
-                    _infoController.TogglePermissionSettings(true);
-                    _infoController.InitPermissions();
+                    foreach (Path checksum in _infoController.Files)
+                    {
+                        if (String.IsNullOrEmpty(checksum.attributes().getChecksum()))
+                        {
+                            _infoController.View.Checksum = Locale.localizedString("Unknown");
+                        }
+                        else
+                        {
+                            _infoController.View.Checksum = checksum.attributes().getChecksum();
+                        }
+                    }
+                    _infoController.ToggleSizeSettings(true);
+                    _infoController.AttachGeneralHandlers();
+                }
+            }
+        }
+
+        public class CustomHeader
+        {
+            private string _name;
+            private string _value;
+
+            public CustomHeader(string name, string value)
+            {
+                _name = name;
+                _value = value;
+            }
+
+            public string Name
+            {
+                get { return _name; }
+                set
+                {
+                    if (Utils.IsNotBlank(value))
+                    {
+                        _name = value;
+                    }
+                }
+            }
+
+            public string Value
+            {
+                get { return _value; }
+                set
+                {
+                    if (Utils.IsNotBlank(value))
+                    {
+                        _value = value;
+                    }
                 }
             }
         }
@@ -1405,85 +1393,81 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
-        private class FetchAclBackgroundAction : BrowserBackgroundAction
+        private class FetchPermissionsBackgroundAction : InfoBackgroundAction
         {
-            private readonly InfoController _infoController;
-            private readonly List _jUpdated = new ArrayList();
-            private readonly IList<UserAndRoleEntry> _updated = new List<UserAndRoleEntry>();
-
-            public FetchAclBackgroundAction(BrowserController controller,
-                                            InfoController infoController) : base(controller)
+            public FetchPermissionsBackgroundAction(BrowserController browserController, InfoController infoController)
+                : base(
+                    browserController,
+                    new InnerReadPermissionWorker(infoController, Utils.ConvertToJavaList(infoController._files)))
             {
-                _infoController = infoController;
             }
 
-            public override void run()
+            private class InnerReadPermissionWorker : ReadPermissionWorker
             {
-                foreach (Path next in _infoController.Files)
+                private readonly InfoController _infoController;
+
+                public InnerReadPermissionWorker(InfoController infoController, List files) : base(files)
                 {
-                    if (Acl.EMPTY.equals(next.attributes().getAcl()))
+                    _infoController = infoController;
+                }
+
+                public override void cleanup(object obj)
+                {
+                    IInfoView view = _infoController.View;
+                    ICollection<Permission> permissions = Utils.ConvertFromJavaList<Permission>((List) obj);
+                    bool overwrite = true;
+                    foreach (Permission permission in permissions)
                     {
-                        next.readAcl();
+                        view.OwnerRead = GetCheckboxState(view.OwnerRead, overwrite,
+                                                          permission.getOwnerPermissions()[Permission.READ]);
+                        view.OwnerWrite = GetCheckboxState(view.OwnerWrite, overwrite,
+                                                           permission.getOwnerPermissions()[Permission.WRITE]);
+                        view.OwnerExecute = GetCheckboxState(view.OwnerExecute, overwrite,
+                                                             permission.getOwnerPermissions()[Permission.EXECUTE]);
+                        view.GroupRead = GetCheckboxState(view.GroupRead, overwrite,
+                                                          permission.getGroupPermissions()[Permission.READ]);
+                        view.GroupWrite = GetCheckboxState(view.GroupWrite, overwrite,
+                                                           permission.getGroupPermissions()[Permission.WRITE]);
+                        view.GroupExecute = GetCheckboxState(view.GroupExecute, overwrite,
+                                                             permission.getGroupPermissions()[Permission.EXECUTE]);
+                        view.OtherRead = GetCheckboxState(view.OtherRead, overwrite,
+                                                          permission.getOtherPermissions()[Permission.READ]);
+                        view.OtherWrite = GetCheckboxState(view.OtherWrite, overwrite,
+                                                           permission.getOtherPermissions()[Permission.WRITE]);
+                        view.OtherExecute = GetCheckboxState(view.OtherExecute, overwrite,
+                                                             permission.getOtherPermissions()[Permission.EXECUTE]);
+
+                        overwrite = false;
                     }
 
-                    List acls = next.attributes().getAcl().asList();
-                    for (int i = 0; i < acls.size(); i++)
+                    if (permissions.Count > 1)
                     {
-                        Acl.UserAndRole uar = acls.get(i) as Acl.UserAndRole;
-                        if (_jUpdated.contains(uar))
+                        view.Permissions = _infoController._multipleFilesString;
+                    }
+                    else
+                    {
+                        foreach (Permission permission in permissions)
                         {
-                            continue;
+                            view.OctalPermissions = permission.getOctalString();
+                            view.Permissions = permission.toString();
                         }
-                        _updated.Add(new UserAndRoleEntry(uar.getUser(), uar.getRole()));
-                        _jUpdated.add(uar);
                     }
+                    _infoController.TogglePermissionSettings(true);
                 }
-            }
 
-            public override void cleanup()
-            {
-                _infoController.SetAcl(_updated);
-                _infoController.ToggleAclSettings(true);
-
-                //todo attachAclHandler?
-            }
-
-            public override string getActivity()
-            {
-                return String.Format(Locale.localizedString("Getting permission of {0}", "Status"),
-                                     toString(Utils.ConvertToJavaList(_infoController.Files)));
-            }
-        }
-
-        private class SetStorageClassBackgroundAction : BrowserBackgroundAction
-        {
-            private readonly InfoController _infoController;
-
-            public SetStorageClassBackgroundAction(BrowserController controller,
-                                            InfoController infoController) : base(controller)
-            {
-                _infoController = infoController;
-            }
-
-            public override void run()
-            {
-                foreach (Path next in _infoController._files)
+                private static CheckState GetCheckboxState(CheckState state, bool overwrite, bool condition)
                 {
-                    next.attributes().setStorageClass(_infoController.View.StorageClass);
-                    // Copy item in place to write new attributes
-                    next.copy(next);                    
+                    // Gets the state which can be CheckState.Checked, CheckState.Unchecked, or CheckState.Indeterminate.
+                    if ((state == CheckState.Unchecked || overwrite) && !condition)
+                    {
+                        return CheckState.Unchecked;
+                    }
+                    if ((state == CheckState.Checked || overwrite) && condition)
+                    {
+                        return CheckState.Checked;
+                    }
+                    return CheckState.Indeterminate;
                 }
-            }
-
-            public override void cleanup()
-            {
-                _infoController.ToggleS3Settings(true);
-            }
-
-            public override string getActivity()
-            {
-                return String.Format(Locale.localizedString("Writing metadata of {0}", "Status"),
-                                     toString(Utils.ConvertToJavaList(_infoController.Files)));
             }
         }
 
@@ -1528,6 +1512,52 @@ namespace Ch.Cyberduck.Ui.Controller
                 _view.BucketMfaEnabled = _versioning;
                 _view.BucketMfa = _mfa;
                 _infoController.ToggleS3Settings(true);
+            }
+        }
+
+        private class ReadAclBackgroundAction : InfoBackgroundAction
+        {
+            public ReadAclBackgroundAction(BrowserController browserController,
+                                           InfoController infoController)
+                : base(browserController,
+                       new InnerReadAclWorker(infoController,
+                                              Utils.ConvertToJavaList(infoController._files)))
+            {
+            }
+
+            private class InnerReadAclWorker : ReadAclWorker
+            {
+                private readonly InfoController _infoController;
+
+                public InnerReadAclWorker(InfoController infoController,
+                                          List files)
+                    : base(files)
+                {
+                    _infoController = infoController;
+                }
+
+                public override void cleanup(object obj)
+                {
+                    IList<UserAndRoleEntry> entries = Utils.ConvertFromJavaList((List) obj, delegate(object item)
+                                                                                                {
+                                                                                                    Acl.UserAndRole
+                                                                                                        entry =
+                                                                                                            (
+                                                                                                            Acl.
+                                                                                                                UserAndRole
+                                                                                                            ) item;
+                                                                                                    return
+                                                                                                        new UserAndRoleEntry
+                                                                                                            (entry.
+                                                                                                                 getUser
+                                                                                                                 (),
+                                                                                                             entry.
+                                                                                                                 getRole
+                                                                                                                 ());
+                                                                                                });
+                    _infoController.SetAcl(entries);
+                    _infoController.ToggleAclSettings(true);
+                }
             }
         }
 
@@ -1588,8 +1618,8 @@ namespace Ch.Cyberduck.Ui.Controller
                 else
                 {
                     String url = _distribution.getUrl(file.getKey());
-                        _view.DistributionUrl = url;
-                        _view.DistributionUrlTooltip = url;
+                    _view.DistributionUrl = url;
+                    _view.DistributionUrlTooltip = url;
                 }
                 string[] cnames = _distribution.getCNAMEs();
                 if (0 == cnames.Length)
@@ -1626,39 +1656,13 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
-        private class WriteMetadataBackgroundAction : InfoBackgroundAction
-        {
-            public WriteMetadataBackgroundAction(BrowserController controller, InfoController infoController)
-                : base(
-                    controller,
-                    new InnerWriteMetadataWorker(infoController, Utils.ConvertToJavaList(infoController._files),
-                                                 infoController.ConvertMetadataToMap()))
-            {
-            }
-
-            private class InnerWriteMetadataWorker : WriteMetadataWorker
-            {
-                private readonly InfoController _infoController;
-
-                public InnerWriteMetadataWorker(InfoController infoController, List files, Map metadata)
-                    : base(files, metadata)
-                {
-                    _infoController = infoController;
-                }
-
-                public override void cleanup(object obj)
-                {
-                    _infoController.ToggleMetadataSettings(true);
-                    _infoController.InitMetadata();
-                }
-            }
-        }
-
         private class ReadMetadataBackgroundAction : InfoBackgroundAction
         {
             public ReadMetadataBackgroundAction(BrowserController controller,
-                                                 InfoController infoController)
-                : base(controller, new InnerReadMetadataWorker(infoController, Utils.ConvertToJavaList(infoController._files)))
+                                                InfoController infoController)
+                : base(
+                    controller,
+                    new InnerReadMetadataWorker(infoController, Utils.ConvertToJavaList(infoController._files)))
             {
             }
 
@@ -1675,11 +1679,11 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     Map updated = (Map) obj;
                     Iterator it = updated.entrySet().iterator();
-                    IList<InfoController.CustomHeader> metadata = new List<InfoController.CustomHeader>();
+                    IList<CustomHeader> metadata = new List<CustomHeader>();
                     while (it.hasNext())
                     {
-                        Map.Entry pair = (Map.Entry)it.next();
-                        metadata.Add(new CustomHeader((string)pair.getKey(), (string)pair.getValue()));
+                        Map.Entry pair = (Map.Entry) it.next();
+                        metadata.Add(new CustomHeader((string) pair.getKey(), (string) pair.getValue()));
                     }
                     _infoController.ToggleMetadataSettings(true);
                     _infoController.SetMetadata(metadata);
@@ -1688,10 +1692,39 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
+        private class ReadSizeBackgroundAction : InfoBackgroundAction
+        {
+            public ReadSizeBackgroundAction(BrowserController browserController, InfoController infoController)
+                : base(
+                    browserController,
+                    new InnerReadSizeWorker(infoController, Utils.ConvertToJavaList(infoController._files)))
+            {
+            }
+
+            private class InnerReadSizeWorker : ReadSizeWorker
+            {
+                private readonly InfoController _infoController;
+
+                public InnerReadSizeWorker(InfoController infoController, List files) : base(files)
+                {
+                    _infoController = infoController;
+                }
+
+                public override void cleanup(object obj)
+                {
+                    long size = ((Long) obj).longValue();
+                    _infoController.UpdateSize(size);
+                    _infoController.ToggleSizeSettings(true);
+                    _infoController.AttachGeneralHandlers();
+                }
+            }
+        }
+
         private class RecursiveSizeAction : InfoBackgroundAction
         {
             public RecursiveSizeAction(BrowserController controller, InfoController infoController,
-                                       List<Path> files) : base(controller, new InnerCalculateSizeWorker(infoController, Utils.ConvertToJavaList(files)) )
+                                       List<Path> files)
+                : base(controller, new InnerCalculateSizeWorker(infoController, Utils.ConvertToJavaList(files)))
             {
             }
 
@@ -1717,140 +1750,99 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
-        private class ReadSizeBackgroundAction : InfoBackgroundAction
+        private class SetBucketLoggingBackgroundAction : BrowserBackgroundAction
         {
-            public ReadSizeBackgroundAction(BrowserController browserController, InfoController infoController)
-                : base(browserController, new InnerReadSizeWorker(infoController, Utils.ConvertToJavaList(infoController._files)))
+            private readonly InfoController _infoController;
+
+            public SetBucketLoggingBackgroundAction(BrowserController browserController, InfoController infoController)
+                : base(browserController)
             {
+                _infoController = infoController;
             }
 
-            private class InnerReadSizeWorker : ReadSizeWorker
+            public override void run()
             {
-                private readonly InfoController _infoController;
-
-                public InnerReadSizeWorker(InfoController infoController, List files) : base(files)
+                foreach (Path next in _infoController._files)
                 {
-                    _infoController = infoController;
+                    string container = next.getContainerName();
+                    ((S3Session) BrowserController.getSession()).setLogging(container,
+                                                                            _infoController.View.BucketLogging);
+                    break;
                 }
+            }
 
-                public override void cleanup(object obj)
-                {
-                    long size = ((Long) obj).longValue();
-                    _infoController.UpdateSize(size);
-                    _infoController.ToggleSizeSettings(true);
-                    _infoController.AttachGeneralHandlers();
-                }
+            public override void cleanup()
+            {
+                _infoController.ToggleS3Settings(true);
+                _infoController.InitS3(); //really necessary?
+            }
+
+            public override string getActivity()
+            {
+                return String.Format(Locale.localizedString("Writing metadata of {0}", "Status"),
+                                     toString(Utils.ConvertToJavaList(_infoController.Files)));
             }
         }
 
-        private class ChecksumBackgroundAction : InfoBackgroundAction
+        private class SetBucketVersioningAndMfaBackgroundAction : BrowserBackgroundAction
         {
-            public ChecksumBackgroundAction(BrowserController browserController, InfoController infoController)
-                : base(browserController, new InnerChecksumWorker(infoController, Utils.ConvertToJavaList(infoController._files)))
+            private readonly InfoController _infoController;
+
+            public SetBucketVersioningAndMfaBackgroundAction(BrowserController browserController,
+                                                             InfoController infoController)
+                : base(browserController)
             {
+                _infoController = infoController;
             }
 
-            private class InnerChecksumWorker : ChecksumWorker
+            public override void run()
             {
-                private readonly InfoController _infoController;
-
-                public InnerChecksumWorker(InfoController infoController, List files) : base(files)
+                foreach (Path next in _infoController._files)
                 {
-                    _infoController = infoController;
+                    string container = next.getContainerName();
+                    ((S3Session) BrowserController.getSession()).setVersioning(container, _infoController.View.BucketMfa,
+                                                                               _infoController.View.BucketVersioning);
+                    break;
                 }
+            }
 
-                public override void cleanup(object obj)
-                {
-                    foreach (Path checksum in _infoController.Files)
-                    {
-                        if (String.IsNullOrEmpty(checksum.attributes().getChecksum()))
-                        {
-                            _infoController.View.Checksum = Locale.localizedString("Unknown");
-                        }
-                        else
-                        {
-                            _infoController.View.Checksum = checksum.attributes().getChecksum();
-                        }
-                    }
-                    _infoController.ToggleSizeSettings(true);
-                    _infoController.AttachGeneralHandlers();
-                }
-            } 
+            public override void cleanup()
+            {
+                _infoController.ToggleS3Settings(true);
+                _infoController.InitS3(); //really necessary?
+            }
         }
 
-        private class FetchPermissionsBackgroundAction : InfoBackgroundAction
+        private class SetStorageClassBackgroundAction : BrowserBackgroundAction
         {
-            public FetchPermissionsBackgroundAction(BrowserController browserController, InfoController infoController)
-                : base(browserController, new InnerReadPermissionWorker(infoController, Utils.ConvertToJavaList(infoController._files)))
+            private readonly InfoController _infoController;
+
+            public SetStorageClassBackgroundAction(BrowserController controller,
+                                                   InfoController infoController) : base(controller)
             {
+                _infoController = infoController;
             }
 
-            private class InnerReadPermissionWorker : ReadPermissionWorker
+            public override void run()
             {
-                private readonly InfoController _infoController;
-
-                public InnerReadPermissionWorker(InfoController infoController, List files) : base(files)
+                foreach (Path next in _infoController._files)
                 {
-                    _infoController = infoController;
+                    next.attributes().setStorageClass(_infoController.View.StorageClass);
+                    // Copy item in place to write new attributes
+                    next.copy(next);
                 }
+            }
 
-                public override void cleanup(object obj)
-                {
-                    IInfoView view = _infoController.View;
-                    ICollection<Permission> permissions = Utils.ConvertFromJavaList<Permission>((List) obj);
-                    bool overwrite = true;
-                    foreach (Permission permission in permissions)
-                    {
-                        view.OwnerRead = GetCheckboxState(view.OwnerRead, overwrite,
-                                                            permission.getOwnerPermissions()[Permission.READ]);
-                        view.OwnerWrite = GetCheckboxState(view.OwnerWrite, overwrite,
-                                                            permission.getOwnerPermissions()[Permission.WRITE]);
-                        view.OwnerExecute = GetCheckboxState(view.OwnerExecute, overwrite,
-                                                              permission.getOwnerPermissions()[Permission.EXECUTE]);
-                        view.GroupRead = GetCheckboxState(view.GroupRead, overwrite,
-                                                           permission.getGroupPermissions()[Permission.READ]);
-                        view.GroupWrite = GetCheckboxState(view.GroupWrite, overwrite,
-                                                            permission.getGroupPermissions()[Permission.WRITE]);
-                        view.GroupExecute = GetCheckboxState(view.GroupExecute, overwrite,
-                                                              permission.getGroupPermissions()[Permission.EXECUTE]);
-                        view.OtherRead = GetCheckboxState(view.OtherRead, overwrite,
-                                                           permission.getOtherPermissions()[Permission.READ]);
-                        view.OtherWrite = GetCheckboxState(view.OtherWrite, overwrite,
-                                                            permission.getOtherPermissions()[Permission.WRITE]);
-                        view.OtherExecute = GetCheckboxState(view.OtherExecute, overwrite,
-                                                              permission.getOtherPermissions()[Permission.EXECUTE]);
+            public override void cleanup()
+            {
+                _infoController.ToggleS3Settings(true);
+                _infoController.InitS3(); //really necessary?
+            }
 
-                        overwrite = false;
-                    }
-
-                    if (permissions.Count > 1 )
-                    {
-                        view.Permissions = _infoController._multipleFilesString;
-                    } else
-                    {
-                        foreach (Permission permission in permissions)
-                        {
-                            view.OctalPermissions = permission.getOctalString();
-                            view.Permissions = permission.toString();
-                        }
-                    }
-                    _infoController.TogglePermissionSettings(true);
-                }
-
-                private static CheckState GetCheckboxState(CheckState state, bool overwrite, bool condition)
-                {
-                    // Gets the state which can be CheckState.Checked, CheckState.Unchecked, or CheckState.Indeterminate.
-                    if ((state == CheckState.Unchecked || overwrite) && !condition)
-                    {
-                        return CheckState.Unchecked;
-                    }
-                    if ((state == CheckState.Checked || overwrite) && condition)
-                    {
-                        return CheckState.Checked;
-                    }
-                    return CheckState.Indeterminate;
-                }
-
+            public override string getActivity()
+            {
+                return String.Format(Locale.localizedString("Writing metadata of {0}", "Status"),
+                                     toString(Utils.ConvertToJavaList(_infoController.Files)));
             }
         }
 
@@ -1923,42 +1915,46 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
-        private class WriteAclBackgroundAction : BrowserBackgroundAction
+        private class WriteAclBackgroundAction : InfoBackgroundAction
         {
-            private readonly InfoController _infoController;
-
-            public WriteAclBackgroundAction(BrowserController controller, InfoController infoController)
-                : base(controller)
+            public WriteAclBackgroundAction(BrowserController browserController,
+                                            InfoController infoController)
+                : base(browserController,
+                       new InnerWriteAclWorker(infoController,
+                                               Utils.ConvertToJavaList(infoController._files),
+                                               GetAcl(infoController)))
             {
-                _infoController = infoController;
             }
 
-            public override void run()
+            private static Acl GetAcl(InfoController infoController)
             {
-                foreach (Path next in _infoController.Files)
+                Acl.UserAndRole[] aclEntries = new Acl.UserAndRole[infoController._acl.Count];
+                for (int index = 0; index < infoController._acl.Count; index++)
                 {
-                    Acl.UserAndRole[] aclEntries = new Acl.UserAndRole[_infoController._acl.Count];
-                    for (int index = 0; index < _infoController._acl.Count; index++)
-                    {
-                        aclEntries[index] = _infoController._acl[index];
-                    }
-                    Acl acl = new Acl();
-                    acl.addAll(aclEntries);
-                    next.writeAcl(acl, true);
+                    aclEntries[index] = infoController._acl[index];
                 }
+                Acl acl = new Acl();
+                acl.addAll(aclEntries);
+                return acl;
             }
 
-            public override void cleanup()
+            private class InnerWriteAclWorker : WriteAclWorker
             {
-                _infoController.ToggleAclSettings(true);
-                _infoController.InitAcl();
-            }
+                private readonly InfoController _infoController;
 
-            public override string getActivity()
-            {
-                return String.Format(Locale.localizedString("Changing permission of {0} to {1}", "Status"),
-                                     toString(Utils.ConvertToJavaList(_infoController.Files)),
-                                     _infoController._acl);
+                public InnerWriteAclWorker(InfoController infoController,
+                                           List files,
+                                           Acl acl)
+                    : base(files, acl, true)
+                {
+                    _infoController = infoController;
+                }
+
+                public override void cleanup(object obj)
+                {
+                    _infoController.ToggleAclSettings(true);
+                    _infoController.InitAcl();
+                }
             }
         }
 
@@ -1966,13 +1962,11 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             private readonly string _cname;
             private readonly Distribution.Method _deliveryMethod;
+            private readonly bool _distribution;
             private readonly List<Path> _files;
             private readonly InfoController _infoController;
+            private readonly bool _logging;
             private readonly IInfoView _view;
-
-            // temporary fields in order prevent cross-context access to the GUI while reading in run()
-            private bool _distribution;
-            private bool _logging;
 
             public WriteDistributionBackgroundAction(BrowserController browserController, InfoController infoController,
                                                      List<Path> files) : base(browserController)
@@ -2002,7 +1996,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     {
                         session.writeDistribution(_distribution, cloud.getContainerName(), method,
                                                   _cname.Split(new[] {' '},
-                                                  StringSplitOptions.RemoveEmptyEntries),
+                                                               StringSplitOptions.RemoveEmptyEntries),
                                                   _logging,
                                                   _view.DistributionDefaultRoot);
                     }
@@ -2025,6 +2019,70 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 return String.Format(Locale.localizedString("Writing metadata of {0}", "Status"),
                                      toString(Utils.ConvertToJavaList(_infoController.Files)));
+            }
+        }
+
+        private class WriteMetadataBackgroundAction : InfoBackgroundAction
+        {
+            public WriteMetadataBackgroundAction(BrowserController controller, InfoController infoController)
+                : base(
+                    controller,
+                    new InnerWriteMetadataWorker(infoController, Utils.ConvertToJavaList(infoController._files),
+                                                 infoController.ConvertMetadataToMap()))
+            {
+            }
+
+            private class InnerWriteMetadataWorker : WriteMetadataWorker
+            {
+                private readonly InfoController _infoController;
+
+                public InnerWriteMetadataWorker(InfoController infoController, List files, Map metadata)
+                    : base(files, metadata)
+                {
+                    _infoController = infoController;
+                }
+
+                public override void cleanup(object obj)
+                {
+                    _infoController.ToggleMetadataSettings(true);
+                    _infoController.InitMetadata();
+                }
+            }
+        }
+
+        private class WritePermissionBackgroundAction : InfoBackgroundAction
+        {
+            public WritePermissionBackgroundAction(BrowserController browserController,
+                                                   InfoController infoController,
+                                                   Permission permission, bool recursive) : base(browserController,
+                                                                                                 new InnerWritePermissionWorker
+                                                                                                     (infoController,
+                                                                                                      Utils.
+                                                                                                          ConvertToJavaList
+                                                                                                          (infoController
+                                                                                                               ._files),
+                                                                                                      permission,
+                                                                                                      recursive))
+            {
+            }
+
+            private class InnerWritePermissionWorker : WritePermissionWorker
+            {
+                private readonly InfoController _infoController;
+
+                public InnerWritePermissionWorker(InfoController infoController,
+                                                  List files,
+                                                  Permission permission,
+                                                  bool recursive) : base(files, permission, recursive)
+                {
+                    _infoController = infoController;
+                }
+
+                public override void cleanup(object obj)
+                {
+                    _infoController.TogglePermissionSettings(true);
+                    _infoController.InitPermissions();
+                }
             }
         }
     }

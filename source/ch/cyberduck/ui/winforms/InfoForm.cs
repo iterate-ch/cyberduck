@@ -34,6 +34,16 @@ namespace Ch.Cyberduck.Ui.Winforms
         {
             InitializeComponent();
 
+            Load += delegate
+                        {
+                            int minWidth = 10; // border etc.
+                            foreach (ToolStripItem item in toolStrip.Items)
+                            {
+                                minWidth += item.Size.Width + item.Margin.Left + item.Margin.Right;
+                            }
+                            MinimumSize = new Size(minWidth, MinimumSize.Height);
+                        };
+
             TopMost = false;
             TopLevel = true;
 
@@ -347,6 +357,11 @@ namespace Ch.Cyberduck.Ui.Winforms
             }
         }
 
+        public bool AclPanel
+        {
+            set { panelManagerPermissions.SelectedPanel = value ? cloudManagedPanel : nonCloudManagedPanel; }
+        }
+
         public BindingList<InfoController.UserAndRoleEntry> AclDataSource
         {
             set { aclDataGridView.DataSource = value; }
@@ -425,7 +440,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                 items[i] = item;
                 i++;
 
-                if ((users.Count -1) == i)
+                if ((users.Count - 1) == i)
                 {
                     items[i++] = new ToolStripSeparator();
                 }
@@ -440,7 +455,17 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public bool AclAnimationActive
         {
-            set { aclAnimaton.Visible = value; }
+            set { aclAnimation.Visible = value; }
+        }
+
+        public string AclUrl
+        {
+            set { authenticatedUrlLinkLabel.Text = value; }
+        }
+
+        public string AclUrlTooltip
+        {
+            set { toolTip.SetToolTip(authenticatedUrlLinkLabel, value); }
         }
 
         public event VoidHandler OwnerReadChanged = delegate { };
@@ -665,7 +690,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public BindingList<InfoController.CustomHeader> MetadataDataSource
         {
-            set { metadataDataGridView.DataSource = value;}
+            set { metadataDataGridView.DataSource = value; }
         }
 
         public void PopulateMetadata(IDictionary<string, AsyncController.SyncDelegate> metadata)
@@ -698,11 +723,13 @@ namespace Ch.Cyberduck.Ui.Winforms
                 DataGridViewSelectedRowCollection rows = metadataDataGridView.SelectedRows;
                 foreach (DataGridViewRow row in rows)
                 {
-                    selected.Add((InfoController.CustomHeader)row.DataBoundItem);
+                    selected.Add((InfoController.CustomHeader) row.DataBoundItem);
                 }
                 return selected;
             }
         }
+
+        public event VoidHandler DistributionDefaultRootChanged = delegate { };
 
         private void InitMetadataGrid()
         {
@@ -714,26 +741,27 @@ namespace Ch.Cyberduck.Ui.Winforms
             metadataDataGridView.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
 
             metadataDataGridView.CellFormatting += delegate(object sender, DataGridViewCellFormattingEventArgs args)
-            {
-                if (null != aclDataGridView.DataSource)
-                {
-                    if (aclDataGridView.IsCurrentCellInEditMode ||
-                        args.ColumnIndex != 0)
-                    {
-                        return;
-                    }
-                    if (String.IsNullOrEmpty(args.Value as String))
-                    {
-                        args.Value =
-                            ((InfoController.UserAndRoleEntry)
-                             aclDataGridView.Rows[args.RowIndex].DataBoundItem).
-                                getUser().getPlaceholder();
-                        args.CellStyle.ForeColor = Color.Gray;
-                        args.CellStyle.Font = new Font(args.CellStyle.Font,
-                                                       FontStyle.Italic);
-                    }
-                }
-            };
+                                                       {
+                                                           if (null != aclDataGridView.DataSource)
+                                                           {
+                                                               if (aclDataGridView.IsCurrentCellInEditMode ||
+                                                                   args.ColumnIndex != 0)
+                                                               {
+                                                                   return;
+                                                               }
+                                                               if (String.IsNullOrEmpty(args.Value as String))
+                                                               {
+                                                                   args.Value =
+                                                                       ((InfoController.UserAndRoleEntry)
+                                                                        aclDataGridView.Rows[args.RowIndex].
+                                                                            DataBoundItem).
+                                                                           getUser().getPlaceholder();
+                                                                   args.CellStyle.ForeColor = Color.Gray;
+                                                                   args.CellStyle.Font = new Font(args.CellStyle.Font,
+                                                                                                  FontStyle.Italic);
+                                                               }
+                                                           }
+                                                       };
 
 
             DataGridViewTextBoxColumn nameColumn = new DataGridViewTextBoxColumn();
@@ -1023,20 +1051,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             }
         }
 
-        private enum AclColumnName
-        {
-            User,
-            Role
-        }
-
-        private enum MetadataColumName
-        {
-            Name,
-            Value
-        }
-
-        public event VoidHandler DistributionDefaultRootChanged = delegate { };
-
         private void defaultRootComboBox_SelectionChangeCommitted(object sender, EventArgs e)
         {
             DistributionDefaultRootChanged();
@@ -1078,7 +1092,18 @@ namespace Ch.Cyberduck.Ui.Winforms
                 panelManager.SelectedPanel = managedGeneralPanel;
                 //ResizeForm(permissionsLayoutPanel, true);
             }
+        }
 
+        private enum AclColumnName
+        {
+            User,
+            Role
+        }
+
+        private enum MetadataColumName
+        {
+            Name,
+            Value
         }
     }
 }
