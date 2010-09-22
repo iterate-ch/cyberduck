@@ -1,4 +1,4 @@
-﻿//
+﻿// 
 // Copyright (c) 2010 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
@@ -127,7 +127,7 @@ namespace Ch.Cyberduck.Ui.Controller
             View.OpenConnection += View_OpenConnection;
             View.ValidateOpenConnection += () => true;
             View.NewDownload += View_NewDownload;
-            View.ValidateNewDownload += () => true;
+            View.ValidateNewDownload += () => false; //todo implement
             View.NewFolder += View_NewFolder;
             View.ValidateNewFolder += View_ValidateNewFolder;
             View.NewFile += View_NewFile;
@@ -288,82 +288,6 @@ namespace Ch.Cyberduck.Ui.Controller
             View.SetBookmarkModel(bookmarkCollection);
         }
 
-        private bool View_ValidateDuplicateBookmark()
-        {
-            return _bookmarkModel.Source.allowsEdit() && View.SelectedBookmarks.Count == 1;
-        }
-
-        private void View_DuplicateBookmark()
-        {
-            ToggleView(BrowserView.Bookmark);
-            Host duplicate = new Host(View.SelectedBookmark.getAsDictionary());
-            // Make sure a new UUID is asssigned for duplicate
-            duplicate.setUuid(null);
-            AddBookmark(duplicate);
-        }
-
-        private void View_HostModelDropped(ModelDropEventArgs dropargs)
-        {
-            int sourceIndex = _bookmarkModel.Source.indexOf(dropargs.SourceModels[0]);
-            int destIndex = dropargs.DropTargetIndex;
-            if (dropargs.DropTargetLocation == DropTargetLocation.BelowItem)
-            {
-                destIndex++;
-            }
-            if (dropargs.Effect == DragDropEffects.Copy)
-            {
-                Host host = new Host(((Host)dropargs.SourceModels[0]).getAsDictionary());
-                host.setUuid(null);
-                AddBookmark(host, destIndex);
-            }
-            if (dropargs.Effect == DragDropEffects.Move)
-            {
-                if (sourceIndex < destIndex)
-                {
-                    destIndex--;
-                }
-                foreach (Host promisedDragBookmark in dropargs.SourceModels)
-                {
-                    _bookmarkModel.Source.remove(promisedDragBookmark);
-                    if (destIndex > _bookmarkModel.Source.size())
-                    {
-                        _bookmarkModel.Source.add(promisedDragBookmark);
-                    }
-                    else
-                    {
-                        _bookmarkModel.Source.add(destIndex, promisedDragBookmark);
-                    }
-                    //view.selectRowIndexes(NSIndexSet.indexSetWithIndex(row), false);
-                    //view.scrollRowToVisible(row);
-                }
-            }
-        }
-
-        private void View_HostModelCanDrop(ModelDropEventArgs args)
-        {
-            if (!_bookmarkModel.Source.allowsEdit())
-            {
-                // Do not allow drags for non writable collections
-                args.Effect = DragDropEffects.None;
-                args.DropTargetLocation = DropTargetLocation.None;
-                return;
-            }
-            switch (args.DropTargetLocation)
-            {
-                case DropTargetLocation.BelowItem:
-                case DropTargetLocation.AboveItem:                    
-                    if (args.SourceModels.Count > 1)
-                    {
-                        args.Effect = DragDropEffects.Move;
-                    }    
-                    break;
-                default:
-                    args.Effect = DragDropEffects.None;
-                    args.DropTargetLocation = DropTargetLocation.None;
-                    return;
-            }
-        }
-
         public BrowserController()
             : this(ObjectFactory.GetInstance<IBrowserView>())
         {
@@ -485,6 +409,82 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 AsyncDelegate mainAction = delegate { View.AddTranscriptEntry(request, transcript); };
                 Invoke(mainAction);
+            }
+        }
+
+        private bool View_ValidateDuplicateBookmark()
+        {
+            return _bookmarkModel.Source.allowsEdit() && View.SelectedBookmarks.Count == 1;
+        }
+
+        private void View_DuplicateBookmark()
+        {
+            ToggleView(BrowserView.Bookmark);
+            Host duplicate = new Host(View.SelectedBookmark.getAsDictionary());
+            // Make sure a new UUID is asssigned for duplicate
+            duplicate.setUuid(null);
+            AddBookmark(duplicate);
+        }
+
+        private void View_HostModelDropped(ModelDropEventArgs dropargs)
+        {
+            int sourceIndex = _bookmarkModel.Source.indexOf(dropargs.SourceModels[0]);
+            int destIndex = dropargs.DropTargetIndex;
+            if (dropargs.DropTargetLocation == DropTargetLocation.BelowItem)
+            {
+                destIndex++;
+            }
+            if (dropargs.Effect == DragDropEffects.Copy)
+            {
+                Host host = new Host(((Host) dropargs.SourceModels[0]).getAsDictionary());
+                host.setUuid(null);
+                AddBookmark(host, destIndex);
+            }
+            if (dropargs.Effect == DragDropEffects.Move)
+            {
+                if (sourceIndex < destIndex)
+                {
+                    destIndex--;
+                }
+                foreach (Host promisedDragBookmark in dropargs.SourceModels)
+                {
+                    _bookmarkModel.Source.remove(promisedDragBookmark);
+                    if (destIndex > _bookmarkModel.Source.size())
+                    {
+                        _bookmarkModel.Source.add(promisedDragBookmark);
+                    }
+                    else
+                    {
+                        _bookmarkModel.Source.add(destIndex, promisedDragBookmark);
+                    }
+                    //view.selectRowIndexes(NSIndexSet.indexSetWithIndex(row), false);
+                    //view.scrollRowToVisible(row);
+                }
+            }
+        }
+
+        private void View_HostModelCanDrop(ModelDropEventArgs args)
+        {
+            if (!_bookmarkModel.Source.allowsEdit())
+            {
+                // Do not allow drags for non writable collections
+                args.Effect = DragDropEffects.None;
+                args.DropTargetLocation = DropTargetLocation.None;
+                return;
+            }
+            switch (args.DropTargetLocation)
+            {
+                case DropTargetLocation.BelowItem:
+                case DropTargetLocation.AboveItem:
+                    if (args.SourceModels.Count > 1)
+                    {
+                        args.Effect = DragDropEffects.Move;
+                    }
+                    break;
+                default:
+                    args.Effect = DragDropEffects.None;
+                    args.DropTargetLocation = DropTargetLocation.None;
+                    return;
             }
         }
 
@@ -2261,7 +2261,7 @@ namespace Ch.Cyberduck.Ui.Controller
                            {
                                Workdir = null;
                                UpdateNavigationPaths();
-                               ReloadData(false);                               
+                               ReloadData(false);
                            });
                 return;
             }
