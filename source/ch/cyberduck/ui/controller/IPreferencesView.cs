@@ -144,6 +144,15 @@ namespace Ch.Cyberduck.Ui.Controller
 
         #endregion
 
+        #region Update
+
+        bool AutomaticUpdateCheck { set; get; }
+        event VoidHandler AutomaticUpdateChangedEvent;
+        event VoidHandler CheckForUpdateEvent;
+        string LastUpdateCheck { set; }
+
+        #endregion
+
         event VoidHandler SaveWorkspaceChangedEvent;
         event VoidHandler NewBrowserOnStartupChangedEvent;
         event VoidHandler DefaultBookmarkChangedEvent;
@@ -236,6 +245,7 @@ namespace Ch.Cyberduck.Ui.Controller
         void PopulateLineEndings(List<string> lineEndings);
         void PopulateSshTransfers(List<string> transfers);
         void PopulateDefaultBucketLocations(IList<KeyValuePair<string, string>> locations);
+        void PopulateDefaultStorageClasses(IList<KeyValuePair<string, string>> classes);
         void PopulateDefaultDownloadThrottleList(IList<KeyValuePair<float, string>> throttles);
         void PopulateDefaultUploadThrottleList(IList<KeyValuePair<float, string>> throttles);
     }

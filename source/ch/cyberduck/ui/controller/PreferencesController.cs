@@ -21,11 +21,13 @@ using ch.cyberduck.core;
 using Ch.Cyberduck.Core;
 using ch.cyberduck.core.io;
 using ch.cyberduck.core.s3;
+using Ch.Cyberduck.Ui.Winforms;
 using Ch.Cyberduck.Ui.Winforms.Controls;
 using com.enterprisedt.net.ftp;
 using java.util;
 using java.util.regex;
 using org.apache.log4j;
+using org.jets3t.service.model;
 using StructureMap;
 using Locale = ch.cyberduck.core.i18n.Locale;
 
@@ -129,8 +131,6 @@ namespace Ch.Cyberduck.Ui.Controller
             View.FailInsecureDataChannelChangedEvent += View_FailInsecureDataChannelChangedEvent;
 
             View.SshTransferChangedEvent += View_SshTransferChangedEvent;
-            View.DefaultBucketLocationChangedEvent += View_DefaultBucketLocationChangedEvent;
-            View.DefaultStorageClassChangedEvent += View_DefaultStorageClassChangedEvent;
 
             View.DefaultDownloadThrottleChangedEvent += View_DefaultDownloadThrottleChangedEvent;
             View.DefaultUploadThrottleChangedEvent += View_DefaultUploadThrottleChangedEvent;
@@ -138,6 +138,13 @@ namespace Ch.Cyberduck.Ui.Controller
             View.ConnectionTimeoutChangedEvent += View_ConnectionTimeoutChangedEvent;
             View.RetryDelayChangedEvent += View_RetryDelayChangedEvent;
             View.RetriesChangedEvent += View_RetriesChangedEvent;
+
+            #region S3
+
+            View.DefaultBucketLocationChangedEvent += View_DefaultBucketLocationChangedEvent;
+            View.DefaultStorageClassChangedEvent += View_DefaultStorageClassChangedEvent;
+
+            #endregion
 
             #region Google Docs
 
@@ -152,6 +159,13 @@ namespace Ch.Cyberduck.Ui.Controller
             #region Language
 
             View.LocaleChanged += View_LocaleChanged;
+
+            #endregion
+
+            #region Update
+
+            View.AutomaticUpdateChangedEvent += View_AutomaticUpdateChangedEvent;
+            View.CheckForUpdateEvent += View_CheckForUpdateEvent;
 
             #endregion
         }
@@ -192,6 +206,16 @@ namespace Ch.Cyberduck.Ui.Controller
             Host selected = View.DefaultBookmark;
             PopulateBookmarks();
             SelectDefaultBookmark(selected);
+        }
+
+        private void View_CheckForUpdateEvent()
+        {
+            UpdateController.Instance.ForceCheckForUpdates(false);
+        }
+
+        private void View_AutomaticUpdateChangedEvent()
+        {
+            Preferences.instance().setProperty("update.check", View.AutomaticUpdateCheck);
         }
 
         private void View_LocaleChanged()
@@ -235,8 +259,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_DefaultStorageClassChangedEvent()
         {
-            //todo implement
-            throw new NotImplementedException();
+            Preferences.instance().setProperty("s3.storage.class", View.DefaultStorageClass);
         }
 
         private void View_RetriesChangedEvent()
@@ -852,10 +875,10 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void Init()
         {
-            // General
+            #region General
+
             View.SaveWorkspace = Preferences.instance().getBoolean("browser.serialize");
             View.NewBrowserOnStartup = Preferences.instance().getBoolean("browser.openUntitled");
-            // Default Bookmark
             PopulateBookmarks();
             BookmarkCollection.defaultCollection().addListener(this);
             View.ViewClosedEvent += delegate { BookmarkCollection.defaultCollection().removeListener(this); };
@@ -867,8 +890,6 @@ namespace Ch.Cyberduck.Ui.Controller
             View.DefaultProtocol =
                 Protocol.forName(Preferences.instance().getProperty("connection.protocol.default"));
             View.LoginName = Preferences.instance().getProperty("connection.login.name");
-
-            // Browser
             View.InfoWindowShowsCurrentSelection =
                 Preferences.instance().getBoolean("browser.info.isInspector");
             View.ShowHiddenFiles = Preferences.instance().getBoolean("browser.showHidden");
@@ -881,7 +902,10 @@ namespace Ch.Cyberduck.Ui.Controller
             PopulateEncodings();
             View.DefaultEncoding = Preferences.instance().getProperty("browser.charset.encoding");
 
-            // Transfers - General
+            #endregion
+
+            #region Transfers - General
+
             PopulateTransferModes();
             View.TransferMode = Preferences.instance().getInteger("connection.host.max") == 1
                                     ? UseBrowserSession
@@ -910,7 +934,11 @@ namespace Ch.Cyberduck.Ui.Controller
                                                     TransferAction.ACTION_OVERWRITE.toString())
                                                 ? true
                                                 : false;
-            // Transfers - Permissions
+
+            #endregion
+
+            #region Transfers - Permissions
+
             PopulateChmodTypes();
             View.ChmodDownload = Preferences.instance().getBoolean("queue.download.changePermissions");
             View.ChmodDownloadEnabled = View.ChmodDownload;
@@ -926,12 +954,20 @@ namespace Ch.Cyberduck.Ui.Controller
             View.ChmodUploadDefaultEnabled = View.ChmodUploadUseDefault;
             View.ChmodUploadType = ForFiles;
             View_ChmodUploadTypeChangedEvent();
-            // Transfers - Timestamps
+
+            #endregion
+
+            #region Transfers - Timestamps
+
             View.PreserveModificationDownload =
                 Preferences.instance().getBoolean("queue.download.preserveDate");
             View.PreserveModificationUpload =
                 Preferences.instance().getBoolean("queue.upload.preserveDate");
-            // Transfers - Advanced
+
+            #endregion
+
+            #region Transfers - Advanced
+
             View.DownloadSkip = Preferences.instance().getBoolean("queue.download.skip.enable");
             View.DownloadSkipRegex = Preferences.instance().getProperty("queue.download.skip.regex");
             View.DownloadSkipRegexEnabled = View.DownloadSkip;
@@ -998,8 +1034,6 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 View.SshTransfer = Protocol.SCP.getDescription();
             }
-            PopulateDefaultBucketLocations();
-            View.DefaultBucketLocation = Preferences.instance().getProperty("s3.location");
 
             PopulateDefaultDownloadThrottleList();
             PopulateDefaultUploadThrottleList();
@@ -1011,7 +1045,19 @@ namespace Ch.Cyberduck.Ui.Controller
             View.RetryDelay = Preferences.instance().getInteger("connection.retry.delay");
             View.ConnectionTimeout = Preferences.instance().getInteger("connection.timeout.seconds");
 
-            // Google Docs
+            #endregion
+
+            #region S3
+
+            PopulateDefaultBucketLocations();
+            View.DefaultBucketLocation = Preferences.instance().getProperty("s3.location");
+            PopulateDefaultStorageClasses();
+            View.DefaultStorageClass = Preferences.instance().getProperty("s3.storage.class");
+
+            #endregion
+
+            #region Google Docs
+
             PopulateDocumentExportFormats();
             View.DocumentExportFormat =
                 Preferences.instance().getProperty("google.docs.export.document");
@@ -1022,10 +1068,23 @@ namespace Ch.Cyberduck.Ui.Controller
             View.ConvertUploads = Preferences.instance().getBoolean("google.docs.upload.convert");
             View.OcrUploads = Preferences.instance().getBoolean("google.docs.upload.ocr");
 
-            // Language
+            #endregion
+
+            #region Update
+
+            View.AutomaticUpdateCheck = Preferences.instance().getBoolean("update.check");
+            long lastCheck = Preferences.instance().getLong("update.check.last");
+            View.LastUpdateCheck = 0 == lastCheck
+                                       ? String.Empty
+                                       : UserDefaultsDateFormatter.GetLongFormat(
+                                           new DateTime(Preferences.instance().getLong("update.check.last")));
+
+            #endregion
+
+            #region Language
+
             PopulateLanguages();
             string userLanguage = Preferences.instance().getProperty("application.language");
-            //string defaultLanguage = ((Ch.Cyberduck.Ui.Controller.Preferences)ch.cyberduck.core.Preferences.instance()).GetDefaultLanguage();
 
             if (Preferences.instance().getBoolean("application.language.custom"))
             {
@@ -1035,6 +1094,8 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 View.CurrentLocale = "default";
             }
+
+            #endregion
         }
 
         private void PopulateLanguages()
@@ -1093,7 +1154,7 @@ namespace Ch.Cyberduck.Ui.Controller
             IList<KeyValuePair<float, string>> list = new List<KeyValuePair<float, string>>();
             list.Add(new KeyValuePair<float, string>(BandwidthThrottle.UNLIMITED,
                                                      Locale.localizedString("Unlimited Bandwidth", "Preferences")));
-			//Todo. Replace with queue.bandwidth.options
+            //Todo. Replace with queue.bandwidth.options
             list.Add(new KeyValuePair<float, string>(5*1024, Locale.localizedString("5 KB/s", "Preferences")));
             list.Add(new KeyValuePair<float, string>(10*1024, Locale.localizedString("10 KB/s", "Preferences")));
             list.Add(new KeyValuePair<float, string>(20*1024, Locale.localizedString("20 KB/s", "Preferences")));
@@ -1114,7 +1175,7 @@ namespace Ch.Cyberduck.Ui.Controller
             IList<KeyValuePair<float, string>> list = new List<KeyValuePair<float, string>>();
             list.Add(new KeyValuePair<float, string>(BandwidthThrottle.UNLIMITED,
                                                      Locale.localizedString("Unlimited Bandwidth", "Preferences")));
-			//Todo. Replace with queue.bandwidth.options
+            //Todo. Replace with queue.bandwidth.options
             list.Add(new KeyValuePair<float, string>(5*1024, Locale.localizedString("5 KB/s", "Preferences")));
             list.Add(new KeyValuePair<float, string>(10*1024, Locale.localizedString("10 KB/s", "Preferences")));
             list.Add(new KeyValuePair<float, string>(20*1024, Locale.localizedString("20 KB/s", "Preferences")));
@@ -1142,6 +1203,20 @@ namespace Ch.Cyberduck.Ui.Controller
                                                                             Locale.localizedString(location, "S3")));
             }
             View.PopulateDefaultBucketLocations(defaultBucketLocations);
+        }
+
+        private void PopulateDefaultStorageClasses()
+        {
+            IList<KeyValuePair<string, string>> storageClasses = new List<KeyValuePair<string, string>>();
+            storageClasses.Add(new KeyValuePair<string, string>(S3Object.STORAGE_CLASS_STANDARD,
+                                                                Locale.localizedString(S3Object.STORAGE_CLASS_STANDARD,
+                                                                                       "S3")));
+            storageClasses.Add(new KeyValuePair<string, string>(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY,
+                                                                Locale.localizedString(
+                                                                    Locale.localizedString(
+                                                                        S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY, "S3"),
+                                                                    "S3")));
+            View.PopulateDefaultStorageClasses(storageClasses);
         }
 
         private void PopulateSshTransfers()

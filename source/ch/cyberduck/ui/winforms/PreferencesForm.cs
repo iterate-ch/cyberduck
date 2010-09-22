@@ -666,6 +666,11 @@ namespace Ch.Cyberduck.Ui.Winforms
             }
         }
 
+        public string LastUpdateCheck
+        {
+            set { lastUpdateLabel.Text = value; }
+        }
+
         public event VoidHandler SaveWorkspaceChangedEvent = delegate { };
         public event VoidHandler NewBrowserOnStartupChangedEvent = delegate { };
         public event VoidHandler DefaultBookmarkChangedEvent = delegate { };
@@ -738,6 +743,16 @@ namespace Ch.Cyberduck.Ui.Winforms
         public event VoidHandler RetriesChangedEvent = delegate { };
         public event VoidHandler DefaultStorageClassChangedEvent = delegate { };
         public event VoidHandler LocaleChanged = delegate { };
+
+        public bool AutomaticUpdateCheck
+        {
+            get { return updateCheckBox.Checked; }
+            set { updateCheckBox.Checked = value; }
+        }
+
+        public event VoidHandler AutomaticUpdateChangedEvent = delegate { };
+
+        public event VoidHandler CheckForUpdateEvent;
 
         public string DocumentExportFormat
         {
@@ -868,6 +883,13 @@ namespace Ch.Cyberduck.Ui.Winforms
             defaultBucketLocationCombobox.DataSource = locations;
             defaultBucketLocationCombobox.ValueMember = "Key";
             defaultBucketLocationCombobox.DisplayMember = "Value";
+        }
+
+        public void PopulateDefaultStorageClasses(IList<KeyValuePair<string, string>> classes)
+        {
+            defaultStorageClassComboBox.DataSource = classes;
+            defaultStorageClassComboBox.ValueMember = "Key";
+            defaultStorageClassComboBox.DisplayMember = "Value";
         }
 
         public void PopulateDefaultDownloadThrottleList(IList<KeyValuePair<float, string>> throttles)
@@ -1426,6 +1448,16 @@ namespace Ch.Cyberduck.Ui.Winforms
         private void languageComboBox_SelectionChangeCommitted(object sender, EventArgs e)
         {
             LocaleChanged();
+        }
+
+        private void updateCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            AutomaticUpdateChangedEvent();
+        }
+
+        private void updateCheckButton_Click(object sender, EventArgs e)
+        {
+            CheckForUpdateEvent();
         }
     }
 }
