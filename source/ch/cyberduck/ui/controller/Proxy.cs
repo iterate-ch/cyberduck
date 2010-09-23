@@ -13,23 +13,102 @@
 // GNU General Public License for more details.
 // 
 // Bug fixes, suggestions and comments should be sent to:
-// yves@langisch.ch
+// yves@cyberduck.ch
 // 
 using System;
+using System.Text.RegularExpressions;
 using ch.cyberduck.core;
+using Ch.Cyberduck.Core;
+using Microsoft.Win32;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
     public class Proxy : AbstractProxy
     {
+        private static bool IsProxyEnabled()
+        {
+            RegistryKey registry =
+                Registry.CurrentUser.OpenSubKey("Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings", false);
+            if (registry != null)
+            {
+                return Convert.ToBoolean(registry.GetValue("ProxyEnable", 0));
+            }
+            return false;
+        }
+
+        private static string GetProxy(string protocol, out int port)
+        {
+            string host = null;
+            port = 80;
+            RegistryKey registry =
+                Registry.CurrentUser.OpenSubKey("Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings", false);
+            if (registry != null)
+            {
+                string server = (string) registry.GetValue("ProxyServer");
+                if (Utils.IsNotBlank(server))
+                {
+                    string[] l = server.Split(';');
+                    foreach (string proxy in l)
+                    {
+                        Regex h = new Regex(String.Format("{0}=([\\w\\.]*)(:([\\d]+))?", protocol));
+                        if (h.IsMatch(proxy))
+                        {
+                            Match match = h.Match(proxy);
+                            host = match.Groups[1].Value;
+                            if (match.Groups.Count == 4 && Utils.IsNotBlank(match.Groups[3].Value))
+                            {
+                                port = Convert.ToInt32(match.Groups[3].Value);
+                            }
+                            break;
+                        }
+                    }
+                    if (l.Length == 1 && !"socks".Equals(protocol))
+                    {
+                        //Use the same proxy server for all protocols is checked
+                        //server has the format 'host:port' only
+                        string[] allServer = server.Split(':');
+                        host = allServer[0];
+                        if (allServer.Length == 2 && null != allServer[1])
+                        {
+                            port = Convert.ToInt32(allServer[1]);
+                        }
+                    }
+                }
+            }
+            return host;
+        }
+
+        public static Regex WildcardToRegex(string pattern)
+        {
+            return new Regex("^" +
+                             Regex.Escape(pattern).
+                                 Replace("\\*", ".*").
+                                 Replace("\\?", ".") +
+                             "$");
+        }
+
         public override bool isSOCKSProxyEnabled()
         {
+            if (IsProxyEnabled())
+            {
+                int port;
+                string proxy = GetProxy("socks", out port);
+                return (null != proxy);
+            }
             return false;
         }
 
         public override string getSOCKSProxyHost()
         {
-            return null;
+            int port;
+            return GetProxy("socks", out port);
+        }
+
+        public override int getSOCKSProxyPort()
+        {
+            int port;
+            GetProxy("socks", out port);
+            return port;
         }
 
         public override bool usePassiveFTP()
@@ -39,42 +118,72 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public override bool isHTTPProxyEnabled()
         {
+            if (IsProxyEnabled())
+            {
+                int port;
+                string proxy = GetProxy("http", out port);
+                return (null != proxy);
+            }
             return false;
         }
 
         public override string getHTTPProxyHost()
         {
-            throw new NotImplementedException();
+            int port;
+            return GetProxy("http", out port);
         }
 
         public override int getHTTPProxyPort()
         {
-            throw new NotImplementedException();
+            int port;
+            GetProxy("http", out port);
+            return port;
         }
 
         public override bool isHTTPSProxyEnabled()
         {
+            if (IsProxyEnabled())
+            {
+                int port;
+                string proxy = GetProxy("https", out port);
+                return (null != proxy);
+            }
             return false;
         }
 
         public override string getHTTPSProxyHost()
         {
-            throw new NotImplementedException();
+            int port;
+            return GetProxy("https", out port);
         }
 
         public override int getHTTPSProxyPort()
         {
-            throw new NotImplementedException();
+            int port;
+            GetProxy("https", out port);
+            return port;
         }
 
         public override bool isHostExcluded(string hostname)
         {
+            RegistryKey registry =
+                Registry.CurrentUser.OpenSubKey("Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings", false);
+            if (registry != null)
+            {
+                string excludes = (string) registry.GetValue("ProxyOverride");
+                if (Utils.IsNotBlank(excludes))
+                {
+                    string[] l = excludes.Split(';');
+                    foreach (string exclude in l)
+                    {
+                        if (WildcardToRegex(exclude).IsMatch(hostname))
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
             return false;
-        }
-
-        public override int getSOCKSProxyPort()
-        {
-            throw new NotImplementedException();
         }
 
         public static void Register()
