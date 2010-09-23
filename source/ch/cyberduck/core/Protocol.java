@@ -153,7 +153,7 @@ public abstract class Protocol {
      * Check login credentials for validity for this protocol.
      *
      * @param credentials
-     * @return
+     * @return True if username and password is not a blank string and password
      */
     public boolean validate(Credentials credentials) {
         return StringUtils.isNotBlank(credentials.getUsername())
@@ -196,7 +196,7 @@ public abstract class Protocol {
             if(credentials.isPublicKeyAuthentication()) {
                 return StringUtils.isNotBlank(credentials.getUsername());
             }
-            return super.validate(credentials);
+            return FTP.validate(credentials);
         }
     };
 
@@ -256,7 +256,7 @@ public abstract class Protocol {
         /**
          * Allows empty string for password.
          * @param credentials
-         * @return
+         * @return True if username is given and password is not null
          */
         @Override
         public boolean validate(Credentials credentials) {
