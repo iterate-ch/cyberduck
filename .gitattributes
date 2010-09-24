@@ -2098,12 +2098,15 @@ source/ch/cyberduck/properties/Settings.Designer.cs -text
 source/ch/cyberduck/properties/Settings.cs -text
 source/ch/cyberduck/properties/Settings.settings -text
 source/ch/cyberduck/properties/app.manifest -text
+source/ch/cyberduck/ui/action/AbstractOverwriteWorker.java -text
 source/ch/cyberduck/ui/action/CalculateSizeWorker.java -text
 source/ch/cyberduck/ui/action/ChecksumWorker.java -text
+source/ch/cyberduck/ui/action/DuplicateWorker.java -text
 source/ch/cyberduck/ui/action/ReadAclWorker.java -text
 source/ch/cyberduck/ui/action/ReadMetadataWorker.java -text
 source/ch/cyberduck/ui/action/ReadPermissionWorker.java -text
 source/ch/cyberduck/ui/action/ReadSizeWorker.java -text
+source/ch/cyberduck/ui/action/RenameWorker.java -text
 source/ch/cyberduck/ui/action/Worker.java -text
 source/ch/cyberduck/ui/action/WriteAclWorker.java -text
 source/ch/cyberduck/ui/action/WriteDistributionWorker.java -text

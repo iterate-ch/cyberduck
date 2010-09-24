@@ -23,10 +23,7 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.core.cloud.CloudSession;
 import ch.cyberduck.core.cloud.Distribution;
 import ch.cyberduck.core.i18n.Locale;
-import ch.cyberduck.core.ssl.AbstractX509TrustManager;
-import ch.cyberduck.core.ssl.IgnoreX509TrustManager;
-import ch.cyberduck.core.ssl.KeychainX509TrustManager;
-import ch.cyberduck.core.ssl.SSLSession;
+import ch.cyberduck.core.ssl.*;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpEntity;
@@ -35,6 +32,16 @@ import org.apache.http.HttpRequest;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.conn.scheme.PlainSocketFactory;
+import org.apache.http.conn.scheme.Scheme;
+import org.apache.http.conn.scheme.SchemeRegistry;
+import org.apache.http.conn.ssl.SSLSocketFactory;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.conn.SingleClientConnManager;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
+import org.apache.http.params.HttpProtocolParams;
 import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.dom4j.Element;
@@ -134,35 +141,50 @@ public class AzureSession extends CloudSession implements SSLSession {
         return trustManager;
     }
 
-    private AzureStorageClient client;
+    private BlobStorageRest client;
 
     @Override
-    protected AzureStorageClient getClient() throws ConnectionCanceledException {
+    protected BlobStorageRest getClient() throws ConnectionCanceledException {
         if(null == client) {
             throw new ConnectionCanceledException();
         }
         return client;
     }
 
+    private HttpClient http;
+
     /**
+     * Create new HTTP client with default configuration and custom trust manager.
      *
+     * @return A new instance of a default HTTP client.
      */
-    protected class AzureStorageClient extends BlobStorageRest {
-        public AzureStorageClient(URI baseUri, String accountName, String base64Key) {
-            super(baseUri, false, accountName, base64Key);
-        }
-
-        private HttpClient http;
-
-        /**
-         * @return HTTP client configured with custom HTTP parameters and trust manager.
-         */
-        public HttpClient getHttp() {
-            if(null == http) {
-                http = http();
+    protected HttpClient http() {
+        if(null == http) {
+            final HttpParams params = new BasicHttpParams();
+            HttpProtocolParams.setVersion(params, org.apache.http.HttpVersion.HTTP_1_1);
+            HttpProtocolParams.setContentCharset(params, getEncoding());
+            HttpProtocolParams.setUseExpectContinue(params, true);
+            HttpConnectionParams.setTcpNoDelay(params, true);
+            HttpConnectionParams.setSoTimeout(params, timeout());
+            HttpConnectionParams.setSocketBufferSize(params, 8192);
+            HttpProtocolParams.setUserAgent(params, getUserAgent());
+            SchemeRegistry registry = new SchemeRegistry();
+            if(host.getProtocol().isSecure()) {
+                SSLSocketFactory factory = new SSLSocketFactory(new CustomTrustSSLProtocolSocketFactory(
+                        getTrustManager()).getSSLContext());
+                // We make sure to verify the hostname later using the trust manager
+                factory.setHostnameVerifier(SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+                registry.register(
+                        new Scheme(host.getProtocol().getScheme(), factory, host.getPort()));
             }
-            return http;
+            else {
+                registry.register(
+                        new Scheme(host.getProtocol().getScheme(), PlainSocketFactory.getSocketFactory(), host.getPort()));
+            }
+            SingleClientConnManager manager = new SingleClientConnManager(params, registry);
+            http = new DefaultHttpClient(manager, params);
         }
+        return http;
     }
 
     @Override
@@ -179,7 +201,8 @@ public class AzureSession extends CloudSession implements SSLSession {
     @Override
     protected void login(LoginController controller, Credentials credentials) throws IOException {
         // http://*.blob.core.windows.net
-        client = new AzureStorageClient(URI.create(host.getProtocol().getScheme() + "://" + host.getHostname()),
+        client = new BlobStorageRest(URI.create(host.getProtocol().getScheme() + "://" + host.getHostname()),
+                false,
                 credentials.getUsername(),
                 credentials.getPassword());
         client.setTimeout(TimeSpan.fromMilliseconds(this.timeout()));
@@ -221,6 +244,7 @@ public class AzureSession extends CloudSession implements SSLSession {
         finally {
             // No logout required
             client = null;
+            http = null;
             this.fireConnectionDidCloseEvent();
         }
     }
@@ -286,7 +310,7 @@ public class AzureSession extends CloudSession implements SSLSession {
             SharedKeyCredentials credentials = getClient().getCredentials();
             credentials.signRequest(request, uriComponents);
             ((HttpEntityEnclosingRequest) request).setEntity(entity);
-            HttpWebResponse response = new HttpWebResponse(getClient().getHttp().execute((HttpUriRequest) request));
+            HttpWebResponse response = new HttpWebResponse(http().execute((HttpUriRequest) request));
             if(response.getStatusCode() == HttpStatus.SC_CREATED) {
                 retval = true;
             }
@@ -392,7 +416,7 @@ public class AzureSession extends CloudSession implements SSLSession {
             BlobProperties blobProperties;
 
             try {
-                HttpWebResponse response = new HttpWebResponse(getClient().getHttp().execute((HttpUriRequest) request));
+                HttpWebResponse response = new HttpWebResponse(http().execute((HttpUriRequest) request));
                 if(response.getStatusCode() == HttpStatus.SC_OK
                         || response.getStatusCode() == HttpStatus.SC_PARTIAL_CONTENT) {
 
@@ -442,7 +466,7 @@ public class AzureSession extends CloudSession implements SSLSession {
                                         XmsVersion.VERSION_2009_07_17);
 
                                 getClient().getCredentials().signRequest(request, uriComponents);
-                                HttpWebResponse response = new HttpWebResponse(getClient().getHttp().execute((HttpUriRequest) request));
+                                HttpWebResponse response = new HttpWebResponse(http().execute((HttpUriRequest) request));
                                 if(response.getStatusCode() == HttpStatus.SC_OK) {
                                     String acl = response
                                             .getHeader(HeaderNames.PublicAccess);
@@ -597,7 +621,7 @@ public class AzureSession extends CloudSession implements SSLSession {
 
     @Override
     public boolean isAclSupported() {
-        return true;
+        return false;
     }
 
     @Override

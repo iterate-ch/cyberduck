@@ -31,17 +31,6 @@ import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.httpclient.protocol.DefaultProtocolSocketFactory;
 import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
 import org.apache.commons.lang.StringUtils;
-import org.apache.http.conn.ClientConnectionManager;
-import org.apache.http.conn.scheme.PlainSocketFactory;
-import org.apache.http.conn.scheme.Scheme;
-import org.apache.http.conn.scheme.SchemeRegistry;
-import org.apache.http.conn.ssl.SSLSocketFactory;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.conn.SingleClientConnManager;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.HttpConnectionParams;
-import org.apache.http.params.HttpParams;
-import org.apache.http.params.HttpProtocolParams;
 import org.apache.log4j.Appender;
 import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.Logger;
@@ -85,46 +74,6 @@ public abstract class HTTPSession extends Session implements SSLSession {
 
     protected HTTPSession(Host h) {
         super(h);
-    }
-
-    /**
-     * Create new HTTP client with default configuration and custom trust manager.
-     *
-     * @return A new instance of a default HTTP client.
-     */
-    protected DefaultHttpClient http() {
-        return new DefaultHttpClient() {
-            @Override
-            protected HttpParams createHttpParams() {
-                final HttpParams params = new BasicHttpParams();
-                HttpProtocolParams.setVersion(params, org.apache.http.HttpVersion.HTTP_1_1);
-                HttpProtocolParams.setContentCharset(params, HTTPSession.this.getEncoding());
-                HttpProtocolParams.setUseExpectContinue(params, true);
-                HttpConnectionParams.setTcpNoDelay(params, true);
-                HttpConnectionParams.setSoTimeout(params, timeout());
-                HttpConnectionParams.setSocketBufferSize(params, 8192);
-                HttpProtocolParams.setUserAgent(params, getUserAgent());
-                return params;
-            }
-
-            @Override
-            protected ClientConnectionManager createClientConnectionManager() {
-                SchemeRegistry registry = new SchemeRegistry();
-                if(host.getProtocol().isSecure()) {
-                    SSLSocketFactory factory = new SSLSocketFactory(new CustomTrustSSLProtocolSocketFactory(
-                            getTrustManager()).getSSLContext());
-                    // We make sure to verify the hostname later using the trust manager
-                    factory.setHostnameVerifier(SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
-                    registry.register(
-                            new Scheme(host.getProtocol().getScheme(), factory, host.getPort()));
-                }
-                else {
-                    registry.register(
-                            new Scheme(host.getProtocol().getScheme(), PlainSocketFactory.getSocketFactory(), host.getPort()));
-                }
-                return new SingleClientConnManager(this.getParams(), registry);
-            }
-        };
     }
 
     /**
