@@ -1,5 +1,7 @@
 package org.kohsuke.putty;
 
+import ch.ethz.ssh2.crypto.PEMDecryptException;
+
 import java.io.ByteArrayInputStream;
 import java.io.DataInput;
 import java.io.DataInputStream;
@@ -15,7 +17,7 @@ import java.math.BigInteger;
 public class KeyReader {
     private final DataInput di;
 
-    KeyReader(byte[] key) {
+    public KeyReader(byte[] key) {
         this.di = new DataInputStream(new ByteArrayInputStream(key));
     }
 
@@ -31,9 +33,12 @@ public class KeyReader {
         }
     }
 
-    private byte[] read() {
+    private byte[] read() throws PEMDecryptException {
         try {
             int len = di.readInt();
+            if(len <= 0 || len > 512) {
+                throw new PEMDecryptException();
+            }
             byte[] r = new byte[len];
             di.readFully(r);
             return r;
@@ -46,7 +51,7 @@ public class KeyReader {
     /**
      * Reads the next integer.
      */
-    public BigInteger readInt() {
+    public BigInteger readInt() throws PEMDecryptException {
         return new BigInteger(read());
     }
 }

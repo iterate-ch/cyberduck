@@ -1,11 +1,13 @@
 package org.kohsuke.putty;
 
 import ch.ethz.ssh2.crypto.Base64;
+import ch.ethz.ssh2.crypto.PEMDecryptException;
 import ch.ethz.ssh2.crypto.cipher.AES;
 import ch.ethz.ssh2.crypto.cipher.CBCMode;
 
 import java.io.*;
 import java.math.BigInteger;
+import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
@@ -110,7 +112,7 @@ public class PuTTYKey {
      *
      * @param passphrase
      */
-    public void decrypt(String passphrase) throws IOException {
+    private byte[] decrypt(String passphrase) throws IOException {
         if(this.isEncrypted()) {
             AES aes = new AES();
             byte[] key = toKey(passphrase);
@@ -120,8 +122,9 @@ public class PuTTYKey {
             for(int i = 0; i < privateKey.length / cbc.getBlockSize(); i++) {
                 cbc.transformBlock(privateKey, i * cbc.getBlockSize(), out, i * cbc.getBlockSize());
             }
-            privateKey = out;
+            return out;
         }
+        return privateKey;
     }
 
     /**
@@ -156,7 +159,7 @@ public class PuTTYKey {
             return r;
         }
         catch(NoSuchAlgorithmException e) {
-            throw new AssertionError(e);    // impossible
+            throw new RuntimeException(e);
         }
     }
 
@@ -168,15 +171,16 @@ public class PuTTYKey {
      * Converts this key into OpenSSH format.
      *
      * @return A multi-line string that can be written back to a file.
+     * @throws InvalidKeyException If the passphrase is wrong
      */
-    public String toOpenSSH() throws IOException {
-        if(getAlgorithm().equals("ssh-rsa")) {
+    public String toOpenSSH(String passphrase) throws IOException, PEMDecryptException {
+        if("ssh-rsa".equals(this.getAlgorithm())) {
             KeyReader r = new KeyReader(publicKey);
             r.skip();   // skip this
             BigInteger e = r.readInt();
             BigInteger n = r.readInt();
 
-            r = new KeyReader(privateKey);
+            r = new KeyReader(this.decrypt(passphrase));
             BigInteger d = r.readInt();
             BigInteger p = r.readInt();
             BigInteger q = r.readInt();
@@ -184,7 +188,6 @@ public class PuTTYKey {
 
             BigInteger dmp1 = d.mod(p.subtract(BigInteger.ONE));
             BigInteger dmq1 = d.mod(q.subtract(BigInteger.ONE));
-
 
             DEREncoder payload = new DEREncoder().writeSequence(
                     new DEREncoder().write(BigInteger.ZERO, n, e, d, p, q, dmp1, dmq1, iqmp).toByteArray()
@@ -194,14 +197,10 @@ public class PuTTYKey {
             buf.append("-----BEGIN RSA PRIVATE KEY-----\n");
             buf.append(payload.toBase64());
             buf.append("-----END RSA PRIVATE KEY-----\n");
-
-            // debug assist
-            //        Object o = PEMDecoder.decode(buf.toString().toCharArray(), null);
-
             return buf.toString();
         }
 
-        if(getAlgorithm().equals("ssh-dss")) {
+        if("ssh-dss".equals(this.getAlgorithm())) {
             KeyReader r = new KeyReader(publicKey);
             r.skip();   // skip this
             BigInteger p = r.readInt();
@@ -209,7 +208,7 @@ public class PuTTYKey {
             BigInteger g = r.readInt();
             BigInteger y = r.readInt();
 
-            r = new KeyReader(privateKey);
+            r = new KeyReader(this.decrypt(passphrase));
             BigInteger x = r.readInt();
 
             DEREncoder payload = new DEREncoder().writeSequence(
@@ -220,27 +219,10 @@ public class PuTTYKey {
             buf.append("-----BEGIN DSA PRIVATE KEY-----\n");
             buf.append(payload.toBase64());
             buf.append("-----END DSA PRIVATE KEY-----\n");
-
-            // debug assist
-            //        Object o = PEMDecoder.decode(buf.toString().toCharArray(), null);
-
             return buf.toString();
         }
 
         throw new IllegalArgumentException("Unrecognized key type: " + getAlgorithm());
-    }
-
-    /**
-     * Converts the key to OpenSSH format, then write it to a file.
-     */
-    public void toOpenSSH(File f) throws IOException {
-        FileWriter w = new FileWriter(f);
-        try {
-            w.write(toOpenSSH());
-        }
-        finally {
-            w.close();
-        }
     }
 
     /**
