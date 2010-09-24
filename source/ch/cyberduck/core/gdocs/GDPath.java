@@ -631,13 +631,10 @@ public class GDPath extends Path {
             for(final DocumentListEntry entry : pager.getEntries()) {
                 log.debug("Resource:" + entry.getResourceId());
                 final String type = entry.getType();
-                GDPath path = new GDPath(this.getSession(), entry.getTitle().getPlainText(),
+                GDPath path = new GDPath(this.getSession(), this.getAbsolute(), entry.getTitle().getPlainText(),
                         FolderEntry.LABEL.equals(type) ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
                 path.setParent(this);
                 path.setDocumentType(type);
-                if(!entry.getParentLinks().isEmpty()) {
-                    path.setPath(entry.getParentLinks().iterator().next().getTitle(), entry.getTitle().getPlainText());
-                }
                 // Download URL
                 path.setExportUri(((OutOfLineContent) entry.getContent()).getUri());
                 // Link to Google Docs Editor
