@@ -24,6 +24,7 @@ import ch.cyberduck.core.serializer.DeserializerFactory;
 import ch.cyberduck.core.serializer.Serializer;
 import ch.cyberduck.core.serializer.SerializerFactory;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.util.Collections;
@@ -126,34 +127,43 @@ public class PathAttributes extends Attributes implements Serializable {
         final Deserializer dict = DeserializerFactory.createDeserializer(serialized);
         String typeObj = dict.stringForKey("Type");
         if(typeObj != null) {
-            this.type = Integer.parseInt(typeObj);
+            type = Integer.parseInt(typeObj);
         }
         String sizeObj = dict.stringForKey("Size");
         if(sizeObj != null) {
-            this.size = Long.parseLong(sizeObj);
+            size = Long.parseLong(sizeObj);
         }
         String modifiedObj = dict.stringForKey("Modified");
         if(modifiedObj != null) {
-            this.modified = Long.parseLong(modifiedObj);
+            modified = Long.parseLong(modifiedObj);
         }
         Object permissionObj = dict.objectForKey("Permission");
         if(permissionObj != null) {
-            this.permission = new Permission(permissionObj);
+            permission = new Permission(permissionObj);
+        }
+        Object versionObj = dict.objectForKey("Version");
+        if(versionObj != null) {
+            versionId = versionObj.toString();
+        }
+        Object duplicateObj = dict.objectForKey("Duplicate");
+        if(duplicateObj != null) {
+            duplicate = Boolean.valueOf(duplicateObj.toString());
         }
     }
 
     public <T> T getAsDictionary() {
         final Serializer dict = SerializerFactory.createSerializer();
-        dict.setStringForKey(String.valueOf(this.type), "Type");
-        if(this.size != -1) {
-            dict.setStringForKey(String.valueOf(this.size), "Size");
+        dict.setStringForKey(String.valueOf(type), "Type");
+        if(size != -1) {
+            dict.setStringForKey(String.valueOf(size), "Size");
         }
-        if(this.modified != -1) {
-            dict.setStringForKey(String.valueOf(this.modified), "Modified");
+        if(modified != -1) {
+            dict.setStringForKey(String.valueOf(modified), "Modified");
         }
-        if(!Permission.EMPTY.equals(permission)) {
-            dict.setObjectForKey(permission, "Permission");
+        if(StringUtils.isNotBlank(versionId)) {
+            dict.setStringForKey(versionId, "Version");
         }
+        dict.setStringForKey(String.valueOf(duplicate), "Duplicate");
         return dict.<T>getSerialized();
     }
 
@@ -326,6 +336,11 @@ public class PathAttributes extends Attributes implements Serializable {
         this.revision = revision;
     }
 
+    /**
+     * Incremental revision number of document.
+     *
+     * @return Revision number
+     */
     @Override
     public String getRevision() {
         return String.valueOf(revision);
