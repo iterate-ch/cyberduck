@@ -43,12 +43,23 @@ public abstract class AbstractKeychain {
             log.warn("No hostname given");
             return null;
         }
-        if(StringUtils.isEmpty(host.getCredentials().getUsername())) {
+        Credentials credentials = host.getCredentials();
+        if(StringUtils.isEmpty(credentials.getUsername())) {
             log.warn("No username given");
             return null;
         }
-        final String p = this.getPassword(host.getProtocol().getScheme(), host.getPort(),
-                host.getHostname(), host.getCredentials().getUsername());
+        String p;
+        if(credentials.isPublicKeyAuthentication()) {
+            p = this.getPassword(host.getHostname(), credentials.getIdentity().getAbbreviatedPath());
+            if(null == p) {
+                // Backward compatibility
+                p = this.getPassword("SSHKeychain", credentials.getIdentity().getAbbreviatedPath());
+            }
+        }
+        else {
+            p = this.getPassword(host.getProtocol().getScheme(), host.getPort(),
+                    host.getHostname(), credentials.getUsername());
+        }
         if(null == p) {
             if(log.isInfoEnabled()) {
                 log.info("Password not found in Keychain:" + host);
@@ -68,19 +79,26 @@ public abstract class AbstractKeychain {
             log.warn("No hostname given");
             return;
         }
-        if(StringUtils.isEmpty(host.getCredentials().getUsername())) {
+        Credentials credentials = host.getCredentials();
+        if(StringUtils.isEmpty(credentials.getUsername())) {
             log.warn("No username given");
             return;
         }
-        if(StringUtils.isEmpty(host.getCredentials().getPassword())) {
+        if(StringUtils.isEmpty(credentials.getPassword())) {
             log.warn("No password given");
             return;
         }
         if(log.isInfoEnabled()) {
             log.info("Add Password to Keychain:" + host);
         }
-        this.addPassword(host.getProtocol().getScheme(), host.getPort(),
-                host.getHostname(), host.getCredentials().getUsername(), host.getCredentials().getPassword());
+        if(credentials.isPublicKeyAuthentication()) {
+            this.addPassword(host.getHostname(), credentials.getIdentity().getAbbreviatedPath(),
+                    credentials.getPassword());
+        }
+        else {
+            this.addPassword(host.getProtocol().getScheme(), host.getPort(),
+                    host.getHostname(), credentials.getUsername(), credentials.getPassword());
+        }
     }
 
     /**
