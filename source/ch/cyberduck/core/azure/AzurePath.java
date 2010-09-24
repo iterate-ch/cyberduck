@@ -653,7 +653,11 @@ public class AzurePath extends CloudPath {
             if(this.isContainer()) {
                 return container.getContainerUri().toString();
             }
-            return container.getBlobProperties(this.getKey()).getUri().toString();
+            //return container.getBlobProperties(this.getKey()).getUri().toString();
+            StringBuilder url = new StringBuilder();
+            url.append(this.getSession().getHost().getProtocol().getScheme()).append("://");
+            url.append(this.getSession().getHostnameForContainer(this.getContainerName()));
+            url.append(this.getAbsolute());
         }
         catch(IOException e) {
             log.error(e.getMessage());
