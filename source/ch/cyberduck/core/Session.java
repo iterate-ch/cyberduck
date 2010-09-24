@@ -150,6 +150,12 @@ public abstract class Session implements TranscriptListener {
      */
     protected abstract void connect() throws IOException;
 
+    /**
+     * Prompt for username and password if not available.
+     *
+     * @param login
+     * @throws LoginCanceledException
+     */
     protected void prompt(LoginController login) throws LoginCanceledException {
         login.check(host, Locale.localizedString("Login with username and password", "Credentials"), null);
     }
@@ -601,6 +607,9 @@ public abstract class Session implements TranscriptListener {
         for(ConnectionListener listener : connectionListeners.toArray(new ConnectionListener[connectionListeners.size()])) {
             listener.connectionDidClose();
         }
+
+        // Update status flag
+        opening = false;
     }
 
     private Set<TranscriptListener> transcriptListeners
