@@ -99,25 +99,27 @@ public class DAVSession extends HTTPSession implements SSLSession {
     protected void configure() throws IOException {
         final HttpClient client = this.getClient().getSessionInstance(this.getClient().getHttpURL(), false);
         client.setHostConfiguration(this.getHostConfiguration());
-        final Proxy proxy = ProxyFactory.instance();
-        if(host.getProtocol().isSecure()) {
-            if(proxy.isHTTPSProxyEnabled() && !proxy.isHostExcluded(host.getHostname())) {
-                this.getClient().setProxy(proxy.getHTTPSProxyHost(), proxy.getHTTPSProxyPort());
-                //this.DAV.setProxyCredentials(new UsernamePasswordCredentials(null, null));
+        if(Preferences.instance().getBoolean("connection.proxy.enable")) {
+            final Proxy proxy = ProxyFactory.instance();
+            if(host.getProtocol().isSecure()) {
+                if(proxy.isHTTPSProxyEnabled() && !proxy.isHostExcluded(host.getHostname())) {
+                    this.getClient().setProxy(proxy.getHTTPSProxyHost(), proxy.getHTTPSProxyPort());
+                    //this.DAV.setProxyCredentials(new UsernamePasswordCredentials(null, null));
+                }
+                else {
+                    this.getClient().setProxy(null, -1);
+                    this.getClient().setProxyCredentials(null);
+                }
             }
             else {
-                this.getClient().setProxy(null, -1);
-                this.getClient().setProxyCredentials(null);
-            }
-        }
-        else {
-            if(proxy.isHTTPProxyEnabled() && !proxy.isHostExcluded(host.getHostname())) {
-                this.getClient().setProxy(proxy.getHTTPProxyHost(), proxy.getHTTPProxyPort());
-                //this.getClient().setProxyCredentials(new UsernamePasswordCredentials(null, null));
-            }
-            else {
-                this.getClient().setProxy(null, -1);
-                this.getClient().setProxyCredentials(null);
+                if(proxy.isHTTPProxyEnabled() && !proxy.isHostExcluded(host.getHostname())) {
+                    this.getClient().setProxy(proxy.getHTTPProxyHost(), proxy.getHTTPProxyPort());
+                    //this.getClient().setProxyCredentials(new UsernamePasswordCredentials(null, null));
+                }
+                else {
+                    this.getClient().setProxy(null, -1);
+                    this.getClient().setProxyCredentials(null);
+                }
             }
         }
         this.getClient().setFollowRedirects(Preferences.instance().getBoolean("webdav.followRedirects"));

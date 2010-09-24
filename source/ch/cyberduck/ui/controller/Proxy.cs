@@ -89,11 +89,6 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public override bool isSOCKSProxyEnabled()
         {
-            if (!Preferences.instance().getBoolean("connection.proxy.enable"))
-            {
-                return false;
-            }
-
             if (IsProxyEnabled())
             {
                 int port;
@@ -123,11 +118,6 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public override bool isHTTPProxyEnabled()
         {
-            if (!Preferences.instance().getBoolean("connection.proxy.enable"))
-            {
-                return false;
-            }
-
             if (IsProxyEnabled())
             {
                 int port;
@@ -152,11 +142,6 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public override bool isHTTPSProxyEnabled()
         {
-            if (!Preferences.instance().getBoolean("connection.proxy.enable"))
-            {
-                return false;
-            }
-
             if (IsProxyEnabled())
             {
                 int port;
