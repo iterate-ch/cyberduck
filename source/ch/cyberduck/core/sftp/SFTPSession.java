@@ -211,69 +211,61 @@ public class SFTPSession extends Session {
      * @return True if authentication succeeded
      * @throws IOException
      */
-    private boolean loginUsingPublicKeyAuthentication(LoginController controller, final Credentials credentials) throws IOException {
+    private boolean loginUsingPublicKeyAuthentication(LoginController controller, final Credentials credentials)
+            throws IOException {
+
         log.debug("loginUsingPublicKeyAuthentication:" + credentials);
         if(this.getClient().isAuthMethodAvailable(credentials.getUsername(), "publickey")) {
             if(credentials.isPublicKeyAuthentication()) {
                 final Local identity = credentials.getIdentity();
-                String passphrase = null;
                 CharArrayWriter privatekey = new CharArrayWriter();
                 if(PuTTYKey.isPuTTYKeyFile(identity.getInputStream())) {
                     PuTTYKey putty = new PuTTYKey(identity.getInputStream());
                     if(putty.isEncrypted()) {
-                        passphrase = KeychainFactory.instance().getPassword(this.getHostname(),
-                                identity.getAbbreviatedPath());
-                        if(StringUtils.isEmpty(passphrase)) {
+                        if(StringUtils.isEmpty(credentials.getPassword())) {
                             controller.prompt(host.getProtocol(), credentials,
                                     Locale.localizedString("Private key password protected", "Credentials"),
                                     Locale.localizedString("Enter the passphrase for the private key file", "Credentials")
                                             + " (" + identity + ")");
-                            passphrase = credentials.getPassword();
                         }
-                        putty.decrypt(passphrase);
                     }
-                    IOUtils.copy(new StringReader(putty.toOpenSSH()), privatekey);
+                    try {
+                        IOUtils.copy(new StringReader(putty.toOpenSSH(credentials.getPassword())), privatekey);
+                    }
+                    catch(PEMDecryptException e) {
+                        this.message(Locale.localizedString("Invalid passphrase", "Credentials"));
+                        controller.prompt(host.getProtocol(), credentials,
+                                Locale.localizedString("Invalid passphrase", "Credentials"),
+                                Locale.localizedString("Enter the passphrase for the private key file", "Credentials")
+                                        + " (" + identity + ")");
+                        return this.loginUsingPublicKeyAuthentication(controller, credentials);
+                    }
                 }
                 else {
                     IOUtils.copy(new FileReader(identity.getAbsolute()), privatekey);
                     if(PEMDecoder.isPEMEncrypted(privatekey.toCharArray())) {
-                        // If the private key is passphrase protected then ask for the passphrase
-                        passphrase = KeychainFactory.instance().getPassword(this.getHostname(),
-                                identity.getAbbreviatedPath());
-                        if(StringUtils.isEmpty(passphrase)) {
+                        if(StringUtils.isEmpty(credentials.getPassword())) {
                             controller.prompt(host.getProtocol(), credentials,
                                     Locale.localizedString("Private key password protected", "Credentials"),
                                     Locale.localizedString("Enter the passphrase for the private key file", "Credentials")
                                             + " (" + identity + ")");
-                            passphrase = credentials.getPassword();
                         }
                     }
-                }
-                try {
-                    boolean success = this.getClient().authenticateWithPublicKey(credentials.getUsername(),
-                            privatekey.toCharArray(), passphrase);
-                    if(success) {
-                        if(credentials.isUseKeychain()) {
-                            // Save passphrase of private key to keychain.
-                            if(StringUtils.isNotEmpty(passphrase)) {
-                                KeychainFactory.instance().addPassword(this.getHostname(), identity.getAbbreviatedPath(),
-                                        passphrase);
-                            }
-                        }
+                    try {
+                        PEMDecoder.decode(privatekey.toCharArray(), credentials.getPassword());
                     }
-                    return success;
-                }
-                catch(IOException e) {
-                    if(e.getCause() instanceof PEMDecryptException) {
-                        this.message(Locale.localizedString("Login failed", "Credentials"));
-                        controller.fail(host.getProtocol(), credentials,
-                                e.getCause().getMessage());
-                        this.login();
-                    }
-                    else {
-                        throw e;
+                    catch(PEMDecryptException e) {
+                        this.message(Locale.localizedString("Invalid passphrase", "Credentials"));
+                        controller.prompt(host.getProtocol(), credentials,
+                                Locale.localizedString("Invalid passphrase", "Credentials"),
+                                Locale.localizedString("Enter the passphrase for the private key file", "Credentials")
+                                        + " (" + identity + ")");
+
+                        return this.loginUsingPublicKeyAuthentication(controller, credentials);
                     }
                 }
+                return this.getClient().authenticateWithPublicKey(credentials.getUsername(),
+                        privatekey.toCharArray(), credentials.getPassword());
             }
         }
         return false;

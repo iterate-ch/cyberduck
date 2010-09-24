@@ -54,28 +54,30 @@ public abstract class AbstractLoginController implements LoginController {
         if(StringUtils.isNotBlank(message)) {
             reason.append(message).append(". ");
         }
-        if(credentials.isPublicKeyAuthentication()) {
-            return;
-        }
         if(!credentials.validate(host.getProtocol())) {
             if(StringUtils.isNotBlank(credentials.getUsername())) {
                 if(Preferences.instance().getBoolean("connection.login.useKeychain")) {
-                    String passFromKeychain = KeychainFactory.instance().find(host);
-                    if(StringUtils.isBlank(passFromKeychain)) {
-                        reason.append(Locale.localizedString(
-                                "No login credentials could be found in the Keychain", "Credentials")).append(".");
-                        ;
-                        this.prompt(host.getProtocol(), credentials, title, reason.toString());
+                    String saved = KeychainFactory.instance().find(host);
+                    if(StringUtils.isBlank(saved)) {
+                        if(credentials.isPublicKeyAuthentication()) {
+                            ;
+                            // We decide later if the key is encrypted and a password must be known to decrypt.
+                        }
+                        else {
+                            reason.append(Locale.localizedString(
+                                    "No login credentials could be found in the Keychain", "Credentials")).append(".");
+                            this.prompt(host.getProtocol(), credentials, title, reason.toString());
+                        }
                     }
                     else {
-                        credentials.setPassword(passFromKeychain);
+                        credentials.setPassword(saved);
+                        // No need to reinsert found password to the keychain.
                         credentials.setUseKeychain(false);
                     }
                 }
                 else {
                     reason.append(Locale.localizedString(
                             "The use of the Keychain is disabled in the Preferences", "Credentials")).append(".");
-                    ;
                     this.prompt(host.getProtocol(), credentials, title, reason.toString());
                 }
             }
@@ -94,11 +96,12 @@ public abstract class AbstractLoginController implements LoginController {
     }
 
     public void success(Host host) {
-        if(host.getCredentials().isAnonymousLogin()) {
+        Credentials credentials = host.getCredentials();
+        if(credentials.isAnonymousLogin()) {
             log.info("Do not write anonymous credentials to Keychain");
             return;
         }
-        if(!host.getCredentials().isUseKeychain()) {
+        if(!credentials.isUseKeychain()) {
             log.info("Do not write credentials to Keychain");
             return;
         }

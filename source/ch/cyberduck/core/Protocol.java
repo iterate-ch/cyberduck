@@ -193,9 +193,6 @@ public abstract class Protocol {
 
         @Override
         public boolean validate(Credentials credentials) {
-            if(credentials.isPublicKeyAuthentication()) {
-                return StringUtils.isNotBlank(credentials.getUsername());
-            }
             return FTP.validate(credentials);
         }
     };
