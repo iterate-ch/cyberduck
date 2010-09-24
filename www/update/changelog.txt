@@ -11,6 +11,7 @@
 - [Bugfix] Uploading .xlsx or .docx documents fails with permission error (#5169) (Google Docs)
 - [Bugfix] Reading and writing ACLs (Google Docs)
 - [Bugfix] Interoperability with cPanel Web Disk (WebDAV) (#5188)
+- [Bugfix] Downloading previous versions of file (S3) (#5217)
 
 3.6.1 (Sep-07-2010) [http://trac.cyberduck.ch/milestone/3.6.1]
 - [Bugfix] Permissions reset (FTP) (#5132)
