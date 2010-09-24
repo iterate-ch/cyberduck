@@ -139,6 +139,8 @@ namespace Ch.Cyberduck.Ui.Controller
             View.RetryDelayChangedEvent += View_RetryDelayChangedEvent;
             View.RetriesChangedEvent += View_RetriesChangedEvent;
 
+            View.UseSystemProxyChangedEvent += View_UseSystemProxyChangedEvent;
+
             #region S3
 
             View.DefaultBucketLocationChangedEvent += View_DefaultBucketLocationChangedEvent;
@@ -206,6 +208,11 @@ namespace Ch.Cyberduck.Ui.Controller
             Host selected = View.DefaultBookmark;
             PopulateBookmarks();
             SelectDefaultBookmark(selected);
+        }
+
+        private void View_UseSystemProxyChangedEvent()
+        {
+            Preferences.instance().setProperty("connection.proxy.enable", View.UseSystemProxy);
         }
 
         private void View_CheckForUpdateEvent()
@@ -1044,6 +1051,7 @@ namespace Ch.Cyberduck.Ui.Controller
             View.Retries = Preferences.instance().getInteger("connection.retry");
             View.RetryDelay = Preferences.instance().getInteger("connection.retry.delay");
             View.ConnectionTimeout = Preferences.instance().getInteger("connection.timeout.seconds");
+            View.UseSystemProxy = Preferences.instance().getBoolean("connection.proxy.enable");
 
             #endregion
 

@@ -17,7 +17,6 @@
 // 
 using System.Collections.Generic;
 using ch.cyberduck.core;
-using Ch.Cyberduck.Core;
 using ch.cyberduck.ui.controller;
 using Ch.Cyberduck.Ui.Winforms.Controls;
 
@@ -111,20 +110,23 @@ namespace Ch.Cyberduck.Ui.Controller
         int ConnectionTimeout { set; get; }
         int RetryDelay { set; get; }
         int Retries { set; get; }
-        void MarkDownloadSkipRegex(int position);
-        void MarkUploadSkipRegex(int position);
-
-        #region Google Docs
-
-        void PopulateDocumentExportFormats(IList<KeyValuePair<string, string>> formats);
-        void PopulatePresentationExportFormats(IList<KeyValuePair<string, string>> formats);
-        void PopulateSpreadsheetExportFormats(IList<KeyValuePair<string, string>> formats);
 
         string DocumentExportFormat { set; get; }
         string PresentationExportFormat { set; get; }
         string SpreadsheetExportFormat { set; get; }
         bool ConvertUploads { set; get; }
         bool OcrUploads { set; get; }
+        string CurrentLocale { set; get; }
+        bool AutomaticUpdateCheck { set; get; }
+        string LastUpdateCheck { set; }
+
+        bool UseSystemProxy { set; get; }
+        void MarkDownloadSkipRegex(int position);
+        void MarkUploadSkipRegex(int position);
+
+        void PopulateDocumentExportFormats(IList<KeyValuePair<string, string>> formats);
+        void PopulatePresentationExportFormats(IList<KeyValuePair<string, string>> formats);
+        void PopulateSpreadsheetExportFormats(IList<KeyValuePair<string, string>> formats);
 
         event VoidHandler DocumentExportFormatChanged;
         event VoidHandler PresentationExportFormatChanged;
@@ -132,27 +134,14 @@ namespace Ch.Cyberduck.Ui.Controller
         event VoidHandler ConvertUploadsChanged;
         event VoidHandler OcrUploadsChanged;
 
-        #endregion
-
-        #region Language
-
-        string CurrentLocale { set; get; }
-
         void PopulateLocales(IList<KeyValuePair<string, string>> locales);
 
         event VoidHandler LocaleChanged;
 
-        #endregion
-
-        #region Update
-
-        bool AutomaticUpdateCheck { set; get; }
         event VoidHandler AutomaticUpdateChangedEvent;
         event VoidHandler CheckForUpdateEvent;
-        string LastUpdateCheck { set; }
 
-        #endregion
-
+        event VoidHandler UseSystemProxyChangedEvent;
         event VoidHandler SaveWorkspaceChangedEvent;
         event VoidHandler NewBrowserOnStartupChangedEvent;
         event VoidHandler DefaultBookmarkChangedEvent;

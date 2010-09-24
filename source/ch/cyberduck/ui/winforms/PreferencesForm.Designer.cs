@@ -1051,7 +1051,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.managedS3Panel.Controls.Add(this.tableLayoutPanel28);
             this.managedS3Panel.Location = new System.Drawing.Point(0, 0);
             this.managedS3Panel.Name = "managedS3Panel";
-            this.managedS3Panel.Size = new System.Drawing.Size(619, 482);
+            this.managedS3Panel.Size = new System.Drawing.Size(0, 0);
             this.managedS3Panel.Text = "managedPanel1";
             // 
             // tableLayoutPanel28
@@ -1068,7 +1068,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.tableLayoutPanel28.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel28.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel28.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel28.Size = new System.Drawing.Size(619, 482);
+            this.tableLayoutPanel28.Size = new System.Drawing.Size(0, 0);
             this.tableLayoutPanel28.TabIndex = 0;
             // 
             // groupBox19
@@ -1078,7 +1078,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.groupBox19.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox19.Location = new System.Drawing.Point(3, 3);
             this.groupBox19.Name = "groupBox19";
-            this.groupBox19.Size = new System.Drawing.Size(613, 81);
+            this.groupBox19.Size = new System.Drawing.Size(1, 81);
             this.groupBox19.TabIndex = 0;
             this.groupBox19.TabStop = false;
             this.groupBox19.Text = "Default Bucket Location";
@@ -1097,7 +1097,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.tableLayoutPanel29.RowCount = 2;
             this.tableLayoutPanel29.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel29.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel29.Size = new System.Drawing.Size(607, 59);
+            this.tableLayoutPanel29.Size = new System.Drawing.Size(0, 59);
             this.tableLayoutPanel29.TabIndex = 2;
             // 
             // label29
@@ -1128,7 +1128,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.groupBox22.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox22.Location = new System.Drawing.Point(3, 90);
             this.groupBox22.Name = "groupBox22";
-            this.groupBox22.Size = new System.Drawing.Size(613, 102);
+            this.groupBox22.Size = new System.Drawing.Size(1, 102);
             this.groupBox22.TabIndex = 1;
             this.groupBox22.TabStop = false;
             this.groupBox22.Text = "Default Storage Class";
@@ -1147,7 +1147,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.tableLayoutPanel30.RowCount = 2;
             this.tableLayoutPanel30.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel30.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel30.Size = new System.Drawing.Size(607, 80);
+            this.tableLayoutPanel30.Size = new System.Drawing.Size(0, 80);
             this.tableLayoutPanel30.TabIndex = 0;
             // 
             // defaultStorageClassComboBox
@@ -1167,7 +1167,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.label3.Location = new System.Drawing.Point(8, 5);
             this.label3.Name = "label3";
             this.label3.Padding = new System.Windows.Forms.Padding(0, 0, 0, 5);
-            this.label3.Size = new System.Drawing.Size(588, 35);
+            this.label3.Size = new System.Drawing.Size(556, 35);
             this.label3.TabIndex = 0;
             this.label3.Text = "Choose Reduced Reduncancy Storage (RRS) to reduce costs by storing non-critical, " +
                 "reproducible data at lower levels of redundancy.";
@@ -1777,20 +1777,20 @@ namespace Ch.Cyberduck.Ui.Winforms
             // systemProxyCheckBox
             // 
             this.systemProxyCheckBox.AutoSize = true;
-            this.systemProxyCheckBox.Enabled = false;
             this.systemProxyCheckBox.Location = new System.Drawing.Point(8, 8);
             this.systemProxyCheckBox.Name = "systemProxyCheckBox";
             this.systemProxyCheckBox.Size = new System.Drawing.Size(161, 19);
             this.systemProxyCheckBox.TabIndex = 0;
             this.systemProxyCheckBox.Text = "Use system proxy settings";
             this.systemProxyCheckBox.UseVisualStyleBackColor = true;
+            this.systemProxyCheckBox.CheckStateChanged += new System.EventHandler(this.systemProxyCheckBox_CheckStateChanged);
             // 
             // managedUpdatePanel
             // 
             this.managedUpdatePanel.Controls.Add(this.tableLayoutPanel41);
             this.managedUpdatePanel.Location = new System.Drawing.Point(0, 0);
             this.managedUpdatePanel.Name = "managedUpdatePanel";
-            this.managedUpdatePanel.Size = new System.Drawing.Size(619, 482);
+            this.managedUpdatePanel.Size = new System.Drawing.Size(0, 0);
             this.managedUpdatePanel.Text = "managedPanel1";
             // 
             // tableLayoutPanel41
@@ -1804,7 +1804,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.tableLayoutPanel41.RowCount = 2;
             this.tableLayoutPanel41.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel41.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel41.Size = new System.Drawing.Size(619, 482);
+            this.tableLayoutPanel41.Size = new System.Drawing.Size(0, 0);
             this.tableLayoutPanel41.TabIndex = 0;
             // 
             // groupBox27
@@ -1814,7 +1814,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.groupBox27.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox27.Location = new System.Drawing.Point(3, 3);
             this.groupBox27.Name = "groupBox27";
-            this.groupBox27.Size = new System.Drawing.Size(613, 103);
+            this.groupBox27.Size = new System.Drawing.Size(1, 103);
             this.groupBox27.TabIndex = 0;
             this.groupBox27.TabStop = false;
             this.groupBox27.Text = "Update";
@@ -1835,7 +1835,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.tableLayoutPanel42.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel42.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel42.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel42.Size = new System.Drawing.Size(607, 81);
+            this.tableLayoutPanel42.Size = new System.Drawing.Size(0, 81);
             this.tableLayoutPanel42.TabIndex = 0;
             // 
             // updateCheckBox
@@ -1843,7 +1843,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.updateCheckBox.AutoSize = true;
             this.updateCheckBox.Location = new System.Drawing.Point(8, 8);
             this.updateCheckBox.Name = "updateCheckBox";
-            this.updateCheckBox.Size = new System.Drawing.Size(197, 19);
+            this.updateCheckBox.Size = new System.Drawing.Size(1, 19);
             this.updateCheckBox.TabIndex = 0;
             this.updateCheckBox.Text = "Automatically check for updates";
             this.updateCheckBox.UseVisualStyleBackColor = true;
@@ -1854,9 +1854,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.updateCheckButton.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.updateCheckButton.AutoSize = true;
             this.updateCheckButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.updateCheckButton.Location = new System.Drawing.Point(235, 33);
+            this.updateCheckButton.Location = new System.Drawing.Point(8, 33);
             this.updateCheckButton.Name = "updateCheckButton";
-            this.updateCheckButton.Size = new System.Drawing.Size(137, 25);
+            this.updateCheckButton.Size = new System.Drawing.Size(1, 25);
             this.updateCheckButton.TabIndex = 1;
             this.updateCheckButton.Text = "Check for Update Now";
             this.updateCheckButton.UseVisualStyleBackColor = true;
@@ -1866,9 +1866,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.lastUpdateLabel.Anchor = System.Windows.Forms.AnchorStyles.Top;
             this.lastUpdateLabel.AutoSize = true;
-            this.lastUpdateLabel.Location = new System.Drawing.Point(281, 61);
+            this.lastUpdateLabel.Location = new System.Drawing.Point(8, 61);
             this.lastUpdateLabel.Name = "lastUpdateLabel";
-            this.lastUpdateLabel.Size = new System.Drawing.Size(44, 15);
+            this.lastUpdateLabel.Size = new System.Drawing.Size(1, 15);
             this.lastUpdateLabel.TabIndex = 2;
             this.lastUpdateLabel.Text = "label17";
             // 

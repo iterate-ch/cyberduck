@@ -671,6 +671,13 @@ namespace Ch.Cyberduck.Ui.Winforms
             set { lastUpdateLabel.Text = value; }
         }
 
+        public bool UseSystemProxy
+        {
+            get { return systemProxyCheckBox.Checked; }
+            set { systemProxyCheckBox.Checked = value; }
+        }
+
+        public event VoidHandler UseSystemProxyChangedEvent = delegate { };
         public event VoidHandler SaveWorkspaceChangedEvent = delegate { };
         public event VoidHandler NewBrowserOnStartupChangedEvent = delegate { };
         public event VoidHandler DefaultBookmarkChangedEvent = delegate { };
@@ -1458,6 +1465,11 @@ namespace Ch.Cyberduck.Ui.Winforms
         private void updateCheckButton_Click(object sender, EventArgs e)
         {
             CheckForUpdateEvent();
+        }
+
+        private void systemProxyCheckBox_CheckStateChanged(object sender, EventArgs e)
+        {
+            UseSystemProxyChangedEvent();
         }
     }
 }
