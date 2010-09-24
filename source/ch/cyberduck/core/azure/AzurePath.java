@@ -238,23 +238,25 @@ public class AzurePath extends CloudPath {
     @Override
     public void writeAcl(Acl acl, boolean recursive) {
         try {
-            IBlobContainer container = this.getSession().getContainer(this.getContainerName());
-            final ContainerAccessControl list;
-            if(acl.asList().contains(PUBLIC_ACL)) {
-                list = new ContainerAccessControl(true);
-            }
-            else {
-                list = new ContainerAccessControl(false);
-            }
-            for(Acl.UserAndRole userAndRole : acl.asList()) {
-                if(!userAndRole.isValid()) {
-                    continue;
+            if(this.isContainer()) {
+                IBlobContainer container = this.getSession().getContainer(this.getContainerName());
+                final ContainerAccessControl list;
+                if(acl.asList().contains(PUBLIC_ACL)) {
+                    list = new ContainerAccessControl(true);
                 }
-                list.addSignedIdentifier(new SignedIdentifier(userAndRole.getUser().getIdentifier(),
-                        SharedAccessPermissions.valueOf(userAndRole.getRole().getName()),
-                        null, null));
+                else {
+                    list = new ContainerAccessControl(false);
+                }
+                for(Acl.UserAndRole userAndRole : acl.asList()) {
+                    if(!userAndRole.isValid()) {
+                        continue;
+                    }
+                    list.addSignedIdentifier(new SignedIdentifier(userAndRole.getUser().getIdentifier(),
+                            SharedAccessPermissions.valueOf(userAndRole.getRole().getName()),
+                            null, null));
+                }
+                container.setContainerAccessControl(list);
             }
-            container.setContainerAccessControl(list);
         }
         catch(StorageException e) {
             this.error("Cannot change permissions", e);
