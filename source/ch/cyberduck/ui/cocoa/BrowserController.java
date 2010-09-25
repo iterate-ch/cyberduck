@@ -291,15 +291,13 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     }
 
     /**
-     * @param path
+     * @param reference
      * @param expand Expand the existing selection
      */
-    private void selectRow(Path path, boolean expand) {
-        log.debug("selectRow:" + path);
+    private void selectRow(PathReference reference, boolean expand) {
+        log.debug("selectRow:" + reference);
         final NSTableView browser = this.getSelectedBrowserView();
-        if(this.getSelectedBrowserModel().contains(browser, path)) {
-            this.selectRow(this.getSelectedBrowserModel().indexOf(browser, path), expand);
-        }
+        this.selectRow(this.getSelectedBrowserModel().indexOf(browser, reference), expand);
     }
 
     /**
@@ -333,21 +331,8 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         log.debug("setSelectedPaths");
         this.deselectAll();
         if(!selected.isEmpty()) {
-            switch(browserSwitchView.selectedSegment()) {
-                case SWITCH_LIST_VIEW: {
-                    //selection handling
-                    for(Path path : selected) {
-                        this.selectRow(path, true);
-                    }
-                    break;
-                }
-                case SWITCH_OUTLINE_VIEW: {
-                    for(Path path : selected) {
-                        final int row = browserOutlineView.rowForItem(path.<NSObject>getReference().unique()).intValue();
-                        this.selectRow(row, true);
-                    }
-                    break;
-                }
+            for(Path path : selected) {
+                this.selectRow(path.getReference(), true);
             }
         }
     }

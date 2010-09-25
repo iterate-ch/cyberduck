@@ -20,6 +20,7 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathReference;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.ui.PathPasteboard;
 import ch.cyberduck.ui.cocoa.application.*;
@@ -44,13 +45,8 @@ public class BrowserOutlineViewModel extends BrowserTableDataSource implements N
     }
 
     @Override
-    public int indexOf(NSView tableView, Path p) {
-        return ((NSOutlineView) tableView).rowForItem(p.<NSObject>getReference().unique()).intValue();
-    }
-
-    @Override
-    public boolean contains(NSView tableView, Path p) {
-        return this.indexOf(tableView, p) != -1;
+    public int indexOf(NSTableView view, PathReference reference) {
+        return ((NSOutlineView) view).rowForItem(((OutlinePathReference) reference).unique()).intValue();
     }
 
     protected AttributedList<Path> children(final OutlinePathReference path) {

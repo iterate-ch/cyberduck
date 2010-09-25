@@ -133,12 +133,8 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
         }
     }
 
-    public int indexOf(NSView tableView, Path p) {
-        return this.children(controller.workdir()).indexOf(p);
-    }
-
-    public boolean contains(NSView tableView, Path p) {
-        return this.children(controller.workdir()).contains(p);
+    public int indexOf(NSTableView view, PathReference reference) {
+        return this.children(controller.workdir()).indexOf(reference);
     }
 
     protected void setObjectValueForItem(final Path item, final NSObject value, final String identifier) {
