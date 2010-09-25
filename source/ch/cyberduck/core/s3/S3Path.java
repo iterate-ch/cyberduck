@@ -700,7 +700,7 @@ public class S3Path extends CloudPath {
                 final Path p = PathFactory.createPath(this.getSession(),
                         bucket, common, Path.DIRECTORY_TYPE);
                 p.setParent(this);
-                if(children.contains(p)) {
+                if(children.contains(p.getReference())) {
                     continue;
                 }
                 p.attributes().setOwner(this.getContainer().attributes().getOwner());
@@ -1186,6 +1186,9 @@ public class S3Path extends CloudPath {
     @Override
     public List<DescriptiveUrl> getHttpURLs() {
         List<DescriptiveUrl> urls = super.getHttpURLs();
+        // Always include HTTP URL
+        urls.add(new DescriptiveUrl(this.toURL(Protocol.S3.getScheme()),
+                MessageFormat.format(Locale.localizedString("{0} URL"), Protocol.S3.getScheme().toUpperCase())));
         DescriptiveUrl hour = this.toSignedUrl(60 * 60);
         if(StringUtils.isNotBlank(hour.getUrl())) {
             urls.add(hour);
