@@ -471,8 +471,8 @@ public class FTPPath extends Path {
             if(-1 == attributes().getSize()) {
                 // Read the size from the directory listing
                 final AttributedList<AbstractPath> l = this.getParent().children();
-                if(l.contains(this)) {
-                    attributes().setSize(l.get(l.indexOf(this)).attributes().getSize());
+                if(l.contains(this.getReference())) {
+                    attributes().setSize(l.get(this.getReference()).attributes().getSize());
                 }
             }
         }
@@ -503,8 +503,8 @@ public class FTPPath extends Path {
             if(-1 == attributes().getModificationDate()) {
                 // Read the timestamp from the directory listing
                 final AttributedList<AbstractPath> l = this.getParent().children();
-                if(l.contains(this)) {
-                    attributes().setModificationDate(l.get(l.indexOf(this)).attributes().getModificationDate());
+                if(l.contains(this.getReference())) {
+                    attributes().setModificationDate(l.get(this.getReference()).attributes().getModificationDate());
                 }
             }
         }
@@ -523,8 +523,8 @@ public class FTPPath extends Path {
 
             // Read the permission from the directory listing
             final AttributedList<AbstractPath> l = this.getParent().children();
-            if(l.contains(this)) {
-                attributes().setPermission(l.get(l.indexOf(this)).attributes().getPermission());
+            if(l.contains(this.getReference())) {
+                attributes().setPermission(l.get(this.getReference()).attributes().getPermission());
             }
         }
         catch(IOException e) {
