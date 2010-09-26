@@ -78,7 +78,7 @@ public class AttributedList<E extends AbstractPath> extends CopyOnWriteArrayList
 
         // Preserves singleton property
 
-        private Object readResolve() {
+        private AttributedList<AbstractPath> readResolve() {
             return EMPTY_LIST;
         }
     }
@@ -246,6 +246,10 @@ public class AttributedList<E extends AbstractPath> extends CopyOnWriteArrayList
         return references.containsKey(reference);
     }
 
+    public int indexOf(PathReference reference) {
+        return super.indexOf(references.get(reference));
+    }
+
     /**
      * The CopyOnWriteArrayList iterator does not support remove but the sort implementation
      * makes use of it. Provide our own implementation here to circumvent.
@@ -254,15 +258,15 @@ public class AttributedList<E extends AbstractPath> extends CopyOnWriteArrayList
      * @see java.util.Collections#sort(java.util.List, java.util.Comparator)
      * @see java.util.concurrent.CopyOnWriteArrayList#iterator()
      */
-    public void sort(Comparator comparator) {
+    public void sort(Comparator<E> comparator) {
         if(null == comparator) {
             return;
         }
         // Because AttributedList is a CopyOnWriteArrayList we cannot use Collections#sort
-        AbstractPath[] sorted = this.toArray(new AbstractPath[this.size()]);
-        Arrays.sort(sorted, (Comparator<AbstractPath>) comparator);
-        for(int j = 0; j < sorted.length; j++) {
-            this.set(j, (E) sorted[j]);
+        E[] sorted = (E[]) this.toArray(new AbstractPath[this.size()]);
+        Arrays.sort(sorted, comparator);
+        for(int i = 0; i < sorted.length; i++) {
+            this.set(i, sorted[i]);
         }
     }
 
