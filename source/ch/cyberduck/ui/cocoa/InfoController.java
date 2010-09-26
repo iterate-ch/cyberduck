@@ -2227,7 +2227,6 @@ public class InfoController extends ToolbarWindowController {
                             }
                         }
                     }
-                    final String defaultRoot = distribution.getDefaultRootObject();
                     if(StringUtils.isNotBlank(distribution.getDefaultRootObject())) {
                         distributionDefaultRootPopup.selectItemWithTitle(distribution.getDefaultRootObject());
                     }
