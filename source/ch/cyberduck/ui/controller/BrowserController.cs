@@ -3598,7 +3598,6 @@ namespace Ch.Cyberduck.Ui.Controller
 
             public override void run()
             {
-                Console.WriteLine("Run von UpdateInspectorAction");
                 foreach (Path path in _selected)
                 {
                     if (isCanceled())
@@ -3614,7 +3613,6 @@ namespace Ch.Cyberduck.Ui.Controller
 
             public override void cleanup()
             {
-                Console.WriteLine("Cleanup von UpdateInspectorAction");
                 if (BrowserController._inspector != null)
                 {
                     BrowserController._inspector.Files = _selected;
@@ -3627,20 +3625,17 @@ namespace Ch.Cyberduck.Ui.Controller
             private readonly BrowserController _controller;
             private readonly bool _removeListener;
             private readonly Transfer _transfer;
-            private readonly Path _workdir;
 
             public UploadTransferAdapter(BrowserController controller, Transfer transfer, Path workdir,
                                          bool removeListener)
             {
                 _controller = controller;
                 _transfer = transfer;
-                _workdir = workdir;
                 _removeListener = removeListener;
             }
 
             public override void transferDidEnd()
             {
-                Debug.WriteLine("entering transferDidEnd()");
                 if (_controller.IsMounted())
                 {
                     //_controller.Workdir.invalidate();
@@ -3660,7 +3655,6 @@ namespace Ch.Cyberduck.Ui.Controller
                     }
                 }
                 if (_removeListener) _transfer.removeListener(this);
-                Debug.WriteLine("exiting transferDidEnd()");
             }
 
             private class ReloadAction : WindowMainAction
