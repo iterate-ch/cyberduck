@@ -85,6 +85,7 @@ namespace Ch.Cyberduck.Ui.Controller
         bool AclRemoveEnabled { set; }
         bool AclAnimationActive { set; }
         string AclUrl { set; }
+        bool AclUrlEnabled { set; }
         string AclUrlTooltip { set; }
 
         bool MetadataTableEnabled { set; }
@@ -109,6 +110,7 @@ namespace Ch.Cyberduck.Ui.Controller
         bool DistributionUrlEnabled { set; }
         string DistributionCname { set; get; }
         string DistributionCnameUrl { set; }
+        bool DistributionCnameUrlEnabled { set; }
         string DistributionCnameUrlTooltip { set; }
         bool DistributionCnameEnabled { set; }
         bool DistributionAnimationActive { set; }
@@ -159,7 +161,7 @@ namespace Ch.Cyberduck.Ui.Controller
         event VoidHandler DistributionCnameChanged;
         event VoidHandler DistributionDefaultRootChanged;
 
-        void PopulateStorageClass(IList<string> classes);
+        void PopulateStorageClass(IList<KeyValuePair<string, string>> classes);
 
         event VoidHandler BucketLoggingChanged;
         event VoidHandler StorageClassChanged;

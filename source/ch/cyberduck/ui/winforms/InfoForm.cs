@@ -20,6 +20,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
+using Ch.Cyberduck.Core;
 using ch.cyberduck.core.cloud;
 using ch.cyberduck.core.i18n;
 using ch.cyberduck.ui.controller;
@@ -30,6 +31,8 @@ namespace Ch.Cyberduck.Ui.Winforms
 {
     public partial class InfoForm : ToolbarBaseForm, IInfoView
     {
+        private string lastDistributionCname; //cache last value
+
         public InfoForm()
         {
             InitializeComponent();
@@ -57,6 +60,12 @@ namespace Ch.Cyberduck.Ui.Winforms
             generalButton_Click(this, EventArgs.Empty);
 
             LocalizationCompleted += ResizeForm;
+
+            //some font tweaking
+            statusLabel.Font = new Font(statusLabel.Font, FontStyle.Bold);
+
+            whereLinkLabel.Text = String.Empty;
+            cnameUrlLinkLabel.Text = String.Empty;
         }
 
         /// <summary>
@@ -403,6 +412,11 @@ namespace Ch.Cyberduck.Ui.Winforms
             set { deliveryMethodComboBox.SelectedValue = value; }
         }
 
+        public bool DistributionCnameUrlEnabled
+        {
+            set { cnameUrlLinkLabel.Enabled = value; }
+        }
+
         public string DistributionCnameUrlTooltip
         {
             set { toolTip.SetToolTip(cnameUrlLinkLabel, value); }
@@ -463,6 +477,11 @@ namespace Ch.Cyberduck.Ui.Winforms
             set { authenticatedUrlLinkLabel.Text = value; }
         }
 
+        public bool AclUrlEnabled
+        {
+            set { authenticatedUrlLinkLabel.Enabled = value; }
+        }
+
         public string AclUrlTooltip
         {
             set { toolTip.SetToolTip(authenticatedUrlLinkLabel, value); }
@@ -488,6 +507,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public void PopulateDistributionDeliveryMethod(IList<KeyValuePair<string, Distribution.Method>> methods)
         {
+            deliveryMethodComboBox.DataSource = null;
             deliveryMethodComboBox.DataSource = methods;
             deliveryMethodComboBox.DisplayMember = "Key";
             deliveryMethodComboBox.ValueMember = "Value";
@@ -561,7 +581,11 @@ namespace Ch.Cyberduck.Ui.Winforms
         public string DistributionCname
         {
             get { return distributionCnameTextBox.Text; }
-            set { distributionCnameTextBox.Text = value; }
+            set
+            {
+                distributionCnameTextBox.Text = value;
+                lastDistributionCname = value;
+            }
         }
 
         public string DistributionCnameUrl
@@ -574,9 +598,13 @@ namespace Ch.Cyberduck.Ui.Winforms
         public event VoidHandler DistributionLoggingChanged = delegate { };
         public event VoidHandler DistributionCnameChanged = delegate { };
 
-        public void PopulateStorageClass(IList<string> classes)
+        public void PopulateStorageClass(IList<KeyValuePair<string, string>> classes)
         {
+            storageClassComboBox.DataSource = null;
             storageClassComboBox.DataSource = classes;
+            storageClassComboBox.DisplayMember = "Key";
+            storageClassComboBox.ValueMember = "Value";
+            storageClassComboBox.Enabled = classes.Count > 0;
         }
 
         public string BucketLocation
@@ -586,8 +614,8 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public string StorageClass
         {
-            get { return storageClassComboBox.Text; }
-            set { storageClassComboBox.Text = value; }
+            get { return (string) storageClassComboBox.SelectedValue; }
+            set { storageClassComboBox.SelectedValue = value; }
         }
 
         public bool StorageClassEnabled
@@ -600,6 +628,11 @@ namespace Ch.Cyberduck.Ui.Winforms
             set { s3PublicUrlLinkLabel.Text = value; }
         }
 
+        public bool S3PublicUrlEnabled
+        {
+            set { s3PublicUrlLinkLabel.Enabled = value; }
+        }
+
         public string S3PublicUrlValidity
         {
             set { s3PublicUrlValidityLabel.Text = value; }
@@ -608,6 +641,11 @@ namespace Ch.Cyberduck.Ui.Winforms
         public string S3TorrentUrl
         {
             set { s3TorrentUrlLinkLabel.Text = value; }
+        }
+
+        public bool S3TorrentUrlEnabled
+        {
+            set { s3TorrentUrlLinkLabel.Enabled = value; }
         }
 
         public string S3PublicUrlTooltip
@@ -1092,6 +1130,45 @@ namespace Ch.Cyberduck.Ui.Winforms
                 panelManager.SelectedPanel = managedGeneralPanel;
                 //ResizeForm(permissionsLayoutPanel, true);
             }
+        }
+
+        private void distributionCnameTextBox_Validated(object sender, EventArgs e)
+        {
+            if (!distributionCnameTextBox.Text.Equals(lastDistributionCname))
+            {
+                lastDistributionCname = distributionCnameTextBox.Text;
+                DistributionCnameChanged();
+            }
+        }
+
+        private void weburlLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            Utils.StartProcess(weburlLabel.Text);
+        }
+
+        private void authenticatedUrlLinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            Utils.StartProcess(authenticatedUrlLinkLabel.Text);
+        }
+
+        private void whereLinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            Utils.StartProcess(whereLinkLabel.Text);
+        }
+
+        private void cnameUrlLinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            Utils.StartProcess(cnameUrlLinkLabel.Text);
+        }
+
+        private void s3PublicUrlLinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            Utils.StartProcess(s3PublicUrlLinkLabel.Text);
+        }
+
+        private void s3TorrentUrlLinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            Utils.StartProcess(s3TorrentUrlLinkLabel.Text);
         }
 
         private enum AclColumnName

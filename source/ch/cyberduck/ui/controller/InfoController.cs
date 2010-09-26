@@ -47,7 +47,6 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private readonly BrowserController _controller;
         private readonly string _multipleFilesString = "(" + Locale.localizedString("Multiple files") + ")";
-        private readonly IList<string> _roots = new List<string>();
         private BindingList<UserAndRoleEntry> _acl = new BindingList<UserAndRoleEntry>();
         private List<Path> _files;
         private BindingList<CustomHeader> _metadata = new BindingList<CustomHeader>();
@@ -56,6 +55,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             View = ObjectFactory.GetInstance<IInfoView>();
             _controller = controller;
+            Files = files;
 
             _controller.View.ViewClosedEvent += delegate
                                                     {
@@ -78,8 +78,6 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 PopulateMetadata();
             }
-
-            Files = files;
         }
 
         public override bool Singleton
@@ -373,6 +371,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             SetAcl(new List<UserAndRoleEntry>());
             View.AclUrl = Locale.localizedString("None");
+            View.AclUrlEnabled = false;
             if (ToggleAclSettings(false))
             {
                 if (NumberOfFiles > 1)
@@ -391,6 +390,7 @@ namespace Ch.Cyberduck.Ui.Controller
                             if (Utils.IsNotBlank(url.getUrl()))
                             {
                                 View.AclUrl = url.getUrl();
+                                View.AclUrlEnabled = true;
                                 View.AclUrlTooltip = url.getHelp();
                             }
                         }
@@ -539,8 +539,10 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void DistributionCnameChanged()
         {
-            //todo
-            throw new NotImplementedException();
+            if (ToggleDistributionSettings(false))
+            {
+                _controller.background(new WriteDistributionBackgroundAction(_controller, this, _files));
+            }
         }
 
         private void DistributionDeliveryMethodChanged()
@@ -952,21 +954,23 @@ namespace Ch.Cyberduck.Ui.Controller
             View.BucketLocation = Locale.localizedString("Unknown");
             View.BucketLoggingTooltip = Locale.localizedString("Unknown");
             View.S3PublicUrl = Locale.localizedString("None");
+            View.S3PublicUrlEnabled = false;
+            View.S3PublicUrlValidity = Locale.localizedString("Unknown");
             View.S3TorrentUrl = Locale.localizedString("None");
+            View.S3TorrentUrlEnabled = false;
 
-
-            IList<string> classes = new List<string>();
-            classes.Add(Locale.localizedString("Unknown"));
+            IList<KeyValuePair<string, string>> classes = new List<KeyValuePair<string, string>>();
             View.PopulateStorageClass(classes);
-            View.StorageClass = Locale.localizedString("Unknown");
 
             if (ToggleS3Settings(false))
             {
                 List list = ((CloudSession) _controller.getSession()).getSupportedStorageClasses();
                 for (int i = 0; i < list.size(); i++)
                 {
-                    classes.Add((string) list.get(i));
+                    string redundancy = (string) list.get(i);
+                    classes.Add(new KeyValuePair<string, string>(Locale.localizedString(redundancy, "S3"), redundancy));
                 }
+                View.PopulateStorageClass(classes);
                 if (NumberOfFiles > 1)
                 {
                     View.S3PublicUrl = _multipleFilesString;
@@ -986,13 +990,14 @@ namespace Ch.Cyberduck.Ui.Controller
                             String redundancy = s3.attributes().getStorageClass();
                             if (Utils.IsNotBlank(redundancy))
                             {
-                                classes.Remove(Locale.localizedString("Unknown"));
-                                View.StorageClass = Locale.localizedString(redundancy, "S3");
+                                View.PopulateStorageClass(classes);
+                                View.StorageClass = redundancy;
                             }
                             AbstractPath.DescriptiveUrl url = s3.toSignedUrl();
                             if (null != url)
                             {
                                 View.S3PublicUrl = url.getUrl();
+                                View.S3PublicUrlEnabled = true;
                                 View.S3PublicUrlTooltip = url.getUrl();
 
                                 View.S3PublicUrlValidity = url.getHelp();
@@ -1001,6 +1006,7 @@ namespace Ch.Cyberduck.Ui.Controller
                             if (null != torrent)
                             {
                                 View.S3TorrentUrl = torrent.getUrl();
+                                View.S3TorrentUrlEnabled = true;
                                 View.S3TorrentUrlTooltip = torrent.getUrl();
                             }
                         }
@@ -1062,36 +1068,37 @@ namespace Ch.Cyberduck.Ui.Controller
 
             View.DistributionStatus = Locale.localizedString("Unknown");
             View.DistributionUrl = Locale.localizedString("None");
+            View.DistributionUrlEnabled = false;
             View.DistributionCname = Locale.localizedString("None");
+            View.DistributionCnameUrlEnabled = false;
 
-            KeyValuePair<string, Distribution.Method> unknownEntry =
-                new KeyValuePair<string, Distribution.Method>(Locale.localizedString("Unknown"), null);
             IList<KeyValuePair<string, Distribution.Method>> methods = new List
                 <KeyValuePair<string, Distribution.Method>>
                                                                            {
-                                                                               unknownEntry
+                                                                               new KeyValuePair
+                                                                                   <string, Distribution.Method>(
+                                                                                   Locale.localizedString("None"), null)
                                                                            };
             View.PopulateDistributionDeliveryMethod(methods);
-
-            _roots.Add(Locale.localizedString("Unknown"));
-            View.PopulateDefaultRoot(_roots);
+            View.PopulateDefaultRoot(new List<string> {Locale.localizedString("None")});
 
             if (ToggleDistributionSettings(false))
             {
                 CloudSession session = (CloudSession) _controller.getSession();
                 View.DistributionTitle = String.Format(Locale.localizedString("Enable {0} Distribution", "Status"),
                                                        session.getDistributionServiceName());
-                methods.Remove(unknownEntry);
-
+                methods = new List<KeyValuePair<string, Distribution.Method>>();
+                methods.Add(new KeyValuePair<string, Distribution.Method>(Locale.localizedString("None"), null));
                 List list = session.getSupportedDistributionMethods();
                 for (int i = 0; i < list.size(); i++)
                 {
                     Distribution.Method method = (Distribution.Method) list.get(i);
                     methods.Add(new KeyValuePair<string, Distribution.Method>(method.ToString(), method));
                 }
+                View.PopulateDistributionDeliveryMethod(methods);
                 View.DistributionDeliveryMethod = Distribution.DOWNLOAD;
+                DistributionDeliveryMethodChanged();
             }
-            DistributionDeliveryMethodChanged();
             AttachDistributionHandlers();
         }
 
@@ -1387,7 +1394,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
                 public override void connectionDidClose()
                 {
-                    _infoController.View.Close();
+                    _infoController.Invoke(delegate { _infoController.View.Close(); });
                     _browserController.getSession().removeConnectionListener(this);
                 }
             }
@@ -1503,15 +1510,22 @@ namespace Ch.Cyberduck.Ui.Controller
 
             public override void cleanup()
             {
-                _view.BucketLogging = _logging;
-                if (Utils.IsNotBlank(_location))
+                try
                 {
-                    _view.BucketLocation = Locale.localizedString(_location, "S3");
+                    _view.BucketLogging = _logging;
+                    if (Utils.IsNotBlank(_location))
+                    {
+                        _view.BucketLocation = Locale.localizedString(_location, "S3");
+                    }
+                    _view.BucketVersioning = _versioning;
+                    _view.BucketMfaEnabled = _versioning;
+                    _view.BucketMfa = _mfa;
+                    _infoController.ToggleS3Settings(true);
                 }
-                _view.BucketVersioning = _versioning;
-                _view.BucketMfaEnabled = _versioning;
-                _view.BucketMfa = _mfa;
-                _infoController.ToggleS3Settings(true);
+                finally
+                {
+                    _infoController.AttachS3Handlers();
+                }
             }
         }
 
@@ -1564,7 +1578,6 @@ namespace Ch.Cyberduck.Ui.Controller
         private class ReadDistributionBackgroundAction : BrowserBackgroundAction
         {
             private readonly Distribution.Method _deliveryMethod;
-            private readonly List<Path> _files;
             private readonly InfoController _infoController;
             private readonly IInfoView _view;
             private Distribution _distribution;
@@ -1579,7 +1592,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
             public override void run()
             {
-                foreach (Path file in _files)
+                foreach (Path file in _infoController._files)
                 {
                     CloudPath cloud = (CloudPath) file;
                     CloudSession session = (CloudSession) BrowserController.getSession();
@@ -1590,63 +1603,82 @@ namespace Ch.Cyberduck.Ui.Controller
                     }
                     break;
                 }
-                AttributedList children = _files[0].getContainer().children();
-                foreach (AbstractPath next in children)
-                {
-                    if (next.attributes().isFile())
-                    {
-                        _infoController._roots.Add(next.getName());
-                    }
-                }
             }
 
             public override void cleanup()
             {
-                _view.Distribution = _distribution.isEnabled();
-                _view.DistributionStatus = _distribution.getStatus();
-                _view.DistributionLoggingEnabled = _distribution.isEnabled();
-                _view.DistributionLogging = _distribution.isLogging();
+                try
+                {
+                    _infoController.DetachDistributionHandlers();
 
-                CloudPath file = ((CloudPath) _files[0]);
-                // Concatenate URLs
-                if (_infoController.NumberOfFiles > 1)
-                {
-                    _view.DistributionUrl = _infoController._multipleFilesString;
-                    _view.DistributionUrlTooltip = null;
-                    _view.DistributionCnameUrl = _infoController._multipleFilesString;
-                }
-                else
-                {
-                    String url = _distribution.getUrl(file.getKey());
-                    _view.DistributionUrl = url;
-                    _view.DistributionUrlTooltip = url;
-                }
-                string[] cnames = _distribution.getCNAMEs();
-                if (0 == cnames.Length)
-                {
-                    _view.DistributionCname = string.Empty;
-                    _view.DistributionCnameUrl = string.Empty;
-                    _view.DistributionCnameUrlTooltip = null;
-                }
-                else
-                {
-                    _view.DistributionCname = string.Join(" ", cnames);
-                    foreach (string cname in cnames)
+                    _view.Distribution = _distribution.isEnabled();
+                    _view.DistributionStatus = _distribution.getStatus();
+                    _view.DistributionLoggingEnabled = _distribution.isEnabled();
+                    _view.DistributionLogging = _distribution.isLogging();
+
+                    CloudPath file = ((CloudPath) _infoController._files[0]);
+                    // Concatenate URLs
+                    if (_infoController.NumberOfFiles > 1)
                     {
-                        string url = _distribution.getCnameUrl(file.getKey());
-                        _view.DistributionCname = url;
-                        _view.DistributionCnameUrlTooltip = url;
-                        // We only support one CNAME URL
-                        break;
+                        _view.DistributionUrl = _infoController._multipleFilesString;
+                        _view.DistributionUrlTooltip = null;
+                        _view.DistributionCnameUrl = _infoController._multipleFilesString;
                     }
+                    else
+                    {
+                        String url = _distribution.getUrl(file.getKey());
+                        if (Utils.IsNotBlank(url))
+                        {
+                            _view.DistributionUrl = url;
+                            _view.DistributionUrlEnabled = true;
+                            _view.DistributionUrlTooltip = Locale.localizedString("Open in Web Browser");
+                        }
+                    }
+                    string[] cnames = _distribution.getCNAMEs();
+                    if (0 == cnames.Length)
+                    {
+                        _view.DistributionCname = string.Empty;
+                        _view.DistributionCnameUrl = string.Empty;
+                        _view.DistributionCnameUrlTooltip = null;
+                    }
+                    else
+                    {
+                        _view.DistributionCname = string.Join(" ", cnames);
+                        String url = _distribution.getCnameUrl(file.getKey());
+                        if (Utils.IsNotBlank(url))
+                        {
+                            _view.DistributionCnameUrl = url;
+                            _view.DistributionCnameUrlEnabled = true;
+                            _view.DistributionCnameUrlTooltip = Locale.localizedString("Open in Web Browser");
+                        }
+                    }
+                    if (_distribution.getMethod() == Distribution.DOWNLOAD)
+                    {
+                        List<String> defaultRoots = new List<string> {Locale.localizedString("None")};
+                        foreach (AbstractPath next in _infoController._files[0].getContainer().children())
+                        {
+                            if (next.attributes().isFile())
+                            {
+                                defaultRoots.Add(next.getName());
+                            }
+                        }
+                        _view.PopulateDefaultRoot(defaultRoots);
+                    }
+                    String defaultRoot = _distribution.getDefaultRootObject();
+                    if (Utils.IsNotBlank(defaultRoot))
+                    {
+                        _view.DistributionDefaultRoot = defaultRoot;
+                    }
+                    else
+                    {
+                        _view.DistributionDefaultRoot = Locale.localizedString("None");
+                    }
+                    _infoController.ToggleDistributionSettings(true);
                 }
-                String defaultRoot = _distribution.getDefaultRootObject();
-                if (Utils.IsNotBlank(defaultRoot))
+                finally
                 {
-                    _infoController._roots.Add(defaultRoot);
-                    _view.DistributionDefaultRoot = defaultRoot;
+                    _infoController.AttachDistributionHandlers();
                 }
-                _infoController.ToggleDistributionSettings(true);
             }
 
             public override string getActivity()
@@ -1816,18 +1848,20 @@ namespace Ch.Cyberduck.Ui.Controller
         private class SetStorageClassBackgroundAction : BrowserBackgroundAction
         {
             private readonly InfoController _infoController;
+            private readonly String _storageClass;
 
             public SetStorageClassBackgroundAction(BrowserController controller,
                                                    InfoController infoController) : base(controller)
             {
                 _infoController = infoController;
+                _storageClass = _infoController.View.StorageClass;
             }
 
             public override void run()
             {
                 foreach (Path next in _infoController._files)
                 {
-                    next.attributes().setStorageClass(_infoController.View.StorageClass);
+                    next.attributes().setStorageClass(_storageClass);
                     // Copy item in place to write new attributes
                     next.copy(next);
                 }
@@ -1961,6 +1995,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private class WriteDistributionBackgroundAction : BrowserBackgroundAction
         {
             private readonly string _cname;
+            private readonly String _defaultRoot;
             private readonly Distribution.Method _deliveryMethod;
             private readonly bool _distribution;
             private readonly List<Path> _files;
@@ -1979,6 +2014,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 _logging = _view.DistributionLogging;
                 _cname = _view.DistributionCname;
                 _distribution = _view.Distribution;
+                _defaultRoot = _view.DistributionDefaultRoot;
             }
 
             public override void run()
@@ -1998,12 +2034,12 @@ namespace Ch.Cyberduck.Ui.Controller
                                                   _cname.Split(new[] {' '},
                                                                StringSplitOptions.RemoveEmptyEntries),
                                                   _logging,
-                                                  _view.DistributionDefaultRoot);
+                                                  _defaultRoot);
                     }
                     else
                     {
                         session.writeDistribution(_distribution, cloud.getContainerName(), method,
-                                                  new string[] {}, _logging, _view.DistributionDefaultRoot);
+                                                  new string[] {}, _logging, _defaultRoot);
                     }
                     break;
                 }
