@@ -437,6 +437,10 @@ public class InfoController extends ToolbarWindowController {
 
     public void setDistributionCnameField(NSTextField t) {
         this.distributionCnameField = t;
+        NSNotificationCenter.defaultCenter().addObserver(this.id(),
+                Foundation.selector("distributionApplyButtonClicked:"),
+                NSControl.NSControlTextDidEndEditingNotification,
+                distributionCnameField);
     }
 
     @Outlet
@@ -2125,9 +2129,16 @@ public class InfoController extends ToolbarWindowController {
                     for(Path next : files) {
                         CloudPath cloud = (CloudPath) next;
                         CloudSession session = (CloudSession) controller.getSession();
-                        Distribution.Method method = Distribution.DOWNLOAD;
+                        Distribution.Method method = null;
                         if(distributionDeliveryPopup.selectedItem().representedObject().equals(Distribution.STREAMING.toString())) {
                             method = Distribution.STREAMING;
+                        }
+                        if(distributionDeliveryPopup.selectedItem().representedObject().equals(Distribution.DOWNLOAD.toString())) {
+                            method = Distribution.DOWNLOAD;
+                        }
+                        if(null == method) {
+                            log.error("No distribution selected");
+                            break;
                         }
                         if(StringUtils.isNotBlank(distributionCnameField.stringValue())) {
                             session.writeDistribution(distributionEnableButton.state() == NSCell.NSOnState, cloud.getContainerName(), method,
