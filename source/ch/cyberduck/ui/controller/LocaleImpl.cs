@@ -29,7 +29,7 @@ namespace Ch.Cyberduck.Ui.Controller
     public class LocaleImpl : Locale
     {
         private static readonly Logger Log = Logger.getLogger(typeof (LocaleImpl).Name);
-        private static readonly Regex StringsRegex = new Regex("\"?(.*?)\"?.*=.*\"(.*)\"", RegexOptions.Compiled);
+        private static readonly Regex StringsRegex = new Regex("\"?(.*?)\"?[ ]*=[ ]*\"(.*)\"", RegexOptions.Compiled);
 
         private readonly IDictionary<string, Dictionary<string, string>> _cache =
             new Dictionary<string, Dictionary<string, string>>();
