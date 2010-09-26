@@ -503,7 +503,7 @@ public class S3Path extends CloudPath {
                         if(Preferences.instance().getBoolean("queue.upload.permissions.useDefault")) {
                             if(this.attributes().isFile()) {
                                 perm = new Permission(
-                                        Preferences.instance().getInteger("queue.upload.permissions.this.default"));
+                                        Preferences.instance().getInteger("queue.upload.permissions.file.default"));
                             }
                             if(this.attributes().isDirectory()) {
                                 perm = new Permission(
