@@ -625,19 +625,19 @@ public class S3Session extends CloudSession implements SSLSession {
     /**
      * Amazon CloudFront Extension used to enable or disable a distribution configuration and its CNAMESs
      *
-     * @param enabled      Distribution status
-     * @param distribution Distribution configuration
-     * @param cnames       DNS CNAME aliases for distribution
-     * @param logging      Access log configuration
+     * @param enabled Distribution status
+     * @param id      Distribution reference
+     * @param cnames  DNS CNAME aliases for distribution
+     * @param logging Access log configuration
      * @throws CloudFrontServiceException CloudFront failure details
      */
     public void updateDistribution(boolean enabled, Distribution.Method method,
-                                   org.jets3t.service.model.cloudfront.Distribution distribution,
+                                   String id,
                                    String[] cnames, LoggingStatus logging, String defaultRootObject) throws CloudFrontServiceException {
         final long reference = System.currentTimeMillis();
         if(method.equals(Distribution.STREAMING)) {
             this.createCloudFrontService().updateStreamingDistributionConfig(
-                    distribution.getId(),
+                    id,
                     cnames, // CNAME aliases for distribution
                     new Date(reference).toString(), // Comment
                     enabled, // Enabled?
@@ -646,7 +646,7 @@ public class S3Session extends CloudSession implements SSLSession {
         }
         else {
             this.createCloudFrontService().updateDistributionConfig(
-                    distribution.getId(),
+                    id,
                     cnames, // CNAME aliases for distribution
                     new Date(reference).toString(), // Comment
                     enabled, // Enabled?
@@ -774,7 +774,7 @@ public class S3Session extends CloudSession implements SSLSession {
                     // Retrieve distribution's configuration to access current logging status settings.
                     final DistributionConfig distributionConfig = this.getDistributionConfig(d);
                     // We currently only support one distribution per bucket
-                    final Distribution distribution = new Distribution(d.isEnabled(), d.isDeployed(),
+                    final Distribution distribution = new Distribution(d.getId(), d.isEnabled(), d.isDeployed(),
                             method.getProtocol() + d.getDomainName() + method.getContext(),
                             Locale.localizedString(d.getStatus(), "S3"),
                             distributionConfig.getCNAMEs(),
@@ -783,6 +783,7 @@ public class S3Session extends CloudSession implements SSLSession {
                     if(distribution.isDeployed()) {
                         distributionStatus.get(method).put(container, distribution);
                     }
+                    // We currently only support one distribution per bucket
                     return distribution;
                 }
             }
@@ -838,13 +839,35 @@ public class S3Session extends CloudSession implements SSLSession {
             else {
                 this.message(MessageFormat.format(Locale.localizedString("Disable {0} Distribution", "Status"), name));
             }
-            for(org.jets3t.service.model.cloudfront.Distribution distribution : this.listDistributions(container, method)) {
-                this.updateDistribution(enabled, method, distribution, cnames, l, defaultRootObject);
-                // We currently only support one distribution per bucket
-                return;
+            Distribution d = this.getDistribution(container, method);
+            if(null == d) {
+                // No existing distribution found for method. Create new configuration.
+                this.createDistribution(enabled, method, container, cnames, l, defaultRootObject);
             }
-            // No existing distribution found for method. Create new configuration.
-            this.createDistribution(enabled, method, container, cnames, l, defaultRootObject);
+            else {
+                boolean modified = false;
+                if(d.isEnabled() != enabled) {
+                    modified = true;
+                }
+                if(!Arrays.equals(d.getCNAMEs(), cnames)) {
+                    modified = true;
+                }
+                if(d.isLogging() != logging) {
+                    modified = true;
+                }
+                if(null == d.getDefaultRootObject() && null == defaultRootObject) {
+                    ;
+                }
+                else if(null != d.getDefaultRootObject() && !d.getDefaultRootObject().equals(defaultRootObject)) {
+                    modified = true;
+                }
+                if(modified) {
+                    this.updateDistribution(enabled, method, d.getId(), cnames, l, defaultRootObject);
+                }
+                else {
+                    log.debug("Skip updating distribution not modified.");
+                }
+            }
         }
         catch(CloudFrontServiceException e) {
             this.error("Cannot write file attributes", e);

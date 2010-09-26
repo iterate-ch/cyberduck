@@ -28,6 +28,7 @@ import org.apache.commons.lang.StringUtils;
  */
 public class Distribution {
 
+    private String id;
     /**
      * Configuration sucessfully applied and distributed
      */
@@ -91,26 +92,28 @@ public class Distribution {
      *
      */
     public Distribution() {
-        this(false, false, null, null, new String[]{}, false);
+        this(null, false, false, null, null, new String[]{}, false);
     }
 
     /**
+     * @param id      Identifier of this distribution
      * @param enabled
      * @param url
      * @param status
      */
-    public Distribution(boolean enabled, String url, String status) {
-        this(enabled, url, status, new String[]{});
+    public Distribution(String id, boolean enabled, String url, String status) {
+        this(id, enabled, url, status, new String[]{});
     }
 
     /**
+     * @param id      Identifier of this distribution
      * @param enabled
      * @param url
      * @param status
      * @param logging
      */
-    public Distribution(boolean enabled, String url, String status, boolean logging) {
-        this(enabled, enabled, url, status, new String[]{}, logging);
+    public Distribution(String id, boolean enabled, String url, String status, boolean logging) {
+        this(id, enabled, enabled, url, status, new String[]{}, logging);
     }
 
     /**
@@ -119,22 +122,24 @@ public class Distribution {
      * @param status  Status Message about Deployment Status
      * @param cnames  Multiple CNAME aliases of this distribution
      */
-    public Distribution(boolean enabled, String url, String status, String[] cnames) {
-        this(enabled, enabled, url, status, cnames);
+    public Distribution(String id, boolean enabled, String url, String status, String[] cnames) {
+        this(id, enabled, enabled, url, status, cnames);
     }
 
     /**
+     * @param id       Identifier of this distribution
      * @param enabled  Deployment Enabled
      * @param deployed Deployment Status is about to be changed
      * @param url      Where to find this distribution
      * @param status   Status Message about Deployment Status
      * @param cnames   Multiple CNAME aliases of this distribution
      */
-    public Distribution(boolean enabled, boolean deployed, String url, String status, String[] cnames) {
-        this(enabled, deployed, url, status, cnames, false);
+    public Distribution(String id, boolean enabled, boolean deployed, String url, String status, String[] cnames) {
+        this(id, enabled, deployed, url, status, cnames, false);
     }
 
     /**
+     * @param id       Identifier of this distribution
      * @param enabled  Deployment Enabled
      * @param deployed Deployment Status is about to be changed
      * @param url      Where to find this distribution
@@ -142,11 +147,12 @@ public class Distribution {
      * @param cnames   Multiple CNAME aliases of this distribution
      * @param logging
      */
-    public Distribution(boolean enabled, boolean deployed, String url, String status, String[] cnames, boolean logging) {
-        this(enabled, deployed, url, status, cnames, logging, DOWNLOAD);
+    public Distribution(String id, boolean enabled, boolean deployed, String url, String status, String[] cnames, boolean logging) {
+        this(id, enabled, deployed, url, status, cnames, logging, DOWNLOAD);
     }
 
     /**
+     * @param id       Identifier of this distribution
      * @param enabled  Deployment Enabled
      * @param deployed Deployment Status is about to be changed
      * @param url      Where to find this distribution
@@ -155,11 +161,12 @@ public class Distribution {
      * @param logging
      * @param method
      */
-    public Distribution(boolean enabled, boolean deployed, String url, String status, String[] cnames, boolean logging, Method method) {
-        this(enabled, deployed, url, status, cnames, logging, DOWNLOAD, null);
+    public Distribution(String id, boolean enabled, boolean deployed, String url, String status, String[] cnames, boolean logging, Method method) {
+        this(id, enabled, deployed, url, status, cnames, logging, DOWNLOAD, null);
     }
 
     /**
+     * @param id                Identifier of this distribution
      * @param enabled           Deployment Enabled
      * @param deployed          Deployment Status is about to be changed
      * @param url               Where to find this distribution
@@ -169,7 +176,8 @@ public class Distribution {
      * @param method
      * @param defaultRootObject
      */
-    public Distribution(boolean enabled, boolean deployed, String url, String status, String[] cnames, boolean logging, Method method, String defaultRootObject) {
+    public Distribution(String id, boolean enabled, boolean deployed, String url, String status, String[] cnames, boolean logging, Method method, String defaultRootObject) {
+        this.id = id;
         this.enabled = enabled;
         this.deployed = deployed;
         this.url = url;
@@ -178,6 +186,10 @@ public class Distribution {
         this.logging = logging;
         this.method = method;
         this.defaultRootObject = defaultRootObject;
+    }
+
+    public String getId() {
+        return id;
     }
 
     /**
@@ -265,5 +277,10 @@ public class Distribution {
 
     public void setMethod(Method method) {
         this.method = method;
+    }
+
+    @Override
+    public String toString() {
+        return this.getId();
     }
 }

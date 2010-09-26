@@ -259,7 +259,7 @@ public class CFSession extends CloudSession implements SSLSession {
                 trust.setHostname(URI.create(this.getClient().getCdnManagementURL()).getHost());
                 try {
                     final FilesCDNContainer info = this.getClient().getCDNContainerInfo(container);
-                    final Distribution distribution = new Distribution(info.isEnabled(), info.getCdnURL(),
+                    final Distribution distribution = new Distribution(info.getName(), info.isEnabled(), info.getCdnURL(),
                             info.isEnabled() ? Locale.localizedString("CDN Enabled", "Mosso") : Locale.localizedString("CDN Disabled", "Mosso"),
                             info.getRetainLogs());
                     if(distribution.isDeployed()) {
@@ -270,7 +270,7 @@ public class CFSession extends CloudSession implements SSLSession {
                 catch(FilesException e) {
                     log.warn(e.getMessage());
                     // Not found.
-                    distributionStatus.put(container, new Distribution(false, null, Locale.localizedString("CDN Disabled", "Mosso")));
+                    distributionStatus.put(container, new Distribution(null, false, null, Locale.localizedString("CDN Disabled", "Mosso")));
                 }
             }
             catch(IOException e) {
