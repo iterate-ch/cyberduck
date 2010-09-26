@@ -50,7 +50,7 @@ namespace Ch.Cyberduck.Ui.Controller
         string Permissions { set; }
         string FileOwner { set; }
         string Group { set; }
-        string Created { set; }
+        string FileCreated { set; }
         string Modified { set; }
         string Checksum { set; }
 
@@ -121,9 +121,11 @@ namespace Ch.Cyberduck.Ui.Controller
         string StorageClass { set; get; }
         bool StorageClassEnabled { set; }
         string S3PublicUrl { set; }
+        bool S3PublicUrlEnabled { set; }
         string S3PublicUrlTooltip { set; }
         string S3PublicUrlValidity { set; }
         string S3TorrentUrl { set; }
+        bool S3TorrentUrlEnabled { set; }
         string S3TorrentUrlTooltip { set; }
         bool S3AnimationActive { set; }
         bool BucketLogging { set; get; }

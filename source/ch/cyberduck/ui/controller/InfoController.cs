@@ -908,7 +908,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     View.Kind = _multipleFilesString;
                     View.Checksum = _multipleFilesString;
                     View.Modified = _multipleFilesString;
-                    View.Created = _multipleFilesString;
+                    View.FileCreated = _multipleFilesString;
                 }
                 else
                 {
@@ -924,11 +924,11 @@ namespace Ch.Cyberduck.Ui.Controller
                     }
                     if (-1 == file.attributes().getCreationDate())
                     {
-                        View.Created = Locale.localizedString("Unknown");
+                        View.FileCreated = Locale.localizedString("Unknown");
                     }
                     else
                     {
-                        View.Created =
+                        View.FileCreated =
                             DateFormatterFactory.instance().getLongFormat(file.attributes().getModificationDate());
                     }
                 }

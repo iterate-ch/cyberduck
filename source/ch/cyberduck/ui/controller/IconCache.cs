@@ -256,7 +256,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 return Icon.ExtractAssociatedIcon(file).ToBitmap();
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return null;
             }

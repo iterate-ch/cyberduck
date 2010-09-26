@@ -20,7 +20,6 @@ using BrightIdeasSoftware;
 using ch.cyberduck.core;
 using Ch.Cyberduck.Core;
 using ch.cyberduck.ui.controller;
-using Ch.Cyberduck.Ui.Winforms.Serializer;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -36,7 +35,7 @@ namespace Ch.Cyberduck.Ui.Controller
         AspectGetterDelegate BookmarkNotesGetter { set; }
 
         ImageGetterDelegate BookmarkStatusImageGetter { set; }
-        
+
         void SetBookmarkModel(IEnumerable hosts);
         void RefreshBookmark(Host host);
         //todo bei Add: Einhaltung der Reihenfolge müsste wohl noch beachtet werden
@@ -52,6 +51,6 @@ namespace Ch.Cyberduck.Ui.Controller
         event VoidHandler DeleteBookmark;
         event ValidateCommand ValidateDeleteBookmark;
         event VoidHandler DuplicateBookmark;
-        event ValidateCommand ValidateDuplicateBookmark;       
+        event ValidateCommand ValidateDuplicateBookmark;
     }
 }

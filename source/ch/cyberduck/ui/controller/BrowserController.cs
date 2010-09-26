@@ -81,8 +81,6 @@ namespace Ch.Cyberduck.Ui.Controller
         private Path _workdir;
         private String dropFolder; // holds the drop folder of the current drag operation
 
-        private FileSystemWatcher watcher;
-
         public BrowserController(IBrowserView view)
         {
             View = view;

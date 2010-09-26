@@ -211,7 +211,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             set { groupLabel.Text = value; }
         }
 
-        public string Created
+        public string FileCreated
         {
             set { createdLabel.Text = value; }
         }

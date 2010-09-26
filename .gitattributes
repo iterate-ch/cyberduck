@@ -2127,7 +2127,6 @@ source/ch/cyberduck/ui/cocoa/urlhandler/URLSchemeHandlerConfiguration.m -text
 source/ch/cyberduck/ui/controller/ActivityController.cs -text
 source/ch/cyberduck/ui/controller/AsyncController.cs -text
 source/ch/cyberduck/ui/controller/BookmarkController.cs -text
-source/ch/cyberduck/ui/controller/BookmarkManagerController.cs -text
 source/ch/cyberduck/ui/controller/BookmarkModel.cs -text
 source/ch/cyberduck/ui/controller/BrowserController.cs -text
 source/ch/cyberduck/ui/controller/ConnectionController.cs -text
@@ -2220,9 +2219,6 @@ source/ch/cyberduck/ui/winforms/BaseForm.resx -text
 source/ch/cyberduck/ui/winforms/BookmarkForm.Designer.cs -text
 source/ch/cyberduck/ui/winforms/BookmarkForm.cs -text
 source/ch/cyberduck/ui/winforms/BookmarkForm.resx -text
-source/ch/cyberduck/ui/winforms/BookmarkManagerForm.Designer.cs -text
-source/ch/cyberduck/ui/winforms/BookmarkManagerForm.cs -text
-source/ch/cyberduck/ui/winforms/BookmarkManagerForm.resx -text
 source/ch/cyberduck/ui/winforms/BrowserForm.Designer.cs -text
 source/ch/cyberduck/ui/winforms/BrowserForm.cs -text
 source/ch/cyberduck/ui/winforms/BrowserForm.resx -text

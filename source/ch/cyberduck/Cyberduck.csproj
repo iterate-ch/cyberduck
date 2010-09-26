@@ -205,10 +205,6 @@
       <DependentUpon>BookmarkForm.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="ui\winforms\BookmarkManagerForm.resx">
-      <DependentUpon>BookmarkManagerForm.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
     <EmbeddedResource Include="ui\winforms\BrowserForm.resx">
       <DependentUpon>BrowserForm.cs</DependentUpon>
       <SubType>Designer</SubType>
@@ -284,7 +280,6 @@
     <Compile Include="ui\controller\ActivityController.cs" />
     <Compile Include="ui\controller\AsyncController.cs" />
     <Compile Include="ui\controller\BookmarkController.cs" />
-    <Compile Include="ui\controller\BookmarkManagerController.cs" />
     <Compile Include="ui\controller\BookmarkModel.cs" />
     <Compile Include="ui\controller\BrowserController.cs" />
     <Compile Include="ui\controller\ConnectionController.cs" />
@@ -402,12 +397,6 @@
     </Compile>
     <Compile Include="ui\winforms\BookmarkForm.Designer.cs">
       <DependentUpon>BookmarkForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ui\winforms\BookmarkManagerForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ui\winforms\BookmarkManagerForm.Designer.cs">
-      <DependentUpon>BookmarkManagerForm.cs</DependentUpon>
     </Compile>
     <Compile Include="ui\winforms\BrowserForm.cs">
       <SubType>Form</SubType>
