@@ -119,14 +119,16 @@ public class CFSession extends CloudSession implements SSLSession {
         client.setConnectionTimeOut(this.timeout());
         client.setUserAgent(this.getUserAgent());
         if(!client.isLoggedin()) {
-            StringBuilder authentication = new StringBuilder(this.getHost().getProtocol().getScheme()).append("://");
-            if(this.getHost().getHostname().equals(this.getHost().getProtocol().getDefaultHostname())) {
+            Host host = this.getHost();
+            StringBuilder authentication = new StringBuilder(host.getProtocol().getScheme()).append("://");
+            if(host.getHostname().equals(host.getProtocol().getDefaultHostname())) {
                 // Use default authentication server. Rackspace.
                 authentication.append(Preferences.instance().getProperty("cf.authentication.host"));
             }
             else {
                 // Use custom authentication server. Swift (OpenStack Object Storage) installation.
-                authentication.append(this.getHost().getHostname());
+                authentication.append(host.getHostname());
+                authentication.append(":").append(host.getPort());
             }
             authentication.append(Preferences.instance().getProperty("cf.authentication.context"));
             log.info("Using authentication URL " + authentication.toString());
