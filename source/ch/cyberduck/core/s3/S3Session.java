@@ -42,7 +42,7 @@ import org.apache.log4j.Logger;
 import org.jets3t.service.CloudFrontService;
 import org.jets3t.service.CloudFrontServiceException;
 import org.jets3t.service.Jets3tProperties;
-import org.jets3t.service.S3ServiceException;
+import org.jets3t.service.ServiceException;
 import org.jets3t.service.acl.GroupGrantee;
 import org.jets3t.service.impl.rest.httpclient.RestS3Service;
 import org.jets3t.service.model.*;
@@ -93,7 +93,7 @@ public class S3Session extends CloudSession implements SSLSession {
      * Exposing protected methods
      */
     public class RequestEntityRestStorageService extends RestS3Service {
-        public RequestEntityRestStorageService(ProviderCredentials credentials) throws S3ServiceException {
+        public RequestEntityRestStorageService(ProviderCredentials credentials) throws ServiceException {
             super(credentials, S3Session.this.getUserAgent(), new CredentialsProvider() {
                 /**
                  * Implementation method for the CredentialsProvider interface
@@ -114,11 +114,11 @@ public class S3Session extends CloudSession implements SSLSession {
          * @param bucketName
          * @param object
          * @param requestEntity
-         * @throws S3ServiceException
+         * @throws ServiceException
          */
         @Override
         public void pubObjectWithRequestEntityImpl(String bucketName, StorageObject object,
-                                                   RequestEntity requestEntity) throws S3ServiceException {
+                                                   RequestEntity requestEntity) throws ServiceException {
             super.pubObjectWithRequestEntityImpl(bucketName, object, requestEntity);
         }
 
@@ -274,9 +274,9 @@ public class S3Session extends CloudSession implements SSLSession {
     /**
      * @param reload
      * @return
-     * @throws S3ServiceException
+     * @throws ServiceException
      */
-    protected List<S3Bucket> getBuckets(boolean reload) throws IOException, S3ServiceException {
+    protected List<S3Bucket> getBuckets(boolean reload) throws IOException, ServiceException {
         if(buckets.isEmpty() || reload) {
             buckets.clear();
             if(host.getCredentials().isAnonymousLogin()) {
@@ -349,7 +349,7 @@ public class S3Session extends CloudSession implements SSLSession {
                 }
             }
         }
-        catch(S3ServiceException e) {
+        catch(ServiceException e) {
             this.error("Cannot read file attributes", e);
         }
         throw new ConnectionCanceledException("Bucket not found with name:" + bucketname);
@@ -401,7 +401,7 @@ public class S3Session extends CloudSession implements SSLSession {
                 bucket.setLocation(location);
                 return location;
             }
-            catch(S3ServiceException e) {
+            catch(ServiceException e) {
                 if(this.isPermissionFailure(e)) {
                     log.warn("Bucket location not supported:" + e.getMessage());
                     this.setBucketLocationSupported(false);
@@ -438,7 +438,7 @@ public class S3Session extends CloudSession implements SSLSession {
                     credentials.getPassword()));
             this.getBuckets(true);
         }
-        catch(S3ServiceException e) {
+        catch(ServiceException e) {
             if(this.isLoginFailure(e)) {
                 this.message(Locale.localizedString("Login failed", "Credentials"));
                 controller.fail(host.getProtocol(), credentials);
@@ -483,15 +483,15 @@ public class S3Session extends CloudSession implements SSLSession {
      * @param e
      * @return True if the error code of the S3 exception is a login failure
      */
-    protected boolean isLoginFailure(S3ServiceException e) {
+    protected boolean isLoginFailure(ServiceException e) {
         if(403 == e.getResponseCode()) {
             return true;
         }
-        if(null == e.getS3ErrorCode()) {
+        if(null == e.getErrorCode()) {
             return false;
         }
-        return e.getS3ErrorCode().equals("InvalidAccessKeyId") // Invalid Access ID
-                || e.getS3ErrorCode().equals("SignatureDoesNotMatch"); // Invalid Secret Key
+        return e.getErrorCode().equals("InvalidAccessKeyId") // Invalid Access ID
+                || e.getErrorCode().equals("SignatureDoesNotMatch"); // Invalid Secret Key
     }
 
     /**
@@ -500,7 +500,7 @@ public class S3Session extends CloudSession implements SSLSession {
      * @param e
      * @return True if generic permission issue.
      */
-    protected boolean isPermissionFailure(S3ServiceException e) {
+    protected boolean isPermissionFailure(ServiceException e) {
         return e.getResponseCode() == 403;
     }
 
@@ -956,7 +956,7 @@ public class S3Session extends CloudSession implements SSLSession {
                             = this.getClient().getBucketLoggingStatus(container);
                     loggingStatus.put(container, status);
                 }
-                catch(S3ServiceException e) {
+                catch(ServiceException e) {
                     if(this.isPermissionFailure(e)) {
                         log.warn("Bucket logging not supported:" + e.getMessage());
                         this.setLoggingSupported(false);
@@ -991,7 +991,7 @@ public class S3Session extends CloudSession implements SSLSession {
                 this.check();
                 this.getClient().setBucketLoggingStatus(container, status, true);
             }
-            catch(S3ServiceException e) {
+            catch(ServiceException e) {
                 this.error("Cannot write file attributes", e);
             }
             catch(IOException e) {
@@ -1047,7 +1047,7 @@ public class S3Session extends CloudSession implements SSLSession {
                             = this.getClient().getBucketVersioningStatus(container);
                     versioningStatus.put(container, status);
                 }
-                catch(S3ServiceException e) {
+                catch(ServiceException e) {
                     if(this.isPermissionFailure(e)) {
                         log.warn("Bucket versioning not supported:" + e.getMessage());
                         this.setVersioningSupported(false);
@@ -1140,7 +1140,7 @@ public class S3Session extends CloudSession implements SSLSession {
                     }
                 }
             }
-            catch(S3ServiceException e) {
+            catch(ServiceException e) {
                 this.error("Cannot write file attributes", e);
             }
             catch(IOException e) {
@@ -1176,7 +1176,7 @@ public class S3Session extends CloudSession implements SSLSession {
                 this.check();
                 this.getClient().setRequesterPaysBucket(container, enabled);
             }
-            catch(S3ServiceException e) {
+            catch(ServiceException e) {
                 this.error("Cannot write file attributes", e);
             }
             catch(IOException e) {
@@ -1195,7 +1195,7 @@ public class S3Session extends CloudSession implements SSLSession {
                 this.check();
                 return this.getClient().isRequesterPaysBucket(container);
             }
-            catch(S3ServiceException e) {
+            catch(ServiceException e) {
                 this.error("Cannot read file attributes", e);
             }
             catch(IOException e) {

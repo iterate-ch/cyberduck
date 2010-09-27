@@ -30,7 +30,7 @@ import org.apache.commons.httpclient.methods.InputStreamRequestEntity;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.jets3t.service.S3ServiceException;
+import org.jets3t.service.ServiceException;
 import org.jets3t.service.StorageObjectsChunk;
 import org.jets3t.service.VersionOrDeleteMarkersChunk;
 import org.jets3t.service.acl.*;
@@ -114,9 +114,9 @@ public class S3Path extends CloudPath {
 
     /**
      * @return
-     * @throws S3ServiceException
+     * @throws ServiceException
      */
-    protected StorageObject getDetails() throws IOException, S3ServiceException {
+    protected StorageObject getDetails() throws IOException, ServiceException {
         final String container = this.getContainerName();
         if(null == _details || !_details.isMetadataComplete()) {
             try {
@@ -128,7 +128,7 @@ public class S3Path extends CloudPath {
                     _details = this.getSession().getClient().getObjectDetails(container, this.getKey());
                 }
             }
-            catch(S3ServiceException e) {
+            catch(ServiceException e) {
                 if(this.getSession().isPermissionFailure(e)) {
                     // Anonymous services can only get a publicly-readable object's details
                     log.warn("Cannot read object details:" + e.getMessage());
@@ -168,7 +168,7 @@ public class S3Path extends CloudPath {
                 // The directory listing is no more current
                 this.getParent().invalidate();
             }
-            catch(S3ServiceException e) {
+            catch(ServiceException e) {
                 this.error("Cannot revert file", e);
             }
             catch(IOException e) {
@@ -210,7 +210,7 @@ public class S3Path extends CloudPath {
                 this.attributes().setAcl(this.convert(list));
             }
         }
-        catch(S3ServiceException e) {
+        catch(ServiceException e) {
             this.error("Cannot read file attributes", e);
         }
         catch(IOException e) {
@@ -223,7 +223,7 @@ public class S3Path extends CloudPath {
             try {
                 log.debug(list.toXml());
             }
-            catch(S3ServiceException e) {
+            catch(ServiceException e) {
                 log.error(e.getMessage());
             }
         }
@@ -272,7 +272,7 @@ public class S3Path extends CloudPath {
             target.addMetadata(METADATA_HEADER_EXPIRES, rfc1123.format(expiration));
             this.getSession().getClient().updateObjectMetadata(this.getContainerName(), target);
         }
-        catch(S3ServiceException e) {
+        catch(ServiceException e) {
             this.error("Cannot write file attributes", e);
         }
         catch(IOException e) {
@@ -302,7 +302,7 @@ public class S3Path extends CloudPath {
             }
             this.getSession().getClient().updateObjectMetadata(this.getContainerName(), target);
         }
-        catch(S3ServiceException e) {
+        catch(ServiceException e) {
             this.error("Cannot write file attributes", e);
         }
         catch(IOException e) {
@@ -326,7 +326,7 @@ public class S3Path extends CloudPath {
                 }
                 this.attributes().setMetadata(metadata);
             }
-            catch(S3ServiceException e) {
+            catch(ServiceException e) {
                 this.error("Cannot read file attributes", e);
             }
             catch(IOException e) {
@@ -348,7 +348,7 @@ public class S3Path extends CloudPath {
                 this.getSession().getClient().updateObjectMetadata(this.getContainerName(), target);
                 target.setMetadataComplete(false);
             }
-            catch(S3ServiceException e) {
+            catch(ServiceException e) {
                 this.error("Cannot write file attributes", e);
             }
             catch(IOException e) {
@@ -377,7 +377,7 @@ public class S3Path extends CloudPath {
                     attributes().setChecksum(details.getETag());
                 }
             }
-            catch(S3ServiceException e) {
+            catch(ServiceException e) {
                 this.error("Cannot read file attributes", e);
             }
             catch(IOException e) {
@@ -397,7 +397,7 @@ public class S3Path extends CloudPath {
                 final StorageObject details = this.getDetails();
                 attributes().setSize(details.getContentLength());
             }
-            catch(S3ServiceException e) {
+            catch(ServiceException e) {
                 this.error("Cannot read file attributes", e);
             }
             catch(IOException e) {
@@ -417,7 +417,7 @@ public class S3Path extends CloudPath {
                 final StorageObject details = this.getDetails();
                 attributes().setModificationDate(details.getLastModifiedDate().getTime());
             }
-            catch(S3ServiceException e) {
+            catch(ServiceException e) {
                 this.error("Cannot read file attributes", e);
             }
             catch(IOException e) {
@@ -458,7 +458,7 @@ public class S3Path extends CloudPath {
                 out = this.getLocal().getOutputStream(this.status().isResume());
                 this.download(in, out, throttle, listener);
             }
-            catch(S3ServiceException e) {
+            catch(ServiceException e) {
                 this.error("Download failed", e);
             }
             catch(IOException e) {
@@ -567,7 +567,7 @@ public class S3Path extends CloudPath {
                                 }
                             });
                 }
-                catch(S3ServiceException e) {
+                catch(ServiceException e) {
                     this.status().setComplete(false);
                     throw e;
                 }
@@ -576,7 +576,7 @@ public class S3Path extends CloudPath {
                 }
             }
         }
-        catch(S3ServiceException e) {
+        catch(ServiceException e) {
             this.error("Upload failed", e);
         }
         catch(IOException e) {
@@ -646,7 +646,7 @@ public class S3Path extends CloudPath {
             }
             this.getSession().setWorkdir(this);
         }
-        catch(S3ServiceException e) {
+        catch(ServiceException e) {
             children.attributes().setReadable(false);
         }
         catch(IOException e) {
@@ -656,7 +656,7 @@ public class S3Path extends CloudPath {
     }
 
     protected AttributedList<Path> listObjects(String bucket, String prefix, String delimiter)
-            throws IOException, S3ServiceException {
+            throws IOException, ServiceException {
         final AttributedList<Path> children = new AttributedList<Path>();
         // Null if listing is complete
         String priorLastKey = null;
@@ -715,7 +715,7 @@ public class S3Path extends CloudPath {
     }
 
     private List<Path> listVersions(String bucket, List<BaseVersionOrDeleteMarker> versionOrDeleteMarkers)
-            throws IOException, S3ServiceException {
+            throws IOException, ServiceException {
         Collections.sort(versionOrDeleteMarkers, new Comparator<BaseVersionOrDeleteMarker>() {
             public int compare(BaseVersionOrDeleteMarker o1, BaseVersionOrDeleteMarker o2) {
                 return o1.getLastModified().compareTo(o2.getLastModified());
@@ -786,7 +786,7 @@ public class S3Path extends CloudPath {
                 // The directory listing is no more current
                 this.getParent().invalidate();
             }
-            catch(S3ServiceException e) {
+            catch(ServiceException e) {
                 this.error("Cannot create folder", e);
             }
             catch(IOException e) {
@@ -800,7 +800,7 @@ public class S3Path extends CloudPath {
         try {
             this.writeAcl(this.convert(acl), recursive);
         }
-        catch(S3ServiceException e) {
+        catch(ServiceException e) {
             this.error("Cannot change permissions", e);
         }
         catch(IOException e) {
@@ -840,7 +840,7 @@ public class S3Path extends CloudPath {
             try {
                 log.debug(list.toXml());
             }
-            catch(S3ServiceException e) {
+            catch(ServiceException e) {
                 log.error(e.getMessage());
             }
         }
@@ -852,7 +852,7 @@ public class S3Path extends CloudPath {
      *
      * @param acl The updated access control list.
      */
-    protected void writeAcl(AccessControlList acl, boolean recursive) throws IOException, S3ServiceException {
+    protected void writeAcl(AccessControlList acl, boolean recursive) throws IOException, ServiceException {
         try {
             if(this.isContainer()) {
                 this.getSession().getClient().putBucketAcl(this.getContainerName(), acl);
@@ -936,7 +936,7 @@ public class S3Path extends CloudPath {
             // The directory listing is no more current
             this.getParent().invalidate();
         }
-        catch(S3ServiceException e) {
+        catch(ServiceException e) {
             if(this.attributes().isFile()) {
                 this.error("Cannot delete file", e);
             }
@@ -959,9 +959,9 @@ public class S3Path extends CloudPath {
      * @param key
      * @param version
      * @throws ConnectionCanceledException
-     * @throws S3ServiceException
+     * @throws ServiceException
      */
-    private void delete(String container, String key, String version) throws ConnectionCanceledException, S3ServiceException {
+    private void delete(String container, String key, String version) throws ConnectionCanceledException, ServiceException {
         if(StringUtils.isNotEmpty(version)) {
             if(this.getSession().isMultiFactorAuthentication(container)) {
                 LoginController c = LoginControllerFactory.instance(this.getSession());
@@ -1016,7 +1016,7 @@ public class S3Path extends CloudPath {
                 }
             }
         }
-        catch(S3ServiceException e) {
+        catch(ServiceException e) {
             this.error(this.attributes().isFile() ? "Cannot rename file" : "Cannot rename folder", e);
         }
         catch(IOException e) {
@@ -1057,7 +1057,7 @@ public class S3Path extends CloudPath {
                 }
             }
         }
-        catch(S3ServiceException e) {
+        catch(ServiceException e) {
             this.error(this.attributes().isFile() ? "Cannot copy file" : "Cannot copy folder", e);
         }
         catch(IOException e) {
@@ -1157,7 +1157,7 @@ public class S3Path extends CloudPath {
                         this.getContainerName(), this.getKey(), null,
                         null, secondsSinceEpoch, false, this.getHost().getProtocol().isSecure(), false);
             }
-            catch(S3ServiceException e) {
+            catch(ServiceException e) {
                 this.error("Cannot read file attributes", e);
             }
             catch(IOException e) {
