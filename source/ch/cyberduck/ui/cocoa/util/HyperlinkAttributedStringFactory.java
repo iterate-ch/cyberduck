@@ -22,10 +22,12 @@ import ch.cyberduck.ui.cocoa.application.NSColor;
 import ch.cyberduck.ui.cocoa.application.NSFont;
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
 import ch.cyberduck.ui.cocoa.foundation.NSMutableAttributedString;
-import ch.cyberduck.ui.cocoa.foundation.NSRange;
 import ch.cyberduck.ui.cocoa.foundation.NSNumber;
+import ch.cyberduck.ui.cocoa.foundation.NSRange;
 
 import org.rococoa.cocoa.foundation.NSUInteger;
+
+import org.apache.commons.lang.StringUtils;
 
 /**
  * From http://developer.apple.com/qa/qa2006/qa1487.html
@@ -35,26 +37,27 @@ import org.rococoa.cocoa.foundation.NSUInteger;
 public class HyperlinkAttributedStringFactory {
 
     /**
-     *
      * @param value
      * @param hyperlink
      * @return
      */
     public static NSAttributedString create(final NSMutableAttributedString value, final String hyperlink) {
-        final NSRange range = NSRange.NSMakeRange(new NSUInteger(0), value.length());
-        value.beginEditing();
-        value.addAttributeInRange(NSMutableAttributedString.LinkAttributeName,
-                hyperlink, range);
-        // make the text appear in blue
-        value.addAttributeInRange(NSMutableAttributedString.ForegroundColorAttributeName,
-                NSColor.blueColor(), range);
-        // system font
-        value.addAttributeInRange(NSMutableAttributedString.FontAttributeName,
-                NSFont.systemFontOfSize(NSFont.smallSystemFontSize()), range);
-        // next make the text appear with an underline
-        value.addAttributeInRange(NSMutableAttributedString.UnderlineStyleAttributeName,
-                NSNumber.numberWithInt(NSMutableAttributedString.SingleUnderlineStyle), range);
-        value.endEditing();
+        if(StringUtils.isNotEmpty(hyperlink)) {
+            final NSRange range = NSRange.NSMakeRange(new NSUInteger(0), value.length());
+            value.beginEditing();
+            value.addAttributeInRange(NSMutableAttributedString.LinkAttributeName,
+                    hyperlink, range);
+            // make the text appear in blue
+            value.addAttributeInRange(NSMutableAttributedString.ForegroundColorAttributeName,
+                    NSColor.blueColor(), range);
+            // system font
+            value.addAttributeInRange(NSMutableAttributedString.FontAttributeName,
+                    NSFont.systemFontOfSize(NSFont.smallSystemFontSize()), range);
+            // next make the text appear with an underline
+            value.addAttributeInRange(NSMutableAttributedString.UnderlineStyleAttributeName,
+                    NSNumber.numberWithInt(NSMutableAttributedString.SingleUnderlineStyle), range);
+            value.endEditing();
+        }
         return value;
     }
 }
