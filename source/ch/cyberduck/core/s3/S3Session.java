@@ -117,10 +117,11 @@ public class S3Session extends CloudSession implements SSLSession {
          * @throws S3ServiceException
          */
         @Override
-        public void pubObjectWithRequestEntityImpl(String bucketName, S3Object object,
+        public void pubObjectWithRequestEntityImpl(String bucketName, StorageObject object,
                                                    RequestEntity requestEntity) throws S3ServiceException {
             super.pubObjectWithRequestEntityImpl(bucketName, object, requestEntity);
         }
+
 
         /**
          * @return the identifier for the signature algorithm.
@@ -1226,7 +1227,7 @@ public class S3Session extends CloudSession implements SSLSession {
                 })
         );
         for(final S3Bucket container : buckets.values()) {
-            final S3Owner owner = container.getOwner();
+            final StorageOwner owner = container.getOwner();
             if(null == owner) {
                 log.warn("Owner not known for container " + container);
                 continue;

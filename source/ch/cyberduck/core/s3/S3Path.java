@@ -30,8 +30,8 @@ import org.apache.commons.httpclient.methods.InputStreamRequestEntity;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.jets3t.service.S3ObjectsChunk;
 import org.jets3t.service.S3ServiceException;
+import org.jets3t.service.StorageObjectsChunk;
 import org.jets3t.service.VersionOrDeleteMarkersChunk;
 import org.jets3t.service.acl.*;
 import org.jets3t.service.model.*;
@@ -110,13 +110,13 @@ public class S3Path extends CloudPath {
      *
      * @see #getDetails()
      */
-    protected S3Object _details;
+    protected StorageObject _details;
 
     /**
      * @return
      * @throws S3ServiceException
      */
-    protected S3Object getDetails() throws IOException, S3ServiceException {
+    protected StorageObject getDetails() throws IOException, S3ServiceException {
         final String container = this.getContainerName();
         if(null == _details || !_details.isMetadataComplete()) {
             try {
@@ -268,7 +268,7 @@ public class S3Path extends CloudPath {
             // You can also copy an object and update its metadata at the same time. Perform a
             // copy-in-place  (with the same bucket and object names for source and destination)
             // to update an object's metadata while leaving the object's data unchanged.
-            final S3Object target = this.getDetails();
+            final StorageObject target = this.getDetails();
             target.addMetadata(METADATA_HEADER_EXPIRES, rfc1123.format(expiration));
             this.getSession().getClient().updateObjectMetadata(this.getContainerName(), target);
         }
@@ -293,7 +293,7 @@ public class S3Path extends CloudPath {
             // You can also copy an object and update its metadata at the same time. Perform a
             // copy-in-place  (with the same bucket and object nexames for source and destination)
             // to update an object's metadata while leaving the object's data unchanged.
-            final S3Object target = this.getDetails();
+            final StorageObject target = this.getDetails();
             if(StringUtils.isEmpty(maxage)) {
                 target.removeMetadata(METADATA_HEADER_CACHE_CONTROL);
             }
@@ -318,7 +318,7 @@ public class S3Path extends CloudPath {
                 this.getSession().message(MessageFormat.format(Locale.localizedString("Reading metadata of {0}", "Status"),
                         this.getName()));
 
-                final S3Object target = this.getDetails();
+                final StorageObject target = this.getDetails();
                 HashMap<String, String> metadata = new HashMap<String, String>();
                 Map<String, Object> source = target.getModifiableMetadata();
                 for(String key : source.keySet()) {
@@ -343,7 +343,7 @@ public class S3Path extends CloudPath {
                 this.getSession().message(MessageFormat.format(Locale.localizedString("Writing metadata of {0}", "Status"),
                         this.getName()));
 
-                final S3Object target = this.getDetails();
+                final StorageObject target = this.getDetails();
                 target.replaceAllMetadata(new HashMap<String, Object>(meta));
                 this.getSession().getClient().updateObjectMetadata(this.getContainerName(), target);
                 target.setMetadataComplete(false);
@@ -368,7 +368,7 @@ public class S3Path extends CloudPath {
                 this.getSession().message(MessageFormat.format(Locale.localizedString("Compute MD5 hash of {0}", "Status"),
                         this.getName()));
 
-                final S3Object details = this.getDetails();
+                final StorageObject details = this.getDetails();
                 if(StringUtils.isNotEmpty(details.getMd5HashAsHex())) {
                     attributes().setChecksum(details.getMd5HashAsHex());
                 }
@@ -394,7 +394,7 @@ public class S3Path extends CloudPath {
                 this.getSession().message(MessageFormat.format(Locale.localizedString("Getting size of {0}", "Status"),
                         this.getName()));
 
-                final S3Object details = this.getDetails();
+                final StorageObject details = this.getDetails();
                 attributes().setSize(details.getContentLength());
             }
             catch(S3ServiceException e) {
@@ -414,7 +414,7 @@ public class S3Path extends CloudPath {
                 this.getSession().message(MessageFormat.format(Locale.localizedString("Getting timestamp of {0}", "Status"),
                         this.getName()));
 
-                final S3Object details = this.getDetails();
+                final StorageObject details = this.getDetails();
                 attributes().setModificationDate(details.getLastModifiedDate().getTime());
             }
             catch(S3ServiceException e) {
@@ -663,12 +663,12 @@ public class S3Path extends CloudPath {
         do {
             // Read directory listing in chunks. List results are always returned
             // in lexicographic (alphabetical) order.
-            S3ObjectsChunk chunk = this.getSession().getClient().listObjectsChunked(
+            StorageObjectsChunk chunk = this.getSession().getClient().listObjectsChunked(
                     bucket, prefix, delimiter,
                     Preferences.instance().getInteger("s3.listing.chunksize"), priorLastKey);
 
-            final S3Object[] objects = chunk.getObjects();
-            for(S3Object object : objects) {
+            final StorageObject[] objects = chunk.getObjects();
+            for(StorageObject object : objects) {
                 final S3Path p = (S3Path) PathFactory.createPath(this.getSession(), bucket,
                         object.getKey(), Path.FILE_TYPE);
                 p.setParent(this);
@@ -681,14 +681,16 @@ public class S3Path extends CloudPath {
                 p.attributes().setModificationDate(object.getLastModifiedDate().getTime());
                 p.attributes().setOwner(this.getContainer().attributes().getOwner());
                 if(0 == object.getContentLength()) {
-                    final S3Object details = p.getDetails();
+                    final StorageObject details = p.getDetails();
                     if(Mimetypes.MIMETYPE_JETS3T_DIRECTORY.equals(details.getContentType())) {
                         p.attributes().setType(Path.DIRECTORY_TYPE);
                         p.attributes().setPlaceholder(true);
                     }
                 }
                 p.attributes().setStorageClass(object.getStorageClass());
-                p.attributes().setVersionId(object.getVersionId());
+                if(object instanceof S3Object) {
+                    p.attributes().setVersionId(((S3Object) object).getVersionId());
+                }
                 children.add(p);
             }
             final String[] prefixes = chunk.getCommonPrefixes();
@@ -738,7 +740,7 @@ public class S3Path extends CloudPath {
             path.attributes().setRevision(++i);
             path.attributes().setDuplicate(true);
             if(0 == version.getSize()) {
-                final S3Object details = path.getDetails();
+                final StorageObject details = path.getDetails();
                 if(Mimetypes.MIMETYPE_JETS3T_DIRECTORY.equals(details.getContentType())) {
                     // No need for versioning delimiters
                     continue;
@@ -815,7 +817,7 @@ public class S3Path extends CloudPath {
      */
     protected AccessControlList convert(Acl acl) throws IOException {
         AccessControlList list = new AccessControlList();
-        final S3Owner owner = this.getSession().getBucket(this.getContainerName()).getOwner();
+        final StorageOwner owner = this.getSession().getBucket(this.getContainerName()).getOwner();
         list.setOwner(owner);
         for(Acl.UserAndRole userAndRole : acl.asList()) {
             if(!userAndRole.isValid()) {
@@ -880,7 +882,7 @@ public class S3Path extends CloudPath {
      */
     protected AccessControlList getAccessControlList(final Permission permission) throws IOException {
         final AccessControlList acl = new AccessControlList();
-        final S3Owner owner = this.getSession().getBucket(this.getContainerName()).getOwner();
+        final StorageOwner owner = this.getSession().getBucket(this.getContainerName()).getOwner();
         acl.setOwner(owner);
         final CanonicalGrantee grantee = new CanonicalGrantee(owner.getId());
         if(permission.getOwnerPermissions()[Permission.READ]) {
@@ -1174,7 +1176,8 @@ public class S3Path extends CloudPath {
     public DescriptiveUrl toTorrentUrl() {
         if(this.attributes().isFile()) {
             try {
-                return new DescriptiveUrl(this.getSession().getClient().createTorrentUrl(this.getContainerName(), encode(this.getKey())));
+                return new DescriptiveUrl(this.getSession().getClient().createTorrentUrl(this.getContainerName(),
+                        this.getKey()));
             }
             catch(ConnectionCanceledException e) {
                 log.error(e.getMessage());
