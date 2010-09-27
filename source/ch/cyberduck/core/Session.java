@@ -77,6 +77,14 @@ public abstract class Session implements TranscriptListener {
         try {
             try {
                 if(!this.isConnected()) {
+                    if(StringUtils.isBlank(host.getHostname())) {
+                        if(StringUtils.isBlank(host.getProtocol().getDefaultHostname())) {
+                            log.warn("No hostname configured:" + host);
+                            throw new ConnectionCanceledException();
+                        }
+                        // If hostname is missing update with default
+                        host.setHostname(host.getProtocol().getDefaultHostname());
+                    }
                     // If not connected anymore, reconnect the session
                     this.connect();
                 }
