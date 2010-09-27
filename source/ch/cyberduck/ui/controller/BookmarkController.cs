@@ -320,10 +320,17 @@ namespace Ch.Cyberduck.Ui.Controller
             Log.debug("protocolSelectionChanged");
             Protocol selected = View.SelectedProtocol;
             _host.setPort(selected.getDefaultPort());
-            if (_host.getProtocol().getDefaultHostname().Equals(_host.getHostname()))
+            if (!_host.getProtocol().isHostnameConfigurable())
             {
+                // Previously selected protocol had a default hostname. Change to default
+                // of newly selected protocol.
                 _host.setHostname(selected.getDefaultHostname());
             }
+            if (!selected.isHostnameConfigurable())
+            {
+                // Hostname of newly selected protocol is not configurable. Change to default.
+                _host.setHostname(selected.getDefaultHostname());
+            } 
             if (!selected.isWebUrlConfigurable())
             {
                 _host.setWebURL(null);
