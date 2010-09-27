@@ -1643,12 +1643,15 @@ namespace Ch.Cyberduck.Ui.Controller
                     else
                     {
                         _view.DistributionCname = string.Join(" ", cnames);
-                        String url = _distribution.getCnameUrl(file.getKey());
-                        if (Utils.IsNotBlank(url))
+                        ICollection<AbstractPath.DescriptiveUrl> urls
+                            = Utils.ConvertFromJavaList<AbstractPath.DescriptiveUrl>(_distribution.getCnameURL(file.getKey()));
+                        foreach (AbstractPath.DescriptiveUrl url in urls)
                         {
-                            _view.DistributionCnameUrl = url;
+                            _view.DistributionCnameUrl = url.getUrl();
                             _view.DistributionCnameUrlEnabled = true;
                             _view.DistributionCnameUrlTooltip = Locale.localizedString("Open in Web Browser");
+                            // We only support one CNAME URL to be displayed
+                            break;                            
                         }
                     }
                     if (_distribution.getMethod() == Distribution.DOWNLOAD)
