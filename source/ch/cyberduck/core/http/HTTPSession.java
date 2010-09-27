@@ -111,23 +111,26 @@ public abstract class HTTPSession extends Session implements SSLSession {
      */
     protected HostConfiguration getHostConfiguration() {
         final HostConfiguration configuration = new StickyHostConfiguration();
-        if(Preferences.instance().getBoolean("connection.proxy.enable")) {
-            final Proxy proxy = ProxyFactory.instance();
-            if(this.getHost().getProtocol().isSecure()) {
-                // Configuration with custom socket factory using the trust manager
-                configuration.setHost(host.getHostname(), host.getPort(),
-                        new org.apache.commons.httpclient.protocol.Protocol(host.getProtocol().getScheme(),
-                                new SocketFactory(this.getTrustManager()), host.getPort())
-                );
+        if(this.getHost().getProtocol().isSecure()) {
+            // Configuration with custom socket factory using the trust manager
+            configuration.setHost(host.getHostname(), host.getPort(),
+                    new org.apache.commons.httpclient.protocol.Protocol(host.getProtocol().getScheme(),
+                            new SocketFactory(this.getTrustManager()), host.getPort())
+            );
+            if(Preferences.instance().getBoolean("connection.proxy.enable")) {
+                final Proxy proxy = ProxyFactory.instance();
                 if(proxy.isHTTPSProxyEnabled()) {
                     configuration.setProxy(proxy.getHTTPSProxyHost(), proxy.getHTTPSProxyPort());
                 }
             }
-            else {
-                configuration.setHost(host.getHostname(), host.getPort(),
-                        new org.apache.commons.httpclient.protocol.Protocol(host.getProtocol().getScheme(),
-                                new DefaultProtocolSocketFactory(), host.getPort())
-                );
+        }
+        else {
+            configuration.setHost(host.getHostname(), host.getPort(),
+                    new org.apache.commons.httpclient.protocol.Protocol(host.getProtocol().getScheme(),
+                            new DefaultProtocolSocketFactory(), host.getPort())
+            );
+            if(Preferences.instance().getBoolean("connection.proxy.enable")) {
+                final Proxy proxy = ProxyFactory.instance();
                 if(proxy.isHTTPProxyEnabled()) {
                     configuration.setProxy(proxy.getHTTPProxyHost(), proxy.getHTTPProxyPort());
                 }
