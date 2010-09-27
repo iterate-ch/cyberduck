@@ -29,7 +29,6 @@ import org.rococoa.Foundation;
 import org.rococoa.ID;
 import org.rococoa.Selector;
 import org.rococoa.cocoa.foundation.NSInteger;
-import org.rococoa.cocoa.foundation.NSSize;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -66,21 +65,21 @@ public class BookmarkController extends WindowController {
     @Action
     public void protocolSelectionChanged(final NSPopUpButton sender) {
         log.debug("protocolSelectionChanged:" + sender);
-        final Protocol protocol = Protocol.forName(protocolPopup.selectedItem().representedObject());
-        host.setPort(protocol.getDefaultPort());
+        final Protocol selected = Protocol.forName(protocolPopup.selectedItem().representedObject());
+        host.setPort(selected.getDefaultPort());
         if(!host.getProtocol().isHostnameConfigurable()) {
             // Previously selected protocol had a default hostname. Change to default
             // of newly selected protocol.
-            host.setHostname(protocol.getDefaultHostname());
+            host.setHostname(selected.getDefaultHostname());
         }
-        if(!protocol.isHostnameConfigurable()) {
+        if(!selected.isHostnameConfigurable()) {
             // Hostname of newly selected protocol is not configurable. Change to default.
-            host.setHostname(protocol.getDefaultHostname());
+            host.setHostname(selected.getDefaultHostname());
         }
-        if(!protocol.isWebUrlConfigurable()) {
+        if(!selected.isWebUrlConfigurable()) {
             host.setWebURL(null);
         }
-        if(protocol.equals(Protocol.IDISK)) {
+        if(selected.equals(Protocol.IDISK)) {
             final String member = Preferences.instance().getProperty("iToolsMember");
             if(StringUtils.isNotEmpty(member)) {
                 // Account name configured in System Preferences
@@ -88,7 +87,7 @@ public class BookmarkController extends WindowController {
                 host.setDefaultPath(String.valueOf(Path.DELIMITER) + member);
             }
         }
-        host.setProtocol(protocol);
+        host.setProtocol(selected);
         this.readOpenSshConfiguration();
         this.itemChanged();
         this.init();
