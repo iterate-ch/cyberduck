@@ -123,22 +123,16 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_ChangedWebURLEvent()
         {
-            if (!_host.getWebURL().Equals(View.WebURL))
-            {
-                _host.setWebURL(View.WebURL);
-            }
+            _host.setWebURL(View.WebURL);
             UpdateFavicon();
             ItemChanged();
         }
 
         private void View_ChangedNicknameEvent()
         {
-            if (!_host.getNickname().Equals(View.Nickname))
-            {
-                _host.setNickname(View.Nickname);
-            }
-            View.WindowTitle = View.Nickname;
+            _host.setNickname(View.Nickname);
             ItemChanged();
+            Update();
         }
 
         internal void View_ChangedPathEvent()
