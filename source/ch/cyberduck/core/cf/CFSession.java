@@ -98,9 +98,14 @@ public class CFSession extends CloudSession implements SSLSession {
         this.CF = new FilesClient(null, null, null, this.timeout());
         this.fireConnectionWillOpenEvent();
 
+        // Configure for authentication URL
         this.configure(this.getClient());
+
         // Prompt the login credentials first
         this.login();
+
+        // Configure for storage URL
+        this.configure(this.getClient());
 
         this.fireConnectionDidOpenEvent();
     }
@@ -112,20 +117,29 @@ public class CFSession extends CloudSession implements SSLSession {
      */
     protected void configure(FilesClient client) {
         client.setConnectionTimeOut(this.timeout());
-        client.setHostConfiguration(this.getHostConfiguration());
         client.setUserAgent(this.getUserAgent());
-        StringBuilder authentication = new StringBuilder(this.getHost().getProtocol().getScheme()).append("://");
-        if(this.getHost().getHostname().equals(this.getHost().getProtocol().getDefaultHostname())) {
-            // Use default authentication server. Rackspace.
-            authentication.append(Preferences.instance().getProperty("cf.authentication.host"));
+        if(!client.isLoggedin()) {
+            StringBuilder authentication = new StringBuilder(this.getHost().getProtocol().getScheme()).append("://");
+            if(this.getHost().getHostname().equals(this.getHost().getProtocol().getDefaultHostname())) {
+                // Use default authentication server. Rackspace.
+                authentication.append(Preferences.instance().getProperty("cf.authentication.host"));
+            }
+            else {
+                // Use custom authentication server. Swift (OpenStack Object Storage) installation.
+                authentication.append(this.getHost().getHostname());
+            }
+            authentication.append(Preferences.instance().getProperty("cf.authentication.context"));
+            log.info("Using authentication URL " + authentication.toString());
+            client.setAuthenticationURL(authentication.toString());
+            URI url = URI.create(authentication.toString());
+            client.setHostConfiguration(this.getHostConfiguration(url));
+            this.getTrustManager().setHostname(url.getHost());
         }
         else {
-            // Use custom authentication server. Swift (OpenStack Object Storage) installation.
-            authentication.append(this.getHost().getHostname());
+            URI url = URI.create(client.getStorageURL());
+            client.setHostConfiguration(this.getHostConfiguration(url));
+            this.getTrustManager().setHostname(url.getHost());
         }
-        authentication.append(Preferences.instance().getProperty("cf.authentication.context"));
-        log.info("Using authentication URL " + authentication.toString());
-        client.setAuthenticationURL(authentication.toString());
     }
 
     @Override
@@ -138,7 +152,6 @@ public class CFSession extends CloudSession implements SSLSession {
             controller.fail(host.getProtocol(), credentials);
             this.login();
         }
-        this.getTrustManager().setHostname(URI.create(this.getClient().getStorageURL()).getHost());
     }
 
     @Override

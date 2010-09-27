@@ -36,9 +36,11 @@ import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
 
+import javax.net.ssl.SSLSocketFactory;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.net.URI;
 import java.net.UnknownHostException;
 
 /**
@@ -96,7 +98,7 @@ public abstract class HTTPSession extends Session implements SSLSession {
         public Socket createSocket(String host, int port, InetAddress localAddress, int localPort,
                                    org.apache.commons.httpclient.params.HttpConnectionParams params)
                 throws IOException {
-            javax.net.ssl.SSLSocketFactory factory = this.getSSLContext().getSocketFactory();
+            SSLSocketFactory factory = this.getSSLContext().getSocketFactory();
             Socket socket = factory.createSocket(host, port, localAddress, localPort);
             socket.setTcpNoDelay(params.getTcpNoDelay());
             socket.setSoTimeout(params.getSoTimeout());
@@ -110,12 +112,20 @@ public abstract class HTTPSession extends Session implements SSLSession {
      * @return A host configuration initialized with the hostname, port and socket factory.
      */
     protected HostConfiguration getHostConfiguration() {
+        return this.getHostConfiguration(URI.create(host.toURL()));
+    }
+
+    protected HostConfiguration getHostConfiguration(URI uri) {
         final HostConfiguration configuration = new StickyHostConfiguration();
+        int port = uri.getPort();
         if(this.getHost().getProtocol().isSecure()) {
+            if(-1 == port) {
+                port = 443;
+            }
             // Configuration with custom socket factory using the trust manager
-            configuration.setHost(host.getHostname(), host.getPort(),
-                    new org.apache.commons.httpclient.protocol.Protocol(host.getProtocol().getScheme(),
-                            new SocketFactory(this.getTrustManager()), host.getPort())
+            configuration.setHost(uri.getHost(), port,
+                    new org.apache.commons.httpclient.protocol.Protocol(uri.getScheme(),
+                            new SocketFactory(this.getTrustManager()), port)
             );
             if(Preferences.instance().getBoolean("connection.proxy.enable")) {
                 final Proxy proxy = ProxyFactory.instance();
@@ -125,9 +135,12 @@ public abstract class HTTPSession extends Session implements SSLSession {
             }
         }
         else {
-            configuration.setHost(host.getHostname(), host.getPort(),
-                    new org.apache.commons.httpclient.protocol.Protocol(host.getProtocol().getScheme(),
-                            new DefaultProtocolSocketFactory(), host.getPort())
+            if(-1 == port) {
+                port = 80;
+            }
+            configuration.setHost(uri.getHost(), port,
+                    new org.apache.commons.httpclient.protocol.Protocol(uri.getScheme(),
+                            new DefaultProtocolSocketFactory(), port)
             );
             if(Preferences.instance().getBoolean("connection.proxy.enable")) {
                 final Proxy proxy = ProxyFactory.instance();
