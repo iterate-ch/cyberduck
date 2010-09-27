@@ -151,21 +151,20 @@ namespace Ch.Cyberduck.Ui.Controller
             bool anonymous = session.getHost().getCredentials().isAnonymousLogin();
 
             View.ToolbarDistributionImage = IconCache.Instance.GetProtocolImages(32).Images[
-                session.getHost().getProtocol().getIdentifier()];
+                session.getHost().getProtocol().disk()];
 
             if (session is S3Session)
             {
                 // Set icon of cloud service provider
                 View.ToolbarS3Label = session.getHost().getProtocol().getName();
                 View.ToolbarS3Image = IconCache.Instance.GetProtocolImages(32).Images[
-                    session.getHost().getProtocol().getIdentifier()];
+                    session.getHost().getProtocol().disk()];
             }
             else
             {
                 // Currently these settings are only available for Amazon S3
                 View.ToolbarS3Label = Protocol.S3.getName();
                 View.ToolbarS3Image = IconCache.Instance.GetProtocolImages(32).Images[Protocol.S3.disk()];
-                View.ToolbarDistributionImage = IconCache.Instance.GetProtocolImages(32).Images[Protocol.S3.disk()];
             }
 
             //ACL or permission view
