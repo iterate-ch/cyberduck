@@ -27,7 +27,7 @@ import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.StatusLine;
 import org.apache.commons.lang.StringUtils;
 import org.jets3t.service.CloudFrontServiceException;
-import org.jets3t.service.S3ServiceException;
+import org.jets3t.service.ServiceException;
 import org.soyatec.windows.azure.error.StorageServerException;
 
 import com.enterprisedt.net.ftp.FTPException;
@@ -86,7 +86,7 @@ public class BackgroundException extends Exception {
         if(cause instanceof SFTPException) {
             return "SSH " + Locale.localizedString("Error");
         }
-        if(cause instanceof S3ServiceException) {
+        if(cause instanceof ServiceException) {
             return "S3 " + Locale.localizedString("Error");
         }
         if(cause instanceof CloudFrontServiceException) {
@@ -120,15 +120,15 @@ public class BackgroundException extends Exception {
             if(cause instanceof SFTPException) {
                 ;
             }
-            if(cause instanceof S3ServiceException) {
-                final S3ServiceException s3 = (S3ServiceException) cause;
+            if(cause instanceof ServiceException) {
+                final ServiceException s3 = (ServiceException) cause;
                 if(StringUtils.isNotBlank(s3.getResponseStatus())) {
                     // HTTP method status
                     buffer.append(" ").append(s3.getResponseStatus()).append(".");
                 }
-                if(StringUtils.isNotBlank(s3.getS3ErrorMessage())) {
+                if(StringUtils.isNotBlank(s3.getErrorMessage())) {
                     // S3 protocol message
-                    buffer.append(" ").append(s3.getS3ErrorMessage());
+                    buffer.append(" ").append(s3.getErrorMessage());
                 }
             }
             if(cause instanceof org.jets3t.service.impl.rest.HttpException) {
