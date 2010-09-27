@@ -409,22 +409,22 @@ public class FTPSession extends Session implements SSLSession {
                         Locale.localizedString("Change", "Credentials"),
                         Locale.localizedString("Continue", "Credentials"),
                         "connection.unsecure." + host.getHostname());
+
+                // Protocol switch
+                host.setProtocol(Protocol.FTP_TLS);
+                if(BookmarkCollection.defaultCollection().contains(host)) {
+                    BookmarkCollection.defaultCollection().save();
+                }
+                // Reconfigure client for TLS
+                this.configure(this.getClient());
             }
             catch(LoginCanceledException e) {
-                // Continue choosen. Login using plain FTP.
-                return;
+                ;// Continue choosen. Login using plain FTP.
             }
             finally {
                 // Do not warn again upon subsequent login
                 this.setUnsecureswitch(false);
             }
-            // Protocol switch
-            host.setProtocol(Protocol.FTP_TLS);
-            if(BookmarkCollection.defaultCollection().contains(host)) {
-                BookmarkCollection.defaultCollection().save();
-            }
-            // Reconfigure client for TLS
-            this.configure(this.getClient());
         }
         else {
             super.warn(login, credentials);
