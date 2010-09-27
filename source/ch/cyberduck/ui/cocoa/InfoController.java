@@ -2221,13 +2221,14 @@ public class InfoController extends ToolbarWindowController {
                     }
                     else {
                         distributionCnameField.setStringValue(StringUtils.join(cnames, ' '));
-                        String url = distribution.getCnameUrl(file.getKey());
-                        if(StringUtils.isNotBlank(url)) {
+                        for(AbstractPath.DescriptiveUrl url : distribution.getCnameURL(file.getKey())) {
                             distributionCnameUrlField.setAttributedStringValue(
                                     HyperlinkAttributedStringFactory.create(
-                                            NSMutableAttributedString.create(url, TRUNCATE_MIDDLE_ATTRIBUTES), url)
+                                            NSMutableAttributedString.create(url.getUrl(), TRUNCATE_MIDDLE_ATTRIBUTES), url.getUrl())
                             );
                             distributionCnameUrlField.setToolTip(Locale.localizedString("Open in Web Browser"));
+                            // We only support one CNAME URL to be displayed
+                            break;
                         }
                     }
                     if(distribution.getMethod().equals(Distribution.DOWNLOAD)) {

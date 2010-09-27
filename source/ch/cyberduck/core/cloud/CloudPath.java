@@ -166,9 +166,7 @@ public abstract class CloudPath extends Path {
             Distribution distribution = session.getDistribution(this.getContainerName(), method);
             if(null != distribution) {
                 // Cached
-                urls.add(new DescriptiveUrl(distribution.getCnameUrl(this.getKey()),
-                        MessageFormat.format(Locale.localizedString("{0} URL"), Locale.localizedString(method.toString(), "S3")))
-                );
+                urls.addAll(distribution.getCnameURL(this.getKey()));
             }
             // Not cached yet.
         }

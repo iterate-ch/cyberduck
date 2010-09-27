@@ -18,10 +18,15 @@ package ch.cyberduck.core.cloud;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.i18n.Locale;
 
 import org.apache.commons.lang.StringUtils;
+
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @version $Id$
@@ -229,18 +234,27 @@ public class Distribution {
         return b.toString();
     }
 
-    public String getCnameUrl(String key) {
-        StringBuilder b = new StringBuilder();
+    public List<AbstractPath.DescriptiveUrl> getCnameURL(String key) {
+        List<AbstractPath.DescriptiveUrl> urls = new ArrayList<AbstractPath.DescriptiveUrl>();
         for(String cname : cnames) {
-            // We only support one CNAME URL
-            b.append(this.getMethod().getProtocol()).append(cname).append(this.getMethod().getContext());
-            if(StringUtils.isNotEmpty(key)) {
-                b.append(Path.encode(key));
-            }
-            return b.toString();
+            urls.add(new AbstractPath.DescriptiveUrl(this.getCnameURL(cname, key),
+                    MessageFormat.format(Locale.localizedString("{0} URL"), Locale.localizedString(method.toString(), "S3"))));
         }
-        // No CNAME configured.
-        return this.getUrl(key);
+        if(urls.isEmpty()) {
+            // No CNAME configured.
+            urls.add(new AbstractPath.DescriptiveUrl(this.getUrl(key),
+                    MessageFormat.format(Locale.localizedString("{0} URL"), Locale.localizedString(method.toString(), "S3"))));
+        }
+        return urls;
+    }
+
+    private String getCnameURL(String cname, String key) {
+        StringBuilder b = new StringBuilder();
+        b.append(this.getMethod().getProtocol()).append(cname).append(this.getMethod().getContext());
+        if(StringUtils.isNotEmpty(key)) {
+            b.append(Path.encode(key));
+        }
+        return b.toString();
     }
 
     /**
