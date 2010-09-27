@@ -2184,7 +2184,7 @@ public class InfoController extends ToolbarWindowController {
                         if(distributionDeliveryPopup.selectedItem().representedObject().equals(Distribution.STREAMING.toString())) {
                             distribution = session.readDistribution(cloud.getContainerName(), Distribution.STREAMING);
                         }
-                        if(distributionDeliveryPopup.selectedItem().representedObject().equals(Distribution.DOWNLOAD.toString())) {
+                        else if(distributionDeliveryPopup.selectedItem().representedObject().equals(Distribution.DOWNLOAD.toString())) {
                             distribution = session.readDistribution(cloud.getContainerName(), Distribution.DOWNLOAD);
                         }
                         break;
@@ -2193,6 +2193,10 @@ public class InfoController extends ToolbarWindowController {
 
                 @Override
                 public void cleanup() {
+                    if(null == distribution) {
+                        return;
+                    }
+
                     distributionEnableButton.setState(distribution.isEnabled() ? NSCell.NSOnState : NSCell.NSOffState);
                     distributionStatusField.setStringValue(distribution.getStatus());
                     distributionLoggingButton.setEnabled(distribution.isEnabled());
