@@ -68,11 +68,13 @@ public class PromptLoginController extends AbstractLoginController {
     }
 
     @Override
-    public void warn(String title, String message, String defaultButton, String otherButton, String preference) throws LoginCanceledException {
+    public void warn(String title, String message, String defaultButton, String otherButton, String preference)
+            throws LoginCanceledException {
         final NSAlert alert = NSAlert.alert(title, message,
-                defaultButton,
-                Locale.localizedString("Don't show again", "Credentials"),
-                otherButton);
+                defaultButton, // Default Button
+                Locale.localizedString("Don't show again", "Credentials"), // Alternate button
+                otherButton // Other
+        );
         alert.setAlertStyle(NSAlert.NSWarningAlertStyle);
         switch(this.parent.alert(alert)) {
             case SheetCallback.OTHER_OPTION:
@@ -80,7 +82,8 @@ public class PromptLoginController extends AbstractLoginController {
             case SheetCallback.ALTERNATE_OPTION:
                 // Never show again.
                 Preferences.instance().setProperty(preference, true);
-                break;
+                // 
+                throw new LoginCanceledException();
         }
     }
 
