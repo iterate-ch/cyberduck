@@ -118,7 +118,11 @@ public abstract class WindowController extends BundleController implements NSWin
      * @return True if the controller window is on screen.
      */
     public boolean isVisible() {
-        return this.window().isVisible();
+        NSWindow window = this.window();
+        if(null == window) {
+            return false;
+        }
+        return window.isVisible();
     }
 
     /**
