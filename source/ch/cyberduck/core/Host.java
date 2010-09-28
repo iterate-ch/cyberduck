@@ -413,7 +413,7 @@ public class Host implements Serializable {
      * @param defaultpath The path to change the working directory to upon connecting
      */
     public void setDefaultPath(String defaultpath) {
-        this.defaultpath = StringUtils.isNotBlank(defaultpath) ? defaultpath : null;
+        this.defaultpath = StringUtils.isNotBlank(defaultpath.trim()) ? defaultpath.trim() : null;
     }
 
     /**
