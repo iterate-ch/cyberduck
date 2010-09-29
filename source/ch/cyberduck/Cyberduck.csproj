@@ -565,7 +565,7 @@
   <!-- to manage version number -->
   <!-- to generate our personnal version info -->
   <Target Name="AssemblyInfo">
-    <AssemblyInfo CodeLanguage="CS" OutputFile="Properties\AssemblyInfo.cs" AssemblyTitle="Cyberduck" AssemblyDescription="FTP and Cloud Files Browser" AssemblyCompany="Cyberduck" AssemblyProduct="Cyberduck" AssemblyCopyright="Copyright © 2010" ComVisible="false" Guid="5fc1c120-24c7-469d-b52b-9bce20db208d" AssemblyVersion="$(Version)" AssemblyFileVersion="$(Version)" Condition="$(Version) != '0' " />
+    <AssemblyInfo CodeLanguage="CS" OutputFile="Properties\AssemblyInfo.cs" AssemblyTitle="Cyberduck" AssemblyDescription="FTP and Cloud Files Browser" AssemblyCompany="Cyberduck" AssemblyProduct="Cyberduck" AssemblyCopyright="© 2010 Yves Langisch. All rights reserved." ComVisible="false" Guid="5fc1c120-24c7-469d-b52b-9bce20db208d" AssemblyVersion="$(Version)" AssemblyFileVersion="$(Version)" Condition="$(Version) != '0' " />
   </Target>
   <!-- We launch these two targets -->
   <Target Name="BeforeBuild">
