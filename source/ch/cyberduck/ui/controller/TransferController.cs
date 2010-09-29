@@ -371,7 +371,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 View.Url = transfer.getRoot().toURL();
                 if (transfer.numberOfRoots() == 1)
                 {
-                    View.Local = transfer.getRoot().getLocal().toURL();
+                    View.Local = transfer.getRoot().getLocal().getAbsolute();
                 }
                 else
                 {
