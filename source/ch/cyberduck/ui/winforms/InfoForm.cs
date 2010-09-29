@@ -604,7 +604,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             storageClassComboBox.DataSource = classes;
             storageClassComboBox.DisplayMember = "Key";
             storageClassComboBox.ValueMember = "Value";
-            storageClassComboBox.Enabled = classes.Count > 0;
+            //storageClassComboBox.Enabled = classes.Count > 0;
         }
 
         public string BucketLocation

@@ -959,10 +959,13 @@ namespace Ch.Cyberduck.Ui.Controller
             View.S3TorrentUrlEnabled = false;
 
             IList<KeyValuePair<string, string>> classes = new List<KeyValuePair<string, string>>();
+            classes.Add(new KeyValuePair<string, string>(Locale.localizedString("Unknown"), "Unknown"));
             View.PopulateStorageClass(classes);
+            View.StorageClassEnabled = false;
 
             if (ToggleS3Settings(false))
             {
+                View.StorageClass = "Unknown";
                 List list = ((CloudSession) _controller.getSession()).getSupportedStorageClasses();
                 for (int i = 0; i < list.size(); i++)
                 {
@@ -991,6 +994,7 @@ namespace Ch.Cyberduck.Ui.Controller
                             {
                                 View.PopulateStorageClass(classes);
                                 View.StorageClass = redundancy;
+                                View.StorageClassEnabled = true;
                             }
                             AbstractPath.DescriptiveUrl url = s3.toSignedUrl();
                             if (null != url)
@@ -998,7 +1002,6 @@ namespace Ch.Cyberduck.Ui.Controller
                                 View.S3PublicUrl = url.getUrl();
                                 View.S3PublicUrlEnabled = true;
                                 View.S3PublicUrlTooltip = url.getUrl();
-
                                 View.S3PublicUrlValidity = url.getHelp();
                             }
                             AbstractPath.DescriptiveUrl torrent = s3.toTorrentUrl();
@@ -1087,7 +1090,6 @@ namespace Ch.Cyberduck.Ui.Controller
                 View.DistributionTitle = String.Format(Locale.localizedString("Enable {0} Distribution", "Status"),
                                                        session.getDistributionServiceName());
                 methods = new List<KeyValuePair<string, Distribution.Method>>();
-                methods.Add(new KeyValuePair<string, Distribution.Method>(Locale.localizedString("None"), null));
                 List list = session.getSupportedDistributionMethods();
                 for (int i = 0; i < list.size(); i++)
                 {
@@ -1644,14 +1646,16 @@ namespace Ch.Cyberduck.Ui.Controller
                     {
                         _view.DistributionCname = string.Join(" ", cnames);
                         ICollection<AbstractPath.DescriptiveUrl> urls
-                            = Utils.ConvertFromJavaList<AbstractPath.DescriptiveUrl>(_distribution.getCnameURL(file.getKey()));
+                            =
+                            Utils.ConvertFromJavaList<AbstractPath.DescriptiveUrl>(
+                                _distribution.getCnameURL(file.getKey()));
                         foreach (AbstractPath.DescriptiveUrl url in urls)
                         {
                             _view.DistributionCnameUrl = url.getUrl();
                             _view.DistributionCnameUrlEnabled = true;
                             _view.DistributionCnameUrlTooltip = Locale.localizedString("Open in Web Browser");
                             // We only support one CNAME URL to be displayed
-                            break;                            
+                            break;
                         }
                     }
                     if (_distribution.getMethod() == Distribution.DOWNLOAD)
@@ -1861,6 +1865,10 @@ namespace Ch.Cyberduck.Ui.Controller
 
             public override void run()
             {
+                if ("Unknown".Equals(_storageClass))
+                {
+                    return;
+                }
                 foreach (Path next in _infoController._files)
                 {
                     next.attributes().setStorageClass(_storageClass);
