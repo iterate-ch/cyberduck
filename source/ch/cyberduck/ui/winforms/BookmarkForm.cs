@@ -474,6 +474,11 @@ namespace Ch.Cyberduck.Ui.Winforms
             OpenUrl();
         }
 
+        private void button1_Click(object sender, EventArgs e)
+        {
+            Close();
+        }
+
         //todo only allow vertical resize (we need the opposite though
         /*
         protected override void WndProc(ref Message m)
