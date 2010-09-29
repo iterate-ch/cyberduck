@@ -26,9 +26,9 @@ namespace Ch.Cyberduck.Ui.Controller
 {
     internal class TreeBrowserModel
     {
-        private readonly string _unknown = Locale.localizedString("Unknown");
         private readonly BrowserController _controller;
         private readonly List<Path> _isLoadingListingInBackground = new List<Path>();
+        private readonly string _unknown = Locale.localizedString("Unknown");
 
         public TreeBrowserModel(BrowserController controller)
         {
@@ -113,11 +113,11 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public string GetModifiedAsString(object value)
         {
-            DateTime modificationDate = (DateTime)value;
+            DateTime modificationDate = (DateTime) value;
             if (modificationDate != DateTime.MinValue)
             {
                 return UserDefaultsDateFormatter.GetShortFormat(modificationDate);
-            }            
+            }
             return _unknown;
         }
 

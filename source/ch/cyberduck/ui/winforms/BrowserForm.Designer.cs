@@ -36,7 +36,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.toolStripProgressBar = new System.Windows.Forms.ToolStripProgressBar();
             this.statusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.securityToolStripStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
-            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
+            this.menuStrip1 = new ClickThroughMenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.newBrowserToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openConnectionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -152,7 +152,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.editor1ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editor2ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editContextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolBar = new System.Windows.Forms.ToolStrip();
+            this.toolBar = new ClickThroughToolStrip();
             this.openConnectionToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparatorAfterOpenConnection = new System.Windows.Forms.ToolStripSeparator();
             this.quickConnectToolStripComboBox = new System.Windows.Forms.ToolStripComboBox();
@@ -285,7 +285,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // statusLabel
             // 
             this.statusLabel.Name = "statusLabel";
-            this.statusLabel.Size = new System.Drawing.Size(938, 17);
+            this.statusLabel.Size = new System.Drawing.Size(969, 17);
             this.statusLabel.Spring = true;
             this.statusLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
@@ -1973,7 +1973,6 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         private System.Windows.Forms.StatusStrip statusStrip;
         private System.Windows.Forms.ToolStripStatusLabel statusLabel;
-        private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem newBrowserToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem;
@@ -2179,6 +2178,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         private SearchTextBox searchTextBox;
         private System.Windows.Forms.ToolStripMenuItem duplicateBookmarkToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem duplicateBookmarkToolStripMenuItem;
+        private ClickThroughMenuStrip menuStrip1;
     }
 }
 

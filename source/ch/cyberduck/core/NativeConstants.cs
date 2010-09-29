@@ -1072,6 +1072,11 @@ namespace Ch.Cyberduck.Core
 
         public const int MAX_PATH = 260;
 
+        public const uint MA_ACTIVATE = 1;
+        public const uint MA_ACTIVATEANDEAT = 2;
+        public const uint MA_NOACTIVATE = 3;
+        public const uint MA_NOACTIVATEANDEAT = 4;
+
         public const int MB_ICONASTERISK = 0x000040;
         public const int MB_ICONEXCLAMATION = 0x000030;
 

@@ -31,7 +31,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            this.toolStrip = new System.Windows.Forms.ToolStrip();
+            this.toolStrip = new ClickThroughToolStrip();
             this.toolbarMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.resumeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.reloadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -266,7 +266,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.splitContainer.Panel2.Controls.Add(this.transcriptBox);
             this.splitContainer.Size = new System.Drawing.Size(541, 478);
-            this.splitContainer.SplitterDistance = 340;
+            this.splitContainer.SplitterDistance = 339;
             this.splitContainer.SplitterWidth = 5;
             this.splitContainer.TabIndex = 6;
             this.splitContainer.SplitterMoved += new System.Windows.Forms.SplitterEventHandler(this.splitContainer_SplitterMoved);
@@ -278,7 +278,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel2.Location = new System.Drawing.Point(0, 0);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(541, 340);
+            this.panel2.Size = new System.Drawing.Size(541, 339);
             this.panel2.TabIndex = 7;
             // 
             // transferListView
@@ -297,7 +297,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.transferListView.Location = new System.Drawing.Point(0, 0);
             this.transferListView.Name = "transferListView";
             this.transferListView.RowHeight = 85;
-            this.transferListView.Size = new System.Drawing.Size(541, 296);
+            this.transferListView.Size = new System.Drawing.Size(541, 295);
             this.transferListView.TabIndex = 6;
             this.transferListView.UseCompatibleStateImageBehavior = false;
             this.transferListView.View = System.Windows.Forms.View.Details;
@@ -324,7 +324,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.tableLayoutPanel1.Controls.Add(this.label2, 1, 1);
             this.tableLayoutPanel1.Controls.Add(this.urlLabel, 2, 0);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 296);
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 295);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.Padding = new System.Windows.Forms.Padding(5, 5, 5, 0);
             this.tableLayoutPanel1.RowCount = 2;
@@ -428,7 +428,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.transcriptBox.Location = new System.Drawing.Point(0, 0);
             this.transcriptBox.Name = "transcriptBox";
             this.transcriptBox.ReadOnly = true;
-            this.transcriptBox.Size = new System.Drawing.Size(541, 133);
+            this.transcriptBox.Size = new System.Drawing.Size(541, 134);
             this.transcriptBox.TabIndex = 1;
             this.transcriptBox.Text = "";
             // 

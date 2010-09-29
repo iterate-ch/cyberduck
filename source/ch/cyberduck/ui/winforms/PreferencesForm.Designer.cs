@@ -238,7 +238,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.uploadSkipCheckbox = new System.Windows.Forms.CheckBox();
             this.uploadSkipRegexRichTextbox = new System.Windows.Forms.RichTextBox();
             this.uploadSkipRegexDefaultButton = new System.Windows.Forms.Button();
-            this.toolStrip = new System.Windows.Forms.ToolStrip();
+            this.toolStrip = new ClickThroughToolStrip();
             this.generalButton = new System.Windows.Forms.ToolStripButton();
             this.transfersButton = new System.Windows.Forms.ToolStripButton();
             this.ftpButton = new System.Windows.Forms.ToolStripButton();

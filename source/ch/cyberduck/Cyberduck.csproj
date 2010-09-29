@@ -173,6 +173,12 @@
     <Compile Include="ui\controller\IUpdateView.cs" />
     <Compile Include="ui\controller\threading\InfoBackgroundAction.cs" />
     <Compile Include="ui\controller\UpdateController.cs" />
+    <Compile Include="ui\winforms\controls\ClickThroughMenuStrip.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ui\winforms\controls\ClickThroughToolStrip.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="ui\winforms\UpdateForm.cs">
       <SubType>Form</SubType>
     </Compile>
