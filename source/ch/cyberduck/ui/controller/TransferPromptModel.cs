@@ -65,9 +65,6 @@ namespace Ch.Cyberduck.Ui.Controller
         public IEnumerable<TreePathReference> ChildrenGetter(object reference)
         {
             Path path = ((TreePathReference) reference).Unique;
-
-            Console.WriteLine("ChildrenGetter: " + path.toString());
-
             AttributedList list;
             lock (_isLoadingListingInBackground)
             {
@@ -224,7 +221,6 @@ namespace Ch.Cyberduck.Ui.Controller
                     if (_isLoadingListingInBackground.Count == 0)
                     {
                         //_controller.ReloadData();
-                        Console.WriteLine("Und jetzt refresh: " +_path);
                         _controller.RefreshObject(_path);
                     }
                 }
@@ -237,7 +233,6 @@ namespace Ch.Cyberduck.Ui.Controller
                                                                    _controller.View.StopActivityAnimation();
                                                                    _controller.UpdateStatusLabel();
                                                                };
-                Console.WriteLine("und schliesslich finish:" +_path);
                 _controller.Invoke(mainAction);
             }
         }
