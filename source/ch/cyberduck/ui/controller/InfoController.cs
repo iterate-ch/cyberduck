@@ -64,20 +64,6 @@ namespace Ch.Cyberduck.Ui.Controller
                                                             View.Close();
                                                         }
                                                     };
-
-            ConfigureToolbar();
-            ConfigureHelp();
-
-            if (_controller.getSession().isAclSupported())
-            {
-                PopulateAclUsers();
-                PopulateAclRoles();
-            }
-            if (_controller.getSession() is CloudSession &&
-                !_controller.getSession().getHost().getCredentials().isAnonymousLogin())
-            {
-                PopulateMetadata();
-            }
         }
 
         public override bool Singleton
@@ -96,6 +82,20 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
 
                 _files = value;
+
+                ConfigureToolbar();
+                ConfigureHelp();
+
+                if (_controller.getSession().isAclSupported())
+                {
+                    PopulateAclUsers();
+                    PopulateAclRoles();
+                }
+                if (_controller.getSession() is CloudSession &&
+                    !_controller.getSession().getHost().getCredentials().isAnonymousLogin())
+                {
+                    PopulateMetadata();
+                }
 
                 InitGeneral();
                 // Sum of files
