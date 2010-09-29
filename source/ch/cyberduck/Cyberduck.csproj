@@ -270,7 +270,9 @@
       <DependentUpon>UpdateForm.cs</DependentUpon>
     </EmbeddedResource>
     <!-- end localizations -->
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
