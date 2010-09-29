@@ -511,8 +511,9 @@ namespace Ch.Cyberduck.Core
             {
                 return false;
             }
+                       
             // Determine if there are any open connections
-            foreach (BrowserController controller in _browsers)
+            foreach (BrowserController controller in new List<BrowserController>(_browsers))
             {
                 if (Preferences.instance().getBoolean("browser.serialize"))
                 {
@@ -524,6 +525,7 @@ namespace Ch.Cyberduck.Core
                         Application._sessions.add(serialized);
                     }
                 }
+
                 if (controller.IsConnected())
                 {
                     if (Preferences.instance().getBoolean("browser.confirmDisconnect"))
@@ -555,6 +557,10 @@ namespace Ch.Cyberduck.Core
                                 }
                                 return false;
                             case 1: // Quit
+                                foreach (BrowserController c in new List<BrowserController>(Browsers))
+                                {
+                                    c.View.Dispose();
+                                }
                                 return ApplicationShouldTerminateAfterDonationPrompt();
                         }
                     }
@@ -600,23 +606,25 @@ namespace Ch.Cyberduck.Core
                                                             args.Cancel = !ApplicationShouldTerminate();
                                                         }
                                                     };
-            controller.View.ViewClosedEvent += delegate
-                                                   {
-                                                       _browsers.Remove(controller);
-                                                       if (0 == _browsers.Count)
-                                                       {
-                                                           // Close/Dispose all non-browser forms (e.g. Transfers) to allow shutdown
-                                                           FormCollection forms = application.OpenForms;
-                                                           for (int i = forms.Count - 1; i >= 0; i--)
-                                                           {
-                                                               forms[i].Dispose();
-                                                           }
-                                                       }
-                                                       else
-                                                       {
-                                                           application.MainForm = _browsers[0].View as Form;
-                                                       }
-                                                   };
+
+            controller.View.ViewDisposedEvent += delegate
+                                                     {
+                                                         _browsers.Remove(controller);
+                                                         if (0 == _browsers.Count)
+                                                         {
+                                                             // Close/Dispose all non-browser forms (e.g. Transfers) to allow shutdown
+                                                             FormCollection forms = application.OpenForms;
+                                                             for (int i = forms.Count - 1; i >= 0; i--)
+                                                             {
+                                                                 forms[i].Dispose();
+                                                             }
+                                                         }
+                                                         else
+                                                         {
+                                                             application.MainForm = _browsers[0].View as Form;
+                                                         }
+                                                     };
+
             if (show)
             {
                 controller.View.Show();

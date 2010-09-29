@@ -203,7 +203,6 @@ namespace Ch.Cyberduck.Ui.Controller
             View.FolderInside += View_FolderInside;
             View.ValidateFolderInside += View_ValidateFolderInside;
             View.Search += View_Search;
-            View.ValidateSearch += View_ValidateSearch;
             View.SendCustomCommand += View_SendCustomCommand;
             View.ValidateSendCustomCommand += View_ValidateSendCustomCommand;
             View.Stop += View_Stop;
@@ -276,7 +275,7 @@ namespace Ch.Cyberduck.Ui.Controller
             View.ShowCertificate += View_Certificate;
 
             View.ValidatePathsCombobox += View_ValidatePathsCombobox;
-            View.ValidateSearchField += View_ValidateSearchFieled;
+            View.ValidateSearchField += View_ValidateSearchField;
 
             //View.ViewClosingEvent += View_ClosingEvent;
             View.Exit += View_Exit;
@@ -859,7 +858,7 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
-        private bool View_ValidateSearchFieled()
+        private bool View_ValidateSearchField()
         {
             return IsMounted() || View.CurrentView != BrowserView.File;
         }
@@ -1067,31 +1066,13 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
-        private void View_ClosingEvent(object sender, FormClosingEventArgs e)
-        {
-            e.Cancel = !Unmount(() => View.Close());
-        }
-
         public override bool ViewShouldClose()
         {
-            //UnmountImpl();
-            //Console.WriteLine("jetztAAAAAAAAAAAAAAAAAA");
-            //bool shouldClose = false;
-
-            /*
-            bool sc = Unmount(delegate
-                                  {
-                                      Console.WriteLine("DISCONNECTED");
-                                      ForceCloseView();                                      
-                                  });*/
-            //Console.WriteLine("Rückgabe");
-            //return false;
             return Unmount();
         }
 
         protected override void Invalidate()
         {
-            Console.WriteLine("Invalidate BrowserController");
             if (HasSession())
             {
                 _session.removeConnectionListener(_listener);
@@ -1342,6 +1323,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private bool View_ValidateCopyUrl()
         {
+            return false;
             return IsMounted();
         }
 
@@ -1353,6 +1335,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private bool View_ValidateCopy()
         {
+            return false;
             return IsMounted() && SelectedPaths.Count > 0;
         }
 
@@ -1364,6 +1347,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private bool View_ValidateCut()
         {
+            return false;
             return IsMounted() && SelectedPaths.Count > 0;
         }
 
@@ -1385,8 +1369,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_Exit()
         {
-            //todo implement
-            MessageBox("Donation", "Donation Please", "DONATE!", eTaskDialogButtons.OK, eSysIcons.Information);
+            MainController.Exit();
         }
 
         private List<string> View_GetArchives()
@@ -2398,14 +2381,14 @@ namespace Ch.Cyberduck.Ui.Controller
         public static bool ApplicationShouldTerminate()
         {
             // Determine if there are any open connections
-            foreach (BrowserController controller in MainController.Browsers)
+            foreach (BrowserController controller in new List<BrowserController>(MainController.Browsers))
             {
                 BrowserController c = controller;
                 if (!controller.Unmount(delegate(DialogResult result)
                                             {
                                                 if (DialogResult.OK == result)
                                                 {
-                                                    //c.View.Close();
+                                                    c.View.Dispose();
                                                     return true;
                                                 }
                                                 return false;
