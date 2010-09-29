@@ -521,8 +521,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             try
             {
-                //note: first call takes a long time since proxy settings are being detected
-                //todo proxy handling in general needs to be considered
+                // Note: First call takes a long time since proxy settings are being detected
                 HttpWebRequest request = (HttpWebRequest) WebRequest.Create(url);
                 request.Proxy = null; // disable proxy auto-detection
                 request.Timeout = 5000;
@@ -564,8 +563,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
             if (string.Empty.Equals(_host.getProtocol().getUsernamePlaceholder()))
             {
-                //todo korrekter Key
-                View.UsernameLabel = Locale.localizedString("Username");
+                View.UsernameLabel = Locale.localizedString("Username", "Credentials");
             }
             else
             {
