@@ -60,9 +60,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             ConfigureCheckBoxButton(historyCheckBox);
             ConfigureCheckBoxButton(bonjourCheckBox);
 
-            //default view is the bookmark view
-            CurrentView = BrowserView.Bookmark;
-
             // configure browser properties
             browser.UseExplorerTheme = true;
             browser.UseTranslucentSelection = true;
@@ -551,6 +548,15 @@ namespace Ch.Cyberduck.Ui.Winforms
         public void ClearTranscript()
         {
             transcriptBox.Clear();
+        }
+
+        public void FocusBrowser()
+        {
+            if (browser.GetItemCount() > 0)
+            {
+                browser.SelectedIndex = 0;
+                browser.Focus();
+            }
         }
 
         public TreeListView.ChildrenGetterDelegate ModelChildrenGetterDelegate

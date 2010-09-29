@@ -18,7 +18,6 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Threading;
@@ -86,6 +85,10 @@ namespace Ch.Cyberduck.Ui.Controller
             View = view;
             _browserModel = new TreeBrowserModel(this);
             _bookmarkModel = new BookmarkModel(this, BookmarkCollection.defaultCollection());
+
+            //default view is the bookmark view
+            ToggleView(BrowserView.Bookmark);
+            View.StopActivityAnimation();
 
             View.ShowBookmarkManager += View_ShowBookmarkManager;
 
@@ -3704,6 +3707,8 @@ namespace Ch.Cyberduck.Ui.Controller
 
                 // Change to the browser view
                 BrowserController.ToggleView(BrowserView.File);
+
+                BrowserController.View.FocusBrowser();
             }
 
             public override void run()

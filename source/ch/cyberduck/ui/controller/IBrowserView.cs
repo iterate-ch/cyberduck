@@ -243,5 +243,6 @@ namespace Ch.Cyberduck.Ui.Controller
 
         void AddTranscriptEntry(bool request, string entry);
         void ClearTranscript();
+        void FocusBrowser();
     }
 }
