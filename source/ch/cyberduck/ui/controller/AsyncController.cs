@@ -69,7 +69,8 @@ namespace Ch.Cyberduck.Ui.Controller
 
                 if (View.InvokeRequired)
                 {
-                    if (wait)
+                    //currently only sync
+                    if (true)
                     {
                         View.Invoke(new AsyncDelegate(mainAction.run), null);
                     }
