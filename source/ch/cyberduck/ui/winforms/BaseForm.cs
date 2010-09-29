@@ -192,7 +192,11 @@ namespace Ch.Cyberduck.Ui.Winforms
         {
             if (owner is Form)
             {
-                base.Show(owner as Form);
+                if (!Visible)
+                {
+                    base.Show(owner as Form);
+                }
+                Focus();
             }
             {
                 Show();

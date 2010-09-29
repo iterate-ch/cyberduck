@@ -1886,7 +1886,6 @@ namespace Ch.Cyberduck.Ui.Controller
                     {
                         _inspector.Files = selected;
                     }
-
                     _inspector.View.Show(View);
                 }
                 else
