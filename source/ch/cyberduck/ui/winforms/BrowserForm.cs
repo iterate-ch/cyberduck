@@ -654,12 +654,12 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public void StartActivityAnimation()
         {
-            toolStripProgress.Image = IconCache.Instance.IconForName("throbber_small");
+            toolStripProgress.Visible = true;
         }
 
         public void StopActivityAnimation()
         {
-            toolStripProgress.Image = null;
+            toolStripProgress.Visible = false;
         }
 
         public PathFilter FilenameFilter
