@@ -1211,7 +1211,12 @@ public class S3Session extends CloudSession implements SSLSession {
     public Acl getPrivateAcl(String container) {
         for(final S3Bucket bucket : buckets.values()) {
             if(bucket.getName().equals(container)) {
-                return new Acl(new Acl.CanonicalUser(bucket.getOwner().getId()),
+                StorageOwner owner = bucket.getOwner();
+                if(null == owner) {
+                    log.warn("Owner not known for container " + container);
+                    continue;
+                }
+                return new Acl(new Acl.CanonicalUser(owner.getId()),
                         new Acl.Role(org.jets3t.service.acl.Permission.PERMISSION_FULL_CONTROL.toString()));
             }
         }
