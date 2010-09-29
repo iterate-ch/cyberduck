@@ -648,13 +648,12 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public void StartActivityAnimation()
         {
-            toolStripProgressBar.Style = ProgressBarStyle.Marquee;
+            toolStripProgress.Image = IconCache.Instance.IconForName("throbber_small");
         }
 
         public void StopActivityAnimation()
         {
-            toolStripProgressBar.Value = 0;
-            toolStripProgressBar.Style = ProgressBarStyle.Continuous;
+            toolStripProgress.Image = null;
         }
 
         public PathFilter FilenameFilter

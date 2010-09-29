@@ -33,10 +33,10 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(BrowserForm));
             this.statusStrip = new System.Windows.Forms.StatusStrip();
-            this.toolStripProgressBar = new System.Windows.Forms.ToolStripProgressBar();
+            this.toolStripProgress = new System.Windows.Forms.ToolStripStatusLabel();
             this.statusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.securityToolStripStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
-            this.menuStrip1 = new ClickThroughMenuStrip();
+            this.menuStrip1 = new Ch.Cyberduck.Ui.Winforms.Controls.ClickThroughMenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.newBrowserToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openConnectionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -63,6 +63,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.toolStripSeparator11 = new System.Windows.Forms.ToolStripSeparator();
             this.createArchiveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.archiveMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.createArchiveContextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.expandArchiveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator12 = new System.Windows.Forms.ToolStripSeparator();
             this.printToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -147,12 +148,11 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.checkToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator28 = new System.Windows.Forms.ToolStripSeparator();
             this.aboutCyberduckToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.createArchiveContextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editorMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.editor1ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editor2ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editContextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolBar = new ClickThroughToolStrip();
+            this.toolBar = new Ch.Cyberduck.Ui.Winforms.Controls.ClickThroughToolStrip();
             this.openConnectionToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparatorAfterOpenConnection = new System.Windows.Forms.ToolStripSeparator();
             this.quickConnectToolStripComboBox = new System.Windows.Forms.ToolStripComboBox();
@@ -266,7 +266,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // statusStrip
             // 
             this.statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripProgressBar,
+            this.toolStripProgress,
             this.statusLabel,
             this.securityToolStripStatusLabel});
             this.statusStrip.Location = new System.Drawing.Point(0, 616);
@@ -275,17 +275,18 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.statusStrip.Size = new System.Drawing.Size(1031, 22);
             this.statusStrip.TabIndex = 9;
             // 
-            // toolStripProgressBar
+            // toolStripProgress
             // 
-            this.toolStripProgressBar.MarqueeAnimationSpeed = 30;
-            this.toolStripProgressBar.Name = "toolStripProgressBar";
-            this.toolStripProgressBar.Size = new System.Drawing.Size(20, 16);
-            this.toolStripProgressBar.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
+            this.toolStripProgress.AutoSize = false;
+            this.toolStripProgress.Image = global::Ch.Cyberduck.ResourcesBundle.throbber_small;
+            this.toolStripProgress.Margin = new System.Windows.Forms.Padding(2, 3, 0, 2);
+            this.toolStripProgress.Name = "toolStripProgress";
+            this.toolStripProgress.Size = new System.Drawing.Size(16, 17);
             // 
             // statusLabel
             // 
             this.statusLabel.Name = "statusLabel";
-            this.statusLabel.Size = new System.Drawing.Size(969, 17);
+            this.statusLabel.Size = new System.Drawing.Size(942, 17);
             this.statusLabel.Spring = true;
             this.statusLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
@@ -493,8 +494,15 @@ namespace Ch.Cyberduck.Ui.Winforms
             // archiveMenuStrip
             // 
             this.archiveMenuStrip.Name = "archiveMenuStrip";
-            this.archiveMenuStrip.OwnerItem = this.createArchiveContextToolStripMenuItem;
+            this.archiveMenuStrip.OwnerItem = this.createArchiveToolStripMenuItem;
             this.archiveMenuStrip.Size = new System.Drawing.Size(61, 4);
+            // 
+            // createArchiveContextToolStripMenuItem
+            // 
+            this.createArchiveContextToolStripMenuItem.DropDown = this.archiveMenuStrip;
+            this.createArchiveContextToolStripMenuItem.Name = "createArchiveContextToolStripMenuItem";
+            this.createArchiveContextToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+            this.createArchiveContextToolStripMenuItem.Text = "Create Archive";
             // 
             // expandArchiveToolStripMenuItem
             // 
@@ -1074,13 +1082,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.aboutCyberduckToolStripMenuItem.Name = "aboutCyberduckToolStripMenuItem";
             this.aboutCyberduckToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
             this.aboutCyberduckToolStripMenuItem.Text = "&About Cyberduck";
-            // 
-            // createArchiveContextToolStripMenuItem
-            // 
-            this.createArchiveContextToolStripMenuItem.DropDown = this.archiveMenuStrip;
-            this.createArchiveContextToolStripMenuItem.Name = "createArchiveContextToolStripMenuItem";
-            this.createArchiveContextToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
-            this.createArchiveContextToolStripMenuItem.Text = "Create Archive";
             // 
             // editorMenuStrip
             // 
@@ -1978,7 +1979,6 @@ namespace Ch.Cyberduck.Ui.Winforms
         private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem aboutCyberduckToolStripMenuItem;
-        private System.Windows.Forms.ToolStrip toolBar;
         private System.Windows.Forms.ToolStripButton openConnectionToolStripButton;
         private System.Windows.Forms.ToolStripMenuItem viewToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem goToolStripMenuItem;
@@ -2173,12 +2173,13 @@ namespace Ch.Cyberduck.Ui.Winforms
         private System.Windows.Forms.ContextMenuStrip columnContextMenu;
         private System.Windows.Forms.ContextMenuStrip historyMenuStrip;
         private System.Windows.Forms.ContextMenuStrip bonjourMenuStrip;
-        private System.Windows.Forms.ToolStripProgressBar toolStripProgressBar;
         private System.Windows.Forms.ToolStripStatusLabel securityToolStripStatusLabel;
         private SearchTextBox searchTextBox;
         private System.Windows.Forms.ToolStripMenuItem duplicateBookmarkToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem duplicateBookmarkToolStripMenuItem;
         private ClickThroughMenuStrip menuStrip1;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripProgress;
+        private ClickThroughToolStrip toolBar;
     }
 }
 
