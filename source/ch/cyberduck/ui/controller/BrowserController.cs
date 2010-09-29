@@ -1871,7 +1871,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_ShowTransfers()
         {
-            Invoke(() => TransferController.Instance.View.Show());
+            TransferController.Instance.View.Show();
         }
 
         private void View_ShowInspector()

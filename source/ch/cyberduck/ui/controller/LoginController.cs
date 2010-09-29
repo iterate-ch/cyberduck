@@ -212,12 +212,12 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             protected override object create()
             {
-                return new LoginController(TransferController.Instance);
+                return new LoginController(null);
             }
 
             public override ch.cyberduck.core.LoginController create(Session s)
             {
-                return new LoginController(TransferController.Instance);
+                return new LoginController(null);
             }
 
             public override ch.cyberduck.core.LoginController create(ch.cyberduck.ui.Controller c)
