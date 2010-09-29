@@ -15,11 +15,9 @@
 // Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
 // 
-using System;
 using System.Threading;
 using ch.cyberduck.core;
 using Ch.Cyberduck.Core;
-using Ch.Cyberduck.Ui.Winforms.Serializer;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
