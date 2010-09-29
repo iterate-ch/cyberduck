@@ -27,7 +27,6 @@ namespace Ch.Cyberduck.Core.Collections
         private readonly Dictionary<TKey, TValue> data;
         private readonly ICollection<KeyValuePair<TKey, TValue>> dataAsCollection;
         private readonly IndexedLinkedList<TKey> lruList = new IndexedLinkedList<TKey>();
-        private object _sync = new object();
 
         public LRUCache(int capacity)
         {
@@ -98,7 +97,6 @@ namespace Ch.Cyberduck.Core.Collections
                 if (data.Count > capacity)
                 {
                     Remove(lruList.First);
-                    lruList.RemoveFirst();
                 }
             }
         }
