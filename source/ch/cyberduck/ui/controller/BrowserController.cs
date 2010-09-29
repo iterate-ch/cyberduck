@@ -2211,8 +2211,6 @@ namespace Ch.Cyberduck.Ui.Controller
 
         protected void ReloadData(ICollection<Path> selected)
         {
-            Console.WriteLine("ReloadData invoked: " + selected);
-
             List<TreePathReference> toUpdate = new List<TreePathReference>();
             foreach (TreePathReference reference in View.VisiblePaths)
             {
@@ -2901,6 +2899,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 case BrowserView.File:
                     View.CurrentView = BrowserView.File;
+                    UpdateStatusLabel();
                     //ReloadData(false); //not necessary?
                     break;
                 case BrowserView.Bookmark:
