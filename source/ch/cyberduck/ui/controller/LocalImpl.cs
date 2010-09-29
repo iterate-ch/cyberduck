@@ -85,8 +85,6 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public override void writeUnixPermission(Permission p, bool b)
         {
-			//Todo. Return isWriteUnixPermissionSupported false.
-            //todo was machen wir hier? throw new UnsupportedOperationException()
             ;
         }
 
