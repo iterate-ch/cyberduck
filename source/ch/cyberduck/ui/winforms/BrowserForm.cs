@@ -222,7 +222,6 @@ namespace Ch.Cyberduck.Ui.Winforms
         public event VoidHandler FolderInside;
         public event ValidateCommand ValidateFolderInside;
         public event VoidHandler Search;
-        public event ValidateCommand ValidateSearch;
         public event VoidHandler SendCustomCommand;
         public event ValidateCommand ValidateSendCustomCommand;
         public event VoidHandler Stop;
@@ -1143,7 +1142,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                              {
                                  searchToolStripMenuItem
                              },
-                         (sender, args) => Search(), () => ValidateSearch());
+                         (sender, args) => Search(), () => ValidateSearchField());
             Commands.Add(new ToolStripItem[]
                              {
                                  sendCommandToolStripMenuItem

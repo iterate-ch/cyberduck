@@ -183,7 +183,6 @@ namespace Ch.Cyberduck.Ui.Controller
         event VoidHandler FolderInside;
         event ValidateCommand ValidateFolderInside;
         event VoidHandler Search;
-        event ValidateCommand ValidateSearch;
         event VoidHandler SendCustomCommand;
         event ValidateCommand ValidateSendCustomCommand;
         event VoidHandler Stop;
