@@ -236,6 +236,7 @@ namespace Ch.Cyberduck.Ui.Controller
             View.ModelSizeGetter = _browserModel.GetSize;
             View.ModelSizeAsStringGetter = _browserModel.GetSizeAsString;
             View.ModelModifiedGetter = _browserModel.GetModified;
+            View.ModelModifiedAsStringGetter = _browserModel.GetModifiedAsString;
             View.ModelOwnerGetter = _browserModel.GetOwner;
             View.ModelGroupGetter = _browserModel.GetGroup;
             View.ModelPermissionsGetter = _browserModel.GetPermission;

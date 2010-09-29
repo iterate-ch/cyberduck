@@ -18,7 +18,6 @@
 using System;
 using System.Collections.Generic;
 using ch.cyberduck.core;
-using Ch.Cyberduck.Core;
 using ch.cyberduck.core.i18n;
 using Ch.Cyberduck.Ui.Controller.Threading;
 using Ch.Cyberduck.Ui.Winforms;
@@ -109,6 +108,16 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 return UserDefaultsDateFormatter.ConvertJavaMiliSecondToDateTime(modificationDate);
             }
+            return DateTime.MinValue;
+        }
+
+        public string GetModifiedAsString(object value)
+        {
+            DateTime modificationDate = (DateTime)value;
+            if (modificationDate != DateTime.MinValue)
+            {
+                return UserDefaultsDateFormatter.GetShortFormat(modificationDate);
+            }            
             return _unknown;
         }
 

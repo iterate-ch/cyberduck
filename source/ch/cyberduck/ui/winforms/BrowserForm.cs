@@ -495,6 +495,11 @@ namespace Ch.Cyberduck.Ui.Winforms
             set { new TypedColumn<TreePathReference>(treeColumnModified) {AspectGetter = value}; }
         }
 
+        public AspectToStringConverterDelegate ModelModifiedAsStringGetter
+        {
+            set { treeColumnModified.AspectToStringConverter = value; }
+        }
+
         public TypedColumn<TreePathReference>.TypedAspectGetterDelegate ModelOwnerGetter
         {
             set { new TypedColumn<TreePathReference>(treeColumnOwner) {AspectGetter = value}; }

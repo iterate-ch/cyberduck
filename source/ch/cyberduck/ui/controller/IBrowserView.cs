@@ -76,6 +76,7 @@ namespace Ch.Cyberduck.Ui.Controller
         TypedColumn<TreePathReference>.TypedAspectGetterDelegate ModelSizeGetter { set; }
         AspectToStringConverterDelegate ModelSizeAsStringGetter { set; }
         TypedColumn<TreePathReference>.TypedAspectGetterDelegate ModelModifiedGetter { set; }
+        AspectToStringConverterDelegate ModelModifiedAsStringGetter { set; }
 
         TypedColumn<TreePathReference>.TypedAspectGetterDelegate ModelOwnerGetter { set; }
         TypedColumn<TreePathReference>.TypedAspectGetterDelegate ModelGroupGetter { set; }
