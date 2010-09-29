@@ -226,23 +226,29 @@ public class FTPControlSocket {
             if(connectMode == FTPConnectMode.ACTIVE) {
                 return this.createDataSocketActive();
             }
-            if(connectMode == FTPConnectMode.PASV) {
+            else if(connectMode == FTPConnectMode.PASV) {
                 return this.createDataSocketPassive();
             }
         }
         catch(FTPException e) {
             if(Preferences.instance().getBoolean("ftp.connectmode.fallback")) {
-                // Fallback to other connect mode
-                if(connectMode == FTPConnectMode.ACTIVE) {
-                    return this.createDataSocketPassive();
+                try {
+                    // Fallback to other connect mode
+                    if(connectMode == FTPConnectMode.ACTIVE) {
+                        return this.createDataSocketPassive();
+                    }
+                    else if(connectMode == FTPConnectMode.PASV) {
+                        return this.createDataSocketActive();
+                    }
                 }
-                if(connectMode == FTPConnectMode.PASV) {
-                    return this.createDataSocketActive();
+                catch(IOException fallback) {
+                    // Report first error.
+                    throw e;
                 }
             }
             throw e;
         }
-        return null;
+        throw new FTPException("Unknown connect mode:" + connectMode);
     }
 
     /**
