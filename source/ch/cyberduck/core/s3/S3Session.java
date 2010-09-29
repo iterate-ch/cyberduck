@@ -402,12 +402,8 @@ public class S3Session extends CloudSession implements SSLSession {
                 return location;
             }
             catch(ServiceException e) {
-                if(this.isPermissionFailure(e)) {
-                    log.warn("Bucket location not supported:" + e.getMessage());
-                    this.setBucketLocationSupported(false);
-                    return null;
-                }
-                this.error("Cannot read file attributes", e);
+                log.warn("Bucket location not supported:" + e.getMessage());
+                this.setBucketLocationSupported(false);
             }
             catch(IOException e) {
                 this.error("Cannot read file attributes", e);
@@ -492,26 +488,6 @@ public class S3Session extends CloudSession implements SSLSession {
         }
         return e.getErrorCode().equals("InvalidAccessKeyId") // Invalid Access ID
                 || e.getErrorCode().equals("SignatureDoesNotMatch"); // Invalid Secret Key
-    }
-
-    /**
-     * Parse the service exception for a 403 HTTP error response.
-     *
-     * @param e
-     * @return True if generic permission issue.
-     */
-    protected boolean isPermissionFailure(ServiceException e) {
-        return e.getResponseCode() == 403;
-    }
-
-    /**
-     * Parse the service exception for a 403 HTTP error response.
-     *
-     * @param e
-     * @return True if generic permission issue.
-     */
-    protected boolean isPermissionFailure(CloudFrontServiceException e) {
-        return e.getResponseCode() == 403;
     }
 
     @Override
@@ -789,13 +765,8 @@ public class S3Session extends CloudSession implements SSLSession {
                 }
             }
             catch(CloudFrontServiceException e) {
-                if(this.isPermissionFailure(e)) {
-                    log.warn("Invalid CloudFront account:" + e.getMessage());
-                    this.setSupportedDistributionMethods(Collections.<Distribution.Method>emptyList());
-                }
-                else {
-                    this.error("Cannot read file attributes", e);
-                }
+                log.warn("Invalid CloudFront account:" + e.getMessage());
+                this.setSupportedDistributionMethods(Collections.<Distribution.Method>emptyList());
             }
             catch(IOException e) {
                 this.error("Cannot read file attributes", e);
@@ -957,13 +928,8 @@ public class S3Session extends CloudSession implements SSLSession {
                     loggingStatus.put(container, status);
                 }
                 catch(ServiceException e) {
-                    if(this.isPermissionFailure(e)) {
-                        log.warn("Bucket logging not supported:" + e.getMessage());
-                        this.setLoggingSupported(false);
-                    }
-                    else {
-                        this.error("Cannot read file attributes", e);
-                    }
+                    log.warn("Bucket logging not supported:" + e.getMessage());
+                    this.setLoggingSupported(false);
                 }
                 catch(IOException e) {
                     this.error("Cannot read file attributes", e);
@@ -1048,13 +1014,8 @@ public class S3Session extends CloudSession implements SSLSession {
                     versioningStatus.put(container, status);
                 }
                 catch(ServiceException e) {
-                    if(this.isPermissionFailure(e)) {
-                        log.warn("Bucket versioning not supported:" + e.getMessage());
-                        this.setVersioningSupported(false);
-                    }
-                    else {
-                        this.error("Cannot read file attributes", e);
-                    }
+                    log.warn("Bucket versioning not supported:" + e.getMessage());
+                    this.setVersioningSupported(false);
                 }
                 catch(IOException e) {
                     this.error("Cannot read file attributes", e);

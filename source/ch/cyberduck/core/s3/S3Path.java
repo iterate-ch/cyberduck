@@ -129,13 +129,8 @@ public class S3Path extends CloudPath {
                 }
             }
             catch(ServiceException e) {
-                if(this.getSession().isPermissionFailure(e)) {
-                    // Anonymous services can only get a publicly-readable object's details
-                    log.warn("Cannot read object details:" + e.getMessage());
-                }
-                else {
-                    throw e;
-                }
+                // Anonymous services can only get a publicly-readable object's details
+                log.warn("Cannot read object details:" + e.getMessage());
             }
         }
         if(null == _details) {
@@ -769,7 +764,7 @@ public class S3Path extends CloudPath {
                         this.error("Bucket name is not DNS compatible");
                         return;
                     }
-                    this.getSession().getClient().createBucket(this.getContainerName(), 
+                    this.getSession().getClient().createBucket(this.getContainerName(),
                             Preferences.instance().getProperty("s3.location"), AccessControlList.REST_CANNED_PUBLIC_READ);
                 }
                 else {
