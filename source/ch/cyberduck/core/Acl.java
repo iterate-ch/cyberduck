@@ -248,7 +248,7 @@ public class Acl extends HashMap<Acl.User, Set<Acl.Role>> {
     /**
      * An email grantee
      */
-    public static class EmailUser extends User {
+    public static class EmailUser extends CanonicalUser {
         public EmailUser() {
             super("", true);
         }
@@ -259,6 +259,10 @@ public class Acl extends HashMap<Acl.User, Set<Acl.Role>> {
 
         public EmailUser(String identifier, boolean editable) {
             super(identifier, editable);
+        }
+
+        public EmailUser(String identifier, String displayName, boolean editable) {
+            super(identifier, displayName, editable);
         }
 
         @Override
