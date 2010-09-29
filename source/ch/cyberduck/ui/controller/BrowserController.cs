@@ -1134,11 +1134,6 @@ namespace Ch.Cyberduck.Ui.Controller
             return IsMounted() && getSession().isSendCommandSupported();
         }
 
-        private bool View_ValidateSearch()
-        {
-            return IsMounted(); //todo check if necessary... || this.getSelectedTabView() == TAB_BOOKMARKS;
-        }
-
         private bool View_ValidateFolderInside()
         {
             return IsMounted() && SelectedPaths.Count > 0;
