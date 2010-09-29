@@ -323,6 +323,7 @@ namespace Ch.Cyberduck.Core
                                        {
                                            NewBrowser().Mount(host);
                                        }
+                                       _sessions.clear();
                                    });
             }
             if (Preferences.instance().getBoolean(
