@@ -1,4 +1,4 @@
-﻿// 
+// 
 // Copyright (c) 2010 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
@@ -1306,7 +1306,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private bool View_ValidatePaste()
         {
-            //todo implement!
+            //todo implement
             return false;
         }
 
@@ -1647,7 +1647,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_NewDownload()
         {
-            //todo
+            //todo implement
             throw new NotImplementedException();
         }
 
@@ -2527,7 +2527,6 @@ namespace Ch.Cyberduck.Ui.Controller
         /// <returns>The previously browsed path or null if there is none</returns>
         public Path GetPreviousPath()
         {
-            Console.WriteLine("GetPreviousPath called");
             int size = _backHistory.Count;
             if (size > 1)
             {
