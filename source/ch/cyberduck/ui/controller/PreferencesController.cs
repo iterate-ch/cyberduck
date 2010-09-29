@@ -1333,7 +1333,6 @@ namespace Ch.Cyberduck.Ui.Controller
         private void PopulateTransferModes()
         {
             List<string> modes = new List<string>();
-            //todo Reihenfolge korrekt?
             modes.Add(UseQueueSession);
             modes.Add(UseBrowserSession);
             View.PopulateTransferModes(modes);
