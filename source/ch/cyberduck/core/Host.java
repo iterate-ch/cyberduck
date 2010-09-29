@@ -266,9 +266,7 @@ public class Host implements Serializable {
         dict.setStringForKey(this.getProtocol().getIdentifier(), "Protocol");
         dict.setStringForKey(this.getNickname(), "Nickname");
         dict.setStringForKey(this.getUuid(), "UUID");
-        if(StringUtils.isNotBlank(this.getHostname())) {
-            dict.setStringForKey(this.getHostname(), "Hostname");
-        }
+        dict.setStringForKey(this.getHostname(), "Hostname");
         dict.setStringForKey(String.valueOf(this.getPort()), "Port");
         if(StringUtils.isNotBlank(this.getCredentials().getUsername())) {
             dict.setStringForKey(this.getCredentials().getUsername(), "Username");
