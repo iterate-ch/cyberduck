@@ -134,12 +134,12 @@ public class CFSession extends CloudSession implements SSLSession {
             log.info("Using authentication URL " + authentication.toString());
             client.setAuthenticationURL(authentication.toString());
             URI url = URI.create(authentication.toString());
-            client.setHostConfiguration(this.getHostConfiguration(url));
+            client.setHostConfiguration(this.getHostConfiguration(url.getScheme(), url.getHost(), url.getPort()));
             this.getTrustManager().setHostname(url.getHost());
         }
         else {
             URI url = URI.create(client.getStorageURL());
-            client.setHostConfiguration(this.getHostConfiguration(url));
+            client.setHostConfiguration(this.getHostConfiguration(url.getScheme(), url.getHost(), url.getPort()));
             this.getTrustManager().setHostname(url.getHost());
         }
     }

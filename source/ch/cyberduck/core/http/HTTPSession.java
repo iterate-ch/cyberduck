@@ -40,7 +40,6 @@ import javax.net.ssl.SSLSocketFactory;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.net.URI;
 import java.net.UnknownHostException;
 
 /**
@@ -112,19 +111,19 @@ public abstract class HTTPSession extends Session implements SSLSession {
      * @return A host configuration initialized with the hostname, port and socket factory.
      */
     protected HostConfiguration getHostConfiguration() {
-        return this.getHostConfiguration(URI.create(host.toURL()));
+        return this.getHostConfiguration(this.getHost().getProtocol().getScheme(), this.getHost().getHostname(),
+                this.getHost().getPort());
     }
 
-    protected HostConfiguration getHostConfiguration(URI uri) {
+    protected HostConfiguration getHostConfiguration(String scheme, String hostname, int port) {
         final HostConfiguration configuration = new StickyHostConfiguration();
-        int port = uri.getPort();
-        if(this.getHost().getProtocol().isSecure()) {
+        if("https".equals(scheme)) {
             if(-1 == port) {
                 port = 443;
             }
             // Configuration with custom socket factory using the trust manager
-            configuration.setHost(uri.getHost(), port,
-                    new org.apache.commons.httpclient.protocol.Protocol(uri.getScheme(),
+            configuration.setHost(hostname, port,
+                    new org.apache.commons.httpclient.protocol.Protocol(scheme,
                             new SocketFactory(this.getTrustManager()), port)
             );
             if(Preferences.instance().getBoolean("connection.proxy.enable")) {
@@ -134,12 +133,12 @@ public abstract class HTTPSession extends Session implements SSLSession {
                 }
             }
         }
-        else {
+        else if("http".equals(scheme)) {
             if(-1 == port) {
                 port = 80;
             }
-            configuration.setHost(uri.getHost(), port,
-                    new org.apache.commons.httpclient.protocol.Protocol(uri.getScheme(),
+            configuration.setHost(hostname, port,
+                    new org.apache.commons.httpclient.protocol.Protocol(scheme,
                             new DefaultProtocolSocketFactory(), port)
             );
             if(Preferences.instance().getBoolean("connection.proxy.enable")) {
