@@ -75,7 +75,6 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public override void writeUnixPermission(Permission p, bool b)
         {
-            //todo auch in preferences prüfen
             ;
         }
     }
