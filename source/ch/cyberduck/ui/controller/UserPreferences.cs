@@ -137,8 +137,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public override void setProperty(string str, List l)
         {
-            //todo
-            ;
+            throw new InvalidOperationException();
         }
 
         public override void deleteProperty(string property)
@@ -199,8 +198,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public override List getList(string str)
         {
-            //todo
-            return new ArrayList();
+            throw new InvalidOperationException();
         }
 
         public override void save()
