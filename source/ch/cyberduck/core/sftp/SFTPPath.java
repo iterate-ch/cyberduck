@@ -398,14 +398,14 @@ public class SFTPPath extends Path {
     @Override
     public void writeTimestamp(long created, long modified, long accessed) {
         try {
-            this.writeModificationDateImpl(created, created);
+            this.writeModificationDateImpl(modified);
         }
         catch(IOException e) {
             this.error("Cannot change timestamp", e);
         }
     }
 
-    private void writeModificationDateImpl(long modified, long created) throws IOException {
+    private void writeModificationDateImpl(long modified) throws IOException {
         this.getSession().message(MessageFormat.format(Locale.localizedString("Changing timestamp of {0} to {1}", "Status"),
                 this.getName(), DateFormatterFactory.instance().getShortFormat(modified)));
         try {
