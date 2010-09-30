@@ -107,20 +107,12 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private static string ApplicationRevision
         {
-            get
-            {
-                string[] versionParts = Application.ProductVersion.Split('.');
-                return versionParts[2];
-            }
+            get { return Assembly.GetExecutingAssembly().GetName().Version.Revision.ToString(); }
         }
 
         private static string ApplicationVersion
         {
-            get
-            {
-                string[] versionParts = Application.ProductVersion.Split('.');
-                return String.Format("{0}.{1} ({2})", versionParts[0], versionParts[1], versionParts[2]);
-            }
+            get { return Application.ProductVersion; }
         }
 
         public override void setProperty(string property, string value)
@@ -242,13 +234,13 @@ namespace Ch.Cyberduck.Ui.Controller
             defaults.put("application.language.custom", false.ToString());
             defaults.put("bookmark.import.filezilla.location", Path.Combine(Environment.GetFolderPath(
                 Environment.SpecialFolder.ApplicationData), "FileZilla", "sitemanager.xml"));
-            
+
             base.setDefaults();
 
             defaults.put("protocol.azure.tls.enable", true.ToString());
             defaults.put("application.support.path", RoamingApplicationDataPath);
             defaults.put("update.check.last", "0");
-            
+
             defaults.put("queue.download.folder", DefaultDownloadPath);
             defaults.put("queue.upload.permissions.useDefault", true.ToString());
             defaults.put("queue.upload.changePermissions", true.ToString());
@@ -284,7 +276,7 @@ namespace Ch.Cyberduck.Ui.Controller
             defaults.put("transfer.toolbar.cleanup", false.ToString());
             defaults.put("transfer.toolbar.log", false.ToString());
             defaults.put("transfer.toolbar.open", true.ToString());
-            defaults.put("transfer.toolbar.show", true.ToString());            
+            defaults.put("transfer.toolbar.show", true.ToString());
         }
 
         public string GetDefaultLanguage()

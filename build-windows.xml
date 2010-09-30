@@ -49,8 +49,8 @@
 
         <propertyregex property="minor"
                        input="${cyberduck.version.minor}.0"
-                       regexp="(\d\.\d)(\.\d)?"
-                       select="\1"/>
+                       regexp="(\d)([\w\d]*)\.(\d)(\.\d)?"
+                       select="\1.\3"/>
 
         <property name="version"
                   value="${cyberduck.version.major}.${minor}.${svn.revision.stripped}"/>
@@ -71,6 +71,7 @@
             <target name="Build"/>
 
             <property name="Version" value="${version}"/>
+            <property name="ShortVersion" value="${shortversion}"/>
             <property name="Configuration" value="${configuration}"/>
             <property name="Platform" value="AnyCPU"/>
         </dn:msbuild>

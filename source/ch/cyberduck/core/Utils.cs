@@ -36,15 +36,16 @@ namespace Ch.Cyberduck.Core
     public class Utils
     {
         public delegate object ApplyPerItemForwardDelegate<T>(T item);
+
         public delegate T ApplyPerItemReverseDelegate<T>(object item);
+
+        public static readonly bool IsVistaOrLater = OperatingSystemVersion.Current >= OSVersionInfo.Vista;
+        public static readonly bool IsWin7OrLater = OperatingSystemVersion.Current >= OSVersionInfo.Win7;
 
         private static readonly Logger Log = Logger.getLogger(typeof (Utils).Name);
 
         private static readonly LRUCache<string, string> defaultApplicationCache = new LRUCache<string, string>(100);
         public static Encoding encoding = Encoding.UTF8;
-
-        public static readonly bool IsVistaOrLater = OperatingSystemVersion.Current >= OSVersionInfo.Vista;
-        public static readonly bool IsWin7OrLater = OperatingSystemVersion.Current >= OSVersionInfo.Win7;
 
         public static bool StartProcess(string filename, string args)
         {
@@ -57,7 +58,7 @@ namespace Ch.Cyberduck.Core
             {
                 Log.error(String.Format("StartProcess: {0},{1}", e.Message, e.NativeErrorCode));
                 return false;
-            }            
+            }
         }
 
         public static bool StartProcess(string filename)
@@ -134,7 +135,7 @@ namespace Ch.Cyberduck.Core
         /// <returns>A java list</returns>
         public static List ConvertToJavaList<T>(IEnumerable<T> list)
         {
-            return ConvertToJavaList<T>(list, null);
+            return ConvertToJavaList(list, null);
         }
 
         /// <summary>
