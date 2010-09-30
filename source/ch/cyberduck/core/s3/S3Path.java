@@ -230,8 +230,7 @@ public class S3Path extends CloudPath {
                         ((CanonicalGrantee) grant.getGrantee()).getDisplayName(), false), role);
             }
             else if(grant.getGrantee() instanceof EmailAddressGrantee) {
-                acl.addAll(new Acl.EmailUser(grant.getGrantee().getIdentifier(),
-                        ((EmailAddressGrantee) grant.getGrantee()).getDisplayName(), true), role);
+                acl.addAll(new Acl.EmailUser(grant.getGrantee().getIdentifier()), role);
             }
             else if(grant.getGrantee() instanceof GroupGrantee) {
                 acl.addAll(new Acl.GroupUser(grant.getGrantee().getIdentifier()), role);
