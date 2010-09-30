@@ -38,6 +38,7 @@ RequestExecutionLevel admin
 !define MIN_FRA_BUILD "*"
 
 ; Welcome page
+!define MUI_WELCOMEPAGE_TITLE_3LINES
 !insertmacro MUI_PAGE_WELCOME
 ; License page
 ;!insertmacro MUI_PAGE_LICENSE "C:\Users\Public\Documents\test.rtf"
@@ -145,8 +146,6 @@ Function UninstallPrevious
     ; Run the uninstaller silently.
     ExecWait '"$R0" /S'
 
-    Abort "Fertig"
-
     Done:
 
 FunctionEnd
@@ -199,7 +198,7 @@ Section "MainSection" SEC01
   File "${BASEDIR}\Cyberduck.exe.config"
   File "${BASEDIR}\Acknowledgments.rtf"
   File "${BASEDIR}\cyberduck-document.ico"
-  File /x IKVM.OpenJDK.SwingAWT.dll "${BASEDIR}\*.dll"
+  File "${BASEDIR}\*.dll"
   File "${BASEDIR}\..\update\wyUpdate.exe"
   File "${BASEDIR}\..\update\*.wyc"
 
