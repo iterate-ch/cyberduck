@@ -1,4 +1,4 @@
-4.0 [http://trac.cyberduck.ch/milestone/4.0]
+4.0 (Sep-30-2010) [http://trac.cyberduck.ch/milestone/4.0]
 - [Feature] Version for Microsoft Windows XP, Windows Vista & Windows 7.
 - [Feature] Connecting to Windows Azure Blob Storage (Azure) (#3938)
 
