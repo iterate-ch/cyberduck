@@ -42,7 +42,6 @@ namespace Ch.Cyberduck.Core
                                              x.For<INewFolderPromptView>().Singleton().Use<NewFolderPromptForm>();
                                              x.For<ICreateFilePromptView>().Singleton().Use<CreateFilePromptForm>();
                                              x.For<IDuplicateFilePromptView>().Singleton().Use<DuplicateFilePromptForm>();
-                                             x.For<IMessageBoxView>().Singleton().Use<MessageBoxDialog>();
                                              x.For<IPreferencesView>().Singleton().Use<PreferencesForm>();
                                              x.For<IDonationView>().Singleton().Use<DonationForm>();
 

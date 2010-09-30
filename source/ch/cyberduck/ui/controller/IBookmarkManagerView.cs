@@ -38,7 +38,6 @@ namespace Ch.Cyberduck.Ui.Controller
 
         void SetBookmarkModel(IEnumerable hosts);
         void RefreshBookmark(Host host);
-        //todo bei Add: Einhaltung der Reihenfolge müsste wohl noch beachtet werden
         void AddBookmark(Host host);
         void RemoveBookmark(Host host);
         void EnsureBookmarkVisible(Host host);

@@ -321,7 +321,6 @@
     <Compile Include="ui\controller\IErrorView.cs" />
     <Compile Include="ui\controller\IInfoView.cs" />
     <Compile Include="ui\controller\ILoginView.cs" />
-    <Compile Include="ui\controller\IMessageBoxView.cs" />
     <Compile Include="ui\controller\INewFolderPromptView.cs" />
     <Compile Include="ui\controller\InfoController.cs" />
     <Compile Include="ui\controller\IPreferencesView.cs" />
@@ -334,7 +333,6 @@
     <Compile Include="ui\controller\LocaleImpl.cs" />
     <Compile Include="ui\controller\LocalImpl.cs" />
     <Compile Include="ui\controller\LoginController.cs" />
-    <Compile Include="ui\controller\MessageBoxDialog.cs" />
     <Compile Include="ui\controller\PathClipboard.cs" />
     <Compile Include="ui\controller\PersistentFormHandler.cs" />
     <Compile Include="ui\controller\SyncPromptController.cs" />

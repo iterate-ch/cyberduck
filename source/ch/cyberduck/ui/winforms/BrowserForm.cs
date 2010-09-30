@@ -165,7 +165,6 @@ namespace Ch.Cyberduck.Ui.Winforms
         public event VoidHandler ExpandArchive;
         public event ValidateCommand ValidateExpandArchive;
         public event VoidHandler Exit;
-        public event VoidHandler ShowBookmarkManager;
         public event VoidHandler QuickConnect;
         public event VoidHandler OpenConnection;
         public event ValidateCommand ValidateOpenConnection;
@@ -1511,11 +1510,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             BrowserDoubleClicked();
         }
 
-        private void showBookmarks(object sender, EventArgs e)
-        {
-            ShowBookmarkManager();
-        }
-
         private void aboutCyberduckToolStripMenuItem_Click(object sender, EventArgs e)
         {
             AboutBox about = new AboutBox();
@@ -2065,7 +2059,6 @@ namespace Ch.Cyberduck.Ui.Winforms
 
             protected override void OnModelCanDrop(ModelDropEventArgs args)
             {
-                //todo reordering bookmarks
                 base.OnModelCanDrop(args);
 
                 args.Effect = DragDropEffects.None;

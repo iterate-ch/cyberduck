@@ -238,7 +238,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.uploadSkipCheckbox = new System.Windows.Forms.CheckBox();
             this.uploadSkipRegexRichTextbox = new System.Windows.Forms.RichTextBox();
             this.uploadSkipRegexDefaultButton = new System.Windows.Forms.Button();
-            this.toolStrip = new ClickThroughToolStrip();
+            this.toolStrip = new Ch.Cyberduck.Ui.Winforms.Controls.ClickThroughToolStrip();
             this.generalButton = new System.Windows.Forms.ToolStripButton();
             this.transfersButton = new System.Windows.Forms.ToolStripButton();
             this.ftpButton = new System.Windows.Forms.ToolStripButton();
@@ -1525,7 +1525,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.managedConnectionPanel.Controls.Add(this.tableLayoutPanel37);
             this.managedConnectionPanel.Location = new System.Drawing.Point(0, 0);
             this.managedConnectionPanel.Name = "managedConnectionPanel";
-            this.managedConnectionPanel.Size = new System.Drawing.Size(619, 482);
+            this.managedConnectionPanel.Size = new System.Drawing.Size(0, 0);
             this.managedConnectionPanel.Text = "managedPanel1";
             // 
             // tableLayoutPanel37
@@ -1544,7 +1544,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.tableLayoutPanel37.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel37.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel37.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel37.Size = new System.Drawing.Size(619, 482);
+            this.tableLayoutPanel37.Size = new System.Drawing.Size(0, 0);
             this.tableLayoutPanel37.TabIndex = 0;
             // 
             // groupBox21
@@ -1554,7 +1554,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.groupBox21.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox21.Location = new System.Drawing.Point(3, 105);
             this.groupBox21.Name = "groupBox21";
-            this.groupBox21.Size = new System.Drawing.Size(613, 144);
+            this.groupBox21.Size = new System.Drawing.Size(1, 144);
             this.groupBox21.TabIndex = 0;
             this.groupBox21.TabStop = false;
             this.groupBox21.Text = "Timeouts";
@@ -1581,14 +1581,14 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.tableLayoutPanel39.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel39.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel39.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel39.Size = new System.Drawing.Size(607, 122);
+            this.tableLayoutPanel39.Size = new System.Drawing.Size(0, 122);
             this.tableLayoutPanel39.TabIndex = 12;
             // 
             // connectionTimeoutUpDown
             // 
             this.connectionTimeoutUpDown.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.connectionTimeoutUpDown.AutoSize = true;
-            this.connectionTimeoutUpDown.Location = new System.Drawing.Point(306, 8);
+            this.connectionTimeoutUpDown.Location = new System.Drawing.Point(8, 8);
             this.connectionTimeoutUpDown.Maximum = new decimal(new int[] {
             60,
             0,
@@ -1600,7 +1600,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             0,
             0});
             this.connectionTimeoutUpDown.Name = "connectionTimeoutUpDown";
-            this.connectionTimeoutUpDown.Size = new System.Drawing.Size(35, 23);
+            this.connectionTimeoutUpDown.Size = new System.Drawing.Size(1, 23);
             this.connectionTimeoutUpDown.TabIndex = 6;
             this.connectionTimeoutUpDown.Value = new decimal(new int[] {
             10,
@@ -1613,14 +1613,14 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.retriesUpDown.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.retriesUpDown.AutoSize = true;
-            this.retriesUpDown.Location = new System.Drawing.Point(306, 91);
+            this.retriesUpDown.Location = new System.Drawing.Point(8, 91);
             this.retriesUpDown.Maximum = new decimal(new int[] {
             9,
             0,
             0,
             0});
             this.retriesUpDown.Name = "retriesUpDown";
-            this.retriesUpDown.Size = new System.Drawing.Size(29, 23);
+            this.retriesUpDown.Size = new System.Drawing.Size(1, 23);
             this.retriesUpDown.TabIndex = 11;
             this.retriesUpDown.Value = new decimal(new int[] {
             9,
@@ -1634,7 +1634,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.retryCheckbox.AutoSize = true;
             this.retryCheckbox.Location = new System.Drawing.Point(8, 37);
             this.retryCheckbox.Name = "retryCheckbox";
-            this.retryCheckbox.Size = new System.Drawing.Size(186, 19);
+            this.retryCheckbox.Size = new System.Drawing.Size(1, 19);
             this.retryCheckbox.TabIndex = 7;
             this.retryCheckbox.Text = "Repeat failed networking tasks";
             this.retryCheckbox.UseVisualStyleBackColor = true;
@@ -1644,9 +1644,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.label34.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.label34.AutoSize = true;
-            this.label34.Location = new System.Drawing.Point(197, 95);
+            this.label34.Location = new System.Drawing.Point(8, 95);
             this.label34.Name = "label34";
-            this.label34.Size = new System.Drawing.Size(103, 15);
+            this.label34.Size = new System.Drawing.Size(1, 15);
             this.label34.TabIndex = 10;
             this.label34.Text = "Number of retries:";
             this.label34.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -1657,7 +1657,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.label36.AutoSize = true;
             this.label36.Location = new System.Drawing.Point(8, 12);
             this.label36.Name = "label36";
-            this.label36.Size = new System.Drawing.Size(292, 15);
+            this.label36.Size = new System.Drawing.Size(1, 15);
             this.label36.TabIndex = 2;
             this.label36.Text = "Timeout for opening connections (seconds):";
             this.label36.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -1666,14 +1666,14 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.retryDelayUpDown.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.retryDelayUpDown.AutoSize = true;
-            this.retryDelayUpDown.Location = new System.Drawing.Point(306, 62);
+            this.retryDelayUpDown.Location = new System.Drawing.Point(8, 62);
             this.retryDelayUpDown.Maximum = new decimal(new int[] {
             30,
             0,
             0,
             0});
             this.retryDelayUpDown.Name = "retryDelayUpDown";
-            this.retryDelayUpDown.Size = new System.Drawing.Size(35, 23);
+            this.retryDelayUpDown.Size = new System.Drawing.Size(1, 23);
             this.retryDelayUpDown.TabIndex = 9;
             this.retryDelayUpDown.Value = new decimal(new int[] {
             10,
@@ -1686,9 +1686,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.label16.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(182, 66);
+            this.label16.Location = new System.Drawing.Point(8, 66);
             this.label16.Name = "label16";
-            this.label16.Size = new System.Drawing.Size(118, 15);
+            this.label16.Size = new System.Drawing.Size(1, 15);
             this.label16.TabIndex = 12;
             this.label16.Text = "with delay (seconds):";
             // 
@@ -1699,7 +1699,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.groupBox4.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox4.Location = new System.Drawing.Point(3, 3);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(613, 96);
+            this.groupBox4.Size = new System.Drawing.Size(1, 96);
             this.groupBox4.TabIndex = 2;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Text Encoding";
@@ -1718,7 +1718,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.tableLayoutPanel38.RowCount = 2;
             this.tableLayoutPanel38.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel38.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel38.Size = new System.Drawing.Size(607, 74);
+            this.tableLayoutPanel38.Size = new System.Drawing.Size(0, 74);
             this.tableLayoutPanel38.TabIndex = 6;
             // 
             // label2
@@ -1754,7 +1754,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.groupBox20.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox20.Location = new System.Drawing.Point(3, 255);
             this.groupBox20.Name = "groupBox20";
-            this.groupBox20.Size = new System.Drawing.Size(613, 57);
+            this.groupBox20.Size = new System.Drawing.Size(1, 57);
             this.groupBox20.TabIndex = 3;
             this.groupBox20.TabStop = false;
             this.groupBox20.Text = "Proxies";
@@ -1771,7 +1771,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.tableLayoutPanel40.Padding = new System.Windows.Forms.Padding(5);
             this.tableLayoutPanel40.RowCount = 1;
             this.tableLayoutPanel40.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel40.Size = new System.Drawing.Size(607, 35);
+            this.tableLayoutPanel40.Size = new System.Drawing.Size(0, 35);
             this.tableLayoutPanel40.TabIndex = 0;
             // 
             // systemProxyCheckBox
@@ -1779,7 +1779,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.systemProxyCheckBox.AutoSize = true;
             this.systemProxyCheckBox.Location = new System.Drawing.Point(8, 8);
             this.systemProxyCheckBox.Name = "systemProxyCheckBox";
-            this.systemProxyCheckBox.Size = new System.Drawing.Size(161, 19);
+            this.systemProxyCheckBox.Size = new System.Drawing.Size(1, 19);
             this.systemProxyCheckBox.TabIndex = 0;
             this.systemProxyCheckBox.Text = "Use system proxy settings";
             this.systemProxyCheckBox.UseVisualStyleBackColor = true;
@@ -3423,7 +3423,6 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         #endregion
 
-        private System.Windows.Forms.ToolStrip toolStrip;
         private System.Windows.Forms.ToolStripButton generalButton;
         private System.Windows.Forms.GroupBox browserGroupbox;
         private System.Windows.Forms.CheckBox saveWorkspaceCheckbox;
@@ -3641,5 +3640,6 @@ namespace Ch.Cyberduck.Ui.Winforms
         private System.Windows.Forms.CheckBox showHiddenFilesCheckbox;
         private System.Windows.Forms.CheckBox returnKeyCheckbox;
         private System.Windows.Forms.CheckBox doubleClickEditorCheckbox;
+        private ClickThroughToolStrip toolStrip;
     }
 }

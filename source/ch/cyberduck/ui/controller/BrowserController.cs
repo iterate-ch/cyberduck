@@ -83,14 +83,15 @@ namespace Ch.Cyberduck.Ui.Controller
         public BrowserController(IBrowserView view)
         {
             View = view;
+
+            ShowHiddenFiles = Preferences.instance().getBoolean("browser.showHidden");
+
             _browserModel = new TreeBrowserModel(this);
             _bookmarkModel = new BookmarkModel(this, BookmarkCollection.defaultCollection());
 
             //default view is the bookmark view
             ToggleView(BrowserView.Bookmark);
             View.StopActivityAnimation();
-
-            View.ShowBookmarkManager += View_ShowBookmarkManager;
 
             View.ChangeBrowserView += View_ChangeBrowserView;
 
@@ -373,6 +374,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 FilenameFilter = value ? NullFilter : HiddenFilter;
                 _showHiddenFiles = value;
+                View.HiddenFilesVisible = _showHiddenFiles;
             }
         }
 
@@ -1156,6 +1158,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private bool View_ValidateGotoFolder()
         {
+            return false;//todo
             return IsMounted();
         }
 
@@ -1294,8 +1297,8 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_ShowHiddenFiles()
         {
-            //todo implement
-            throw new NotImplementedException();
+            ShowHiddenFiles = !ShowHiddenFiles;
+            ReloadData(true);
         }
 
         private void View_ToggleToolbar()
@@ -1318,6 +1321,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private bool View_ValidateCopyUrl()
         {
+            //todo
             return false;
             return IsMounted();
         }
@@ -1325,6 +1329,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private void View_CopyUrl()
         {
             //todo implement
+            return;
             throw new NotImplementedException();
         }
 
@@ -1349,6 +1354,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private void View_Cut()
         {
             //todo implement
+            return;
             throw new NotImplementedException();
         }
 
@@ -1648,6 +1654,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private void View_NewDownload()
         {
             //todo implement
+            return;
             throw new NotImplementedException();
         }
 
@@ -2012,11 +2019,6 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
             }
             Mount(Host.parse(input));
-        }
-
-        private void View_ShowBookmarkManager()
-        {
-            //todo
         }
 
         /// <summary>

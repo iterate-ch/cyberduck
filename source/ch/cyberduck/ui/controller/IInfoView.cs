@@ -102,7 +102,6 @@ namespace Ch.Cyberduck.Ui.Controller
         bool DistributionEnabled { set; }
         string DistributionTitle { set; }
         string DistributionStatus { set; }
-        bool DistributionStatusEnabled { set; }
         bool DistributionLogging { set; get; }
         bool DistributionLoggingEnabled { set; }
         string DistributionUrl { set; }

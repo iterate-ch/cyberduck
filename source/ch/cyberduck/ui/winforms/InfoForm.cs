@@ -544,14 +544,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             set { statusLabel.Text = value; }
         }
 
-        public bool DistributionStatusEnabled
-        {
-            set
-            {
-                //todo ist wohl nicht nötig. Wenn nicht cloud, dann ist oben der grosse Button disabled 
-            }
-        }
-
         public bool DistributionLogging
         {
             get { return distributionLoggingCheckBox.Checked; }

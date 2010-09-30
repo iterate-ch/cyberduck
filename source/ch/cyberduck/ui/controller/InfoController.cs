@@ -462,8 +462,6 @@ namespace Ch.Cyberduck.Ui.Controller
         /// <returns>True if progress animation has started and settings are toggled</returns>
         private bool ToggleAclSettings(bool stop)
         {
-            //todo detachAclHandlers?
-
             Session session = _controller.getSession();
             Credentials credentials = session.getHost().getCredentials();
             bool enable = !credentials.isAnonymousLogin() && session.isAclSupported();
