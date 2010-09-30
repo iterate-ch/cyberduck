@@ -51,6 +51,11 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
+        public override bool Singleton
+        {
+            get { return true; }
+        }
+
         public bool AboutToInstallUpdate
         {
             get { return View.AboutToInstallUpdate;  }
