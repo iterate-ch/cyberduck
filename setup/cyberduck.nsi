@@ -144,7 +144,7 @@ Function UninstallPrevious
     DetailPrint "Removing previous installation."
 
     ; Run the uninstaller silently.
-    ExecWait '"$R0" /S'
+    ExecWait '"$R0" /S _?=$INSTDIR'
 
     Done:
 
