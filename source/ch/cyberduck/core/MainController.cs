@@ -72,9 +72,7 @@ namespace Ch.Cyberduck.Core
         {
             StructureMapBootstrapper.Bootstrap();
             RegisterImplementations();
-
-            /*
-
+            
             // Add the event handler for handling UI thread exceptions to the event.
             System.Windows.Forms.Application.ThreadException += ExceptionHandler;
 
@@ -84,9 +82,7 @@ namespace Ch.Cyberduck.Core
 
             // Add the event handler for handling non-UI thread exceptions to the event. 
             AppDomain.CurrentDomain.UnhandledException += UnhandledExceptionHandler;
-
-             */
-
+            
             ConfigureLogging();
             LoadCollections();
 
@@ -642,7 +638,7 @@ namespace Ch.Cyberduck.Core
             ExceptionReportInfo info = new ExceptionReportInfo {MainException = e};
             ExceptionReportGenerator reportGenerator = new ExceptionReportGenerator(info);
             ExceptionReport report = reportGenerator.CreateExceptionReport();
-
+            
             string crashDir = Path.Combine(Preferences.instance().getProperty("application.support.path"),
                                            "CrashReporter");
             Directory.CreateDirectory(crashDir);
