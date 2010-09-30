@@ -120,7 +120,7 @@ namespace Ch.Cyberduck.Core
                                                                        getInteger("uses") +
                                                                    1);
                                 // Shutdown thread pools
-                                AbstractController.getTimerPool().shutdownNow(); 
+                                AbstractController.getTimerPool().shutdownNow();
                                 ThreadPool.instance().shutdown();
                             };
         }
@@ -304,7 +304,6 @@ namespace Ch.Cyberduck.Core
         private void ApplicationDidFinishLaunching(object sender, StartupEventArgs e)
         {
             Logger.debug("ApplicationDidFinishLaunching");
-
             UpdateController.Instance.CheckForUpdatesIfNecessary();
 
             if (Preferences.instance().getBoolean("queue.openByDefault"))
@@ -511,7 +510,7 @@ namespace Ch.Cyberduck.Core
             {
                 return false;
             }
-                       
+
             // Determine if there are any open connections
             foreach (BrowserController controller in new List<BrowserController>(_browsers))
             {
@@ -525,15 +524,13 @@ namespace Ch.Cyberduck.Core
                         Application._sessions.add(serialized);
                     }
                 }
-
             }
-
-            return ApplicationShouldTerminateAfterDonationPrompt();
+            return true;
         }
 
         public static void Exit()
         {
-            if(ApplicationShouldTerminate())
+            if (ApplicationShouldTerminate())
             {
                 foreach (BrowserController controller in new List<BrowserController>(_browsers))
                 {
@@ -559,19 +556,18 @@ namespace Ch.Cyberduck.Core
                             {
                                 case -1: // Cancel
                                     Application._sessions.clear();
-                                    break;
+                                    return;
                                 case 0: // Review
                                     if (BrowserController.ApplicationShouldTerminate())
                                     {
-                                        System.Windows.Forms.Application.Exit();
+                                        break;
                                     }
-                                    break;
+                                    return;
                                 case 1: // Quit
                                     foreach (BrowserController c in new List<BrowserController>(Browsers))
                                     {
                                         c.View.Dispose();
                                     }
-                                    System.Windows.Forms.Application.Exit();
                                     break;
                             }
                         }
@@ -581,6 +577,8 @@ namespace Ch.Cyberduck.Core
                         }
                     }
                 }
+                ApplicationShouldTerminateAfterDonationPrompt();
+                System.Windows.Forms.Application.Exit();
             }
         }
 
@@ -600,16 +598,6 @@ namespace Ch.Cyberduck.Core
                 }
             }
             BrowserController controller = new BrowserController();
-
-            controller.View.ViewClosingEvent += delegate(object sender, FormClosingEventArgs args)
-                                                    {
-                                                        if (1 == _browsers.Count)
-                                                        {
-                                                            // last browser is about to close, check if we can terminate
-                                                            args.Cancel = !ApplicationShouldTerminateAfterDonationPrompt();
-                                                        }
-                                                    };
-
             controller.View.ViewDisposedEvent += delegate
                                                      {
                                                          _browsers.Remove(controller);
@@ -621,6 +609,7 @@ namespace Ch.Cyberduck.Core
                                                              {
                                                                  forms[i].Dispose();
                                                              }
+                                                             Exit();
                                                          }
                                                          else
                                                          {
