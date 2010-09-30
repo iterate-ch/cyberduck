@@ -57,8 +57,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             FormClosed += delegate
                               {
                                   VoidHandler closedEvent = ViewClosedEvent;
-                                  if (null != closedEvent) ViewClosedEvent();
-                                  Application.Idle -= OnApplicationIdle;
+                                  if (null != closedEvent) ViewClosedEvent();                                  
                               };
 
             Load += delegate
@@ -86,6 +85,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 
             Disposed += delegate
                             {
+                                Application.Idle -= OnApplicationIdle;
                                 VoidHandler disposedEvent = ViewDisposedEvent;
                                 if (null != disposedEvent) ViewDisposedEvent();
                             };
