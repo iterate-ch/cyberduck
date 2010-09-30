@@ -2158,7 +2158,6 @@ source/ch/cyberduck/ui/controller/IDuplicateFilePromptView.cs -text
 source/ch/cyberduck/ui/controller/IErrorView.cs -text
 source/ch/cyberduck/ui/controller/IInfoView.cs -text
 source/ch/cyberduck/ui/controller/ILoginView.cs -text
-source/ch/cyberduck/ui/controller/IMessageBoxView.cs -text
 source/ch/cyberduck/ui/controller/INewFolderPromptView.cs -text
 source/ch/cyberduck/ui/controller/IPreferencesView.cs -text
 source/ch/cyberduck/ui/controller/IProgressView.cs -text
@@ -2173,7 +2172,6 @@ source/ch/cyberduck/ui/controller/Keychain.cs -text
 source/ch/cyberduck/ui/controller/LocalImpl.cs -text
 source/ch/cyberduck/ui/controller/LocaleImpl.cs -text
 source/ch/cyberduck/ui/controller/LoginController.cs -text
-source/ch/cyberduck/ui/controller/MessageBoxDialog.cs -text
 source/ch/cyberduck/ui/controller/PathClipboard.cs -text
 source/ch/cyberduck/ui/controller/PersistentFormHandler.cs -text
 source/ch/cyberduck/ui/controller/PreferencesController.cs -text
