@@ -526,58 +526,61 @@ namespace Ch.Cyberduck.Core
                     }
                 }
 
-                if (controller.IsConnected())
-                {
-                    if (Preferences.instance().getBoolean("browser.confirmDisconnect"))
-                    {
-                        //-1=Cancel, 0=Review, 1=Quit
-                        int result = cTaskDialog.ShowCommandBox(controller.View as Form,
-                                                                Locale.localizedString("Quit"),
-                                                                Locale.localizedString(
-                                                                    "You are connected to at least one remote site. Do you want to review open browsers?"),
-                                                                null,
-                                                                null,
-                                                                null,
-                                                                null,
-                                                                Locale.localizedString("Review…") + "|" +
-                                                                Locale.localizedString("Quit Anyway"),
-                                                                true,
-                                                                eSysIcons.Warning,
-                                                                eSysIcons.Warning);
-                        switch (result)
-                        {
-                            case -1: // Cancel
-                                Application._sessions.clear();
-                                return false;
-                            case 0: // Review
-                                bool t = BrowserController.ApplicationShouldTerminate();
-                                if (t)
-                                {
-                                    return ApplicationShouldTerminateAfterDonationPrompt();
-                                }
-                                return false;
-                            case 1: // Quit
-                                foreach (BrowserController c in new List<BrowserController>(Browsers))
-                                {
-                                    c.View.Dispose();
-                                }
-                                return ApplicationShouldTerminateAfterDonationPrompt();
-                        }
-                    }
-                    else
-                    {
-                        controller.Unmount();
-                    }
-                }
             }
+
             return ApplicationShouldTerminateAfterDonationPrompt();
         }
 
         public static void Exit()
         {
-            if (ApplicationShouldTerminate())
+            if(ApplicationShouldTerminate())
             {
-                System.Windows.Forms.Application.Exit();
+                foreach (BrowserController controller in new List<BrowserController>(_browsers))
+                {
+                    if (controller.IsConnected())
+                    {
+                        if (Preferences.instance().getBoolean("browser.confirmDisconnect"))
+                        {
+                            //-1=Cancel, 0=Review, 1=Quit
+                            int result = cTaskDialog.ShowCommandBox(controller.View as Form,
+                                                                    Locale.localizedString("Quit"),
+                                                                    Locale.localizedString(
+                                                                        "You are connected to at least one remote site. Do you want to review open browsers?"),
+                                                                    null,
+                                                                    null,
+                                                                    null,
+                                                                    null,
+                                                                    Locale.localizedString("Review…") + "|" +
+                                                                    Locale.localizedString("Quit Anyway"),
+                                                                    true,
+                                                                    eSysIcons.Warning,
+                                                                    eSysIcons.Warning);
+                            switch (result)
+                            {
+                                case -1: // Cancel
+                                    Application._sessions.clear();
+                                    break;
+                                case 0: // Review
+                                    if (BrowserController.ApplicationShouldTerminate())
+                                    {
+                                        System.Windows.Forms.Application.Exit();
+                                    }
+                                    break;
+                                case 1: // Quit
+                                    foreach (BrowserController c in new List<BrowserController>(Browsers))
+                                    {
+                                        c.View.Dispose();
+                                    }
+                                    System.Windows.Forms.Application.Exit();
+                                    break;
+                            }
+                        }
+                        else
+                        {
+                            controller.Unmount();
+                        }
+                    }
+                }
             }
         }
 
@@ -603,7 +606,7 @@ namespace Ch.Cyberduck.Core
                                                         if (1 == _browsers.Count)
                                                         {
                                                             // last browser is about to close, check if we can terminate
-                                                            args.Cancel = !ApplicationShouldTerminate();
+                                                            args.Cancel = !ApplicationShouldTerminateAfterDonationPrompt();
                                                         }
                                                     };
 
