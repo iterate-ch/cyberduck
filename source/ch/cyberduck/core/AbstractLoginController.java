@@ -29,12 +29,20 @@ import org.apache.log4j.Logger;
 public abstract class AbstractLoginController implements LoginController {
     private static Logger log = Logger.getLogger(AbstractLoginController.class);
 
+    /**
+     * Show alert with a Continue and Disconnect option.
+     *
+     * @param title      Title in alert window
+     * @param message    Message in alert window
+     * @param preference Where to save preference if dismissed
+     * @throws LoginCanceledException
+     */
     public void warn(String title, String message, String preference) throws LoginCanceledException {
         this.warn(title, message, Locale.localizedString("Continue", "Credentials"),
                 Locale.localizedString("Disconnect", "Credentials"), preference);
     }
 
-    public abstract void warn(String title, String message, String defaultButton, String otherButton, String preference)
+    public abstract void warn(String title, String message, String continueButton, String disconnectButton, String preference)
             throws LoginCanceledException;
 
     /**

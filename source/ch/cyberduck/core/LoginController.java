@@ -37,12 +37,12 @@ public interface LoginController {
      *
      * @param title         Title in alert window
      * @param message       Message in alert window
-     * @param defaultButton Button title for default button
-     * @param otherButton   Button title for other button
+     * @param continueButton Button title for default button
+     * @param disconnectButton   Button title for other button
      * @param preference    Where to save preference if dismissed
      * @throws LoginCanceledException If the other option has been selected.
      */
-    void warn(String title, String message, String defaultButton, String otherButton, String preference) throws LoginCanceledException;
+    void warn(String title, String message, String continueButton, String disconnectButton, String preference) throws LoginCanceledException;
 
     /**
      * Check the credentials for validity and prompt the user for the password if not found

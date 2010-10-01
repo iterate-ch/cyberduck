@@ -68,23 +68,26 @@ public class PromptLoginController extends AbstractLoginController {
     }
 
     @Override
-    public void warn(String title, String message, String defaultButton, String otherButton, String preference)
+    public void warn(String title, String message, String continueButton, String disconnectButton, String preference)
             throws LoginCanceledException {
         final NSAlert alert = NSAlert.alert(title, message,
-                defaultButton, // Default Button
-                Locale.localizedString("Don't show again", "Credentials"), // Alternate button
-                otherButton // Other
+                continueButton, // Default Button
+                null, // Alternate button
+                disconnectButton // Other
         );
+        alert.setShowsSuppressionButton(true);
+        alert.suppressionButton().setTitle(Locale.localizedString("Don't show again", "Credentials"));
         alert.setAlertStyle(NSAlert.NSWarningAlertStyle);
-        switch(this.parent.alert(alert)) {
+        int option = this.parent.alert(alert);
+        if(alert.suppressionButton().state() == NSCell.NSOnState) {
+            // Never show again.
+            Preferences.instance().setProperty(preference, true);
+        }
+        switch(option) {
             case SheetCallback.OTHER_OPTION:
                 throw new LoginCanceledException();
-            case SheetCallback.ALTERNATE_OPTION:
-                // Never show again.
-                Preferences.instance().setProperty(preference, true);
-                // 
-                throw new LoginCanceledException();
         }
+        //Proceed nevertheless.
     }
 
     @Override

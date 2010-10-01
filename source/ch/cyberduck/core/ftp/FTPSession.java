@@ -406,10 +406,12 @@ public class FTPSession extends Session implements SSLSession {
             try {
                 login.warn(MessageFormat.format(Locale.localizedString("Unsecured {0} connection", "Credentials"), host.getProtocol().getName()),
                         MessageFormat.format(Locale.localizedString("The server supports encrypted connections. Do you want to switch to {0}?", "Credentials"), Protocol.FTP_TLS.getName()),
-                        Locale.localizedString("Change", "Credentials"),
                         Locale.localizedString("Continue", "Credentials"),
+                        Locale.localizedString("Change", "Credentials"),
                         "connection.unsecure." + host.getHostname());
-
+                // Continue choosen. Login using plain FTP.
+            }
+            catch(LoginCanceledException e) {
                 // Protocol switch
                 host.setProtocol(Protocol.FTP_TLS);
                 if(BookmarkCollection.defaultCollection().contains(host)) {
@@ -417,9 +419,6 @@ public class FTPSession extends Session implements SSLSession {
                 }
                 // Reconfigure client for TLS
                 this.configure(this.getClient());
-            }
-            catch(LoginCanceledException e) {
-                ;// Continue choosen. Login using plain FTP.
             }
             finally {
                 // Do not warn again upon subsequent login

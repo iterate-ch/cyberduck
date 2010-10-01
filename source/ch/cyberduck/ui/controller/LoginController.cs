@@ -110,7 +110,6 @@ namespace Ch.Cyberduck.Ui.Controller
                                   String preference)
         {
             //todo implement, e.g. for insecure connections if a secure one would be possible            
-            throw new LoginCanceledException();            
         }
 
         public override void prompt(Protocol protocol, Credentials credentials, string title, string reason)
