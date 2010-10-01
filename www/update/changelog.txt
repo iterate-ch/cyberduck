@@ -3,15 +3,19 @@
 - [Feature] Connecting to Windows Azure Blob Storage (Azure) (#3938)
 
 3.6.2 [http://trac.cyberduck.ch/milestone/3.6.2]
-- [Bugfix] Files pasted upload to parent directory (#5155)
 - [Feature] Option to display hidden files in upload prompt (#1243)
 - [Feature] Import Transmit favorites (#3073)
 - [Feature] Copy and open multiple URLs (#5135)
 - [Feature] Support for PuTTY private key format (SFTP)
+- [Feature] Duplicate Bookmarks using drag and drop with option key
+- [Feature] Display only affected files in synchronization preview (#5226)
+- [Bugfix] Files pasted upload to parent directory (#5155)
 - [Bugfix] Uploading .xlsx or .docx documents fails with permission error (#5169) (Google Docs)
 - [Bugfix] Reading and writing ACLs (Google Docs)
 - [Bugfix] Interoperability with cPanel Web Disk (WebDAV) (#5188)
 - [Bugfix] Downloading previous versions of file (S3) (#5217)
+- [Bugfix] Skip directories with matching timestamp from synchronization (#557)
+- [Bugfix] Not using proper storage URL (#5216) (Swift OpenStack)
 
 3.6.1 (Sep-07-2010) [http://trac.cyberduck.ch/milestone/3.6.1]
 - [Bugfix] Permissions reset (FTP) (#5132)
