@@ -134,13 +134,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         }
 
         this.toggleBookmarks(true);
-
-        if(this.getSelectedTabView() != TAB_BOOKMARKS) {
-            this.browserSwitchClicked(Preferences.instance().getInteger("browser.view"));
-        }
-
-        this.validateNavigationButtons();
-
         super.awakeFromNib();
     }
 
@@ -210,7 +203,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 }
             };
         }
-        this.reloadData(true);
     }
 
     /**
@@ -288,11 +280,13 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         browser.reloadData();
         this.setSelectedPaths(selected);
         this.updateStatusLabel();
+        // Update path navigation
+        this.validateNavigationButtons();
     }
 
     /**
      * @param reference
-     * @param expand Expand the existing selection
+     * @param expand    Expand the existing selection
      */
     private void selectRow(PathReference reference, boolean expand) {
         log.debug("selectRow:" + reference);
@@ -776,24 +770,28 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
     @Action
     public void browserSwitchButtonClicked(final NSSegmentedControl sender) {
-        this.browserSwitchClicked(sender.selectedSegment());
+        this.browserSwitchClicked(sender.selectedSegment(), this.getSelectedPaths());
     }
 
     @Action
     public void browserSwitchMenuClicked(final NSMenuItem sender) {
         this.browserSwitchView.setSelectedSegment(sender.tag());
-        this.browserSwitchClicked(sender.tag());
+        this.browserSwitchClicked(sender.tag(), this.getSelectedPaths());
     }
 
-    private void browserSwitchClicked(final int selected) {
+    private void browserSwitchClicked(final int view, final List<Path> selected) {
         // Close bookmarks
         this.toggleBookmarks(false);
         // Highlight selected browser view
-        this.selectBrowser(selected);
-        this.reloadData(false);
+        this.selectBrowser(view);
+        // Remove any custom file filter
+        setPathFilter(null);
+        // Update from model
+        this.reloadData(selected);
+        // Focus on browser view
         this.getFocus();
         // Save selected browser view
-        Preferences.instance().setProperty("browser.view", selected);
+        Preferences.instance().setProperty("browser.view", view);
     }
 
     private void selectBrowser(int selected) {
@@ -1578,6 +1576,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         }
         else { // TAB_LIST_VIEW || TAB_OUTLINE_VIEW
             this.setPathFilter(searchField.stringValue());
+            this.reloadData(true);
         }
     }
 
@@ -1806,6 +1805,9 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         pathPopupButton.lastItem().setImage(IconCache.instance().iconForPath(p, 16));
     }
 
+    /**
+     * Update navigation toolbar.
+     */
     private void validateNavigationButtons() {
         if(!this.isMounted()) {
             pathPopupButton.removeAllItems();
@@ -3180,7 +3182,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         if(null == directory) {
             // Clear the browser view if no working directory is given
             this.workdir = null;
-            this.validateNavigationButtons();
             this.reloadData(false);
             return;
         }
@@ -3210,16 +3211,8 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
             @Override
             public void cleanup() {
-                // Remove any custom file filter
-                setPathFilter(null);
-
                 // Change to last selected browser view
-                browserSwitchClicked(Preferences.instance().getInteger("browser.view"));
-
-                validateNavigationButtons();
-
-                // Mark the browser data source as dirty
-                reloadData(selected);
+                browserSwitchClicked(Preferences.instance().getInteger("browser.view"), selected);
             }
         });
     }
