@@ -618,7 +618,9 @@ public class MainController extends BundleController implements NSApplication.De
             @Override
             public void cleanup() {
                 if(Preferences.instance().getBoolean("browser.openUntitled")) {
-                    openDefaultBookmark(MainController.newDocument());
+                    if(MainController.getBrowsers().isEmpty()) {
+                        openDefaultBookmark(MainController.newDocument());
+                    }
                 }
             }
         });
