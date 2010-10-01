@@ -1253,7 +1253,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             downloadAsToolStripMenuItem.ShortcutKeys = Keys.Alt | Keys.Shift | Keys.Down;
             uploadToolStripMenuItem.ShortcutKeys = Keys.Alt | Keys.Up;
             deleteToolStripMenuItem.ShortcutKeys = Keys.Delete;
-            //exitToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.W;
+            exitToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.Q;
 
             #endregion
 
