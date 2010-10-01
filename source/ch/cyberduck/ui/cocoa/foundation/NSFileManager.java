@@ -246,7 +246,7 @@ public abstract class NSFileManager extends NSObject {
      * Original signature : <code>NSString* currentDirectoryPath()</code><br>
      * <i>native declaration : :98</i>
      */
-    public abstract com.sun.jna.Pointer currentDirectoryPath();
+    public abstract String currentDirectoryPath();
 
     /**
      * Original signature : <code>BOOL changeCurrentDirectoryPath(NSString*)</code><br>
@@ -324,14 +324,14 @@ public abstract class NSFileManager extends NSObject {
      * Original signature : <code>NSArray* subpathsAtPath(NSString*)</code><br>
      * <i>native declaration : :130</i>
      */
-    public abstract com.sun.jna.Pointer subpathsAtPath(String path);
+    public abstract NSArray subpathsAtPath(String path);
 
     /**
      * These methods are provided here for compatibility. The corresponding methods on NSData which return NSErrors should be regarded as the primary method of creating a file from an NSData or retrieving the contents of a file as an NSData.<br>
      * Original signature : <code>NSData* contentsAtPath(NSString*)</code><br>
      * <i>native declaration : :134</i>
      */
-    public abstract com.sun.jna.Pointer contentsAtPath(String path);
+    public abstract NSData contentsAtPath(String path);
 
     /**
      * Original signature : <code>BOOL createFileAtPath(NSString*, NSData*, NSDictionary*)</code><br>
