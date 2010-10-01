@@ -44,7 +44,7 @@ public class SyncPromptModel extends TransferPromptModel {
                 @Override
                 public boolean accept(Path child) {
                     log.debug("accept:" + child);
-                    return super.accept(child);
+                    return super.accept(child) && transfer.isIncluded(child);
                 }
             };
         }
