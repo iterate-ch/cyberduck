@@ -20,7 +20,6 @@ using ch.cyberduck.core;
 using ch.cyberduck.core.i18n;
 using Ch.Cyberduck.Ui.Controller.Threading;
 using java.io;
-using java.text;
 using org.apache.log4j;
 
 namespace Ch.Cyberduck.Ui.Controller
@@ -52,7 +51,7 @@ namespace Ch.Cyberduck.Ui.Controller
             BundleIdentifier = bundleIdentifier;
             edited = path;
             Local folder = LocalFactory.createLocal(
-                new File(ch.cyberduck.core.Preferences.instance().getProperty("editor.tmp.directory"),
+                new File(Preferences.instance().getProperty("editor.tmp.directory"),
                          edited.getParent().getAbsolute()));
             edited.setLocal(LocalFactory.createLocal(folder, edited.getName()));
         }
@@ -88,7 +87,7 @@ namespace Ch.Cyberduck.Ui.Controller
         protected virtual void delete()
         {
             Log.debug("delete");
-            edited.getLocal().delete(ch.cyberduck.core.Preferences.instance().getBoolean("editor.file.trash"));
+            edited.getLocal().delete(Preferences.instance().getBoolean("editor.file.trash"));
         }
 
         protected virtual void setDeferredDelete(Boolean deferredDelete)

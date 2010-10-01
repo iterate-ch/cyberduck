@@ -247,6 +247,8 @@ namespace Ch.Cyberduck.Ui.Controller
 
             defaults.put("queue.dock.badge", true.ToString());
 
+            defaults.put("editor.file.trash", false.ToString());
+
             //defaults.put("logging", "debug");
             defaults.put("logging", "info");
             //defaults.put("logging", "info");
