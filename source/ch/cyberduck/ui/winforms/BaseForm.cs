@@ -33,6 +33,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         //private static readonly Logger Log = Logger.getLogger(typeof (BaseForm).Name);
         protected Commands Commands = new Commands();
         private bool _releaseWhenClose = true;
+        private Font _defaultFontBold = null;
 
         public BaseForm()
         {
@@ -94,6 +95,18 @@ namespace Ch.Cyberduck.Ui.Winforms
 
             Load += persistentFormLoad;
             FormClosing += persistentFormFormClosing;
+        }
+
+        protected Font DefaultFontBold
+        {
+            get
+            {
+                if (null == _defaultFontBold)
+                {
+                    _defaultFontBold = new Font(Font, FontStyle.Bold);
+                }
+                return _defaultFontBold;
+            }
         }
 
         protected PersistentFormHandler PersistenceHandler { get; set; }

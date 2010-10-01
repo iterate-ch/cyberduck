@@ -55,9 +55,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.loginButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.loginButton.AutoSize = true;
             this.loginButton.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.loginButton.Location = new System.Drawing.Point(316, 171);
+            this.loginButton.Location = new System.Drawing.Point(371, 198);
             this.loginButton.Name = "loginButton";
-            this.loginButton.Size = new System.Drawing.Size(43, 23);
+            this.loginButton.Size = new System.Drawing.Size(50, 27);
             this.loginButton.TabIndex = 7;
             this.loginButton.Text = "Login";
             this.loginButton.UseVisualStyleBackColor = true;
@@ -67,9 +67,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.cancelButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.cancelButton.AutoSize = true;
             this.cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.cancelButton.Location = new System.Drawing.Point(365, 171);
+            this.cancelButton.Location = new System.Drawing.Point(427, 198);
             this.cancelButton.Name = "cancelButton";
-            this.cancelButton.Size = new System.Drawing.Size(50, 23);
+            this.cancelButton.Size = new System.Drawing.Size(58, 27);
             this.cancelButton.TabIndex = 8;
             this.cancelButton.Text = "Cancel";
             this.cancelButton.UseVisualStyleBackColor = true;
@@ -78,7 +78,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.tableLayoutPanel1.AutoSize = true;
             this.tableLayoutPanel1.ColumnCount = 5;
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 70F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 82F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
@@ -98,27 +98,27 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.Padding = new System.Windows.Forms.Padding(9);
+            this.tableLayoutPanel1.Padding = new System.Windows.Forms.Padding(10, 10, 10, 10);
             this.tableLayoutPanel1.RowCount = 7;
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 35F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(427, 206);
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 23F));
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(498, 238);
             this.tableLayoutPanel1.TabIndex = 10;
             // 
             // labelMessage
             // 
             this.tableLayoutPanel1.SetColumnSpan(this.labelMessage, 4);
             this.labelMessage.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelMessage.Location = new System.Drawing.Point(79, 9);
+            this.labelMessage.Location = new System.Drawing.Point(92, 10);
             this.labelMessage.Margin = new System.Windows.Forms.Padding(0);
             this.labelMessage.Name = "labelMessage";
-            this.labelMessage.Size = new System.Drawing.Size(339, 30);
+            this.labelMessage.Size = new System.Drawing.Size(396, 35);
             this.labelMessage.TabIndex = 9;
             this.labelMessage.Text = "label1";
             // 
@@ -127,7 +127,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.labelUsername.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.labelUsername.AutoSize = true;
             this.labelUsername.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F);
-            this.labelUsername.Location = new System.Drawing.Point(82, 45);
+            this.labelUsername.Location = new System.Drawing.Point(95, 52);
             this.labelUsername.Name = "labelUsername";
             this.labelUsername.Size = new System.Drawing.Size(68, 15);
             this.labelUsername.TabIndex = 0;
@@ -139,9 +139,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.textBoxUsername.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.tableLayoutPanel1.SetColumnSpan(this.textBoxUsername, 3);
-            this.textBoxUsername.Location = new System.Drawing.Point(156, 42);
+            this.textBoxUsername.Location = new System.Drawing.Point(169, 48);
             this.textBoxUsername.Name = "textBoxUsername";
-            this.textBoxUsername.Size = new System.Drawing.Size(259, 21);
+            this.textBoxUsername.Size = new System.Drawing.Size(316, 23);
             this.textBoxUsername.TabIndex = 1;
             this.textBoxUsername.TextChanged += new System.EventHandler(this.textBoxUsername_TextChanged);
             // 
@@ -149,9 +149,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.checkBoxPkAuthentication.AutoSize = true;
             this.tableLayoutPanel1.SetColumnSpan(this.checkBoxPkAuthentication, 3);
-            this.checkBoxPkAuthentication.Location = new System.Drawing.Point(156, 119);
+            this.checkBoxPkAuthentication.Location = new System.Drawing.Point(169, 131);
             this.checkBoxPkAuthentication.Name = "checkBoxPkAuthentication";
-            this.checkBoxPkAuthentication.Size = new System.Drawing.Size(168, 17);
+            this.checkBoxPkAuthentication.Size = new System.Drawing.Size(185, 19);
             this.checkBoxPkAuthentication.TabIndex = 6;
             this.checkBoxPkAuthentication.Text = "Use Public Key Authentication";
             this.checkBoxPkAuthentication.UseVisualStyleBackColor = true;
@@ -161,9 +161,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.labelPassword.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.labelPassword.AutoSize = true;
-            this.labelPassword.Location = new System.Drawing.Point(93, 73);
+            this.labelPassword.Location = new System.Drawing.Point(103, 81);
             this.labelPassword.Name = "labelPassword";
-            this.labelPassword.Size = new System.Drawing.Size(57, 13);
+            this.labelPassword.Size = new System.Drawing.Size(60, 15);
             this.labelPassword.TabIndex = 2;
             this.labelPassword.Text = "Password:";
             this.labelPassword.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -172,9 +172,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.checkBoxAnonymous.AutoSize = true;
             this.tableLayoutPanel1.SetColumnSpan(this.checkBoxAnonymous, 3);
-            this.checkBoxAnonymous.Location = new System.Drawing.Point(156, 96);
+            this.checkBoxAnonymous.Location = new System.Drawing.Point(169, 106);
             this.checkBoxAnonymous.Name = "checkBoxAnonymous";
-            this.checkBoxAnonymous.Size = new System.Drawing.Size(110, 17);
+            this.checkBoxAnonymous.Size = new System.Drawing.Size(124, 19);
             this.checkBoxAnonymous.TabIndex = 5;
             this.checkBoxAnonymous.Text = "Anonymous Login";
             this.checkBoxAnonymous.UseVisualStyleBackColor = true;
@@ -185,9 +185,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.textBoxPassword.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.tableLayoutPanel1.SetColumnSpan(this.textBoxPassword, 3);
-            this.textBoxPassword.Location = new System.Drawing.Point(156, 69);
+            this.textBoxPassword.Location = new System.Drawing.Point(169, 77);
             this.textBoxPassword.Name = "textBoxPassword";
-            this.textBoxPassword.Size = new System.Drawing.Size(259, 21);
+            this.textBoxPassword.Size = new System.Drawing.Size(316, 23);
             this.textBoxPassword.TabIndex = 3;
             this.textBoxPassword.UseSystemPasswordChar = true;
             this.textBoxPassword.TextChanged += new System.EventHandler(this.textBoxPassword_TextChanged);
@@ -198,17 +198,17 @@ namespace Ch.Cyberduck.Ui.Winforms
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.pkLabel.AutoSize = true;
             this.tableLayoutPanel1.SetColumnSpan(this.pkLabel, 3);
-            this.pkLabel.Location = new System.Drawing.Point(170, 139);
-            this.pkLabel.Margin = new System.Windows.Forms.Padding(17, 0, 3, 0);
-            this.pkLabel.MinimumSize = new System.Drawing.Size(0, 26);
+            this.pkLabel.Location = new System.Drawing.Point(186, 153);
+            this.pkLabel.Margin = new System.Windows.Forms.Padding(20, 0, 3, 0);
+            this.pkLabel.MinimumSize = new System.Drawing.Size(0, 30);
             this.pkLabel.Name = "pkLabel";
-            this.pkLabel.Size = new System.Drawing.Size(245, 26);
+            this.pkLabel.Size = new System.Drawing.Size(299, 30);
             this.pkLabel.TabIndex = 10;
             this.pkLabel.Text = "No private key selected";
             // 
             // diskPictureBox
             // 
-            this.diskPictureBox.Location = new System.Drawing.Point(12, 12);
+            this.diskPictureBox.Location = new System.Drawing.Point(13, 13);
             this.diskPictureBox.MinimumSize = new System.Drawing.Size(55, 55);
             this.diskPictureBox.Name = "diskPictureBox";
             this.tableLayoutPanel1.SetRowSpan(this.diskPictureBox, 5);
@@ -222,9 +222,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.checkBoxSavePassword.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.checkBoxSavePassword.AutoSize = true;
             this.tableLayoutPanel1.SetColumnSpan(this.checkBoxSavePassword, 3);
-            this.checkBoxSavePassword.Location = new System.Drawing.Point(12, 177);
+            this.checkBoxSavePassword.Location = new System.Drawing.Point(13, 206);
             this.checkBoxSavePassword.Name = "checkBoxSavePassword";
-            this.checkBoxSavePassword.Size = new System.Drawing.Size(99, 17);
+            this.checkBoxSavePassword.Size = new System.Drawing.Size(103, 19);
             this.checkBoxSavePassword.TabIndex = 4;
             this.checkBoxSavePassword.Text = "Save password";
             this.checkBoxSavePassword.UseVisualStyleBackColor = true;
@@ -233,11 +233,11 @@ namespace Ch.Cyberduck.Ui.Winforms
             // LoginForm
             // 
             this.AcceptButton = this.loginButton;
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
             this.CancelButton = this.cancelButton;
-            this.ClientSize = new System.Drawing.Size(427, 206);
+            this.ClientSize = new System.Drawing.Size(498, 238);
             this.Controls.Add(this.tableLayoutPanel1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Name = "LoginForm";
