@@ -367,7 +367,10 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         private void toolbarMenuStrip_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
         {
-            _lastMenuItemClicked = (ToolStripMenuItem) e.ClickedItem;
+            if (e.ClickedItem is ToolStripMenuItem)
+            {
+                _lastMenuItemClicked = (ToolStripMenuItem) e.ClickedItem;
+            }
         }
 
         private void toolbarMenuStrip_Closing(object sender, ToolStripDropDownClosingEventArgs e)

@@ -1638,7 +1638,10 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         private void toolbarContextMenu_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
         {
-            _lastMenuItemClicked = (ToolStripMenuItem) e.ClickedItem;
+            if (e.ClickedItem is ToolStripMenuItem)
+            {
+                _lastMenuItemClicked = (ToolStripMenuItem) e.ClickedItem;
+            }
         }
 
         private void columnContextMenu_Opening(object sender, CancelEventArgs e)
