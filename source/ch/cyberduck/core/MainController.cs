@@ -248,15 +248,9 @@ namespace Ch.Cyberduck.Core
                         License license = LicenseFactory.create(f);
                         if (license.verify())
                         {
-                            String to = license.getValue("Name");
-                            if (Utils.IsBlank(to))
-                            {
-                                to = license.getValue("Email");
-                            }
-
                             //see http://stackoverflow.com/questions/719251/unable-to-find-an-entry-point-named-taskdialogindirect-in-dll-comctl32
                             if (DialogResult.OK == cTaskDialog.MessageBox(
-                                String.Format(Locale.localizedString("Registered to {0}", "License"), to),
+                                license.ToString(),
                                 Locale.localizedString(
                                     "Thanks for your support! Your contribution helps to further advance development to make Cyberduck even better.",
                                     "License"),
