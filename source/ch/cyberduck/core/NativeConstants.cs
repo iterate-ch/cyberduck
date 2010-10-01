@@ -784,6 +784,10 @@ namespace Ch.Cyberduck.Core
         public const int LB_SETSEL = 0x0185;
         public const int LB_SETTABSTOPS = 0x0192;
         public const int LB_SETTOPINDEX = 0x0197;
+
+        public const int LCID_INSTALLED = 0x01;
+        public const int LCID_SUPPORTED = 0x02;
+
         public const int LOCALE_IFIRSTDAYOFWEEK = 0x0000100C;
 
         public const int LOCK_EXCLUSIVE = 0x2,

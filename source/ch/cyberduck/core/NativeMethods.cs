@@ -196,5 +196,8 @@ namespace Ch.Cyberduck.Core
 
         [DllImport("user32.dll", EntryPoint = "HideCaret")]
         public static extern long HideCaret(IntPtr hwnd);
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        public static extern int IsValidLocale(int locale, int dwFlags);
     }
 }

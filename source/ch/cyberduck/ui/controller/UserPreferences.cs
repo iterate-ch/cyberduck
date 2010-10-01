@@ -157,12 +157,12 @@ namespace Ch.Cyberduck.Ui.Controller
             }
 
             //new Locale(...) seems to be very expensive (>100ms on my machine)
-            CultureInfo cultureInfo = CultureInfo.GetCultureInfo(locale.Replace('_', '-'));
+            CultureInfo cultureInfo = CultureInfo.GetCultureInfo(locale.Replace('_', '-'));            
             return cultureInfo.TextInfo.ToTitleCase(cultureInfo.NativeName);
         }
 
         public override List applicationLocales()
-        {
+        {            
             Assembly asm = Assembly.GetExecutingAssembly();
             string[] names = asm.GetManifestResourceNames();
             // the dots apparently come from the relative path in the msbuild file
@@ -175,7 +175,15 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     string cand = match.Groups[1].Value.Replace('_', '-');
                     if (!distinctNames.Contains(cand))
-                    {
+                    {                        
+                        if (("ja".Equals(cand) ||
+                            "ko".Equals(cand) ||
+                            "ka".Equals(cand) ||
+                            "zh-CN".Equals(cand) ||
+                            "zh-TW".Equals(cand)) && !Utils.HasEastAsianFontSupport())
+                        {
+                            continue;
+                        }
                         distinctNames.Add(cand);
                     }
                 }
