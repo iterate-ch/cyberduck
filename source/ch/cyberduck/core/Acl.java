@@ -198,7 +198,7 @@ public class Acl extends HashMap<Acl.User, Set<Acl.Role>> {
         private String displayName;
 
         public CanonicalUser() {
-            this("", null);
+            this(StringUtils.EMPTY, null);
         }
 
         public CanonicalUser(String identifier) {
@@ -250,7 +250,7 @@ public class Acl extends HashMap<Acl.User, Set<Acl.Role>> {
      */
     public static class EmailUser extends CanonicalUser {
         public EmailUser() {
-            super("", true);
+            super(StringUtils.EMPTY, true);
         }
 
         public EmailUser(String identifier) {

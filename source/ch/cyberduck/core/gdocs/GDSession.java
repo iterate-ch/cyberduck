@@ -22,6 +22,8 @@ package ch.cyberduck.core.gdocs;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.i18n.Locale;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.google.gdata.client.docs.DocsService;
 import com.google.gdata.data.acl.AclRole;
 import com.google.gdata.util.AuthenticationException;
@@ -201,19 +203,19 @@ public class GDSession extends Session {
     @Override
     public List<Acl.User> getAvailableAclUsers() {
         return Arrays.asList(
-                new Acl.EmailUser("") {
+                new Acl.EmailUser(StringUtils.EMPTY) {
                     @Override
                     public String getPlaceholder() {
                         return Locale.localizedString("Google Email Address", "Google");
                     }
                 },
-                new Acl.DomainUser("") {
+                new Acl.DomainUser(StringUtils.EMPTY) {
                     @Override
                     public String getPlaceholder() {
                         return Locale.localizedString("Google Apps Domain", "Google");
                     }
                 },
-                new Acl.GroupUser("", true) {
+                new Acl.GroupUser(StringUtils.EMPTY, true) {
                     @Override
                     public String getPlaceholder() {
                         return Locale.localizedString("Google Group Email Address", "Google");

@@ -343,9 +343,9 @@ public abstract class AbstractPath {
     public abstract void copy(AbstractPath copy);
 
     public static class DescriptiveUrl {
-        private String url = "";
+        private String url = StringUtils.EMPTY;
 
-        private String help = "";
+        private String help = StringUtils.EMPTY;
 
         public DescriptiveUrl(String url) {
             this(url, Locale.localizedString("Open in Web Browser"));

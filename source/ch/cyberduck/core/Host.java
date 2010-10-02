@@ -486,7 +486,7 @@ public class Host implements Serializable {
         if(StringUtils.isNotEmpty(this.getHostname())) {
             return this.getHostname() + " \u2013 " + this.getProtocol().getName();
         }
-        return "";
+        return StringUtils.EMPTY;
     }
 
     /**

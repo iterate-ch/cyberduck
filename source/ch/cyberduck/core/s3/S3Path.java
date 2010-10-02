@@ -608,7 +608,7 @@ public class S3Path extends CloudPath {
                 // for the names of related keys and marking these keys with
                 // a special character that delimits hierarchy, you can use the list
                 // operation to select and browse keys hierarchically
-                String prefix = "";
+                String prefix = StringUtils.EMPTY;
                 if(!this.isContainer()) {
                     // estricts the response to only contain results that begin with the
                     // specified prefix. If you omit this optional argument, the value

@@ -24,6 +24,7 @@ import ch.cyberduck.core.cloud.Distribution;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.s3.S3Session;
 
+import org.apache.commons.lang.StringUtils;
 import org.jets3t.service.Jets3tProperties;
 import org.jets3t.service.acl.Permission;
 import org.jets3t.service.model.S3Object;
@@ -134,13 +135,13 @@ public class GSSession extends S3Session {
                 return Locale.localizedString("Google Account Email Address", "S3");
             }
         });
-//        users.add(new Acl.DomainUser("") {
+//        users.add(new Acl.DomainUser(StringUtils.EMPTY) {
 //            @Override
 //            public String getPlaceholder() {
 //                return Locale.localizedString("Google Apps Domain", "S3");
 //            }
 //        });
-//        users.add(new Acl.GroupUser("", true) {
+//        users.add(new Acl.GroupUser(StringUtils.EMPTY, true) {
 //            @Override
 //            public String getPlaceholder() {
 //                return Locale.localizedString("Google Group Email Address", "S3");

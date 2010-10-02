@@ -26,6 +26,7 @@ import ch.cyberduck.core.serializer.Serializer;
 import ch.cyberduck.core.serializer.SerializerFactory;
 import ch.cyberduck.ui.growl.Growl;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -313,7 +314,7 @@ public abstract class Transfer implements Serializable {
      * @see #getRoots()
      */
     public String getName() {
-        String name = "";
+        String name = StringUtils.EMPTY;
         for(Path next : this.roots) {
             name = name + next.getLocal().getName() + " ";
         }

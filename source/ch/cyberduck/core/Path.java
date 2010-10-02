@@ -312,7 +312,7 @@ public abstract class Path extends AbstractPath implements Serializable {
             // Remove duplicated delimiters
             String[] segments = normalized.split(String.valueOf(DELIMITER));
             for(String segment : segments) {
-                if(segment.equals("")) {
+                if(segment.equals(StringUtils.EMPTY)) {
                     continue;
                 }
                 n.append(segment);

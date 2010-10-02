@@ -27,6 +27,7 @@ import ch.cyberduck.core.ssl.SSLSession;
 import org.apache.commons.httpclient.HostConfiguration;
 import org.apache.commons.httpclient.HttpVersion;
 import org.apache.commons.httpclient.params.HostParams;
+import org.apache.commons.httpclient.params.HttpConnectionParams;
 import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.httpclient.protocol.DefaultProtocolSocketFactory;
 import org.apache.commons.httpclient.protocol.ProtocolSocketFactory;
@@ -95,8 +96,7 @@ public abstract class HTTPSession extends Session implements SSLSession {
         }
 
         public Socket createSocket(String host, int port, InetAddress localAddress, int localPort,
-                                   org.apache.commons.httpclient.params.HttpConnectionParams params)
-                throws IOException {
+                                   HttpConnectionParams params) throws IOException {
             Socket socket = super.createSocket(host, port, localAddress, localPort);
             socket.setTcpNoDelay(params.getTcpNoDelay());
             socket.setSoTimeout(params.getSoTimeout());
