@@ -35,6 +35,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Controls
     [DefaultProperty("Text")]
     public partial class SearchTextBox : Control
     {
+        //todo Localize
         private const string DefaultInactiveText = "Search";
         private const int DefaultTimerInterval = 500;
         private readonly Timer _timer;

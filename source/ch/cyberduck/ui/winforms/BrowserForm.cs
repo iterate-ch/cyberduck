@@ -76,8 +76,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             browser.SelectedRowDecoration = new ExplorerRowBorderDecoration();
             browser.ItemsChanged += (sender, args) => ItemsChanged();
 
-            searchTextBox.InactiveFont = new Font(Font, FontStyle.Italic);
-            searchTextBox.InactiveText = Locale.localizedString("Search…", "Main");
+            searchTextBox.PlaceHolderText = Locale.localizedString("Search…", "Main");
 
             securityToolStripStatusLabel.Visible = false;
 
@@ -1619,11 +1618,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             PathSelectionChanged();
         }
 
-        private void searchTextBox_TextChanged(object sender, EventArgs e)
-        {
-            SearchFieldChanged();
-        }
-
         private void minimizeToolStripMenuItem_Click(object sender, EventArgs e)
         {
             WindowState = FormWindowState.Minimized;
@@ -1747,6 +1741,11 @@ namespace Ch.Cyberduck.Ui.Winforms
         private void securityToolStripStatusLabel_Click(object sender, EventArgs e)
         {
             ShowCertificate();
+        }
+
+        private void searchTextBox_TextChanged(object sender, EventArgs e)
+        {
+            SearchFieldChanged();
         }
 
         private class BrowserDragSource : SimpleDragSource

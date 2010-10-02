@@ -2278,6 +2278,8 @@ source/ch/cyberduck/ui/winforms/controls/PanelManager.cs -text
 source/ch/cyberduck/ui/winforms/controls/ReadOnlyRichTextBox.cs -text
 source/ch/cyberduck/ui/winforms/controls/SearchTextBox.Designer.cs -text
 source/ch/cyberduck/ui/winforms/controls/SearchTextBox.cs -text
+source/ch/cyberduck/ui/winforms/controls/SearchTextBox2.Designer.cs -text
+source/ch/cyberduck/ui/winforms/controls/SearchTextBox2.cs -text
 source/ch/cyberduck/ui/winforms/controls/SplitButton.cs -text
 source/ch/cyberduck/ui/winforms/controls/design/SearchTextBoxDesigner.cs -text
 source/ch/cyberduck/ui/winforms/serializer/PlistDeserializer.cs -text

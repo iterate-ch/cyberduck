@@ -226,7 +226,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.treeColumnPermissions = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
             this.treeColumnKind = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
             this.viewPanel = new System.Windows.Forms.Panel();
-            this.searchTextBox = new Ch.Cyberduck.Ui.Winforms.Controls.SearchTextBox();
+            this.searchTextBox = new Ch.Cyberduck.ui.winforms.controls.SearchTextBox2();
             this.label5 = new System.Windows.Forms.Label();
             this.bonjourCheckBox = new System.Windows.Forms.CheckBox();
             this.historyCheckBox = new System.Windows.Forms.CheckBox();
@@ -1148,11 +1148,11 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             // openConnectionToolStripButton
             // 
-            this.openConnectionToolStripButton.Font = new System.Drawing.Font("Segoe UI", 8F);
+            this.openConnectionToolStripButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F);
             this.openConnectionToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("openConnectionToolStripButton.Image")));
             this.openConnectionToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.openConnectionToolStripButton.Name = "openConnectionToolStripButton";
-            this.openConnectionToolStripButton.Size = new System.Drawing.Size(97, 51);
+            this.openConnectionToolStripButton.Size = new System.Drawing.Size(90, 51);
             this.openConnectionToolStripButton.Text = "New Connection";
             this.openConnectionToolStripButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
             // 
@@ -1510,7 +1510,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.splitContainer.Panel2.Controls.Add(this.transcriptBox);
             this.splitContainer.Panel2MinSize = 0;
             this.splitContainer.Size = new System.Drawing.Size(1031, 538);
-            this.splitContainer.SplitterDistance = 429;
+            this.splitContainer.SplitterDistance = 428;
             this.splitContainer.SplitterWidth = 5;
             this.splitContainer.TabIndex = 2;
             // 
@@ -1523,7 +1523,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.panelManagerMain.Name = "panelManagerMain";
             this.panelManagerMain.SelectedIndex = 1;
             this.panelManagerMain.SelectedPanel = this.browserPanel;
-            this.panelManagerMain.Size = new System.Drawing.Size(1031, 397);
+            this.panelManagerMain.Size = new System.Drawing.Size(1031, 396);
             this.panelManagerMain.TabIndex = 28;
             // 
             // bookmarksPanel
@@ -1637,10 +1637,10 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.editBookmarkToolStripButton,
             this.deleteBookmarkToolStripButton});
             this.actionToolStrip.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.HorizontalStackWithOverflow;
-            this.actionToolStrip.Location = new System.Drawing.Point(0, -34);
+            this.actionToolStrip.Location = new System.Drawing.Point(0, -33);
             this.actionToolStrip.Name = "actionToolStrip";
             this.actionToolStrip.ShowItemToolTips = false;
-            this.actionToolStrip.Size = new System.Drawing.Size(0, 34);
+            this.actionToolStrip.Size = new System.Drawing.Size(0, 33);
             this.actionToolStrip.Stretch = true;
             this.actionToolStrip.TabIndex = 5;
             this.actionToolStrip.Text = "toolStrip1";
@@ -1787,17 +1787,13 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             // searchTextBox
             // 
-            this.searchTextBox.ActiveFont = new System.Drawing.Font("Segoe UI", 9F);
             this.searchTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.searchTextBox.BackColor = System.Drawing.SystemColors.InactiveBorder;
-            this.searchTextBox.Cursor = System.Windows.Forms.Cursors.IBeam;
-            this.searchTextBox.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.searchTextBox.ForeColor = System.Drawing.SystemColors.GrayText;
-            this.searchTextBox.Location = new System.Drawing.Point(872, 4);
+            this.searchTextBox.Location = new System.Drawing.Point(855, 3);
             this.searchTextBox.Name = "searchTextBox";
-            this.searchTextBox.Size = new System.Drawing.Size(152, 21);
+            this.searchTextBox.OptionsMenu = null;
+            this.searchTextBox.Size = new System.Drawing.Size(170, 24);
             this.searchTextBox.TabIndex = 14;
-            this.searchTextBox.TextChanged += new System.EventHandler(this.searchTextBox_TextChanged);
+            this.searchTextBox.TextChanged += new Ch.Cyberduck.ui.winforms.controls.SearchTextBox2.TextChange(this.searchTextBox_TextChanged);
             // 
             // label5
             // 
@@ -1843,7 +1839,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.bookmarkCheckBox.FlatAppearance.BorderSize = 0;
             this.bookmarkCheckBox.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.bookmarkCheckBox.Image = global::Ch.Cyberduck.ResourcesBundle.bookmarks;
-            this.bookmarkCheckBox.Location = new System.Drawing.Point(39, 3);
+            this.bookmarkCheckBox.Location = new System.Drawing.Point(38, 3);
             this.bookmarkCheckBox.Name = "bookmarkCheckBox";
             this.bookmarkCheckBox.Size = new System.Drawing.Size(29, 23);
             this.bookmarkCheckBox.TabIndex = 10;
@@ -1881,7 +1877,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.pathComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.pathComboBox.FormattingEnabled = true;
-            this.pathComboBox.Location = new System.Drawing.Point(235, 3);
+            this.pathComboBox.Location = new System.Drawing.Point(234, 3);
             this.pathComboBox.Name = "pathComboBox";
             this.pathComboBox.Size = new System.Drawing.Size(571, 23);
             this.pathComboBox.TabIndex = 6;
@@ -1915,7 +1911,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.transcriptBox.Name = "transcriptBox";
             this.transcriptBox.ReadOnly = true;
             this.transcriptBox.ShortcutsEnabled = false;
-            this.transcriptBox.Size = new System.Drawing.Size(1031, 104);
+            this.transcriptBox.Size = new System.Drawing.Size(1031, 105);
             this.transcriptBox.TabIndex = 0;
             this.transcriptBox.Text = "";
             this.transcriptBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.transcriptBox_KeyDown);
@@ -1941,7 +1937,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.Controls.Add(this.statusStrip);
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
-            this.MinimumSize = new System.Drawing.Size(464, 38);
+            this.MinimumSize = new System.Drawing.Size(463, 38);
             this.Name = "BrowserForm";
             this.Text = "Cyberduck";
             this.statusStrip.ResumeLayout(false);
@@ -2179,12 +2175,12 @@ namespace Ch.Cyberduck.Ui.Winforms
         private System.Windows.Forms.ContextMenuStrip historyMenuStrip;
         private System.Windows.Forms.ContextMenuStrip bonjourMenuStrip;
         private System.Windows.Forms.ToolStripStatusLabel securityToolStripStatusLabel;
-        private SearchTextBox searchTextBox;
         private System.Windows.Forms.ToolStripMenuItem duplicateBookmarkToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem duplicateBookmarkToolStripMenuItem;
         private ClickThroughMenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripStatusLabel toolStripProgress;
         private ClickThroughToolStrip toolBar;
+        private ui.winforms.controls.SearchTextBox2 searchTextBox;
     }
 }
 
