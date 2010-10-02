@@ -700,7 +700,7 @@ public class S3Session extends CloudSession implements SSLSession {
                 final HttpHost endpoint = new HttpHost(new URI(CloudFrontService.ENDPOINT, false));
                 hostconfig.setHost(endpoint.getHostName(), endpoint.getPort(),
                         new org.apache.commons.httpclient.protocol.Protocol(endpoint.getProtocol().getScheme(),
-                                new SocketFactory(new KeychainX509TrustManager(endpoint.getHostName())), endpoint.getPort())
+                                new SSLSocketFactory(new KeychainX509TrustManager(endpoint.getHostName())), endpoint.getPort())
                 );
             }
             catch(URIException e) {

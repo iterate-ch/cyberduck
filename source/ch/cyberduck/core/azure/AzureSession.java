@@ -170,10 +170,10 @@ public class AzureSession extends CloudSession implements SSLSession {
             HttpProtocolParams.setUserAgent(params, getUserAgent());
             SchemeRegistry registry = new SchemeRegistry();
             if(host.getProtocol().isSecure()) {
-                SSLSocketFactory factory = new SSLSocketFactory(new CustomTrustSSLProtocolSocketFactory(
+                org.apache.http.conn.ssl.SSLSocketFactory factory = new org.apache.http.conn.ssl.SSLSocketFactory(new CustomTrustSSLProtocolSocketFactory(
                         getTrustManager()).getSSLContext());
                 // We make sure to verify the hostname later using the trust manager
-                factory.setHostnameVerifier(SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+                factory.setHostnameVerifier(org.apache.http.conn.ssl.SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
                 registry.register(
                         new Scheme(host.getProtocol().getScheme(), factory, host.getPort()));
             }
