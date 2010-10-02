@@ -511,7 +511,7 @@ public abstract class Preferences {
         defaults.put("s3.url.expire.seconds", String.valueOf(24 * 60 * 60)); //expiry time for public URL
         defaults.put("s3.tls.acceptAnyCertificate", String.valueOf(false));
 
-        defaults.put("s3.mfa.serialnumber", "");
+        defaults.put("s3.mfa.serialnumber", StringUtils.EMPTY);
 
         defaults.put("s3.listing.chunksize", String.valueOf(1000));
 
@@ -576,7 +576,7 @@ public abstract class Preferences {
         /**
          * NTLM Windows Domain
          */
-        defaults.put("webdav.ntlm.domain", "");
+        defaults.put("webdav.ntlm.domain", StringUtils.EMPTY);
 
         /**
          * Maximum concurrent connections to the same host
@@ -610,7 +610,7 @@ public abstract class Preferences {
         defaults.put("connection.retry", String.valueOf(0));
         defaults.put("connection.retry.delay", String.valueOf(10));
 
-        defaults.put("connection.hostname.default", "");
+        defaults.put("connection.hostname.default", StringUtils.EMPTY);
         /**
          * Try to resolve the hostname when entered in connection dialog
          */
@@ -626,6 +626,7 @@ public abstract class Preferences {
          * Read proxy settings from system preferences
          */
         defaults.put("connection.proxy.enable", String.valueOf(true));
+        defaults.put("connection.proxy.ntlm.domain", StringUtils.EMPTY);
 
         /**
          * Warning when opening connections sending credentials in plaintext

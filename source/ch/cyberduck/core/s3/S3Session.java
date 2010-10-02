@@ -235,6 +235,10 @@ public class S3Session extends CloudSession implements SSLSession {
                     configuration.setProperty("httpclient.proxy-port", String.valueOf(proxy.getHTTPSProxyPort()));
                     configuration.setProperty("httpclient.proxy-user", null);
                     configuration.setProperty("httpclient.proxy-password", null);
+                    if(StringUtils.isNotEmpty(Preferences.instance().getProperty("connection.proxy.ntlm.domain"))) {
+                        configuration.setProperty("httpclient.proxy-domain",
+                                Preferences.instance().getProperty("connection.proxy.ntlm.domain"));
+                    }
                 }
             }
             else {
@@ -243,6 +247,10 @@ public class S3Session extends CloudSession implements SSLSession {
                     configuration.setProperty("httpclient.proxy-port", String.valueOf(proxy.getHTTPProxyPort()));
                     configuration.setProperty("httpclient.proxy-user", null);
                     configuration.setProperty("httpclient.proxy-password", null);
+                    if(StringUtils.isNotEmpty(Preferences.instance().getProperty("connection.proxy.ntlm.domain"))) {
+                        configuration.setProperty("httpclient.proxy-domain",
+                                Preferences.instance().getProperty("connection.proxy.ntlm.domain"));
+                    }
                 }
             }
         }
