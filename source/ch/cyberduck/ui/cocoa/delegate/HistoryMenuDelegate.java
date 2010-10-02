@@ -30,6 +30,7 @@ import ch.cyberduck.ui.cocoa.application.NSMenuItem;
 import org.rococoa.Foundation;
 import org.rococoa.cocoa.foundation.NSInteger;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 /**
@@ -84,7 +85,7 @@ public class HistoryMenuDelegate extends CollectionMenuDelegate<Host> {
         }
         else if(index.intValue() == size) {
             // How to change an existing item to a separator item?
-            item.setTitle("");
+            item.setTitle(StringUtils.EMPTY);
             item.setTarget(null);
             item.setAction(null);
             item.setImage(null);

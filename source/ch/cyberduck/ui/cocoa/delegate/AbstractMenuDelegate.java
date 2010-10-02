@@ -24,6 +24,7 @@ import ch.cyberduck.ui.cocoa.application.NSMenuItem;
 
 import org.rococoa.cocoa.foundation.NSInteger;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 /**
@@ -98,7 +99,7 @@ public abstract class AbstractMenuDelegate extends ProxyController implements NS
 
 
     protected void clearShortcut(NSMenuItem item) {
-        this.setShortcut(item, "", 0);
+        this.setShortcut(item, StringUtils.EMPTY, 0);
     }
 
     protected void setShortcut(NSMenuItem item, String key) {

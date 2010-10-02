@@ -395,7 +395,7 @@ public class FinderLocal extends Local {
                     log.debug("Move " + file + " to Trash");
                     if(!NSWorkspace.sharedWorkspace().performFileOperation(
                             NSWorkspace.RecycleOperation,
-                            file.getParent().getAbsolute(), "",
+                            file.getParent().getAbsolute(), StringUtils.EMPTY,
                             NSArray.arrayWithObject(file.getName()))) {
                         log.warn("Failed to move " + file.getAbsolute() + " to Trash");
                     }
