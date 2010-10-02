@@ -22,6 +22,7 @@ Changelog. Last modified: $Date$
 - [Bugfix] Downloading previous versions of file (S3) (#5217)
 - [Bugfix] Skip directories with matching timestamp from synchronization (#557)
 - [Bugfix] Not using proper storage URL (#5216) (Swift OpenStack)
+- [Bugfix] Proxy connection failure (#5239) (S3)
 
 3.6.1 (Sep-07-2010) [http://trac.cyberduck.ch/milestone/3.6.1]
 - [Bugfix] Permissions reset (FTP) (#5132)
