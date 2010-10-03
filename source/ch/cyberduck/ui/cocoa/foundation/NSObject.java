@@ -19,12 +19,19 @@ package ch.cyberduck.ui.cocoa.foundation;
  * dkocher@cyberduck.ch
  */
 
+import org.rococoa.ID;
 import org.rococoa.Selector;
+import org.rococoa.cocoa.foundation.NSUInteger;
 
 /// <i>native declaration : :14</i>
+
 public abstract class NSObject extends org.rococoa.cocoa.foundation.NSObject {
 
     public abstract boolean respondsToSelector(Selector sel);
 
     public abstract NSObject performSelector(Selector sel);
+
+    public abstract NSUInteger hash();
+
+    public abstract boolean isEqual(ID anObject);
 }
