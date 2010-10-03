@@ -153,6 +153,7 @@ FunctionEnd
 Section "MainSection" SEC01
   SetOutPath "$INSTDIR"
   SetOverwrite ifnewer
+  SetShellVarContext all
 
   ; Get .NET if required
   ${If} $InstallDotNET == "Yes"
@@ -249,6 +250,7 @@ Function un.onInit
 FunctionEnd
 
 Section Uninstall
+  SetShellVarContext all
 
   ;Delete "$SMPROGRAMS\Cyberduck\Uninstall.lnk"
   Delete "$SMPROGRAMS\Cyberduck\Website.lnk"
