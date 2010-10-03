@@ -23,13 +23,22 @@
 
 <project name="Cyberduck for Windows" basedir="." xmlns:dn="antlib:org.apache.ant.dotnet">
 
-    <property name="jdk.home" value="C:/Program Files/Java/jdk1.5.0_22"/>
+    <!-- the following path needs to be set appropriately -->
+    <property name="ikvm.home" value="C:/workspace/ikvm-0.44.0.5"/>
 
+    <!-- try to detect the process architecture (32/64bit) -->
+    <condition property="programFiles" value="${env.ProgramFiles(x86)}">
+        <available file="${env.ProgramFiles(x86)}"/>
+    </condition>
+    <condition property="programFiles" value="${env.ProgramFiles}">
+        <available file="${env.ProgramFiles}"/>
+    </condition>
+
+    <property name="jdk.home" value="${env.ProgramFiles}/Java/jdk1.5.0_22"/>
     <property name="setup" value="${home}/setup"/>
-    <property name="nsis.home" value="${env.ProgramFiles(x86)}/NSIS"/>
-    <property name="winsdk.home" value="${env.ProgramFiles(x86)}/Microsoft SDKs/Windows/v7.0A/Bin"/>
-    <property name="ikvm.home" value="c:/workspace/ikvm-0.44.0.5"/>
-    <property name="wybuild.home" value="${env.ProgramFiles(x86)}/wyBuild"/>
+    <property name="nsis.home" value="${programFiles}/NSIS"/>
+    <property name="winsdk.home" value="${programFiles}/Microsoft SDKs/Windows/v7.0A/Bin"/>
+    <property name="wybuild.home" value="${programFiles}/wyBuild"/>
 
     <taskdef resource="net/sf/antcontrib/antcontrib.properties"/>
     <taskdef name="ikvmc" classname="net.ikvm.ant.IkvmcTask"/>
