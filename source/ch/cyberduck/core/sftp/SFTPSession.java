@@ -130,7 +130,7 @@ public class SFTPSession extends Session {
         SSH = new Connection(this.getHostname(), host.getPort(), this.getUserAgent());
         SSH.addConnectionMonitor(new ConnectionMonitor() {
             public void connectionLost(Throwable reason) {
-                interrupt();
+                log.warn(reason.getMessage());
             }
         });
 
@@ -392,7 +392,7 @@ public class SFTPSession extends Session {
             super.check();
         }
         catch(ChannelClosedException e) {
-            log.debug(e.getMessage());
+            log.warn(e.getMessage());
             this.interrupt();
             this.connect();
         }
@@ -400,6 +400,16 @@ public class SFTPSession extends Session {
             if(!this.sftp().isConnected()) {
                 this.interrupt();
                 this.connect();
+            }
+            else {
+                try {
+                    this.sftp().canonicalPath("/");
+                }
+                catch(IOException e) {
+                    log.warn(e.getMessage());
+                    this.interrupt();
+                    this.connect();
+                }
             }
         }
     }
