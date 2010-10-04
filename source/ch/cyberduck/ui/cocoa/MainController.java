@@ -780,7 +780,7 @@ public class MainController extends BundleController implements NSApplication.De
                 if(controller.isMounted()) {
                     // The workspace should be saved. Serialize all open browser sessions
                     final Host serialized = new Host(controller.getSession().getHost().getAsDictionary());
-                    serialized.setDefaultPath(controller.workdir().getAbsolute());
+                    serialized.setWorkdir(controller.workdir().getAbsolute());
                     sessions.add(serialized);
                 }
             }
