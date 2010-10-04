@@ -45,8 +45,8 @@ public class DAVResource extends WebdavResource {
 
     public DAVResource(Host host) throws IOException {
         super(host.getProtocol().isSecure()
-                ? new HttpsURL(host.getHostname(), host.getPort(), host.getDefaultPath())
-                : new HttpURL(host.getHostname(), host.getPort(), host.getDefaultPath()));
+                ? new HttpsURL(host.getHostname(), host.getPort(), null)
+                : new HttpURL(host.getHostname(), host.getPort(), null));
     }
 
 
