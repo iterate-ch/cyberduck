@@ -34,6 +34,7 @@ import org.apache.log4j.Logger;
 public abstract class PreferencesHostKeyVerifier extends MemoryHostKeyVerifier {
     protected static Logger log = Logger.getLogger(PreferencesHostKeyVerifier.class);
 
+    @Override
     protected boolean isHostKeyDatabaseWritable() {
         return true;
     }
@@ -43,7 +44,7 @@ public abstract class PreferencesHostKeyVerifier extends MemoryHostKeyVerifier {
             throws ConnectionCanceledException {
 
         if(String.valueOf(Base64.encode(serverHostKey)).equals(
-                Preferences.instance().getProperty("ssh.hostkey." + serverHostKeyAlgorithm + "." + KnownHosts.createHashedHostname(hostname)))) {
+                Preferences.instance().getProperty("ssh.hostkey." + serverHostKeyAlgorithm + "." + hostname))) {
             return true;
         }
         return false;
@@ -56,9 +57,10 @@ public abstract class PreferencesHostKeyVerifier extends MemoryHostKeyVerifier {
      * @param serverHostKeyAlgorithm
      * @param serverHostKey
      */
+    @Override
     protected void save(final String hostname, final String serverHostKeyAlgorithm,
                         final byte[] serverHostKey) {
-        Preferences.instance().setProperty("ssh.hostkey." + serverHostKeyAlgorithm + "." + KnownHosts.createHashedHostname(hostname),
+        Preferences.instance().setProperty("ssh.hostkey." + serverHostKeyAlgorithm + "." + hostname,
                 String.valueOf(Base64.encode(serverHostKey)));
     }
 }
