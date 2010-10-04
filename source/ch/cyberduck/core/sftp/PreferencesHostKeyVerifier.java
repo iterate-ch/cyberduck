@@ -21,7 +21,6 @@ package ch.cyberduck.core.sftp;
 
 import ch.cyberduck.core.ConnectionCanceledException;
 import ch.cyberduck.core.Preferences;
-import ch.ethz.ssh2.KnownHosts;
 import ch.ethz.ssh2.crypto.Base64;
 
 import org.apache.log4j.Logger;
