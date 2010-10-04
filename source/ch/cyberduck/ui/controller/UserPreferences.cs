@@ -257,9 +257,6 @@ namespace Ch.Cyberduck.Ui.Controller
 
             defaults.put("editor.file.trash", false.ToString());
 
-            //defaults.put("logging", "debug");
-            defaults.put("logging", "info");
-            //defaults.put("logging", "info");
             defaults.put("connection.host.max", "-1");
             defaults.put("ssh.knownhosts", Path.Combine(RoamingApplicationDataPath, "known_hosts"));
 
