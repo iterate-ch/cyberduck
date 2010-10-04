@@ -78,12 +78,16 @@ public abstract class Editor {
 
     /**
      * Open the file in the parent directory
+     *
      * @param folder Where to temporary save the file to.
      */
     public void open(Local folder) {
-        this.edited.setLocal(LocalFactory.createLocal(folder, edited.getName()));
+        final Local local = LocalFactory.createLocal(folder, edited.getName());
+        edited.setLocal(local);
         controller.background(new BrowserBackgroundAction(controller) {
             public void run() {
+                // Delete any existing file which might be used by a watch editor already
+                local.delete(Preferences.instance().getBoolean("editor.file.trash"));
                 TransferOptions options = new TransferOptions();
                 options.closeSession = false;
                 Transfer download = new DownloadTransfer(edited) {
