@@ -20,10 +20,7 @@ using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 using ch.cyberduck.core;
-using Ch.Cyberduck.Core;
-using ch.cyberduck.ui;
 using Ch.Cyberduck.Ui.Winforms;
-using Ch.Cyberduck.Ui.Winforms.Serializer;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -62,7 +59,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             if (!String.IsNullOrEmpty(View.InputText) &&
                 !View.InputText.Trim().Equals(string.Empty))
-            {                
+            {
                 if (DialogResult.OK == result)
                 {
                     DuplicateFile(BrowserController.SelectedPath, View.InputText, false);

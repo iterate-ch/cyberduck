@@ -56,13 +56,12 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 _workdir = workdir;
                 _filename = filename;
+                _folder = PathFactory.createPath(getSession(), _workdir.getAbsolute(), _filename,
+                                 AbstractPath.DIRECTORY_TYPE);
             }
 
             public override void run()
             {
-                _folder = PathFactory.createPath(getSession(), _workdir.getAbsolute(), _filename,
-                                                 AbstractPath.DIRECTORY_TYPE);
-
                 _folder.mkdir(false);
             }
 

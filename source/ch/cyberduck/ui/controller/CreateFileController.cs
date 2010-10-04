@@ -20,7 +20,6 @@ using System.Windows.Forms;
 using ch.cyberduck.core;
 using ch.cyberduck.core.i18n;
 using Ch.Cyberduck.Ui.Controller.Threading;
-using java.text;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -50,9 +49,9 @@ namespace Ch.Cyberduck.Ui.Controller
         private class CreateFileAction : BrowserBackgroundAction
         {
             private readonly bool _edit;
+            private readonly Path _file;
             private readonly string _filename;
             private readonly Path _workdir;
-            private Path _file;
 
             public CreateFileAction(BrowserController controller, Path workdir, string filename, bool edit)
                 : base(controller)
@@ -60,16 +59,15 @@ namespace Ch.Cyberduck.Ui.Controller
                 _workdir = workdir;
                 _filename = filename;
                 _edit = edit;
+                _file = PathFactory.createPath(getSession(),
+                                               _workdir.getAbsolute(),
+                                               LocalFactory.createLocal(
+                                                   Preferences.instance().getProperty("tmp.dir"),
+                                                   _filename));
             }
 
             public override void run()
             {
-                _file = PathFactory.createPath(getSession(),
-                                               _workdir.getAbsolute(),
-                                               LocalFactory.createLocal(
-                                                   ch.cyberduck.core.Preferences.instance().getProperty("tmp.dir"),
-                                                   _filename));
-
                 int no = 0;
                 while (_file.getLocal().exists())
                 {
@@ -81,7 +79,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         proposal += "." + System.IO.Path.GetExtension(_filename);
                     }
                     _file.setLocal(
-                        LocalFactory.createLocal(ch.cyberduck.core.Preferences.instance().getProperty("tmp.dir"),
+                        LocalFactory.createLocal(Preferences.instance().getProperty("tmp.dir"),
                                                  proposal));
                 }
                 _file.getLocal().touch();
