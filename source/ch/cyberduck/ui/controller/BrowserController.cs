@@ -2506,8 +2506,13 @@ namespace Ch.Cyberduck.Ui.Controller
                 case BrowserView.Bonjour:
                     label = View.NumberOfBookmarks + " " + Locale.localizedString("Bookmarks");
                     break;
-            }            
-            View.StatusLabel = label;               
+            }
+            UpdateStatusLabel(label);
+        }
+
+        public void UpdateStatusLabel(string label) 
+        {
+            View.StatusLabel = label;
         }
 
         public void AddPathToHistory(Path path)

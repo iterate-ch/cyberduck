@@ -47,7 +47,11 @@ namespace Ch.Cyberduck.Ui.Controller.Threading
 
         public override bool prepare()
         {
-            AsyncController.AsyncDelegate mainAction = () => BrowserController.View.StartActivityAnimation();
+            AsyncController.AsyncDelegate mainAction = delegate
+            {
+                BrowserController.View.StartActivityAnimation();
+                BrowserController.UpdateStatusLabel(getActivity());
+            };
             BrowserController.Invoke(mainAction);
             return base.prepare();
         }
@@ -55,10 +59,10 @@ namespace Ch.Cyberduck.Ui.Controller.Threading
         public override void finish()
         {
             AsyncController.AsyncDelegate mainAction = delegate
-                                                           {
-                                                               BrowserController.View.StopActivityAnimation();
-                                                               BrowserController.UpdateStatusLabel();
-                                                           };
+            {
+                BrowserController.View.StopActivityAnimation();
+                BrowserController.UpdateStatusLabel();
+            };
             BrowserController.Invoke(mainAction);
             base.finish();
         }
