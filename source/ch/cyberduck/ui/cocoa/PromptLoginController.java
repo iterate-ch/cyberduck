@@ -116,10 +116,10 @@ public class PromptLoginController extends AbstractLoginController {
             }
 
             @Outlet
-            private NSTextField userLabel;
+            private NSTextField usernameLabel;
 
-            public void setUserLabel(NSTextField userLabel) {
-                this.userLabel = userLabel;
+            public void setUsernameLabel(NSTextField usernameLabel) {
+                this.usernameLabel = usernameLabel;
             }
 
             @Outlet
