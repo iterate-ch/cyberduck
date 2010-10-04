@@ -25,7 +25,7 @@ using Session = ch.cyberduck.core.Session;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
-    public class HostKeyController : KnownHostsHostKeyVerifier
+    public class HostKeyController : PreferencesHostKeyVerifier
     {
         private static readonly Logger Log = Logger.getLogger(typeof (HostKeyController).Name);
 
@@ -36,6 +36,9 @@ namespace Ch.Cyberduck.Ui.Controller
         protected override bool isUnknownKeyAccepted(string hostname, int port, string serverHostKeyAlgorithm,
                                                      byte[] serverHostKey)
         {
+            if (base.isUnknownKeyAccepted(hostname, port, serverHostKeyAlgorithm, serverHostKey)) {
+                return true;
+            }
             string commands = Locale.localizedString("Allow") + "|" +
                               Locale.localizedString("Deny") +
                               (isHostKeyDatabaseWritable()
