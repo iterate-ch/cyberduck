@@ -190,7 +190,7 @@ public class CFPath extends CloudPath {
                 for(FilesObject object : this.getSession().getClient().listObjects(this.getContainerName(), this.getKey(), -1, null)) {
                     final Path file = PathFactory.createPath(this.getSession(), this.getContainerName(), object.getName(),
                             "application/directory".equals(object.getMimeType()) ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
-                    if(file.getParent().equals(this)) {
+                    if(file.getParent().getAbsolute().equals(this.getAbsolute())) {
                         file.setParent(this);
                         if(file.attributes().getType() == Path.FILE_TYPE) {
                             file.attributes().setSize(object.getSize());
