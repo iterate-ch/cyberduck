@@ -28,8 +28,8 @@ import java.io.IOException;
 /**
  * @version $Id:$
  */
-public abstract class KnownHostsHostKeyVerifier extends HostKeyController {
-    protected static Logger log = Logger.getLogger(KnownHostsHostKeyVerifier.class);
+public abstract class MemoryHostKeyVerifier extends HostKeyController {
+    protected static Logger log = Logger.getLogger(MemoryHostKeyVerifier.class);
 
     /**
      * It is a thread safe implementation, therefore, you need only to instantiate one

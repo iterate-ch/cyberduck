@@ -31,8 +31,8 @@ import org.apache.log4j.Logger;
  *
  * @version $Id:$
  */
-public abstract class PreferencesHostsHostKeyVerifier extends HostKeyController {
-    protected static Logger log = Logger.getLogger(PreferencesHostsHostKeyVerifier.class);
+public abstract class PreferencesHostKeyVerifier extends MemoryHostKeyVerifier {
+    protected static Logger log = Logger.getLogger(PreferencesHostKeyVerifier.class);
 
     protected boolean isHostKeyDatabaseWritable() {
         return true;
