@@ -25,8 +25,6 @@ import org.apache.log4j.Logger;
 
 import com.apple.dnssd.*;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
