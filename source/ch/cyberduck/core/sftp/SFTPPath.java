@@ -202,13 +202,8 @@ public class SFTPPath extends Path {
         }
     }
 
-    protected void readAttributes() {
-        try {
-            this.readAttributes(this.getSession().sftp().stat(this.getAbsolute()));
-        }
-        catch(IOException e) {
-            this.error("Cannot read file attributes", e);
-        }
+    protected void readAttributes() throws IOException {
+        this.readAttributes(this.getSession().sftp().stat(this.getAbsolute()));
     }
 
     protected void readAttributes(SFTPv3FileAttributes attributes) {
