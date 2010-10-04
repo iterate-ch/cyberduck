@@ -155,9 +155,9 @@ public abstract class Preferences {
         defaults.put("tmp.dir", System.getProperty("java.io.tmpdir"));
 
         /**
-         * The logging level (DEBUG, INFO, WARN, ERROR)
+         * The logging level (debug, info, warn, error)
          */
-        defaults.put("logging", "ERROR");
+        defaults.put("logging", "error");
 
         /**
          * How many times the application was launched
