@@ -514,6 +514,9 @@ public class Host implements Serializable {
      * @param nickname
      */
     public void setNickname(String nickname) {
+        if(this.getDefaultNickname().equals(nickname)) {
+            return;
+        }
         this.nickname = nickname;
     }
 
