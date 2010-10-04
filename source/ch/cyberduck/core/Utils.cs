@@ -25,6 +25,7 @@ using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
+using ch.cyberduck.core;
 using Ch.Cyberduck.Core.Collections;
 using java.nio.charset;
 using java.util;
@@ -84,6 +85,21 @@ namespace Ch.Cyberduck.Core
         public static string ReplaceNewlines(string blockOfText, string replaceWith)
         {
             return blockOfText.Replace("\r\n", replaceWith).Replace("\n", replaceWith).Replace("\r", replaceWith);
+        }
+
+        /// <summary>
+        /// Get file extension. Ignores OS specific special characters. Includes the dot if available.
+        /// </summary>
+        /// <param name="filename"></param>
+        /// <returns></returns>
+        public static string GetSafeExtension(string filename)
+        {
+            String ext = LocalFactory.createLocal(filename).getExtension();
+            if (IsNotBlank(filename))
+            {
+                ext = "." + ext;
+            }
+            return ext;
         }
 
         public static string SafeString(string s)
@@ -215,7 +231,7 @@ namespace Ch.Cyberduck.Core
         //see http://windevblog.blogspot.com/2008/09/get-default-application-in-windows-xp.html
         public static string GetRegisteredDefaultApplication(string filename)
         {
-            string strExt = Path.GetExtension(filename);
+            string strExt = GetSafeExtension(filename);
             string command;
             Log.debug(string.Format("GetRegisteredDefaultApplication for filname {0}", filename));
 
@@ -280,7 +296,7 @@ namespace Ch.Cyberduck.Core
         private static string GetExplorerRegisteredApplication(string filename)
         {
             string command = null;
-            string strExt = Path.GetExtension(filename);
+            string strExt = GetSafeExtension(filename);
 
             try
             {
@@ -606,11 +622,13 @@ namespace Ch.Cyberduck.Core
 
         public static bool HasEastAsianFontSupport()
         {
-            if (Utils.IsVistaOrLater)
+            if (IsVistaOrLater)
             {
                 return true;
             }
-            return Convert.ToBoolean(NativeMethods.IsValidLocale(CultureInfo.CreateSpecificCulture("zh").LCID, NativeConstants.LCID_INSTALLED));
+            return
+                Convert.ToBoolean(NativeMethods.IsValidLocale(CultureInfo.CreateSpecificCulture("zh").LCID,
+                                                              NativeConstants.LCID_INSTALLED));
         }
     }
 }

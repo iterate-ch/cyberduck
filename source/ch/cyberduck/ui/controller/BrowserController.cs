@@ -502,7 +502,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     foreach (string file in data.GetFileDropList())
                     {
                         //check if we received at least one non-duck file
-                        if (!".duck".Equals(System.IO.Path.GetExtension(file)))
+                        if (!".duck".Equals(Utils.GetSafeExtension(file)))
                         {
                             // The bookmark this file has been dropped onto
                             Host destination = (Host) e.DropTargetItem.RowObject;
@@ -577,7 +577,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 //check if all files are .duck files
                 foreach (string file in dataObject.GetFileDropList())
                 {
-                    string ext = System.IO.Path.GetExtension(file);
+                    string ext = Utils.GetSafeExtension(file);
                     if (!".duck".Equals(ext))
                     {
                         //if at least one non-duck file we prepare for uploading

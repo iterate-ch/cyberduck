@@ -321,7 +321,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private Icon GetFileIcon(string name, bool isFolder, IconSize size, bool linkOverlay)
         {
             //by extension
-            string ext = System.IO.Path.GetExtension(name);
+            string ext = Utils.GetSafeExtension(name);
             string key = ext + isFolder + linkOverlay;
             int s = size == IconSize.Small ? 16 : 32;
             Icon icon = _iconCache.Get(key, s);
