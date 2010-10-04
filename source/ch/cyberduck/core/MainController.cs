@@ -510,7 +510,7 @@ namespace Ch.Cyberduck.Core
                     {
                         // The workspace should be saved. Serialize all open browser sessions
                         Host serialized = new Host(controller.getSession().getHost().getAsDictionary());
-                        serialized.setDefaultPath(controller.Workdir.getAbsolute());
+                        serialized.setWorkdir(controller.Workdir.getAbsolute());
                         Application._sessions.add(serialized);
                     }
                 }
