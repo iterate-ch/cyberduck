@@ -21,7 +21,7 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.sftp.HostKeyController;
-import ch.cyberduck.core.sftp.KnownHostsHostKeyVerifier;
+import ch.cyberduck.core.sftp.MemoryHostKeyVerifier;
 import ch.cyberduck.ui.Controller;
 import ch.cyberduck.ui.cocoa.application.NSAlert;
 import ch.cyberduck.ui.cocoa.foundation.NSAutoreleasePool;
@@ -37,7 +37,7 @@ import java.io.IOException;
  *
  * @version $Id$
  */
-public class AlertHostKeyController extends KnownHostsHostKeyVerifier {
+public class AlertHostKeyController extends MemoryHostKeyVerifier {
     protected static Logger log = Logger.getLogger(AlertHostKeyController.class);
 
     public static void register() {
