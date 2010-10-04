@@ -265,15 +265,15 @@ namespace Ch.Cyberduck.Ui.Controller
             defaults.put("browser.toolbar.openconnection", true.ToString());
             defaults.put("browser.toolbar.quickconnect", true.ToString());
             defaults.put("browser.toolbar.action", true.ToString());
-            defaults.put("browser.toolbar.info", false.ToString());
-            defaults.put("browser.toolbar.refresh", false.ToString());
-            defaults.put("browser.toolbar.edit", false.ToString());
+            defaults.put("browser.toolbar.info", true.ToString());
+            defaults.put("browser.toolbar.refresh", true.ToString());
+            defaults.put("browser.toolbar.edit", true.ToString());
             defaults.put("browser.toolbar.openinbrowser", false.ToString());
             defaults.put("browser.toolbar.newfolder", false.ToString());
             defaults.put("browser.toolbar.delete", false.ToString());
             defaults.put("browser.toolbar.download", false.ToString());
             defaults.put("browser.toolbar.upload", true.ToString());
-            defaults.put("browser.toolbar.transfers", false.ToString());
+            defaults.put("browser.toolbar.transfers", true.ToString());
 
             //default transfer toolbar set
             defaults.put("transfer.toolbar.resume", true.ToString());
