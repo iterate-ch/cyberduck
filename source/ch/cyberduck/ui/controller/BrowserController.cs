@@ -995,21 +995,21 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_NewBookmark()
         {
-            Host host = null;
+            Host bookmark;
             if (IsMounted())
             {
                 Path selected = SelectedPath;
                 if (null == selected || !selected.attributes().isDirectory())
                 {
                     selected = Workdir;
-                    host = new Host(_session.getHost().getAsDictionary());
-                    host.setUuid(null);
-                    host.setDefaultPath(selected.getAbsolute());
                 }
+                bookmark = new Host(_session.getHost().getAsDictionary());
+                bookmark.setUuid(null);
+                bookmark.setDefaultPath(selected.getAbsolute());
             }
             else
             {
-                host =
+                bookmark =
                     new Host(
                         Protocol.forName(
                             Preferences.instance().getProperty("connection.protocol.default")),
@@ -1017,7 +1017,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         Preferences.instance().getInteger("connection.port.default"));
             }
             ToggleView(BrowserView.Bookmark);
-            AddBookmark(host);
+            AddBookmark(bookmark);
         }
 
         private void AddBookmark(Host item)
@@ -1158,7 +1158,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private bool View_ValidateGotoFolder()
         {
-            return false;//todo
+            return false; //todo
             return IsMounted();
         }
 
@@ -2510,7 +2510,7 @@ namespace Ch.Cyberduck.Ui.Controller
             UpdateStatusLabel(label);
         }
 
-        public void UpdateStatusLabel(string label) 
+        public void UpdateStatusLabel(string label)
         {
             View.StatusLabel = label;
         }
