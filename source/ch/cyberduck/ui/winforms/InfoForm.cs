@@ -223,7 +223,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public string Checksum
         {
-            set { checksumLabel.Text = value; }
+            set { checksumTextBox.Text = value; }
         }
 
         public event VoidHandler FilenameChanged = delegate { };
