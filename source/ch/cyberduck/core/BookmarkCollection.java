@@ -23,6 +23,8 @@ import ch.cyberduck.core.serializer.HostWriterFactory;
 
 import org.apache.log4j.Logger;
 
+import java.util.Collection;
+
 /**
  * @version $Id: BookmarkCollection.java 6244 2010-07-04 06:39:24Z dkocher $
  */
@@ -75,6 +77,13 @@ public class BookmarkCollection extends AbstractHostCollection {
     @Override
     public Host get(int row) {
         return super.get(row);
+    }
+
+    @Override
+    public boolean addAll(Collection<? extends Host> hosts) {
+        super.addAll(hosts);
+        this.save();
+        return true;
     }
 
     /**
