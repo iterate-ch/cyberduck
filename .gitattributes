@@ -2093,6 +2093,7 @@ source/ch/cyberduck/core/s3/S3Path.java -text
 source/ch/cyberduck/core/s3/S3Session.java -text
 source/ch/cyberduck/core/sftp/HostKeyController.java -text
 source/ch/cyberduck/core/sftp/KnownHostsHostKeyVerifier.java -text
+source/ch/cyberduck/core/sftp/PreferencesHostsHostKeyVerifier.java -text
 source/ch/cyberduck/core/ssl/AbstractX509TrustManager.java -text
 source/ch/cyberduck/core/ssl/SSLSession.java -text
 source/ch/cyberduck/properties/Settings.Designer.cs -text

@@ -19,14 +19,10 @@ package ch.cyberduck.core.sftp;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LocalFactory;
-import ch.cyberduck.core.Preferences;
 import ch.ethz.ssh2.KnownHosts;
 
 import org.apache.log4j.Logger;
 
-import java.io.File;
 import java.io.IOException;
 
 /**
@@ -39,38 +35,22 @@ public abstract class KnownHostsHostKeyVerifier extends HostKeyController {
      * It is a thread safe implementation, therefore, you need only to instantiate one
      * <code>KnownHosts</code> for your whole application.
      */
-    private KnownHosts database;
+    protected KnownHosts database;
 
-    /**
-     * Path to known_hosts file.
-     */
-    private Local file;
-
-    public KnownHostsHostKeyVerifier() {
-        file = LocalFactory.createLocal(Preferences.instance().getProperty("ssh.knownhosts"));
-        if(!file.exists()) {
-            file.touch(true);
+    protected KnownHosts getDatabase() {
+        if(null == database) {
+            database = new KnownHosts();
         }
-        if(file.attributes().getPermission().isReadable()) {
-            try {
-                this.database = new KnownHosts(file.getAbsolute());
-            }
-            catch(IOException e) {
-                log.error("Cannot read " + file.getAbsolute());
-            }
-        }
-        if(null == this.database) {
-            this.database = new KnownHosts();
-        }
+        return database;
     }
 
     protected boolean isHostKeyDatabaseWritable() {
-        return file.attributes().getPermission().isWritable();
+        return false;
     }
 
     public boolean verifyServerHostKey(final String hostname, final int port, final String serverHostKeyAlgorithm,
                                        final byte[] serverHostKey) throws Exception {
-        int result = database.verifyHostkey(hostname, serverHostKeyAlgorithm, serverHostKey);
+        int result = this.getDatabase().verifyHostkey(hostname, serverHostKeyAlgorithm, serverHostKey);
         if(KnownHosts.HOSTKEY_IS_OK == result) {
             return true; // We are happy
         }
@@ -98,21 +78,27 @@ public abstract class KnownHostsHostKeyVerifier extends HostKeyController {
         String hashedHostname = KnownHosts.createHashedHostname(hostname);
         try {
             // Add the hostkey to the in-memory database
-            database.addHostkey(new String[]{hashedHostname}, serverHostKeyAlgorithm, serverHostKey);
+            this.getDatabase().addHostkey(new String[]{hashedHostname}, serverHostKeyAlgorithm, serverHostKey);
         }
         catch(IOException e) {
             log.error(e.getMessage());
         }
         if(always) {
-            // Also try to add the key to a known_host file
-            try {
-                KnownHosts.addHostkeyToFile(new File(file.getAbsolute()),
-                        new String[]{KnownHosts.createHashedHostname(hostname)},
-                        serverHostKeyAlgorithm, serverHostKey);
-            }
-            catch(IOException ignore) {
-                log.error(ignore.getMessage());
+            if(this.isHostKeyDatabaseWritable()) {
+                this.save(hostname, serverHostKeyAlgorithm, serverHostKey);
             }
         }
+    }
+
+    /**
+     * Serialize host key to lookup
+     *
+     * @param hostname
+     * @param serverHostKeyAlgorithm
+     * @param serverHostKey
+     */
+    protected void save(final String hostname, final String serverHostKeyAlgorithm,
+                        final byte[] serverHostKey) {
+        throw new UnsupportedOperationException();
     }
 }

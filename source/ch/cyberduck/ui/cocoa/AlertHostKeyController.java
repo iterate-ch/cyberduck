@@ -18,9 +18,7 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.ConnectionCanceledException;
-import ch.cyberduck.core.HostKeyControllerFactory;
-import ch.cyberduck.core.Session;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.sftp.HostKeyController;
 import ch.cyberduck.core.sftp.KnownHostsHostKeyVerifier;
@@ -31,7 +29,12 @@ import ch.ethz.ssh2.KnownHosts;
 
 import org.apache.log4j.Logger;
 
+import java.io.File;
+import java.io.IOException;
+
 /**
+ * Using known_hosts from OpenSSH to store accepted host keys.
+ *
  * @version $Id$
  */
 public class AlertHostKeyController extends KnownHostsHostKeyVerifier {
@@ -67,6 +70,33 @@ public class AlertHostKeyController extends KnownHostsHostKeyVerifier {
 
     public AlertHostKeyController(WindowController c) {
         this.parent = c;
+    }
+
+    /**
+     * Path to known_hosts file.
+     */
+    private Local file;
+
+    @Override
+    protected KnownHosts getDatabase() {
+        file = LocalFactory.createLocal(Preferences.instance().getProperty("ssh.knownhosts"));
+        if(!file.exists()) {
+            file.touch(true);
+        }
+        if(file.attributes().getPermission().isReadable()) {
+            try {
+                database = new KnownHosts(file.getAbsolute());
+            }
+            catch(IOException e) {
+                log.error("Cannot read " + file.getAbsolute());
+            }
+        }
+        return database;
+    }
+
+    @Override
+    protected boolean isHostKeyDatabaseWritable() {
+        return file.attributes().getPermission().isWritable();
     }
 
     @Override
@@ -147,6 +177,19 @@ public class AlertHostKeyController extends KnownHostsHostKeyVerifier {
         }
         finally {
             pool.drain();
+        }
+    }
+
+    @Override
+    protected void save(String hostname, String serverHostKeyAlgorithm, byte[] serverHostKey) {
+        // Also try to add the key to a known_host file
+        try {
+            KnownHosts.addHostkeyToFile(new File(file.getAbsolute()),
+                    new String[]{KnownHosts.createHashedHostname(hostname)},
+                    serverHostKeyAlgorithm, serverHostKey);
+        }
+        catch(IOException ignore) {
+            log.error(ignore.getMessage());
         }
     }
 }
