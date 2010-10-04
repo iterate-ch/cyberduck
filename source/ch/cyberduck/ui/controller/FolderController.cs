@@ -27,7 +27,7 @@ namespace Ch.Cyberduck.Ui.Controller
     internal class FolderController : FileController
     {
         public FolderController(IPromptView view, BrowserController browserController) : base(view, browserController)
-        {            
+        {
         }
 
         public override Bitmap IconView
@@ -48,8 +48,8 @@ namespace Ch.Cyberduck.Ui.Controller
         private class CreateFolderAction : BrowserBackgroundAction
         {
             private readonly string _filename;
+            private readonly Path _folder;
             private readonly Path _workdir;
-            private Path _folder;
 
             public CreateFolderAction(BrowserController controller, Path workdir, string filename)
                 : base(controller)
@@ -57,7 +57,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 _workdir = workdir;
                 _filename = filename;
                 _folder = PathFactory.createPath(getSession(), _workdir.getAbsolute(), _filename,
-                                 AbstractPath.DIRECTORY_TYPE);
+                                                 AbstractPath.DIRECTORY_TYPE);
             }
 
             public override void run()
