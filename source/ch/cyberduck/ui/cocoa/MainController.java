@@ -362,7 +362,7 @@ public class MainController extends BundleController implements NSApplication.De
     @Action
     public void feedbackMenuClicked(final ID sender) {
         openUrl(Preferences.instance().getProperty("mail.feedback")
-                + "?subject=" + Preferences.instance().getProperty("application") + "-" + Preferences.instance().getProperty("version"));
+                + "?subject=" + Preferences.instance().getProperty("application.name") + "-" + Preferences.instance().getProperty("application.version"));
     }
 
     @Action

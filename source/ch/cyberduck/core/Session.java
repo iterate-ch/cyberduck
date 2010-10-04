@@ -58,8 +58,8 @@ public abstract class Session implements TranscriptListener {
      */
     protected abstract <C> C getClient() throws ConnectionCanceledException;
 
-    private final String ua = Preferences.instance().getProperty("application") + "/"
-            + Preferences.instance().getProperty("version")
+    private final String ua = Preferences.instance().getProperty("application.name") + "/"
+            + Preferences.instance().getProperty("application.version")
             + " (" + System.getProperty("os.name") + "/" + System.getProperty("os.version") + ")"
             + " (" + System.getProperty("os.arch") + ")";
 

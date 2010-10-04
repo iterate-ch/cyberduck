@@ -395,7 +395,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
     @Override
     public void setWindow(NSWindow window) {
-        window.setTitle(Preferences.instance().getProperty("application"));
+        window.setTitle(Preferences.instance().getProperty("application.name"));
         window.setMiniwindowImage(IconCache.iconNamed("cyberduck-document.icns"));
         window.setMovableByWindowBackground(true);
         window.setDelegate(this.id());
@@ -3378,7 +3378,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                         bookmarkTable.setNeedsDisplay();
 
                         if(!isMounted()) {
-                            window.setTitle(Preferences.instance().getProperty("application"));
+                            window.setTitle(Preferences.instance().getProperty("application.name"));
                             window.setRepresentedFilename("");
                         }
                         window.setDocumentEdited(false);

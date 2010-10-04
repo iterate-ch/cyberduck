@@ -151,9 +151,9 @@ public class UserDefaultsPreferences extends Preferences {
         super.setDefaults();
 
         defaults.put("application.support.path", LocalFactory.createLocal("~/Library/Application Support/Cyberduck").getAbbreviatedPath());
-        defaults.put("application",
+        defaults.put("application.name",
                 NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleName").toString());
-        defaults.put("version",
+        defaults.put("application.version",
                 NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleShortVersionString").toString());
 
         defaults.put("bookmark.import.filezilla.location", "~/.filezilla/sitemanager.xml");

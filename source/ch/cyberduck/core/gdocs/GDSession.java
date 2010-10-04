@@ -121,8 +121,8 @@ public class GDSession extends Session {
 
     @Override
     public String getUserAgent() {
-        return Preferences.instance().getProperty("application") + "-"
-                + Preferences.instance().getProperty("version");
+        return Preferences.instance().getProperty("application.name") + "-"
+                + Preferences.instance().getProperty("application.version");
     }
 
     @Override
