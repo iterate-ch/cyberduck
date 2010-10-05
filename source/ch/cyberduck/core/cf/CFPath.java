@@ -328,11 +328,12 @@ public class CFPath extends CloudPath {
     public void delete() {
         try {
             this.getSession().check();
-            if(!this.isContainer()) {
+            final String container = this.getContainerName();
+            if(attributes().isFile()) {
                 this.getSession().message(MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),
                         this.getName()));
 
-                this.getSession().getClient().deleteObject(this.getContainerName(), this.getKey());
+                this.getSession().getClient().deleteObject(container, this.getKey());
             }
             else if(attributes().isDirectory()) {
                 for(AbstractPath i : this.children()) {
@@ -341,8 +342,13 @@ public class CFPath extends CloudPath {
                     }
                     i.delete();
                 }
+                this.getSession().message(MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),
+                        this.getName()));
                 if(this.isContainer()) {
-                    this.getSession().getClient().deleteContainer(this.getContainerName());
+                    this.getSession().getClient().deleteContainer(container);
+                }
+                else {
+                    this.getSession().getClient().deleteObject(container, this.getKey());
                 }
             }
             // The directory listing is no more current
