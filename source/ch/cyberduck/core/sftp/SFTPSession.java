@@ -165,6 +165,11 @@ public class SFTPSession extends Session {
 
     @Override
     protected void login(LoginController controller, final Credentials credentials) throws IOException {
+        if(this.getClient().isAuthenticationComplete()) {
+            this.message(Locale.localizedString("Login successful", "Credentials"));
+            // Already authenticated
+            return;
+        }
         if(credentials.isPublicKeyAuthentication()) {
             if(this.loginUsingPublicKeyAuthentication(controller, credentials)) {
                 this.message(Locale.localizedString("Login successful", "Credentials"));
@@ -364,6 +369,7 @@ public class SFTPSession extends Session {
 
     @Override
     public void interrupt() {
+        log.debug("interrupt");
         try {
             this.fireConnectionWillCloseEvent();
             this.getClient().close(null, true);
@@ -403,7 +409,7 @@ public class SFTPSession extends Session {
             }
             else {
                 try {
-                    this.sftp().canonicalPath("/");
+                    this.sftp().canonicalPath(".");
                 }
                 catch(IOException e) {
                     log.warn(e.getMessage());
