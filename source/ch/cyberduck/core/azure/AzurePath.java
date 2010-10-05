@@ -549,6 +549,9 @@ public class AzurePath extends CloudPath {
                     i.delete();
                 }
                 if(this.isContainer()) {
+                    this.getSession().message(MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),
+                            this.getName()));
+
                     this.getSession().getClient().deleteContainer(this.getContainerName());
                 }
             }

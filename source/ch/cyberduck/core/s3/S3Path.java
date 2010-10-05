@@ -907,11 +907,10 @@ public class S3Path extends CloudPath {
         try {
             this.getSession().check();
             final String container = this.getContainerName();
-            final String key = this.getKey();
             if(attributes().isFile()) {
                 this.getSession().message(MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),
                         this.getName()));
-                this.delete(container, key, this.attributes().getVersionId());
+                this.delete(container, this.getKey(), this.attributes().getVersionId());
             }
             else if(attributes().isDirectory()) {
                 for(AbstractPath child : this.children()) {
@@ -920,11 +919,13 @@ public class S3Path extends CloudPath {
                     }
                     child.delete();
                 }
+                this.getSession().message(MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),
+                        this.getName()));
                 if(this.isContainer()) {
                     this.getSession().getClient().deleteBucket(container);
                 }
                 else {
-                    this.delete(container, key, this.attributes().getVersionId());
+                    this.delete(container, this.getKey(), this.attributes().getVersionId());
                 }
             }
             // The directory listing is no more current
