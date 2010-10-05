@@ -1969,6 +1969,9 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             // Update the status label at the bottom of the browser window
             statusLabel.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(label, TRUNCATE_MIDDLE_ATTRIBUTES));
         }
+        else {
+            statusLabel.setStringValue("");
+        }
     }
 
     @Outlet
