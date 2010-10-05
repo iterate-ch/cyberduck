@@ -9,6 +9,7 @@ Changelog. Last modified: $Date$
 - [Feature] Connecting to Windows Azure Blob Storage (Azure) (#3938)
 
 3.6.2 [http://trac.cyberduck.ch/milestone/3.6.2]
+- [Feature] Option to upload with temporary name and rename file after transfer is complete (#4165)
 - [Feature] Copy files between browser windows with different sessions (#21)
 - [Feature] Option to display hidden files in upload prompt (#1243)
 - [Feature] Import Transmit favorites (#3073)
