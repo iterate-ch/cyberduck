@@ -313,7 +313,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                 else {
                     // The file should be renamed
                     final Map<Path, Path> files = new HashMap<Path, Path>();
-                    for(Path next : pasteboard) {
+                    for(Path next : pasteboard.copy(controller.getSession())) {
                         Path renamed = PathFactory.createPath(controller.getSession(),
                                 destination.getAbsolute(), next.getName(), next.attributes().getType());
                         files.put(next, renamed);
@@ -407,7 +407,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                 }
                 else {
                     // If copying between sessions is supported
-                    // return NSDraggingInfo.NSDragOperationCopy;
+                    return NSDraggingInfo.NSDragOperationCopy;
                 }
             }
         }
