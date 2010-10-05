@@ -26,6 +26,7 @@ import ch.cyberduck.core.io.BandwidthThrottle;
 
 import org.apache.commons.httpclient.methods.InputStreamRequestEntity;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.jets3t.service.utils.ServiceUtils;
 import org.w3c.util.DateParser;
@@ -40,7 +41,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.MessageFormat;
 import java.text.ParseException;
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Rackspace Cloud Files Implementation
@@ -187,31 +190,31 @@ public class CFPath extends CloudPath {
                 }
             }
             else {
-                for(FilesObject object : this.getSession().getClient().listObjects(this.getContainerName(), this.getKey(), -1, null)) {
+                for(FilesObject object : this.getSession().getClient().listObjects(this.getContainerName(),
+                        this.isContainer() ? StringUtils.EMPTY : this.getKey(), -1, null))
+                {
                     final Path file = PathFactory.createPath(this.getSession(), this.getContainerName(), object.getName(),
                             "application/directory".equals(object.getMimeType()) ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
-                    if(file.getParent().getAbsolute().equals(this.getAbsolute())) {
-                        file.setParent(this);
-                        if(file.attributes().getType() == Path.FILE_TYPE) {
-                            file.attributes().setSize(object.getSize());
-                            file.attributes().setChecksum(object.getMd5sum());
-                        }
-                        if(file.attributes().getType() == Path.DIRECTORY_TYPE) {
-                            file.attributes().setPlaceholder(true);
-                        }
-                        try {
-                            final Date modified = DateParser.parse(object.getLastModified());
-                            if(null != modified) {
-                                file.attributes().setModificationDate(modified.getTime());
-                            }
-                        }
-                        catch(InvalidDateException e) {
-                            log.warn("Not ISO 8601 format:" + e.getMessage());
-                        }
-                        file.attributes().setOwner(this.attributes().getOwner());
-
-                        children.add(file);
+                    file.setParent(this);
+                    if(file.attributes().getType() == Path.FILE_TYPE) {
+                        file.attributes().setSize(object.getSize());
+                        file.attributes().setChecksum(object.getMd5sum());
                     }
+                    if(file.attributes().getType() == Path.DIRECTORY_TYPE) {
+                        file.attributes().setPlaceholder(true);
+                    }
+                    try {
+                        final Date modified = DateParser.parse(object.getLastModified());
+                        if(null != modified) {
+                            file.attributes().setModificationDate(modified.getTime());
+                        }
+                    }
+                    catch(InvalidDateException e) {
+                        log.warn("Not ISO 8601 format:" + e.getMessage());
+                    }
+                    file.attributes().setOwner(this.attributes().getOwner());
+
+                    children.add(file);
                 }
             }
             this.getSession().setWorkdir(this);
