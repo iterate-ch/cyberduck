@@ -28,6 +28,8 @@ namespace Ch.Cyberduck.Ui.Winforms
 {
     public partial class UpdateForm : BaseForm, IUpdateView
     {
+        private static bool _expanded;
+
         public UpdateForm()
         {
             InitializeComponent();
@@ -37,8 +39,11 @@ namespace Ch.Cyberduck.Ui.Winforms
             ConfigureUpdater();
 
             pictureBox.Image = IconCache.Instance.IconForName("cyberduck", 64);
-            newVersionAvailableLabel.Text = Locale.localizedString("A new version of %@ is available!", "Sparkle").Replace("%@",
-                                                            Preferences.instance().getProperty("application.name"));
+            newVersionAvailableLabel.Text =
+                Locale.localizedString("A new version of %@ is available!", "Sparkle").Replace("%@",
+                                                                                               Preferences.instance().
+                                                                                                   getProperty(
+                                                                                                       "application.name"));
 
             //force handle creation to make the updater work
             IntPtr intPtr = Handle;
@@ -73,6 +78,18 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public static void SetButtonShield(Button btn, bool showShield)
         {
+            if (showShield)
+            {
+                if (!_expanded)
+                {
+                    btn.Width += 20;
+                    _expanded = true;
+                }
+            }
+            else
+            {
+                if (_expanded) btn.Width -= 20;
+            }
             btn.FlatStyle = FlatStyle.System;
             // BCM_SETSHIELD = 0x0000160C
             NativeMethods.SendMessage(btn.Handle, 0x160C, 0, showShield ? 1 : 0);
@@ -80,9 +97,6 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         private void ConfigureUpdater()
         {
-            //updater.DaysBetweenChecks = 500;
-            //updater.WaitBeforeCheckSecs = 1000000;
-
             updater.ContainerForm = this;
             updater.KeepHidden = true;
             updater.Visible = false;
@@ -105,7 +119,8 @@ namespace Ch.Cyberduck.Ui.Winforms
                                                string newVersion = updater.Version;
 
                                                versionLabel.Text = Locale.localizedString(
-                                                   "%1$@ %2$@ is now available (you have %3$@). Would you like to download it now?", "Sparkle")
+                                                   "%1$@ %2$@ is now available (you have %3$@). Would you like to download it now?",
+                                                   "Sparkle")
                                                    .Replace("%1$@",
                                                             Preferences.instance
                                                                 ().getProperty
@@ -136,7 +151,8 @@ namespace Ch.Cyberduck.Ui.Winforms
 
             updater.BeforeDownloading += (sender, args) =>
                                              {
-                                                 UpdateStatusLabel(Locale.localizedString("Downloading update...", "Sparkle"), false);
+                                                 UpdateStatusLabel(
+                                                     Locale.localizedString("Downloading update...", "Sparkle"), false);
                                                  progressBar.Style = ProgressBarStyle.Continuous;
                                                  progressBar.Value = 0;
                                                  progressBar.Visible = true;
@@ -151,7 +167,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             updater.ReadyToBeInstalled += delegate
                                               {
                                                   progressBar.Visible = false;
-                                                  statusLabel.Text = Locale.localizedString("Installing update...", "Sparkle");
+                                                  statusLabel.Text = Locale.localizedString("Installing update...",
+                                                                                            "Sparkle");
                                                   updater.InstallNow();
                                               };
 
@@ -178,8 +195,11 @@ namespace Ch.Cyberduck.Ui.Winforms
             }
             statusLabel.Visible = true;
             statusLabel.ForeColor = error ? Color.Red : Color.FromKnownColor(KnownColor.ControlText);
-            statusLabel.Text = error ? Locale.localizedString("An error occurred during installation. Please try again later." + " ", "Sparkle")
-                                + status : status;
+            statusLabel.Text = error
+                                   ? Locale.localizedString(
+                                       "An error occurred during installation. Please try again later." + " ", "Sparkle")
+                                     + status
+                                   : status;
         }
 
         public void SetStatusChecking(bool checking)
