@@ -22,10 +22,14 @@ package ch.cyberduck.ui.cocoa.model;
 import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.PathReference;
 import ch.cyberduck.core.PathReferenceFactory;
+import ch.cyberduck.core.Preferences;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.foundation.NSString;
 
+import org.apache.commons.collections.map.LRUMap;
 import org.apache.commons.lang.StringUtils;
+
+import java.util.Map;
 
 /**
  * Mapper between path references returned from the outline view model and its internal
@@ -38,6 +42,11 @@ public class OutlinePathReference extends PathReference<NSObject> {
     private NSObject reference;
 
     private int hashcode;
+
+    private static Map<String, NSString> cache = new LRUMap(
+            Preferences.instance().getInteger("browser.model.cache.size")
+    );
+
 
     /**
      * @param path
@@ -52,8 +61,12 @@ public class OutlinePathReference extends PathReference<NSObject> {
                 reference.append("-").append(path.attributes().getChecksum());
             }
         }
-        this.reference = NSString.stringWithString(reference.toString());
-        this.hashcode = reference.toString().hashCode();
+        String unique = reference.toString();
+        if(!cache.containsKey(unique)) {
+            cache.put(unique, NSString.stringWithString(unique));
+        }
+        this.reference = cache.get(unique);
+        this.hashcode = unique.hashCode();
     }
 
     /**
