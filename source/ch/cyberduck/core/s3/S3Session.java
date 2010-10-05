@@ -89,7 +89,7 @@ public class S3Session extends CloudSession implements SSLSession {
     /**
      * Exposing protected methods
      */
-    private class RequestEntityRestStorageService extends RestS3Service {
+    protected class RequestEntityRestStorageService extends RestS3Service {
         public RequestEntityRestStorageService(ProviderCredentials credentials) throws ServiceException {
             super(credentials, S3Session.this.getUserAgent(), new CredentialsProvider() {
                 /**
