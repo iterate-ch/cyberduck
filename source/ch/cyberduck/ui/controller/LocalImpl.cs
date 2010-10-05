@@ -16,17 +16,17 @@
 // yves@cyberduck.ch
 // 
 using System;
-using System.ComponentModel;
-using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
-using System.Security.AccessControl;
+using System.Text;
 using ch.cyberduck.core;
 using Ch.Cyberduck.Core;
 using java.util;
+using org.apache.commons.io;
 using org.apache.log4j;
 using File = java.io.File;
 using Locale = ch.cyberduck.core.i18n.Locale;
+using Path = System.IO.Path;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -96,7 +96,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             if (Log.isDebugEnabled())
             {
-                Log.debug("open():" + getAbsolute());            
+                Log.debug("open():" + getAbsolute());
             }
             return Utils.StartProcess(getAbsolute());
         }
@@ -140,7 +140,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public override void delete()
         {
-            this.delete(false);
+            delete(false);
         }
 
         public override void trash()
@@ -178,9 +178,64 @@ namespace Ch.Cyberduck.Ui.Controller
             ;
         }
 
-        public override void setPath(string name)
+        public override void setPath(string parent, string name)
         {
-            base.setPath(name.Replace('/', '\\'));
+            base.setPath(MakeValidPath(parent), MakeValidFilename(name));
+        }
+
+        public override void setPath(string filename)
+        {
+            base.setPath(Path.Combine(MakeValidPath(FilenameUtils.getPath(filename)),
+                                      MakeValidFilename(FilenameUtils.getName(filename))));
+        }
+
+        private string MakeValidPath(string path)
+        {
+            if (Utils.IsNotBlank(path))
+            {
+                path = FilenameUtils.separatorsToSystem(path);
+                string prefix = FilenameUtils.getPrefix(path);
+                if (!path.EndsWith(Path.DirectorySeparatorChar.ToString()))
+                {
+                    path = path + Path.DirectorySeparatorChar;
+                }
+                path = FilenameUtils.getPath(path);
+
+                StringBuilder sb = new StringBuilder();
+                if (Utils.IsNotBlank(prefix))
+                {
+                    sb.Append(prefix);
+                }
+                path = FilenameUtils.separatorsToSystem(path);
+                string[] parts = path.Split(Path.DirectorySeparatorChar);
+                foreach (string part in parts)
+                {
+                    string cleanpart = part;
+                    foreach (char c in Path.GetInvalidFileNameChars())
+                    {
+                        cleanpart = cleanpart.Replace(c.ToString(), "_");
+                    }
+                    sb.Append(cleanpart);
+                    if (!parts[parts.Length - 1].Equals(part))
+                    {
+                        sb.Append(Path.DirectorySeparatorChar);
+                    }
+                }
+                return sb.ToString();
+            }
+            return path;
+        }
+
+        private string MakeValidFilename(string name)
+        {
+            if (Utils.IsNotBlank(name))
+            {
+                foreach (char c in Path.GetInvalidFileNameChars())
+                {
+                    name = name.Replace(c.ToString(), "_");
+                }
+            }
+            return name;
         }
 
         public static void Register()
