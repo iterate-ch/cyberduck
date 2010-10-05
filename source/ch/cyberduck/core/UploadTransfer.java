@@ -29,6 +29,7 @@ import org.apache.commons.lang.StringUtils;
 import java.text.MessageFormat;
 import java.util.Iterator;
 import java.util.List;
+import java.util.UUID;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
@@ -377,6 +378,13 @@ public class UploadTransfer extends Transfer {
                     }
                 }
             }
+            String original = file.getName();
+            if(Preferences.instance().getBoolean("queue.upload.file.temporary")
+                    && file.getSession().isRenameSupported(file)) {
+                String temporary = MessageFormat.format(Preferences.instance().getProperty("queue.upload.file.temporary.format"),
+                        file.getName(), UUID.randomUUID().toString());
+                file.setPath(file.getParent(), temporary);
+            }
             // Transfer
             file.upload(bandwidth, new AbstractStreamListener() {
                 @Override
@@ -384,6 +392,14 @@ public class UploadTransfer extends Transfer {
                     transferred += bytes;
                 }
             });
+            if(file.status().isComplete()) {
+                if(Preferences.instance().getBoolean("queue.upload.file.temporary")
+                        && file.getSession().isRenameSupported(file)) {
+                    file.rename(PathFactory.createPath(file.getSession(), file.getParent().getAbsolute(),
+                            original, file.attributes().getType()));
+                    file.setPath(file.getParent(), original);
+                }
+            }
         }
         else if(file.attributes().isDirectory()) {
             if(file.getSession().isCreateFolderSupported(file)) {

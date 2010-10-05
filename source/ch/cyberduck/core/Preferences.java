@@ -390,6 +390,15 @@ public abstract class Preferences {
         defaults.put("queue.upload.skip.regex",
                 ".*~\\..*|\\.DS_Store|\\.svn|CVS");
 
+        /**
+         * Create temporary filename with an UUID and rename when upload is complete
+         */
+        defaults.put("queue.upload.file.temporary", String.valueOf(false));
+        /**
+         * Format string for temporary filename. Default to filename-uuid
+         */
+        defaults.put("queue.upload.file.temporary.format", "{0}-{1}");
+
         defaults.put("queue.download.changePermissions", String.valueOf(true));
         defaults.put("queue.download.permissions.useDefault", String.valueOf(false));
         defaults.put("queue.download.permissions.file.default", String.valueOf(644));
