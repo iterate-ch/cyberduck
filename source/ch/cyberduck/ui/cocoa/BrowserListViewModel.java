@@ -130,29 +130,4 @@ public class BrowserListViewModel extends BrowserTableDataSource implements NSTa
                                                                                                 final NSURL dropDestination, NSIndexSet rowIndexes) {
         return this.namesOfPromisedFilesDroppedAtDestination(dropDestination);
     }
-
-//    public NSArray tableView_namesOfPromisedFilesDroppedAtDestination_forDraggedRowsWithIndexes(NSTableView view, final NSURL dropDestination, NSIndexSet rowIndexes) {
-//        final NSMutableArray promisedDragNames = NSMutableArray.arrayWithCapacity(rowIndexes.count().intValue());
-//        final List<Path> roots = new Collection<Path>();
-//        final AttributedList<Path> children = this.children(this.controller.workdir());
-//        for(NSUInteger index = rowIndexes.firstIndex(); index.intValue() != NSIndexSet.NSNotFound; index = rowIndexes.indexGreaterThanIndex(index)) {
-//            Path promisedDragPath = children.get(index.intValue());
-//            promisedDragPath.setLocal(LocalFactory.createLocalLocal(dropDestination.path(), promisedDragPath.getName()));
-//            if(rowIndexes.count().intValue() == 1) {
-//                if(promisedDragPath.attributes().isFile()) {
-//                    promisedDragPath.getLocal().touch();
-//                }
-//                if(promisedDragPath.attributes().isDirectory()) {
-//                    promisedDragPath.getLocal().mkdir();
-//                }
-//            }
-//            promisedDragNames.addObject(NSString.stringWithString(promisedDragPath.getLocal().getName()));
-//            roots.add(promisedDragPath);
-//        }
-//        final Transfer q = new DownloadTransfer(roots);
-//        if(q.numberOfRoots() > 0) {
-//            controller.transfer(q);
-//        }
-//        return promisedDragNames;
-//    }
 }
