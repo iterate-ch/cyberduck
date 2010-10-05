@@ -3,6 +3,7 @@
 - [Feature] Connecting to Windows Azure Blob Storage (Azure) (#3938)
 
 3.6.2 [http://trac.cyberduck.ch/milestone/3.6.2]
+- [Feature] Copy files between browser windows with different sessions (#21)
 - [Feature] Option to display hidden files in upload prompt (#1243)
 - [Feature] Import Transmit favorites (#3073)
 - [Feature] Copy and open multiple URLs (#5135)
