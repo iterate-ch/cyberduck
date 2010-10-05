@@ -1309,28 +1309,57 @@ namespace Ch.Cyberduck.Ui.Winforms
 
             #region Shortcuts - Browser Context
 
-            refreshContextToolStripMenuItem.ShortcutKeys = refreshToolStripMenuItem.ShortcutKeys;
-            infoContextToolStripMenuItem.ShortcutKeys = infoToolStripMenuItem.ShortcutKeys;
-            editContextToolStripMenuItem.ShortcutKeys = editWithToolStripMenuItem.ShortcutKeys;
-            downloadContextToolStripMenuItem.ShortcutKeys = downloadToolStripMenuItem.ShortcutKeys;
-            downloadAsContextToolStripMenuItem.ShortcutKeys = downloadAsToolStripMenuItem.ShortcutKeys;
-            deleteContextToolStripMenuItem.ShortcutKeys = deleteToolStripMenuItem.ShortcutKeys;
-            duplicateFileContextToolStripMenuItem.ShortcutKeys = duplicateFileToolStripMenuItem.ShortcutKeys;
-            uploadContextToolStripMenuItem.ShortcutKeys = uploadToolStripMenuItem.ShortcutKeys;
-            newFolderContextToolStripMenuItem.ShortcutKeys = newFolderToolStripMenuItem.ShortcutKeys;
-            newFileContextToolStripMenuItem.ShortcutKeys = newFileToolStripMenuItem.ShortcutKeys;
-            copyURLContextToolStripMenuItem.ShortcutKeys = copyURLToolStripMenuItem.ShortcutKeys;
-            openWebURLContextToolStripMenuItem.ShortcutKeys = openWebURLToolStripMenuItem.ShortcutKeys;
-            newBookmarkContextToolStripMenuItem.ShortcutKeys = newBookmarkToolStripMenuItem.ShortcutKeys;
+            //All doubly assigned shortcuts are falsely active in all child forms
+            Activated += delegate
+                             {
+                                 refreshContextToolStripMenuItem.ShortcutKeys = refreshToolStripMenuItem.ShortcutKeys;
+                                 infoContextToolStripMenuItem.ShortcutKeys = infoToolStripMenuItem.ShortcutKeys;
+                                 editContextToolStripMenuItem.ShortcutKeys = editWithToolStripMenuItem.ShortcutKeys;
+                                 downloadContextToolStripMenuItem.ShortcutKeys = downloadToolStripMenuItem.ShortcutKeys;
+                                 downloadAsContextToolStripMenuItem.ShortcutKeys = downloadAsToolStripMenuItem.ShortcutKeys;
+                                 deleteContextToolStripMenuItem.ShortcutKeys = Keys.Delete;
+                                 deleteContextToolStripMenuItem.ShortcutKeys = deleteToolStripMenuItem.ShortcutKeys;
+                                 duplicateFileContextToolStripMenuItem.ShortcutKeys = duplicateFileToolStripMenuItem.ShortcutKeys;
+                                 uploadContextToolStripMenuItem.ShortcutKeys = uploadToolStripMenuItem.ShortcutKeys;
+                                 newFolderContextToolStripMenuItem.ShortcutKeys = newFolderToolStripMenuItem.ShortcutKeys;
+                                 newFileContextToolStripMenuItem.ShortcutKeys = newFileToolStripMenuItem.ShortcutKeys;
+                                 copyURLContextToolStripMenuItem.ShortcutKeys = copyURLToolStripMenuItem.ShortcutKeys;
+                                 openWebURLContextToolStripMenuItem.ShortcutKeys = openWebURLToolStripMenuItem.ShortcutKeys;
+                                 newBookmarkContextToolStripMenuItem.ShortcutKeys = newBookmarkToolStripMenuItem.ShortcutKeys;                                 
+                             };
+            Deactivate += delegate
+                              {
+                                  foreach (ToolStripItem item in contextMenuStrip.Items)
+                                  {
+                                      if (item is ToolStripMenuItem)
+                                      {
+                                          (item as ToolStripMenuItem).ShortcutKeys = Keys.None;
+                                      }
+                                  }
+                              };
 
             #endregion
 
             #region Shortcuts - Bookmarks Context
 
-            connectBookmarkContextToolStripMenuItem.ShortcutKeyDisplayString = "Enter";
-            newBookmarkContextToolStripMenuItem1.ShortcutKeys = newBookmarkToolStripMenuItem.ShortcutKeys;
-            //todo deleteBookmarkContextToolStripMenuItem1.ShortcutKeys = 
-            editBookmarkContextToolStripMenuItem1.ShortcutKeys = editBookmarkToolStripMenuItem.ShortcutKeys;
+            //All doubly assigned shortcuts are falsely active in all child forms
+            Activated += delegate
+                             {
+                                 connectBookmarkContextToolStripMenuItem.ShortcutKeyDisplayString = "Enter";
+                                 newBookmarkContextToolStripMenuItem1.ShortcutKeys = newBookmarkToolStripMenuItem.ShortcutKeys;
+                                 //todo deleteBookmarkContextToolStripMenuItem1.ShortcutKeys = 
+                                 editBookmarkContextToolStripMenuItem1.ShortcutKeys = editBookmarkToolStripMenuItem.ShortcutKeys;
+                             };
+            Deactivate += delegate
+                              {
+                                  foreach (ToolStripItem item in bookmarkContextMenuStrip.Items)
+                                  {
+                                      if (item is ToolStripMenuItem)
+                                      {
+                                          (item as ToolStripMenuItem).ShortcutKeys = Keys.None;
+                                      }
+                                  }
+                              };
 
             #endregion
         }
