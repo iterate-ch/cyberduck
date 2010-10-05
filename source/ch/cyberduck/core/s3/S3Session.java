@@ -39,10 +39,7 @@ import org.apache.commons.httpclient.auth.CredentialsProvider;
 import org.apache.commons.httpclient.methods.RequestEntity;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.jets3t.service.CloudFrontService;
-import org.jets3t.service.CloudFrontServiceException;
-import org.jets3t.service.Jets3tProperties;
-import org.jets3t.service.ServiceException;
+import org.jets3t.service.*;
 import org.jets3t.service.acl.GroupGrantee;
 import org.jets3t.service.impl.rest.httpclient.RestS3Service;
 import org.jets3t.service.model.*;
@@ -92,7 +89,7 @@ public class S3Session extends CloudSession implements SSLSession {
     /**
      * Exposing protected methods
      */
-    public class RequestEntityRestStorageService extends RestS3Service {
+    private class RequestEntityRestStorageService extends RestS3Service {
         public RequestEntityRestStorageService(ProviderCredentials credentials) throws ServiceException {
             super(credentials, S3Session.this.getUserAgent(), new CredentialsProvider() {
                 /**
@@ -121,56 +118,6 @@ public class S3Session extends CloudSession implements SSLSession {
                                                    RequestEntity requestEntity) throws ServiceException {
             super.pubObjectWithRequestEntityImpl(bucketName, object, requestEntity);
         }
-
-
-        /**
-         * @return the identifier for the signature algorithm.
-         */
-        @Override
-        protected String getSignatureIdentifier() {
-            return S3Session.this.getSignatureIdentifier();
-        }
-
-        /**
-         * @return header prefix for general Google Storage headers: x-goog-.
-         */
-        @Override
-        public String getRestHeaderPrefix() {
-            return S3Session.this.getRestHeaderPrefix();
-        }
-
-        /**
-         * @return header prefix for Google Storage metadata headers: x-goog-meta-.
-         */
-        @Override
-        public String getRestMetadataPrefix() {
-            return S3Session.this.getRestMetadataPrefix();
-        }
-    }
-
-    private static final String AWS_SIGNATURE_IDENTIFIER = "AWS";
-    private static final String AWS_REST_HEADER_PREFIX = "x-amz-";
-    private static final String AWS_REST_METADATA_PREFIX = "x-amz-meta-";
-
-    /**
-     * @return the identifier for the signature algorithm.
-     */
-    protected String getSignatureIdentifier() {
-        return AWS_SIGNATURE_IDENTIFIER;
-    }
-
-    /**
-     * @return header prefix for general headers.
-     */
-    protected String getRestHeaderPrefix() {
-        return AWS_REST_HEADER_PREFIX;
-    }
-
-    /**
-     * @return header prefix for metadata headers.
-     */
-    protected String getRestMetadataPrefix() {
-        return AWS_REST_METADATA_PREFIX;
     }
 
     /**
