@@ -18,7 +18,10 @@ package ch.cyberduck.ui;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.threading.*;
+import ch.cyberduck.core.threading.BackgroundAction;
+import ch.cyberduck.core.threading.ControllerMainAction;
+import ch.cyberduck.core.threading.MainAction;
+import ch.cyberduck.core.threading.ThreadPool;
 
 import org.apache.log4j.Logger;
 
@@ -32,12 +35,12 @@ public abstract class AbstractController implements Controller {
     private static Logger log = Logger.getLogger(AbstractController.class);
 
     /**
-     * Does not wait for main action to return.
+     * Does wait for main action to return before continuing the caller thread.
      *
      * @param runnable The action to execute
      */
     public void invoke(MainAction runnable) {
-        this.invoke(runnable, false);
+        this.invoke(runnable, true);
     }
 
     /**
