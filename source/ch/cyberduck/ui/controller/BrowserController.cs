@@ -1133,7 +1133,8 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private bool View_ValidateSendCustomCommand()
         {
-            return IsMounted() && getSession().isSendCommandSupported();
+            return false;
+            return IsMounted() && getSession().isSendCommandSupported(); //todo implement Send custom command
         }
 
         private bool View_ValidateFolderInside()
