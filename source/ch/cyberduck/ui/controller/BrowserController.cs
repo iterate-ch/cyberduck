@@ -1084,7 +1084,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_OpenWebUrl()
         {
-            Process.Start(SelectedPathWebUrl);
+            Utils.StartProcess(SelectedPathWebUrl);            
         }
 
         private void View_SearchFieldChanged()

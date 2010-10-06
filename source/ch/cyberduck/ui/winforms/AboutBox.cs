@@ -48,7 +48,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             creditsRichTextBox.DeselectAll();
             creditsRichTextBox.LinkClicked += (sender, e) => Utils.StartProcess(e.LinkText);
 
-            ackButton.Click += delegate { Process.Start("Acknowledgments.rtf"); };
+            ackButton.Click += delegate { Utils.StartProcess("Acknowledgments.rtf"); };
         }
 
         public string AssemblyTitle
