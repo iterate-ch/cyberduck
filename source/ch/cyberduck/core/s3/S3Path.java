@@ -1092,16 +1092,17 @@ public class S3Path extends CloudPath {
             url.append(this.getHost().getHostname());
         }
         else {
-            final String hostnameForContainer = this.getSession().getHostnameForContainer(this.getContainerName());
-            if(hostnameForContainer.equals(this.getSession().getHost().getHostname())) {
-                url.append(this.getSession().getHost().getHostname());
-                url.append(encode(this.getAbsolute()));
-            }
-            else {
-                url.append(hostnameForContainer);
+            String container = this.getContainerName();
+            String hostname = this.getSession().getHostnameForContainer(container);
+            if(hostname.startsWith(container)) {
+                url.append(hostname);
                 if(!this.isContainer()) {
                     url.append(encode(this.getKey()));
                 }
+            }
+            else {
+                url.append(this.getSession().getHost().getHostname());
+                url.append(encode(this.getAbsolute()));
             }
         }
         return url.toString();

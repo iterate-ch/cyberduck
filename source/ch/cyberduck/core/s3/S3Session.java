@@ -219,8 +219,16 @@ public class S3Session extends CloudSession implements SSLSession {
      */
     @Override
     public String getHostnameForContainer(String bucket) {
-        return ServiceUtils.generateS3HostnameForBucket(bucket,
-                configuration.getBoolProperty("s3service.disable-dns-buckets", false), this.getHost().getHostname());
+        if(configuration.getBoolProperty("s3service.disable-dns-buckets", false)) {
+            return this.getHost().getHostname(true);
+        }
+        if(!ServiceUtils.isBucketNameValidDNSName(bucket)) {
+            return this.getHost().getHostname(true);
+        }
+        if(this.getHost().getHostname().equals(this.getHost().getProtocol().getDefaultHostname())) {
+            return bucket + "." + this.getHost().getHostname(true);
+        }
+        return this.getHost().getHostname(true);
     }
 
     /**
@@ -269,10 +277,6 @@ public class S3Session extends CloudSession implements SSLSession {
                 buckets.put(bucketname, bucket);
             }
             else {
-                if(this.getHost().getProtocol().isSecure()) {
-                    // List all operation
-                    this.getTrustManager().setHostname(host.getHostname());
-                }
                 // If bucketname is specified in hostname, try to connect to this particular bucket only.
                 String bucketname = this.getContainerForHostname(host.getHostname());
                 if(StringUtils.isNotEmpty(bucketname)) {
@@ -317,10 +321,6 @@ public class S3Session extends CloudSession implements SSLSession {
         try {
             for(S3Bucket bucket : this.getBuckets(false)) {
                 if(bucket.getName().equals(bucketname)) {
-                    if(this.getHost().getProtocol().isSecure()) {
-                        // We now connect to bucket subdomain
-                        this.getTrustManager().setHostname(this.getHostnameForContainer(bucket.getName()));
-                    }
                     return bucket;
                 }
             }
@@ -775,8 +775,7 @@ public class S3Session extends CloudSession implements SSLSession {
         try {
             LoggingStatus l = null;
             if(logging) {
-                l = new LoggingStatus(
-                        this.getHostnameForContainer(container),
+                l = new LoggingStatus(this.getHostnameForContainer(container),
                         Preferences.instance().getProperty("cloudfront.logging.prefix"));
             }
             this.check();
