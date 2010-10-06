@@ -1,4 +1,4 @@
-﻿// 
+// 
 // Copyright (c) 2010 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
@@ -72,7 +72,7 @@ namespace Ch.Cyberduck.Core
         {
             StructureMapBootstrapper.Bootstrap();
             RegisterImplementations();
-            
+
             // Add the event handler for handling UI thread exceptions to the event.
             System.Windows.Forms.Application.ThreadException += ExceptionHandler;
 
@@ -82,7 +82,7 @@ namespace Ch.Cyberduck.Core
 
             // Add the event handler for handling non-UI thread exceptions to the event. 
             AppDomain.CurrentDomain.UnhandledException += UnhandledExceptionHandler;
-            
+
             ConfigureLogging();
             LoadCollections();
 
@@ -520,56 +520,53 @@ namespace Ch.Cyberduck.Core
 
         public static void Exit()
         {
-            if (ApplicationShouldTerminate())
+            foreach (BrowserController controller in new List<BrowserController>(_browsers))
             {
-                foreach (BrowserController controller in new List<BrowserController>(_browsers))
+                if (controller.IsConnected())
                 {
-                    if (controller.IsConnected())
+                    if (Preferences.instance().getBoolean("browser.confirmDisconnect"))
                     {
-                        if (Preferences.instance().getBoolean("browser.confirmDisconnect"))
+                        //-1=Cancel, 0=Review, 1=Quit
+                        int result = cTaskDialog.ShowCommandBox(controller.View as Form,
+                                                                Locale.localizedString("Quit"),
+                                                                Locale.localizedString(
+                                                                    "You are connected to at least one remote site. Do you want to review open browsers?"),
+                                                                null,
+                                                                null,
+                                                                null,
+                                                                null,
+                                                                Locale.localizedString("Review…") + "|" +
+                                                                Locale.localizedString("Quit Anyway"),
+                                                                true,
+                                                                eSysIcons.Warning,
+                                                                eSysIcons.Warning);
+                        switch (result)
                         {
-                            //-1=Cancel, 0=Review, 1=Quit
-                            int result = cTaskDialog.ShowCommandBox(controller.View as Form,
-                                                                    Locale.localizedString("Quit"),
-                                                                    Locale.localizedString(
-                                                                        "You are connected to at least one remote site. Do you want to review open browsers?"),
-                                                                    null,
-                                                                    null,
-                                                                    null,
-                                                                    null,
-                                                                    Locale.localizedString("Review…") + "|" +
-                                                                    Locale.localizedString("Quit Anyway"),
-                                                                    true,
-                                                                    eSysIcons.Warning,
-                                                                    eSysIcons.Warning);
-                            switch (result)
-                            {
-                                case -1: // Cancel
-                                    Application._sessions.clear();
-                                    return;
-                                case 0: // Review
-                                    if (BrowserController.ApplicationShouldTerminate())
-                                    {
-                                        break;
-                                    }
-                                    return;
-                                case 1: // Quit
-                                    foreach (BrowserController c in new List<BrowserController>(Browsers))
-                                    {
-                                        c.View.Dispose();
-                                    }
+                            case -1: // Cancel
+                                Application._sessions.clear();
+                                return;
+                            case 0: // Review
+                                if (BrowserController.ApplicationShouldTerminate())
+                                {
                                     break;
-                            }
-                        }
-                        else
-                        {
-                            controller.Unmount();
+                                }
+                                return;
+                            case 1: // Quit
+                                foreach (BrowserController c in new List<BrowserController>(Browsers))
+                                {
+                                    c.View.Dispose();
+                                }
+                                break;
                         }
                     }
+                    else
+                    {
+                        controller.Unmount();
+                    }
                 }
-                ApplicationShouldTerminateAfterDonationPrompt();
-                System.Windows.Forms.Application.Exit();
             }
+            ApplicationShouldTerminateAfterDonationPrompt();
+            System.Windows.Forms.Application.Exit();
         }
 
         private static BrowserController NewBrowser(bool force, bool show)
@@ -588,6 +585,14 @@ namespace Ch.Cyberduck.Core
                 }
             }
             BrowserController controller = new BrowserController();
+            controller.View.ViewClosingEvent += delegate(object sender, FormClosingEventArgs args)
+                                                    {
+                                                        if (1 == _browsers.Count)
+                                                        {
+                                                            // last browser is about to close, check if we can terminate
+                                                            args.Cancel = !ApplicationShouldTerminate();
+                                                        }
+                                                    };
             controller.View.ViewDisposedEvent += delegate
                                                      {
                                                          _browsers.Remove(controller);
@@ -606,12 +611,10 @@ namespace Ch.Cyberduck.Core
                                                              application.MainForm = _browsers[0].View as Form;
                                                          }
                                                      };
-
             if (show)
             {
                 controller.View.Show();
             }
-
             application.MainForm = controller.View as Form;
             _browsers.Add(controller);
             return controller;
@@ -632,7 +635,7 @@ namespace Ch.Cyberduck.Core
             ExceptionReportInfo info = new ExceptionReportInfo {MainException = e};
             ExceptionReportGenerator reportGenerator = new ExceptionReportGenerator(info);
             ExceptionReport report = reportGenerator.CreateExceptionReport();
-            
+
             string crashDir = Path.Combine(Preferences.instance().getProperty("application.support.path"),
                                            "CrashReporter");
             Directory.CreateDirectory(crashDir);
