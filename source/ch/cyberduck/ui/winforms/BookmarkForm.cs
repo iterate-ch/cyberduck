@@ -416,6 +416,12 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         private void textBoxPath_TextChanged(object sender, EventArgs e)
         {
+            //prevent cursor from being positioned at the beginning after trimming trailing spaces
+            //see Host.setDefaultPath
+            if (textBoxPath.Focused)
+            {
+                textBoxPath.Select(textBoxPath.Text.Length, 0);
+            }
             ChangedPathEvent();
         }
 
