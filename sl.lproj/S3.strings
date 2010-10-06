@@ -39,18 +39,18 @@
 "Email Address" = "E-poštni naslov";
 
 /* Amazon Related ACL Scopes */
-"Amazon Customer Email Address" = "Amazon Customer Email Address";
+"Amazon Customer Email Address" = "E-poštni naslov Amazon računa";
 
 /* Google Storage Related ACL Scopes */
-"Google Account Email Address" = "Google Account Email Address";
-"Google Group Email Address" = "Google Group Email Address";
-"Google Apps Domain" = "Google Apps Domain";
+"Google Account Email Address" = "E-poštni naslov Google računa";
+"Google Group Email Address" = "E-poštni naslov Google Group računa";
+"Google Apps Domain" = "Google Apps domena";
 
 "http://acs.amazonaws.com/groups/global/AllUsers" ="http://acs.amazonaws.com/groups/global/AllUsers";
 "http://acs.amazonaws.com/groups/s3/LogDelivery" = "http://acs.amazonaws.com/groups/s3/LogDelivery";
 
 /* Signed URL Expiry */
-"Expires on {0}" = "Expires on {0}";
+"Expires on {0}" = "Poteče {0}";
 
 /* HTTP Metadata */
-"Custom Header" = "Custom Header";
+"Custom Header" = "Glava po meri";
