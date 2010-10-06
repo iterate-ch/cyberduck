@@ -2602,57 +2602,6 @@ tr.lproj/S3.strings -text svneol=unset#text/utf-16
 tr.lproj/Status.strings -text svneol=unset#text/utf-16
 tr.lproj/Transfer.strings -text svneol=unset#text/utf-16
 www/crash/crash.py -text
-www/help/.htaccess -text
-www/help/ca/faq/index.html -text
-www/help/ca/howto/bookmark.html -text
-www/help/ca/howto/download.html -text
-www/help/ca/howto/editing.html -text
-www/help/ca/howto/index.html -text
-www/help/ca/howto/ssh.html -text
-www/help/ca/howto/synchronization.html -text
-www/help/ca/howto/upload.html -text
-www/help/ca/index.html -text
-www/help/ca/problems/index.html -text
-www/help/cs/.htaccess -text
-www/help/cy/.htaccess -text
-www/help/da/.htaccess -text
-www/help/de/faq/index.html -text
-www/help/de/howto/bookmark.html -text
-www/help/de/howto/download.html -text
-www/help/de/howto/editing.html -text
-www/help/de/howto/index.html -text
-www/help/de/howto/ssh.html -text
-www/help/de/howto/synchronization.html -text
-www/help/de/howto/upload.html -text
-www/help/de/index.html -text
-www/help/de/problems/index.html -text
-www/help/en/faq/index.html -text
-www/help/en/howto/bookmark.html -text
-www/help/en/howto/download.html -text
-www/help/en/howto/editing.html -text
-www/help/en/howto/index.html -text
-www/help/en/howto/preferences.html -text
-www/help/en/howto/ssh.html -text
-www/help/en/howto/synchronization.html -text
-www/help/en/howto/upload.html -text
-www/help/en/howto/widget.html -text
-www/help/en/index.html -text
-www/help/en/problems/index.html -text
-www/help/es/.htaccess -text
-www/help/fi/.htaccess -text
-www/help/fr/faq/index.html -text
-www/help/fr/howto/bookmark.html -text
-www/help/fr/howto/download.html -text
-www/help/fr/howto/editing.html -text
-www/help/fr/howto/index.html -text
-www/help/fr/howto/ssh.html -text
-www/help/fr/howto/synchronization.html -text
-www/help/fr/howto/upload.html -text
-www/help/fr/index.html -text
-www/help/fr/problems/index.html -text
-www/help/he/.htaccess -text
-www/help/hu/.htaccess -text
-www/help/id/.htaccess -text
 www/help/images/bonjour.png -text svneol=unset#image/png
 www/help/images/bookmark_add.png -text svneol=unset#image/png
 www/help/images/bookmark_drag.png -text svneol=unset#image/png
@@ -2681,42 +2630,6 @@ www/help/images/synchronize.png -text svneol=unset#image/png
 www/help/images/toolbar.png -text svneol=unset#image/png
 www/help/images/transfer.png -text svneol=unset#image/png
 www/help/images/upload.png -text svneol=unset#image/png
-www/help/index.css -text
-www/help/it/.htaccess -text
-www/help/ja/faq/index.html -text
-www/help/ja/howto/bookmark.html -text
-www/help/ja/howto/download.html -text
-www/help/ja/howto/editing.html -text
-www/help/ja/howto/index.html -text
-www/help/ja/howto/preferences.html -text
-www/help/ja/howto/ssh.html -text
-www/help/ja/howto/upload.html -text
-www/help/ja/howto/widget.html -text
-www/help/ja/index.html -text
-www/help/ja/problems/index.html -text
-www/help/ko/.htaccess -text
-www/help/nl/.htaccess -text
-www/help/no/.htaccess -text
-www/help/pl/.htaccess -text
-www/help/pt_BR/.htaccess -text
-www/help/pt_PT/.htaccess -text
-www/help/ru/.htaccess -text
-www/help/sk/faq/index.html -text
-www/help/sk/howto/bookmark.html -text
-www/help/sk/howto/download.html -text
-www/help/sk/howto/editing.html -text
-www/help/sk/howto/index.html -text
-www/help/sk/howto/ssh.html -text
-www/help/sk/howto/synchronization.html -text
-www/help/sk/howto/upload.html -text
-www/help/sk/index.html -text
-www/help/sk/problems/index.html -text
-www/help/style.css -text
-www/help/sv/.htaccess -text
-www/help/th/.htaccess -text
-www/help/tr/.htaccess -text
-www/help/zh_CN/.htaccess -text
-www/help/zh_TW/.htaccess -text
 www/update/changelog-nightly.wyp -text
 www/update/changelog.html -text
 www/update/changelog.rss -text
