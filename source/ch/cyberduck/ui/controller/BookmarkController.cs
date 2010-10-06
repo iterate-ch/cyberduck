@@ -1,4 +1,4 @@
-﻿// 
+// 
 // Copyright (c) 2010 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
@@ -323,6 +323,10 @@ namespace Ch.Cyberduck.Ui.Controller
             if (!selected.isHostnameConfigurable())
             {
                 // Hostname of newly selected protocol is not configurable. Change to default.
+                _host.setHostname(selected.getDefaultHostname());
+            }
+            if(StringUtils.isNotBlank(selected.getDefaultHostname())) {
+                // Prefill with default hostname
                 _host.setHostname(selected.getDefaultHostname());
             }
             if (!selected.isWebUrlConfigurable())

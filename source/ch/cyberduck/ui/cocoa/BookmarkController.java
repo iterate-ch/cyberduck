@@ -76,6 +76,10 @@ public class BookmarkController extends WindowController {
             // Hostname of newly selected protocol is not configurable. Change to default.
             host.setHostname(selected.getDefaultHostname());
         }
+        if(StringUtils.isNotBlank(selected.getDefaultHostname())) {
+            // Prefill with default hostname
+            host.setHostname(selected.getDefaultHostname());
+        }
         if(!selected.isWebUrlConfigurable()) {
             host.setWebURL(null);
         }
