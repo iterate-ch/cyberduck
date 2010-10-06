@@ -1195,7 +1195,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                              {
                                  activitiyToolStripMenuItem,
                              },
-                         (sender, args) => ((Form) ActivityController.Instance.View).Show(), () => true);
+                         (sender, args) => ((Form) ActivityController.Instance.View).Show(), () => false);
             //todo muss ShowActivity() sein
             //(ActivityController.Instance.View as Form).Show();
         }
