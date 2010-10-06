@@ -792,7 +792,8 @@ public class S3Path extends CloudPath {
     @Override
     public void writeAcl(Acl acl, boolean recursive) {
         try {
-            this.writeAcl(this.convert(acl), recursive);
+            AccessControlList list = this.convert(acl);
+            this.writeAcl(list, recursive);
         }
         catch(ServiceException e) {
             this.error("Cannot change permissions", e);
@@ -848,6 +849,10 @@ public class S3Path extends CloudPath {
      */
     protected void writeAcl(AccessControlList acl, boolean recursive) throws IOException, ServiceException {
         try {
+            if(null == acl.getOwner()) {
+                log.warn("Owner unknown. Cannot update ACL");
+                return;
+            }
             if(this.isContainer()) {
                 this.getSession().getClient().putBucketAcl(this.getContainerName(), acl);
             }

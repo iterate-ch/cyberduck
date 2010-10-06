@@ -39,7 +39,10 @@ import org.apache.commons.httpclient.auth.CredentialsProvider;
 import org.apache.commons.httpclient.methods.RequestEntity;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.jets3t.service.*;
+import org.jets3t.service.CloudFrontService;
+import org.jets3t.service.CloudFrontServiceException;
+import org.jets3t.service.Jets3tProperties;
+import org.jets3t.service.ServiceException;
 import org.jets3t.service.acl.GroupGrantee;
 import org.jets3t.service.impl.rest.httpclient.RestS3Service;
 import org.jets3t.service.model.*;
@@ -254,7 +257,16 @@ public class S3Session extends CloudSession implements SSLSession {
                 if(!this.getClient().isBucketAccessible(bucketname)) {
                     throw new IOException("Bucket not accessible: " + bucketname);
                 }
-                buckets.put(bucketname, new S3Bucket(bucketname));
+                S3Bucket bucket = new S3Bucket(bucketname);
+                try {
+                    StorageOwner owner = this.getClient().getBucketAcl(bucketname).getOwner();
+                    bucket.setOwner(owner);
+                }
+                catch(ServiceException e) {
+                    // ACL not readable by anonymous user.
+                    log.warn(e.getMessage());
+                }
+                buckets.put(bucketname, bucket);
             }
             else {
                 if(this.getHost().getProtocol().isSecure()) {
@@ -267,7 +279,16 @@ public class S3Session extends CloudSession implements SSLSession {
                     if(!this.getClient().isBucketAccessible(bucketname)) {
                         throw new IOException("Bucket not accessible: " + bucketname);
                     }
-                    buckets.put(bucketname, new S3Bucket(bucketname));
+                    S3Bucket bucket = new S3Bucket(bucketname);
+                    try {
+                        StorageOwner owner = this.getClient().getBucketAcl(bucketname).getOwner();
+                        bucket.setOwner(owner);
+                    }
+                    catch(ServiceException e) {
+                        // ACL not readable by anonymous user.
+                        log.warn(e.getMessage());
+                    }
+                    buckets.put(bucketname, bucket);
                 }
                 else {
                     // List all buckets owned
