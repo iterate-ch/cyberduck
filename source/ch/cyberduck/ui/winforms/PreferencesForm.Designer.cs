@@ -361,8 +361,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.panelManager.Controls.Add(this.managedTransfersPanel);
             this.panelManager.Location = new System.Drawing.Point(12, 76);
             this.panelManager.Name = "panelManager";
-            this.panelManager.SelectedIndex = 6;
-            this.panelManager.SelectedPanel = this.managedConnectionPanel;
+            this.panelManager.SelectedIndex = 3;
+            this.panelManager.SelectedPanel = this.managedS3Panel;
             this.panelManager.Size = new System.Drawing.Size(619, 482);
             this.panelManager.TabIndex = 1;
             // 

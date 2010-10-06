@@ -33,17 +33,17 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.laterButton = new System.Windows.Forms.Button();
             this.tableLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
             this.newVersionAvailableLabel = new System.Windows.Forms.Label();
-            this.pictureBox = new System.Windows.Forms.PictureBox();
             this.versionLabel = new System.Windows.Forms.Label();
             this.releaseNotesLabel = new System.Windows.Forms.Label();
             this.installButton = new System.Windows.Forms.Button();
+            this.changesTextBox = new Ch.Cyberduck.Ui.Winforms.Controls.ReadOnlyRichTextBox();
             this.updater = new wyDay.Controls.AutomaticUpdater();
             this.statusLabel = new System.Windows.Forms.Label();
             this.progressBar = new System.Windows.Forms.ProgressBar();
-            this.changesTextBox = new Ch.Cyberduck.Ui.Winforms.Controls.ReadOnlyRichTextBox();
+            this.pictureBox = new System.Windows.Forms.PictureBox();
             this.tableLayoutPanel.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.updater)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).BeginInit();
             this.SuspendLayout();
             // 
             // laterButton
@@ -107,14 +107,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.newVersionAvailableLabel.TabIndex = 1;
             this.newVersionAvailableLabel.Text = "A new version of Cyberduck is available!";
             // 
-            // pictureBox
-            // 
-            this.pictureBox.Location = new System.Drawing.Point(12, 15);
-            this.pictureBox.Name = "pictureBox";
-            this.pictureBox.Size = new System.Drawing.Size(74, 74);
-            this.pictureBox.TabIndex = 0;
-            this.pictureBox.TabStop = false;
-            // 
             // versionLabel
             // 
             this.versionLabel.AutoSize = true;
@@ -149,6 +141,19 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.installButton.UseVisualStyleBackColor = true;
             this.installButton.Click += new System.EventHandler(this.donateButton_Click);
             // 
+            // changesTextBox
+            // 
+            this.changesTextBox.BackColor = System.Drawing.Color.White;
+            this.changesTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.tableLayoutPanel.SetColumnSpan(this.changesTextBox, 3);
+            this.changesTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.changesTextBox.Location = new System.Drawing.Point(3, 87);
+            this.changesTextBox.Name = "changesTextBox";
+            this.changesTextBox.ReadOnly = true;
+            this.changesTextBox.Size = new System.Drawing.Size(470, 178);
+            this.changesTextBox.TabIndex = 4;
+            this.changesTextBox.Text = "";
+            // 
             // updater
             // 
             this.updater.ContainerForm = this;
@@ -178,18 +183,13 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.progressBar.Size = new System.Drawing.Size(470, 15);
             this.progressBar.TabIndex = 8;
             // 
-            // changesTextBox
+            // pictureBox
             // 
-            this.changesTextBox.BackColor = System.Drawing.Color.White;
-            this.changesTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.tableLayoutPanel.SetColumnSpan(this.changesTextBox, 3);
-            this.changesTextBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.changesTextBox.Location = new System.Drawing.Point(3, 87);
-            this.changesTextBox.Name = "changesTextBox";
-            this.changesTextBox.ReadOnly = true;
-            this.changesTextBox.Size = new System.Drawing.Size(470, 178);
-            this.changesTextBox.TabIndex = 4;
-            this.changesTextBox.Text = "";
+            this.pictureBox.Location = new System.Drawing.Point(12, 15);
+            this.pictureBox.Name = "pictureBox";
+            this.pictureBox.Size = new System.Drawing.Size(74, 74);
+            this.pictureBox.TabIndex = 0;
+            this.pictureBox.TabStop = false;
             // 
             // UpdateForm
             // 
@@ -205,8 +205,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.Text = "Cyberduck Update";
             this.tableLayoutPanel.ResumeLayout(false);
             this.tableLayoutPanel.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.updater)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).EndInit();
             this.ResumeLayout(false);
 
         }

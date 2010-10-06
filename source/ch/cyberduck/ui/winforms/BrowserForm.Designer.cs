@@ -63,7 +63,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.toolStripSeparator11 = new System.Windows.Forms.ToolStripSeparator();
             this.createArchiveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.archiveMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.createArchiveContextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.expandArchiveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator12 = new System.Windows.Forms.ToolStripSeparator();
             this.printToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -148,6 +147,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.checkToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator28 = new System.Windows.Forms.ToolStripSeparator();
             this.aboutCyberduckToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.createArchiveContextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editorMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.editor1ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editor2ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -226,14 +226,15 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.treeColumnPermissions = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
             this.treeColumnKind = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
             this.viewPanel = new System.Windows.Forms.Panel();
-            this.searchTextBox = new Ch.Cyberduck.ui.winforms.controls.SearchTextBox2();
-            this.label5 = new System.Windows.Forms.Label();
-            this.bonjourCheckBox = new System.Windows.Forms.CheckBox();
-            this.historyCheckBox = new System.Windows.Forms.CheckBox();
-            this.bookmarkCheckBox = new System.Windows.Forms.CheckBox();
+            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.browserCheckBox = new System.Windows.Forms.CheckBox();
+            this.bookmarkCheckBox = new System.Windows.Forms.CheckBox();
+            this.searchTextBox = new Ch.Cyberduck.ui.winforms.controls.SearchTextBox2();
+            this.historyCheckBox = new System.Windows.Forms.CheckBox();
             this.parentPathButton = new System.Windows.Forms.Button();
+            this.label5 = new System.Windows.Forms.Label();
             this.pathComboBox = new System.Windows.Forms.ComboBox();
+            this.bonjourCheckBox = new System.Windows.Forms.CheckBox();
             this.historyForwardButton = new System.Windows.Forms.Button();
             this.historyBackButton = new System.Windows.Forms.Button();
             this.transcriptBox = new System.Windows.Forms.RichTextBox();
@@ -261,6 +262,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.browserPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.browser)).BeginInit();
             this.viewPanel.SuspendLayout();
+            this.tableLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // statusStrip
@@ -272,7 +274,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.statusStrip.Location = new System.Drawing.Point(0, 616);
             this.statusStrip.Name = "statusStrip";
             this.statusStrip.Padding = new System.Windows.Forms.Padding(1, 0, 16, 0);
-            this.statusStrip.Size = new System.Drawing.Size(1031, 22);
+            this.statusStrip.Size = new System.Drawing.Size(902, 22);
             this.statusStrip.TabIndex = 9;
             // 
             // toolStripProgress
@@ -286,7 +288,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // statusLabel
             // 
             this.statusLabel.Name = "statusLabel";
-            this.statusLabel.Size = new System.Drawing.Size(973, 17);
+            this.statusLabel.Size = new System.Drawing.Size(844, 17);
             this.statusLabel.Spring = true;
             this.statusLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
@@ -311,7 +313,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Padding = new System.Windows.Forms.Padding(7, 2, 0, 2);
-            this.menuStrip1.Size = new System.Drawing.Size(1031, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(902, 24);
             this.menuStrip1.TabIndex = 12;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -494,15 +496,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             // archiveMenuStrip
             // 
             this.archiveMenuStrip.Name = "archiveMenuStrip";
-            this.archiveMenuStrip.OwnerItem = this.createArchiveToolStripMenuItem;
+            this.archiveMenuStrip.OwnerItem = this.createArchiveContextToolStripMenuItem;
             this.archiveMenuStrip.Size = new System.Drawing.Size(61, 4);
-            // 
-            // createArchiveContextToolStripMenuItem
-            // 
-            this.createArchiveContextToolStripMenuItem.DropDown = this.archiveMenuStrip;
-            this.createArchiveContextToolStripMenuItem.Name = "createArchiveContextToolStripMenuItem";
-            this.createArchiveContextToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
-            this.createArchiveContextToolStripMenuItem.Text = "Create Archive";
             // 
             // expandArchiveToolStripMenuItem
             // 
@@ -1087,6 +1082,13 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.aboutCyberduckToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
             this.aboutCyberduckToolStripMenuItem.Text = "&About Cyberduck";
             // 
+            // createArchiveContextToolStripMenuItem
+            // 
+            this.createArchiveContextToolStripMenuItem.DropDown = this.archiveMenuStrip;
+            this.createArchiveContextToolStripMenuItem.Name = "createArchiveContextToolStripMenuItem";
+            this.createArchiveContextToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+            this.createArchiveContextToolStripMenuItem.Text = "Create Archive";
+            // 
             // editorMenuStrip
             // 
             this.editorMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -1141,7 +1143,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.toolBar.Location = new System.Drawing.Point(0, 0);
             this.toolBar.Name = "toolBar";
             this.toolBar.ShowItemToolTips = false;
-            this.toolBar.Size = new System.Drawing.Size(1031, 54);
+            this.toolBar.Size = new System.Drawing.Size(902, 54);
             this.toolBar.Stretch = true;
             this.toolBar.TabIndex = 13;
             this.toolBar.Text = "toolStrip1";
@@ -1480,11 +1482,11 @@ namespace Ch.Cyberduck.Ui.Winforms
             // toolStripContainer1.ContentPanel
             // 
             this.toolStripContainer1.ContentPanel.Controls.Add(this.splitContainer);
-            this.toolStripContainer1.ContentPanel.Size = new System.Drawing.Size(1031, 538);
+            this.toolStripContainer1.ContentPanel.Size = new System.Drawing.Size(902, 538);
             this.toolStripContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.toolStripContainer1.Location = new System.Drawing.Point(0, 24);
             this.toolStripContainer1.Name = "toolStripContainer1";
-            this.toolStripContainer1.Size = new System.Drawing.Size(1031, 592);
+            this.toolStripContainer1.Size = new System.Drawing.Size(902, 592);
             this.toolStripContainer1.TabIndex = 16;
             this.toolStripContainer1.Text = "toolStripContainer1";
             // 
@@ -1509,8 +1511,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.splitContainer.Panel2.Controls.Add(this.transcriptBox);
             this.splitContainer.Panel2MinSize = 0;
-            this.splitContainer.Size = new System.Drawing.Size(1031, 538);
-            this.splitContainer.SplitterDistance = 428;
+            this.splitContainer.Size = new System.Drawing.Size(902, 538);
+            this.splitContainer.SplitterDistance = 426;
             this.splitContainer.SplitterWidth = 5;
             this.splitContainer.TabIndex = 2;
             // 
@@ -1519,11 +1521,11 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.panelManagerMain.Controls.Add(this.bookmarksPanel);
             this.panelManagerMain.Controls.Add(this.browserPanel);
             this.panelManagerMain.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panelManagerMain.Location = new System.Drawing.Point(0, 32);
+            this.panelManagerMain.Location = new System.Drawing.Point(0, 31);
             this.panelManagerMain.Name = "panelManagerMain";
             this.panelManagerMain.SelectedIndex = 1;
             this.panelManagerMain.SelectedPanel = this.browserPanel;
-            this.panelManagerMain.Size = new System.Drawing.Size(1031, 396);
+            this.panelManagerMain.Size = new System.Drawing.Size(902, 395);
             this.panelManagerMain.TabIndex = 28;
             // 
             // bookmarksPanel
@@ -1769,39 +1771,129 @@ namespace Ch.Cyberduck.Ui.Winforms
             // viewPanel
             // 
             this.viewPanel.BackColor = System.Drawing.Color.WhiteSmoke;
-            this.viewPanel.Controls.Add(this.searchTextBox);
-            this.viewPanel.Controls.Add(this.label5);
-            this.viewPanel.Controls.Add(this.bonjourCheckBox);
-            this.viewPanel.Controls.Add(this.historyCheckBox);
-            this.viewPanel.Controls.Add(this.bookmarkCheckBox);
-            this.viewPanel.Controls.Add(this.browserCheckBox);
-            this.viewPanel.Controls.Add(this.parentPathButton);
-            this.viewPanel.Controls.Add(this.pathComboBox);
-            this.viewPanel.Controls.Add(this.historyForwardButton);
-            this.viewPanel.Controls.Add(this.historyBackButton);
+            this.viewPanel.Controls.Add(this.tableLayoutPanel1);
             this.viewPanel.Dock = System.Windows.Forms.DockStyle.Top;
             this.viewPanel.Location = new System.Drawing.Point(0, 0);
             this.viewPanel.Name = "viewPanel";
-            this.viewPanel.Size = new System.Drawing.Size(1031, 32);
+            this.viewPanel.Size = new System.Drawing.Size(902, 31);
             this.viewPanel.TabIndex = 29;
+            // 
+            // tableLayoutPanel1
+            // 
+            this.tableLayoutPanel1.ColumnCount = 10;
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 31F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 31F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 31F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 31F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 10F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 42F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 42F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 42F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 120F));
+            this.tableLayoutPanel1.Controls.Add(this.browserCheckBox, 0, 0);
+            this.tableLayoutPanel1.Controls.Add(this.bookmarkCheckBox, 1, 0);
+            this.tableLayoutPanel1.Controls.Add(this.searchTextBox, 9, 0);
+            this.tableLayoutPanel1.Controls.Add(this.historyCheckBox, 2, 0);
+            this.tableLayoutPanel1.Controls.Add(this.parentPathButton, 8, 0);
+            this.tableLayoutPanel1.Controls.Add(this.label5, 4, 0);
+            this.tableLayoutPanel1.Controls.Add(this.pathComboBox, 7, 0);
+            this.tableLayoutPanel1.Controls.Add(this.bonjourCheckBox, 3, 0);
+            this.tableLayoutPanel1.Controls.Add(this.historyForwardButton, 6, 0);
+            this.tableLayoutPanel1.Controls.Add(this.historyBackButton, 5, 0);
+            this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
+            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
+            this.tableLayoutPanel1.Padding = new System.Windows.Forms.Padding(0, 0, 2, 0);
+            this.tableLayoutPanel1.RowCount = 1;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(902, 31);
+            this.tableLayoutPanel1.TabIndex = 16;
+            // 
+            // browserCheckBox
+            // 
+            this.browserCheckBox.Appearance = System.Windows.Forms.Appearance.Button;
+            this.browserCheckBox.AutoCheck = false;
+            this.browserCheckBox.FlatAppearance.BorderSize = 0;
+            this.browserCheckBox.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.browserCheckBox.Image = global::Ch.Cyberduck.ResourcesBundle.outline;
+            this.browserCheckBox.Location = new System.Drawing.Point(3, 3);
+            this.browserCheckBox.Name = "browserCheckBox";
+            this.browserCheckBox.Size = new System.Drawing.Size(25, 23);
+            this.browserCheckBox.TabIndex = 9;
+            this.browserCheckBox.UseVisualStyleBackColor = true;
+            this.browserCheckBox.Click += new System.EventHandler(this.browserCheckBox_Click);
+            // 
+            // bookmarkCheckBox
+            // 
+            this.bookmarkCheckBox.Appearance = System.Windows.Forms.Appearance.Button;
+            this.bookmarkCheckBox.AutoCheck = false;
+            this.bookmarkCheckBox.FlatAppearance.BorderSize = 0;
+            this.bookmarkCheckBox.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.bookmarkCheckBox.Image = global::Ch.Cyberduck.ResourcesBundle.bookmarks;
+            this.bookmarkCheckBox.Location = new System.Drawing.Point(34, 3);
+            this.bookmarkCheckBox.Name = "bookmarkCheckBox";
+            this.bookmarkCheckBox.Size = new System.Drawing.Size(25, 23);
+            this.bookmarkCheckBox.TabIndex = 10;
+            this.bookmarkCheckBox.UseVisualStyleBackColor = true;
+            this.bookmarkCheckBox.Click += new System.EventHandler(this.bookmarkCheckBox_Click);
             // 
             // searchTextBox
             // 
             this.searchTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.searchTextBox.Location = new System.Drawing.Point(855, 3);
+            this.searchTextBox.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.searchTextBox.Location = new System.Drawing.Point(783, 3);
             this.searchTextBox.Name = "searchTextBox";
             this.searchTextBox.OptionsMenu = null;
-            this.searchTextBox.Size = new System.Drawing.Size(170, 24);
+            this.searchTextBox.Size = new System.Drawing.Size(114, 24);
             this.searchTextBox.TabIndex = 14;
             this.searchTextBox.TextChanged += new Ch.Cyberduck.ui.winforms.controls.SearchTextBox2.TextChange(this.searchTextBox_TextChanged);
             // 
+            // historyCheckBox
+            // 
+            this.historyCheckBox.Appearance = System.Windows.Forms.Appearance.Button;
+            this.historyCheckBox.AutoCheck = false;
+            this.historyCheckBox.FlatAppearance.BorderSize = 0;
+            this.historyCheckBox.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.historyCheckBox.Image = global::Ch.Cyberduck.ResourcesBundle.history;
+            this.historyCheckBox.Location = new System.Drawing.Point(65, 3);
+            this.historyCheckBox.Name = "historyCheckBox";
+            this.historyCheckBox.Size = new System.Drawing.Size(25, 23);
+            this.historyCheckBox.TabIndex = 11;
+            this.historyCheckBox.UseVisualStyleBackColor = true;
+            this.historyCheckBox.Click += new System.EventHandler(this.historyCheckBox_Click);
+            // 
+            // parentPathButton
+            // 
+            this.parentPathButton.FlatAppearance.BorderSize = 0;
+            this.parentPathButton.Image = global::Ch.Cyberduck.ResourcesBundle.arrowUpBlack16;
+            this.parentPathButton.Location = new System.Drawing.Point(741, 3);
+            this.parentPathButton.Name = "parentPathButton";
+            this.parentPathButton.Size = new System.Drawing.Size(36, 25);
+            this.parentPathButton.TabIndex = 7;
+            this.parentPathButton.UseVisualStyleBackColor = true;
+            // 
             // label5
             // 
+            this.label5.Anchor = System.Windows.Forms.AnchorStyles.None;
             this.label5.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.label5.Location = new System.Drawing.Point(139, 3);
+            this.label5.Location = new System.Drawing.Point(128, 3);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(2, 25);
             this.label5.TabIndex = 13;
+            // 
+            // pathComboBox
+            // 
+            this.pathComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.pathComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.pathComboBox.FormattingEnabled = true;
+            this.pathComboBox.Location = new System.Drawing.Point(221, 4);
+            this.pathComboBox.Margin = new System.Windows.Forms.Padding(3, 4, 3, 3);
+            this.pathComboBox.Name = "pathComboBox";
+            this.pathComboBox.Size = new System.Drawing.Size(514, 23);
+            this.pathComboBox.TabIndex = 6;
+            this.pathComboBox.SelectionChangeCommitted += new System.EventHandler(this.pathComboBox_SelectionChangeCommitted);
             // 
             // bonjourCheckBox
             // 
@@ -1811,95 +1903,31 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.bonjourCheckBox.FlatAppearance.BorderSize = 0;
             this.bonjourCheckBox.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.bonjourCheckBox.Image = global::Ch.Cyberduck.ResourcesBundle.rendezvous;
-            this.bonjourCheckBox.Location = new System.Drawing.Point(103, 3);
+            this.bonjourCheckBox.Location = new System.Drawing.Point(96, 3);
             this.bonjourCheckBox.Name = "bonjourCheckBox";
-            this.bonjourCheckBox.Size = new System.Drawing.Size(29, 23);
+            this.bonjourCheckBox.Size = new System.Drawing.Size(25, 23);
             this.bonjourCheckBox.TabIndex = 12;
             this.bonjourCheckBox.UseVisualStyleBackColor = true;
             this.bonjourCheckBox.Click += new System.EventHandler(this.bonjourCheckBox_Click);
-            // 
-            // historyCheckBox
-            // 
-            this.historyCheckBox.Appearance = System.Windows.Forms.Appearance.Button;
-            this.historyCheckBox.AutoCheck = false;
-            this.historyCheckBox.FlatAppearance.BorderSize = 0;
-            this.historyCheckBox.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.historyCheckBox.Image = global::Ch.Cyberduck.ResourcesBundle.history;
-            this.historyCheckBox.Location = new System.Drawing.Point(71, 3);
-            this.historyCheckBox.Name = "historyCheckBox";
-            this.historyCheckBox.Size = new System.Drawing.Size(29, 23);
-            this.historyCheckBox.TabIndex = 11;
-            this.historyCheckBox.UseVisualStyleBackColor = true;
-            this.historyCheckBox.Click += new System.EventHandler(this.historyCheckBox_Click);
-            // 
-            // bookmarkCheckBox
-            // 
-            this.bookmarkCheckBox.Appearance = System.Windows.Forms.Appearance.Button;
-            this.bookmarkCheckBox.AutoCheck = false;
-            this.bookmarkCheckBox.FlatAppearance.BorderSize = 0;
-            this.bookmarkCheckBox.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.bookmarkCheckBox.Image = global::Ch.Cyberduck.ResourcesBundle.bookmarks;
-            this.bookmarkCheckBox.Location = new System.Drawing.Point(38, 3);
-            this.bookmarkCheckBox.Name = "bookmarkCheckBox";
-            this.bookmarkCheckBox.Size = new System.Drawing.Size(29, 23);
-            this.bookmarkCheckBox.TabIndex = 10;
-            this.bookmarkCheckBox.UseVisualStyleBackColor = true;
-            this.bookmarkCheckBox.Click += new System.EventHandler(this.bookmarkCheckBox_Click);
-            // 
-            // browserCheckBox
-            // 
-            this.browserCheckBox.Appearance = System.Windows.Forms.Appearance.Button;
-            this.browserCheckBox.AutoCheck = false;
-            this.browserCheckBox.FlatAppearance.BorderSize = 0;
-            this.browserCheckBox.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.browserCheckBox.Image = global::Ch.Cyberduck.ResourcesBundle.outline;
-            this.browserCheckBox.Location = new System.Drawing.Point(7, 3);
-            this.browserCheckBox.Name = "browserCheckBox";
-            this.browserCheckBox.Size = new System.Drawing.Size(29, 23);
-            this.browserCheckBox.TabIndex = 9;
-            this.browserCheckBox.UseVisualStyleBackColor = true;
-            this.browserCheckBox.Click += new System.EventHandler(this.browserCheckBox_Click);
-            // 
-            // parentPathButton
-            // 
-            this.parentPathButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.parentPathButton.FlatAppearance.BorderSize = 0;
-            this.parentPathButton.Image = global::Ch.Cyberduck.ResourcesBundle.arrowUpBlack16;
-            this.parentPathButton.Location = new System.Drawing.Point(812, 2);
-            this.parentPathButton.Name = "parentPathButton";
-            this.parentPathButton.Size = new System.Drawing.Size(37, 25);
-            this.parentPathButton.TabIndex = 7;
-            this.parentPathButton.UseVisualStyleBackColor = true;
-            // 
-            // pathComboBox
-            // 
-            this.pathComboBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.pathComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.pathComboBox.FormattingEnabled = true;
-            this.pathComboBox.Location = new System.Drawing.Point(234, 3);
-            this.pathComboBox.Name = "pathComboBox";
-            this.pathComboBox.Size = new System.Drawing.Size(571, 23);
-            this.pathComboBox.TabIndex = 6;
-            this.pathComboBox.SelectionChangeCommitted += new System.EventHandler(this.pathComboBox_SelectionChangeCommitted);
             // 
             // historyForwardButton
             // 
             this.historyForwardButton.FlatAppearance.BorderSize = 0;
             this.historyForwardButton.Image = global::Ch.Cyberduck.ResourcesBundle.arrowRightBlack16;
-            this.historyForwardButton.Location = new System.Drawing.Point(191, 2);
+            this.historyForwardButton.Location = new System.Drawing.Point(179, 3);
             this.historyForwardButton.Name = "historyForwardButton";
-            this.historyForwardButton.Size = new System.Drawing.Size(37, 25);
+            this.historyForwardButton.Size = new System.Drawing.Size(36, 25);
             this.historyForwardButton.TabIndex = 5;
             this.historyForwardButton.UseVisualStyleBackColor = true;
             // 
             // historyBackButton
             // 
+            this.historyBackButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.historyBackButton.FlatAppearance.BorderSize = 0;
             this.historyBackButton.Image = global::Ch.Cyberduck.ResourcesBundle.arrowLeftBlack16;
-            this.historyBackButton.Location = new System.Drawing.Point(153, 2);
+            this.historyBackButton.Location = new System.Drawing.Point(137, 3);
             this.historyBackButton.Name = "historyBackButton";
-            this.historyBackButton.Size = new System.Drawing.Size(37, 25);
+            this.historyBackButton.Size = new System.Drawing.Size(36, 25);
             this.historyBackButton.TabIndex = 4;
             this.historyBackButton.UseVisualStyleBackColor = true;
             // 
@@ -1911,7 +1939,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.transcriptBox.Name = "transcriptBox";
             this.transcriptBox.ReadOnly = true;
             this.transcriptBox.ShortcutsEnabled = false;
-            this.transcriptBox.Size = new System.Drawing.Size(1031, 105);
+            this.transcriptBox.Size = new System.Drawing.Size(902, 107);
             this.transcriptBox.TabIndex = 0;
             this.transcriptBox.Text = "";
             this.transcriptBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.transcriptBox_KeyDown);
@@ -1932,12 +1960,12 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1031, 638);
+            this.ClientSize = new System.Drawing.Size(902, 638);
             this.Controls.Add(this.toolStripContainer1);
             this.Controls.Add(this.statusStrip);
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
-            this.MinimumSize = new System.Drawing.Size(463, 38);
+            this.MinimumSize = new System.Drawing.Size(460, 38);
             this.Name = "BrowserForm";
             this.Text = "Cyberduck";
             this.statusStrip.ResumeLayout(false);
@@ -1966,6 +1994,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.browserPanel.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.browser)).EndInit();
             this.viewPanel.ResumeLayout(false);
+            this.tableLayoutPanel1.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -2181,6 +2210,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         private System.Windows.Forms.ToolStripStatusLabel toolStripProgress;
         private ClickThroughToolStrip toolBar;
         private ui.winforms.controls.SearchTextBox2 searchTextBox;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
     }
 }
 

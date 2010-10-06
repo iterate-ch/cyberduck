@@ -35,8 +35,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.labelVersion = new System.Windows.Forms.Label();
             this.labelCopyright = new System.Windows.Forms.Label();
             this.creditsRichTextBox = new Ch.Cyberduck.Ui.Winforms.Controls.ReadOnlyRichTextBox();
-            this.ackButton = new System.Windows.Forms.Button();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.ackButton = new System.Windows.Forms.Button();
             this.tableLayoutPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.logoPictureBox)).BeginInit();
             this.tableLayoutPanel1.SuspendLayout();
@@ -128,17 +128,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.creditsRichTextBox.TabIndex = 22;
             this.creditsRichTextBox.Text = "";
             // 
-            // ackButton
-            // 
-            this.ackButton.AutoSize = true;
-            this.ackButton.Location = new System.Drawing.Point(110, 0);
-            this.ackButton.Margin = new System.Windows.Forms.Padding(0, 0, 0, 0);
-            this.ackButton.Name = "ackButton";
-            this.ackButton.Size = new System.Drawing.Size(122, 25);
-            this.ackButton.TabIndex = 23;
-            this.ackButton.Text = "Acknowledgements";
-            this.ackButton.UseVisualStyleBackColor = true;
-            // 
             // tableLayoutPanel1
             // 
             this.tableLayoutPanel1.AutoSize = true;
@@ -155,6 +144,17 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.Size = new System.Drawing.Size(342, 25);
             this.tableLayoutPanel1.TabIndex = 24;
+            // 
+            // ackButton
+            // 
+            this.ackButton.AutoSize = true;
+            this.ackButton.Location = new System.Drawing.Point(110, 0);
+            this.ackButton.Margin = new System.Windows.Forms.Padding(0);
+            this.ackButton.Name = "ackButton";
+            this.ackButton.Size = new System.Drawing.Size(122, 25);
+            this.ackButton.TabIndex = 23;
+            this.ackButton.Text = "Acknowledgements";
+            this.ackButton.UseVisualStyleBackColor = true;
             // 
             // AboutBox
             // 

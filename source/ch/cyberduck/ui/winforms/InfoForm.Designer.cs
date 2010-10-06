@@ -129,7 +129,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.octalTextBox = new System.Windows.Forms.TextBox();
             this.cloudManagedPanel = new Ch.Cyberduck.Ui.Winforms.Controls.ManagedPanel();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.label24 = new System.Windows.Forms.Label();
+            this.AclLabel = new System.Windows.Forms.Label();
             this.aclDataGridView = new System.Windows.Forms.DataGridView();
             this.addAclButton = new ch.cyberduck.ui.winforms.controls.SplitButton();
             this.addAclContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
@@ -137,7 +137,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.canoncalUserIDToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.removeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.label13 = new System.Windows.Forms.Label();
+            this.authenticatedLabel = new System.Windows.Forms.Label();
             this.authenticatedUrlLinkLabel = new System.Windows.Forms.LinkLabel();
             this.aclAnimation = new System.Windows.Forms.PictureBox();
             this.managedS3Panel = new Ch.Cyberduck.Ui.Winforms.Controls.ManagedPanel();
@@ -182,7 +182,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.s3Button});
             this.toolStrip.Location = new System.Drawing.Point(0, 0);
             this.toolStrip.Name = "toolStrip";
-            this.toolStrip.Size = new System.Drawing.Size(526, 51);
+            this.toolStrip.Size = new System.Drawing.Size(484, 51);
             this.toolStrip.TabIndex = 0;
             this.toolStrip.Text = "toolStrip1";
             // 
@@ -280,14 +280,14 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.distributionLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 10F));
             this.distributionLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.distributionLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 10F));
-            this.distributionLayoutPanel.Size = new System.Drawing.Size(526, 333);
+            this.distributionLayoutPanel.Size = new System.Drawing.Size(0, 0);
             this.distributionLayoutPanel.TabIndex = 0;
             // 
             // label14
             // 
             this.label14.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(13, 16);
+            this.label14.Location = new System.Drawing.Point(13, 17);
             this.label14.Name = "label14";
             this.label14.Size = new System.Drawing.Size(94, 15);
             this.label14.TabIndex = 0;
@@ -299,7 +299,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.label15.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
                         | System.Windows.Forms.AnchorStyles.Left)));
             this.label15.AutoSize = true;
-            this.label15.Location = new System.Drawing.Point(13, 74);
+            this.label15.Location = new System.Drawing.Point(13, 76);
             this.label15.Name = "label15";
             this.label15.Size = new System.Drawing.Size(39, 15);
             this.label15.TabIndex = 1;
@@ -311,7 +311,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.label16.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
                         | System.Windows.Forms.AnchorStyles.Left)));
             this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(13, 124);
+            this.label16.Location = new System.Drawing.Point(13, 126);
             this.label16.Name = "label16";
             this.label16.Size = new System.Drawing.Size(41, 15);
             this.label16.TabIndex = 2;
@@ -322,7 +322,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.label17.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(13, 156);
+            this.label17.Location = new System.Drawing.Point(13, 158);
             this.label17.Name = "label17";
             this.label17.Size = new System.Drawing.Size(49, 15);
             this.label17.TabIndex = 3;
@@ -338,7 +338,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.deliveryMethodComboBox.FormattingEnabled = true;
             this.deliveryMethodComboBox.Location = new System.Drawing.Point(113, 13);
             this.deliveryMethodComboBox.Name = "deliveryMethodComboBox";
-            this.deliveryMethodComboBox.Size = new System.Drawing.Size(400, 23);
+            this.deliveryMethodComboBox.Size = new System.Drawing.Size(1, 23);
             this.deliveryMethodComboBox.TabIndex = 4;
             this.deliveryMethodComboBox.SelectionChangeCommitted += new System.EventHandler(this.deliveryMethodComboBox_SelectionChangeCommitted);
             // 
@@ -346,10 +346,10 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.distributionEnableCheckBox.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.distributionEnableCheckBox.AutoSize = true;
-            this.distributionEnableCheckBox.Location = new System.Drawing.Point(113, 40);
+            this.distributionEnableCheckBox.Location = new System.Drawing.Point(113, 42);
             this.distributionEnableCheckBox.MinimumSize = new System.Drawing.Size(0, 21);
             this.distributionEnableCheckBox.Name = "distributionEnableCheckBox";
-            this.distributionEnableCheckBox.Size = new System.Drawing.Size(236, 21);
+            this.distributionEnableCheckBox.Size = new System.Drawing.Size(1, 21);
             this.distributionEnableCheckBox.TabIndex = 5;
             this.distributionEnableCheckBox.Text = "Enable Amazon CloudFront Distribution";
             this.distributionEnableCheckBox.UseVisualStyleBackColor = true;
@@ -360,9 +360,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.distributionLoggingCheckBox.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.distributionLoggingCheckBox.AutoSize = true;
             this.distributionLayoutPanel.SetColumnSpan(this.distributionLoggingCheckBox, 2);
-            this.distributionLoggingCheckBox.Location = new System.Drawing.Point(113, 92);
+            this.distributionLoggingCheckBox.Location = new System.Drawing.Point(113, 94);
             this.distributionLoggingCheckBox.Name = "distributionLoggingCheckBox";
-            this.distributionLoggingCheckBox.Size = new System.Drawing.Size(174, 19);
+            this.distributionLoggingCheckBox.Size = new System.Drawing.Size(1, 19);
             this.distributionLoggingCheckBox.TabIndex = 6;
             this.distributionLoggingCheckBox.Text = "Distribution Access Logging";
             this.distributionLoggingCheckBox.UseVisualStyleBackColor = true;
@@ -374,9 +374,9 @@ namespace Ch.Cyberduck.Ui.Winforms
                         | System.Windows.Forms.AnchorStyles.Left)));
             this.statusLabel.AutoSize = true;
             this.distributionLayoutPanel.SetColumnSpan(this.statusLabel, 2);
-            this.statusLabel.Location = new System.Drawing.Point(113, 74);
+            this.statusLabel.Location = new System.Drawing.Point(113, 76);
             this.statusLabel.Name = "statusLabel";
-            this.statusLabel.Size = new System.Drawing.Size(44, 15);
+            this.statusLabel.Size = new System.Drawing.Size(1, 15);
             this.statusLabel.TabIndex = 7;
             this.statusLabel.Text = "label18";
             this.statusLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -386,9 +386,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.distributionCnameTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.distributionLayoutPanel.SetColumnSpan(this.distributionCnameTextBox, 2);
-            this.distributionCnameTextBox.Location = new System.Drawing.Point(113, 152);
+            this.distributionCnameTextBox.Location = new System.Drawing.Point(113, 154);
             this.distributionCnameTextBox.Name = "distributionCnameTextBox";
-            this.distributionCnameTextBox.Size = new System.Drawing.Size(400, 23);
+            this.distributionCnameTextBox.Size = new System.Drawing.Size(1, 23);
             this.distributionCnameTextBox.TabIndex = 9;
             this.distributionCnameTextBox.Validated += new System.EventHandler(this.distributionCnameTextBox_Validated);
             // 
@@ -398,9 +398,9 @@ namespace Ch.Cyberduck.Ui.Winforms
                         | System.Windows.Forms.AnchorStyles.Left)));
             this.whereLinkLabel.AutoSize = true;
             this.distributionLayoutPanel.SetColumnSpan(this.whereLinkLabel, 2);
-            this.whereLinkLabel.Location = new System.Drawing.Point(113, 124);
+            this.whereLinkLabel.Location = new System.Drawing.Point(113, 126);
             this.whereLinkLabel.Name = "whereLinkLabel";
-            this.whereLinkLabel.Size = new System.Drawing.Size(60, 15);
+            this.whereLinkLabel.Size = new System.Drawing.Size(1, 15);
             this.whereLinkLabel.TabIndex = 10;
             this.whereLinkLabel.TabStop = true;
             this.whereLinkLabel.Text = "linkLabel1";
@@ -411,7 +411,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.distributionAnimation.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.distributionAnimation.Image = global::Ch.Cyberduck.ResourcesBundle.throbber_small;
-            this.distributionAnimation.Location = new System.Drawing.Point(483, 40);
+            this.distributionAnimation.Location = new System.Drawing.Point(-22, 42);
             this.distributionAnimation.Name = "distributionAnimation";
             this.distributionAnimation.Size = new System.Drawing.Size(30, 20);
             this.distributionAnimation.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
@@ -424,9 +424,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.cnameUrlLinkLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
                         | System.Windows.Forms.AnchorStyles.Left)));
             this.cnameUrlLinkLabel.AutoSize = true;
-            this.cnameUrlLinkLabel.Location = new System.Drawing.Point(113, 178);
+            this.cnameUrlLinkLabel.Location = new System.Drawing.Point(113, 180);
             this.cnameUrlLinkLabel.Name = "cnameUrlLinkLabel";
-            this.cnameUrlLinkLabel.Size = new System.Drawing.Size(60, 15);
+            this.cnameUrlLinkLabel.Size = new System.Drawing.Size(1, 1);
             this.cnameUrlLinkLabel.TabIndex = 26;
             this.cnameUrlLinkLabel.TabStop = true;
             this.cnameUrlLinkLabel.Text = "linkLabel1";
@@ -437,7 +437,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.label25.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.label25.AutoSize = true;
-            this.label25.Location = new System.Drawing.Point(13, 209);
+            this.label25.Location = new System.Drawing.Point(13, 197);
             this.label25.Name = "label25";
             this.label25.Size = new System.Drawing.Size(94, 15);
             this.label25.TabIndex = 27;
@@ -450,9 +450,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.distributionLayoutPanel.SetColumnSpan(this.defaultRootComboBox, 2);
             this.defaultRootComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.defaultRootComboBox.FormattingEnabled = true;
-            this.defaultRootComboBox.Location = new System.Drawing.Point(113, 206);
+            this.defaultRootComboBox.Location = new System.Drawing.Point(113, 193);
             this.defaultRootComboBox.Name = "defaultRootComboBox";
-            this.defaultRootComboBox.Size = new System.Drawing.Size(400, 23);
+            this.defaultRootComboBox.Size = new System.Drawing.Size(1, 23);
             this.defaultRootComboBox.TabIndex = 28;
             this.defaultRootComboBox.SelectionChangeCommitted += new System.EventHandler(this.defaultRootComboBox_SelectionChangeCommitted);
             // 
@@ -506,7 +506,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.generalLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.generalLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.generalLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.generalLayoutPanel.Size = new System.Drawing.Size(526, 333);
+            this.generalLayoutPanel.Size = new System.Drawing.Size(0, 0);
             this.generalLayoutPanel.TabIndex = 0;
             // 
             // icon
@@ -524,7 +524,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.generalLayoutPanel.SetColumnSpan(this.filenameTextbox, 4);
             this.filenameTextbox.Location = new System.Drawing.Point(83, 27);
             this.filenameTextbox.Name = "filenameTextbox";
-            this.filenameTextbox.Size = new System.Drawing.Size(430, 23);
+            this.filenameTextbox.Size = new System.Drawing.Size(1, 23);
             this.filenameTextbox.TabIndex = 1;
             this.filenameTextbox.Validated += new System.EventHandler(this.filenameTextbox_Validated);
             // 
@@ -644,7 +644,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.sizeLabel.Location = new System.Drawing.Point(159, 69);
             this.sizeLabel.MinimumSize = new System.Drawing.Size(0, 23);
             this.sizeLabel.Name = "sizeLabel";
-            this.sizeLabel.Size = new System.Drawing.Size(76, 23);
+            this.sizeLabel.Size = new System.Drawing.Size(1, 23);
             this.sizeLabel.TabIndex = 11;
             this.sizeLabel.Text = "ellipsisLabel1";
             this.sizeLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -658,7 +658,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.pathLabel.Location = new System.Drawing.Point(159, 95);
             this.pathLabel.MinimumSize = new System.Drawing.Size(0, 23);
             this.pathLabel.Name = "pathLabel";
-            this.pathLabel.Size = new System.Drawing.Size(76, 23);
+            this.pathLabel.Size = new System.Drawing.Size(1, 23);
             this.pathLabel.TabIndex = 12;
             this.pathLabel.Text = "ellipsisLabel2";
             this.pathLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -672,7 +672,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.weburlLabel.Location = new System.Drawing.Point(159, 118);
             this.weburlLabel.MinimumSize = new System.Drawing.Size(0, 23);
             this.weburlLabel.Name = "weburlLabel";
-            this.weburlLabel.Size = new System.Drawing.Size(60, 23);
+            this.weburlLabel.Size = new System.Drawing.Size(1, 23);
             this.weburlLabel.TabIndex = 13;
             this.weburlLabel.TabStop = true;
             this.weburlLabel.Text = "linkLabel1";
@@ -688,7 +688,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.kindLabel.Location = new System.Drawing.Point(159, 141);
             this.kindLabel.MinimumSize = new System.Drawing.Size(0, 23);
             this.kindLabel.Name = "kindLabel";
-            this.kindLabel.Size = new System.Drawing.Size(76, 23);
+            this.kindLabel.Size = new System.Drawing.Size(1, 23);
             this.kindLabel.TabIndex = 14;
             this.kindLabel.Text = "ellipsisLabel3";
             this.kindLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -702,7 +702,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.permissionsLabel.Location = new System.Drawing.Point(159, 164);
             this.permissionsLabel.MinimumSize = new System.Drawing.Size(0, 23);
             this.permissionsLabel.Name = "permissionsLabel";
-            this.permissionsLabel.Size = new System.Drawing.Size(76, 23);
+            this.permissionsLabel.Size = new System.Drawing.Size(1, 23);
             this.permissionsLabel.TabIndex = 15;
             this.permissionsLabel.Text = "ellipsisLabel4";
             this.permissionsLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -716,7 +716,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.ownerLabel.Location = new System.Drawing.Point(159, 187);
             this.ownerLabel.MinimumSize = new System.Drawing.Size(0, 23);
             this.ownerLabel.Name = "ownerLabel";
-            this.ownerLabel.Size = new System.Drawing.Size(76, 23);
+            this.ownerLabel.Size = new System.Drawing.Size(1, 23);
             this.ownerLabel.TabIndex = 16;
             this.ownerLabel.Text = "ellipsisLabel5";
             this.ownerLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -730,7 +730,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.groupLabel.Location = new System.Drawing.Point(159, 210);
             this.groupLabel.MinimumSize = new System.Drawing.Size(0, 23);
             this.groupLabel.Name = "groupLabel";
-            this.groupLabel.Size = new System.Drawing.Size(76, 23);
+            this.groupLabel.Size = new System.Drawing.Size(1, 23);
             this.groupLabel.TabIndex = 17;
             this.groupLabel.Text = "ellipsisLabel6";
             this.groupLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -744,7 +744,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.modifiedLabel.Location = new System.Drawing.Point(159, 256);
             this.modifiedLabel.MinimumSize = new System.Drawing.Size(0, 23);
             this.modifiedLabel.Name = "modifiedLabel";
-            this.modifiedLabel.Size = new System.Drawing.Size(76, 23);
+            this.modifiedLabel.Size = new System.Drawing.Size(1, 23);
             this.modifiedLabel.TabIndex = 19;
             this.modifiedLabel.Text = "ellipsisLabel8";
             this.modifiedLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -753,7 +753,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.calculateButton.AutoSize = true;
             this.calculateButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.calculateButton.Location = new System.Drawing.Point(447, 70);
+            this.calculateButton.Location = new System.Drawing.Point(-58, 70);
             this.calculateButton.Name = "calculateButton";
             this.generalLayoutPanel.SetRowSpan(this.calculateButton, 2);
             this.calculateButton.Size = new System.Drawing.Size(66, 25);
@@ -767,7 +767,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.sizeAnimation.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.sizeAnimation.Image = global::Ch.Cyberduck.ResourcesBundle.throbber_small;
-            this.sizeAnimation.Location = new System.Drawing.Point(424, 70);
+            this.sizeAnimation.Location = new System.Drawing.Point(-81, 70);
             this.sizeAnimation.Name = "sizeAnimation";
             this.sizeAnimation.Size = new System.Drawing.Size(17, 21);
             this.sizeAnimation.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
@@ -796,7 +796,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.createdLabel.Location = new System.Drawing.Point(159, 233);
             this.createdLabel.MinimumSize = new System.Drawing.Size(0, 23);
             this.createdLabel.Name = "createdLabel";
-            this.createdLabel.Size = new System.Drawing.Size(76, 23);
+            this.createdLabel.Size = new System.Drawing.Size(1, 23);
             this.createdLabel.TabIndex = 24;
             this.createdLabel.Text = "ellipsisLabel8";
             this.createdLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -810,7 +810,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.checksumTextBox.Margin = new System.Windows.Forms.Padding(6, 3, 3, 3);
             this.checksumTextBox.Name = "checksumTextBox";
             this.checksumTextBox.ReadOnly = true;
-            this.checksumTextBox.Size = new System.Drawing.Size(100, 16);
+            this.checksumTextBox.Size = new System.Drawing.Size(1, 16);
             this.checksumTextBox.TabIndex = 25;
             this.checksumTextBox.TabStop = false;
             this.checksumTextBox.Text = "Dies ist";
@@ -856,7 +856,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.s3LayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 10F));
             this.s3LayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.s3LayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
-            this.s3LayoutPanel.Size = new System.Drawing.Size(0, 0);
+            this.s3LayoutPanel.Size = new System.Drawing.Size(484, 315);
             this.s3LayoutPanel.TabIndex = 0;
             // 
             // bucketVersioningCheckBox
@@ -864,9 +864,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.bucketVersioningCheckBox.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.bucketVersioningCheckBox.AutoSize = true;
             this.s3LayoutPanel.SetColumnSpan(this.bucketVersioningCheckBox, 4);
-            this.bucketVersioningCheckBox.Location = new System.Drawing.Point(13, 155);
+            this.bucketVersioningCheckBox.Location = new System.Drawing.Point(13, 172);
             this.bucketVersioningCheckBox.Name = "bucketVersioningCheckBox";
-            this.bucketVersioningCheckBox.Size = new System.Drawing.Size(1, 19);
+            this.bucketVersioningCheckBox.Size = new System.Drawing.Size(121, 19);
             this.bucketVersioningCheckBox.TabIndex = 27;
             this.bucketVersioningCheckBox.Text = "Bucket Versioning";
             this.bucketVersioningCheckBox.UseVisualStyleBackColor = true;
@@ -876,7 +876,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.s3Animation.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.s3Animation.Image = global::Ch.Cyberduck.ResourcesBundle.throbber_small;
-            this.s3Animation.Location = new System.Drawing.Point(-17, 13);
+            this.s3Animation.Location = new System.Drawing.Point(446, 13);
             this.s3Animation.Name = "s3Animation";
             this.s3Animation.Size = new System.Drawing.Size(25, 18);
             this.s3Animation.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
@@ -902,7 +902,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.label19.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.label19.AutoSize = true;
             this.s3LayoutPanel.SetColumnSpan(this.label19, 2);
-            this.label19.Location = new System.Drawing.Point(13, 77);
+            this.label19.Location = new System.Drawing.Point(13, 79);
             this.label19.Name = "label19";
             this.label19.Size = new System.Drawing.Size(67, 15);
             this.label19.TabIndex = 1;
@@ -914,7 +914,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.label20.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.label20.AutoSize = true;
             this.s3LayoutPanel.SetColumnSpan(this.label20, 2);
-            this.label20.Location = new System.Drawing.Point(13, 102);
+            this.label20.Location = new System.Drawing.Point(13, 119);
             this.label20.Name = "label20";
             this.label20.Size = new System.Drawing.Size(70, 15);
             this.label20.TabIndex = 2;
@@ -928,7 +928,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.bucketLocationLabel.Location = new System.Drawing.Point(96, 10);
             this.bucketLocationLabel.MinimumSize = new System.Drawing.Size(0, 25);
             this.bucketLocationLabel.Name = "bucketLocationLabel";
-            this.bucketLocationLabel.Size = new System.Drawing.Size(1, 25);
+            this.bucketLocationLabel.Size = new System.Drawing.Size(44, 25);
             this.bucketLocationLabel.TabIndex = 5;
             this.bucketLocationLabel.Text = "label22";
             this.bucketLocationLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -938,9 +938,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.s3PublicUrlLinkLabel.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.s3PublicUrlLinkLabel.AutoSize = true;
             this.s3LayoutPanel.SetColumnSpan(this.s3PublicUrlLinkLabel, 2);
-            this.s3PublicUrlLinkLabel.Location = new System.Drawing.Point(96, 77);
+            this.s3PublicUrlLinkLabel.Location = new System.Drawing.Point(96, 79);
             this.s3PublicUrlLinkLabel.Name = "s3PublicUrlLinkLabel";
-            this.s3PublicUrlLinkLabel.Size = new System.Drawing.Size(1, 15);
+            this.s3PublicUrlLinkLabel.Size = new System.Drawing.Size(60, 15);
             this.s3PublicUrlLinkLabel.TabIndex = 6;
             this.s3PublicUrlLinkLabel.TabStop = true;
             this.s3PublicUrlLinkLabel.Text = "linkLabel1";
@@ -952,9 +952,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.s3TorrentUrlLinkLabel.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.s3TorrentUrlLinkLabel.AutoSize = true;
             this.s3LayoutPanel.SetColumnSpan(this.s3TorrentUrlLinkLabel, 2);
-            this.s3TorrentUrlLinkLabel.Location = new System.Drawing.Point(96, 102);
+            this.s3TorrentUrlLinkLabel.Location = new System.Drawing.Point(96, 119);
             this.s3TorrentUrlLinkLabel.Name = "s3TorrentUrlLinkLabel";
-            this.s3TorrentUrlLinkLabel.Size = new System.Drawing.Size(1, 15);
+            this.s3TorrentUrlLinkLabel.Size = new System.Drawing.Size(60, 15);
             this.s3TorrentUrlLinkLabel.TabIndex = 7;
             this.s3TorrentUrlLinkLabel.TabStop = true;
             this.s3TorrentUrlLinkLabel.Text = "linkLabel2";
@@ -966,7 +966,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.label26.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.label26.AutoSize = true;
             this.s3LayoutPanel.SetColumnSpan(this.label26, 2);
-            this.label26.Location = new System.Drawing.Point(13, 46);
+            this.label26.Location = new System.Drawing.Point(13, 47);
             this.label26.Name = "label26";
             this.label26.Size = new System.Drawing.Size(77, 15);
             this.label26.TabIndex = 25;
@@ -976,9 +976,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.s3PublicUrlValidityLabel.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.s3PublicUrlValidityLabel.AutoSize = true;
-            this.s3PublicUrlValidityLabel.Location = new System.Drawing.Point(96, 92);
+            this.s3PublicUrlValidityLabel.Location = new System.Drawing.Point(96, 94);
             this.s3PublicUrlValidityLabel.Name = "s3PublicUrlValidityLabel";
-            this.s3PublicUrlValidityLabel.Size = new System.Drawing.Size(1, 1);
+            this.s3PublicUrlValidityLabel.Size = new System.Drawing.Size(44, 15);
             this.s3PublicUrlValidityLabel.TabIndex = 26;
             this.s3PublicUrlValidityLabel.Text = "label27";
             // 
@@ -987,9 +987,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.bucketLoggingCheckBox.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.bucketLoggingCheckBox.AutoSize = true;
             this.s3LayoutPanel.SetColumnSpan(this.bucketLoggingCheckBox, 4);
-            this.bucketLoggingCheckBox.Location = new System.Drawing.Point(13, 130);
+            this.bucketLoggingCheckBox.Location = new System.Drawing.Point(13, 147);
             this.bucketLoggingCheckBox.Name = "bucketLoggingCheckBox";
-            this.bucketLoggingCheckBox.Size = new System.Drawing.Size(1, 19);
+            this.bucketLoggingCheckBox.Size = new System.Drawing.Size(148, 19);
             this.bucketLoggingCheckBox.TabIndex = 4;
             this.bucketLoggingCheckBox.Text = "Bucket Access Logging";
             this.bucketLoggingCheckBox.UseVisualStyleBackColor = true;
@@ -1003,7 +1003,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.storageClassComboBox.FormattingEnabled = true;
             this.storageClassComboBox.Location = new System.Drawing.Point(96, 43);
             this.storageClassComboBox.Name = "storageClassComboBox";
-            this.storageClassComboBox.Size = new System.Drawing.Size(1, 23);
+            this.storageClassComboBox.Size = new System.Drawing.Size(375, 23);
             this.storageClassComboBox.TabIndex = 30;
             this.storageClassComboBox.SelectionChangeCommitted += new System.EventHandler(this.storageClassComboBox_SelectionChangeCommitted);
             // 
@@ -1012,9 +1012,10 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.label21.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.label21.AutoSize = true;
             this.s3LayoutPanel.SetColumnSpan(this.label21, 3);
-            this.label21.Location = new System.Drawing.Point(33, 177);
+            this.label21.ForeColor = System.Drawing.SystemColors.GrayText;
+            this.label21.Location = new System.Drawing.Point(33, 194);
             this.label21.Name = "label21";
-            this.label21.Size = new System.Drawing.Size(1, 1);
+            this.label21.Size = new System.Drawing.Size(405, 30);
             this.label21.TabIndex = 28;
             this.label21.Text = "You can view all revisions of a file in the browser by choosing View → Show Hidde" +
                 "n Files.";
@@ -1024,9 +1025,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.bucketMfaCheckBox.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.bucketMfaCheckBox.AutoSize = true;
             this.s3LayoutPanel.SetColumnSpan(this.bucketMfaCheckBox, 3);
-            this.bucketMfaCheckBox.Location = new System.Drawing.Point(33, 190);
+            this.bucketMfaCheckBox.Location = new System.Drawing.Point(33, 237);
             this.bucketMfaCheckBox.Name = "bucketMfaCheckBox";
-            this.bucketMfaCheckBox.Size = new System.Drawing.Size(1, 19);
+            this.bucketMfaCheckBox.Size = new System.Drawing.Size(246, 19);
             this.bucketMfaCheckBox.TabIndex = 29;
             this.bucketMfaCheckBox.Text = "Multi-Factor Authentication (MFA) Delete";
             this.bucketMfaCheckBox.UseVisualStyleBackColor = true;
@@ -1042,9 +1043,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.panelManager.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panelManager.Location = new System.Drawing.Point(0, 51);
             this.panelManager.Name = "panelManager";
-            this.panelManager.SelectedIndex = 1;
-            this.panelManager.SelectedPanel = this.managedGeneralPanel;
-            this.panelManager.Size = new System.Drawing.Size(526, 333);
+            this.panelManager.SelectedIndex = 4;
+            this.panelManager.SelectedPanel = this.managedS3Panel;
+            this.panelManager.Size = new System.Drawing.Size(484, 315);
             this.panelManager.TabIndex = 2;
             // 
             // managedDistributionPanel
@@ -1052,7 +1053,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.managedDistributionPanel.Controls.Add(this.distributionLayoutPanel);
             this.managedDistributionPanel.Location = new System.Drawing.Point(0, 0);
             this.managedDistributionPanel.Name = "managedDistributionPanel";
-            this.managedDistributionPanel.Size = new System.Drawing.Size(526, 333);
+            this.managedDistributionPanel.Size = new System.Drawing.Size(0, 0);
             this.managedDistributionPanel.Text = "managedPanel1";
             // 
             // managedGeneralPanel
@@ -1060,7 +1061,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.managedGeneralPanel.Controls.Add(this.generalLayoutPanel);
             this.managedGeneralPanel.Location = new System.Drawing.Point(0, 0);
             this.managedGeneralPanel.Name = "managedGeneralPanel";
-            this.managedGeneralPanel.Size = new System.Drawing.Size(526, 333);
+            this.managedGeneralPanel.Size = new System.Drawing.Size(0, 0);
             this.managedGeneralPanel.Text = "managedPanel1";
             // 
             // managedMetadataPanel
@@ -1194,7 +1195,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.panelManagerPermissions.Name = "panelManagerPermissions";
             this.panelManagerPermissions.SelectedIndex = 1;
             this.panelManagerPermissions.SelectedPanel = this.cloudManagedPanel;
-            this.panelManagerPermissions.Size = new System.Drawing.Size(0, 0);
+            this.panelManagerPermissions.Size = new System.Drawing.Size(526, 333);
             this.panelManagerPermissions.TabIndex = 1;
             // 
             // nonCloudManagedPanel
@@ -1437,10 +1438,10 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.tableLayoutPanel1.ColumnCount = 2;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel1.Controls.Add(this.label24, 0, 3);
+            this.tableLayoutPanel1.Controls.Add(this.AclLabel, 0, 3);
             this.tableLayoutPanel1.Controls.Add(this.aclDataGridView, 0, 4);
             this.tableLayoutPanel1.Controls.Add(this.addAclButton, 0, 5);
-            this.tableLayoutPanel1.Controls.Add(this.label13, 0, 1);
+            this.tableLayoutPanel1.Controls.Add(this.authenticatedLabel, 0, 1);
             this.tableLayoutPanel1.Controls.Add(this.authenticatedUrlLinkLabel, 0, 2);
             this.tableLayoutPanel1.Controls.Add(this.aclAnimation, 1, 1);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -1455,19 +1456,19 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(0, 0);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(526, 333);
             this.tableLayoutPanel1.TabIndex = 0;
             // 
-            // label24
+            // AclLabel
             // 
-            this.label24.AutoSize = true;
-            this.tableLayoutPanel1.SetColumnSpan(this.label24, 2);
-            this.label24.Location = new System.Drawing.Point(13, 63);
-            this.label24.Name = "label24";
-            this.label24.Padding = new System.Windows.Forms.Padding(0, 10, 0, 0);
-            this.label24.Size = new System.Drawing.Size(1, 10);
-            this.label24.TabIndex = 27;
-            this.label24.Text = "Access Control List (ACL)";
+            this.AclLabel.AutoSize = true;
+            this.tableLayoutPanel1.SetColumnSpan(this.AclLabel, 2);
+            this.AclLabel.Location = new System.Drawing.Point(13, 63);
+            this.AclLabel.Name = "AclLabel";
+            this.AclLabel.Padding = new System.Windows.Forms.Padding(0, 10, 0, 0);
+            this.AclLabel.Size = new System.Drawing.Size(140, 25);
+            this.AclLabel.TabIndex = 27;
+            this.AclLabel.Text = "Access Control List (ACL)";
             // 
             // aclDataGridView
             // 
@@ -1475,9 +1476,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.aclDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.tableLayoutPanel1.SetColumnSpan(this.aclDataGridView, 2);
             this.aclDataGridView.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.aclDataGridView.Location = new System.Drawing.Point(13, 76);
+            this.aclDataGridView.Location = new System.Drawing.Point(13, 91);
             this.aclDataGridView.Name = "aclDataGridView";
-            this.aclDataGridView.Size = new System.Drawing.Size(1, 1);
+            this.aclDataGridView.Size = new System.Drawing.Size(500, 199);
             this.aclDataGridView.TabIndex = 29;
             // 
             // addAclButton
@@ -1486,9 +1487,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.addAclButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.addAclButton.ContextMenuStrip = this.addAclContextMenuStrip;
             this.addAclButton.Image = global::Ch.Cyberduck.ResourcesBundle.gear;
-            this.addAclButton.Location = new System.Drawing.Point(13, -16);
+            this.addAclButton.Location = new System.Drawing.Point(13, 296);
             this.addAclButton.Name = "addAclButton";
-            this.addAclButton.Size = new System.Drawing.Size(1, 24);
+            this.addAclButton.Size = new System.Drawing.Size(38, 24);
             this.addAclButton.SplitMenuStrip = this.addAclContextMenuStrip;
             this.addAclButton.TabIndex = 30;
             this.addAclButton.UseVisualStyleBackColor = true;
@@ -1527,15 +1528,15 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.removeToolStripMenuItem.Size = new System.Drawing.Size(164, 22);
             this.removeToolStripMenuItem.Text = "Remove";
             // 
-            // label13
+            // authenticatedLabel
             // 
-            this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(13, 15);
-            this.label13.MinimumSize = new System.Drawing.Size(0, 28);
-            this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(1, 28);
-            this.label13.TabIndex = 31;
-            this.label13.Text = "Authenticated URL";
+            this.authenticatedLabel.AutoSize = true;
+            this.authenticatedLabel.Location = new System.Drawing.Point(13, 15);
+            this.authenticatedLabel.MinimumSize = new System.Drawing.Size(0, 28);
+            this.authenticatedLabel.Name = "authenticatedLabel";
+            this.authenticatedLabel.Size = new System.Drawing.Size(106, 28);
+            this.authenticatedLabel.TabIndex = 31;
+            this.authenticatedLabel.Text = "Authenticated URL";
             // 
             // authenticatedUrlLinkLabel
             // 
@@ -1544,7 +1545,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.authenticatedUrlLinkLabel.Location = new System.Drawing.Point(13, 43);
             this.authenticatedUrlLinkLabel.MinimumSize = new System.Drawing.Size(0, 20);
             this.authenticatedUrlLinkLabel.Name = "authenticatedUrlLinkLabel";
-            this.authenticatedUrlLinkLabel.Size = new System.Drawing.Size(1, 20);
+            this.authenticatedUrlLinkLabel.Size = new System.Drawing.Size(60, 20);
             this.authenticatedUrlLinkLabel.TabIndex = 32;
             this.authenticatedUrlLinkLabel.TabStop = true;
             this.authenticatedUrlLinkLabel.Text = "linkLabel1";
@@ -1555,7 +1556,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.aclAnimation.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.aclAnimation.Image = global::Ch.Cyberduck.ResourcesBundle.throbber_small;
-            this.aclAnimation.Location = new System.Drawing.Point(-8, 18);
+            this.aclAnimation.Location = new System.Drawing.Point(497, 18);
             this.aclAnimation.Name = "aclAnimation";
             this.aclAnimation.Size = new System.Drawing.Size(16, 21);
             this.aclAnimation.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
@@ -1568,7 +1569,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.managedS3Panel.Controls.Add(this.s3LayoutPanel);
             this.managedS3Panel.Location = new System.Drawing.Point(0, 0);
             this.managedS3Panel.Name = "managedS3Panel";
-            this.managedS3Panel.Size = new System.Drawing.Size(0, 0);
+            this.managedS3Panel.Size = new System.Drawing.Size(484, 315);
             this.managedS3Panel.Text = "managedPanel1";
             // 
             // InfoForm
@@ -1576,13 +1577,15 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
-            this.ClientSize = new System.Drawing.Size(526, 384);
+            this.ClientSize = new System.Drawing.Size(484, 366);
             this.Controls.Add(this.panelManager);
             this.Controls.Add(this.toolStrip);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
             this.HelpButton = true;
             this.MaximizeBox = false;
+            this.MaximumSize = new System.Drawing.Size(1000, 800);
             this.MinimizeBox = false;
+            this.MinimumSize = new System.Drawing.Size(500, 400);
             this.Name = "InfoForm";
             this.Text = "Info";
             this.toolStrip.ResumeLayout(false);
@@ -1702,7 +1705,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         private System.Windows.Forms.PictureBox permissionAnimation;
         private System.Windows.Forms.CheckBox otherrCheckbox;
         private System.Windows.Forms.Label label23;
-        private System.Windows.Forms.Label label24;
+        private System.Windows.Forms.Label AclLabel;
         private System.Windows.Forms.Button applyRecursivePermissionsButton;
         private System.Windows.Forms.DataGridView aclDataGridView;
         private ch.cyberduck.ui.winforms.controls.SplitButton addAclButton;
@@ -1733,7 +1736,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         private ManagedPanel nonCloudManagedPanel;
         private ManagedPanel cloudManagedPanel;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
-        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.Label authenticatedLabel;
         private System.Windows.Forms.LinkLabel authenticatedUrlLinkLabel;
         private System.Windows.Forms.PictureBox aclAnimation;
         private ClickThroughToolStrip toolStrip;

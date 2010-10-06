@@ -16,7 +16,6 @@
 // yves@cyberduck.ch
 // 
 using System;
-using System.Diagnostics;
 using System.Drawing;
 using System.Reflection;
 using ch.cyberduck.core;
@@ -123,6 +122,11 @@ namespace Ch.Cyberduck.Ui.Winforms
                 }
                 return ((AssemblyCompanyAttribute) attributes[0]).Company;
             }
+        }
+
+        public override string[] BundleNames
+        {
+            get { return new[] {"Main", "Localizable"}; }
         }
     }
 }

@@ -31,8 +31,6 @@ namespace Ch.Cyberduck.Ui.Winforms
 {
     public partial class InfoForm : ToolbarBaseForm, IInfoView
     {
-        private string lastDistributionCname; //cache last value
-
         public InfoForm()
         {
             InitializeComponent();
@@ -62,10 +60,14 @@ namespace Ch.Cyberduck.Ui.Winforms
             LocalizationCompleted += ResizeForm;
 
             //some font tweaking
-            statusLabel.Font = new Font(statusLabel.Font, FontStyle.Bold);
+            statusLabel.Font = DefaultFontBold;
+            authenticatedLabel.Font = DefaultFontBold;
+            AclLabel.Font = DefaultFontBold;
 
             whereLinkLabel.Text = String.Empty;
             cnameUrlLinkLabel.Text = String.Empty;
+
+            MaximumSize = new Size(1000, Height);
         }
 
         /// <summary>
@@ -573,11 +575,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         public string DistributionCname
         {
             get { return distributionCnameTextBox.Text; }
-            set
-            {
-                distributionCnameTextBox.Text = value;
-                lastDistributionCname = value;
-            }
+            set { distributionCnameTextBox.Text = value; }
         }
 
         public string DistributionCnameUrl
@@ -1126,11 +1124,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         private void distributionCnameTextBox_Validated(object sender, EventArgs e)
         {
-            if (!distributionCnameTextBox.Text.Equals(lastDistributionCname))
-            {
-                lastDistributionCname = distributionCnameTextBox.Text;
-                DistributionCnameChanged();
-            }
+            DistributionCnameChanged();
         }
 
         private void weburlLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
