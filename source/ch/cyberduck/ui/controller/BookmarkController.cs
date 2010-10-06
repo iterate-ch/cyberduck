@@ -324,7 +324,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 // Hostname of newly selected protocol is not configurable. Change to default.
                 _host.setHostname(selected.getDefaultHostname());
-            } 
+            }
             if (!selected.isWebUrlConfigurable())
             {
                 _host.setWebURL(null);
@@ -675,9 +675,16 @@ namespace Ch.Cyberduck.Ui.Controller
             public override void run()
             {
                 //try to find the favicon in the root folder
-                Uri url = new Uri(_host.getWebURL());
-                UriBuilder builder = new UriBuilder(url.Scheme, url.Host, url.Port);
-                _favicon = GetImageFromUrl(builder.Uri + "/favicon.ico");
+                try
+                {
+                    Uri url = new Uri(_host.getWebURL());
+                    UriBuilder builder = new UriBuilder(url.Scheme, url.Host, url.Port);
+                    _favicon = GetImageFromUrl(builder.Uri + "/favicon.ico");
+                }
+                catch
+                {
+                    //catch silently
+                }
             }
 
             public override void cleanup()
