@@ -230,18 +230,21 @@ namespace Ch.Cyberduck.ui.winforms.controls
             }
         }
 
+        protected override void OnEnabledChanged(EventArgs e)
+        {
+            base.OnEnabledChanged(e);
+            textBox.BackColor = textBox.Enabled ? Color.FromKnownColor(KnownColor.Window) : Color.WhiteSmoke;
+            xPictureBox.BackColor = textBox.BackColor;
+        }
+
         private void UserControl1_Resize(object sender, EventArgs e)
         {
-            int offset = _contextMenu != null ? 10 : 0;
             textBox.Size = new Size(Width - 22, Height - 2);
-            //textBox.Size = new Size(Width - 43 - offset, Height - 6);
-            //textBox.Location = new Point(23 + offset, 2);
             textBox.Location = new Point(3, (Height / 2) - (textBox.Size.Height / 2) + 1);
 
             xPictureBox.Size = new Size(18, Height - 2);
             xPictureBox.SizeMode = PictureBoxSizeMode.CenterImage;
             xPictureBox.Location = new Point(Width - 19, 1);
-            //xPictureBox.Location = new Point(Width - 18, (Height - 15)/2);
             xPictureBox.BackColor = textBox.BackColor;
         }
 
@@ -249,7 +252,6 @@ namespace Ch.Cyberduck.ui.winforms.controls
         {
             e.Graphics.FillRectangle(new SolidBrush(textBox.BackColor), 1, 1, ClientRectangle.Width - 2,
                                      ClientRectangle.Height - 2);
-            //e.Graphics.DrawImage(Resources.searchg, 3, (Height - 18)/2, 18, 18);            
             ControlPaint.DrawBorder(e.Graphics, ClientRectangle, Color.Gray, ButtonBorderStyle.Solid);
         }
 
