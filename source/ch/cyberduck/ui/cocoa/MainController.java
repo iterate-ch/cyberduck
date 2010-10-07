@@ -635,30 +635,32 @@ public class MainController extends BundleController implements NSApplication.De
                 Growl.instance().register();
             }
         });
-        Rendezvous.instance().addListener(new RendezvousListener() {
-            public void serviceResolved(final String identifier, final String hostname) {
-                if(Preferences.instance().getBoolean("rendezvous.loopback.supress")) {
-                    try {
-                        if(InetAddress.getByName(hostname).equals(InetAddress.getLocalHost())) {
-                            log.info("Supressed Rendezvous notification for " + hostname);
-                            return;
+        if(Preferences.instance().getBoolean("rendezvous.enable")) {
+            RendezvousFactory.instance().addListener(new RendezvousListener() {
+                public void serviceResolved(final String identifier, final String hostname) {
+                    if(Preferences.instance().getBoolean("rendezvous.loopback.supress")) {
+                        try {
+                            if(InetAddress.getByName(hostname).equals(InetAddress.getLocalHost())) {
+                                log.info("Supressed Rendezvous notification for " + hostname);
+                                return;
+                            }
+                        }
+                        catch(UnknownHostException e) {
+                            ; //Ignore
                         }
                     }
-                    catch(UnknownHostException e) {
-                        ; //Ignore
-                    }
+                    invoke(new DefaultMainAction() {
+                        public void run() {
+                            Growl.instance().notifyWithImage("Bonjour", RendezvousFactory.instance().getDisplayedName(identifier), "rendezvous");
+                        }
+                    });
                 }
-                invoke(new DefaultMainAction() {
-                    public void run() {
-                        Growl.instance().notifyWithImage("Bonjour", Rendezvous.instance().getDisplayedName(identifier), "rendezvous");
-                    }
-                });
-            }
 
-            public void serviceLost(String servicename) {
-                ;
-            }
-        });
+                public void serviceLost(String servicename) {
+                    ;
+                }
+            });
+        }
         if(Preferences.instance().getBoolean("defaulthandler.reminder")
                 && Preferences.instance().getInteger("uses") > 0) {
             if(!URLSchemeHandlerConfiguration.instance().isDefaultHandlerForURLScheme(
@@ -705,7 +707,7 @@ public class MainController extends BundleController implements NSApplication.De
         if(Preferences.instance().getBoolean("rendezvous.enable")) {
             this.background(new AbstractBackgroundAction() {
                 public void run() {
-                    Rendezvous.instance().init();
+                    RendezvousFactory.instance().init();
                 }
             });
         }
@@ -913,8 +915,10 @@ public class MainController extends BundleController implements NSApplication.De
 
         this.invalidate();
 
-        //Terminating rendezvous discovery
-        Rendezvous.instance().quit();
+        if(Preferences.instance().getBoolean("rendezvous.enable")) {
+            //Terminating rendezvous discovery
+            RendezvousFactory.instance().quit();
+        }
         //Writing usage info
         Preferences.instance().setProperty("uses", Preferences.instance().getInteger("uses") + 1);
         Preferences.instance().save();

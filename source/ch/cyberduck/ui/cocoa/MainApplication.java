@@ -84,6 +84,8 @@ public class MainApplication {
 
                 PromptLoginController.register();
                 AlertHostKeyController.register();
+
+                Rendezvous.register();
             }
 
             final Logger root = Logger.getRootLogger();

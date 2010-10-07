@@ -28,7 +28,7 @@ public class RendezvousCollection extends AbstractHostCollection {
             = new RendezvousCollection();
 
     private RendezvousCollection() {
-        Rendezvous.instance().addListener(new RendezvousListener() {
+        RendezvousFactory.instance().addListener(new RendezvousListener() {
             public void serviceResolved(String servicename, String hostname) {
                 RendezvousCollection.this.collectionItemAdded(null);
             }
@@ -48,12 +48,12 @@ public class RendezvousCollection extends AbstractHostCollection {
 
     @Override
     public Host get(int row) {
-        return Rendezvous.instance().getService(row);
+        return RendezvousFactory.instance().getService(row);
     }
 
     @Override
     public int size() {
-        return Rendezvous.instance().numberOfServices();
+        return RendezvousFactory.instance().numberOfServices();
     }
 
     @Override

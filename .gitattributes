@@ -2036,6 +2036,7 @@ source/ch/cyberduck/Cyberduck.sln -text
 source/ch/cyberduck/ResourcesBundle.Designer.cs -text
 source/ch/cyberduck/ResourcesBundle.resx -text
 source/ch/cyberduck/core/AbstractLoginController.java -text
+source/ch/cyberduck/core/AbstractRendezvous.java -text
 source/ch/cyberduck/core/CollectionListener.java -text
 source/ch/cyberduck/core/Commands.cs -text
 source/ch/cyberduck/core/DelegateOutputStream.cs -text
@@ -2056,6 +2057,7 @@ source/ch/cyberduck/core/Program.cs -text
 source/ch/cyberduck/core/Protocol.java -text
 source/ch/cyberduck/core/RFC2253.cs -text
 source/ch/cyberduck/core/RendezvousCollection.java -text
+source/ch/cyberduck/core/RendezvousFactory.java -text
 source/ch/cyberduck/core/Serializable.java -text
 source/ch/cyberduck/core/SerializableDictionary.cs -text
 source/ch/cyberduck/core/Speedometer.java -text
