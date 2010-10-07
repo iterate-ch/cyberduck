@@ -149,7 +149,20 @@ public class Rendezvous extends AbstractRendezvous
         log.debug("serviceResolved:" + hostname);
         final NSAutoreleasePool pool = NSAutoreleasePool.push();
         try {
-            this.add(fullname, hostname, port, txtRecord);
+            String user = null;
+            String password = null;
+            String path = null;
+            log.debug("TXT Record:" + txtRecord);
+            if(txtRecord.contains("u")) {
+                user = txtRecord.getValueAsString("u");
+            }
+            if(txtRecord.contains("p")) {
+                password = txtRecord.getValueAsString("p");
+            }
+            if(txtRecord.contains("path")) {
+                path = txtRecord.getValueAsString("path");
+            }
+            this.add(fullname, hostname, port, user, password, path);
         }
         finally {
             // Note: When the desired results have been returned, the client MUST terminate

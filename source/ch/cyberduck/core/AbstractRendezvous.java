@@ -23,8 +23,6 @@ import ch.cyberduck.core.i18n.Locale;
 
 import org.apache.log4j.Logger;
 
-import com.apple.dnssd.TXTRecord;
-
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
@@ -167,26 +165,16 @@ public abstract class AbstractRendezvous {
         return host.getNickname();
     }
 
-    protected void add(String fullname, String hostname, int port, TXTRecord txtRecord) {
+    protected void add(String fullname, String hostname, int port, String user, String password, String path) {
         final Protocol protocol = this.getProtocol(fullname, port);
         if(null == protocol) {
             log.warn("Unknown service type:" + fullname);
             return;
         }
         final Host host = new Host(protocol, hostname, port);
-        log.debug("TXT Record:" + txtRecord);
-        if(txtRecord.contains("u")) {
-            host.getCredentials().setUsername(txtRecord.getValueAsString("u"));
-        }
-        else {
-            host.getCredentials().setUsername(null);
-        }
-        if(txtRecord.contains("p")) {
-            host.getCredentials().setPassword(txtRecord.getValueAsString("p"));
-        }
-        if(txtRecord.contains("path")) {
-            host.setDefaultPath(Path.normalize(txtRecord.getValueAsString("path")));
-        }
+        host.getCredentials().setUsername(user);
+        host.getCredentials().setPassword(password);
+        host.setDefaultPath(Path.normalize(path));
         this.add(fullname, host);
     }
 
