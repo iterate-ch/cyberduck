@@ -3341,6 +3341,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             public void connectionWillOpen() {
                 invoke(new WindowMainAction(BrowserController.this) {
                     public void run() {
+                        // Update status icon
                         bookmarkTable.setNeedsDisplay();
                         window.setTitle(host.getNickname());
                         window.setRepresentedFilename("");
@@ -3352,7 +3353,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             public void connectionDidOpen() {
                 invoke(new WindowMainAction(BrowserController.this) {
                     public void run() {
-                        getSelectedBrowserView().setNeedsDisplay();
+                        // Update status icon
                         bookmarkTable.setNeedsDisplay();
 
                         Growl.instance().notify("Connection opened", host.getHostname());
@@ -3377,7 +3378,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             public void connectionDidClose() {
                 invoke(new WindowMainAction(BrowserController.this) {
                     public void run() {
-                        getSelectedBrowserView().setNeedsDisplay();
+                        // Update status icon
                         bookmarkTable.setNeedsDisplay();
 
                         if(!isMounted()) {
