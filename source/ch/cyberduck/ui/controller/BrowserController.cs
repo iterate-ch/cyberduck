@@ -281,8 +281,6 @@ namespace Ch.Cyberduck.Ui.Controller
             //View.ViewClosingEvent += View_ClosingEvent;
             View.Exit += View_Exit;
 
-            View.LogDrawerVisible = Preferences.instance().getBoolean("browser.logDrawer.isOpen");
-
             BookmarkCollection bookmarkCollection = BookmarkCollection.defaultCollection();
             //todo eigene ListenerKlasse muss her
             //hostCollection.addListener(this);
@@ -2880,27 +2878,31 @@ namespace Ch.Cyberduck.Ui.Controller
         public void ToggleView(BrowserView view)
         {
             Log.debug("ToggleView:" + view);
-            if (View.CurrentView == view) return; //additional to Java version. Necessary?
+            if (View.CurrentView == view) return;
 
             SetBookmarkFilter(null);
             switch (view)
             {
                 case BrowserView.File:
+                    View.LogDrawerVisible = Preferences.instance().getBoolean("browser.logDrawer.isOpen");
                     View.CurrentView = BrowserView.File;
                     UpdateStatusLabel();
                     //ReloadData(false); //not necessary?
                     break;
                 case BrowserView.Bookmark:
+                    View.LogDrawerVisible = false;
                     View.CurrentView = BrowserView.Bookmark;
                     _bookmarkModel.Source = BookmarkCollection.defaultCollection();
                     ReloadBookmarks();
                     break;
                 case BrowserView.History:
+                    View.LogDrawerVisible = false;
                     View.CurrentView = BrowserView.History;
                     _bookmarkModel.Source = HistoryCollection.defaultCollection();
                     ReloadBookmarks();
                     break;
                 case BrowserView.Bonjour:
+                    View.LogDrawerVisible = false;
                     View.CurrentView = BrowserView.Bonjour;
                     _bookmarkModel.Source = RendezvousCollection.defaultCollection();
                     ReloadBookmarks();
