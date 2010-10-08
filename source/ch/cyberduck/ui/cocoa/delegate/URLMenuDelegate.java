@@ -37,12 +37,14 @@ import org.rococoa.Foundation;
 import org.rococoa.Selector;
 import org.rococoa.cocoa.foundation.NSInteger;
 
+import org.apache.commons.collections.map.LRUMap;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.text.MessageFormat;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @version $Id:$
@@ -63,7 +65,7 @@ public abstract class URLMenuDelegate extends AbstractMenuDelegate {
     protected abstract List<Path> getSelected();
 
     /**
-     * @return
+     * @return Lowercase shortcut key
      */
     protected abstract String getKeyEquivalent();
 
@@ -84,8 +86,13 @@ public abstract class URLMenuDelegate extends AbstractMenuDelegate {
         return new NSInteger(urls * 2);
     }
 
+    protected Map<Path, List<AbstractPath.DescriptiveUrl>> cache = new LRUMap();
+
     protected List<AbstractPath.DescriptiveUrl> getURLs(Path selected) {
-        return selected.getURLs();
+        if(!cache.containsKey(selected)) {
+            cache.put(selected, selected.getURLs());
+        }
+        return cache.get(selected);
     }
 
     @Override

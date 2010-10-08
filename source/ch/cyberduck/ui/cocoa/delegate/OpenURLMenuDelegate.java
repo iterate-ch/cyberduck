@@ -68,7 +68,10 @@ public abstract class OpenURLMenuDelegate extends URLMenuDelegate {
      */
     @Override
     protected List<AbstractPath.DescriptiveUrl> getURLs(Path selected) {
-        return selected.getHttpURLs();
+        if(!cache.containsKey(selected)) {
+            cache.put(selected, selected.getHttpURLs());
+        }
+        return cache.get(selected);
     }
 
     @Action
