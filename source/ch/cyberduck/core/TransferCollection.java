@@ -32,26 +32,23 @@ public class TransferCollection extends Collection<Transfer> {
 
     private static TransferCollection instance;
 
-    private TransferCollection() {
-        this.load();
+    private Local file;
+
+    private TransferCollection(Local file) {
+        this.file = file;
     }
 
     private static final Object lock = new Object();
 
-    public static TransferCollection instance() {
+    public static TransferCollection defaultCollection() {
         synchronized(lock) {
             if(null == instance) {
-                instance = new TransferCollection();
+                instance = new TransferCollection(
+                        LocalFactory.createLocal(Preferences.instance().getProperty("application.support.path"), "Queue.plist")
+                );
             }
             return instance;
         }
-    }
-
-    private static final Local QUEUE_FILE
-            = LocalFactory.createLocal(Preferences.instance().getProperty("application.support.path"), "Queue.plist");
-
-    static {
-        QUEUE_FILE.getParent().mkdir(true);
     }
 
     @Override
@@ -87,18 +84,19 @@ public class TransferCollection extends Collection<Transfer> {
     }
 
     public void save() {
-        this.save(QUEUE_FILE);
+        this.save(file);
     }
 
     private void save(Local f) {
         log.debug("save");
         if(Preferences.instance().getBoolean("queue.save")) {
+            f.getParent().mkdir(true);
             TransferWriterFactory.instance().write(this, f);
         }
     }
 
     public void load() {
-        this.load(QUEUE_FILE);
+        this.load(file);
     }
 
     private void load(Local f) {

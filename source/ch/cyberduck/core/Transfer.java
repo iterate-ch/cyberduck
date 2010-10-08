@@ -638,7 +638,7 @@ public abstract class Transfer implements Serializable {
     }
 
     private void queue() {
-        final TransferCollection q = TransferCollection.instance();
+        final TransferCollection q = TransferCollection.defaultCollection();
         // This transfer should respect the settings for maximum number of transfers
         if(q.numberOfRunningTransfers() - q.numberOfQueuedTransfers() - 1
                 >= (int) Preferences.instance().getDouble("queue.maxtransfers")) {

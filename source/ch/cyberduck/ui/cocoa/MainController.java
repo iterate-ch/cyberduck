@@ -631,6 +631,11 @@ public class MainController extends BundleController implements NSApplication.De
         });
         this.background(new AbstractBackgroundAction() {
             public void run() {
+                TransferCollection.defaultCollection().load();
+            }
+        });
+        this.background(new AbstractBackgroundAction() {
+            public void run() {
                 // Make sure we register to Growl first
                 Growl.instance().register();
             }

@@ -154,7 +154,7 @@ public class TransferController extends WindowController implements NSToolbar.De
 
     public void filterFieldTextDidChange(NSNotification notification) {
         transferTableModel.setFilter(filterField.stringValue());
-        this.reloadData();
+        this.reload();
     }
 
     /**
@@ -255,7 +255,7 @@ public class TransferController extends WindowController implements NSToolbar.De
                 int bytes = Integer.valueOf(item.representedObject());
                 NSIndexSet iterator = transferTable.selectedRowIndexes();
                 for(NSUInteger index = iterator.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = iterator.indexGreaterThanIndex(index)) {
-                    Transfer transfer = TransferCollection.instance().get(index.intValue());
+                    Transfer transfer = TransferCollection.defaultCollection().get(index.intValue());
                     if(BandwidthThrottle.UNLIMITED == transfer.getBandwidth()) {
                         if(BandwidthThrottle.UNLIMITED == bytes) {
                             item.setState(selected > 1 ? NSCell.NSMixedState : NSCell.NSOnState);
@@ -286,7 +286,7 @@ public class TransferController extends WindowController implements NSToolbar.De
         NSIndexSet iterator = transferTable.selectedRowIndexes();
         int bandwidth = Integer.valueOf(sender.selectedItem().representedObject());
         for(NSUInteger index = iterator.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = iterator.indexGreaterThanIndex(index)) {
-            Transfer transfer = TransferCollection.instance().get(index.intValue());
+            Transfer transfer = TransferCollection.defaultCollection().get(index.intValue());
             transfer.setBandwidth(bandwidth);
         }
         this.updateBandwidthPopup();
@@ -297,6 +297,17 @@ public class TransferController extends WindowController implements NSToolbar.De
      */
     private TransferController() {
         this.loadBundle();
+        TransferCollection.defaultCollection().addListener(new AbstractCollectionListener<Transfer>() {
+            @Override
+            public void collectionItemAdded(Transfer item) {
+                reload();
+            }
+
+            @Override
+            public void collectionItemRemoved(Transfer item) {
+                reload();
+            }
+        });
     }
 
     public static TransferController instance() {
@@ -330,7 +341,7 @@ public class TransferController extends WindowController implements NSToolbar.De
         if(null != instance) {
             //Saving state of transfer window
             Preferences.instance().setProperty("queue.openByDefault", instance.window().isVisible());
-            if(TransferCollection.instance().numberOfRunningTransfers() > 0) {
+            if(TransferCollection.defaultCollection().numberOfRunningTransfers() > 0) {
                 final NSAlert alert = NSAlert.alert(Locale.localizedString("Transfer in progress"), //title
                         Locale.localizedString("There are files currently being transferred. Quit anyway?"), // message
                         Locale.localizedString("Quit"), // defaultbutton
@@ -340,7 +351,7 @@ public class TransferController extends WindowController implements NSToolbar.De
                 instance.alert(alert, new SheetCallback() {
                     public void callback(int returncode) {
                         if(returncode == DEFAULT_OPTION) { //Quit
-                            for(Transfer transfer : TransferCollection.instance()) {
+                            for(Transfer transfer : TransferCollection.defaultCollection()) {
                                 if(transfer.isRunning()) {
                                     transfer.interrupt();
                                 }
@@ -553,7 +564,7 @@ public class TransferController extends WindowController implements NSToolbar.De
         this.bandwidthPopup.itemAtIndex(new NSInteger(0)).setImage(IconCache.iconNamed("bandwidth.tiff", 16));
     }
 
-    private void reloadData() {
+    private void reload() {
         while(transferTable.subviews().count().intValue() > 0) {
             (Rococoa.cast(transferTable.subviews().lastObject(), NSView.class)).removeFromSuperviewWithoutNeedingDisplay();
         }
@@ -568,8 +579,7 @@ public class TransferController extends WindowController implements NSToolbar.De
      * @param transfer
      */
     public void removeTransfer(final Transfer transfer) {
-        TransferCollection.instance().remove(transfer);
-        this.reloadData();
+        TransferCollection.defaultCollection().remove(transfer);
     }
 
     /**
@@ -578,9 +588,8 @@ public class TransferController extends WindowController implements NSToolbar.De
      * @param transfer
      */
     public void addTransfer(final Transfer transfer) {
-        TransferCollection.instance().add(transfer);
-        final int row = TransferCollection.instance().size() - 1;
-        this.reloadData();
+        TransferCollection.defaultCollection().add(transfer);
+        final int row = TransferCollection.defaultCollection().size() - 1;
         final NSInteger index = new NSInteger(row);
         transferTable.selectRowIndexes(NSIndexSet.indexSetWithIndex(index), false);
         transferTable.scrollRowToVisible(index);
@@ -599,7 +608,7 @@ public class TransferController extends WindowController implements NSToolbar.De
      * @param reloadRequested
      */
     private void startTransfer(final Transfer transfer, final boolean resumeRequested, final boolean reloadRequested) {
-        if(!TransferCollection.instance().contains(transfer)) {
+        if(!TransferCollection.defaultCollection().contains(transfer)) {
             this.addTransfer(transfer);
         }
         if(Preferences.instance().getBoolean("queue.orderFrontOnStart")) {
@@ -638,7 +647,7 @@ public class TransferController extends WindowController implements NSToolbar.De
 
                     private void badge() {
                         if(Preferences.instance().getBoolean("queue.dock.badge")) {
-                            int count = TransferCollection.instance().numberOfRunningTransfers();
+                            int count = TransferCollection.defaultCollection().numberOfRunningTransfers();
                             if(0 == count) {
                                 NSApplication.sharedApplication().dockTile().setBadgeLabel("");
                             }
@@ -676,13 +685,13 @@ public class TransferController extends WindowController implements NSToolbar.De
                             removeTransfer(transfer);
                         }
                         if(Preferences.instance().getBoolean("queue.orderBackOnStop")) {
-                            if(!(TransferCollection.instance().numberOfRunningTransfers() > 0)) {
+                            if(!(TransferCollection.defaultCollection().numberOfRunningTransfers() > 0)) {
                                 window().close();
                             }
                         }
                     }
                 }
-                TransferCollection.instance().save();
+                TransferCollection.defaultCollection().save();
             }
 
             @Override
@@ -851,8 +860,7 @@ public class TransferController extends WindowController implements NSToolbar.De
             if(pasteboard.isEmpty()) {
                 continue;
             }
-            TransferCollection.instance().add(new DownloadTransfer(pasteboard.copy()));
-            this.reloadData();
+            TransferCollection.defaultCollection().add(new DownloadTransfer(pasteboard.copy()));
             pasteboard.clear();
         }
     }
@@ -988,11 +996,10 @@ public class TransferController extends WindowController implements NSToolbar.De
         for(NSUInteger index = iterator.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = iterator.indexGreaterThanIndex(index)) {
             final Transfer transfer = transfers.get(index.intValue());
             if(!transfer.isRunning()) {
-                TransferCollection.instance().remove(transfer);
+                TransferCollection.defaultCollection().remove(transfer);
             }
         }
-        TransferCollection.instance().save();
-        this.reloadData();
+        TransferCollection.defaultCollection().save();
     }
 
     @Action
@@ -1000,11 +1007,10 @@ public class TransferController extends WindowController implements NSToolbar.De
         final Collection<Transfer> transfers = transferTableModel.getSource();
         for(Transfer transfer : transfers) {
             if(!transfer.isRunning() && transfer.isComplete()) {
-                TransferCollection.instance().remove(transfer);
+                TransferCollection.defaultCollection().remove(transfer);
             }
         }
-        TransferCollection.instance().save();
-        this.reloadData();
+        TransferCollection.defaultCollection().save();
     }
 
     @Action

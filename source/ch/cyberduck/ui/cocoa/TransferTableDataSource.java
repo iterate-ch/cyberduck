@@ -56,7 +56,7 @@ public class TransferTableDataSource extends ListDataSource {
     private final Map<Transfer, ProgressController> controllers = new HashMap<Transfer, ProgressController>();
 
     public TransferTableDataSource() {
-        TransferCollection.instance().addListener(new AbstractCollectionListener<Transfer>() {
+        TransferCollection.defaultCollection().addListener(new AbstractCollectionListener<Transfer>() {
             @Override
             public void collectionItemRemoved(Transfer item) {
                 final ProgressController controller = controllers.remove(item);
@@ -103,9 +103,9 @@ public class TransferTableDataSource extends ListDataSource {
      */
     protected Collection<Transfer> getSource() {
         if(null == filter) {
-            return TransferCollection.instance();
+            return TransferCollection.defaultCollection();
         }
-        Collection<Transfer> filtered = new Collection<Transfer>(TransferCollection.instance());
+        Collection<Transfer> filtered = new Collection<Transfer>(TransferCollection.defaultCollection());
         for(Iterator<Transfer> i = filtered.iterator(); i.hasNext();) {
             if(!filter.accept(i.next())) {
                 //temporarly remove the t from the collection
@@ -198,7 +198,7 @@ public class TransferTableDataSource extends ListDataSource {
             if(pasteboard.isEmpty()) {
                 continue;
             }
-            TransferCollection.instance().add(row.intValue(), new DownloadTransfer(pasteboard.copy()));
+            TransferCollection.defaultCollection().add(row.intValue(), new DownloadTransfer(pasteboard.copy()));
             view.reloadData();
             view.selectRowIndexes(NSIndexSet.indexSetWithIndex(row), false);
             view.scrollRowToVisible(row);
