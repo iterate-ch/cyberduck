@@ -233,8 +233,6 @@
 		47FD44A70801DCE200716715 /* queue.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47FD44A60801DCE200716715 /* queue.tiff */; };
 		47FD45720801ED1D00716715 /* browser.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47FD456E0801ED1C00716715 /* browser.tiff */; };
 		47FD45740801ED1D00716715 /* general.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47FD45700801ED1C00716715 /* general.tiff */; };
-		47FD5CC2125DF8AB0001105C /* CDMenuDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = 47FD5CC0125DF8AB0001105C /* CDMenuDelegate.h */; };
-		47FD5CC3125DF8AB0001105C /* CDMenuDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 47FD5CC1125DF8AB0001105C /* CDMenuDelegate.m */; };
 		47FF630407F34E6100C0BDB9 /* gear.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47FF630307F34E6100C0BDB9 /* gear.tiff */; };
 		47FF75730FD545150068F30C /* libAquaticPrime.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4773D6B00F9C86A7004658BD /* libAquaticPrime.a */; };
 /* End PBXBuildFile section */
@@ -1408,8 +1406,6 @@
 		47FD44A60801DCE200716715 /* queue.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = queue.tiff; sourceTree = "<group>"; };
 		47FD456E0801ED1C00716715 /* browser.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = browser.tiff; sourceTree = "<group>"; };
 		47FD45700801ED1C00716715 /* general.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = general.tiff; sourceTree = "<group>"; };
-		47FD5CC0125DF8AB0001105C /* CDMenuDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CDMenuDelegate.h; path = delegate/CDMenuDelegate.h; sourceTree = "<group>"; };
-		47FD5CC1125DF8AB0001105C /* CDMenuDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CDMenuDelegate.m; path = delegate/CDMenuDelegate.m; sourceTree = "<group>"; };
 		47FF630307F34E6100C0BDB9 /* gear.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = gear.tiff; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -1666,7 +1662,6 @@
 		4741530206C4F08A00AC0BD2 /* cocoa */ = {
 			isa = PBXGroup;
 			children = (
-				47FD5CAE125DF6840001105C /* delegate */,
 				4718C1FE107AA41F006FDEFA /* urlhandler */,
 				47DF9A21102CE43B00DCAD41 /* model */,
 				4798434E072B0DAA00FA3CDB /* view */,
@@ -1977,15 +1972,6 @@
 			path = model;
 			sourceTree = "<group>";
 		};
-		47FD5CAE125DF6840001105C /* delegate */ = {
-			isa = PBXGroup;
-			children = (
-				47FD5CC0125DF8AB0001105C /* CDMenuDelegate.h */,
-				47FD5CC1125DF8AB0001105C /* CDMenuDelegate.m */,
-			);
-			name = delegate;
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -2060,7 +2046,6 @@
 				475286C510D2CC660029363C /* CDOutlineCell.h in Headers */,
 				475286C610D2CC660029363C /* CDOutlineView.h in Headers */,
 				47BE1F8B12369DF100E758FE /* CDTransmitImporter.h in Headers */,
-				47FD5CC2125DF8AB0001105C /* CDMenuDelegate.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2744,7 +2729,6 @@
 				475286CD10D2CC660029363C /* CDOutlineCell.m in Sources */,
 				475286CE10D2CC660029363C /* CDOutlineView.m in Sources */,
 				47BE1F8C12369DF100E758FE /* CDTransmitImporter.m in Sources */,
-				47FD5CC3125DF8AB0001105C /* CDMenuDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
