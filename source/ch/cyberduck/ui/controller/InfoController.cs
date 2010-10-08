@@ -151,35 +151,68 @@ namespace Ch.Cyberduck.Ui.Controller
             bool anonymous = session.getHost().getCredentials().isAnonymousLogin();
 
             View.ToolbarDistributionImage = IconCache.Instance.GetProtocolImages(32).Images[
-                session.getHost().getProtocol().disk()];
+                session.getHost().getProtocol().getIdentifier()];
 
             if (session is S3Session)
             {
                 // Set icon of cloud service provider
                 View.ToolbarS3Label = session.getHost().getProtocol().getName();
                 View.ToolbarS3Image = IconCache.Instance.GetProtocolImages(32).Images[
-                    session.getHost().getProtocol().disk()];
+                    session.getHost().getProtocol().getIdentifier()];
             }
             else
             {
                 // Currently these settings are only available for Amazon S3
-                View.ToolbarS3Label = Protocol.S3.getName();
-                View.ToolbarS3Image = IconCache.Instance.GetProtocolImages(32).Images[Protocol.S3.disk()];
+                View.ToolbarS3Label = Protocol.S3_SSL.getName();
+                View.ToolbarS3Image = IconCache.Instance.GetProtocolImages(32).Images[Protocol.S3_SSL.getIdentifier()];
             }
 
             //ACL or permission view
             View.AclPanel = session.isAclSupported();
 
-            // Anonymous never has the right to update permissions
-            View.ToolbarPermissionsEnabled = anonymous
-                                                 ? false
-                                                 : session.isAclSupported() || session.isUnixPermissionsSupported();
-            View.ToolbarDistributionEnabled = anonymous || !(session is CloudSession)
-                                                  ? false
-                                                  : ((CloudSession) session).getSupportedDistributionMethods().size() >
-                                                    0;
-            View.ToolbarS3Enabled = session is S3Session ? !anonymous : false;
-            View.ToolbarMetadataEnabled = session is CloudSession ? !anonymous : false;
+            if(anonymous) {
+                // Anonymous never has the right to update permissions
+                View.ToolbarPermissionsEnabled = false;
+            }
+            else {
+                View.ToolbarPermissionsEnabled = session.isAclSupported() || session.isUnixPermissionsSupported();
+            }
+
+            if (anonymous) {
+                View.ToolbarDistributionEnabled = false;
+            }
+            else {
+                if(session is CloudSession) {
+                    View.ToolbarDistributionEnabled = ((CloudSession)session).getSupportedDistributionMethods().size() > 0;
+                }
+                else {
+                    View.ToolbarDistributionEnabled = false;
+                }
+            }
+
+            if (anonymous) {
+                View.ToolbarS3Enabled = false;
+            }
+            else {
+                if (session is S3Session)
+                {
+                    View.ToolbarS3Enabled = ((S3Session)session).isBucketLocationSupported();
+                }
+                else
+                {
+                    View.ToolbarS3Enabled = false;
+                }
+            }
+
+            if (anonymous)
+            {
+                // Anonymous never has the right to update permissions
+                View.ToolbarMetadataEnabled = false;
+            }
+            else
+            {
+                View.ToolbarMetadataEnabled = session is CloudSession;
+            }
         }
 
         /// <summary>
