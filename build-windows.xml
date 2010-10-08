@@ -104,8 +104,6 @@
                 <contains>Warning IKVMC0107: skipping resource (name clash): "META-INF/</contains>
                 <contains>Warning IKVMC0111: emitted java.lang.NoClassDefFoundError in "ch.cyberduck.core.Native
                 </contains>
-                <contains>Warning IKVMC0111: emitted java.lang.NoClassDefFoundError in "ch.cyberduck.core.Rendezvous
-                </contains>
                 <contains>org.apache.commons.cli</contains>
                 <contains>ch.cyberduck.ui.cocoa</contains>
                 <contains>org.apache.avalon</contains>
