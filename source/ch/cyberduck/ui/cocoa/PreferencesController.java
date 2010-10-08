@@ -1612,6 +1612,23 @@ public class PreferencesController extends ToolbarWindowController {
     }
 
     @Outlet
+    private NSButton uploadTemporaryFilenameButton;
+
+    public void setUploadTemporaryFilenameButton(NSButton b) {
+        this.uploadTemporaryFilenameButton = b;
+        this.uploadTemporaryFilenameButton.setTarget(this.id());
+        this.uploadTemporaryFilenameButton.setAction(Foundation.selector("uploadTemporaryFilenameButtonClicked:"));
+        this.uploadTemporaryFilenameButton.setState(
+                Preferences.instance().getBoolean("queue.upload.file.temporary") ? NSCell.NSOnState : NSCell.NSOffState);
+    }
+
+    @Action
+    public void uploadTemporaryFilenameButtonClicked(final NSButton sender) {
+        boolean enabled = sender.state() == NSCell.NSOnState;
+        Preferences.instance().setProperty("queue.upload.file.temporary", enabled);
+    }
+    
+    @Outlet
     private NSPopUpButton lineEndingCombobox;
 
     public void setLineEndingCombobox(NSPopUpButton b) {

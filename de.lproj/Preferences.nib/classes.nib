@@ -99,6 +99,7 @@
         uploadSkipButton = NSButton;
         uploadSkipRegexDefaultButton = NSButton;
         uploadSkipRegexField = NSTextView;
+        uploadTemporaryFilenameButton = NSButton;
         useProxiesButton = NSButton;
         verticalLinesCheckbox = NSButton;
         window = NSWindow;

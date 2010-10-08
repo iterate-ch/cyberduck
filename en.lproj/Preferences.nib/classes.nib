@@ -229,6 +229,8 @@
 				<string>NSButton</string>
 				<key>uploadSkipRegexField</key>
 				<string>NSTextView</string>
+				<key>uploadTemporaryFilenameButton</key>
+				<string>NSButton</string>
 				<key>useProxiesButton</key>
 				<string>NSButton</string>
 				<key>verticalLinesCheckbox</key>
