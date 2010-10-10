@@ -85,26 +85,6 @@ public class Collection<E> extends ArrayList<E> implements CollectionListener<E>
     }
 
     @Override
-    public E get(int row) {
-        return super.get(row);
-    }
-
-    @Override
-    public Iterator<E> iterator() {
-        return super.iterator();
-    }
-
-    @Override
-    public int size() {
-        return super.size();
-    }
-
-    @Override
-    public boolean contains(Object o) {
-        return super.contains(o);
-    }
-
-    @Override
     public void clear() {
         for(Iterator<E> iter = this.iterator(); iter.hasNext();) {
             E next = iter.next();
