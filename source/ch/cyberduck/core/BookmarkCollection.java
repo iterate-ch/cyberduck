@@ -93,7 +93,8 @@ public class BookmarkCollection extends AbstractHostCollection {
      */
     @Override
     public boolean add(Host host) {
-        this.add(this.size(), host);
+        super.add(host);
+        this.save();
         return true;
     }
 
@@ -105,7 +106,6 @@ public class BookmarkCollection extends AbstractHostCollection {
     @Override
     public void add(int row, Host host) {
         super.add(row, host);
-        this.sort();
         this.save();
     }
 
@@ -127,9 +127,7 @@ public class BookmarkCollection extends AbstractHostCollection {
         return found;
     }
 
-    protected void sort() {
-        //
-    }
+    private boolean locked = true;
 
     /**
      * Saves this collection of bookmarks in to a file to the users's application support directory
@@ -137,6 +135,10 @@ public class BookmarkCollection extends AbstractHostCollection {
      */
     @Override
     public void save() {
+        if(locked) {
+            log.debug("Do not write locked collection");
+            return;
+        }
         if(Preferences.instance().getBoolean("favorites.save")) {
             log.info("Saving Bookmarks file: " + file.getAbsolute());
             HostWriterFactory.instance().write(this, file);
@@ -151,7 +153,7 @@ public class BookmarkCollection extends AbstractHostCollection {
         if(file.exists()) {
             log.info("Found Bookmarks file: " + file.getAbsolute());
             this.addAll(HostReaderFactory.instance().readCollection(file));
-            this.sort();
         }
+        locked = false;
     }
 }

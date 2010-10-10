@@ -30,7 +30,7 @@ import java.util.Comparator;
 /**
  * @version $Id$
  */
-public class HistoryCollection extends BookmarkCollection {
+public class HistoryCollection extends AbstractHostCollection {
     private static Logger log = Logger.getLogger(HistoryCollection.class);
 
     private static HistoryCollection HISTORY_COLLECTION = new HistoryCollection(
@@ -44,19 +44,20 @@ public class HistoryCollection extends BookmarkCollection {
         return HISTORY_COLLECTION;
     }
 
+    private Local folder;
+
     /**
      * Reading bookmarks from this folder
      *
-     * @param folder Parent directory to look for bookmarks
+     * @param f Parent directory to look for bookmarks
      */
-    public HistoryCollection(Local folder) {
-        super(folder);
+    public HistoryCollection(Local f) {
+        this.folder = f;
+        this.folder.mkdir(true);
     }
 
-    @Override
-    protected void setFile(Local folder) {
-        super.setFile(folder);
-        folder.mkdir(true);
+    public void open() {
+        this.folder.open();
     }
 
     /**
@@ -64,7 +65,7 @@ public class HistoryCollection extends BookmarkCollection {
      * @return
      */
     public Local getFile(Host bookmark) {
-        return LocalFactory.createLocal(file, bookmark.getNickname() + ".duck");
+        return LocalFactory.createLocal(folder, bookmark.getNickname() + ".duck");
     }
 
     @Override
@@ -90,8 +91,8 @@ public class HistoryCollection extends BookmarkCollection {
 
     @Override
     public void load() {
-        log.info("Reloading " + file);
-        final AttributedList<Local> bookmarks = file.children(
+        log.info("Reloading:" + folder);
+        final AttributedList<Local> bookmarks = folder.children(
                 new PathFilter<Local>() {
                     public boolean accept(Local file) {
                         return file.getName().endsWith(".duck");
@@ -100,8 +101,9 @@ public class HistoryCollection extends BookmarkCollection {
         );
         final Reader<Host> reader = HostReaderFactory.instance();
         for(Local next : bookmarks) {
-            super.add(this.size(), reader.read(next));
+            super.add(reader.read(next));
         }
+        this.sort();
     }
 
     @Override
@@ -123,7 +125,7 @@ public class HistoryCollection extends BookmarkCollection {
 
     @Override
     public void clear() {
-        log.debug("Removing all bookmarks from " + file);
+        log.debug("Removing all bookmarks from:" + folder);
         for(Host next : this) {
             this.getFile(next).delete(false);
         }
