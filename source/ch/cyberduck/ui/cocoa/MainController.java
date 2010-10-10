@@ -307,7 +307,7 @@ public class MainController extends BundleController implements NSApplication.De
 
     @Action
     public void historyMenuClicked(NSMenuItem sender) {
-        HistoryCollection.defaultCollection().getFile().open();
+        HistoryCollection.defaultCollection().open();
     }
 
     @Action

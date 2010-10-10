@@ -18,17 +18,18 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import org.apache.log4j.Logger;
+
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @version $Id$
  */
 public abstract class AbstractHostCollection extends Collection<Host> {
+    private static Logger log = Logger.getLogger(AbstractHostCollection.class);
 
     private static final AbstractHostCollection EMPTY = new AbstractHostCollection() {
-        @Override
-        public void save() {
-            ;
-        }
-
         @Override
         public void load() {
             ;
@@ -47,13 +48,54 @@ public abstract class AbstractHostCollection extends Collection<Host> {
         super(c);
     }
 
+    @Override
+    public boolean addAll(java.util.Collection<? extends Host> c) {
+        List<Host> temporary = new ArrayList<Host>();
+        for(Host host : c) {
+            if(temporary.contains(host)) {
+                log.warn("Reset UUID of duplicate in collection:" + host);
+                host.setUuid(null);
+            }
+            temporary.add(host);
+        }
+        boolean result = super.addAll(temporary);
+        this.sort();
+        return result;
+    }
+
+    @Override
+    public boolean add(Host host) {
+        if(this.contains(host)) {
+            log.warn("Reset UUID of duplicate in collection:" + host);
+            host.setUuid(null);
+        }
+        boolean result = super.add(host);
+        this.sort();
+        return result;
+    }
+
+    @Override
+    public void add(int row, Host host) {
+        if(this.contains(host)) {
+            log.warn("Reset UUID of duplicate in collection:" + host);
+            host.setUuid(null);
+        }
+        super.add(row, host);
+        this.sort();
+    }
+
+    protected void sort() {
+        ;//
+    }
+
     /**
      * Lookup bookmark by UUID
+     *
      * @param uuid Identifier of bookmark
      * @return Null if not found
      */
     public Host lookup(String uuid) {
-        for(Host bookmark: this) {
+        for(Host bookmark : this) {
             if(bookmark.getUuid().equals(uuid)) {
                 return bookmark;
             }
@@ -88,7 +130,9 @@ public abstract class AbstractHostCollection extends Collection<Host> {
         return true;
     }
 
-    public abstract void save();
+    public void save() {
+        ; // Not persistent by default
+    }
 
     public abstract void load();
 }

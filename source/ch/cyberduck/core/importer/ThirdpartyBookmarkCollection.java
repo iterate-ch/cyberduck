@@ -57,11 +57,6 @@ public abstract class ThirdpartyBookmarkCollection extends AbstractHostCollectio
 
     protected abstract void parse(Local file);
 
-    @Override
-    public void save() {
-        throw new UnsupportedOperationException("Should not attempt to write to thirdparty bookmark collection");
-    }
-
     public String getName() {
         return EditorFactory.getApplicationName(this.getBundleIdentifier());
     }
