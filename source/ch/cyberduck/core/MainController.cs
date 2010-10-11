@@ -110,14 +110,10 @@ namespace Ch.Cyberduck.Core
             Startup += ApplicationDidFinishLaunching;
             Shutdown += delegate
                             {
-                                //Terminating rendezvous discovery
-                                RendezvousFactory.instance().quit();
-
-                                Preferences.instance().setProperty("uses",
-                                                                   Preferences.
-                                                                       instance().
-                                                                       getInteger("uses") +
-                                                                   1);
+                                if(Preferences.instance().getBoolean("rendezvous.enable")) {
+                                    RendezvousFactory.instance().quit();
+                                }
+                                Preferences.instance().setProperty("uses", Preferences.instance().getInteger("uses") + 1);
                                 // Shutdown thread pools
                                 AbstractController.getTimerPool().shutdownNow();
                                 ThreadPool.instance().shutdown();
