@@ -110,6 +110,9 @@ namespace Ch.Cyberduck.Core
             Startup += ApplicationDidFinishLaunching;
             Shutdown += delegate
                             {
+                                //Terminating rendezvous discovery
+                                RendezvousFactory.instance().quit();
+
                                 Preferences.instance().setProperty("uses",
                                                                    Preferences.
                                                                        instance().
@@ -191,6 +194,7 @@ namespace Ch.Cyberduck.Core
             LoginController.Register();
             HostKeyController.Register();
             UserDefaultsDateFormatter.Register();
+            Rendezvous.Register();
         }
 
         private static void LoadCollections()
@@ -326,7 +330,10 @@ namespace Ch.Cyberduck.Core
             //Registering for Growl is an expensive operation. Takes up to 500ms on my machine.
             _bc.Background(delegate { ch.cyberduck.ui.growl.Growl.instance().register(); }, delegate { });
 
-            //todo add Bonjour initialization stuff            
+            // Bonjour initialization
+            if(Preferences.instance().getBoolean("rendezvous.enable")) {
+                 RendezvousFactory.instance().init();
+            }
 
             // Import thirdparty bookmarks.
             foreach (ThirdpartyBookmarkCollection c in GetThirdpartyBookmarks())
