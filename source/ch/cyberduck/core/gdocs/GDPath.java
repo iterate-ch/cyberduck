@@ -287,8 +287,9 @@ public class GDPath extends Path {
                 AclRole role = entry.getRole();
                 if(type.equals(AclScope.Type.USER)) {
                     // Only editable if not owner of document. Changing owner is not supported.
-                    acl.addAll(new Acl.EmailUser(scope.getValue(), !role.getValue().equals(AclRole.OWNER.getValue())),
-                            new Acl.Role(role.getValue()));
+                    boolean editable = !role.getValue().equals(AclRole.OWNER.getValue());
+                    acl.addAll(new Acl.EmailUser(scope.getValue(), editable),
+                            new Acl.Role(role.getValue(), editable));
                 }
                 else if(type.equals(AclScope.Type.DOMAIN)) {
                     // Google Apps Domain grant.

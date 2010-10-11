@@ -317,9 +317,15 @@ public class Acl extends HashMap<Acl.User, Set<Acl.Role>> {
      */
     public static class Role implements Comparable<Role> {
         private String name;
+        private boolean editable;
 
         public Role(String name) {
+            this(name, true);
+        }
+
+        public Role(String name, boolean editable) {
             this.name = name;
+            this.editable = editable;
         }
 
         public String getName() {
@@ -336,6 +342,10 @@ public class Acl extends HashMap<Acl.User, Set<Acl.Role>> {
 
         public boolean isValid() {
             return StringUtils.isNotBlank(this.getName());
+        }
+
+        public boolean isEditable() {
+            return editable;
         }
 
         @Override
