@@ -565,6 +565,14 @@ public class InfoController extends ToolbarWindowController {
                     // Group Grantee identifier is not editable
                     return false;
                 }
+                if(column.identifier().equals(HEADER_ACL_PERMISSION_COLUMN)) {
+                    final Acl.UserAndRole grant = acl.get(row);
+                    if(grant.getRole().isEditable()) {
+                        return true;
+                    }
+                    // Static role that cannot be modified
+                    return false;
+                }
                 return true;
             }
 
@@ -1898,9 +1906,9 @@ public class InfoController extends ToolbarWindowController {
         this.setAcl(Collections.<Acl.UserAndRole>emptyList());
         aclUrlField.setStringValue(Locale.localizedString("None"));
         if(this.toggleAclSettings(false)) {
-            this.aclPermissionCellPrototype.removeAllItems();
+            aclPermissionCellPrototype.removeAllItems();
             for(Acl.Role permission : controller.getSession().getAvailableAclRoles(files)) {
-                this.aclPermissionCellPrototype.addItemWithObjectValue(NSString.stringWithString(permission.getName()));
+                aclPermissionCellPrototype.addItemWithObjectValue(NSString.stringWithString(permission.getName()));
             }
             if(this.numberOfFiles() > 1) {
                 aclUrlField.setStringValue("(" + Locale.localizedString("Multiple files") + ")");
