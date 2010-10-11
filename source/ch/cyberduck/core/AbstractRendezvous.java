@@ -23,10 +23,7 @@ import ch.cyberduck.core.i18n.Locale;
 
 import org.apache.log4j.Logger;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class AbstractRendezvous {
@@ -139,6 +136,10 @@ public abstract class AbstractRendezvous {
 
     public Host getService(int index) {
         return services.values().toArray(new Host[services.size()])[index];
+    }
+
+    public Iterator<Host> iterator() {
+        return services.values().iterator();
     }
 
     /**

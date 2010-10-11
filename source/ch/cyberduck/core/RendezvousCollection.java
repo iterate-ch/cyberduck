@@ -19,6 +19,8 @@ package ch.cyberduck.core;
  * dkocher@cyberduck.ch
  */
 
+import java.util.Iterator;
+
 /**
  * @version $Id$
  */
@@ -69,6 +71,11 @@ public class RendezvousCollection extends AbstractHostCollection {
             content[i] = host;
         }
         return content;
+    }
+
+    @Override
+    public Iterator<Host> iterator() {
+        return RendezvousFactory.instance().iterator();
     }
 
     @Override
