@@ -77,6 +77,18 @@ public class Acl extends HashMap<Acl.User, Set<Acl.Role>> {
         return grants;
     }
 
+    public boolean isModified() {
+        for(UserAndRole ua: this.asList()) {
+            if(ua.getUser().isModified()) {
+                return true;
+            }
+            if(ua.getRole().isModified()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public static class UserAndRole implements Comparable<UserAndRole> {
         private Acl.User user;
         private Acl.Role role;
@@ -125,8 +137,8 @@ public class Acl extends HashMap<Acl.User, Set<Acl.Role>> {
     public static abstract class User implements Comparable<User> {
 
         private String identifier;
-
         private boolean editable;
+        private boolean modified;
 
         public User(String identifier) {
             this(identifier, true);
@@ -166,6 +178,7 @@ public class Acl extends HashMap<Acl.User, Set<Acl.Role>> {
 
         public void setIdentifier(String identifier) {
             this.identifier = identifier;
+            this.modified = true;
         }
 
         public boolean isValid() {
@@ -187,6 +200,10 @@ public class Acl extends HashMap<Acl.User, Set<Acl.Role>> {
 
         public int compareTo(User o) {
             return this.getIdentifier().compareTo(o.getIdentifier());
+        }
+
+        public boolean isModified() {
+            return modified;
         }
     }
 
@@ -318,6 +335,7 @@ public class Acl extends HashMap<Acl.User, Set<Acl.Role>> {
     public static class Role implements Comparable<Role> {
         private String name;
         private boolean editable;
+        private boolean modified;
 
         public Role(String name) {
             this(name, true);
@@ -338,6 +356,7 @@ public class Acl extends HashMap<Acl.User, Set<Acl.Role>> {
 
         public void setName(String name) {
             this.name = name;
+            this.modified = true;
         }
 
         public boolean isValid() {
@@ -368,6 +387,10 @@ public class Acl extends HashMap<Acl.User, Set<Acl.Role>> {
 
         public int compareTo(Role o) {
             return this.getName().compareTo(o.getName());
+        }
+
+        public boolean isModified() {
+            return modified;
         }
     }
 }

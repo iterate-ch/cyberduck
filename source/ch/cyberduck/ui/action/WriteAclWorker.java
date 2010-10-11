@@ -61,11 +61,18 @@ public abstract class WriteAclWorker extends Worker<Acl> {
             if(!next.getSession().isConnected()) {
                 break;
             }
-            if(acl.equals(next.attributes().getAcl())) {
-                log.info("Skip writing equal ACL for " + next);
-                return acl;
+            if(acl.isModified()) {
+                // Existing entry has been modified
+                next.writeAcl(acl, recursive);
             }
-            next.writeAcl(acl, recursive);
+            else {
+                if(acl.equals(next.attributes().getAcl())) {
+                    log.info("Skip writing equal ACL for " + next);
+                    return acl;
+                }
+                // Additional entry added
+                next.writeAcl(acl, recursive);
+            }
         }
         return acl;
     }
