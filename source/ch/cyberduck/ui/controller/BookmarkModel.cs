@@ -85,10 +85,7 @@ namespace Ch.Cyberduck.Ui.Controller
         public object GetBookmarkImage(object host)
         {
             Host h = (Host) host;
-            return
-                IconCache.Instance.GetProtocolImages(64).Images[
-                    h.getProtocol().getIdentifier()
-                    ];
+            return IconCache.Instance.GetProtocolImages(64).Images[h.getProtocol().getIdentifier()];
         }
 
         public object GetHostname(object host)
