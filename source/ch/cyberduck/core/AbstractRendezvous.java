@@ -180,23 +180,24 @@ public abstract class AbstractRendezvous {
 
 
     /**
-     * @param serviceType
+     * @param fullname
      * @return Null if no protocol can be found for the given Rendezvous service type.
      * @see "http://developer.apple.com/qa/qa2001/qa1312.html"
      */
-    public Protocol getProtocol(final String serviceType, final int port) {
-        if(serviceType.contains(SERVICE_TYPE_SFTP)) {
+    public Protocol getProtocol(final String fullname, final int port) {
+        if(fullname.contains(SERVICE_TYPE_SFTP)) {
             return Protocol.SFTP;
         }
-        if(serviceType.contains(SERVICE_TYPE_FTP)) {
+        if(fullname.contains(SERVICE_TYPE_FTP)) {
             return Protocol.FTP;
         }
-        if(serviceType.contains(SERVICE_TYPE_WEBDAV)) {
+        if(fullname.contains(SERVICE_TYPE_WEBDAV)) {
             return Protocol.WEBDAV;
         }
-        if(serviceType.contains(SERVICE_TYPE_WEBDAV_TLS)) {
+        if(fullname.contains(SERVICE_TYPE_WEBDAV_TLS)) {
             return Protocol.WEBDAV_SSL;
         }
+        log.warn("Cannot find service type in:" + fullname);
         return null;
     }
 
