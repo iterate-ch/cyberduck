@@ -81,7 +81,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 //Saving state of transfer window
                 Preferences.instance().setProperty("queue.openByDefault", _instance.Visible);
-                if (TransferCollection.instance().numberOfRunningTransfers() > 0)
+                if (TransferCollection.defaultCollection().numberOfRunningTransfers() > 0)
                 {
                     DialogResult result = _instance.MessageBox(Locale.localizedString("Transfer in progress"),
                                                                Locale.localizedString(
@@ -90,9 +90,9 @@ namespace Ch.Cyberduck.Ui.Controller
                                                                eTaskDialogButtons.OKCancel, eSysIcons.Question);
                     if (DialogResult.OK == result) // Quit
                     {
-                        for (int i = 0; i < TransferCollection.instance().size(); i++)
+                        for (int i = 0; i < TransferCollection.defaultCollection().size(); i++)
                         {
-                            Transfer transfer = (Transfer) TransferCollection.instance().get(i);
+                            Transfer transfer = (Transfer) TransferCollection.defaultCollection().get(i);
                             if (transfer.isRunning())
                             {
                                 transfer.interrupt();
@@ -112,7 +112,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private void Init()
         {
             IList<IProgressView> model = new List<IProgressView>();
-            foreach (Transfer transfer in TransferCollection.instance())
+            foreach (Transfer transfer in TransferCollection.defaultCollection())
             {
                 ProgressController progressController = new ProgressController(transfer);
                 model.Add(progressController.View);
@@ -208,7 +208,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 Transfer t = pair.Key;
                 if (!t.isRunning() && t.isComplete())
                 {
-                    TransferCollection.instance().remove(t);
+                    TransferCollection.defaultCollection().remove(t);
                     View.RemoveTransfer(pair.Value.View);
                     toRemove.Add(t);
                 }
@@ -217,7 +217,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 _transferMap.Remove(t);
             }
-            TransferCollection.instance().save();
+            TransferCollection.defaultCollection().save();
         }
 
         private bool View_ValidateRemoveEvent()
@@ -483,12 +483,12 @@ namespace Ch.Cyberduck.Ui.Controller
                 Transfer transfer = GetTransferFromView(progressView);
                 if (!transfer.isRunning())
                 {
-                    TransferCollection.instance().remove(transfer);
+                    TransferCollection.defaultCollection().remove(transfer);
                     _transferMap.Remove(transfer);
                     View.RemoveTransfer(progressView);
                 }
             }
-            TransferCollection.instance().save();
+            TransferCollection.defaultCollection().save();
         }
 
         private void View_StopEvent()
@@ -551,7 +551,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void StartTransfer(Transfer transfer, bool resumeRequested, bool reloadRequested)
         {
-            if (!TransferCollection.instance().contains(transfer))
+            if (!TransferCollection.defaultCollection().contains(transfer))
             {
                 AddTransfer(transfer);
             }
@@ -568,7 +568,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void AddTransfer(Transfer transfer)
         {
-            TransferCollection.instance().add(transfer);
+            TransferCollection.defaultCollection().add(transfer);
             ProgressController progressController = new ProgressController(transfer);
             _transferMap.Add(new KeyValuePair<Transfer, ProgressController>(transfer, progressController));
             IProgressView progressView = progressController.View;
@@ -578,7 +578,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void RemoveTransfer(Transfer transfer)
         {
-            TransferCollection.instance().remove(transfer);
+            TransferCollection.defaultCollection().remove(transfer);
             ProgressController progressController;
             if (_transferMap.TryGetValue(transfer, out progressController))
             {
@@ -664,14 +664,14 @@ namespace Ch.Cyberduck.Ui.Controller
                         }
                         if (Preferences.instance().getBoolean("queue.orderBackOnStop"))
                         {
-                            if (!(TransferCollection.instance().numberOfRunningTransfers() > 0))
+                            if (!(TransferCollection.defaultCollection().numberOfRunningTransfers() > 0))
                             {
                                 _controller.View.Close();
                             }
                         }
                     }
                 }
-                TransferCollection.instance().save();
+                TransferCollection.defaultCollection().save();
             }
 
             protected override Session getSession()
@@ -732,7 +732,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     if (Preferences.instance().getBoolean("queue.dock.badge"))
                     {
-                        int count = TransferCollection.instance().numberOfRunningTransfers();
+                        int count = TransferCollection.defaultCollection().numberOfRunningTransfers();
                         if (0 == count)
                         {
                             _controller.Invoke(delegate { _controller.View.TaskbarBadge(null); });
