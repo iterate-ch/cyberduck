@@ -1627,7 +1627,7 @@ public class PreferencesController extends ToolbarWindowController {
         boolean enabled = sender.state() == NSCell.NSOnState;
         Preferences.instance().setProperty("queue.upload.file.temporary", enabled);
     }
-    
+
     @Outlet
     private NSPopUpButton lineEndingCombobox;
 
@@ -1779,7 +1779,6 @@ public class PreferencesController extends ToolbarWindowController {
      * FTPS Data Channel Security
      *
      * @param b
-     *
      */
     public void setFailInsecureDataChannelCheckbox(NSButton b) {
         this.failInsecureDataChannelCheckbox = b;
@@ -1866,10 +1865,9 @@ public class PreferencesController extends ToolbarWindowController {
 
     @Action
     public void defaultFTPHandlerComboboxClicked(NSPopUpButton sender) {
-        final Protocol protocol = Protocol.forName(sender.selectedItem().representedObject());
+        String bundle = sender.selectedItem().representedObject();
         URLSchemeHandlerConfiguration.instance().setDefaultHandlerForURLScheme(
-                new String[]{Protocol.FTP.getScheme(), Protocol.FTP_TLS.getScheme()}, protocol.getIdentifier()
-        );
+                new String[]{Protocol.FTP.getScheme(), Protocol.FTP_TLS.getScheme()}, bundle);
     }
 
     @Outlet
@@ -1890,8 +1888,9 @@ public class PreferencesController extends ToolbarWindowController {
 
     @Action
     public void defaultSFTPHandlerComboboxClicked(NSPopUpButton sender) {
+        String bundle = sender.selectedItem().representedObject();
         URLSchemeHandlerConfiguration.instance().setDefaultHandlerForURLScheme(
-                Protocol.SFTP.getScheme(), sender.selectedItem().representedObject()
+                Protocol.SFTP.getScheme(), bundle
         );
     }
 
