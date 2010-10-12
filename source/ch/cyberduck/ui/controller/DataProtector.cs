@@ -13,16 +13,19 @@
 // GNU General Public License for more details.
 // 
 // Bug fixes, suggestions and comments should be sent to:
-// yves@langisch.ch
+// yves@cyberduck.ch
 // 
 using System;
 using System.Security.Cryptography;
 using System.Text;
+using org.apache.log4j;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
     public class DataProtector
     {
+        private static readonly Logger Log = Logger.getLogger(typeof (DataProtector).Name);
+
         public static string Encrypt(string data)
         {
             try
@@ -33,8 +36,7 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             catch (CryptographicException e)
             {
-                Console.WriteLine("Data was not encrypted. An error occurred.");
-                Console.WriteLine(e.ToString());
+                Log.error("Error while encrypting data.", e);
                 return null;
             }
         }
@@ -49,8 +51,7 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             catch (CryptographicException e)
             {
-                Console.WriteLine("Data was not decrypted. An error occurred.");
-                Console.WriteLine(e.ToString());
+                Log.error("Error while decrypting data.", e);
                 return null;
             }
         }
