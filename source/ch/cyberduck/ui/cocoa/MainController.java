@@ -729,16 +729,18 @@ public class MainController extends BundleController implements NSApplication.De
                             MessageFormat.format(Locale.localizedString("Import {0} Bookmarks", "Configuration"), c.getName()),
                             MessageFormat.format(Locale.localizedString("{0} bookmarks found. Do you want to add these to your bookmarks?", "Configuration"), c.size()),
                             Locale.localizedString("Import", "Configuration"), //default
-                            Locale.localizedString("Don't Ask Again", "Configuration"), //other
+                            null, //other
                             Locale.localizedString("Cancel", "Configuration"));
+                    alert.setShowsSuppressionButton(true);
+                    alert.suppressionButton().setTitle(Locale.localizedString("Don't Ask Again", "Configuration"));
                     alert.setAlertStyle(NSAlert.NSInformationalAlertStyle);
                     int choice = alert.runModal(); //alternate
-                    if(choice == SheetCallback.DEFAULT_OPTION) {
-                        BookmarkCollection.defaultCollection().addAll(c);
-                        // Flag as imported
+                    if(alert.suppressionButton().state() == NSCell.NSOnState) {
+                        // Never show again.
                         Preferences.instance().setProperty(c.getConfiguration(), true);
                     }
-                    if(choice == SheetCallback.ALTERNATE_OPTION) {
+                    if(choice == SheetCallback.DEFAULT_OPTION) {
+                        BookmarkCollection.defaultCollection().addAll(c);
                         // Flag as imported
                         Preferences.instance().setProperty(c.getConfiguration(), true);
                     }
