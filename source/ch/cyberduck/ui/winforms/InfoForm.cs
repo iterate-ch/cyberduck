@@ -67,7 +67,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             whereLinkLabel.Text = String.Empty;
             cnameUrlLinkLabel.Text = String.Empty;
 
-            MaximumSize = new Size(1000, Height);
+            MaximumSize = new Size(1000, Height + 30);
         }
 
         /// <summary>
