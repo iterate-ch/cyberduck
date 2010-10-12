@@ -49,7 +49,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private readonly string _multipleFilesString = "(" + Locale.localizedString("Multiple files") + ")";
         private BindingList<UserAndRoleEntry> _acl = new BindingList<UserAndRoleEntry>();
         private List<Path> _files;
-        private BindingList<CustomHeader> _metadata = new BindingList<CustomHeader>();
+        private BindingList<CustomHeaderEntry> _metadata = new BindingList<CustomHeaderEntry>();
 
         private InfoController(BrowserController controller, List<Path> files)
         {
@@ -138,7 +138,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private Map ConvertMetadataToMap()
         {
             TreeMap map = new TreeMap();
-            foreach (CustomHeader header in _metadata)
+            foreach (CustomHeaderEntry header in _metadata)
             {
                 map.Add(header.Name, header.Value);
             }
@@ -170,33 +170,42 @@ namespace Ch.Cyberduck.Ui.Controller
             //ACL or permission view
             View.AclPanel = session.isAclSupported();
 
-            if(anonymous) {
+            if (anonymous)
+            {
                 // Anonymous never has the right to update permissions
                 View.ToolbarPermissionsEnabled = false;
             }
-            else {
+            else
+            {
                 View.ToolbarPermissionsEnabled = session.isAclSupported() || session.isUnixPermissionsSupported();
             }
 
-            if (anonymous) {
+            if (anonymous)
+            {
                 View.ToolbarDistributionEnabled = false;
             }
-            else {
-                if(session is CloudSession) {
-                    View.ToolbarDistributionEnabled = ((CloudSession)session).getSupportedDistributionMethods().size() > 0;
+            else
+            {
+                if (session is CloudSession)
+                {
+                    View.ToolbarDistributionEnabled =
+                        ((CloudSession) session).getSupportedDistributionMethods().size() > 0;
                 }
-                else {
+                else
+                {
                     View.ToolbarDistributionEnabled = false;
                 }
             }
 
-            if (anonymous) {
+            if (anonymous)
+            {
                 View.ToolbarS3Enabled = false;
             }
-            else {
+            else
+            {
                 if (session is S3Session)
                 {
-                    View.ToolbarS3Enabled = ((S3Session)session).isBucketLocationSupported();
+                    View.ToolbarS3Enabled = ((S3Session) session).isBucketLocationSupported();
                 }
                 else
                 {
@@ -220,7 +229,7 @@ namespace Ch.Cyberduck.Ui.Controller
         /// </summary>
         private void InitMetadata()
         {
-            SetMetadata(new List<CustomHeader>());
+            SetMetadata(new List<CustomHeaderEntry>());
             if (ToggleMetadataSettings(false))
             {
                 _controller.Background(new ReadMetadataBackgroundAction(_controller, this));
@@ -260,11 +269,10 @@ namespace Ch.Cyberduck.Ui.Controller
             return enable;
         }
 
-        private void SetMetadata(IList<CustomHeader> metadata)
+        private void SetMetadata(IList<CustomHeaderEntry> metadata)
         {
-            _metadata = new BindingList<CustomHeader>(metadata);
+            _metadata = new BindingList<CustomHeaderEntry>(metadata);
             View.MetadataDataSource = _metadata;
-
             _metadata.ListChanged += delegate(object sender, ListChangedEventArgs args)
                                          {
                                              switch (args.ListChangedType)
@@ -293,12 +301,20 @@ namespace Ch.Cyberduck.Ui.Controller
                                          };
         }
 
+        private void AddAclEntry(Acl.User user, Acl.Role role)
+        {
+            Log.debug("AddAclItem:" + user.getDisplayName());
+            UserAndRoleEntry entry = new UserAndRoleEntry(user, role);
+            _acl.Add(entry);
+            View.EditAclRow(entry, !user.isEditable());
+        }
+
         /// <summary>
         /// Add new metadata row and selects the name column
         /// </summary>
         private void AddMetadataItem(string name)
         {
-            AddMetadataItem(name, "", false);
+            AddMetadataItem(name, string.Empty, false);
         }
 
         /// <summary>
@@ -318,14 +334,9 @@ namespace Ch.Cyberduck.Ui.Controller
         private void AddMetadataItem(string name, string value, bool selectValue)
         {
             Log.debug("AddMetadataItem:" + name);
-            IList<CustomHeader> l = new List<CustomHeader>();
-            foreach (CustomHeader pair in _metadata)
-            {
-                l.Add(pair);
-            }
-            l.Add(new CustomHeader(name, value));
-            SetMetadata(l);
-            View.EditMetadataRow(name, selectValue);
+            CustomHeaderEntry newHeaderEntry = new CustomHeaderEntry(name, value);
+            _metadata.Add(newHeaderEntry);
+            View.EditMetadataRow(newHeaderEntry, selectValue);
         }
 
         private void PopulateMetadata()
@@ -359,8 +370,8 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void RemoveMetadata()
         {
-            List<CustomHeader> entries = View.SelectedMetadataEntries;
-            foreach (CustomHeader entry in entries)
+            List<CustomHeaderEntry> entries = View.SelectedMetadataEntries;
+            foreach (CustomHeaderEntry entry in entries)
             {
                 _metadata.Remove(entry);
             }
@@ -440,7 +451,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 Acl.User user = (Acl.User) aclUsers.get(i);
                 mapping.Add(user.getPlaceholder(),
-                            () => _acl.Add(new UserAndRoleEntry(user, new Acl.Role(String.Empty))));
+                            () => AddAclEntry(user, new Acl.Role(String.Empty)));
             }
             mapping.Add(Locale.localizedString("Remove"), RemoveAcl);
             View.PopulateAclUsers(mapping);
@@ -464,7 +475,6 @@ namespace Ch.Cyberduck.Ui.Controller
                                     {
                                         switch (args.ListChangedType)
                                         {
-                                                //case ListChangedType.ItemAdded:
                                             case ListChangedType.ItemDeleted:
                                                 if (ToggleAclSettings(false))
                                                 {
@@ -1328,12 +1338,12 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
-        public class CustomHeader
+        public class CustomHeaderEntry : INotifyPropertyChanged
         {
             private string _name;
             private string _value;
 
-            public CustomHeader(string name, string value)
+            public CustomHeaderEntry(string name, string value)
             {
                 _name = name;
                 _value = value;
@@ -1347,6 +1357,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     if (Utils.IsNotBlank(value))
                     {
                         _name = value;
+                        NotifyPropertyChanged("Name");
                     }
                 }
             }
@@ -1359,7 +1370,18 @@ namespace Ch.Cyberduck.Ui.Controller
                     if (Utils.IsNotBlank(value))
                     {
                         _value = value;
+                        NotifyPropertyChanged("Value");
                     }
+                }
+            }
+
+            public event PropertyChangedEventHandler PropertyChanged;
+
+            private void NotifyPropertyChanged(String info)
+            {
+                if (PropertyChanged != null)
+                {
+                    PropertyChanged(this, new PropertyChangedEventArgs(info));
                 }
             }
         }
@@ -1748,11 +1770,11 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     Map updated = (Map) obj;
                     Iterator it = updated.entrySet().iterator();
-                    IList<CustomHeader> metadata = new List<CustomHeader>();
+                    IList<CustomHeaderEntry> metadata = new List<CustomHeaderEntry>();
                     while (it.hasNext())
                     {
                         Map.Entry pair = (Map.Entry) it.next();
-                        metadata.Add(new CustomHeader((string) pair.getKey(), (string) pair.getValue()));
+                        metadata.Add(new CustomHeaderEntry((string) pair.getKey(), (string) pair.getValue()));
                     }
                     _infoController.ToggleMetadataSettings(true);
                     _infoController.SetMetadata(metadata);

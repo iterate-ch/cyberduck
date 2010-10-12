@@ -393,11 +393,26 @@ namespace Ch.Cyberduck.Ui.Winforms
             set { addAclContextMenuStrip.Items[addAclContextMenuStrip.Items.Count - 1].Enabled = value; }
         }
 
-        public void EditMetadataRow(string name, bool selectValue)
+        public void EditAclRow(InfoController.UserAndRoleEntry aclEntry, bool selectRole)
+        {
+            foreach (DataGridViewRow row in aclDataGridView.Rows)
+            {
+                if (row.DataBoundItem == aclEntry)
+                {
+                    aclDataGridView.CurrentCell = selectRole
+                                                      ? row.Cells[AclColumnName.Role.ToString()]
+                                                      : row.Cells[AclColumnName.User.ToString()];
+                    break;
+                }
+            }
+            aclDataGridView.BeginEdit(true);
+        }
+
+        public void EditMetadataRow(InfoController.CustomHeaderEntry headerEntry, bool selectValue)
         {
             foreach (DataGridViewRow row in metadataDataGridView.Rows)
             {
-                if (name.Equals(name))
+                if (row.DataBoundItem == headerEntry)
                 {
                     metadataDataGridView.CurrentCell = selectValue
                                                            ? row.Cells[MetadataColumName.Value.ToString()]
@@ -716,7 +731,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             set { metadataAnimation.Visible = value; }
         }
 
-        public BindingList<InfoController.CustomHeader> MetadataDataSource
+        public BindingList<InfoController.CustomHeaderEntry> MetadataDataSource
         {
             set { metadataDataGridView.DataSource = value; }
         }
@@ -743,15 +758,15 @@ namespace Ch.Cyberduck.Ui.Winforms
             addMetadataContextMenuStrip.Items.AddRange(items);
         }
 
-        public List<InfoController.CustomHeader> SelectedMetadataEntries
+        public List<InfoController.CustomHeaderEntry> SelectedMetadataEntries
         {
             get
             {
-                List<InfoController.CustomHeader> selected = new List<InfoController.CustomHeader>();
+                List<InfoController.CustomHeaderEntry> selected = new List<InfoController.CustomHeaderEntry>();
                 DataGridViewSelectedRowCollection rows = metadataDataGridView.SelectedRows;
                 foreach (DataGridViewRow row in rows)
                 {
-                    selected.Add((InfoController.CustomHeader) row.DataBoundItem);
+                    selected.Add((InfoController.CustomHeaderEntry) row.DataBoundItem);
                 }
                 return selected;
             }

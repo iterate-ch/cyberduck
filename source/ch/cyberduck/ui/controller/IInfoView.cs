@@ -93,8 +93,8 @@ namespace Ch.Cyberduck.Ui.Controller
         bool MetadataRemoveEnabled { set; }
         bool MetadataAnimationActive { set; }
 
-        BindingList<InfoController.CustomHeader> MetadataDataSource { set; }
-        List<InfoController.CustomHeader> SelectedMetadataEntries { get; }
+        BindingList<InfoController.CustomHeaderEntry> MetadataDataSource { set; }
+        List<InfoController.CustomHeaderEntry> SelectedMetadataEntries { get; }
 
         Distribution.Method DistributionDeliveryMethod { set; get; }
         bool DistributionDeliveryMethodEnabled { set; }
@@ -152,7 +152,8 @@ namespace Ch.Cyberduck.Ui.Controller
         void PopulateAclUsers(IDictionary<string, AsyncController.SyncDelegate> users);
         void PopulateAclRoles(IList<string> roles);
         void PopulateMetadata(IDictionary<string, AsyncController.SyncDelegate> metadata);
-        void EditMetadataRow(string name, bool selectValue);
+        void EditAclRow(InfoController.UserAndRoleEntry aclEntry, bool selectRole);
+        void EditMetadataRow(InfoController.CustomHeaderEntry headerEntry, bool selectValue);
         void PopulateDistributionDeliveryMethod(IList<KeyValuePair<string, Distribution.Method>> methods);
         void PopulateDefaultRoot(IList<string> roots);
 
