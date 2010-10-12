@@ -153,7 +153,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.ackButton.Name = "ackButton";
             this.ackButton.Size = new System.Drawing.Size(122, 25);
             this.ackButton.TabIndex = 23;
-            this.ackButton.Text = "Acknowledgements";
+            this.ackButton.Text = "Acknowledgments";
             this.ackButton.UseVisualStyleBackColor = true;
             // 
             // AboutBox
