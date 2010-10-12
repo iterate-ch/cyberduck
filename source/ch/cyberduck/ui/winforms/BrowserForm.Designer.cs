@@ -1147,7 +1147,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.toolBar.Stretch = true;
             this.toolBar.TabIndex = 13;
             this.toolBar.Text = "toolStrip1";
-            this.toolBar.LayoutCompleted += new System.EventHandler(this.toolBar_LayoutCompleted);
             // 
             // openConnectionToolStripButton
             // 

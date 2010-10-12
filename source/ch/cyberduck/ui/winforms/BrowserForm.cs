@@ -31,6 +31,7 @@ using ch.cyberduck.ui.controller;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Winforms.Commondialog;
 using Ch.Cyberduck.Ui.Winforms.Controls;
+using org.apache.log4j;
 using DataObject = System.Windows.Forms.DataObject;
 
 namespace Ch.Cyberduck.Ui.Winforms
@@ -38,9 +39,11 @@ namespace Ch.Cyberduck.Ui.Winforms
     public partial class BrowserForm : BaseForm, IBrowserView
     {
         private static readonly Font FixedFont = new Font(FontFamily.GenericMonospace, 8);
+        private static readonly Logger Log = Logger.getLogger(typeof (BrowserForm).Name);
         private BrowserView _currentView;
         private bool _lastActivityRunning;
         private ToolStripMenuItem _lastMenuItemClicked;
+        private bool browserStateRestored;
 
         public BrowserForm()
         {
@@ -51,13 +54,6 @@ namespace Ch.Cyberduck.Ui.Winforms
                 bonjourCheckBox.Image = IconCache.Instance.IconForName("rendezvous", 16);
                 newFolderToolStripButton.Image = IconCache.Instance.IconForName("newfolder", 32);
             }
-
-            Load += delegate
-                        {
-                            Size preferredSize = disconnectStripButton.GetPreferredSize(Size.Empty);
-                            disconnectStripButton.AutoSize = false;
-                            disconnectStripButton.Width = preferredSize.Width;
-                        };
 
             ConfigureToolbar();
 
@@ -82,6 +78,16 @@ namespace Ch.Cyberduck.Ui.Winforms
             browser.TreeColumnRenderer = new BrowserRenderer();
             browser.SelectedRowDecoration = new ExplorerRowBorderDecoration();
             browser.ItemsChanged += (sender, args) => ItemsChanged();
+
+            Closed += delegate
+                          {
+                              //we save the state of the last browser form
+                              //this might be improved by some other logic
+                              if (MainController.Browsers.Count == 1)
+                              {
+                                  SaveUiSettings();
+                              }
+                          };
 
             searchTextBox.PlaceHolderText = Locale.localizedString("Search…", "Main");
 
@@ -125,11 +131,10 @@ namespace Ch.Cyberduck.Ui.Winforms
             // restore additional UI settings
             Load += delegate
                         {
-                            byte[] state = PersistenceHandler.Get<byte[]>("Tree.State", null);
-                            if (null != state)
-                            {
-                                browser.RestoreState(state);
-                            }
+                            //correct width for disconnect button
+                            Size preferredSize = disconnectStripButton.GetPreferredSize(Size.Empty);
+                            disconnectStripButton.AutoSize = false;
+                            disconnectStripButton.Width = preferredSize.Width;
                             splitContainer.SplitterDistance = PersistenceHandler.Get("Splitter.Distance", 400);
                         };
         }
@@ -441,6 +446,22 @@ namespace Ch.Cyberduck.Ui.Winforms
             // Clear the cache in order to avoid strange side effects                                                                        
             browser.ClearCachedInfo();
             browser.SetObjects(model);
+
+            //only restore the state for the first time
+            if (null!= model && !browserStateRestored)
+            {
+                byte[] state = PersistenceHandler.Get<byte[]>("Tree.State", null);
+                if (null != state)
+                {
+                    browser.RestoreState(state);
+                }
+                else
+                {
+                    //by default we sort ascending by filename
+                    browser.Sort(0);
+                }
+                browserStateRestored = true;
+            }
         }
 
         public void RefreshBrowserObject(TreePathReference path)
@@ -1323,16 +1344,21 @@ namespace Ch.Cyberduck.Ui.Winforms
                                  infoContextToolStripMenuItem.ShortcutKeys = infoToolStripMenuItem.ShortcutKeys;
                                  editContextToolStripMenuItem.ShortcutKeys = editWithToolStripMenuItem.ShortcutKeys;
                                  downloadContextToolStripMenuItem.ShortcutKeys = downloadToolStripMenuItem.ShortcutKeys;
-                                 downloadAsContextToolStripMenuItem.ShortcutKeys = downloadAsToolStripMenuItem.ShortcutKeys;
+                                 downloadAsContextToolStripMenuItem.ShortcutKeys =
+                                     downloadAsToolStripMenuItem.ShortcutKeys;
                                  deleteContextToolStripMenuItem.ShortcutKeys = Keys.Delete;
                                  deleteContextToolStripMenuItem.ShortcutKeys = deleteToolStripMenuItem.ShortcutKeys;
-                                 duplicateFileContextToolStripMenuItem.ShortcutKeys = duplicateFileToolStripMenuItem.ShortcutKeys;
+                                 duplicateFileContextToolStripMenuItem.ShortcutKeys =
+                                     duplicateFileToolStripMenuItem.ShortcutKeys;
                                  uploadContextToolStripMenuItem.ShortcutKeys = uploadToolStripMenuItem.ShortcutKeys;
-                                 newFolderContextToolStripMenuItem.ShortcutKeys = newFolderToolStripMenuItem.ShortcutKeys;
+                                 newFolderContextToolStripMenuItem.ShortcutKeys =
+                                     newFolderToolStripMenuItem.ShortcutKeys;
                                  newFileContextToolStripMenuItem.ShortcutKeys = newFileToolStripMenuItem.ShortcutKeys;
                                  copyURLContextToolStripMenuItem.ShortcutKeys = copyURLToolStripMenuItem.ShortcutKeys;
-                                 openWebURLContextToolStripMenuItem.ShortcutKeys = openWebURLToolStripMenuItem.ShortcutKeys;
-                                 newBookmarkContextToolStripMenuItem.ShortcutKeys = newBookmarkToolStripMenuItem.ShortcutKeys;                                 
+                                 openWebURLContextToolStripMenuItem.ShortcutKeys =
+                                     openWebURLToolStripMenuItem.ShortcutKeys;
+                                 newBookmarkContextToolStripMenuItem.ShortcutKeys =
+                                     newBookmarkToolStripMenuItem.ShortcutKeys;
                              };
             Deactivate += delegate
                               {
@@ -1353,9 +1379,11 @@ namespace Ch.Cyberduck.Ui.Winforms
             Activated += delegate
                              {
                                  connectBookmarkContextToolStripMenuItem.ShortcutKeyDisplayString = "Enter";
-                                 newBookmarkContextToolStripMenuItem1.ShortcutKeys = newBookmarkToolStripMenuItem.ShortcutKeys;
+                                 newBookmarkContextToolStripMenuItem1.ShortcutKeys =
+                                     newBookmarkToolStripMenuItem.ShortcutKeys;
                                  //todo deleteBookmarkContextToolStripMenuItem1.ShortcutKeys = 
-                                 editBookmarkContextToolStripMenuItem1.ShortcutKeys = editBookmarkToolStripMenuItem.ShortcutKeys;
+                                 editBookmarkContextToolStripMenuItem1.ShortcutKeys =
+                                     editBookmarkToolStripMenuItem.ShortcutKeys;
                              };
             Deactivate += delegate
                               {
@@ -1391,20 +1419,12 @@ namespace Ch.Cyberduck.Ui.Winforms
                              {
                                  newBrowserToolStripMenuItem
                              },
-                         (sender, args) =>
-                             {
-                                 SaveUiSettings();
-                                 NewBrowser(this, new NewBrowserEventArgs(false));
-                             }, () => true);
+                         (sender, args) => NewBrowser(this, new NewBrowserEventArgs(false)), () => true);
             Commands.Add(new ToolStripItem[]
                              {
                                  newBrowserContextToolStripMenuItem
                              },
-                         (sender, args) =>
-                             {
-                                 SaveUiSettings();
-                                 NewBrowser(this, new NewBrowserEventArgs(true));
-                             }, () => ValidateNewBrowser());
+                         (sender, args) => NewBrowser(this, new NewBrowserEventArgs(true)), () => ValidateNewBrowser());
             Commands.Add(new ToolStripItem[]
                              {
                                  openConnectionToolStripMenuItem,
@@ -1527,7 +1547,11 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         private void SaveUiSettings()
         {
-            PersistenceHandler.Set("Tree.State", browser.SaveState());
+            if (browser.Objects != null)
+            {
+                Log.debug("Saving browser state");
+                PersistenceHandler.Set("Tree.State", browser.SaveState());
+            }
             PersistenceHandler.Set("Splitter.Distance", splitContainer.SplitterDistance);
         }
 
@@ -1545,20 +1569,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             BrowserDoubleClicked();
         }
 
-        private void aboutCyberduckToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            AboutBox about = new AboutBox();
-            about.ShowDialog();
-        }
-
         private void toolStripQuickConnect_SelectionChangeCommited(object sender, EventArgs e)
         {
             QuickConnect();
-        }
-
-        private void toolStripPath_SelectionChangeCommitted(object sender, EventArgs e)
-        {
-            PathSelectionChanged();
         }
 
         private void toolStripQuickConnect_KeyDown(object sender, KeyEventArgs e)
@@ -2191,10 +2204,6 @@ namespace Ch.Cyberduck.Ui.Winforms
                                                new Size(img.Width, img.Height));
                 e.Graphics.DrawImage(img, rect);
             }
-        }
-
-        private void toolBar_LayoutCompleted(object sender, EventArgs e)
-        {
         }
     }
 }
