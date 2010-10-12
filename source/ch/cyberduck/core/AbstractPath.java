@@ -73,7 +73,7 @@ public abstract class AbstractPath {
     /**
      *
      */
-    private PathReference reference;
+    protected PathReference reference;
 
     /**
      * Default implementation returning a reference to self. You can override this

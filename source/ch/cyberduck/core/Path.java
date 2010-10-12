@@ -225,6 +225,7 @@ public abstract class Path extends AbstractPath implements Serializable {
     public void setPath(String name) {
         this.path = Path.normalize(name);
         this.parent = null;
+        this.reference = null;
     }
 
     public void setParent(Path parent) {
