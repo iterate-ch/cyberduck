@@ -52,6 +52,13 @@ namespace Ch.Cyberduck.Ui.Winforms
                 newFolderToolStripButton.Image = IconCache.Instance.IconForName("newfolder", 32);
             }
 
+            Load += delegate
+                        {
+                            Size preferredSize = disconnectStripButton.GetPreferredSize(Size.Empty);
+                            disconnectStripButton.AutoSize = false;
+                            disconnectStripButton.Width = preferredSize.Width;
+                        };
+
             ConfigureToolbar();
 
             //configure before setting the current view
@@ -2184,6 +2191,10 @@ namespace Ch.Cyberduck.Ui.Winforms
                                                new Size(img.Width, img.Height));
                 e.Graphics.DrawImage(img, rect);
             }
+        }
+
+        private void toolBar_LayoutCompleted(object sender, EventArgs e)
+        {
         }
     }
 }

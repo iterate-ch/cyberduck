@@ -63,7 +63,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.toolStripSeparator11 = new System.Windows.Forms.ToolStripSeparator();
             this.createArchiveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.archiveMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.createArchiveContextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.expandArchiveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator12 = new System.Windows.Forms.ToolStripSeparator();
             this.printToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -148,6 +147,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.checkToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator28 = new System.Windows.Forms.ToolStripSeparator();
             this.aboutCyberduckToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.createArchiveContextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editorMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.editor1ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editor2ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -274,7 +274,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.statusStrip.Location = new System.Drawing.Point(0, 616);
             this.statusStrip.Name = "statusStrip";
             this.statusStrip.Padding = new System.Windows.Forms.Padding(1, 0, 16, 0);
-            this.statusStrip.Size = new System.Drawing.Size(902, 22);
+            this.statusStrip.Size = new System.Drawing.Size(903, 22);
             this.statusStrip.TabIndex = 9;
             // 
             // toolStripProgress
@@ -288,7 +288,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // statusLabel
             // 
             this.statusLabel.Name = "statusLabel";
-            this.statusLabel.Size = new System.Drawing.Size(844, 17);
+            this.statusLabel.Size = new System.Drawing.Size(845, 17);
             this.statusLabel.Spring = true;
             this.statusLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
@@ -313,7 +313,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Padding = new System.Windows.Forms.Padding(7, 2, 0, 2);
-            this.menuStrip1.Size = new System.Drawing.Size(902, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(903, 24);
             this.menuStrip1.TabIndex = 12;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -496,15 +496,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             // archiveMenuStrip
             // 
             this.archiveMenuStrip.Name = "archiveMenuStrip";
-            this.archiveMenuStrip.OwnerItem = this.createArchiveToolStripMenuItem;
+            this.archiveMenuStrip.OwnerItem = this.createArchiveContextToolStripMenuItem;
             this.archiveMenuStrip.Size = new System.Drawing.Size(61, 4);
-            // 
-            // createArchiveContextToolStripMenuItem
-            // 
-            this.createArchiveContextToolStripMenuItem.DropDown = this.archiveMenuStrip;
-            this.createArchiveContextToolStripMenuItem.Name = "createArchiveContextToolStripMenuItem";
-            this.createArchiveContextToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
-            this.createArchiveContextToolStripMenuItem.Text = "Create Archive";
             // 
             // expandArchiveToolStripMenuItem
             // 
@@ -1089,6 +1082,13 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.aboutCyberduckToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
             this.aboutCyberduckToolStripMenuItem.Text = "&About Cyberduck";
             // 
+            // createArchiveContextToolStripMenuItem
+            // 
+            this.createArchiveContextToolStripMenuItem.DropDown = this.archiveMenuStrip;
+            this.createArchiveContextToolStripMenuItem.Name = "createArchiveContextToolStripMenuItem";
+            this.createArchiveContextToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+            this.createArchiveContextToolStripMenuItem.Text = "Create Archive";
+            // 
             // editorMenuStrip
             // 
             this.editorMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -1143,10 +1143,11 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.toolBar.Location = new System.Drawing.Point(0, 0);
             this.toolBar.Name = "toolBar";
             this.toolBar.ShowItemToolTips = false;
-            this.toolBar.Size = new System.Drawing.Size(902, 54);
+            this.toolBar.Size = new System.Drawing.Size(903, 54);
             this.toolBar.Stretch = true;
             this.toolBar.TabIndex = 13;
             this.toolBar.Text = "toolStrip1";
+            this.toolBar.LayoutCompleted += new System.EventHandler(this.toolBar_LayoutCompleted);
             // 
             // openConnectionToolStripButton
             // 
@@ -1481,11 +1482,11 @@ namespace Ch.Cyberduck.Ui.Winforms
             // toolStripContainer1.ContentPanel
             // 
             this.toolStripContainer1.ContentPanel.Controls.Add(this.splitContainer);
-            this.toolStripContainer1.ContentPanel.Size = new System.Drawing.Size(902, 538);
+            this.toolStripContainer1.ContentPanel.Size = new System.Drawing.Size(903, 538);
             this.toolStripContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.toolStripContainer1.Location = new System.Drawing.Point(0, 24);
             this.toolStripContainer1.Name = "toolStripContainer1";
-            this.toolStripContainer1.Size = new System.Drawing.Size(902, 592);
+            this.toolStripContainer1.Size = new System.Drawing.Size(903, 592);
             this.toolStripContainer1.TabIndex = 16;
             this.toolStripContainer1.Text = "toolStripContainer1";
             // 
@@ -1510,7 +1511,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.splitContainer.Panel2.Controls.Add(this.transcriptBox);
             this.splitContainer.Panel2MinSize = 0;
-            this.splitContainer.Size = new System.Drawing.Size(902, 538);
+            this.splitContainer.Size = new System.Drawing.Size(903, 538);
             this.splitContainer.SplitterDistance = 426;
             this.splitContainer.SplitterWidth = 5;
             this.splitContainer.TabIndex = 2;
@@ -1524,7 +1525,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.panelManagerMain.Name = "panelManagerMain";
             this.panelManagerMain.SelectedIndex = 1;
             this.panelManagerMain.SelectedPanel = this.browserPanel;
-            this.panelManagerMain.Size = new System.Drawing.Size(902, 395);
+            this.panelManagerMain.Size = new System.Drawing.Size(903, 395);
             this.panelManagerMain.TabIndex = 28;
             // 
             // bookmarksPanel
@@ -1774,7 +1775,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.viewPanel.Dock = System.Windows.Forms.DockStyle.Top;
             this.viewPanel.Location = new System.Drawing.Point(0, 0);
             this.viewPanel.Name = "viewPanel";
-            this.viewPanel.Size = new System.Drawing.Size(902, 31);
+            this.viewPanel.Size = new System.Drawing.Size(903, 31);
             this.viewPanel.TabIndex = 29;
             // 
             // tableLayoutPanel1
@@ -1806,7 +1807,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.tableLayoutPanel1.Padding = new System.Windows.Forms.Padding(0, 0, 2, 0);
             this.tableLayoutPanel1.RowCount = 1;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(902, 31);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(903, 31);
             this.tableLayoutPanel1.TabIndex = 16;
             // 
             // browserCheckBox
@@ -1841,7 +1842,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.searchTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.searchTextBox.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.searchTextBox.Location = new System.Drawing.Point(783, 3);
+            this.searchTextBox.Location = new System.Drawing.Point(784, 3);
             this.searchTextBox.Name = "searchTextBox";
             this.searchTextBox.OptionsMenu = null;
             this.searchTextBox.Size = new System.Drawing.Size(114, 24);
@@ -1866,7 +1867,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.parentPathButton.FlatAppearance.BorderSize = 0;
             this.parentPathButton.Image = global::Ch.Cyberduck.ResourcesBundle.arrowUpBlack16;
-            this.parentPathButton.Location = new System.Drawing.Point(741, 3);
+            this.parentPathButton.Location = new System.Drawing.Point(742, 3);
             this.parentPathButton.Name = "parentPathButton";
             this.parentPathButton.Size = new System.Drawing.Size(36, 25);
             this.parentPathButton.TabIndex = 7;
@@ -1890,7 +1891,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.pathComboBox.Location = new System.Drawing.Point(221, 4);
             this.pathComboBox.Margin = new System.Windows.Forms.Padding(3, 4, 3, 3);
             this.pathComboBox.Name = "pathComboBox";
-            this.pathComboBox.Size = new System.Drawing.Size(514, 23);
+            this.pathComboBox.Size = new System.Drawing.Size(515, 23);
             this.pathComboBox.TabIndex = 6;
             this.pathComboBox.SelectionChangeCommitted += new System.EventHandler(this.pathComboBox_SelectionChangeCommitted);
             // 
@@ -1938,7 +1939,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.transcriptBox.Name = "transcriptBox";
             this.transcriptBox.ReadOnly = true;
             this.transcriptBox.ShortcutsEnabled = false;
-            this.transcriptBox.Size = new System.Drawing.Size(902, 107);
+            this.transcriptBox.Size = new System.Drawing.Size(903, 107);
             this.transcriptBox.TabIndex = 0;
             this.transcriptBox.Text = "";
             this.transcriptBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.transcriptBox_KeyDown);
@@ -1959,7 +1960,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(902, 638);
+            this.ClientSize = new System.Drawing.Size(903, 638);
             this.Controls.Add(this.toolStripContainer1);
             this.Controls.Add(this.statusStrip);
             this.Controls.Add(this.menuStrip1);
