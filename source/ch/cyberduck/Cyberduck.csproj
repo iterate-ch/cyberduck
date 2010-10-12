@@ -51,6 +51,7 @@
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <UseVSHostingProcess>true</UseVSHostingProcess>
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -163,6 +164,7 @@
     <Compile Include="core\NativeListEnumerator.cs" />
     <Compile Include="core\NativeMethods.cs" />
     <Compile Include="core\OSVersion.cs" />
+    <Compile Include="core\Rendezvous.cs" />
     <Compile Include="core\RFC2253.cs" />
     <Compile Include="core\SerializableDictionary.cs" />
     <Compile Include="core\Utils.cs" />
@@ -537,10 +539,10 @@
     <Compile Include="ui\winforms\TransferPromptForm.Designer.cs">
       <DependentUpon>TransferPromptForm.cs</DependentUpon>
     </Compile>
+    <None Include="Properties\app.manifest" />
     <None Include="Resources\Credits.rtf" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Properties\app.manifest" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -568,6 +570,17 @@
       <ProductName>Windows Installer 3.1</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <COMReference Include="Bonjour">
+      <Guid>{18FBED6D-F2B7-4EC8-A4A4-46282E635308}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
+    </COMReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
