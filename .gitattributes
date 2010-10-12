@@ -2031,7 +2031,6 @@ sl.lproj/Status.strings -text svneol=unset#text/utf-16
 sl.lproj/Transfer.strings -text svneol=unset#text/utf-16
 source/ch/cyberduck/App.config -text
 source/ch/cyberduck/Cyberduck.csproj -text
-source/ch/cyberduck/Cyberduck.csproj.user -text
 source/ch/cyberduck/Cyberduck.sln -text
 source/ch/cyberduck/ResourcesBundle.Designer.cs -text
 source/ch/cyberduck/ResourcesBundle.resx -text
