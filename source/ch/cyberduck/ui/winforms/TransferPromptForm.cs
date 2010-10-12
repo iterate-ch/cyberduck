@@ -263,13 +263,12 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public void StartActivityAnimation()
         {
-            progressBar.Style = ProgressBarStyle.Marquee;
+            animation.Visible = true;
         }
 
         public void StopActivityAnimation()
         {
-            progressBar.Value = 0;
-            progressBar.Style = ProgressBarStyle.Continuous;
+            animation.Visible = false;
         }
 
         public string StatusLabel

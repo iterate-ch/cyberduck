@@ -55,11 +55,12 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.statusLabel = new System.Windows.Forms.Label();
             this.toggleDetailsLabel = new System.Windows.Forms.Label();
             this.imageList = new System.Windows.Forms.ImageList(this.components);
-            this.progressBar = new System.Windows.Forms.ProgressBar();
             this.detailsTableLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
+            this.animation = new System.Windows.Forms.PictureBox();
             ((System.ComponentModel.ISupportInitialize)(this.browser)).BeginInit();
             this.mainTableLayoutPanel.SuspendLayout();
             this.detailsTableLayoutPanel.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.animation)).BeginInit();
             this.SuspendLayout();
             // 
             // comboBoxAction
@@ -117,6 +118,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // treeColumnSize
             // 
             this.treeColumnSize.AspectName = "Size";
+            this.treeColumnSize.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.treeColumnSize.Text = "Size";
             this.treeColumnSize.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             this.treeColumnSize.Width = 120;
@@ -242,6 +244,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.mainTableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.mainTableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.mainTableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
+            this.mainTableLayoutPanel.Controls.Add(this.animation, 0, 2);
             this.mainTableLayoutPanel.Controls.Add(this.separatorLine, 0, 4);
             this.mainTableLayoutPanel.Controls.Add(this.statusLabel, 1, 2);
             this.mainTableLayoutPanel.Controls.Add(this.continueButton, 2, 2);
@@ -249,7 +252,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.mainTableLayoutPanel.Controls.Add(this.comboBoxAction, 0, 0);
             this.mainTableLayoutPanel.Controls.Add(this.browser, 0, 1);
             this.mainTableLayoutPanel.Controls.Add(this.toggleDetailsLabel, 0, 3);
-            this.mainTableLayoutPanel.Controls.Add(this.progressBar, 0, 2);
             this.mainTableLayoutPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.mainTableLayoutPanel.Location = new System.Drawing.Point(0, 0);
             this.mainTableLayoutPanel.Name = "mainTableLayoutPanel";
@@ -260,6 +262,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.mainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.mainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.mainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.mainTableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.mainTableLayoutPanel.Size = new System.Drawing.Size(715, 347);
             this.mainTableLayoutPanel.TabIndex = 3;
             // 
@@ -315,17 +318,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.imageList.Images.SetKeyName(5, "arrow_down_color_pressed.bmp");
             this.imageList.Images.SetKeyName(6, "green_arrow.bmp");
             // 
-            // progressBar
-            // 
-            this.progressBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.progressBar.Location = new System.Drawing.Point(13, 282);
-            this.progressBar.MarqueeAnimationSpeed = 20;
-            this.progressBar.Name = "progressBar";
-            this.progressBar.Size = new System.Drawing.Size(24, 16);
-            this.progressBar.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
-            this.progressBar.TabIndex = 45;
-            // 
             // detailsTableLayoutPanel
             // 
             this.detailsTableLayoutPanel.AutoSize = true;
@@ -355,6 +347,18 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.detailsTableLayoutPanel.Size = new System.Drawing.Size(715, 108);
             this.detailsTableLayoutPanel.TabIndex = 4;
             // 
+            // animation
+            // 
+            this.animation.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.animation.Image = global::Ch.Cyberduck.ResourcesBundle.throbber_small;
+            this.animation.Location = new System.Drawing.Point(13, 282);
+            this.animation.Name = "animation";
+            this.animation.Size = new System.Drawing.Size(24, 20);
+            this.animation.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
+            this.animation.TabIndex = 45;
+            this.animation.TabStop = false;
+            this.animation.Visible = false;
+            // 
             // TransferPromptForm
             // 
             this.AcceptButton = this.continueButton;
@@ -372,6 +376,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.mainTableLayoutPanel.PerformLayout();
             this.detailsTableLayoutPanel.ResumeLayout(false);
             this.detailsTableLayoutPanel.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.animation)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -402,6 +407,6 @@ namespace Ch.Cyberduck.Ui.Winforms
         private BrightIdeasSoftware.OLVColumn treeColumnSync;
         private BrightIdeasSoftware.OLVColumn treeColumnCreate;
         private ImageList imageList;
-        private ProgressBar progressBar;
+        private PictureBox animation;
     }
 }
