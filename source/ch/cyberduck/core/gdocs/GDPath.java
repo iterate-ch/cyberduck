@@ -41,7 +41,6 @@ import com.google.gdata.data.acl.AclFeed;
 import com.google.gdata.data.acl.AclRole;
 import com.google.gdata.data.acl.AclScope;
 import com.google.gdata.data.docs.*;
-import com.google.gdata.data.extensions.LastModifiedBy;
 import com.google.gdata.data.media.MediaMultipart;
 import com.google.gdata.data.media.MediaSource;
 import com.google.gdata.data.media.MediaStreamSource;
@@ -631,6 +630,18 @@ public class GDPath extends Path {
         do {
             for(final DocumentListEntry entry : pager.getEntries()) {
                 log.debug("Resource:" + entry.getResourceId());
+                boolean include = false;
+                for(Person person : entry.getAuthors()) {
+                    log.debug("Author of document " + entry.getResourceId() + ":" + person.getEmail());
+                    if(person.getEmail().equals(this.getSession().getHost().getCredentials().getUsername())) {
+                        include = true;
+                        break;
+                    }
+                }
+                if(!include) {
+                    log.warn("Skip document with different owner");
+                    continue;
+                }
                 final String type = entry.getType();
                 GDPath path = new GDPath(this.getSession(), this.getAbsolute(), entry.getTitle().getPlainText(),
                         FolderEntry.LABEL.equals(type) ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
@@ -653,9 +664,8 @@ public class GDPath extends Path {
                 if(lastViewed != null) {
                     path.attributes().setAccessedDate(lastViewed.getValue());
                 }
-                LastModifiedBy lastModifiedBy = entry.getLastModifiedBy();
-                if(lastModifiedBy != null) {
-                    path.attributes().setOwner(lastModifiedBy.getName());
+                for(Person person : entry.getAuthors()) {
+                    path.attributes().setOwner(person.getEmail());
                 }
                 final DateTime updated = entry.getUpdated();
                 if(updated != null) {
