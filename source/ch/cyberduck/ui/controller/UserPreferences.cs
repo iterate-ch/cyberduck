@@ -247,6 +247,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
             base.setDefaults();
 
+            defaults.put("logging", "debug");
             defaults.put("rendezvous.enable", false.ToString());
 
             defaults.put("protocol.azure.tls.enable", true.ToString());
