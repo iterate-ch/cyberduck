@@ -175,12 +175,13 @@ public class GDPath extends Path {
     public String getExportUri() {
         if(StringUtils.isBlank(exportUri)) {
             log.warn("Refetching Export URI for " + this.toString());
-            final GDPath cached = (GDPath) this.getParent().children().get(this.getReference());
-            if(null == cached) {
-                log.error("Missing Export URI for " + this.toString());
-                return null;
+            AttributedList<AbstractPath> l = this.getParent().children();
+            if(l.contains(this.getReference())) {
+                exportUri = ((GDPath) l.get(this.getReference())).getExportUri();
             }
-            exportUri = cached.getExportUri();
+            else {
+                log.error("Missing Export URI for " + this.toString());
+            }
         }
         return exportUri;
     }
@@ -198,12 +199,13 @@ public class GDPath extends Path {
     public String getResourceId() {
         if(StringUtils.isBlank(resourceId)) {
             log.warn("Refetching Resource ID for " + this.toString());
-            final GDPath cached = (GDPath) this.getParent().children().get(this.getReference());
-            if(null == cached) {
-                log.error("Missing Resource ID for " + this.toString());
-                return null;
+            AttributedList<AbstractPath> l = this.getParent().children();
+            if(l.contains(this.getReference())) {
+                resourceId = ((GDPath) l.get(this.getReference())).getResourceId();
             }
-            resourceId = cached.getResourceId();
+            else {
+                log.error("Missing Resource ID for " + this.toString());
+            }
         }
         return resourceId;
     }
