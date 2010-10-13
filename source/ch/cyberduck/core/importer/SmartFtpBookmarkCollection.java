@@ -82,6 +82,8 @@ public class SmartFtpBookmarkCollection extends XmlBookmarkCollection {
         public void startElement(String name) {
             if(name.equals("FavoriteItem")) {
                 current = new Host(Preferences.instance().getProperty("connection.hostname.default"));
+                current.getCredentials().setUsername(
+                        Preferences.instance().getProperty("connection.login.anon.name"));
             }
         }
 
