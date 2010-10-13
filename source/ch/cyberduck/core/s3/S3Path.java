@@ -642,9 +642,11 @@ public class S3Path extends CloudPath {
             this.getSession().setWorkdir(this);
         }
         catch(ServiceException e) {
+            log.warn("Listing directory failed:" + e.getMessage());
             children.attributes().setReadable(false);
         }
         catch(IOException e) {
+            log.warn("Listing directory failed:" + e.getMessage());
             children.attributes().setReadable(false);
         }
         return children;

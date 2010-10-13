@@ -612,9 +612,11 @@ public class GDPath extends Path {
             children.addAll(this.list(new DocumentQuery(new URL(this.getFolderFeed()))));
         }
         catch(ServiceException e) {
+            log.warn("Listing directory failed:" + e.getMessage());
             children.attributes().setReadable(false);
         }
         catch(IOException e) {
+            log.warn("Listing directory failed:" + e.getMessage());
             children.attributes().setReadable(false);
         }
         return children;

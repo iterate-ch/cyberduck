@@ -116,6 +116,7 @@ public class SFTPPath extends Path {
             this.getSession().setWorkdir(this);
         }
         catch(IOException e) {
+            log.warn("Listing directory failed:" + e.getMessage());
             children.attributes().setReadable(false);
         }
         return children;
