@@ -24,6 +24,7 @@ import ch.cyberduck.core.serializer.Reader;
 
 import org.apache.log4j.Logger;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 
@@ -111,6 +112,24 @@ public class HistoryCollection extends AbstractHostCollection {
     public Host remove(int row) {
         this.getFile(this.get(row)).delete(false);
         return super.remove(row);
+    }
+
+    @Override
+    public boolean remove(Object item) {
+        if(this.contains(item)) {
+            this.getFile(this.get(this.indexOf(item))).delete(false);
+        }
+        return super.remove(item);
+    }
+
+    @Override
+    public boolean removeAll(Collection<?> c) {
+        for(Object next : c) {
+            if(this.contains(next)) {
+                this.getFile(this.get(this.indexOf(next))).delete(false);
+            }
+        }
+        return super.removeAll(c);
     }
 
     @Override

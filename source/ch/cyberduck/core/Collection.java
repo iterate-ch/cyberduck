@@ -111,6 +111,21 @@ public class Collection<E> extends ArrayList<E> implements CollectionListener<E>
         return previous;
     }
 
+    @Override
+    public boolean removeAll(java.util.Collection<?> c) {
+        boolean modified = false;
+        Iterator<?> e = iterator();
+        while(e.hasNext()) {
+            Object item = e.next();
+            if(c.contains(item)) {
+                e.remove();
+                this.collectionItemRemoved((E) item);
+                modified = true;
+            }
+        }
+        return modified;
+    }
+
     public void collectionItemAdded(E item) {
         for(CollectionListener<E> listener : listeners.toArray(new CollectionListener[listeners.size()])) {
             listener.collectionItemAdded(item);
