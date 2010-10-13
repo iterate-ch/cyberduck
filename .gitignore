@@ -1,6 +1,7 @@
 source/ch/cyberduck/*.aps
 source/ch/cyberduck/*.eto
 source/ch/cyberduck/*.user
+source/ch/cyberduck/Cyberduck.csproj.user
 source/ch/cyberduck/[Bb]in
 source/ch/cyberduck/[Dd]ebug
 source/ch/cyberduck/[Rr]elease
@@ -13,3 +14,10 @@ source/ch/cyberduck/ui/winforms/commondialog/[Bb]in
 source/ch/cyberduck/ui/winforms/commondialog/[Dd]ebug
 source/ch/cyberduck/ui/winforms/commondialog/[Rr]elease
 source/ch/cyberduck/ui/winforms/commondialog/obj
+test/ch/cyberduck/*.aps
+test/ch/cyberduck/*.eto
+test/ch/cyberduck/*.user
+test/ch/cyberduck/[Bb]in
+test/ch/cyberduck/[Dd]ebug
+test/ch/cyberduck/[Rr]elease
+test/ch/cyberduck/obj

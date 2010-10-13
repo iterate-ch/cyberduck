@@ -391,12 +391,12 @@ public abstract class Local extends AbstractPath {
 
     @Override
     public void setPath(String name) {
-        _impl = new File(Path.normalize(name));
+        _impl = new File(name);
     }
 
     @Override
     public void setPath(String parent, String name) {
-        _impl = new File(Path.normalize(parent), Path.normalize(name));
+        _impl = new File(parent, name);
     }
 
     @Override
