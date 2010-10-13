@@ -42,7 +42,6 @@ using DataObject = System.Windows.Forms.DataObject;
 using Locale = ch.cyberduck.core.i18n.Locale;
 using Object = System.Object;
 using Path = ch.cyberduck.core.Path;
-using Process = System.Diagnostics.Process;
 using String = System.String;
 using StringBuilder = System.Text.StringBuilder;
 using Timer = System.Threading.Timer;
@@ -1045,24 +1044,33 @@ namespace Ch.Cyberduck.Ui.Controller
         private void View_DeleteBookmark()
         {
             List<Host> selected = View.SelectedBookmarks;
+            //View.SelectBookmark(host);
+            //View.EnsureBookmarkVisible(host);
+            StringBuilder alertText = new StringBuilder();
+            int i = 0;
             foreach (Host host in selected)
             {
-                View.SelectBookmark(host);
-                View.EnsureBookmarkVisible(host);
-                if (_bookmarkModel.Source.allowsEdit())
+                if (i>0)
                 {
-                    DialogResult result = MessageBox(Locale.localizedString("Delete Bookmark"),
-                                                     Locale.localizedString(
-                                                         "Do you want to delete the selected bookmark?"),
-                                                     host.getNickname(),
-                                                     eTaskDialogButtons.OKCancel,
-                                                     eSysIcons.Question
-                        );
-                    if (result == DialogResult.OK)
-                    {
-                        _bookmarkModel.Source.remove(host);
-                    }
+                    alertText.Append("\n");
                 }
+                alertText.Append(Character.toString('\u2022')).Append(" ").Append(host.getNickname());
+                i++;
+                if (i > 10)
+                {
+                    break;
+                }
+            }
+            DialogResult result = MessageBox(Locale.localizedString("Delete Bookmark"),
+                                             Locale.localizedString(
+                                                 "Do you want to delete the selected bookmark?"),
+                                             alertText.ToString(),
+                                             eTaskDialogButtons.OKCancel,
+                                             eSysIcons.Question
+                );
+            if (result == DialogResult.OK)
+            {                
+                _bookmarkModel.Source.removeAll(Utils.ConvertToJavaList(selected));
             }
         }
 
@@ -1082,7 +1090,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_OpenWebUrl()
         {
-            Utils.StartProcess(SelectedPathWebUrl);            
+            Utils.StartProcess(SelectedPathWebUrl);
         }
 
         private void View_SearchFieldChanged()
