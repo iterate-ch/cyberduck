@@ -22,33 +22,49 @@ package ch.cyberduck.core.importer;
 import ch.cyberduck.core.*;
 
 import org.apache.log4j.Logger;
+import org.w3c.util.DateParser;
+import org.w3c.util.InvalidDateException;
 
 import com.enterprisedt.net.ftp.FTPConnectMode;
 
 /**
  * @version $Id$
  */
-public class FilezillaBookmarkCollection extends XmlBookmarkCollection {
-    private static Logger log = Logger.getLogger(FilezillaBookmarkCollection.class);
+public class SmartFtpBookmarkCollection extends XmlBookmarkCollection {
+    private static Logger log = Logger.getLogger(SmartFtpBookmarkCollection.class);
 
     @Override
     public String getBundleIdentifier() {
-        return "de.filezilla";
+        return "com.smartftp";
     }
 
     @Override
     public String getName() {
-        return "FileZilla";
+        return "SmartFTP";
     }
 
     @Override
     public Local getFile() {
-        return LocalFactory.createLocal(Preferences.instance().getProperty("bookmark.import.filezilla.location"));
+        return LocalFactory.createLocal(Preferences.instance().getProperty("bookmark.import.smartftp.location"));
     }
 
     @Override
-    protected void parse(Local file) {
-        this.read(file);
+    protected void parse(Local folder) {
+        for(Local child : folder.children(new PathFilter<Local>() {
+            public boolean accept(Local file) {
+                if(file.attributes().isDirectory()) {
+                    return true;
+                }
+                return file.getExtension().equals("xml");
+            }
+        })) {
+            if(child.attributes().isDirectory()) {
+                this.parse(child);
+            }
+            else {
+                this.read(child);
+            }
+        }
     }
 
     @Override
@@ -57,40 +73,41 @@ public class FilezillaBookmarkCollection extends XmlBookmarkCollection {
     }
 
     /**
-     * Parser for Filezilla Site Manager.
+     * Parser for SmartFTP favorites.
      */
     private class ServerHandler extends AbstractHandler {
         private Host current = null;
 
         @Override
         public void startElement(String name) {
-            if(name.equals("Server")) {
+            if(name.equals("FavoriteItem")) {
                 current = new Host(Preferences.instance().getProperty("connection.hostname.default"));
             }
         }
 
         @Override
         public void endElement(String name, String elementText) {
+            log.debug("endElement:" + name + "," + elementText);
             if(name.equals("Host")) {
                 current.setHostname(elementText);
             }
             else if(name.equals("Protocol")) {
                 try {
                     switch(Integer.parseInt(elementText)) {
-                        case 0:
+                        case 1:
                             current.setProtocol(Protocol.FTP);
                             break;
+                        case 2:
                         case 3:
-                        case 4:
                             current.setProtocol(Protocol.FTP_TLS);
                             break;
-                        case 1:
+                        case 4:
                             current.setProtocol(Protocol.SFTP);
                             break;
                     }
                 }
                 catch(NumberFormatException e) {
-                    log.warn("Unknown protocol:" + e.getMessage());
+                    log.warn("Unknown Protocol:" + e.getMessage());
                 }
             }
             else if(name.equals("Port")) {
@@ -101,83 +118,55 @@ public class FilezillaBookmarkCollection extends XmlBookmarkCollection {
                     log.warn("Invalid Port:" + e.getMessage());
                 }
             }
-            else if(name.equals("MaximumMultipleConnections")) {
-                if("0".equals(elementText)) {
-                    current.setMaxConnections(null);
+            else if(name.equals("LastConnect")) {
+                try {
+                    current.setTimestamp(DateParser.parse(elementText));
                 }
-                else {
-                    try {
-                        current.setMaxConnections(Integer.parseInt(elementText));
-                    }
-                    catch(NumberFormatException e) {
-                        log.warn("Invalid MaximumMultipleConnections:" + e.getMessage());
-                    }
+                catch(InvalidDateException e) {
+                    log.warn("Failed to parse timestamp:" + e.getMessage());
                 }
             }
             else if(name.equals("User")) {
                 current.getCredentials().setUsername(elementText);
             }
-            else if(name.equals("Logontype")) {
+            else if(name.equals("Name")) {
+                current.setNickname(elementText);
+            }
+            else if(name.equals("DataConnectionMethod")) {
                 try {
                     switch(Integer.parseInt(elementText)) {
                         case 0:
-                            current.getCredentials().setUsername(Preferences.instance().getProperty("connection.login.anon.name"));
+                            current.setFTPConnectMode(FTPConnectMode.ACTIVE);
+                            break;
+                        case 1:
+                            current.setFTPConnectMode(FTPConnectMode.PASV);
                             break;
                     }
                 }
                 catch(NumberFormatException e) {
-                    log.warn("Invalid Logontype:" + e.getMessage());
+                    log.warn("Invalid connect mode:" + e.getMessage());
                 }
             }
-            else if(name.equals("Pass")) {
-                current.getCredentials().setPassword(elementText);
-            }
-            else if(name.equals("Name")) {
-                current.setNickname(elementText);
-            }
-            else if(name.equals("EncodingType")) {
-                if("Auto".equals(elementText)) {
-                    current.setEncoding(null);
-                }
-                else {
-                    current.setEncoding(elementText);
-                }
-            }
-            else if(name.equals("PasvMode")) {
-                if("MODE_DEFAULT".equals(elementText)) {
-                    current.setFTPConnectMode(null);
-                }
-                else if("MODE_PASSIVE".equals(elementText)) {
-                    current.setFTPConnectMode(FTPConnectMode.PASV);
-                }
-                else if("MODE_ACTIVE".equals(elementText)) {
-                    current.setFTPConnectMode(FTPConnectMode.ACTIVE);
-                }
-            }
-            else if(name.equals("Comments")) {
+            else if(name.equals("Description")) {
                 current.setComment(elementText);
             }
-            else if(name.equals("RemoteDir")) {
+            else if(name.equals("Path")) {
                 current.setDefaultPath(elementText);
             }
-            else if(name.equals("TimezoneOffset")) {
-                ;
+            else if(name.equals("HTTP")) {
+                current.setWebURL(elementText);
             }
-            else if(name.equals("Server")) {
+            else if(name.equals("WebRootPath")) {
+                current.setDefaultPath(elementText);
+            }
+            else if(name.equals("PrivateKey")) {
+                current.getCredentials().setIdentity(LocalFactory.createLocal(elementText));
+            }
+            else if(name.equals("FavoriteItem")) {
                 if(log.isDebugEnabled()) {
                     log.debug("Created new bookmark from listing: " + current);
                 }
                 add(current);
-                if(current.getCredentials().validate(current.getProtocol())) {
-                    // Save password in keychain instead of bookmark.
-                    KeychainFactory.instance().addPassword(
-                            current.getProtocol().getScheme(), current.getPort(),
-                            current.getHostname(), current.getCredentials().getUsername(),
-                            current.getCredentials().getPassword()
-                    );
-                }
-                // Reset password
-                current.getCredentials().setPassword(null);
             }
         }
     }

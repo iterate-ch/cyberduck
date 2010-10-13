@@ -2091,6 +2091,7 @@ source/ch/cyberduck/core/importer/CDTransmitImporter.h -text
 source/ch/cyberduck/core/importer/CDTransmitImporter.m -text
 source/ch/cyberduck/core/importer/ThirdpartyBookmarkCollection.java -text
 source/ch/cyberduck/core/importer/TransmitBookmarkCollection.java -text
+source/ch/cyberduck/core/importer/XmlBookmarkCollection.java -text
 source/ch/cyberduck/core/s3/S3Path.java -text
 source/ch/cyberduck/core/s3/S3Session.java -text
 source/ch/cyberduck/core/sftp/HostKeyController.java -text

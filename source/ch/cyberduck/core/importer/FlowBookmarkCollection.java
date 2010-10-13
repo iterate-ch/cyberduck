@@ -122,7 +122,7 @@ public class FlowBookmarkCollection extends ThirdpartyBookmarkCollection {
                         }
                     }
                     catch(NumberFormatException e) {
-                        log.error(e.getMessage());
+                        log.warn("Unknown protocol:" + e.getMessage());
                     }
                 }
                 this.add(host);
