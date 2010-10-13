@@ -179,6 +179,7 @@ public class AbstractTestCase extends TestCase {
                 };
             }
         });
+        Protocol.register();
     }
 
     @Override
