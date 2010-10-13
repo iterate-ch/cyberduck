@@ -80,6 +80,10 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public override bool exists()
         {
+            if(this.attributes().isDirectory())
+            {
+                return System.IO.Directory.Exists(getAbsolute());
+            }
             return System.IO.File.Exists(getAbsolute());
         }
 
