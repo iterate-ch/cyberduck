@@ -157,7 +157,7 @@
 
     <target name="nightly" depends="clean, version">
         <property name="setup.file"
-                  location="${build}/${app.name}-Installer-${cyberduck.version.major}.${cyberduck.version.minor}-${svn.revision.stripped}.exe"/>
+                  location="${build}/${app.name}-Installer-${cyberduck.version.major}.${cyberduck.version.minor}.${svn.revision.stripped}.exe"/>
         <antcall target="package">
             <param name="changelog.wyp" value="${www.update}/changelog-nightly.wyp"/>
         </antcall>
