@@ -1,4 +1,4 @@
-﻿// 
+﻿//
 // Copyright (c) 2010 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
@@ -242,6 +242,8 @@ namespace Ch.Cyberduck.Ui.Controller
             defaults.put("application.language.custom", false.ToString());
             defaults.put("bookmark.import.filezilla.location", Path.Combine(Environment.GetFolderPath(
                 Environment.SpecialFolder.ApplicationData), "FileZilla", "sitemanager.xml"));
+            defaults.put("bookmark.import.smartftp.location", Path.Combine(Environment.GetFolderPath(
+                Environment.SpecialFolder.ApplicationData), "SmartFTP", "Client 2.0", "Favorites"));
 
             base.setDefaults();
 
