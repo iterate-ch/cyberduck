@@ -86,6 +86,10 @@ public class FlowBookmarkCollection extends ThirdpartyBookmarkCollection {
                 if(StringUtils.isNotBlank(user)) {
                     host.getCredentials().setUsername(user);
                 }
+                else {
+                    host.getCredentials().setUsername(
+                            Preferences.instance().getProperty("connection.login.anon.name"));
+                }
                 String mode = bookmark.stringForKey("PreferredFTPDataConnectionType");
                 if(StringUtils.isNotBlank(mode)) {
                     if("Passive".equals(mode)) {
