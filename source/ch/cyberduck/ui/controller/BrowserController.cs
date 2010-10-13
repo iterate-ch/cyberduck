@@ -1364,7 +1364,8 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private bool View_ContextMenuEnabled()
         {
-            return IsMounted();
+            //context menu is always enabled
+            return true;
         }
 
         private void View_Exit()
