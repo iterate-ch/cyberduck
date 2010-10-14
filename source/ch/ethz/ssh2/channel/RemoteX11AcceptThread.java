@@ -32,6 +32,7 @@ public class RemoteX11AcceptThread extends Thread
 		this.remoteOriginatorPort = remoteOriginatorPort;
 	}
 
+    @Override
 	public void run()
 	{
 		try
