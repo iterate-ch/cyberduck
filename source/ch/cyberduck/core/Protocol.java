@@ -43,6 +43,7 @@ import ch.cyberduck.core.sftp.SFTPSession;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.jets3t.service.Constants;
+import org.soyatec.windows.azure.authenticate.Base64;
 
 import java.util.List;
 
@@ -963,6 +964,14 @@ public abstract class Protocol {
         @Override
         public String getPasswordPlaceholder() {
             return Locale.localizedString("Primary Access Key", "Azure");
+        }
+
+        @Override
+        public boolean validate(Credentials credentials) {
+            if(super.validate(credentials)) {
+                return null != Base64.decode(credentials.getPassword());
+            }
+            return false;
         }
 
         @Override

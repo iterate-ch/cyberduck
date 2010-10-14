@@ -35,7 +35,6 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
-import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.SingleClientConnManager;
 import org.apache.http.params.BasicHttpParams;
@@ -228,8 +227,11 @@ public class AzureSession extends CloudSession implements SSLSession {
      * @return True if the error code of the S3 exception is a login failure
      */
     protected boolean isLoginFailure(StorageServerException e) {
-        if(403 == e.getStatusCode()) {
-            return true;
+        Throwable cause = e.getCause();
+        if(cause instanceof StorageServerException) {
+            if(403 == ((StorageServerException) cause).getStatusCode()) {
+                return true;
+            }
         }
         return false;
     }
