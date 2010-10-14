@@ -14,7 +14,7 @@ Changelog. Last modified: $Date$
 - [Feature] Option to display hidden files in upload prompt (#1243)
 - [Feature] Import Transmit favorites (#3073)
 - [Feature] Copy and open multiple URLs (#5135)
-- [Feature] Support for PuTTY private key format (SFTP)
+- [Feature] Support for PuTTY private key format (SFTP) (#5322)
 - [Feature] Duplicate Bookmarks using drag and drop with option key
 - [Feature] Display only affected files in synchronization preview (#5226)
 - [Feature] Change update source to snapshot builds in Preferences
