@@ -223,6 +223,8 @@
 				<string>NSButton</string>
 				<key>updateCheckbox</key>
 				<string>NSButton</string>
+				<key>updateFeedPopup</key>
+				<string>NSPopUpButton</string>
 				<key>uploadSkipButton</key>
 				<string>NSButton</string>
 				<key>uploadSkipRegexDefaultButton</key>

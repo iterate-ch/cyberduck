@@ -11,6 +11,7 @@
 - [Feature] Support for PuTTY private key format (SFTP)
 - [Feature] Duplicate Bookmarks using drag and drop with option key
 - [Feature] Display only affected files in synchronization preview (#5226)
+- [Feature] Change update source to snapshot builds in Preferences
 - [Bugfix] Files pasted upload to parent directory (#5155)
 - [Bugfix] Uploading .xlsx or .docx documents fails with permission error (#5169) (Google Docs)
 - [Bugfix] Reading and writing ACLs (Google Docs)
