@@ -1355,6 +1355,7 @@ lib/ext/ant-contrib-1.0b3.jar -text
 lib/ext/ant-dotnet-1.0.jar -text
 lib/ext/ant-ikvmc.0.5.jar -text
 lib/ext/junit-4.6.jar -text
+lib/ext/nunit.framework.dll -text
 lib/gdata-client-1.0.jar -text
 lib/gdata-client-meta-1.0.jar -text
 lib/gdata-core-1.0.jar -text
@@ -1380,7 +1381,6 @@ lib/log4j-1.2.15.jar -text
 lib/log4j.xml -text
 lib/mail-1.4.3.jar -text
 lib/mime.types -text
-lib/nunit.framework.dll -text
 lib/slf4j-api-1.6.1.jar -text
 lib/slf4j-log4j12-1.6.1.jar -text
 lv.lproj/Alert.nib/classes.nib -text
