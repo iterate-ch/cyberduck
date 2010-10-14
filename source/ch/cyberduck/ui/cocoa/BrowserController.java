@@ -690,7 +690,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         else if(bookmarkButton.state() == NSCell.NSOnState) {
             bookmarkModel.setSource(BookmarkCollection.defaultCollection());
         }
-        bookmarkTableDelegate.selectionDidChange(null);
         this.setBookmarkFilter(null);
         this.reloadBookmarks();
         this.getFocus();
