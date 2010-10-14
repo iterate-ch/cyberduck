@@ -2007,9 +2007,16 @@ public class PreferencesController extends ToolbarWindowController {
         this.updateFeedPopup.lastItem().setRepresentedObject(Preferences.instance().getProperty("update.feed.beta"));
         this.updateFeedPopup.addItemWithTitle(Locale.localizedString("Snapshot Builds"));
         this.updateFeedPopup.lastItem().setRepresentedObject(Preferences.instance().getProperty("update.feed.nightly"));
-        this.updateFeedPopup.selectItemAtIndex(this.updateFeedPopup.menu().indexOfItemWithRepresentedObject(
-                Preferences.instance().getProperty("SUFeedURL")
-        ));
+        String feed = Preferences.instance().getProperty("SUFeedURL");
+        NSInteger selected = this.updateFeedPopup.menu().indexOfItemWithRepresentedObject(feed);
+        if(-1 == selected.intValue()) {
+            log.warn("Invalid feed setting:" + feed);
+            this.updateFeedPopup.selectItemAtIndex(this.updateFeedPopup.menu().indexOfItemWithRepresentedObject(
+                    Preferences.instance().getProperty("update.feed.release")));
+        }
+        else {
+            this.updateFeedPopup.selectItemAtIndex(selected);
+        }
     }
 
     @Action
