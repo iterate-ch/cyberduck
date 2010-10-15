@@ -238,12 +238,12 @@ public class Distribution {
         List<AbstractPath.DescriptiveUrl> urls = new ArrayList<AbstractPath.DescriptiveUrl>();
         for(String cname : cnames) {
             urls.add(new AbstractPath.DescriptiveUrl(this.getCnameURL(cname, key),
-                    MessageFormat.format(Locale.localizedString("{0} URL"), Locale.localizedString(method.toString(), "S3"))));
+                    MessageFormat.format(Locale.localizedString("{0} CDN URL"), Locale.localizedString(method.toString(), "S3"))));
         }
         if(urls.isEmpty()) {
             // No CNAME configured.
             urls.add(new AbstractPath.DescriptiveUrl(this.getUrl(key),
-                    MessageFormat.format(Locale.localizedString("{0} URL"), Locale.localizedString(method.toString(), "S3"))));
+                    MessageFormat.format(Locale.localizedString("{0} CDN URL"), Locale.localizedString(method.toString(), "S3"))));
         }
         return urls;
     }
