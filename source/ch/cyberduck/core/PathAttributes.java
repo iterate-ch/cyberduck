@@ -103,7 +103,7 @@ public class PathAttributes extends Attributes implements Serializable {
     /**
      * Revision number.
      */
-    private int revision;
+    private long revision;
 
     /**
      * Directory placeholder in Cloud Storage.
@@ -332,7 +332,7 @@ public class PathAttributes extends Attributes implements Serializable {
         this.versionId = versionId;
     }
 
-    public void setRevision(int revision) {
+    public void setRevision(long revision) {
         this.revision = revision;
     }
 
