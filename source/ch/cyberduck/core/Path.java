@@ -804,6 +804,9 @@ public abstract class Path extends AbstractPath implements Serializable {
             status().setCurrent(bytesTransferred);
         }
         out.flush();
+        if(status().isCanceled()) {
+            throw new ConnectionCanceledException("Interrupted transfer");
+        }
     }
 
     @Override
