@@ -668,12 +668,12 @@ public class S3Path extends CloudPath {
             for(StorageObject object : objects) {
                 final S3Path p = (S3Path) PathFactory.createPath(this.getSession(), bucket,
                         object.getKey(), Path.FILE_TYPE);
-                p.setParent(this);
                 if(!p.isChild(this)) {
                     // #Workaround for key that end with /. Refer to #3347.
                     log.warn("Skipping object " + object.getKey());
                     continue;
                 }
+                p.setParent(this);
                 p.attributes().setSize(object.getContentLength());
                 p.attributes().setModificationDate(object.getLastModifiedDate().getTime());
                 p.attributes().setOwner(this.getContainer().attributes().getOwner());
