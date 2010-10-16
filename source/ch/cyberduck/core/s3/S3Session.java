@@ -210,7 +210,7 @@ public class S3Session extends CloudSession implements SSLSession {
         configuration.setProperty("httpclient.authentication-preemptive", String.valueOf(false));
 
         // How many times to retry connections when they fail with IO errors. Set this to 0 to disable retries.
-        // configuration.setProperty("httpclient.retry-max", String.valueOf(0));
+        configuration.setProperty("httpclient.retry-max", String.valueOf(0));
     }
 
     /**
