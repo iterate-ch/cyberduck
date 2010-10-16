@@ -634,7 +634,7 @@ public class S3Path extends CloudPath {
                                     priorLastKey, priorLastVersionId, true);
                             children.addAll(this.listVersions(container, Arrays.asList(chunk.getItems())));
                         }
-                        while(priorLastKey != null && !status().isCanceled());
+                        while(priorLastKey != null);
                     }
                 }
 
@@ -707,7 +707,7 @@ public class S3Path extends CloudPath {
             }
             priorLastKey = chunk.getPriorLastKey();
         }
-        while(priorLastKey != null && !status().isCanceled());
+        while(priorLastKey != null);
         return children;
     }
 
