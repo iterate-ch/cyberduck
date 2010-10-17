@@ -1887,7 +1887,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             }
             this.background(new BrowserBackgroundAction(this) {
                 public void run() {
-                    unmountImpl();
+                    session.close();
                 }
 
                 @Override
@@ -3440,12 +3440,13 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                     public void cleanup() {
                         browserListModel.clear();
                         browserOutlineModel.clear();
-                        // Set the working directory
-                        setWorkdir(mount);
-                        if(!session.isConnected()) {
+                        if(session.isConnected()) {
+                            // Set the working directory
+                            setWorkdir(mount);
+                        }
+                        else {
                             // Connection attempt failed
                             log.warn("Mount failed:" + host);
-                            unmountImpl();
                         }
                     }
 
@@ -3521,7 +3522,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         final Session session = this.getSession();
         this.background(new AbstractBackgroundAction() {
             public void run() {
-                unmountImpl();
+                session.close();
             }
 
             @Override
@@ -3539,19 +3540,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                         session.getHost().getHostname());
             }
         });
-    }
-
-    /**
-     * Will close the session but still display the current working directory without any confirmation
-     * from the user
-     */
-    private void unmountImpl() {
-        // This is not synchronized to the <code>mountingLock</code> intentionally; this allows to unmount
-        // sessions not yet connected
-        if(this.hasSession()) {
-            //Close the connection gracefully
-            this.session.close();
-        }
     }
 
     /**
@@ -3607,7 +3595,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     private void disconnect() {
         this.background(new BrowserBackgroundAction(this) {
             public void run() {
-                unmountImpl();
+                session.close();
             }
 
             @Override
