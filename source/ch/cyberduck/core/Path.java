@@ -698,8 +698,11 @@ public abstract class Path extends AbstractPath implements Serializable {
      * @param out      The stream to write to
      * @param throttle The bandwidth limit
      * @param l        The stream listener to notify about bytes received and sent
-     * @throws IOResumeException If the input stream fails to skip the appropriate
-     *                           number of bytes
+     * @throws IOResumeException           If the input stream fails to skip the appropriate
+     *                                     number of bytes
+     * @throws IOException                 Write not completed due to a I/O problem
+     * @throws ConnectionCanceledException When transfer is interrupted by user setting the
+     *                                     status flag to cancel.
      */
     protected void upload(OutputStream out, InputStream in, BandwidthThrottle throttle, final StreamListener l) throws IOException {
         if(log.isDebugEnabled()) {
@@ -725,7 +728,9 @@ public abstract class Path extends AbstractPath implements Serializable {
      * @param out      The stream to write to
      * @param throttle The bandwidth limit
      * @param l        The stream listener to notify about bytes received and sent
-     * @throws IOException
+     * @throws IOException                 Write not completed due to a I/O problem
+     * @throws ConnectionCanceledException When transfer is interrupted by user setting the
+     *                                     status flag to cancel.
      */
     protected void download(InputStream in, OutputStream out, BandwidthThrottle throttle, final StreamListener l) throws IOException {
         if(log.isDebugEnabled()) {
@@ -781,10 +786,14 @@ public abstract class Path extends AbstractPath implements Serializable {
     }
 
     /**
+     * Updates the current number of bytes transferred in the status reference.
+     *
      * @param in       The stream to read from
      * @param out      The stream to write to
      * @param listener The stream listener to notify about bytes received and sent
-     * @throws IOException
+     * @throws IOException                 Write not completed due to a I/O problem
+     * @throws ConnectionCanceledException When transfer is interrupted by user setting the
+     *                                     status flag to cancel.
      */
     private void transfer(InputStream in, OutputStream out, StreamListener listener) throws IOException {
         final int chunksize = Preferences.instance().getInteger("connection.chunksize");
@@ -809,6 +818,12 @@ public abstract class Path extends AbstractPath implements Serializable {
         }
     }
 
+    /**
+     * Default implementation using a temporary file on localhost as an intermediary
+     * with a download and upload transfer.
+     *
+     * @param copy Destination
+     */
     @Override
     public void copy(final AbstractPath copy) {
         final Local local = LocalFactory.createLocal(Preferences.instance().getProperty("tmp.dir"),
@@ -867,7 +882,7 @@ public abstract class Path extends AbstractPath implements Serializable {
      */
     @Override
     public int hashCode() {
-        return this.getAbsolute().hashCode();
+        return this.getReference().hashCode();
     }
 
     /**
