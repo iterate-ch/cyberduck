@@ -24,6 +24,7 @@ import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.foundation.*;
 
 import org.rococoa.Foundation;
+import org.rococoa.ID;
 import org.rococoa.Rococoa;
 import org.rococoa.cocoa.foundation.NSPoint;
 import org.rococoa.cocoa.foundation.NSSize;
@@ -272,5 +273,27 @@ public abstract class WindowController extends BundleController implements NSWin
     @Action
     public void helpButtonClicked(final NSButton sender) {
         openUrl(Preferences.instance().getProperty("website.help"));
+    }
+
+    /**
+     * 
+     * @param view
+     */
+    protected void print(NSView view) {
+        NSPrintInfo print = NSPrintInfo.sharedPrintInfo();
+        print.setOrientation(NSPrintInfo.NSPrintingOrientation.NSLandscapeOrientation);
+        NSPrintOperation op = NSPrintOperation.printOperationWithView_printInfo(view, print);
+        op.setShowsPrintPanel(true);
+        final NSPrintPanel panel = op.printPanel();
+        panel.setOptions(panel.options() | NSPrintPanel.NSPrintPanelShowsOrientation
+                | NSPrintPanel.NSPrintPanelShowsPaperSize | NSPrintPanel.NSPrintPanelShowsScaling);
+        op.runOperationModalForWindow_delegate_didRunSelector_contextInfo(this.window(), this.id(),
+                Foundation.selector("printOperationDidRun:success:contextInfo:"), null);
+    }
+
+    public void printOperationDidRun_success_contextInfo(NSPrintOperation op, boolean success, ID contextInfo) {
+        if(!success) {
+            log.warn("Printing failed:" + contextInfo);
+        }
     }
 }

@@ -1028,6 +1028,11 @@ public class TransferController extends WindowController implements NSToolbar.De
         this.updateIcon();
     }
 
+    @Action
+    public void printDocument(final ID sender) {
+        this.print(transferTable);
+    }
+
     /**
      * NSToolbar.Delegate
      *

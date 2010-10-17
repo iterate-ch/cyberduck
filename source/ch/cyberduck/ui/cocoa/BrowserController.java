@@ -3627,21 +3627,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
     @Action
     public void printDocument(final ID sender) {
-        NSPrintInfo print = NSPrintInfo.sharedPrintInfo();
-        print.setOrientation(NSPrintInfo.NSPrintingOrientation.NSLandscapeOrientation);
-        NSPrintOperation op = NSPrintOperation.printOperationWithView_printInfo(this.getSelectedBrowserView(), print);
-        op.setShowsPrintPanel(true);
-        final NSPrintPanel panel = op.printPanel();
-        panel.setOptions(panel.options() | NSPrintPanel.NSPrintPanelShowsOrientation
-                | NSPrintPanel.NSPrintPanelShowsPaperSize | NSPrintPanel.NSPrintPanelShowsScaling);
-        op.runOperationModalForWindow_delegate_didRunSelector_contextInfo(this.window(), this.id(),
-                Foundation.selector("printOperationDidRun:success:contextInfo:"), null);
-    }
-
-    public void printOperationDidRun_success_contextInfo(NSPrintOperation op, boolean success, ID contextInfo) {
-        if(!success) {
-            log.warn("Printing failed:" + contextInfo);
-        }
+        this.print(this.getSelectedBrowserView());
     }
 
     /**
