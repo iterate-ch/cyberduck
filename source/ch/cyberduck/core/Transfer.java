@@ -72,7 +72,7 @@ public abstract class Transfer implements Serializable {
      * @return True if in <code>canceled</code> state
      */
     public boolean isCanceled() {
-        return this.canceled;
+        return canceled;
     }
 
     private boolean running;
