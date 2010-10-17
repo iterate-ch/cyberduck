@@ -406,43 +406,45 @@ public class UploadTransfer extends Transfer {
                 file.mkdir();
             }
         }
-        if(this.getSession().isAclSupported()) {
-            ; // Currently handled in S3 only.
-        }
-        if(this.getSession().isUnixPermissionsSupported()) {
-            if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
-                if(perm.equals(Permission.EMPTY)) {
-                    if(Preferences.instance().getBoolean("queue.upload.permissions.useDefault")) {
-                        if(file.attributes().isFile()) {
-                            perm = new Permission(
-                                    Preferences.instance().getInteger("queue.upload.permissions.file.default"));
+        if(!file.status().isCanceled()) {
+            if(this.getSession().isAclSupported()) {
+                ; // Currently handled in S3 only.
+            }
+            if(this.getSession().isUnixPermissionsSupported()) {
+                if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
+                    if(perm.equals(Permission.EMPTY)) {
+                        if(Preferences.instance().getBoolean("queue.upload.permissions.useDefault")) {
+                            if(file.attributes().isFile()) {
+                                perm = new Permission(
+                                        Preferences.instance().getInteger("queue.upload.permissions.file.default"));
+                            }
+                            else if(file.attributes().isDirectory()) {
+                                perm = new Permission(
+                                        Preferences.instance().getInteger("queue.upload.permissions.folder.default"));
+                            }
                         }
-                        else if(file.attributes().isDirectory()) {
-                            perm = new Permission(
-                                    Preferences.instance().getInteger("queue.upload.permissions.folder.default"));
+                        else {
+                            if(file.getLocal().exists()) {
+                                // Read permissions from local file
+                                perm = file.getLocal().attributes().getPermission();
+                            }
                         }
+                    }
+                    if(perm.equals(Permission.EMPTY)) {
+                        log.debug("Skip writing empty permissions for:" + this.toString());
                     }
                     else {
-                        if(file.getLocal().exists()) {
-                            // Read permissions from local file
-                            perm = file.getLocal().attributes().getPermission();
-                        }
+                        file.writeUnixPermission(perm, false);
                     }
                 }
-                if(perm.equals(Permission.EMPTY)) {
-                    log.debug("Skip writing empty permissions for:" + this.toString());
-                }
-                else {
-                    file.writeUnixPermission(perm, false);
-                }
             }
-        }
-        if(file.getSession().isTimestampSupported()) {
-            if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
-                // Read timestamps from local file
-                file.writeTimestamp(file.getLocal().attributes().getCreationDate(),
-                        file.getLocal().attributes().getModificationDate(),
-                        file.getLocal().attributes().getAccessedDate());
+            if(file.getSession().isTimestampSupported()) {
+                if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
+                    // Read timestamps from local file
+                    file.writeTimestamp(file.getLocal().attributes().getCreationDate(),
+                            file.getLocal().attributes().getModificationDate(),
+                            file.getLocal().attributes().getAccessedDate());
+                }
             }
         }
     }
