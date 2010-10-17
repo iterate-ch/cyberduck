@@ -1,4 +1,4 @@
-﻿// 
+﻿//
 // Copyright (c) 2010 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
@@ -632,7 +632,10 @@ namespace Ch.Cyberduck.Ui.Controller
                     _listener = new TaskbarTransferAdapter(_controller);
                     _transfer.addListener(_listener);
                 }
+                // Attach listeners
                 return base.prepare();
+                // Always continue. Current status might be canceled if interrupted before.
+                return true;
             }
 
             public override void run()
@@ -690,11 +693,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
             public override bool isCanceled()
             {
-                if ((_transfer.isRunning() || _transfer.isQueued()) && _transfer.isCanceled())
-                {
-                    return true;
-                }
-                return base.isCanceled();
+                return _transfers.isCanceled();
             }
 
             public override void log(bool request, string message)

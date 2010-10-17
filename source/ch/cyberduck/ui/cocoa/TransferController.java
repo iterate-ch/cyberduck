@@ -658,7 +658,10 @@ public class TransferController extends WindowController implements NSToolbar.De
                         }
                     }
                 });
-                return super.prepare();
+                // Attach listeners
+                super.prepare();
+                // Always continue. Current status might be canceled if interrupted before.
+                return true;
             }
 
             public void run() {
@@ -710,10 +713,7 @@ public class TransferController extends WindowController implements NSToolbar.De
 
             @Override
             public boolean isCanceled() {
-                if((transfer.isRunning() || transfer.isQueued()) && transfer.isCanceled()) {
-                    return true;
-                }
-                return super.isCanceled();
+                return transfer.isCanceled();
             }
 
             @Override
