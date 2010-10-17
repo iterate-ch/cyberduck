@@ -399,8 +399,7 @@ public class FTPPath extends Path {
                 this.getSession().message(MessageFormat.format(Locale.localizedString("Making directory {0}", "Status"),
                         this.getName()));
 
-                this.getSession().setWorkdir(this.getParent());
-                this.getSession().getClient().mkdir(this.getName());
+                this.getSession().getClient().mkdir(this.getAbsolute());
                 if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
                     if(Preferences.instance().getBoolean("queue.upload.permissions.useDefault")) {
                         this.writeUnixPermissionImpl(new Permission(
@@ -424,8 +423,7 @@ public class FTPPath extends Path {
             this.getSession().message(MessageFormat.format(Locale.localizedString("Renaming {0} to {1}", "Status"),
                     this.getName(), renamed));
 
-            this.getSession().setWorkdir(this.getParent());
-            this.getSession().getClient().rename(this.getName(), renamed.getAbsolute());
+            this.getSession().getClient().rename(this.getAbsolute(), renamed.getAbsolute());
             // The directory listing is no more current
             renamed.getParent().invalidate();
             this.getParent().invalidate();
@@ -538,14 +536,12 @@ public class FTPPath extends Path {
         try {
             this.getSession().check();
             if(attributes().isFile() || attributes().isSymbolicLink()) {
-                this.getSession().setWorkdir(this.getParent());
                 this.getSession().message(MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),
                         this.getName()));
 
-                this.getSession().getClient().delete(this.getName());
+                this.getSession().getClient().delete(this.getAbsolute());
             }
             else if(attributes().isDirectory()) {
-                this.getSession().setWorkdir(this);
                 for(AbstractPath file : this.children()) {
                     if(!this.getSession().isConnected()) {
                         break;
@@ -554,17 +550,16 @@ public class FTPPath extends Path {
                         this.getSession().message(MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),
                                 file.getName()));
 
-                        this.getSession().getClient().delete(file.getName());
+                        this.getSession().getClient().delete(file.getAbsolute());
                     }
                     else if(file.attributes().isDirectory()) {
                         file.delete();
                     }
                 }
-                this.getSession().setWorkdir(this.getParent());
                 this.getSession().message(MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),
                         this.getName()));
 
-                this.getSession().getClient().rmdir(this.getName());
+                this.getSession().getClient().rmdir(this.getAbsolute());
             }
             // The directory listing is no more current
             this.getParent().invalidate();
@@ -691,7 +686,7 @@ public class FTPPath extends Path {
         this.getSession().message(MessageFormat.format(Locale.localizedString("Changing timestamp of {0} to {1}", "Status"),
                 this.getName(), DateFormatterFactory.instance().getShortFormat(modified)));
         try {
-            this.getSession().getClient().mfmt(modified, created, this.getName());
+            this.getSession().getClient().mfmt(modified, created, this.getAbsolute());
             this.attributes().setModificationDate(modified);
             this.attributes().setCreationDate(created);
         }
@@ -713,7 +708,6 @@ public class FTPPath extends Path {
                 this.getSession().check();
             }
             if(attributes().isFile()) {
-                this.getSession().setWorkdir(this.getParent());
                 if(Preferences.instance().getProperty("ftp.transfermode").equals(FTPTransferType.AUTO.toString())) {
                     if(this.getTextFiletypePattern().matcher(this.getName()).matches()) {
                         this.downloadASCII(throttle, listener);
@@ -748,9 +742,20 @@ public class FTPPath extends Path {
                     this.status().setResume(false);
                 }
             }
-            in = this.getSession().getClient().get(this.getName(), this.status().isResume() ? this.getLocal().attributes().getSize() : 0);
+            in = this.getSession().getClient().get(this.getAbsolute(), this.status().isResume() ? this.getLocal().attributes().getSize() : 0);
             out = this.getLocal().getOutputStream(this.status().isResume());
-            this.download(in, out, throttle, listener);
+            try {
+                this.download(in, out, throttle, listener);
+            }
+            catch(ConnectionCanceledException e) {
+                // Interrupted by user
+                IOUtils.closeQuietly(in);
+                IOUtils.closeQuietly(out);
+                // Tell the server to abort the previous FTP service command and any associated transfer of data
+                this.getSession().getClient().abor();
+                this.status().setComplete(false);
+                throw e;
+            }
             if(this.status().isComplete()) {
                 IOUtils.closeQuietly(in);
                 IOUtils.closeQuietly(out);
@@ -761,11 +766,6 @@ public class FTPPath extends Path {
                     this.status().setComplete(false);
                     throw e;
                 }
-            }
-            if(this.status().isCanceled()) {
-                IOUtils.closeQuietly(in);
-                IOUtils.closeQuietly(out);
-                this.getSession().getClient().abor();
             }
         }
         finally {
@@ -789,11 +789,22 @@ public class FTPPath extends Path {
                 lineSeparator = DOS_LINE_SEPARATOR;
             }
             this.getSession().getClient().setTransferType(FTPTransferType.ASCII);
-            in = new FromNetASCIIInputStream(this.getSession().getClient().get(this.getName(), 0),
+            in = new FromNetASCIIInputStream(this.getSession().getClient().get(this.getAbsolute(), 0),
                     lineSeparator);
             out = new FromNetASCIIOutputStream(this.getLocal().getOutputStream(false),
                     lineSeparator);
-            this.download(in, out, throttle, listener);
+            try {
+                this.download(in, out, throttle, listener);
+            }
+            catch(ConnectionCanceledException e) {
+                // Interrupted by user
+                IOUtils.closeQuietly(in);
+                IOUtils.closeQuietly(out);
+                // Tell the server to abort the previous FTP service command and any associated transfer of data
+                this.getSession().getClient().abor();
+                this.status().setComplete(false);
+                throw e;
+            }
             if(this.status().isComplete()) {
                 IOUtils.closeQuietly(in);
                 IOUtils.closeQuietly(out);
@@ -804,11 +815,6 @@ public class FTPPath extends Path {
                     this.status().setComplete(false);
                     throw e;
                 }
-            }
-            if(this.status().isCanceled()) {
-                IOUtils.closeQuietly(in);
-                IOUtils.closeQuietly(out);
-                this.getSession().getClient().abor();
             }
         }
         finally {
@@ -824,7 +830,6 @@ public class FTPPath extends Path {
                 if(check) {
                     this.getSession().check();
                 }
-                this.getSession().setWorkdir(this.getParent());
                 if(Preferences.instance().getProperty("ftp.transfermode").equals(FTPTransferType.AUTO.toString())) {
                     if(this.getTextFiletypePattern().matcher(this.getName()).matches()) {
                         this.uploadASCII(throttle, listener);
@@ -857,8 +862,19 @@ public class FTPPath extends Path {
         try {
             this.getSession().getClient().setTransferType(FTPTransferType.BINARY);
             in = this.getLocal().getInputStream();
-            out = this.getSession().getClient().put(this.getName(), this.status().isResume());
-            this.upload(out, in, throttle, listener);
+            out = this.getSession().getClient().put(this.getAbsolute(), this.status().isResume());
+            try {
+                this.upload(out, in, throttle, listener);
+            }
+            catch(ConnectionCanceledException e) {
+                // Interrupted by user
+                IOUtils.closeQuietly(in);
+                IOUtils.closeQuietly(out);
+                // Tell the server to abort the previous FTP service command and any associated transfer of data
+                this.getSession().getClient().abor();
+                this.status().setComplete(false);
+                throw e;
+            }
             if(status().isComplete()) {
                 IOUtils.closeQuietly(in);
                 IOUtils.closeQuietly(out);
@@ -869,11 +885,6 @@ public class FTPPath extends Path {
                     this.status().setComplete(false);
                     throw e;
                 }
-            }
-            if(status().isCanceled()) {
-                IOUtils.closeQuietly(in);
-                IOUtils.closeQuietly(out);
-                this.getSession().getClient().abor();
             }
         }
         finally {
@@ -888,9 +899,20 @@ public class FTPPath extends Path {
         try {
             this.getSession().getClient().setTransferType(FTPTransferType.ASCII);
             in = new ToNetASCIIInputStream(this.getLocal().getInputStream());
-            out = new ToNetASCIIOutputStream(this.getSession().getClient().put(this.getName(),
+            out = new ToNetASCIIOutputStream(this.getSession().getClient().put(this.getAbsolute(),
                     this.status().isResume()));
-            this.upload(out, in, throttle, listener);
+            try {
+                this.upload(out, in, throttle, listener);
+            }
+            catch(ConnectionCanceledException e) {
+                // Interrupted by user
+                IOUtils.closeQuietly(in);
+                IOUtils.closeQuietly(out);
+                // Tell the server to abort the previous FTP service command and any associated transfer of data
+                this.getSession().getClient().abor();
+                this.status().setComplete(false);
+                throw e;
+            }
             if(this.status().isComplete()) {
                 IOUtils.closeQuietly(in);
                 IOUtils.closeQuietly(out);
@@ -901,11 +923,6 @@ public class FTPPath extends Path {
                     this.status().setComplete(false);
                     throw e;
                 }
-            }
-            if(status().isCanceled()) {
-                IOUtils.closeQuietly(in);
-                IOUtils.closeQuietly(out);
-                this.getSession().getClient().abor();
             }
         }
         finally {
