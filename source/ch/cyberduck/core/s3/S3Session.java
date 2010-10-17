@@ -802,17 +802,25 @@ public class S3Session extends CloudSession implements SSLSession {
                 if(d.isLogging() != logging) {
                     modified = true;
                 }
+
                 if(null == d.getDefaultRootObject() && null == defaultRootObject) {
-                    ;
+                    // No change to default root object
                 }
-                else if(null != d.getDefaultRootObject() && !d.getDefaultRootObject().equals(defaultRootObject)) {
+                else if(null != d.getDefaultRootObject() && null == defaultRootObject) {
                     modified = true;
                 }
+                else if(null == d.getDefaultRootObject() && null != defaultRootObject) {
+                    modified = true;
+                }
+                else if(!d.getDefaultRootObject().equals(defaultRootObject)) {
+                    modified = true;
+                }
+
                 if(modified) {
                     this.updateDistribution(enabled, method, d.getId(), cnames, l, defaultRootObject);
                 }
                 else {
-                    log.debug("Skip updating distribution not modified.");
+                    log.info("Skip updating distribution not modified.");
                 }
             }
         }
