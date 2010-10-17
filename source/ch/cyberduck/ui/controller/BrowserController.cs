@@ -1630,15 +1630,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private bool View_ValidateDuplicateFile()
         {
-            if (IsMounted() && SelectedPaths.Count == 1)
-            {
-                if (null == SelectedPath)
-                {
-                    return false;
-                }
-                return SelectedPath.attributes().isFile();
-            }
-            return false;
+            return IsMounted() && SelectedPaths.Count == 1;
         }
 
         private bool View_ValidateRenameFile()

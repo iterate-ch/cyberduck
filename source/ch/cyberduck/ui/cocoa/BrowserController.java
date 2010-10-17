@@ -3856,14 +3856,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             return this.isMounted() && this.getSession().isCreateFileSupported(this.workdir());
         }
         else if(action.equals(Foundation.selector("duplicateFileButtonClicked:"))) {
-            if(this.isMounted() && this.getSelectionCount() == 1) {
-                final Path selected = this.getSelectedPath();
-                if(null == selected) {
-                    return false;
-                }
-                return selected.attributes().isFile();
-            }
-            return false;
+            return this.isMounted() && this.getSelectionCount() == 1;
         }
         else if(action.equals(Foundation.selector("renameFileButtonClicked:"))) {
             if(this.isMounted() && this.getSelectionCount() == 1) {
