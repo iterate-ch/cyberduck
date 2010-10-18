@@ -626,28 +626,35 @@ public class AzurePath extends CloudPath {
 
     @Override
     public void copy(AbstractPath copy) {
-        if(attributes().isFile()) {
-            final NameValueCollection metadata = new NameValueCollection();
-            if(this.attributes().getMetadata().isEmpty()) {
-                this.readMetadata();
+        if(((Path) copy).getSession().equals(this.getSession())) {
+            // Copy on same server
+            if(attributes().isFile()) {
+                final NameValueCollection metadata = new NameValueCollection();
+                if(this.attributes().getMetadata().isEmpty()) {
+                    this.readMetadata();
+                }
+                metadata.putAll(this.attributes().getMetadata());
+                try {
+                    this.getSession().getContainer(this.getContainerName()).copyBlob(((AzurePath) copy).getContainerName(),
+                            ((AzurePath) copy).getKey(), this.getKey(), metadata, null);
+                }
+                catch(IOException e) {
+                    this.error(this.attributes().isFile() ? "Cannot copy file" : "Cannot copy folder", e);
+                }
             }
-            metadata.putAll(this.attributes().getMetadata());
-            try {
-                this.getSession().getContainer(this.getContainerName()).copyBlob(((AzurePath) copy).getContainerName(),
-                        ((AzurePath) copy).getKey(), this.getKey(), metadata, null);
-            }
-            catch(IOException e) {
-                this.error(this.attributes().isFile() ? "Cannot copy file" : "Cannot copy folder", e);
+            else {
+                for(AbstractPath i : this.children()) {
+                    if(!this.getSession().isConnected()) {
+                        break;
+                    }
+                    i.copy(PathFactory.createPath(this.getSession(), copy.getAbsolute(),
+                            i.getName(), i.attributes().getType()));
+                }
             }
         }
         else {
-            for(AbstractPath i : this.children()) {
-                if(!this.getSession().isConnected()) {
-                    break;
-                }
-                i.copy(PathFactory.createPath(this.getSession(), copy.getAbsolute(),
-                        i.getName(), i.attributes().getType()));
-            }
+            // Copy to different host
+            super.copy(copy);
         }
     }
 

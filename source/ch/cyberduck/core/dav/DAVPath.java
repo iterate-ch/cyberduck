@@ -259,22 +259,29 @@ public class DAVPath extends Path {
 
     @Override
     public void copy(AbstractPath copy) {
-        try {
-            this.getSession().check();
-            this.getSession().message(MessageFormat.format(Locale.localizedString("Copying {0} to {1}", "Status"),
-                    this.getName(), copy));
+        if(((Path) copy).getSession().equals(this.getSession())) {
+            // Copy on same server
+            try {
+                this.getSession().check();
+                this.getSession().message(MessageFormat.format(Locale.localizedString("Copying {0} to {1}", "Status"),
+                        this.getName(), copy));
 
-            if(!this.getSession().getClient().copyMethod(this.getAbsolute(), copy.getAbsolute())) {
-                throw new IOException(this.getSession().getClient().getStatusMessage());
+                if(!this.getSession().getClient().copyMethod(this.getAbsolute(), copy.getAbsolute())) {
+                    throw new IOException(this.getSession().getClient().getStatusMessage());
+                }
+            }
+            catch(IOException e) {
+                if(this.attributes().isFile()) {
+                    this.error("Cannot copy file", e);
+                }
+                if(this.attributes().isDirectory()) {
+                    this.error("Cannot copy folder", e);
+                }
             }
         }
-        catch(IOException e) {
-            if(this.attributes().isFile()) {
-                this.error("Cannot copy file", e);
-            }
-            if(this.attributes().isDirectory()) {
-                this.error("Cannot copy folder", e);
-            }
+        else {
+            // Copy to different host
+            super.copy(copy);
         }
     }
 

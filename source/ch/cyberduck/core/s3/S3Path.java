@@ -1028,42 +1028,49 @@ public class S3Path extends CloudPath {
 
     @Override
     public void copy(AbstractPath copy) {
-        try {
-            this.getSession().check();
-            this.getSession().message(MessageFormat.format(Locale.localizedString("Copying {0} to {1}", "Status"),
-                    this.getName(), copy));
+        if(((Path) copy).getSession().equals(this.getSession())) {
+            // Copy on same server
+            try {
+                this.getSession().check();
+                this.getSession().message(MessageFormat.format(Locale.localizedString("Copying {0} to {1}", "Status"),
+                        this.getName(), copy));
 
-            if(this.attributes().isFile()) {
-                S3Object destination = new S3Object(((S3Path) copy).getKey());
-                // Keep same storage class
-                destination.setStorageClass(this.attributes().getStorageClass());
-                // Apply non standard ACL
-                if(Acl.EMPTY.equals(this.attributes().getAcl())) {
-                    this.readAcl();
-                }
-                destination.setAcl(this.convert(this.attributes().getAcl()));
-                // Copying object applying the metadata of the original
-                this.getSession().getClient().copyObject(this.getContainerName(), this.getKey(),
-                        ((S3Path) copy).getContainerName(), destination, false);
-            }
-            else if(this.attributes().isDirectory()) {
-                for(AbstractPath i : this.children()) {
-                    if(!this.getSession().isConnected()) {
-                        break;
+                if(this.attributes().isFile()) {
+                    S3Object destination = new S3Object(((S3Path) copy).getKey());
+                    // Keep same storage class
+                    destination.setStorageClass(this.attributes().getStorageClass());
+                    // Apply non standard ACL
+                    if(Acl.EMPTY.equals(this.attributes().getAcl())) {
+                        this.readAcl();
                     }
-                    S3Path destination = (S3Path) PathFactory.createPath(this.getSession(), copy.getAbsolute(),
-                            i.getName(), i.attributes().getType());
-                    // Apply storage class of parent directory
-                    ((S3Path) i).attributes().setStorageClass(this.attributes().getStorageClass());
-                    i.copy(destination);
+                    destination.setAcl(this.convert(this.attributes().getAcl()));
+                    // Copying object applying the metadata of the original
+                    this.getSession().getClient().copyObject(this.getContainerName(), this.getKey(),
+                            ((S3Path) copy).getContainerName(), destination, false);
+                }
+                else if(this.attributes().isDirectory()) {
+                    for(AbstractPath i : this.children()) {
+                        if(!this.getSession().isConnected()) {
+                            break;
+                        }
+                        S3Path destination = (S3Path) PathFactory.createPath(this.getSession(), copy.getAbsolute(),
+                                i.getName(), i.attributes().getType());
+                        // Apply storage class of parent directory
+                        ((S3Path) i).attributes().setStorageClass(this.attributes().getStorageClass());
+                        i.copy(destination);
+                    }
                 }
             }
+            catch(ServiceException e) {
+                this.error(this.attributes().isFile() ? "Cannot copy file" : "Cannot copy folder", e);
+            }
+            catch(IOException e) {
+                this.error(this.attributes().isFile() ? "Cannot copy file" : "Cannot copy folder", e);
+            }
         }
-        catch(ServiceException e) {
-            this.error(this.attributes().isFile() ? "Cannot copy file" : "Cannot copy folder", e);
-        }
-        catch(IOException e) {
-            this.error(this.attributes().isFile() ? "Cannot copy file" : "Cannot copy folder", e);
+        else {
+            // Copy to different host
+            super.copy(copy);
         }
     }
 
