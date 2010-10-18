@@ -19,7 +19,6 @@ package ch.cyberduck.ui.cocoa.model;
  */
 
 import ch.cyberduck.core.*;
-import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.threading.DefaultMainAction;
 import ch.cyberduck.ui.cocoa.IconCache;
 import ch.cyberduck.ui.cocoa.ProxyController;
@@ -93,10 +92,10 @@ public class FinderLocal extends Local {
     @Override
     public void setPath(String name) {
         if(loadNative()) {
-            super.setPath(Path.normalize(this.resolveAlias(stringByExpandingTildeInPath(name))));
+            super.setPath(this.resolveAlias(stringByExpandingTildeInPath(name)));
         }
         else {
-            super.setPath(Path.normalize(stringByExpandingTildeInPath(name)));
+            super.setPath(stringByExpandingTildeInPath(name));
         }
     }
 
@@ -106,7 +105,7 @@ public class FinderLocal extends Local {
             // See trac #933
             name = name.replace(this.getPathDelimiter(), ':');
         }
-        super.setPath(Path.normalize(stringByExpandingTildeInPath(parent)), Path.normalize(name));
+        super.setPath(stringByExpandingTildeInPath(parent), name);
     }
 
     /**
