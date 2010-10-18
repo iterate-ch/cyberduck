@@ -136,14 +136,16 @@ public class MainController extends BundleController implements NSApplication.De
 
     public void setApplicationMenu(NSMenu menu) {
         this.applicationMenu = menu;
+        this.updateLicenseMenu();
+    }
+
+    private void updateLicenseMenu() {
         String name = LicenseFactory.find().toString();
-        this.applicationMenu.insertItemWithTitle_action_keyEquivalent_atIndex(name,
-                null, "", new NSInteger(5));
         NSDictionary KEY_FONT_ATTRIBUTES = NSDictionary.dictionaryWithObjectsForKeys(
                 NSArray.arrayWithObjects(NSFont.userFontOfSize(NSFont.smallSystemFontSize()), NSColor.darkGrayColor()),
                 NSArray.arrayWithObjects(NSAttributedString.FontAttributeName, NSAttributedString.ForegroundColorAttributeName)
         );
-        this.applicationMenu.itemWithTitle(name).setAttributedTitle(
+        this.applicationMenu.itemAtIndex(new NSInteger(5)).setAttributedTitle(
                 NSAttributedString.attributedStringWithAttributes(name, KEY_FONT_ATTRIBUTES)
         );
     }
@@ -429,8 +431,9 @@ public class MainController extends BundleController implements NSApplication.De
                     if(alert.runModal() == SheetCallback.DEFAULT_OPTION) {
                         f.copy(LocalFactory.createLocal(Preferences.instance().getProperty("application.support.path"), f.getName()));
                         for(BrowserController c : MainController.getBrowsers()) {
-                            c.getDonateButton().removeFromSuperview();
+                            c.removeDonateWindowTitle();
                         }
+                        this.updateLicenseMenu();
                     }
                 }
                 else {

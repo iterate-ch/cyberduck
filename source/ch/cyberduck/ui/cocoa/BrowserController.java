@@ -478,6 +478,10 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         view.addSubview(donateButton);
     }
 
+    public void removeDonateWindowTitle() {
+        donateButton.removeFromSuperview();
+    }
+
     private static final int TAB_BOOKMARKS = 0;
     private static final int TAB_LIST_VIEW = 1;
     private static final int TAB_OUTLINE_VIEW = 2;
