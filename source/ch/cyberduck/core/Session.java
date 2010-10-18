@@ -242,6 +242,9 @@ public abstract class Session implements TranscriptListener {
      */
     public Path mount() {
         try {
+            if(StringUtils.isNotBlank(host.getWorkdir())) {
+                return this.mount(host.getWorkdir());
+            }
             if(StringUtils.isNotBlank(host.getDefaultPath())) {
                 return this.mount(host.getDefaultPath());
             }
