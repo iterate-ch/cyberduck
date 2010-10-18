@@ -1,4 +1,4 @@
-﻿// 
+﻿//
 // Copyright (c) 2010 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
@@ -120,17 +120,13 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public override string kind()
         {
-            if (attributes().isFile())
+            // Native file type mapping
+            String kind = LocalImpl.kind(getExtension());
+            if (string.IsNullOrEmpty(kind))
             {
-                // Native file type mapping
-                String kind = LocalImpl.kind(getExtension());
-                if (string.IsNullOrEmpty(kind))
-                {
-                    return Locale.localizedString("Unknown");
-                }
-                return kind;
+                return base.kind();
             }
-            return base.kind();
+            return kind;
         }
 
         /// <summary>

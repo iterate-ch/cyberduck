@@ -326,15 +326,12 @@ public class FinderLocal extends Local {
      */
     @Override
     public String kind() {
-        if(this.attributes().isFile()) {
-            // Native file type mapping
-            final String kind = kind(this.getExtension());
-            if(StringUtils.isEmpty(kind)) {
-                return Locale.localizedString("Unknown");
-            }
-            return kind;
+        // Native file type mapping
+        final String kind = kind(this.getExtension());
+        if(StringUtils.isEmpty(kind)) {
+            return super.kind();
         }
-        return super.kind();
+        return kind;
     }
 
     public static native String kind(String extension);
