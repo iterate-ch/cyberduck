@@ -693,7 +693,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
             public override bool isCanceled()
             {
-                return _transfers.isCanceled();
+                return _transfer.isCanceled();
             }
 
             public override void log(bool request, string message)
