@@ -20,6 +20,7 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.ui.AbstractPathTableDelegate;
 import ch.cyberduck.ui.DateFormatterFactory;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;

@@ -16,10 +16,11 @@
  *  dkocher@cyberduck.ch
  */
 
-package ch.cyberduck.ui.cocoa;
+package ch.cyberduck.ui;
 
 import ch.cyberduck.core.*;
-import ch.cyberduck.ui.DateFormatterFactory;
+import ch.cyberduck.ui.cocoa.AbstractTableDelegate;
+import ch.cyberduck.ui.cocoa.BrowserTableDataSource;
 
 import org.apache.log4j.Logger;
 
