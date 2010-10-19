@@ -3,54 +3,11 @@
 /Credits.rtf -text
 /Cyberduck[!!-~]Website.webloc -text
 /Cyberduck.scriptTerminology -text svneol=unset#application/octet-stream
-Dashboard[!!-~]Widget/Cyberduck.wdgt/Default.png -text svneol=unset#image/png
-Dashboard[!!-~]Widget/Cyberduck.wdgt/Icon.png -text svneol=unset#image/png
-Dashboard[!!-~]Widget/Cyberduck.wdgt/Images/back.png -text svneol=unset#image/png
-Dashboard[!!-~]Widget/Cyberduck.wdgt/Images/bookmark.png -text svneol=unset#image/png
-Dashboard[!!-~]Widget/Cyberduck.wdgt/Images/duck.png -text svneol=unset#image/png
-Dashboard[!!-~]Widget/Cyberduck.wdgt/Images/front.png -text svneol=unset#image/png
-Dashboard[!!-~]Widget/Cyberduck.wdgt/Info.plist -text
-Dashboard[!!-~]Widget/Cyberduck.wdgt/Scripts/Upload.scpt -text
-Dashboard[!!-~]Widget/Cyberduck.wdgt/Upload.css -text
-Dashboard[!!-~]Widget/Cyberduck.wdgt/Upload.html -text
-Dashboard[!!-~]Widget/Cyberduck.wdgt/Upload.js -text
-Dashboard[!!-~]Widget/Cyberduck.wdgt/ca.lproj/localizedStrings.js -text
-Dashboard[!!-~]Widget/Cyberduck.wdgt/cs.lproj/localizedStrings.js -text
-Dashboard[!!-~]Widget/Cyberduck.wdgt/cy.lproj/localizedStrings.js -text
-Dashboard[!!-~]Widget/Cyberduck.wdgt/da.lproj/localizedStrings.js -text
-Dashboard[!!-~]Widget/Cyberduck.wdgt/de.lproj/localizedStrings.js -text
-Dashboard[!!-~]Widget/Cyberduck.wdgt/en.lproj/localizedStrings.js -text
-Dashboard[!!-~]Widget/Cyberduck.wdgt/es.lproj/localizedStrings.js -text
-Dashboard[!!-~]Widget/Cyberduck.wdgt/fi.lproj/localizedStrings.js -text
-Dashboard[!!-~]Widget/Cyberduck.wdgt/fr.lproj/localizedStrings.js -text
-Dashboard[!!-~]Widget/Cyberduck.wdgt/he.lproj/localizedStrings.js -text
-Dashboard[!!-~]Widget/Cyberduck.wdgt/hu.lproj/localizedStrings.js -text
-Dashboard[!!-~]Widget/Cyberduck.wdgt/id.lproj/localizedStrings.js -text
-Dashboard[!!-~]Widget/Cyberduck.wdgt/it.lproj/localizedStrings.js -text
-Dashboard[!!-~]Widget/Cyberduck.wdgt/ja.lproj/localizedStrings.js -text
-Dashboard[!!-~]Widget/Cyberduck.wdgt/ko.lproj/localizedStrings.js -text
-Dashboard[!!-~]Widget/Cyberduck.wdgt/nl.lproj/localizedStrings.js -text
-Dashboard[!!-~]Widget/Cyberduck.wdgt/no.lproj/localizedStrings.js -text
-Dashboard[!!-~]Widget/Cyberduck.wdgt/pl.lproj/localizedStrings.js -text
-Dashboard[!!-~]Widget/Cyberduck.wdgt/pt.lproj/localizedStrings.js -text
-Dashboard[!!-~]Widget/Cyberduck.wdgt/ru.lproj/localizedStrings.js -text
-Dashboard[!!-~]Widget/Cyberduck.wdgt/sk.lproj/localizedStrings.js -text
-Dashboard[!!-~]Widget/Cyberduck.wdgt/sv.lproj/localizedStrings.js -text
-Dashboard[!!-~]Widget/Cyberduck.wdgt/th.lproj/localizedStrings.js -text
-Dashboard[!!-~]Widget/Cyberduck.wdgt/zh_CN.lproj/localizedStrings.js -text
-Dashboard[!!-~]Widget/Cyberduck.wdgt/zh_TW.lproj/localizedStrings.js -text
-Dashboard[!!-~]Widget/Plugin/BookmarkPlugin.m -text
-Dashboard[!!-~]Widget/Plugin/BookmarkPlugin_Prefix.pch -text
-Dashboard[!!-~]Widget/Plugin/English.lproj/InfoPlist.strings -text
-Dashboard[!!-~]Widget/Plugin/Info.plist -text
-Dashboard[!!-~]Widget/Plugin/Plugin.xcodeproj/project.pbxproj -text
 /Donate.webloc -text
-Download[!!-~]Automator[!!-~]Action/English.lproj/InfoPlist.strings svneol=native#unset
 /Info.plist.debug -text
 /LICENSE.txt -text
 Spotlight[!!-~]Importer/English.lproj/InfoPlist.strings svneol=native#unset
 Spotlight[!!-~]Importer/English.lproj/schema.strings svneol=native#unset
-Upload[!!-~]Automator[!!-~]Action/English.lproj/InfoPlist.strings svneol=native#unset
 /build-mac.xml -text
 ca.lproj/Alert.nib/classes.nib -text
 ca.lproj/Alert.nib/info.nib -text
