@@ -140,16 +140,19 @@ JNIEXPORT jobjectArray JNICALL Java_ch_cyberduck_ui_cocoa_model_FinderLocal_appl
 JNIEXPORT jstring JNICALL Java_ch_cyberduck_ui_cocoa_model_FinderLocal_kind(JNIEnv *env, jobject this, jstring extension)
 {
 	NSString *kind = nil;
-	LSCopyKindStringForTypeInfo(kLSUnknownType, kLSUnknownCreator, 
+	OSStatus status = LSCopyKindStringForTypeInfo(kLSUnknownType, kLSUnknownCreator,
 		(CFStringRef)convertToNSString(env, extension), (CFStringRef *)&kind);
-	if(!kind) {
-		kind = NSLocalizedString(@"Unknown", @"");
+    if(noErr == status) {
+        jstring result = (*env)->NewStringUTF(env, [kind UTF8String]);
+        if(kind) {
+            [kind release];
+        }
+        return result;
+    }
+	else {
+        jstring result = (*env)->NewStringUTF(env, [NSLocalizedString(@"Unknown", @"") UTF8String]);
+        return result;
 	}
-	jstring result = (*env)->NewStringUTF(env, [kind UTF8String]);
-	if(kind) {
-		[kind release];
-	}
-	return result;
 }
 
 JNIEXPORT jstring JNICALL Java_ch_cyberduck_ui_cocoa_model_FinderLocal_resolveAlias(JNIEnv *env, jobject this, jstring absolute)
