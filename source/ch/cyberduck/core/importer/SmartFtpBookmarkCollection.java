@@ -55,7 +55,7 @@ public class SmartFtpBookmarkCollection extends XmlBookmarkCollection {
                 if(file.attributes().isDirectory()) {
                     return true;
                 }
-                return file.getExtension().equals("xml");
+                return "xml".equals(file.getExtension());
             }
         })) {
             if(child.attributes().isDirectory()) {
