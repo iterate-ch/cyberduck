@@ -25,6 +25,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSBundle;
 import org.apache.commons.collections.map.LRUMap;
 import org.apache.log4j.Logger;
 
+import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -44,13 +45,13 @@ public class BundleLocale extends Locale {
         }
     }
 
-    private static Map<String, String> cache = new LRUMap() {
+    private static Map<String, String> cache = Collections.<String, String>synchronizedMap(new LRUMap() {
         @Override
         protected boolean removeLRU(LinkEntry entry) {
             log.debug("Removing from cache:" + entry);
             return true;
         }
-    };
+    });
 
     @Override
     public String get(final String key, final String table) {
