@@ -2,7 +2,7 @@
 - [Feature] Version for Microsoft Windows XP, Windows Vista & Windows 7.
 - [Feature] Connecting to Windows Azure Blob Storage (Azure) (#3938)
 
-3.6.2 [http://trac.cyberduck.ch/milestone/3.6.2]
+3.7 (Oct-20-2010) [http://trac.cyberduck.ch/milestone/3.7]
 - [Feature] Option to upload with temporary name and rename file after transfer is complete (#4165)
 - [Feature] Copy files between browser windows with different sessions (#21)
 - [Feature] Option to display hidden files in upload prompt (#1243)
