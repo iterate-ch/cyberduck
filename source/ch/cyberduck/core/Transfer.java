@@ -460,7 +460,7 @@ public abstract class Transfer implements Serializable {
             }
             for(Path child : children) {
                 this.transfer(child, filter);
-                if(child.attributes().isFile() && !child.status().isComplete()) {
+                if(!child.status().isComplete()) {
                     failure = true;
                 }
             }
