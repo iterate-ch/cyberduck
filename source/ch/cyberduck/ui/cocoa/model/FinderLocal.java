@@ -325,8 +325,12 @@ public class FinderLocal extends Local {
      */
     @Override
     public String kind() {
+        String suffix = this.getExtension();
+        if(StringUtils.isEmpty(suffix)) {
+            return super.kind();
+        }
         // Native file type mapping
-        final String kind = kind(this.getExtension());
+        final String kind = kind(suffix);
         if(StringUtils.isEmpty(kind)) {
             return super.kind();
         }
