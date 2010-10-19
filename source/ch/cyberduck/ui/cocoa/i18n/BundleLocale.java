@@ -22,12 +22,16 @@ import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.i18n.LocaleFactory;
 import ch.cyberduck.ui.cocoa.foundation.NSBundle;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.collections.map.LRUMap;
+import org.apache.log4j.Logger;
+
+import java.util.Map;
 
 /**
  * @version $Id$
  */
 public class BundleLocale extends Locale {
+    private static Logger log = Logger.getLogger(BundleLocale.class);
 
     public static void register() {
         LocaleFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
@@ -40,8 +44,20 @@ public class BundleLocale extends Locale {
         }
     }
 
+    private static Map<String, String> cache = new LRUMap() {
+        @Override
+        protected boolean removeLRU(LinkEntry entry) {
+            log.debug("Removing from cache:" + entry);
+            return true;
+        }
+    };
+
     @Override
     public String get(final String key, final String table) {
-        return NSBundle.localizedString(key, table);
+        String identifier = table + "." + key;
+        if(!cache.containsKey(identifier)) {
+            cache.put(identifier, NSBundle.localizedString(key, table));
+        }
+        return cache.get(identifier);
     }
 }
