@@ -58,9 +58,7 @@ public abstract class AbstractHostCollection extends Collection<Host> {
             }
             temporary.add(host);
         }
-        boolean result = super.addAll(temporary);
-        this.sort();
-        return result;
+        return super.addAll(temporary);
     }
 
     @Override
@@ -69,9 +67,7 @@ public abstract class AbstractHostCollection extends Collection<Host> {
             log.warn("Reset UUID of duplicate in collection:" + host);
             host.setUuid(null);
         }
-        boolean result = super.add(host);
-        this.sort();
-        return result;
+        return super.add(host);
     }
 
     @Override
@@ -81,7 +77,12 @@ public abstract class AbstractHostCollection extends Collection<Host> {
             host.setUuid(null);
         }
         super.add(row, host);
+    }
+
+    @Override
+    public void collectionItemAdded(Host item) {
         this.sort();
+        super.collectionItemAdded(item);
     }
 
     protected void sort() {

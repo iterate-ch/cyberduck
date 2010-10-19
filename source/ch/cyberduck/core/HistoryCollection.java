@@ -69,6 +69,12 @@ public class HistoryCollection extends AbstractHostCollection {
         return LocalFactory.createLocal(folder, bookmark.getNickname() + ".duck");
     }
 
+    @Override
+    public void collectionItemAdded(Host bookmark) {
+        HostWriterFactory.instance().write(bookmark, this.getFile(bookmark));
+        super.collectionItemAdded(bookmark);
+    }
+
     /**
      * Does not allow duplicate entries.
      *
@@ -77,13 +83,10 @@ public class HistoryCollection extends AbstractHostCollection {
      */
     @Override
     public void add(int row, Host bookmark) {
-        HostWriterFactory.instance().write(bookmark, this.getFile(bookmark));
-        if(!this.contains(bookmark)) {
-            super.add(row, bookmark);
+        if(this.contains(bookmark)) {
+            this.remove(bookmark);
         }
-        else {
-            this.sort();
-        }
+        super.add(row, bookmark);
     }
 
     /**
@@ -94,14 +97,10 @@ public class HistoryCollection extends AbstractHostCollection {
      */
     @Override
     public boolean add(Host bookmark) {
-        HostWriterFactory.instance().write(bookmark, this.getFile(bookmark));
-        if(!this.contains(bookmark)) {
-            super.add(bookmark);
+        if(this.contains(bookmark)) {
+            this.remove(bookmark);
         }
-        else {
-            this.sort();
-        }
-        return true;
+        return super.add(bookmark);
     }
 
     /**
@@ -146,7 +145,6 @@ public class HistoryCollection extends AbstractHostCollection {
         for(Local next : bookmarks) {
             super.add(reader.read(next));
         }
-        this.sort();
     }
 
     @Override
