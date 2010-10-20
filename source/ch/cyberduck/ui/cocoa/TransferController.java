@@ -23,6 +23,7 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
+import ch.cyberduck.core.threading.ControllerMainAction;
 import ch.cyberduck.ui.PathPasteboard;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.delegate.AbstractMenuDelegate;
@@ -300,12 +301,20 @@ public class TransferController extends WindowController implements NSToolbar.De
         TransferCollection.defaultCollection().addListener(new AbstractCollectionListener<Transfer>() {
             @Override
             public void collectionItemAdded(Transfer item) {
-                reload();
+                invoke(new ControllerMainAction(TransferController.this) {
+                    public void run() {
+                        reload();
+                    }
+                });
             }
 
             @Override
             public void collectionItemRemoved(Transfer item) {
-                reload();
+                invoke(new ControllerMainAction(TransferController.this) {
+                    public void run() {
+                        reload();
+                    }
+                });
             }
         });
     }
