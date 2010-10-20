@@ -59,6 +59,7 @@ public class TransmitBookmarkCollection extends ThirdpartyBookmarkCollection {
 
         TransmitFavorite f = Rococoa.createClass("CDTransmitImportFavorite", TransmitFavorite.class);
         NSKeyedUnarchiver.setClass_forClassName(f, "Favorite");
+        NSKeyedUnarchiver.setClass_forClassName(f, "DotMacFavorite");
 
         NSData collectionsData = Rococoa.cast(serialized.objectForKey("FavoriteCollections"), NSData.class);
         TransmitFavoriteCollection rootCollection
