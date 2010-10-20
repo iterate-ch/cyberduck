@@ -20,7 +20,7 @@ package ch.cyberduck.core;
  */
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class SystemConfigurationReachability implements Reachability {
 
@@ -60,7 +60,15 @@ public class SystemConfigurationReachability implements Reachability {
         if(!loadNative()) {
             return false;
         }
-        return this.isReachable(host.toURL());
+        return this.isReachable(this.toURL(host));
+    }
+
+    private String toURL(Host host) {
+        StringBuilder url = new StringBuilder(host.getProtocol().getScheme());
+        url.append("://");
+        url.append(host.getHostname(true));
+        url.append(":").append(host.getPort());
+        return url.toString();
     }
 
     private native boolean isReachable(String url);
