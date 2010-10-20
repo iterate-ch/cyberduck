@@ -37,7 +37,7 @@ import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
+import org.apache.http.impl.conn.SingleClientConnManager;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
@@ -181,7 +181,7 @@ public class AzureSession extends CloudSession implements SSLSession {
                 registry.register(
                         new Scheme(host.getProtocol().getScheme(), PlainSocketFactory.getSocketFactory(), host.getPort()));
             }
-            ClientConnectionManager manager = new ThreadSafeClientConnManager(params, registry);
+            ClientConnectionManager manager = new SingleClientConnManager(params, registry);
             http = new DefaultHttpClient(manager, params);
         }
         return http;
@@ -242,6 +242,11 @@ public class AzureSession extends CloudSession implements SSLSession {
         try {
             if(this.isConnected()) {
                 this.fireConnectionWillCloseEvent();
+                // When HttpClient instance is no longer needed, shut down the connection manager to ensure
+                // immediate deallocation of all system resources
+                if(null != http) {
+                    http.getConnectionManager().shutdown();
+                }
             }
         }
         finally {
