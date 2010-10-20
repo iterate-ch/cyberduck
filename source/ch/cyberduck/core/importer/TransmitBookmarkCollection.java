@@ -135,7 +135,7 @@ public class TransmitBookmarkCollection extends ThirdpartyBookmarkCollection {
             bookmark.getCredentials().setUsername(
                     Preferences.instance().getProperty("connection.login.anon.name"));
         }
-        String path = favorite.initialPath();
+        String path = favorite.path();
         if(StringUtils.isNotBlank(path)) {
             bookmark.setDefaultPath(path);
         }
@@ -155,11 +155,9 @@ public class TransmitBookmarkCollection extends ThirdpartyBookmarkCollection {
 
         String username();
 
-        String password();
-
         String protocol();
 
-        String initialPath();
+        String path();
 
         int port();
     }

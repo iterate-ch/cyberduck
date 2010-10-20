@@ -20,32 +20,30 @@
 
 @implementation CDTransmitImportFavorite
 
-@synthesize nickname, username, password, protocol, server, initialPath;
+@synthesize nickname, username, protocol, server, path;
 @synthesize port;
 
 -(void)dealloc {
 	[nickname release];
 	[username release];
-	[password release];
 	[protocol release];
 	[server release];
-	[initialPath release];
+	[path release];
 	
 	[super dealloc];
 }
 
--(id)initWithCoder:(NSKeyedUnarchiver*)unarchiver{
+-(id)initWithCoder:(NSKeyedUnarchiver*)unarchiver {
 	self = [self init];
 	
 	// There are more attributes, but the rest is Transmit-bound	
 	nickname = [[unarchiver decodeObjectForKey:@"nickname"] retain];
-	initialPath = [[unarchiver decodeObjectForKey:@"initialRemotePath"] retain];
-	password = [[unarchiver decodeObjectForKey:@"password"] retain];
-	port = [unarchiver decodeIntForKey:@"port"];
+	username = [[unarchiver decodeObjectForKey:@"username"] retain];
 	protocol = [[unarchiver decodeObjectForKey:@"protocol"] retain];
 	server = [[unarchiver decodeObjectForKey:@"server"] retain];
-	username = [[unarchiver decodeObjectForKey:@"username"] retain];
-	
+	path = [[unarchiver decodeObjectForKey:@"initialRemotePath"] retain];
+	port = [unarchiver decodeIntForKey:@"port"];
+
 	return self;
 }
 
@@ -56,13 +54,14 @@
 @synthesize name = _name;
 @synthesize favorites = _favorites ;
 
--(void)dealloc{
+-(void)dealloc {
 	[_name release];
 	[_favorites release];
+
 	[super dealloc];
 }
 
--(id)initWithCoder:(NSKeyedUnarchiver*)unarchiver{
+-(id)initWithCoder:(NSKeyedUnarchiver*)unarchiver {
 	self = [self init];
 	
 	_name = [[unarchiver decodeObjectForKey:@"name"] retain];

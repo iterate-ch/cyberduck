@@ -32,18 +32,14 @@
 //The favortite class
 @interface CDTransmitImportFavorite : NSObject {
 	NSString *nickname; //Favorite's name
-	
 	NSString *username; //Username
-	NSString *password; //Password might be stored here - however, it was always nil in all my examples
-	
 	NSString *protocol; //Protocol to be used - FTP, SFTP, S3, FTPSSL (FTP with implicit SSL), FTPTLS (FTP with TLS/SSL), WebDAV, WebDAVS
 	NSString *server; //Server URL
 	int port; //Port to be used. When default, is 0
-	
-	NSString *initialPath; //Initial path for the server
+	NSString *path; //Initial path for the server
 }
 
-@property (readonly) NSString *nickname, *username, *password, *protocol, *server, *initialPath;
+@property (readonly) NSString *nickname, *username, *protocol, *server, *path;
 @property (readonly) int port;
 
 @end
