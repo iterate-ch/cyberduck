@@ -8,6 +8,9 @@ Changelog. Last modified: $Date$
 - [Feature] Version for Microsoft Windows XP, Windows Vista & Windows 7.
 - [Feature] Connecting to Windows Azure Blob Storage (Azure) (#3938)
 
+3.7.1 (Oct-20-2010) [http://trac.cyberduck.ch/milestone/3.7.1]
+- [Bugfix] Crash importing Transmit bookmarks for some users (#5351)
+
 3.7 (Oct-20-2010) [http://trac.cyberduck.ch/milestone/3.7]
 - [Feature] Option to upload with temporary name and rename file after transfer is complete (#4165)
 - [Feature] Copy files between browser windows with different sessions (#21)
