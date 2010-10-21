@@ -1663,15 +1663,10 @@ public class InfoController extends ToolbarWindowController {
     }
 
     private void updateSize(long size) {
-        StringBuilder formatted = new StringBuilder(Status.getSizeAsString(size));
-        if(size > -1) {
-            formatted.append(" (").append(NumberFormat.getInstance().format(size)).append(" bytes)");
-        }
         sizeField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
-                formatted.toString(),
+                Status.getSizeAsString(size, true),
                 TRUNCATE_MIDDLE_ATTRIBUTES));
     }
-
 
     private void initChecksum() {
         if(this.numberOfFiles() > 1) {

@@ -1265,12 +1265,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void UpdateSize(long size)
         {
-            StringBuilder formatted = new StringBuilder(Status.getSizeAsString(size));
-            if (size > -1)
-            {
-                formatted.Append(" (").Append(size.ToString("N0")).Append(" bytes)");
-            }
-            View.FileSize = formatted.ToString();
+            View.FileSize = Status.getSizeAsString(size, true);
         }
 
         private class CacheControlBackgroundAction : BrowserBackgroundAction

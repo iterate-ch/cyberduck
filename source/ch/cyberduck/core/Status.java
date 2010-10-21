@@ -24,6 +24,7 @@ import org.apache.log4j.Logger;
 
 import java.math.BigDecimal;
 import java.text.MessageFormat;
+import java.text.NumberFormat;
 
 /**
  * The Status class is the model of a download's status.
@@ -67,38 +68,56 @@ public class Status {
      * @return The size of the file using BigDecimal.ROUND_HALF_UP rounding
      */
     public static String getSizeAsString(double size) {
-        return getSizeAsString(size, true);
+        return getSizeAsString(size, false, true);
+    }
+
+    /**
+     *
+     * @param size
+     * @param number
+     * @return
+     */
+    public static String getSizeAsString(double size, boolean number) {
+        return getSizeAsString(size, number, true);
     }
 
     /**
      * @param size
      * @param bytes Report file size as bytes or bits.
+     * @param number Include plain format of bytes
      * @return
      */
-    public static String getSizeAsString(double size, boolean bytes) {
+    public static String getSizeAsString(double size, boolean number, boolean bytes) {
         if(-1 == size) {
             return Locale.localizedString("Unknown size");
         }
         if(size < KILO) {
             return (int) size + (bytes ? " B" : " bit");
         }
+        StringBuilder formatted = new StringBuilder();
         if(size < MEGA) {
-            return new BigDecimal(size).divide(new BigDecimal(KILO),
+            formatted.append(new BigDecimal(size).divide(new BigDecimal(KILO),
                     1,
-                    BigDecimal.ROUND_DOWN).toString() + (bytes ? " KB" : " kbit");
+                    BigDecimal.ROUND_DOWN).toString()).append(bytes ? " KB" : " kbit");
         }
-        if(size < GIGA) {
-            return new BigDecimal(size).divide(new BigDecimal(MEGA),
+        else if(size < GIGA) {
+            formatted.append(new BigDecimal(size).divide(new BigDecimal(MEGA),
                     1,
-                    BigDecimal.ROUND_DOWN).toString() + (bytes ? " MB" : " Mbit");
+                    BigDecimal.ROUND_DOWN).toString()).append(bytes ? " MB" : " Mbit");
         }
-        return new BigDecimal(size).divide(new BigDecimal(GIGA),
-                1,
-                BigDecimal.ROUND_DOWN).toString() + (bytes ? " GB" : " Gbit");
+        else {
+            formatted.append(new BigDecimal(size).divide(new BigDecimal(GIGA),
+                    1,
+                    BigDecimal.ROUND_DOWN).toString()).append(bytes ? " GB" : " Gbit");
+        }
+        if(number) {
+            formatted.append(" (").append(NumberFormat.getInstance().format(size)).append(" bytes)");
+        }
+        return formatted.toString();
     }
 
     public static String getSpeedAsString(double size) {
-        return getSizeAsString(size, true);
+        return getSizeAsString(size, false, true);
     }
 
     /**
