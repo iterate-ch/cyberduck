@@ -91,6 +91,9 @@ public class AlertHostKeyController extends MemoryHostKeyVerifier {
                 log.error("Cannot read " + file.getAbsolute());
             }
         }
+        if(null == database) {
+            return super.getDatabase();
+        }
         return database;
     }
 
