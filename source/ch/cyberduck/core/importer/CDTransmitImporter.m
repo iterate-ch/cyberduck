@@ -35,15 +35,18 @@
 
 -(id)initWithCoder:(NSKeyedUnarchiver*)unarchiver {
 	self = [self init];
-	
-	// There are more attributes, but the rest is Transmit-bound	
-	nickname = [[unarchiver decodeObjectForKey:@"nickname"] retain];
-	username = [[unarchiver decodeObjectForKey:@"username"] retain];
-	protocol = [[unarchiver decodeObjectForKey:@"protocol"] retain];
-	server = [[unarchiver decodeObjectForKey:@"server"] retain];
-	path = [[unarchiver decodeObjectForKey:@"initialRemotePath"] retain];
-	port = [unarchiver decodeIntForKey:@"port"];
-
+    @try {
+        // There are more attributes, but the rest is Transmit-bound	
+        nickname = [[unarchiver decodeObjectForKey:@"nickname"] retain];
+        username = [[unarchiver decodeObjectForKey:@"username"] retain];
+        protocol = [[unarchiver decodeObjectForKey:@"protocol"] retain];
+        server = [[unarchiver decodeObjectForKey:@"server"] retain];
+        path = [[unarchiver decodeObjectForKey:@"initialRemotePath"] retain];
+        port = [unarchiver decodeIntForKey:@"port"];
+    }
+    @catch (NSException *e) {
+		NSLog(@"Exception in unarchiver:%@", [e reason]);
+    }
 	return self;
 }
 
@@ -63,10 +66,13 @@
 
 -(id)initWithCoder:(NSKeyedUnarchiver*)unarchiver {
 	self = [self init];
-	
-	_name = [[unarchiver decodeObjectForKey:@"name"] retain];
-	_favorites = [[unarchiver decodeObjectForKey:@"contents"] retain];
-
+    @try {
+		_name = [[unarchiver decodeObjectForKey:@"name"] retain];
+		_favorites = [[unarchiver decodeObjectForKey:@"contents"] retain];
+    }
+    @catch (NSException *e) {
+		NSLog(@"Exception in unarchiver:%@", [e reason]);
+    }
 	return self;
 }
 @end
