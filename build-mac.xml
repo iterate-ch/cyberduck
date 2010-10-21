@@ -200,6 +200,37 @@
         </scp>
     </target>
 
+    <target name="beta" depends="clean, revision">
+	    <echo message="_REVISION_=${svn.revision}"/>
+        <antcall target="package">
+            <param name="url.archive" value="http://update.cyberduck.ch/beta/Cyberduck-_REVISION_.tar.gz"/>
+            <param name="url.changelog" value="http://version.cyberduck.ch/beta/changelog.html"/>
+            <param name="sparkle.feed" value="http://version.cyberduck.ch/beta/changelog.rss"/>
+        </antcall>
+	    <echo message="_REVISION_=${svn.revision}"/>
+        <scp file="${build}/${app.name}-${svn.revision}.tar.gz"
+             todir="dkocher@update.cyberduck.ch:./update.cyberduck.ch/beta/"
+             keyfile="${user.home}/.ssh/update.cyberduck.ch-rsa"
+             passphrase="">
+        </scp>
+        <scp file="${build}/${app.name}-${svn.revision}.tar.gz.md5"
+             todir="dkocher@update.cyberduck.ch:./update.cyberduck.ch/beta/"
+             keyfile="${user.home}/.ssh/update.cyberduck.ch-rsa"
+             passphrase="">
+        </scp>
+        <!-- Changelog Beta - version.cyberduck.ch -->
+        <scp file="${build}/changelog.rss"
+             todir="dkocher@version.cyberduck.ch:./version.cyberduck.ch/beta/"
+             keyfile="${user.home}/.ssh/version.cyberduck.ch-rsa"
+             passphrase="">
+        </scp>
+        <scp file="${www.update}/changelog.html"
+             todir="dkocher@version.cyberduck.ch:./version.cyberduck.ch/beta/"
+             keyfile="${user.home}/.ssh/version.cyberduck.ch-rsa"
+             passphrase="">
+        </scp>
+    </target>
+
     <target name="release" depends="clean, revision">
         <antcall target="package">
             <param name="url.archive" value="http://update.cyberduck.ch/Cyberduck-_REVISION_.tar.gz"/>
