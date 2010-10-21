@@ -1294,6 +1294,7 @@ lib/System.Core.dll -text
 lib/VistaBridgeLibrary.dll -text
 lib/Windows7.DesktopIntegration.dll -text
 lib/activation-1.1.1.jar -text
+lib/apache-mime4j-0.6.jar -text
 lib/asm-3.3.jar -text
 lib/backport-util-concurrent-3.1.jar -text
 lib/cglib-2.2.jar -text
@@ -1324,6 +1325,7 @@ lib/gdata-spreadsheet-meta-3.0.jar -text
 lib/google-collect-1.0.jar -text
 lib/httpclient-4.0.3.jar -text
 lib/httpcore-4.0.1.jar -text
+lib/httpmime-4.0.3.jar -text
 lib/icu4j-module-4.4.1.1.jar -text
 lib/jakarta-oro-2.0.8.jar -text
 lib/jakarta-slide-webdavlib-2.2-dev.jar -text
@@ -1332,12 +1334,15 @@ lib/jaxen-1.1.1.jar -text
 lib/jdom-1.1.jar -text
 lib/jets3t-0.8.0.jar -text
 lib/jna-3.2.7.jar -text
+lib/json-simple-1.1.jar -text
 lib/libAquaticPrime.a -text
 lib/libjdns_sd.jnilib -text
 lib/log4j-1.2.15.jar -text
 lib/log4j.xml -text
 lib/mail-1.4.3.jar -text
 lib/mime.types -text
+lib/signpost-commonshttp4-1.2.1.1.jar -text
+lib/signpost-core-1.2.1.1.jar -text
 lib/slf4j-api-1.6.1.jar -text
 lib/slf4j-log4j12-1.6.1.jar -text
 lv.lproj/Alert.nib/classes.nib -text
@@ -2036,6 +2041,8 @@ source/ch/cyberduck/core/collections/LRUCache.cs -text
 source/ch/cyberduck/core/dav/DAVPath.java -text
 source/ch/cyberduck/core/dav/DAVResource.java -text
 source/ch/cyberduck/core/dav/DAVSession.java -text
+source/ch/cyberduck/core/dropbox/DropboxPath.java -text
+source/ch/cyberduck/core/dropbox/DropboxSession.java -text
 source/ch/cyberduck/core/eucalyptus/ECPath.java -text
 source/ch/cyberduck/core/eucalyptus/ECSession.java -text
 source/ch/cyberduck/core/ftp/parser/CommonUnixFTPEntryParser.java -text

@@ -166,6 +166,7 @@
                 <include name="org/spearce/jgit/**/*.class"/>
                 <include name="org/soyatec/**/*.class"/>
                 <include name="com/enterprisedt/**/*.class"/>
+                <include name="com/dropbox/**/*.class"/>
             </fileset>
             <fileset dir="${lib}">
                 <include name="cloudfiles.properties"/>

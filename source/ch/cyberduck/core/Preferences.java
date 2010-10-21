@@ -201,6 +201,7 @@ public abstract class Preferences {
         defaults.put("protocol.gdocs.enable", String.valueOf(true));
         defaults.put("protocol.gstorage.tls.enable", String.valueOf(true));
         defaults.put("protocol.azure.tls.enable", String.valueOf(false));
+        defaults.put("protocol.dropbox.tls.enable", String.valueOf(false));
 
         /**
          * Normalize path names
@@ -576,6 +577,9 @@ public abstract class Preferences {
 
         defaults.put("google.docs.upload.convert", String.valueOf(true));
         defaults.put("google.docs.upload.ocr", String.valueOf(false));
+
+        defaults.put("dropbox.key", "");
+        defaults.put("dropbox.secret", "");
 
         /**
          * Show revisions as hidden files in browser
