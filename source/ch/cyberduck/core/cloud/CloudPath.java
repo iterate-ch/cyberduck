@@ -55,9 +55,6 @@ public abstract class CloudPath extends Path {
     }
 
     @Override
-    public abstract CloudSession getSession();
-
-    @Override
     public Path getParent() {
         final CloudPath parent = (CloudPath) super.getParent();
         if(parent.isRoot()) {
@@ -161,7 +158,7 @@ public abstract class CloudPath extends Path {
                 new DescriptiveUrl(this.toURL(), MessageFormat.format(Locale.localizedString("{0} URL"),
                         this.getHost().getProtocol().getScheme().toUpperCase())))
         );
-        CloudSession session = this.getSession();
+        CloudSession session = (CloudSession)this.getSession();
         for(Distribution.Method method : session.getSupportedDistributionMethods()) {
             Distribution distribution = session.getDistribution(this.getContainerName(), method);
             if(null != distribution) {

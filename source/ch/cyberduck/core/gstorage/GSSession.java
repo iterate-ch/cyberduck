@@ -24,7 +24,6 @@ import ch.cyberduck.core.cloud.Distribution;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.s3.S3Session;
 
-import org.apache.commons.lang.StringUtils;
 import org.jets3t.service.Jets3tProperties;
 import org.jets3t.service.acl.Permission;
 import org.jets3t.service.model.S3Object;

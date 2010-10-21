@@ -46,7 +46,7 @@ import java.net.UnknownHostException;
 /**
  * @version $Id$
  */
-public abstract class HTTPSession extends Session implements SSLSession {
+public abstract class HTTP3Session extends Session implements SSLSession {
 
     private Appender appender = new AppenderSkeleton() {
 
@@ -66,15 +66,15 @@ public abstract class HTTPSession extends Session implements SSLSession {
         protected void append(LoggingEvent event) {
             final String m = StringUtils.remove(StringUtils.remove(event.getMessage().toString(), "[\\r][\\n]"), "\"");
             if(m.startsWith(IN)) {
-                HTTPSession.this.log(false, StringUtils.remove(m, IN));
+                HTTP3Session.this.log(false, StringUtils.remove(m, IN));
             }
             else if(m.startsWith(OUT)) {
-                HTTPSession.this.log(true, StringUtils.remove(m, OUT));
+                HTTP3Session.this.log(true, StringUtils.remove(m, OUT));
             }
         }
     };
 
-    protected HTTPSession(Host h) {
+    protected HTTP3Session(Host h) {
         super(h);
     }
 
@@ -158,8 +158,6 @@ public abstract class HTTPSession extends Session implements SSLSession {
     protected void fireConnectionWillOpenEvent() throws ResolveCanceledException, UnknownHostException {
         // For 3.x
         Logger.getLogger("httpclient.wire.header").addAppender(appender);
-        // For HTTP Components 4
-        Logger.getLogger("org.apache.http.headers").addAppender(appender);
         super.fireConnectionWillOpenEvent();
     }
 
@@ -167,8 +165,6 @@ public abstract class HTTPSession extends Session implements SSLSession {
     protected void fireConnectionWillCloseEvent() {
         // For 3.x
         Logger.getLogger("httpclient.wire.header").removeAppender(appender);
-        // For HTTP Components 4
-        Logger.getLogger("org.apache.http.headers").removeAppender(appender);
         super.fireConnectionWillCloseEvent();
     }
 }

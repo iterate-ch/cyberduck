@@ -20,12 +20,11 @@ package ch.cyberduck.core.dav;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.http.HTTPSession;
+import ch.cyberduck.core.http.HTTP3Session;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.ssl.AbstractX509TrustManager;
 import ch.cyberduck.core.ssl.IgnoreX509TrustManager;
 import ch.cyberduck.core.ssl.KeychainX509TrustManager;
-import ch.cyberduck.core.ssl.SSLSession;
 
 import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.auth.*;
@@ -42,7 +41,7 @@ import java.text.MessageFormat;
 /**
  * @version $Id$
  */
-public class DAVSession extends HTTPSession implements SSLSession {
+public class DAVSession extends HTTP3Session {
     private static Logger log = Logger.getLogger(DAVSession.class);
 
     private static class Factory extends SessionFactory {

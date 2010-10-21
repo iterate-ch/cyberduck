@@ -20,28 +20,19 @@ package ch.cyberduck.core.azure;
  */
 
 import ch.cyberduck.core.*;
-import ch.cyberduck.core.cloud.CloudSession;
+import ch.cyberduck.core.cloud.CloudHTTP4Session;
 import ch.cyberduck.core.cloud.Distribution;
 import ch.cyberduck.core.i18n.Locale;
-import ch.cyberduck.core.ssl.*;
+import ch.cyberduck.core.ssl.AbstractX509TrustManager;
+import ch.cyberduck.core.ssl.IgnoreX509TrustManager;
+import ch.cyberduck.core.ssl.KeychainX509TrustManager;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpEntityEnclosingRequest;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpStatus;
-import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.conn.ClientConnectionManager;
-import org.apache.http.conn.scheme.PlainSocketFactory;
-import org.apache.http.conn.scheme.Scheme;
-import org.apache.http.conn.scheme.SchemeRegistry;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.conn.SingleClientConnManager;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.HttpConnectionParams;
-import org.apache.http.params.HttpParams;
-import org.apache.http.params.HttpProtocolParams;
 import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.dom4j.Element;
@@ -76,7 +67,7 @@ import java.util.concurrent.Callable;
 /**
  * @version $Id$
  */
-public class AzureSession extends CloudSession implements SSLSession {
+public class AzureSession extends CloudHTTP4Session {
     private static Logger log = Logger.getLogger(AzureSession.class);
 
     private static class Factory extends SessionFactory {
@@ -151,42 +142,6 @@ public class AzureSession extends CloudSession implements SSLSession {
         return client;
     }
 
-    private HttpClient http;
-
-    /**
-     * Create new HTTP client with default configuration and custom trust manager.
-     *
-     * @return A new instance of a default HTTP client.
-     */
-    protected HttpClient http() {
-        if(null == http) {
-            final HttpParams params = new BasicHttpParams();
-            HttpProtocolParams.setVersion(params, org.apache.http.HttpVersion.HTTP_1_1);
-            HttpProtocolParams.setContentCharset(params, getEncoding());
-            HttpProtocolParams.setUseExpectContinue(params, true);
-            HttpConnectionParams.setTcpNoDelay(params, true);
-            HttpConnectionParams.setSoTimeout(params, timeout());
-            HttpConnectionParams.setSocketBufferSize(params, 8192);
-            HttpProtocolParams.setUserAgent(params, getUserAgent());
-            SchemeRegistry registry = new SchemeRegistry();
-            if(host.getProtocol().isSecure()) {
-                org.apache.http.conn.ssl.SSLSocketFactory factory = new org.apache.http.conn.ssl.SSLSocketFactory(new CustomTrustSSLProtocolSocketFactory(
-                        getTrustManager()).getSSLContext());
-                // We make sure to verify the hostname later using the trust manager
-                factory.setHostnameVerifier(org.apache.http.conn.ssl.SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
-                registry.register(
-                        new Scheme(host.getProtocol().getScheme(), factory, host.getPort()));
-            }
-            else {
-                registry.register(
-                        new Scheme(host.getProtocol().getScheme(), PlainSocketFactory.getSocketFactory(), host.getPort()));
-            }
-            ClientConnectionManager manager = new SingleClientConnManager(params, registry);
-            http = new DefaultHttpClient(manager, params);
-        }
-        return http;
-    }
-
     @Override
     protected void connect() throws IOException {
         if(this.isConnected()) {
@@ -242,17 +197,12 @@ public class AzureSession extends CloudSession implements SSLSession {
         try {
             if(this.isConnected()) {
                 this.fireConnectionWillCloseEvent();
-                // When HttpClient instance is no longer needed, shut down the connection manager to ensure
-                // immediate deallocation of all system resources
-                if(null != http) {
-                    http.getConnectionManager().shutdown();
-                }
+                super.close();
             }
         }
         finally {
             // No logout required
             client = null;
-            http = null;
             this.fireConnectionDidCloseEvent();
         }
     }

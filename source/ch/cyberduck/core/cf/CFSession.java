@@ -20,13 +20,12 @@ package ch.cyberduck.core.cf;
  */
 
 import ch.cyberduck.core.*;
-import ch.cyberduck.core.cloud.CloudSession;
+import ch.cyberduck.core.cloud.CloudHTTP3Session;
 import ch.cyberduck.core.cloud.Distribution;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.ssl.AbstractX509TrustManager;
 import ch.cyberduck.core.ssl.IgnoreX509TrustManager;
 import ch.cyberduck.core.ssl.KeychainX509TrustManager;
-import ch.cyberduck.core.ssl.SSLSession;
 
 import org.apache.log4j.Logger;
 
@@ -44,7 +43,7 @@ import java.util.*;
  *
  * @version $Id$
  */
-public class CFSession extends CloudSession implements SSLSession {
+public class CFSession extends CloudHTTP3Session {
     private static Logger log = Logger.getLogger(CFSession.class);
 
     private static class Factory extends SessionFactory {

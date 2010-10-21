@@ -2026,6 +2026,8 @@ source/ch/cyberduck/core/aquaticprime/LicenseImpl.cs -text
 source/ch/cyberduck/core/aquaticprime/LicenseVerifier.cs -text
 source/ch/cyberduck/core/cf/CFPath.java -text
 source/ch/cyberduck/core/cf/CFSession.java -text
+source/ch/cyberduck/core/cloud/CloudHTTP3Session.java -text
+source/ch/cyberduck/core/cloud/CloudHTTP4Session.java -text
 source/ch/cyberduck/core/cloud/CloudPath.java -text
 source/ch/cyberduck/core/cloud/CloudSession.java -text
 source/ch/cyberduck/core/cloud/Distribution.java -text
@@ -2040,7 +2042,8 @@ source/ch/cyberduck/core/ftp/parser/CommonUnixFTPEntryParser.java -text
 source/ch/cyberduck/core/ftp/parser/LaxUnixFTPEntryParser.java -text
 source/ch/cyberduck/core/ftp/parser/RumpusFTPEntryParser.java -text
 source/ch/cyberduck/core/ftp/parser/TrellixFTPEntryParser.java -text
-source/ch/cyberduck/core/http/HTTPSession.java -text
+source/ch/cyberduck/core/http/HTTP3Session.java -text
+source/ch/cyberduck/core/http/HTTP4Session.java -text
 source/ch/cyberduck/core/http/StickyHostConfiguration.java -text
 source/ch/cyberduck/core/idisk/IDiskPath.java -text
 source/ch/cyberduck/core/idisk/IDiskSession.java -text
