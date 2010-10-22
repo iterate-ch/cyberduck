@@ -934,26 +934,7 @@ public class TransferController extends WindowController implements NSToolbar.De
             for(Path i : transfer.getRoots()) {
                 Local l = i.getLocal();
                 if(!l.open()) {
-                    if(transfer.isComplete()) {
-                        this.alert(NSAlert.alert(Locale.localizedString("Could not open the file"), //title
-                                Locale.localizedString("Could not open the file") + " \""
-                                        + l.getDisplayName()
-                                        + "\". " + Locale.localizedString("It moved since you downloaded it."), // message
-                                Locale.localizedString("OK"), // defaultbutton
-                                null, //alternative button
-                                null //other button
-                        ));
-                    }
-                    else {
-                        this.alert(NSAlert.alert(Locale.localizedString("Could not open the file"), //title
-                                Locale.localizedString("Could not open the file") + " \""
-                                        + l.getDisplayName()
-                                        + "\". " + Locale.localizedString("The file has not yet been downloaded."), // message
-                                Locale.localizedString("OK"), // defaultbutton
-                                null, //alternative button
-                                null //other button
-                        ));
-                    }
+                    log.warn("Error opening file:" + l.getAbsolute());
                 }
             }
         }
@@ -967,31 +948,7 @@ public class TransferController extends WindowController implements NSToolbar.De
             final Transfer transfer = transfers.get(index.intValue());
             for(Path i : transfer.getRoots()) {
                 Local l = i.getLocal();
-                // If a second path argument is specified, a new file viewer is opened. If you specify an
-                // empty string (@"") for this parameter, the file is selected in the main viewer.
-                if(!NSWorkspace.sharedWorkspace().selectFile(l.getAbsolute(), l.getParent().getAbsolute())) {
-                    if(transfer.isComplete()) {
-                        this.alert(NSAlert.alert(Locale.localizedString("Could not show the file in the Finder"), //title
-                                Locale.localizedString("Could not show the file") + " \""
-                                        + l.getDisplayName()
-                                        + "\". " + Locale.localizedString("It moved since you downloaded it."), // message
-                                Locale.localizedString("OK"), // defaultbutton
-                                null, //alternative button
-                                null //other button
-                        ));
-                    }
-                    else {
-                        this.alert(NSAlert.alert(Locale.localizedString("Could not show the file in the Finder"), //title
-                                Locale.localizedString("Could not show the file") + " \""
-                                        + l.getDisplayName()
-                                        + "\". " + Locale.localizedString("The file has not yet been downloaded."), // message
-                                Locale.localizedString("OK"), // defaultbutton
-                                null, //alternative button
-                                null //other button
-                        ));
-                    }
-                }
-                else {
+                if(l.reveal()) {
                     break;
                 }
             }
@@ -1157,6 +1114,9 @@ public class TransferController extends WindowController implements NSToolbar.De
                 || action.equals(Foundation.selector("trashButtonClicked:"))) {
             return this.validate(new TransferToolbarValidator() {
                 public boolean validate(Transfer transfer) {
+                    if(!transfer.isComplete()) {
+                        return false;
+                    }
                     if(!transfer.isRunning()) {
                         for(Path i : transfer.getRoots()) {
                             if(i.getLocal().exists()) {

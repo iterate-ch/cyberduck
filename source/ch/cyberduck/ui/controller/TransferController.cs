@@ -180,6 +180,9 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             return ValidateToolbarItem(delegate(Transfer transfer)
                                            {
+                                               if (!transfer.isComplete()) {
+                                                    return false;
+                                               }
                                                if (!transfer.isRunning())
                                                {
                                                    for (int i = 0; i < transfer.getRoots().size(); i++)
@@ -394,44 +397,8 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     Path path = (Path) transfer.getRoots().get(i);
                     Local l = path.getLocal();
-
-                    string containingFolder = System.IO.Path.GetDirectoryName(l.getAbsolute());
-                    if (File.Exists(l.getAbsolute()) && transfer.isComplete())
-                    {
-                        try
-                        {
-                            //select first file downloaded. We could just open the containing folder alternatively.
-                            Process.Start("explorer.exe", "/select, " + l.getAbsolute());
-                            break;
-                        }
-                        catch (Exception e)
-                        {
-                            Log.debug("Unable to show containing folder:" + e);
-                            continue;
-                        }
-                    }
-                    else
-                    {
-                        if (transfer.isComplete())
-                        {
-                            //todo string.Empty für content?
-                            MessageBox(Locale.localizedString("Could not open the file"),
-                                       Locale.localizedString("Could not open the file") + " \""
-                                       + l.getDisplayName()
-                                       + "\". " + Locale.localizedString("It moved since you downloaded it."),
-                                       string.Empty,
-                                       eTaskDialogButtons.OK, eSysIcons.Error);
-                        }
-                        else
-                        {
-                            //todo string.Empty für content?
-                            MessageBox(Locale.localizedString("Could not open the file"),
-                                       Locale.localizedString("Could not open the file") + " \""
-                                       + l.getDisplayName()
-                                       + "\". " + Locale.localizedString("The file has not yet been downloaded."),
-                                       string.Empty,
-                                       eTaskDialogButtons.OK, eSysIcons.Error);
-                        }
+                    if(l.reveal()) {
+                        break;
                     }
                 }
             }
@@ -448,29 +415,8 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     Path path = (Path) transfer.getRoots().get(i);
                     Local l = path.getLocal();
-                    if (!l.open())
-                    {
-                        if (transfer.isComplete())
-                        {
-                            //todo string.Empty für content?
-                            MessageBox(Locale.localizedString("Could not open the file"),
-                                       Locale.localizedString("Could not open the file") + " \""
-                                       + l.getDisplayName()
-                                       + "\". " + Locale.localizedString("It moved since you downloaded it."),
-                                       string.Empty,
-                                       eTaskDialogButtons.OK, eSysIcons.Error);
-                        }
-
-                        else
-                        {
-                            //todo string.Empty für content?
-                            MessageBox(Locale.localizedString("Could not open the file"),
-                                       Locale.localizedString("Could not open the file") + " \""
-                                       + l.getDisplayName()
-                                       + "\". " + Locale.localizedString("The file has not yet been downloaded."),
-                                       string.Empty,
-                                       eTaskDialogButtons.OK, eSysIcons.Error);
-                        }
+                    if (l.open()) {
+                        break;
                     }
                 }
             }

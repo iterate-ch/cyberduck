@@ -22,14 +22,13 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.ui.cocoa.IconCache;
-import ch.cyberduck.ui.cocoa.application.NSCell;
 import ch.cyberduck.ui.cocoa.application.NSMenu;
 import ch.cyberduck.ui.cocoa.application.NSMenuItem;
-import ch.cyberduck.ui.cocoa.application.NSWorkspace;
 
-import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.cocoa.foundation.NSInteger;
+
+import org.apache.log4j.Logger;
 
 import java.util.List;
 
@@ -78,10 +77,6 @@ public class TransferMenuDelegate extends AbstractMenuDelegate {
 
     public void reveal(final NSMenuItem sender) {
         Local l = LocalFactory.createLocal(sender.representedObject());
-        // If a second path argument is specified, a new file viewer is opened. If you specify an
-        // empty string (@"") for this parameter, the file is selected in the main viewer.
-        if(!NSWorkspace.sharedWorkspace().selectFile(l.getAbsolute(), l.getParent().getAbsolute())) {
-            log.error("reveal:" + l.getAbsolute());
-        }
+        l.reveal();
     }
 }
