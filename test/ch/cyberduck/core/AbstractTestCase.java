@@ -225,6 +225,11 @@ public class AbstractTestCase extends TestCase {
         }
 
         @Override
+        public boolean reveal() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
         public void setQuarantine(String originUrl, String dataUrl) {
             throw new UnsupportedOperationException();
         }
