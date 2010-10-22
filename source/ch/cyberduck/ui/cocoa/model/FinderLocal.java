@@ -404,6 +404,13 @@ public class FinderLocal extends Local {
         }
     }
 
+    @Override
+    public boolean reveal() {
+        // If a second path argument is specified, a new file viewer is opened. If you specify an
+        // empty string (@"") for this parameter, the file is selected in the main viewer.
+        return NSWorkspace.sharedWorkspace().selectFile(this.getAbsolute(), this.getParent().getAbsolute());
+    }
+
     /**
      * Comparing by inode if the file exists.
      *
