@@ -150,13 +150,14 @@ namespace Ch.Cyberduck.Ui.Controller
             //http://stackoverflow.com/questions/222463/is-it-possible-with-java-to-delete-to-the-recycle-bin
         }
 
-        public override boolean reveal()
+        public override bool reveal()
         {
             if (exists())
             {
                 //select first file downloaded. We could just open the containing folder alternatively.
                 return Utils.StartProcess("explorer.exe", "/select, " + getAbsolute());
             }
+            return false;
         }
 
         /// <summary>

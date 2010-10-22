@@ -2151,7 +2151,6 @@ source/ch/cyberduck/ui/controller/ProgressController.cs -text
 source/ch/cyberduck/ui/controller/Proxy.cs -text
 source/ch/cyberduck/ui/controller/Renderers.cs -text
 source/ch/cyberduck/ui/controller/SettingsDictionary.cs -text
-source/ch/cyberduck/ui/controller/StreamLocal.cs -text
 source/ch/cyberduck/ui/controller/SyncPromptController.cs -text
 source/ch/cyberduck/ui/controller/SyncPromptModel.cs -text
 source/ch/cyberduck/ui/controller/TcpReachability.cs -text
