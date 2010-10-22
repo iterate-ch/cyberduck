@@ -1,67 +1,18 @@
-4.0 [http://trac.cyberduck.ch/milestone/4.0]
+4.0b5 [http://trac.cyberduck.ch/milestone/4.0b5]
+- [Feature] FlashFXP Bookmarks Importer
+- [Bugfix] Bugfixes and usability improvements
+
+4.0b4 [http://trac.cyberduck.ch/milestone/4.0b4]
+- [Feature] SmartFTP Bookmarks Importer
+- [Bugfix] Bugfixes and usability improvements
+
+4.0b3 [http://trac.cyberduck.ch/milestone/4.0b3]
+- [Bugfix] Bugfixes and usability improvements
+
+4.0b2 [http://trac.cyberduck.ch/milestone/4.0b2]
+- [Bugfix] Bugfixes and usability improvements
+
+4.0b1 [http://trac.cyberduck.ch/milestone/4.0b1]
 - [Feature] Version for Microsoft Windows XP, Windows Vista & Windows 7.
 - [Feature] Connecting to Windows Azure Blob Storage (Azure) (#3938)
-
-3.7.1 (Oct-20-2010) [http://trac.cyberduck.ch/milestone/3.7.1]
-- [Bugfix] Crash importing Transmit bookmarks for some users (#5351)
-
-3.7 (Oct-20-2010) [http://trac.cyberduck.ch/milestone/3.7]
-- [Feature] Option to upload with temporary name and rename file after transfer is complete (#4165)
-- [Feature] Copy files between browser windows with different sessions (#21)
-- [Feature] Option to display hidden files in upload prompt (#1243)
-- [Feature] Import Transmit favorites (#3073)
-- [Feature] Copy and open multiple URLs (#5135)
-- [Feature] Support for PuTTY private key format (SFTP) (#5322)
-- [Feature] Duplicate Bookmarks using drag and drop with option key
-- [Feature] Display only affected files in synchronization preview (#5226)
-- [Feature] Change update source to snapshot builds in Preferences
-- [Bugfix] Files pasted upload to parent directory (#5155)
-- [Bugfix] Uploading .xlsx or .docx documents fails with permission error (#5169) (Google Docs)
-- [Bugfix] Reading and writing ACLs (Google Docs)
-- [Bugfix] Interoperability with cPanel Web Disk (WebDAV) (#5188)
-- [Bugfix] Downloading previous versions of file (S3) (#5217)
-- [Bugfix] Skip directories with matching timestamp from synchronization (#557)
-- [Bugfix] Not using proper storage URL (#5216) (Swift OpenStack)
-- [Bugfix] Proxy connection failure (#5239) (S3)
-
-3.6.1 (Sep-07-2010) [http://trac.cyberduck.ch/milestone/3.6.1]
-- [Bugfix] Permissions reset (FTP) (#5132)
-- [Bugfix] Failure reading symbolic link target for directories (SFTP) (#5141)
-
-3.6 (Sep-06-2010) [http://trac.cyberduck.ch/milestone/3.6]
-- [Feature] Connecting to Google Storage (Google Storage)
-- [Feature] Edit Access Control List (ACL) (#3191) (S3, Google Storage, Google Docs)
-- [Feature] Enable Bucket Versioning (#4511) (S3)
-- [Feature] Enable Bucket Multi-Factor Authentication Delete (#4510) (S3)
-- [Feature] Display previous file versions in browser (S3)
-- [Feature] Download previous file version (S3)
-- [Feature] Revert to previous file version (S3)
-- [Feature] Default root file (index.html) configuration for distribution (CloudFront)
-- [Feature] Eucalyptus Walrus support enabled by default (S3)
-- [Feature] Duplicate Bookmark (#3385)
-- [Feature] Import bookmarks from thirdparty applications (Filezilla, Fetch, Interarchy, Flow) (#3373)
-- [Feature] Copy directory listing to clipboard (#2372)
-- [Feature] Support for thirdparty terminal applications (#2987)
-- [Feature] Change SSH options for open in Terminal.app (#4232)
-- [Feature] Unsecure connection warning when password is transmitted in plaintext
-- [Feature] Alert to change connection to TLS if server supports AUTH TLS (FTP)
-- [Feature] Edit metadata for multiple files (S3, Google Storage)
-- [Feature] Menu items to copy HTTP, CDN, signed & authenticated URLs to clipboard (#4207)
-- [Feature] Menu items to open HTTP, CDN, signed & authenticated URLs in Web Browser
-- [Feature] Move and rename files and folders (Google Docs)
-- [Feature] Update size display incrementally while calculating recursively (#3213)
-- [Feature] Hidden preference to change SSH options for 'Open in Terminal.app' (#4232)
-- [Feature] Batch editing of S3 metadata (Google Storage, S3) (#5105)
-- [Feature] Show number of active transfers in Dock (#3808)
-- [Feature] Copy directory listing to clipboard (#2372)
-- [Bugfix] Improved interoperability with Eucalyptus Walrus (S3)
-- [Bugfix] Improved interoperability with Dunkel Cloud Storage (S3)
-- [Bugfix] Trust validation failure with self signed certificates for HTTP redirects (WebDAV) (#2443)
-- [Bugfix] Drag and drop of a file over a bookmark to upload (#4562)
-- [Bugfix] Connect authenticated to thirdparty buckets (S3) (#4480)
-- [Bugfix] Connections stalls after long idle (SFTP) (#5073, #4214, #3941)
-- [Bugfix] Dragging files for upload is slow (#4141)
-- [Bugfix] STAT fails for directories containing spaces in filename (FTP) (#2500)
-- [Bugfix] Upload to drop box gives file listing error (#2552)
-- [Bugfix] Incompatibility with Akamai NetStorage (SFTP) (#4015)
-- [Bugfix] Usability of changing permissions in Info panel (FTP, SFTP) (#3930)
+- [Feature] FileZilla Bookmarks Importer
