@@ -1,4 +1,4 @@
-﻿//
+﻿﻿//
 // Copyright (c) 2010 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
@@ -246,6 +246,8 @@ namespace Ch.Cyberduck.Ui.Controller
                 Environment.SpecialFolder.ApplicationData), "SmartFTP", "Client 2.0", "Favorites"));
             defaults.put("bookmark.import.flashfxp.location", Path.Combine(Environment.GetFolderPath(
                 Environment.SpecialFolder.ApplicationData), "FlashFXP", "3", "Sites.dat"));
+            defaults.put("bookmark.import.wsftp.location", Path.Combine(Environment.GetFolderPath(
+                Environment.SpecialFolder.ApplicationData), "Ipswitch", "WS_FTP", "Sites"));
 
             base.setDefaults();
 
