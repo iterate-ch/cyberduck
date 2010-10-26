@@ -25,6 +25,7 @@ using Ch.Cyberduck.Core;
 using ch.cyberduck.core.io;
 using ch.cyberduck.ui.controller;
 using Ch.Cyberduck.Ui.Controller;
+using Windows7.DesktopIntegration;
 using Windows7.DesktopIntegration.WindowsForms;
 
 namespace Ch.Cyberduck.Ui.Winforms
@@ -313,6 +314,20 @@ namespace Ch.Cyberduck.Ui.Winforms
 
                 g.Dispose();
                 bm.Dispose();
+            }
+        }
+
+        public void UpdateOverallProgressState(double progress, double maximum)
+        {
+            if (Utils.IsWin7OrLater){
+                if (progress == 0 || maximum == 0)
+                {
+                    Windows7Taskbar.SetProgressState(this.Handle, Windows7Taskbar.ThumbnailProgressState.NoProgress);    
+                } else
+                {
+                    Windows7Taskbar.SetProgressState(this.Handle, Windows7Taskbar.ThumbnailProgressState.Normal);
+                    Windows7Taskbar.SetProgressValue(this.Handle, (ulong) progress, (ulong) maximum);  
+                }
             }
         }
 

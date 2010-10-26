@@ -19,10 +19,9 @@ using System;
 using System.Collections.Generic;
 using ch.cyberduck.core;
 using Ch.Cyberduck.Core;
+using ch.cyberduck.core.io;
 using ch.cyberduck.ui;
 using Ch.Cyberduck.Ui.Controller.Threading;
-using Ch.Cyberduck.Ui.Winforms.Serializer;
-using ch.cyberduck.core.io;
 using java.lang;
 using java.util;
 using java.util.concurrent;
@@ -54,6 +53,24 @@ namespace Ch.Cyberduck.Ui.Controller
             View = ObjectFactory.GetInstance<IProgressView>();
             _meter = new Speedometer(transfer);
             Init();
+        }
+
+        private void UpdateOverallProgress()
+        {
+            if (Utils.IsVistaOrLater)
+            {
+                if (TransferCollection.defaultCollection().numberOfRunningTransfers() +
+                    TransferCollection.defaultCollection().numberOfQueuedTransfers() == 0)
+                {
+                    TransferController.Instance.View.UpdateOverallProgressState(0, 0);
+                }
+                else
+                {
+                    double progress = TransferCollection.defaultCollection().getDataTransferred();
+                    double maximum = TransferCollection.defaultCollection().getDataSize();
+                    TransferController.Instance.View.UpdateOverallProgressState(progress, maximum);
+                }
+            }
         }
 
         private void Init()
@@ -104,7 +121,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 // Do not display any progress text when transfer is stopped
                 Date timestamp = _transfer.getTimestamp();
                 if (null != timestamp)
-                {                    
+                {
                     _messageText = DateFormatterFactory.instance().getLongFormat(timestamp.getTime());
                 }
             }
@@ -193,6 +210,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                                                      : TransferStatus.Incomplete;
                                           //todo
                                           //filesPopup.itemAtIndex(new NSInteger(0)).setEnabled(transfer.getRoot().getLocal().exists());
+                                          _controller.UpdateOverallProgress();
                                       };
                 _controller.invoke(new SimpleDefaultMainAction(_controller, d));
             }
@@ -201,7 +219,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 _controller._meter.reset();
                 _progressTimer = getTimerPool().scheduleAtFixedRate(new ProgressTimerRunnable(_controller),
-                                                                                Delay, Period, TimeUnit.MILLISECONDS);
+                                                                    Delay, Period, TimeUnit.MILLISECONDS);
             }
 
             public override void didTransferPath(Path path)
@@ -247,6 +265,9 @@ namespace Ch.Cyberduck.Ui.Controller
                                                       _controller.View.ProgressValue = Convert.ToInt32(transferred);
                                                   }
                                               }
+
+                                              //Update overall progress
+                                              _controller.UpdateOverallProgress();
                                           };
                     _controller.Invoke(new SimpleDefaultMainAction(_controller, d));
                 }
@@ -268,10 +289,13 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 _controller._messageText = msg;
                 SimpleDefaultMainAction action = new SimpleDefaultMainAction(_controller, delegate
-                                                                     {
-                                                                         Log.info("message() invoked: " + this);
-                                                                         _controller.SetMessageText();
-                                                                     });
+                                                                                              {
+                                                                                                  Log.info(
+                                                                                                      "message() invoked: " +
+                                                                                                      this);
+                                                                                                  _controller.
+                                                                                                      SetMessageText();
+                                                                                              });
                 _controller.invoke(action);
             }
         }

@@ -150,7 +150,9 @@ public class TransferCollection extends Collection<Transfer> {
     public double getDataTransferred() {
         double size = 0;
         for(Transfer t : this) {
-            size += t.getTransferred();
+            if (t.isRunning() || t.isQueued()){
+                size += t.getTransferred();
+            }
         }
         return size;
     }
@@ -162,7 +164,9 @@ public class TransferCollection extends Collection<Transfer> {
     public double getDataSize() {
         double size = 0;
         for(Transfer t : this) {
-            size += t.getSize();
+            if (t.isRunning() || t.isQueued()){
+                size += t.getSize();
+            }
         }
         return size;
     }
