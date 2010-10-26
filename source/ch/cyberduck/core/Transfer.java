@@ -739,8 +739,6 @@ public abstract class Transfer implements Serializable {
     }
 
     /**
-     * Should not be called too frequently as it iterates over all items
-     *
      * @return The number of bytes transfered of all items in this <code>transfer</code>
      */
     public double getTransferred() {
