@@ -651,6 +651,7 @@ public class FTPPath extends Path {
             }
             else if(attributes().isDirectory()) {
                 this.getSession().getClient().chmod(perm.getOctalString(), this.getAbsolute());
+                this.attributes().setPermission(perm);
                 if(recursive) {
                     for(AbstractPath child : this.children()) {
                         if(!this.getSession().isConnected()) {
