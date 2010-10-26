@@ -57,7 +57,7 @@ public class BackgroundException extends Exception {
 
     @Override
     public String getMessage() {
-        return Locale.localizedString(this.message, "Error");
+        return Locale.localizedString(message, "Error");
     }
 
     /**
@@ -174,14 +174,14 @@ public class BackgroundException extends Exception {
      *         the exception is not related to any path
      */
     public Path getPath() {
-        return this.path;
+        return path;
     }
 
     /**
      * @return The session this exception occured
      */
     public Session getSession() {
-        return this.session;
+        return session;
     }
 
     @Override
