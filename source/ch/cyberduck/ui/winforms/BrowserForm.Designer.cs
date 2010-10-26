@@ -1,4 +1,5 @@
-﻿using Ch.Cyberduck.Ui.Winforms.Controls;
+﻿using Ch.Cyberduck.ui.winforms.controls;
+using Ch.Cyberduck.Ui.Winforms.Controls;
 
 namespace Ch.Cyberduck.Ui.Winforms
 {
@@ -31,7 +32,6 @@ namespace Ch.Cyberduck.Ui.Winforms
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(BrowserForm));
             this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.toolStripProgress = new System.Windows.Forms.ToolStripStatusLabel();
             this.statusLabel = new System.Windows.Forms.ToolStripStatusLabel();
@@ -198,25 +198,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.disconnectStripButton = new System.Windows.Forms.ToolStripButton();
             this.iconList = new System.Windows.Forms.ImageList(this.components);
             this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
+            this.panelManager1 = new Ch.Cyberduck.Ui.Winforms.Controls.PanelManager();
+            this.managedBrowserPanel1 = new Ch.Cyberduck.Ui.Winforms.Controls.ManagedPanel();
             this.splitContainer = new System.Windows.Forms.SplitContainer();
-            this.panelManagerMain = new Ch.Cyberduck.Ui.Winforms.Controls.PanelManager();
-            this.bookmarksPanel = new Ch.Cyberduck.Ui.Winforms.Controls.ManagedPanel();
-            this.bookmarkListView = new Ch.Cyberduck.Ui.Winforms.Controls.LineSeparatedObjectListView();
-            this.bookmarkImageColumn = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
-            this.bookmarkDescriptionColumn = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
-            this.activeColumn = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
-            this.bookmarkContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.connectBookmarkContextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator29 = new System.Windows.Forms.ToolStripSeparator();
-            this.newBookmarkContextToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.deleteBookmarkContextToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.editBookmarkContextToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.duplicateBookmarkToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.actionToolStrip = new System.Windows.Forms.ToolStrip();
-            this.newBookmarkToolStripButton = new System.Windows.Forms.ToolStripButton();
-            this.editBookmarkToolStripButton = new System.Windows.Forms.ToolStripButton();
-            this.deleteBookmarkToolStripButton = new System.Windows.Forms.ToolStripButton();
-            this.browserPanel = new Ch.Cyberduck.Ui.Winforms.Controls.ManagedPanel();
             this.browser = new Ch.Cyberduck.Ui.Winforms.Controls.MulticolorTreeListView();
             this.treeColumnName = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
             this.treeColumnSize = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
@@ -225,56 +209,220 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.treeColumnGroup = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
             this.treeColumnPermissions = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
             this.treeColumnKind = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+            this.transcriptBox = new System.Windows.Forms.RichTextBox();
+            this.managedBookmarkPanel2 = new Ch.Cyberduck.Ui.Winforms.Controls.ManagedPanel();
+            this.bookmarkListView = new Ch.Cyberduck.Ui.Winforms.Controls.LineSeparatedObjectListView();
+            this.bookmarkImageColumn = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+            this.bookmarkDescriptionColumn = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+            this.activeColumn = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+            this.actionToolStrip = new System.Windows.Forms.ToolStrip();
+            this.newBookmarkToolStripButton = new System.Windows.Forms.ToolStripButton();
+            this.editBookmarkToolStripButton = new System.Windows.Forms.ToolStripButton();
+            this.deleteBookmarkToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.viewPanel = new System.Windows.Forms.Panel();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.browserCheckBox = new System.Windows.Forms.CheckBox();
-            this.bookmarkCheckBox = new System.Windows.Forms.CheckBox();
+            this.viewToolStrip = new Ch.Cyberduck.Ui.Winforms.Controls.ClickThroughToolStrip();
+            this.browserToolStripButton = new System.Windows.Forms.ToolStripButton();
+            this.bookmarksToolStripButton = new System.Windows.Forms.ToolStripButton();
+            this.historyToolStripButton = new System.Windows.Forms.ToolStripButton();
+            this.bonjourToolStripButton = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator23 = new System.Windows.Forms.ToolStripSeparator();
             this.searchTextBox = new Ch.Cyberduck.ui.winforms.controls.SearchTextBox2();
-            this.historyCheckBox = new System.Windows.Forms.CheckBox();
             this.parentPathButton = new System.Windows.Forms.Button();
-            this.label5 = new System.Windows.Forms.Label();
             this.pathComboBox = new System.Windows.Forms.ComboBox();
-            this.bonjourCheckBox = new System.Windows.Forms.CheckBox();
             this.historyForwardButton = new System.Windows.Forms.Button();
             this.historyBackButton = new System.Windows.Forms.Button();
-            this.transcriptBox = new System.Windows.Forms.RichTextBox();
+            this.bookmarkContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.connectBookmarkContextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator29 = new System.Windows.Forms.ToolStripSeparator();
+            this.newBookmarkContextToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.deleteBookmarkContextToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.editBookmarkContextToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.duplicateBookmarkToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
             this.folderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
+            this.mainMenu1 = new System.Windows.Forms.MainMenu(this.components);
+            this.menuItem1 = new System.Windows.Forms.MenuItem();
+            this.newBrowserMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.openConnectionMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.menuItem4 = new System.Windows.Forms.MenuItem();
+            this.newDownloadMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.menuItem6 = new System.Windows.Forms.MenuItem();
+            this.newFolderMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.newFileMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.renameMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.duplicateMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.menuItem11 = new System.Windows.Forms.MenuItem();
+            this.openWebUrlMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.editMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.infoMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.menuItem2 = new System.Windows.Forms.MenuItem();
+            this.downloadMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.downloadAsMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.downloadToMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.uploadMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.synchronizeMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.menuItem21 = new System.Windows.Forms.MenuItem();
+            this.deleteMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.revertMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.menuItem24 = new System.Windows.Forms.MenuItem();
+            this.createArchiveMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.expandArchiveMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.menuItem27 = new System.Windows.Forms.MenuItem();
+            this.printMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.menuItem29 = new System.Windows.Forms.MenuItem();
+            this.exitMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.mainMenuItem2 = new System.Windows.Forms.MenuItem();
+            this.cutMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.copyMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.copyUrlMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.pasteMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.selectAllMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.menuItem37 = new System.Windows.Forms.MenuItem();
+            this.preferencesMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.menuItem39 = new System.Windows.Forms.MenuItem();
+            this.toggleToolbarMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.customizeToolbarMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.menuItem42 = new System.Windows.Forms.MenuItem();
+            this.menuItem43 = new System.Windows.Forms.MenuItem();
+            this.columnMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.menuItem45 = new System.Windows.Forms.MenuItem();
+            this.showHiddenFilesMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.textEncodingMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.menuItem48 = new System.Windows.Forms.MenuItem();
+            this.toggleLogDrawerMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.menuItem50 = new System.Windows.Forms.MenuItem();
+            this.refreshMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.menuItem52 = new System.Windows.Forms.MenuItem();
+            this.goToFolderMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.backMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.forwardMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.enclosingFolderMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.insideMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.searchMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.menuItem59 = new System.Windows.Forms.MenuItem();
+            this.sendCommandMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.menuItem61 = new System.Windows.Forms.MenuItem();
+            this.stopMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.disconnectMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.menuItem64 = new System.Windows.Forms.MenuItem();
+            this.toggleBookmarksMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.menuItem66 = new System.Windows.Forms.MenuItem();
+            this.newBookmarkMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.deleteBookmarkMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.editBookmarkMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.duplicateBookmarkMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.menuItem71 = new System.Windows.Forms.MenuItem();
+            this.historyMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.bonjourMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.menuItem74 = new System.Windows.Forms.MenuItem();
+            this.menuItem75 = new System.Windows.Forms.MenuItem();
+            this.minimizeMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.menuItem77 = new System.Windows.Forms.MenuItem();
+            this.transfersMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.activityMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.menuItem80 = new System.Windows.Forms.MenuItem();
+            this.helpMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.licenseMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.acknowledgmentsMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.menuItem84 = new System.Windows.Forms.MenuItem();
+            this.bugMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.menuItem86 = new System.Windows.Forms.MenuItem();
+            this.updateMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.menuItem88 = new System.Windows.Forms.MenuItem();
+            this.aboutMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.vistaMenu1 = new Ch.Cyberduck.Ui.Winforms.Controls.VistaMenu(this.components);
+            this.toolbarContextMenu1 = new System.Windows.Forms.ContextMenu();
+            this.openConnectionToolbarMenuItem = new System.Windows.Forms.MenuItem();
+            this.menuItem91 = new System.Windows.Forms.MenuItem();
+            this.quickConnectToolbarMenuItem = new System.Windows.Forms.MenuItem();
+            this.actionContextToolbarMenuItem = new System.Windows.Forms.MenuItem();
+            this.menuItem94 = new System.Windows.Forms.MenuItem();
+            this.infoToolbarMenuItem = new System.Windows.Forms.MenuItem();
+            this.refreshToolbarMenuItem = new System.Windows.Forms.MenuItem();
+            this.menuItem97 = new System.Windows.Forms.MenuItem();
+            this.editToolbarMenuItem = new System.Windows.Forms.MenuItem();
+            this.openInWebBrowserToolbarMenuItem = new System.Windows.Forms.MenuItem();
+            this.newFolderToolbarMenuItem = new System.Windows.Forms.MenuItem();
+            this.deleteToolbarMenuItem = new System.Windows.Forms.MenuItem();
+            this.menuItem102 = new System.Windows.Forms.MenuItem();
+            this.downloadToolbarMenuItem = new System.Windows.Forms.MenuItem();
+            this.uploadToolbarMenuItem = new System.Windows.Forms.MenuItem();
+            this.transfersToolbarMenuItem = new System.Windows.Forms.MenuItem();
+            this.browserContextMenu = new System.Windows.Forms.ContextMenu();
+            this.refreshBrowserContextMenuItem = new System.Windows.Forms.MenuItem();
+            this.menuItem44 = new System.Windows.Forms.MenuItem();
+            this.infoBrowserContextMenuItem = new System.Windows.Forms.MenuItem();
+            this.editBrowserContextMenuItem = new System.Windows.Forms.MenuItem();
+            this.renameBrowserContextMenuItem = new System.Windows.Forms.MenuItem();
+            this.duplicateFileBrowserContextMenuItem = new System.Windows.Forms.MenuItem();
+            this.menuItem96 = new System.Windows.Forms.MenuItem();
+            this.downloadBrowserContextMenuItem = new System.Windows.Forms.MenuItem();
+            this.downloadAsBrowserContextMenuItem = new System.Windows.Forms.MenuItem();
+            this.downloadToBrowserContextMenuItem = new System.Windows.Forms.MenuItem();
+            this.menuItem101 = new System.Windows.Forms.MenuItem();
+            this.deleteBrowserContextMenuItem = new System.Windows.Forms.MenuItem();
+            this.revertBrowserContextMenuItem = new System.Windows.Forms.MenuItem();
+            this.menuItem105 = new System.Windows.Forms.MenuItem();
+            this.uploadBrowserContextMenuItem = new System.Windows.Forms.MenuItem();
+            this.synchronizeBrowserContextMenuItem = new System.Windows.Forms.MenuItem();
+            this.newFolderBrowserContextMenuItem = new System.Windows.Forms.MenuItem();
+            this.newFileBrowserContextMenuItem = new System.Windows.Forms.MenuItem();
+            this.menuItem110 = new System.Windows.Forms.MenuItem();
+            this.createArchiveBrowserContextMenuItem = new System.Windows.Forms.MenuItem();
+            this.expandArchiveBrowserContextMnuItem = new System.Windows.Forms.MenuItem();
+            this.menuItem113 = new System.Windows.Forms.MenuItem();
+            this.copyUrlBrowserContextMenuItem = new System.Windows.Forms.MenuItem();
+            this.openWebUrlBrowserContextMenuItem = new System.Windows.Forms.MenuItem();
+            this.menuItem116 = new System.Windows.Forms.MenuItem();
+            this.newBrowserBrowserContextMenuItem = new System.Windows.Forms.MenuItem();
+            this.newBookmarkBrowserContextMenuItem = new System.Windows.Forms.MenuItem();
+            this.bookmarkContextMenu = new System.Windows.Forms.ContextMenu();
+            this.connectBookmarkContextMenuItem = new System.Windows.Forms.MenuItem();
+            this.menuItem5 = new System.Windows.Forms.MenuItem();
+            this.newBookmarkContextMenuItem = new System.Windows.Forms.MenuItem();
+            this.deleteBookmarkContextMenuItem = new System.Windows.Forms.MenuItem();
+            this.editBookmarkContextMenuItem = new System.Windows.Forms.MenuItem();
+            this.duplicateBookmarkContextMenuItem = new System.Windows.Forms.MenuItem();
             this.statusStrip.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.toolbarContextMenu.SuspendLayout();
             this.editorMenuStrip.SuspendLayout();
             this.toolBar.SuspendLayout();
             this.contextMenuStrip.SuspendLayout();
+            this.toolStripContainer1.BottomToolStripPanel.SuspendLayout();
             this.toolStripContainer1.ContentPanel.SuspendLayout();
             this.toolStripContainer1.TopToolStripPanel.SuspendLayout();
             this.toolStripContainer1.SuspendLayout();
+            this.panelManager1.SuspendLayout();
+            this.managedBrowserPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).BeginInit();
             this.splitContainer.Panel1.SuspendLayout();
             this.splitContainer.Panel2.SuspendLayout();
             this.splitContainer.SuspendLayout();
-            this.panelManagerMain.SuspendLayout();
-            this.bookmarksPanel.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.bookmarkListView)).BeginInit();
-            this.bookmarkContextMenuStrip.SuspendLayout();
-            this.actionToolStrip.SuspendLayout();
-            this.browserPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.browser)).BeginInit();
+            this.managedBookmarkPanel2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.bookmarkListView)).BeginInit();
+            this.actionToolStrip.SuspendLayout();
             this.viewPanel.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
+            this.viewToolStrip.SuspendLayout();
+            this.bookmarkContextMenuStrip.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.vistaMenu1)).BeginInit();
             this.SuspendLayout();
             // 
             // statusStrip
             // 
+            this.statusStrip.Dock = System.Windows.Forms.DockStyle.None;
             this.statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripProgress,
             this.statusLabel,
             this.securityToolStripStatusLabel});
-            this.statusStrip.Location = new System.Drawing.Point(0, 616);
+            this.statusStrip.Location = new System.Drawing.Point(0, 0);
             this.statusStrip.Name = "statusStrip";
             this.statusStrip.Padding = new System.Windows.Forms.Padding(1, 0, 16, 0);
-            this.statusStrip.Size = new System.Drawing.Size(903, 22);
+            this.statusStrip.Size = new System.Drawing.Size(1028, 22);
             this.statusStrip.TabIndex = 9;
             // 
             // toolStripProgress
@@ -288,7 +436,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // statusLabel
             // 
             this.statusLabel.Name = "statusLabel";
-            this.statusLabel.Size = new System.Drawing.Size(845, 17);
+            this.statusLabel.Size = new System.Drawing.Size(970, 17);
             this.statusLabel.Spring = true;
             this.statusLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
@@ -302,6 +450,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             // menuStrip1
             // 
+            this.menuStrip1.Dock = System.Windows.Forms.DockStyle.None;
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
             this.editToolStripMenuItem,
@@ -310,12 +459,13 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.bookmarkToolStripMenuItem,
             this.windowToolStripMenuItem,
             this.helpToolStripMenuItem});
-            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
+            this.menuStrip1.Location = new System.Drawing.Point(0, 56);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Padding = new System.Windows.Forms.Padding(7, 2, 0, 2);
-            this.menuStrip1.Size = new System.Drawing.Size(903, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(343, 24);
             this.menuStrip1.TabIndex = 12;
             this.menuStrip1.Text = "menuStrip1";
+            this.menuStrip1.Visible = false;
             // 
             // fileToolStripMenuItem
             // 
@@ -995,7 +1145,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.minimizeToolStripMenuItem.Name = "minimizeToolStripMenuItem";
             this.minimizeToolStripMenuItem.Size = new System.Drawing.Size(123, 22);
             this.minimizeToolStripMenuItem.Text = "Minimize";
-            this.minimizeToolStripMenuItem.Click += new System.EventHandler(this.minimizeToolStripMenuItem_Click);
             // 
             // toolStripSeparator20
             // 
@@ -1017,6 +1166,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             // helpToolStripMenuItem
             // 
+            this.helpToolStripMenuItem.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
             this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.cyberduckHelpToolStripMenuItem,
             this.licenseToolStripMenuItem,
@@ -1143,25 +1293,27 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.toolBar.Location = new System.Drawing.Point(0, 0);
             this.toolBar.Name = "toolBar";
             this.toolBar.ShowItemToolTips = false;
-            this.toolBar.Size = new System.Drawing.Size(903, 54);
+            this.toolBar.Size = new System.Drawing.Size(1028, 56);
             this.toolBar.Stretch = true;
             this.toolBar.TabIndex = 13;
             this.toolBar.Text = "toolStrip1";
             // 
             // openConnectionToolStripButton
             // 
-            this.openConnectionToolStripButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F);
-            this.openConnectionToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("openConnectionToolStripButton.Image")));
+            this.openConnectionToolStripButton.Image = global::Ch.Cyberduck.ResourcesBundle.connect;
+            this.openConnectionToolStripButton.ImageAlign = System.Drawing.ContentAlignment.BottomCenter;
+            this.openConnectionToolStripButton.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.openConnectionToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.openConnectionToolStripButton.Name = "openConnectionToolStripButton";
-            this.openConnectionToolStripButton.Size = new System.Drawing.Size(90, 51);
+            this.openConnectionToolStripButton.Padding = new System.Windows.Forms.Padding(0, 1, 0, 1);
+            this.openConnectionToolStripButton.Size = new System.Drawing.Size(100, 53);
             this.openConnectionToolStripButton.Text = "New Connection";
             this.openConnectionToolStripButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
             // 
             // toolStripSeparatorAfterOpenConnection
             // 
             this.toolStripSeparatorAfterOpenConnection.Name = "toolStripSeparatorAfterOpenConnection";
-            this.toolStripSeparatorAfterOpenConnection.Size = new System.Drawing.Size(6, 54);
+            this.toolStripSeparatorAfterOpenConnection.Size = new System.Drawing.Size(6, 56);
             // 
             // quickConnectToolStripComboBox
             // 
@@ -1173,7 +1325,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             "Test2",
             "Zest3"});
             this.quickConnectToolStripComboBox.Name = "quickConnectToolStripComboBox";
-            this.quickConnectToolStripComboBox.Size = new System.Drawing.Size(180, 54);
+            this.quickConnectToolStripComboBox.Size = new System.Drawing.Size(180, 56);
             this.quickConnectToolStripComboBox.Text = "Quick Connect";
             this.quickConnectToolStripComboBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.toolStripQuickConnect_KeyDown);
             // 
@@ -1181,9 +1333,12 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.actionToolStripDropDownButton.DropDown = this.contextMenuStrip;
             this.actionToolStripDropDownButton.Image = global::Ch.Cyberduck.ResourcesBundle.advanced;
+            this.actionToolStripDropDownButton.ImageAlign = System.Drawing.ContentAlignment.BottomCenter;
+            this.actionToolStripDropDownButton.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.actionToolStripDropDownButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.actionToolStripDropDownButton.Name = "actionToolStripDropDownButton";
-            this.actionToolStripDropDownButton.Size = new System.Drawing.Size(55, 51);
+            this.actionToolStripDropDownButton.Padding = new System.Windows.Forms.Padding(0, 1, 0, 1);
+            this.actionToolStripDropDownButton.Size = new System.Drawing.Size(55, 53);
             this.actionToolStripDropDownButton.Text = "Action";
             this.actionToolStripDropDownButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
             // 
@@ -1367,95 +1522,113 @@ namespace Ch.Cyberduck.Ui.Winforms
             // toolStripSeparatorAfterAction
             // 
             this.toolStripSeparatorAfterAction.Name = "toolStripSeparatorAfterAction";
-            this.toolStripSeparatorAfterAction.Size = new System.Drawing.Size(6, 54);
+            this.toolStripSeparatorAfterAction.Size = new System.Drawing.Size(6, 56);
             // 
             // infoToolStripButton
             // 
             this.infoToolStripButton.Image = global::Ch.Cyberduck.ResourcesBundle.info;
+            this.infoToolStripButton.ImageAlign = System.Drawing.ContentAlignment.BottomCenter;
+            this.infoToolStripButton.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.infoToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.infoToolStripButton.Name = "infoToolStripButton";
-            this.infoToolStripButton.Size = new System.Drawing.Size(36, 51);
+            this.infoToolStripButton.Size = new System.Drawing.Size(36, 53);
             this.infoToolStripButton.Text = "Info";
             this.infoToolStripButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
             // 
             // refreshToolStripButton
             // 
             this.refreshToolStripButton.Image = global::Ch.Cyberduck.ResourcesBundle.reload;
+            this.refreshToolStripButton.ImageAlign = System.Drawing.ContentAlignment.BottomCenter;
+            this.refreshToolStripButton.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.refreshToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.refreshToolStripButton.Name = "refreshToolStripButton";
-            this.refreshToolStripButton.Size = new System.Drawing.Size(50, 51);
+            this.refreshToolStripButton.Size = new System.Drawing.Size(50, 53);
             this.refreshToolStripButton.Text = "Refresh";
             this.refreshToolStripButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
             // 
             // toolStripSeparatorAfterRefresh
             // 
             this.toolStripSeparatorAfterRefresh.Name = "toolStripSeparatorAfterRefresh";
-            this.toolStripSeparatorAfterRefresh.Size = new System.Drawing.Size(6, 54);
+            this.toolStripSeparatorAfterRefresh.Size = new System.Drawing.Size(6, 56);
             // 
             // editToolStripButton
             // 
             this.editToolStripButton.Image = global::Ch.Cyberduck.ResourcesBundle.pencil;
+            this.editToolStripButton.ImageAlign = System.Drawing.ContentAlignment.BottomCenter;
+            this.editToolStripButton.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.editToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.editToolStripButton.Name = "editToolStripButton";
-            this.editToolStripButton.Size = new System.Drawing.Size(36, 51);
+            this.editToolStripButton.Size = new System.Drawing.Size(36, 53);
             this.editToolStripButton.Text = "Edit";
             this.editToolStripButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
             // 
             // openInBrowserToolStripButton
             // 
             this.openInBrowserToolStripButton.Image = global::Ch.Cyberduck.ResourcesBundle.pencil;
+            this.openInBrowserToolStripButton.ImageAlign = System.Drawing.ContentAlignment.BottomCenter;
+            this.openInBrowserToolStripButton.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.openInBrowserToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.openInBrowserToolStripButton.Name = "openInBrowserToolStripButton";
-            this.openInBrowserToolStripButton.Size = new System.Drawing.Size(40, 51);
+            this.openInBrowserToolStripButton.Size = new System.Drawing.Size(40, 53);
             this.openInBrowserToolStripButton.Text = "Open";
             this.openInBrowserToolStripButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
             // 
             // newFolderToolStripButton
             // 
+            this.newFolderToolStripButton.ImageAlign = System.Drawing.ContentAlignment.BottomCenter;
+            this.newFolderToolStripButton.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.newFolderToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.newFolderToolStripButton.Name = "newFolderToolStripButton";
-            this.newFolderToolStripButton.Size = new System.Drawing.Size(71, 51);
+            this.newFolderToolStripButton.Size = new System.Drawing.Size(71, 53);
             this.newFolderToolStripButton.Text = "New Folder";
             this.newFolderToolStripButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
             // 
             // deleteToolStripButton
             // 
             this.deleteToolStripButton.Image = global::Ch.Cyberduck.ResourcesBundle.delete;
+            this.deleteToolStripButton.ImageAlign = System.Drawing.ContentAlignment.BottomCenter;
+            this.deleteToolStripButton.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.deleteToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.deleteToolStripButton.Name = "deleteToolStripButton";
-            this.deleteToolStripButton.Size = new System.Drawing.Size(44, 51);
+            this.deleteToolStripButton.Size = new System.Drawing.Size(44, 53);
             this.deleteToolStripButton.Text = "Delete";
             this.deleteToolStripButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
             // 
             // toolStripSeparatorAfterDelete
             // 
             this.toolStripSeparatorAfterDelete.Name = "toolStripSeparatorAfterDelete";
-            this.toolStripSeparatorAfterDelete.Size = new System.Drawing.Size(6, 54);
+            this.toolStripSeparatorAfterDelete.Size = new System.Drawing.Size(6, 56);
             // 
             // downloadToolStripButton
             // 
             this.downloadToolStripButton.Image = global::Ch.Cyberduck.ResourcesBundle.download;
+            this.downloadToolStripButton.ImageAlign = System.Drawing.ContentAlignment.BottomCenter;
+            this.downloadToolStripButton.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.downloadToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.downloadToolStripButton.Name = "downloadToolStripButton";
-            this.downloadToolStripButton.Size = new System.Drawing.Size(65, 51);
+            this.downloadToolStripButton.Size = new System.Drawing.Size(65, 53);
             this.downloadToolStripButton.Text = "Download";
             this.downloadToolStripButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
             // 
             // uploadToolStripButton
             // 
             this.uploadToolStripButton.Image = global::Ch.Cyberduck.ResourcesBundle.upload;
+            this.uploadToolStripButton.ImageAlign = System.Drawing.ContentAlignment.BottomCenter;
+            this.uploadToolStripButton.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.uploadToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.uploadToolStripButton.Name = "uploadToolStripButton";
-            this.uploadToolStripButton.Size = new System.Drawing.Size(49, 51);
+            this.uploadToolStripButton.Size = new System.Drawing.Size(49, 53);
             this.uploadToolStripButton.Text = "Upload";
             this.uploadToolStripButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
             // 
             // transfersToolStripButton
             // 
             this.transfersToolStripButton.Image = global::Ch.Cyberduck.ResourcesBundle.queue;
+            this.transfersToolStripButton.ImageAlign = System.Drawing.ContentAlignment.BottomCenter;
+            this.transfersToolStripButton.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.transfersToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.transfersToolStripButton.Name = "transfersToolStripButton";
-            this.transfersToolStripButton.Size = new System.Drawing.Size(59, 51);
+            this.transfersToolStripButton.Size = new System.Drawing.Size(59, 53);
             this.transfersToolStripButton.Text = "Transfers";
             this.transfersToolStripButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
             // 
@@ -1463,9 +1636,11 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.disconnectStripButton.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
             this.disconnectStripButton.Image = global::Ch.Cyberduck.ResourcesBundle.eject;
+            this.disconnectStripButton.ImageAlign = System.Drawing.ContentAlignment.BottomCenter;
+            this.disconnectStripButton.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.disconnectStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.disconnectStripButton.Name = "disconnectStripButton";
-            this.disconnectStripButton.Size = new System.Drawing.Size(70, 51);
+            this.disconnectStripButton.Size = new System.Drawing.Size(70, 53);
             this.disconnectStripButton.Text = "Disconnect";
             this.disconnectStripButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
             // 
@@ -1478,20 +1653,48 @@ namespace Ch.Cyberduck.Ui.Winforms
             // toolStripContainer1
             // 
             // 
+            // toolStripContainer1.BottomToolStripPanel
+            // 
+            this.toolStripContainer1.BottomToolStripPanel.Controls.Add(this.statusStrip);
+            // 
             // toolStripContainer1.ContentPanel
             // 
-            this.toolStripContainer1.ContentPanel.Controls.Add(this.splitContainer);
-            this.toolStripContainer1.ContentPanel.Size = new System.Drawing.Size(903, 538);
+            this.toolStripContainer1.ContentPanel.Controls.Add(this.panelManager1);
+            this.toolStripContainer1.ContentPanel.Controls.Add(this.viewPanel);
+            this.toolStripContainer1.ContentPanel.Size = new System.Drawing.Size(1028, 528);
             this.toolStripContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.toolStripContainer1.Location = new System.Drawing.Point(0, 24);
+            this.toolStripContainer1.LeftToolStripPanelVisible = false;
+            this.toolStripContainer1.Location = new System.Drawing.Point(0, 0);
             this.toolStripContainer1.Name = "toolStripContainer1";
-            this.toolStripContainer1.Size = new System.Drawing.Size(903, 592);
+            this.toolStripContainer1.RightToolStripPanelVisible = false;
+            this.toolStripContainer1.Size = new System.Drawing.Size(1028, 606);
             this.toolStripContainer1.TabIndex = 16;
             this.toolStripContainer1.Text = "toolStripContainer1";
             // 
             // toolStripContainer1.TopToolStripPanel
             // 
             this.toolStripContainer1.TopToolStripPanel.Controls.Add(this.toolBar);
+            this.toolStripContainer1.TopToolStripPanel.Controls.Add(this.menuStrip1);
+            // 
+            // panelManager1
+            // 
+            this.panelManager1.Controls.Add(this.managedBrowserPanel1);
+            this.panelManager1.Controls.Add(this.managedBookmarkPanel2);
+            this.panelManager1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panelManager1.Location = new System.Drawing.Point(0, 31);
+            this.panelManager1.Name = "panelManager1";
+            this.panelManager1.SelectedIndex = 0;
+            this.panelManager1.SelectedPanel = this.managedBrowserPanel1;
+            this.panelManager1.Size = new System.Drawing.Size(1028, 497);
+            this.panelManager1.TabIndex = 3;
+            // 
+            // managedBrowserPanel1
+            // 
+            this.managedBrowserPanel1.Controls.Add(this.splitContainer);
+            this.managedBrowserPanel1.Location = new System.Drawing.Point(0, 0);
+            this.managedBrowserPanel1.Name = "managedBrowserPanel1";
+            this.managedBrowserPanel1.Size = new System.Drawing.Size(0, 0);
+            this.managedBrowserPanel1.Text = "managedBrowserPanel1";
             // 
             // splitContainer
             // 
@@ -1502,39 +1705,116 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             // splitContainer.Panel1
             // 
-            this.splitContainer.Panel1.Controls.Add(this.panelManagerMain);
-            this.splitContainer.Panel1.Controls.Add(this.viewPanel);
+            this.splitContainer.Panel1.Controls.Add(this.browser);
             this.splitContainer.Panel1MinSize = 0;
             // 
             // splitContainer.Panel2
             // 
             this.splitContainer.Panel2.Controls.Add(this.transcriptBox);
             this.splitContainer.Panel2MinSize = 0;
-            this.splitContainer.Size = new System.Drawing.Size(903, 538);
-            this.splitContainer.SplitterDistance = 426;
+            this.splitContainer.Size = new System.Drawing.Size(0, 0);
+            this.splitContainer.SplitterDistance = 25;
             this.splitContainer.SplitterWidth = 5;
             this.splitContainer.TabIndex = 2;
             // 
-            // panelManagerMain
+            // browser
             // 
-            this.panelManagerMain.Controls.Add(this.bookmarksPanel);
-            this.panelManagerMain.Controls.Add(this.browserPanel);
-            this.panelManagerMain.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panelManagerMain.Location = new System.Drawing.Point(0, 31);
-            this.panelManagerMain.Name = "panelManagerMain";
-            this.panelManagerMain.SelectedIndex = 1;
-            this.panelManagerMain.SelectedPanel = this.browserPanel;
-            this.panelManagerMain.Size = new System.Drawing.Size(903, 395);
-            this.panelManagerMain.TabIndex = 28;
+            this.browser.ActiveForegroudColor = System.Drawing.SystemColors.ControlText;
+            this.browser.ActiveGetter = null;
+            this.browser.AllColumns.Add(this.treeColumnName);
+            this.browser.AllColumns.Add(this.treeColumnSize);
+            this.browser.AllColumns.Add(this.treeColumnModified);
+            this.browser.AllColumns.Add(this.treeColumnOwner);
+            this.browser.AllColumns.Add(this.treeColumnGroup);
+            this.browser.AllColumns.Add(this.treeColumnPermissions);
+            this.browser.AllColumns.Add(this.treeColumnKind);
+            this.browser.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.browser.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.treeColumnName,
+            this.treeColumnSize,
+            this.treeColumnModified});
+            this.browser.Cursor = System.Windows.Forms.Cursors.Default;
+            this.browser.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.browser.FullRowSelect = true;
+            this.browser.InactiveForegroudColor = System.Drawing.Color.Gray;
+            this.browser.IsSimpleDragSource = true;
+            this.browser.Location = new System.Drawing.Point(0, 0);
+            this.browser.Name = "browser";
+            this.browser.OwnerDraw = true;
+            this.browser.ShowGroups = false;
+            this.browser.Size = new System.Drawing.Size(0, 25);
+            this.browser.TabIndex = 15;
+            this.browser.UseCompatibleStateImageBehavior = false;
+            this.browser.View = System.Windows.Forms.View.Details;
+            this.browser.VirtualMode = true;
+            this.browser.SelectionChanged += new System.EventHandler(this.browser_SelectionChanged);
+            this.browser.AfterLabelEdit += new System.Windows.Forms.LabelEditEventHandler(this.browser_AfterLabelEdit);
+            this.browser.DoubleClick += new System.EventHandler(this.browser_DoubleClick);
+            this.browser.KeyDown += new System.Windows.Forms.KeyEventHandler(this.browser_KeyDown);
             // 
-            // bookmarksPanel
+            // treeColumnName
             // 
-            this.bookmarksPanel.Controls.Add(this.bookmarkListView);
-            this.bookmarksPanel.Controls.Add(this.actionToolStrip);
-            this.bookmarksPanel.Location = new System.Drawing.Point(0, 0);
-            this.bookmarksPanel.Name = "bookmarksPanel";
-            this.bookmarksPanel.Size = new System.Drawing.Size(0, 0);
-            this.bookmarksPanel.Text = "managedPanel1";
+            this.treeColumnName.FillsFreeSpace = true;
+            this.treeColumnName.Text = "Filename";
+            this.treeColumnName.Width = 180;
+            // 
+            // treeColumnSize
+            // 
+            this.treeColumnSize.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.treeColumnSize.Text = "Size";
+            this.treeColumnSize.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            // 
+            // treeColumnModified
+            // 
+            this.treeColumnModified.IsTileViewColumn = true;
+            this.treeColumnModified.Text = "Modified";
+            this.treeColumnModified.Width = 145;
+            // 
+            // treeColumnOwner
+            // 
+            this.treeColumnOwner.DisplayIndex = 3;
+            this.treeColumnOwner.IsVisible = false;
+            this.treeColumnOwner.Text = "Owner";
+            // 
+            // treeColumnGroup
+            // 
+            this.treeColumnGroup.DisplayIndex = 4;
+            this.treeColumnGroup.IsVisible = false;
+            this.treeColumnGroup.Text = "Group";
+            // 
+            // treeColumnPermissions
+            // 
+            this.treeColumnPermissions.DisplayIndex = 5;
+            this.treeColumnPermissions.IsVisible = false;
+            this.treeColumnPermissions.Text = "Permissions";
+            // 
+            // treeColumnKind
+            // 
+            this.treeColumnKind.DisplayIndex = 6;
+            this.treeColumnKind.IsVisible = false;
+            this.treeColumnKind.Text = "Kind";
+            // 
+            // transcriptBox
+            // 
+            this.transcriptBox.CausesValidation = false;
+            this.transcriptBox.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.transcriptBox.Location = new System.Drawing.Point(0, 0);
+            this.transcriptBox.Name = "transcriptBox";
+            this.transcriptBox.ReadOnly = true;
+            this.transcriptBox.ShortcutsEnabled = false;
+            this.transcriptBox.Size = new System.Drawing.Size(0, 24);
+            this.transcriptBox.TabIndex = 0;
+            this.transcriptBox.Text = "";
+            this.transcriptBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.transcriptBox_KeyDown);
+            // 
+            // managedBookmarkPanel2
+            // 
+            this.managedBookmarkPanel2.Controls.Add(this.bookmarkListView);
+            this.managedBookmarkPanel2.Controls.Add(this.actionToolStrip);
+            this.managedBookmarkPanel2.Location = new System.Drawing.Point(0, 0);
+            this.managedBookmarkPanel2.Name = "managedBookmarkPanel2";
+            this.managedBookmarkPanel2.Size = new System.Drawing.Size(0, 0);
+            this.managedBookmarkPanel2.Text = "managedBookmarkPanel2";
             // 
             // bookmarkListView
             // 
@@ -1546,7 +1826,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.bookmarkImageColumn,
             this.bookmarkDescriptionColumn,
             this.activeColumn});
-            this.bookmarkListView.ContextMenuStrip = this.bookmarkContextMenuStrip;
             this.bookmarkListView.Cursor = System.Windows.Forms.Cursors.Default;
             this.bookmarkListView.Dock = System.Windows.Forms.DockStyle.Fill;
             this.bookmarkListView.FullRowSelect = true;
@@ -1578,53 +1857,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             // activeColumn
             // 
             this.activeColumn.Text = "";
-            // 
-            // bookmarkContextMenuStrip
-            // 
-            this.bookmarkContextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.connectBookmarkContextToolStripMenuItem,
-            this.toolStripSeparator29,
-            this.newBookmarkContextToolStripMenuItem1,
-            this.deleteBookmarkContextToolStripMenuItem1,
-            this.editBookmarkContextToolStripMenuItem1,
-            this.duplicateBookmarkToolStripMenuItem});
-            this.bookmarkContextMenuStrip.Name = "bookmarkContextMenuStrip";
-            this.bookmarkContextMenuStrip.Size = new System.Drawing.Size(182, 120);
-            // 
-            // connectBookmarkContextToolStripMenuItem
-            // 
-            this.connectBookmarkContextToolStripMenuItem.Name = "connectBookmarkContextToolStripMenuItem";
-            this.connectBookmarkContextToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
-            this.connectBookmarkContextToolStripMenuItem.Text = "Connect to server";
-            // 
-            // toolStripSeparator29
-            // 
-            this.toolStripSeparator29.Name = "toolStripSeparator29";
-            this.toolStripSeparator29.Size = new System.Drawing.Size(178, 6);
-            // 
-            // newBookmarkContextToolStripMenuItem1
-            // 
-            this.newBookmarkContextToolStripMenuItem1.Name = "newBookmarkContextToolStripMenuItem1";
-            this.newBookmarkContextToolStripMenuItem1.Size = new System.Drawing.Size(181, 22);
-            this.newBookmarkContextToolStripMenuItem1.Text = "New Bookmark";
-            // 
-            // deleteBookmarkContextToolStripMenuItem1
-            // 
-            this.deleteBookmarkContextToolStripMenuItem1.Name = "deleteBookmarkContextToolStripMenuItem1";
-            this.deleteBookmarkContextToolStripMenuItem1.Size = new System.Drawing.Size(181, 22);
-            this.deleteBookmarkContextToolStripMenuItem1.Text = "Delete Bookmark";
-            // 
-            // editBookmarkContextToolStripMenuItem1
-            // 
-            this.editBookmarkContextToolStripMenuItem1.Name = "editBookmarkContextToolStripMenuItem1";
-            this.editBookmarkContextToolStripMenuItem1.Size = new System.Drawing.Size(181, 22);
-            this.editBookmarkContextToolStripMenuItem1.Text = "Edit Bookmark";
-            // 
-            // duplicateBookmarkToolStripMenuItem
-            // 
-            this.duplicateBookmarkToolStripMenuItem.Name = "duplicateBookmarkToolStripMenuItem";
-            this.duplicateBookmarkToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
-            this.duplicateBookmarkToolStripMenuItem.Text = "Duplicate Bookmark";
             // 
             // actionToolStrip
             // 
@@ -1681,92 +1913,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.deleteBookmarkToolStripButton.Size = new System.Drawing.Size(22, 22);
             this.deleteBookmarkToolStripButton.Text = "toolStripButton3";
             // 
-            // browserPanel
-            // 
-            this.browserPanel.Controls.Add(this.browser);
-            this.browserPanel.Location = new System.Drawing.Point(0, 0);
-            this.browserPanel.Name = "browserPanel";
-            this.browserPanel.Size = new System.Drawing.Size(0, 0);
-            this.browserPanel.Text = "managedPanel1";
-            // 
-            // browser
-            // 
-            this.browser.ActiveForegroudColor = System.Drawing.SystemColors.ControlText;
-            this.browser.ActiveGetter = null;
-            this.browser.AllColumns.Add(this.treeColumnName);
-            this.browser.AllColumns.Add(this.treeColumnSize);
-            this.browser.AllColumns.Add(this.treeColumnModified);
-            this.browser.AllColumns.Add(this.treeColumnOwner);
-            this.browser.AllColumns.Add(this.treeColumnGroup);
-            this.browser.AllColumns.Add(this.treeColumnPermissions);
-            this.browser.AllColumns.Add(this.treeColumnKind);
-            this.browser.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.browser.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.treeColumnName,
-            this.treeColumnSize,
-            this.treeColumnModified});
-            this.browser.ContextMenuStrip = this.contextMenuStrip;
-            this.browser.Cursor = System.Windows.Forms.Cursors.Default;
-            this.browser.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.browser.FullRowSelect = true;
-            this.browser.InactiveForegroudColor = System.Drawing.Color.Gray;
-            this.browser.IsSimpleDragSource = true;
-            this.browser.Location = new System.Drawing.Point(0, 0);
-            this.browser.Name = "browser";
-            this.browser.OwnerDraw = true;
-            this.browser.ShowGroups = false;
-            this.browser.Size = new System.Drawing.Size(0, 0);
-            this.browser.TabIndex = 15;
-            this.browser.UseCompatibleStateImageBehavior = false;
-            this.browser.View = System.Windows.Forms.View.Details;
-            this.browser.VirtualMode = true;
-            this.browser.SelectionChanged += new System.EventHandler(this.browser_SelectionChanged);
-            this.browser.AfterLabelEdit += new System.Windows.Forms.LabelEditEventHandler(this.browser_AfterLabelEdit);
-            this.browser.DoubleClick += new System.EventHandler(this.browser_DoubleClick);
-            this.browser.KeyDown += new System.Windows.Forms.KeyEventHandler(this.browser_KeyDown);
-            // 
-            // treeColumnName
-            // 
-            this.treeColumnName.FillsFreeSpace = true;
-            this.treeColumnName.Text = "Filename";
-            this.treeColumnName.Width = 180;
-            // 
-            // treeColumnSize
-            // 
-            this.treeColumnSize.HeaderTextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            this.treeColumnSize.Text = "Size";
-            this.treeColumnSize.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            // 
-            // treeColumnModified
-            // 
-            this.treeColumnModified.IsTileViewColumn = true;
-            this.treeColumnModified.Text = "Modified";
-            this.treeColumnModified.Width = 145;
-            // 
-            // treeColumnOwner
-            // 
-            this.treeColumnOwner.DisplayIndex = 3;
-            this.treeColumnOwner.IsVisible = false;
-            this.treeColumnOwner.Text = "Owner";
-            // 
-            // treeColumnGroup
-            // 
-            this.treeColumnGroup.DisplayIndex = 4;
-            this.treeColumnGroup.IsVisible = false;
-            this.treeColumnGroup.Text = "Group";
-            // 
-            // treeColumnPermissions
-            // 
-            this.treeColumnPermissions.DisplayIndex = 5;
-            this.treeColumnPermissions.IsVisible = false;
-            this.treeColumnPermissions.Text = "Permissions";
-            // 
-            // treeColumnKind
-            // 
-            this.treeColumnKind.DisplayIndex = 6;
-            this.treeColumnKind.IsVisible = false;
-            this.treeColumnKind.Text = "Kind";
-            // 
             // viewPanel
             // 
             this.viewPanel.BackColor = System.Drawing.Color.WhiteSmoke;
@@ -1774,112 +1920,130 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.viewPanel.Dock = System.Windows.Forms.DockStyle.Top;
             this.viewPanel.Location = new System.Drawing.Point(0, 0);
             this.viewPanel.Name = "viewPanel";
-            this.viewPanel.Size = new System.Drawing.Size(903, 31);
+            this.viewPanel.Size = new System.Drawing.Size(1028, 31);
             this.viewPanel.TabIndex = 29;
             // 
             // tableLayoutPanel1
             // 
-            this.tableLayoutPanel1.ColumnCount = 10;
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 31F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 31F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 31F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 31F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 10F));
+            this.tableLayoutPanel1.BackColor = System.Drawing.SystemColors.Control;
+            this.tableLayoutPanel1.ColumnCount = 6;
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 42F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 42F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 42F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 120F));
-            this.tableLayoutPanel1.Controls.Add(this.browserCheckBox, 0, 0);
-            this.tableLayoutPanel1.Controls.Add(this.bookmarkCheckBox, 1, 0);
-            this.tableLayoutPanel1.Controls.Add(this.searchTextBox, 9, 0);
-            this.tableLayoutPanel1.Controls.Add(this.historyCheckBox, 2, 0);
-            this.tableLayoutPanel1.Controls.Add(this.parentPathButton, 8, 0);
-            this.tableLayoutPanel1.Controls.Add(this.label5, 4, 0);
-            this.tableLayoutPanel1.Controls.Add(this.pathComboBox, 7, 0);
-            this.tableLayoutPanel1.Controls.Add(this.bonjourCheckBox, 3, 0);
-            this.tableLayoutPanel1.Controls.Add(this.historyForwardButton, 6, 0);
-            this.tableLayoutPanel1.Controls.Add(this.historyBackButton, 5, 0);
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel1.Controls.Add(this.viewToolStrip, 0, 0);
+            this.tableLayoutPanel1.Controls.Add(this.searchTextBox, 5, 0);
+            this.tableLayoutPanel1.Controls.Add(this.parentPathButton, 4, 0);
+            this.tableLayoutPanel1.Controls.Add(this.pathComboBox, 3, 0);
+            this.tableLayoutPanel1.Controls.Add(this.historyForwardButton, 2, 0);
+            this.tableLayoutPanel1.Controls.Add(this.historyBackButton, 1, 0);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.Padding = new System.Windows.Forms.Padding(0, 0, 2, 0);
             this.tableLayoutPanel1.RowCount = 1;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(903, 31);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(1028, 31);
             this.tableLayoutPanel1.TabIndex = 16;
             // 
-            // browserCheckBox
+            // viewToolStrip
             // 
-            this.browserCheckBox.Appearance = System.Windows.Forms.Appearance.Button;
-            this.browserCheckBox.AutoCheck = false;
-            this.browserCheckBox.FlatAppearance.BorderSize = 0;
-            this.browserCheckBox.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.browserCheckBox.Image = global::Ch.Cyberduck.ResourcesBundle.outline;
-            this.browserCheckBox.Location = new System.Drawing.Point(3, 3);
-            this.browserCheckBox.Name = "browserCheckBox";
-            this.browserCheckBox.Size = new System.Drawing.Size(25, 23);
-            this.browserCheckBox.TabIndex = 9;
-            this.browserCheckBox.UseVisualStyleBackColor = true;
-            this.browserCheckBox.Click += new System.EventHandler(this.browserCheckBox_Click);
+            this.viewToolStrip.Dock = System.Windows.Forms.DockStyle.None;
+            this.viewToolStrip.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
+            this.viewToolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.browserToolStripButton,
+            this.bookmarksToolStripButton,
+            this.historyToolStripButton,
+            this.bonjourToolStripButton,
+            this.toolStripSeparator23});
+            this.viewToolStrip.Location = new System.Drawing.Point(0, 2);
+            this.viewToolStrip.Margin = new System.Windows.Forms.Padding(0, 2, 0, 0);
+            this.viewToolStrip.Name = "viewToolStrip";
+            this.viewToolStrip.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
+            this.viewToolStrip.Size = new System.Drawing.Size(128, 28);
+            this.viewToolStrip.TabIndex = 17;
+            this.viewToolStrip.Text = "toolStrip3";
             // 
-            // bookmarkCheckBox
+            // browserToolStripButton
             // 
-            this.bookmarkCheckBox.Appearance = System.Windows.Forms.Appearance.Button;
-            this.bookmarkCheckBox.AutoCheck = false;
-            this.bookmarkCheckBox.FlatAppearance.BorderSize = 0;
-            this.bookmarkCheckBox.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.bookmarkCheckBox.Image = global::Ch.Cyberduck.ResourcesBundle.bookmarks;
-            this.bookmarkCheckBox.Location = new System.Drawing.Point(34, 3);
-            this.bookmarkCheckBox.Name = "bookmarkCheckBox";
-            this.bookmarkCheckBox.Size = new System.Drawing.Size(25, 23);
-            this.bookmarkCheckBox.TabIndex = 10;
-            this.bookmarkCheckBox.UseVisualStyleBackColor = true;
-            this.bookmarkCheckBox.Click += new System.EventHandler(this.bookmarkCheckBox_Click);
+            this.browserToolStripButton.AutoSize = false;
+            this.browserToolStripButton.CheckOnClick = true;
+            this.browserToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.browserToolStripButton.Image = global::Ch.Cyberduck.ResourcesBundle.outline;
+            this.browserToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.browserToolStripButton.Margin = new System.Windows.Forms.Padding(2, 1, 2, 2);
+            this.browserToolStripButton.Name = "browserToolStripButton";
+            this.browserToolStripButton.Size = new System.Drawing.Size(25, 25);
+            this.browserToolStripButton.Text = "toolStripButton3";
+            this.browserToolStripButton.Click += new System.EventHandler(this.browserCheckBox_Click);
+            // 
+            // bookmarksToolStripButton
+            // 
+            this.bookmarksToolStripButton.AutoSize = false;
+            this.bookmarksToolStripButton.CheckOnClick = true;
+            this.bookmarksToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.bookmarksToolStripButton.Image = global::Ch.Cyberduck.ResourcesBundle.bookmarks;
+            this.bookmarksToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.bookmarksToolStripButton.Margin = new System.Windows.Forms.Padding(2, 1, 2, 2);
+            this.bookmarksToolStripButton.Name = "bookmarksToolStripButton";
+            this.bookmarksToolStripButton.Size = new System.Drawing.Size(25, 25);
+            this.bookmarksToolStripButton.Text = "toolStripButton4";
+            this.bookmarksToolStripButton.Click += new System.EventHandler(this.bookmarkCheckBox_Click);
+            // 
+            // historyToolStripButton
+            // 
+            this.historyToolStripButton.AutoSize = false;
+            this.historyToolStripButton.CheckOnClick = true;
+            this.historyToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.historyToolStripButton.Image = global::Ch.Cyberduck.ResourcesBundle.history;
+            this.historyToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.historyToolStripButton.Margin = new System.Windows.Forms.Padding(2, 1, 2, 2);
+            this.historyToolStripButton.Name = "historyToolStripButton";
+            this.historyToolStripButton.Size = new System.Drawing.Size(25, 25);
+            this.historyToolStripButton.Text = "toolStripButton5";
+            this.historyToolStripButton.Click += new System.EventHandler(this.historyCheckBox_Click);
+            // 
+            // bonjourToolStripButton
+            // 
+            this.bonjourToolStripButton.AutoSize = false;
+            this.bonjourToolStripButton.CheckOnClick = true;
+            this.bonjourToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.bonjourToolStripButton.Image = global::Ch.Cyberduck.ResourcesBundle.rendezvous;
+            this.bonjourToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.bonjourToolStripButton.Margin = new System.Windows.Forms.Padding(2, 1, 5, 2);
+            this.bonjourToolStripButton.Name = "bonjourToolStripButton";
+            this.bonjourToolStripButton.Size = new System.Drawing.Size(25, 25);
+            this.bonjourToolStripButton.Text = "toolStripButton6";
+            this.bonjourToolStripButton.Click += new System.EventHandler(this.bonjourCheckBox_Click);
+            // 
+            // toolStripSeparator23
+            // 
+            this.toolStripSeparator23.Name = "toolStripSeparator23";
+            this.toolStripSeparator23.Size = new System.Drawing.Size(6, 28);
             // 
             // searchTextBox
             // 
             this.searchTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.searchTextBox.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.searchTextBox.Location = new System.Drawing.Point(784, 3);
+            this.searchTextBox.Location = new System.Drawing.Point(909, 3);
             this.searchTextBox.Name = "searchTextBox";
             this.searchTextBox.OptionsMenu = null;
             this.searchTextBox.Size = new System.Drawing.Size(114, 24);
             this.searchTextBox.TabIndex = 14;
             this.searchTextBox.TextChanged += new Ch.Cyberduck.ui.winforms.controls.SearchTextBox2.TextChange(this.searchTextBox_TextChanged);
             // 
-            // historyCheckBox
-            // 
-            this.historyCheckBox.Appearance = System.Windows.Forms.Appearance.Button;
-            this.historyCheckBox.AutoCheck = false;
-            this.historyCheckBox.FlatAppearance.BorderSize = 0;
-            this.historyCheckBox.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.historyCheckBox.Image = global::Ch.Cyberduck.ResourcesBundle.history;
-            this.historyCheckBox.Location = new System.Drawing.Point(65, 3);
-            this.historyCheckBox.Name = "historyCheckBox";
-            this.historyCheckBox.Size = new System.Drawing.Size(25, 23);
-            this.historyCheckBox.TabIndex = 11;
-            this.historyCheckBox.UseVisualStyleBackColor = true;
-            this.historyCheckBox.Click += new System.EventHandler(this.historyCheckBox_Click);
-            // 
             // parentPathButton
             // 
             this.parentPathButton.FlatAppearance.BorderSize = 0;
             this.parentPathButton.Image = global::Ch.Cyberduck.ResourcesBundle.arrowUpBlack16;
-            this.parentPathButton.Location = new System.Drawing.Point(742, 3);
+            this.parentPathButton.Location = new System.Drawing.Point(867, 3);
             this.parentPathButton.Name = "parentPathButton";
             this.parentPathButton.Size = new System.Drawing.Size(36, 25);
             this.parentPathButton.TabIndex = 7;
             this.parentPathButton.UseVisualStyleBackColor = true;
-            // 
-            // label5
-            // 
-            this.label5.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.label5.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.label5.Location = new System.Drawing.Point(128, 3);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(2, 25);
-            this.label5.TabIndex = 13;
             // 
             // pathComboBox
             // 
@@ -1887,33 +2051,18 @@ namespace Ch.Cyberduck.Ui.Winforms
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.pathComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.pathComboBox.FormattingEnabled = true;
-            this.pathComboBox.Location = new System.Drawing.Point(221, 4);
+            this.pathComboBox.Location = new System.Drawing.Point(215, 4);
             this.pathComboBox.Margin = new System.Windows.Forms.Padding(3, 4, 3, 3);
             this.pathComboBox.Name = "pathComboBox";
-            this.pathComboBox.Size = new System.Drawing.Size(515, 23);
+            this.pathComboBox.Size = new System.Drawing.Size(646, 23);
             this.pathComboBox.TabIndex = 6;
             this.pathComboBox.SelectionChangeCommitted += new System.EventHandler(this.pathComboBox_SelectionChangeCommitted);
-            // 
-            // bonjourCheckBox
-            // 
-            this.bonjourCheckBox.Appearance = System.Windows.Forms.Appearance.Button;
-            this.bonjourCheckBox.AutoCheck = false;
-            this.bonjourCheckBox.Enabled = false;
-            this.bonjourCheckBox.FlatAppearance.BorderSize = 0;
-            this.bonjourCheckBox.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.bonjourCheckBox.Image = global::Ch.Cyberduck.ResourcesBundle.rendezvous;
-            this.bonjourCheckBox.Location = new System.Drawing.Point(96, 3);
-            this.bonjourCheckBox.Name = "bonjourCheckBox";
-            this.bonjourCheckBox.Size = new System.Drawing.Size(25, 23);
-            this.bonjourCheckBox.TabIndex = 12;
-            this.bonjourCheckBox.UseVisualStyleBackColor = true;
-            this.bonjourCheckBox.Click += new System.EventHandler(this.bonjourCheckBox_Click);
             // 
             // historyForwardButton
             // 
             this.historyForwardButton.FlatAppearance.BorderSize = 0;
             this.historyForwardButton.Image = global::Ch.Cyberduck.ResourcesBundle.arrowRightBlack16;
-            this.historyForwardButton.Location = new System.Drawing.Point(179, 3);
+            this.historyForwardButton.Location = new System.Drawing.Point(173, 3);
             this.historyForwardButton.Name = "historyForwardButton";
             this.historyForwardButton.Size = new System.Drawing.Size(36, 25);
             this.historyForwardButton.TabIndex = 5;
@@ -1924,24 +2073,58 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.historyBackButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.historyBackButton.FlatAppearance.BorderSize = 0;
             this.historyBackButton.Image = global::Ch.Cyberduck.ResourcesBundle.arrowLeftBlack16;
-            this.historyBackButton.Location = new System.Drawing.Point(137, 3);
+            this.historyBackButton.Location = new System.Drawing.Point(131, 3);
             this.historyBackButton.Name = "historyBackButton";
             this.historyBackButton.Size = new System.Drawing.Size(36, 25);
             this.historyBackButton.TabIndex = 4;
             this.historyBackButton.UseVisualStyleBackColor = true;
             // 
-            // transcriptBox
+            // bookmarkContextMenuStrip
             // 
-            this.transcriptBox.CausesValidation = false;
-            this.transcriptBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.transcriptBox.Location = new System.Drawing.Point(0, 0);
-            this.transcriptBox.Name = "transcriptBox";
-            this.transcriptBox.ReadOnly = true;
-            this.transcriptBox.ShortcutsEnabled = false;
-            this.transcriptBox.Size = new System.Drawing.Size(903, 107);
-            this.transcriptBox.TabIndex = 0;
-            this.transcriptBox.Text = "";
-            this.transcriptBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.transcriptBox_KeyDown);
+            this.bookmarkContextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.connectBookmarkContextToolStripMenuItem,
+            this.toolStripSeparator29,
+            this.newBookmarkContextToolStripMenuItem1,
+            this.deleteBookmarkContextToolStripMenuItem1,
+            this.editBookmarkContextToolStripMenuItem1,
+            this.duplicateBookmarkToolStripMenuItem});
+            this.bookmarkContextMenuStrip.Name = "bookmarkContextMenuStrip";
+            this.bookmarkContextMenuStrip.Size = new System.Drawing.Size(182, 120);
+            // 
+            // connectBookmarkContextToolStripMenuItem
+            // 
+            this.connectBookmarkContextToolStripMenuItem.Name = "connectBookmarkContextToolStripMenuItem";
+            this.connectBookmarkContextToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
+            this.connectBookmarkContextToolStripMenuItem.Text = "Connect to server";
+            // 
+            // toolStripSeparator29
+            // 
+            this.toolStripSeparator29.Name = "toolStripSeparator29";
+            this.toolStripSeparator29.Size = new System.Drawing.Size(178, 6);
+            // 
+            // newBookmarkContextToolStripMenuItem1
+            // 
+            this.newBookmarkContextToolStripMenuItem1.Name = "newBookmarkContextToolStripMenuItem1";
+            this.newBookmarkContextToolStripMenuItem1.Size = new System.Drawing.Size(181, 22);
+            this.newBookmarkContextToolStripMenuItem1.Text = "New Bookmark";
+            // 
+            // deleteBookmarkContextToolStripMenuItem1
+            // 
+            this.deleteBookmarkContextToolStripMenuItem1.Name = "deleteBookmarkContextToolStripMenuItem1";
+            this.deleteBookmarkContextToolStripMenuItem1.Size = new System.Drawing.Size(181, 22);
+            this.deleteBookmarkContextToolStripMenuItem1.Text = "Delete Bookmark";
+            // 
+            // editBookmarkContextToolStripMenuItem1
+            // 
+            this.editBookmarkContextToolStripMenuItem1.Name = "editBookmarkContextToolStripMenuItem1";
+            this.editBookmarkContextToolStripMenuItem1.Size = new System.Drawing.Size(181, 22);
+            this.editBookmarkContextToolStripMenuItem1.Text = "Edit Bookmark";
+            // 
+            // duplicateBookmarkToolStripMenuItem
+            // 
+            this.duplicateBookmarkToolStripMenuItem.Name = "duplicateBookmarkToolStripMenuItem";
+            this.duplicateBookmarkToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
+            this.duplicateBookmarkToolStripMenuItem.Text = "Duplicate Bookmark";
             // 
             // saveFileDialog
             // 
@@ -1955,15 +2138,870 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.openFileDialog.Multiselect = true;
             this.openFileDialog.Title = "Upload";
             // 
+            // mainMenu1
+            // 
+            this.mainMenu1.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.menuItem1,
+            this.mainMenuItem2,
+            this.menuItem39,
+            this.menuItem50,
+            this.menuItem64,
+            this.menuItem75,
+            this.menuItem80});
+            // 
+            // menuItem1
+            // 
+            this.menuItem1.Index = 0;
+            this.menuItem1.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.newBrowserMainMenuItem,
+            this.openConnectionMainMenuItem,
+            this.menuItem4,
+            this.newDownloadMainMenuItem,
+            this.menuItem6,
+            this.newFolderMainMenuItem,
+            this.newFileMainMenuItem,
+            this.renameMainMenuItem,
+            this.duplicateMainMenuItem,
+            this.menuItem11,
+            this.openWebUrlMainMenuItem,
+            this.editMainMenuItem,
+            this.infoMainMenuItem,
+            this.menuItem2,
+            this.downloadMainMenuItem,
+            this.downloadAsMainMenuItem,
+            this.downloadToMainMenuItem,
+            this.uploadMainMenuItem,
+            this.synchronizeMainMenuItem,
+            this.menuItem21,
+            this.deleteMainMenuItem,
+            this.revertMainMenuItem,
+            this.menuItem24,
+            this.createArchiveMainMenuItem,
+            this.expandArchiveMainMenuItem,
+            this.menuItem27,
+            this.printMainMenuItem,
+            this.menuItem29,
+            this.exitMainMenuItem});
+            this.menuItem1.Text = "&File";
+            // 
+            // newBrowserMainMenuItem
+            // 
+            this.newBrowserMainMenuItem.Index = 0;
+            this.newBrowserMainMenuItem.Text = "New Browser";
+            // 
+            // openConnectionMainMenuItem
+            // 
+            this.openConnectionMainMenuItem.Index = 1;
+            this.openConnectionMainMenuItem.Text = "Open Connection…";
+            // 
+            // menuItem4
+            // 
+            this.menuItem4.Index = 2;
+            this.menuItem4.Text = "-";
+            // 
+            // newDownloadMainMenuItem
+            // 
+            this.newDownloadMainMenuItem.Index = 3;
+            this.newDownloadMainMenuItem.Text = "New Download";
+            // 
+            // menuItem6
+            // 
+            this.menuItem6.Index = 4;
+            this.menuItem6.Text = "-";
+            // 
+            // newFolderMainMenuItem
+            // 
+            this.newFolderMainMenuItem.Index = 5;
+            this.newFolderMainMenuItem.Text = "New Folder…";
+            // 
+            // newFileMainMenuItem
+            // 
+            this.newFileMainMenuItem.Index = 6;
+            this.newFileMainMenuItem.Text = "New File…";
+            // 
+            // renameMainMenuItem
+            // 
+            this.renameMainMenuItem.Index = 7;
+            this.renameMainMenuItem.Text = "Rename…";
+            // 
+            // duplicateMainMenuItem
+            // 
+            this.duplicateMainMenuItem.Index = 8;
+            this.duplicateMainMenuItem.Text = "Duplicate…";
+            // 
+            // menuItem11
+            // 
+            this.menuItem11.Index = 9;
+            this.menuItem11.Text = "-";
+            // 
+            // openWebUrlMainMenuItem
+            // 
+            this.openWebUrlMainMenuItem.Index = 10;
+            this.openWebUrlMainMenuItem.Text = "Open Web URL";
+            // 
+            // editMainMenuItem
+            // 
+            this.editMainMenuItem.Index = 11;
+            this.editMainMenuItem.Text = "Edit";
+            // 
+            // infoMainMenuItem
+            // 
+            this.infoMainMenuItem.Index = 12;
+            this.infoMainMenuItem.Text = "Info";
+            // 
+            // menuItem2
+            // 
+            this.menuItem2.Index = 13;
+            this.menuItem2.Text = "-";
+            // 
+            // downloadMainMenuItem
+            // 
+            this.downloadMainMenuItem.Index = 14;
+            this.downloadMainMenuItem.Text = "Download";
+            // 
+            // downloadAsMainMenuItem
+            // 
+            this.downloadAsMainMenuItem.Index = 15;
+            this.downloadAsMainMenuItem.Text = "Download As…";
+            // 
+            // downloadToMainMenuItem
+            // 
+            this.downloadToMainMenuItem.Index = 16;
+            this.downloadToMainMenuItem.Text = "Download To…";
+            // 
+            // uploadMainMenuItem
+            // 
+            this.uploadMainMenuItem.Index = 17;
+            this.uploadMainMenuItem.Text = "Upload…";
+            // 
+            // synchronizeMainMenuItem
+            // 
+            this.synchronizeMainMenuItem.Index = 18;
+            this.synchronizeMainMenuItem.Text = "Synchronize…";
+            // 
+            // menuItem21
+            // 
+            this.menuItem21.Index = 19;
+            this.menuItem21.Text = "-";
+            // 
+            // deleteMainMenuItem
+            // 
+            this.deleteMainMenuItem.Index = 20;
+            this.deleteMainMenuItem.Text = "Delete";
+            // 
+            // revertMainMenuItem
+            // 
+            this.revertMainMenuItem.Index = 21;
+            this.revertMainMenuItem.Text = "Revert";
+            // 
+            // menuItem24
+            // 
+            this.menuItem24.Index = 22;
+            this.menuItem24.Text = "-";
+            // 
+            // createArchiveMainMenuItem
+            // 
+            this.createArchiveMainMenuItem.Index = 23;
+            this.createArchiveMainMenuItem.Text = "Create Archive";
+            // 
+            // expandArchiveMainMenuItem
+            // 
+            this.expandArchiveMainMenuItem.Index = 24;
+            this.expandArchiveMainMenuItem.Text = "Expand Archive";
+            // 
+            // menuItem27
+            // 
+            this.menuItem27.Index = 25;
+            this.menuItem27.Text = "-";
+            // 
+            // printMainMenuItem
+            // 
+            this.printMainMenuItem.Index = 26;
+            this.printMainMenuItem.Text = "Print…";
+            // 
+            // menuItem29
+            // 
+            this.menuItem29.Index = 27;
+            this.menuItem29.Text = "-";
+            // 
+            // exitMainMenuItem
+            // 
+            this.exitMainMenuItem.Index = 28;
+            this.exitMainMenuItem.Text = "Exit";
+            // 
+            // mainMenuItem2
+            // 
+            this.mainMenuItem2.Index = 1;
+            this.mainMenuItem2.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.cutMainMenuItem,
+            this.copyMainMenuItem,
+            this.copyUrlMainMenuItem,
+            this.pasteMainMenuItem,
+            this.selectAllMainMenuItem,
+            this.menuItem37,
+            this.preferencesMainMenuItem});
+            this.mainMenuItem2.Text = "&Edit";
+            // 
+            // cutMainMenuItem
+            // 
+            this.cutMainMenuItem.Index = 0;
+            this.cutMainMenuItem.Text = "Cut";
+            // 
+            // copyMainMenuItem
+            // 
+            this.copyMainMenuItem.Index = 1;
+            this.copyMainMenuItem.Text = "Copy";
+            // 
+            // copyUrlMainMenuItem
+            // 
+            this.copyUrlMainMenuItem.Index = 2;
+            this.copyUrlMainMenuItem.Text = "Copy URL";
+            // 
+            // pasteMainMenuItem
+            // 
+            this.pasteMainMenuItem.Index = 3;
+            this.pasteMainMenuItem.Text = "Paste";
+            // 
+            // selectAllMainMenuItem
+            // 
+            this.selectAllMainMenuItem.Index = 4;
+            this.selectAllMainMenuItem.Text = "Select All";
+            // 
+            // menuItem37
+            // 
+            this.menuItem37.Index = 5;
+            this.menuItem37.Text = "-";
+            // 
+            // preferencesMainMenuItem
+            // 
+            this.preferencesMainMenuItem.Index = 6;
+            this.preferencesMainMenuItem.Text = "Preferences…";
+            // 
+            // menuItem39
+            // 
+            this.menuItem39.Index = 2;
+            this.menuItem39.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.toggleToolbarMainMenuItem,
+            this.customizeToolbarMainMenuItem,
+            this.menuItem43,
+            this.columnMainMenuItem,
+            this.menuItem45,
+            this.showHiddenFilesMainMenuItem,
+            this.textEncodingMainMenuItem,
+            this.menuItem48,
+            this.toggleLogDrawerMainMenuItem});
+            this.menuItem39.Text = "&View";
+            // 
+            // toggleToolbarMainMenuItem
+            // 
+            this.toggleToolbarMainMenuItem.Index = 0;
+            this.toggleToolbarMainMenuItem.Text = "Hide Toolbar";
+            // 
+            // customizeToolbarMainMenuItem
+            // 
+            this.customizeToolbarMainMenuItem.Index = 1;
+            this.customizeToolbarMainMenuItem.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.menuItem42});
+            this.customizeToolbarMainMenuItem.Text = "Customize Toolbar…";
+            this.customizeToolbarMainMenuItem.Popup += new System.EventHandler(this.customizeToolbarMenuItem_Popup);
+            // 
+            // menuItem42
+            // 
+            this.menuItem42.Index = 0;
+            this.menuItem42.Text = "noch";
+            // 
+            // menuItem43
+            // 
+            this.menuItem43.Index = 2;
+            this.menuItem43.Text = "-";
+            // 
+            // columnMainMenuItem
+            // 
+            this.columnMainMenuItem.Index = 3;
+            this.columnMainMenuItem.Text = "Column";
+            this.columnMainMenuItem.Popup += new System.EventHandler(this.columnMenuItem_Popup);
+            // 
+            // menuItem45
+            // 
+            this.menuItem45.Index = 4;
+            this.menuItem45.Text = "-";
+            // 
+            // showHiddenFilesMainMenuItem
+            // 
+            this.showHiddenFilesMainMenuItem.Index = 5;
+            this.showHiddenFilesMainMenuItem.Text = "Show Hidden Files";
+            // 
+            // textEncodingMainMenuItem
+            // 
+            this.textEncodingMainMenuItem.Index = 6;
+            this.textEncodingMainMenuItem.Text = "Text Encoding";
+            // 
+            // menuItem48
+            // 
+            this.menuItem48.Index = 7;
+            this.menuItem48.Text = "-";
+            // 
+            // toggleLogDrawerMainMenuItem
+            // 
+            this.toggleLogDrawerMainMenuItem.Index = 8;
+            this.toggleLogDrawerMainMenuItem.Text = "Toggle Log Drawer";
+            // 
+            // menuItem50
+            // 
+            this.menuItem50.Index = 3;
+            this.menuItem50.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.refreshMainMenuItem,
+            this.menuItem52,
+            this.goToFolderMainMenuItem,
+            this.backMainMenuItem,
+            this.forwardMainMenuItem,
+            this.enclosingFolderMainMenuItem,
+            this.insideMainMenuItem,
+            this.searchMainMenuItem,
+            this.menuItem59,
+            this.sendCommandMainMenuItem,
+            this.menuItem61,
+            this.stopMainMenuItem,
+            this.disconnectMainMenuItem});
+            this.menuItem50.Text = "&Go";
+            // 
+            // refreshMainMenuItem
+            // 
+            this.refreshMainMenuItem.Index = 0;
+            this.refreshMainMenuItem.Text = "Refresh";
+            // 
+            // menuItem52
+            // 
+            this.menuItem52.Index = 1;
+            this.menuItem52.Text = "-";
+            // 
+            // goToFolderMainMenuItem
+            // 
+            this.goToFolderMainMenuItem.Index = 2;
+            this.goToFolderMainMenuItem.Text = "Go to Folder…";
+            // 
+            // backMainMenuItem
+            // 
+            this.backMainMenuItem.Index = 3;
+            this.backMainMenuItem.Text = "Back";
+            // 
+            // forwardMainMenuItem
+            // 
+            this.forwardMainMenuItem.Index = 4;
+            this.forwardMainMenuItem.Text = "Forward";
+            // 
+            // enclosingFolderMainMenuItem
+            // 
+            this.enclosingFolderMainMenuItem.Index = 5;
+            this.enclosingFolderMainMenuItem.Text = "Enclosing Folder";
+            // 
+            // insideMainMenuItem
+            // 
+            this.insideMainMenuItem.Index = 6;
+            this.insideMainMenuItem.Text = "Inside";
+            // 
+            // searchMainMenuItem
+            // 
+            this.searchMainMenuItem.Index = 7;
+            this.searchMainMenuItem.Text = "Search…";
+            // 
+            // menuItem59
+            // 
+            this.menuItem59.Index = 8;
+            this.menuItem59.Text = "-";
+            // 
+            // sendCommandMainMenuItem
+            // 
+            this.sendCommandMainMenuItem.Index = 9;
+            this.sendCommandMainMenuItem.Text = "Send Command…";
+            // 
+            // menuItem61
+            // 
+            this.menuItem61.Index = 10;
+            this.menuItem61.Text = "-";
+            // 
+            // stopMainMenuItem
+            // 
+            this.stopMainMenuItem.Index = 11;
+            this.stopMainMenuItem.Text = "Stop";
+            // 
+            // disconnectMainMenuItem
+            // 
+            this.disconnectMainMenuItem.Index = 12;
+            this.disconnectMainMenuItem.Text = "Disconnect";
+            // 
+            // menuItem64
+            // 
+            this.menuItem64.Index = 4;
+            this.menuItem64.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.toggleBookmarksMainMenuItem,
+            this.menuItem66,
+            this.newBookmarkMainMenuItem,
+            this.deleteBookmarkMainMenuItem,
+            this.editBookmarkMainMenuItem,
+            this.duplicateBookmarkMainMenuItem,
+            this.menuItem71,
+            this.historyMainMenuItem,
+            this.bonjourMainMenuItem,
+            this.menuItem74});
+            this.menuItem64.Text = "&Bookmark";
+            // 
+            // toggleBookmarksMainMenuItem
+            // 
+            this.toggleBookmarksMainMenuItem.Index = 0;
+            this.toggleBookmarksMainMenuItem.Text = "Toggle Bookmarks";
+            // 
+            // menuItem66
+            // 
+            this.menuItem66.Index = 1;
+            this.menuItem66.Text = "-";
+            // 
+            // newBookmarkMainMenuItem
+            // 
+            this.newBookmarkMainMenuItem.Index = 2;
+            this.newBookmarkMainMenuItem.Text = "New Bookmark";
+            // 
+            // deleteBookmarkMainMenuItem
+            // 
+            this.deleteBookmarkMainMenuItem.Index = 3;
+            this.deleteBookmarkMainMenuItem.Text = "Delete Bookmark";
+            // 
+            // editBookmarkMainMenuItem
+            // 
+            this.editBookmarkMainMenuItem.Index = 4;
+            this.editBookmarkMainMenuItem.Text = "Edit Bookmark";
+            // 
+            // duplicateBookmarkMainMenuItem
+            // 
+            this.duplicateBookmarkMainMenuItem.Index = 5;
+            this.duplicateBookmarkMainMenuItem.Text = "Duplicate Bookmark";
+            // 
+            // menuItem71
+            // 
+            this.menuItem71.Index = 6;
+            this.menuItem71.Text = "-";
+            // 
+            // historyMainMenuItem
+            // 
+            this.historyMainMenuItem.Index = 7;
+            this.historyMainMenuItem.Text = "History";
+            // 
+            // bonjourMainMenuItem
+            // 
+            this.bonjourMainMenuItem.Index = 8;
+            this.bonjourMainMenuItem.Text = "Bonjour";
+            // 
+            // menuItem74
+            // 
+            this.menuItem74.Index = 9;
+            this.menuItem74.Text = "-";
+            // 
+            // menuItem75
+            // 
+            this.menuItem75.Index = 5;
+            this.menuItem75.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.minimizeMainMenuItem,
+            this.menuItem77,
+            this.transfersMainMenuItem,
+            this.activityMainMenuItem});
+            this.menuItem75.Text = "&Window";
+            // 
+            // minimizeMainMenuItem
+            // 
+            this.minimizeMainMenuItem.Index = 0;
+            this.minimizeMainMenuItem.Text = "Minimize";
+            // 
+            // menuItem77
+            // 
+            this.menuItem77.Index = 1;
+            this.menuItem77.Text = "-";
+            // 
+            // transfersMainMenuItem
+            // 
+            this.transfersMainMenuItem.Index = 2;
+            this.transfersMainMenuItem.Text = "Transfers";
+            // 
+            // activityMainMenuItem
+            // 
+            this.activityMainMenuItem.Index = 3;
+            this.activityMainMenuItem.Text = "Activity";
+            // 
+            // menuItem80
+            // 
+            this.menuItem80.Index = 6;
+            this.menuItem80.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.helpMainMenuItem,
+            this.licenseMainMenuItem,
+            this.acknowledgmentsMainMenuItem,
+            this.menuItem84,
+            this.bugMainMenuItem,
+            this.menuItem86,
+            this.updateMainMenuItem,
+            this.menuItem88,
+            this.aboutMainMenuItem});
+            this.menuItem80.Text = "&Help";
+            // 
+            // helpMainMenuItem
+            // 
+            this.helpMainMenuItem.Index = 0;
+            this.helpMainMenuItem.Text = "Cyberduck Help";
+            // 
+            // licenseMainMenuItem
+            // 
+            this.licenseMainMenuItem.Index = 1;
+            this.licenseMainMenuItem.Text = "License";
+            // 
+            // acknowledgmentsMainMenuItem
+            // 
+            this.acknowledgmentsMainMenuItem.Index = 2;
+            this.acknowledgmentsMainMenuItem.Text = "Acknowledgments";
+            // 
+            // menuItem84
+            // 
+            this.menuItem84.Index = 3;
+            this.menuItem84.Text = "-";
+            // 
+            // bugMainMenuItem
+            // 
+            this.bugMainMenuItem.Index = 4;
+            this.bugMainMenuItem.Text = "Report a Bug";
+            // 
+            // menuItem86
+            // 
+            this.menuItem86.Index = 5;
+            this.menuItem86.Text = "-";
+            // 
+            // updateMainMenuItem
+            // 
+            this.updateMainMenuItem.Index = 6;
+            this.updateMainMenuItem.Text = "Check for Update…";
+            // 
+            // menuItem88
+            // 
+            this.menuItem88.Index = 7;
+            this.menuItem88.Text = "-";
+            // 
+            // aboutMainMenuItem
+            // 
+            this.aboutMainMenuItem.Index = 8;
+            this.aboutMainMenuItem.Text = "About Cyberduck";
+            // 
+            // vistaMenu1
+            // 
+            this.vistaMenu1.ContainerControl = this;
+            // 
+            // toolbarContextMenu1
+            // 
+            this.toolbarContextMenu1.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.openConnectionToolbarMenuItem,
+            this.menuItem91,
+            this.quickConnectToolbarMenuItem,
+            this.actionContextToolbarMenuItem,
+            this.menuItem94,
+            this.infoToolbarMenuItem,
+            this.refreshToolbarMenuItem,
+            this.menuItem97,
+            this.editToolbarMenuItem,
+            this.openInWebBrowserToolbarMenuItem,
+            this.newFolderToolbarMenuItem,
+            this.deleteToolbarMenuItem,
+            this.menuItem102,
+            this.downloadToolbarMenuItem,
+            this.uploadToolbarMenuItem,
+            this.transfersToolbarMenuItem});
+            // 
+            // openConnectionToolbarMenuItem
+            // 
+            this.openConnectionToolbarMenuItem.Index = 0;
+            this.openConnectionToolbarMenuItem.Text = "New Connection";
+            // 
+            // menuItem91
+            // 
+            this.menuItem91.Index = 1;
+            this.menuItem91.Text = "-";
+            // 
+            // quickConnectToolbarMenuItem
+            // 
+            this.quickConnectToolbarMenuItem.Index = 2;
+            this.quickConnectToolbarMenuItem.Text = "Quick Connect";
+            // 
+            // actionContextToolbarMenuItem
+            // 
+            this.actionContextToolbarMenuItem.Index = 3;
+            this.actionContextToolbarMenuItem.Text = "Action";
+            // 
+            // menuItem94
+            // 
+            this.menuItem94.Index = 4;
+            this.menuItem94.Text = "-";
+            // 
+            // infoToolbarMenuItem
+            // 
+            this.infoToolbarMenuItem.Index = 5;
+            this.infoToolbarMenuItem.Text = "Info";
+            // 
+            // refreshToolbarMenuItem
+            // 
+            this.refreshToolbarMenuItem.Index = 6;
+            this.refreshToolbarMenuItem.Text = "Refresh";
+            // 
+            // menuItem97
+            // 
+            this.menuItem97.Index = 7;
+            this.menuItem97.Text = "-";
+            // 
+            // editToolbarMenuItem
+            // 
+            this.editToolbarMenuItem.Index = 8;
+            this.editToolbarMenuItem.Text = "Edit";
+            // 
+            // openInWebBrowserToolbarMenuItem
+            // 
+            this.openInWebBrowserToolbarMenuItem.Index = 9;
+            this.openInWebBrowserToolbarMenuItem.Text = "Open in Web Browser";
+            // 
+            // newFolderToolbarMenuItem
+            // 
+            this.newFolderToolbarMenuItem.Index = 10;
+            this.newFolderToolbarMenuItem.Text = "New Folder";
+            // 
+            // deleteToolbarMenuItem
+            // 
+            this.deleteToolbarMenuItem.Index = 11;
+            this.deleteToolbarMenuItem.Text = "Delete";
+            // 
+            // menuItem102
+            // 
+            this.menuItem102.Index = 12;
+            this.menuItem102.Text = "-";
+            // 
+            // downloadToolbarMenuItem
+            // 
+            this.downloadToolbarMenuItem.Index = 13;
+            this.downloadToolbarMenuItem.Text = "Download";
+            // 
+            // uploadToolbarMenuItem
+            // 
+            this.uploadToolbarMenuItem.Index = 14;
+            this.uploadToolbarMenuItem.Text = "Upload";
+            // 
+            // transfersToolbarMenuItem
+            // 
+            this.transfersToolbarMenuItem.Index = 15;
+            this.transfersToolbarMenuItem.Text = "Transfers";
+            // 
+            // browserContextMenu
+            // 
+            this.browserContextMenu.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.refreshBrowserContextMenuItem,
+            this.menuItem44,
+            this.infoBrowserContextMenuItem,
+            this.editBrowserContextMenuItem,
+            this.renameBrowserContextMenuItem,
+            this.duplicateFileBrowserContextMenuItem,
+            this.menuItem96,
+            this.downloadBrowserContextMenuItem,
+            this.downloadAsBrowserContextMenuItem,
+            this.downloadToBrowserContextMenuItem,
+            this.menuItem101,
+            this.deleteBrowserContextMenuItem,
+            this.revertBrowserContextMenuItem,
+            this.menuItem105,
+            this.uploadBrowserContextMenuItem,
+            this.synchronizeBrowserContextMenuItem,
+            this.newFolderBrowserContextMenuItem,
+            this.newFileBrowserContextMenuItem,
+            this.menuItem110,
+            this.createArchiveBrowserContextMenuItem,
+            this.expandArchiveBrowserContextMnuItem,
+            this.menuItem113,
+            this.copyUrlBrowserContextMenuItem,
+            this.openWebUrlBrowserContextMenuItem,
+            this.menuItem116,
+            this.newBrowserBrowserContextMenuItem,
+            this.newBookmarkBrowserContextMenuItem});
+            // 
+            // refreshBrowserContextMenuItem
+            // 
+            this.refreshBrowserContextMenuItem.Index = 0;
+            this.refreshBrowserContextMenuItem.Text = "Refresh";
+            // 
+            // menuItem44
+            // 
+            this.menuItem44.Index = 1;
+            this.menuItem44.Text = "-";
+            // 
+            // infoBrowserContextMenuItem
+            // 
+            this.infoBrowserContextMenuItem.Index = 2;
+            this.infoBrowserContextMenuItem.Text = "Info";
+            // 
+            // editBrowserContextMenuItem
+            // 
+            this.editBrowserContextMenuItem.Index = 3;
+            this.editBrowserContextMenuItem.Text = "Edit";
+            // 
+            // renameBrowserContextMenuItem
+            // 
+            this.renameBrowserContextMenuItem.Index = 4;
+            this.renameBrowserContextMenuItem.Text = "Rename…";
+            // 
+            // duplicateFileBrowserContextMenuItem
+            // 
+            this.duplicateFileBrowserContextMenuItem.Index = 5;
+            this.duplicateFileBrowserContextMenuItem.Text = "Duplicate File…";
+            // 
+            // menuItem96
+            // 
+            this.menuItem96.Index = 6;
+            this.menuItem96.Text = "-";
+            // 
+            // downloadBrowserContextMenuItem
+            // 
+            this.downloadBrowserContextMenuItem.Index = 7;
+            this.downloadBrowserContextMenuItem.Text = "Download";
+            // 
+            // downloadAsBrowserContextMenuItem
+            // 
+            this.downloadAsBrowserContextMenuItem.Index = 8;
+            this.downloadAsBrowserContextMenuItem.Text = "Download As…";
+            // 
+            // downloadToBrowserContextMenuItem
+            // 
+            this.downloadToBrowserContextMenuItem.Index = 9;
+            this.downloadToBrowserContextMenuItem.Text = "Download To…";
+            // 
+            // menuItem101
+            // 
+            this.menuItem101.Index = 10;
+            this.menuItem101.Text = "-";
+            // 
+            // deleteBrowserContextMenuItem
+            // 
+            this.deleteBrowserContextMenuItem.Index = 11;
+            this.deleteBrowserContextMenuItem.Text = "Delete";
+            // 
+            // revertBrowserContextMenuItem
+            // 
+            this.revertBrowserContextMenuItem.Index = 12;
+            this.revertBrowserContextMenuItem.Text = "Revert";
+            // 
+            // menuItem105
+            // 
+            this.menuItem105.Index = 13;
+            this.menuItem105.Text = "-";
+            // 
+            // uploadBrowserContextMenuItem
+            // 
+            this.uploadBrowserContextMenuItem.Index = 14;
+            this.uploadBrowserContextMenuItem.Text = "Upload…";
+            // 
+            // synchronizeBrowserContextMenuItem
+            // 
+            this.synchronizeBrowserContextMenuItem.Index = 15;
+            this.synchronizeBrowserContextMenuItem.Text = "Synchronize…";
+            // 
+            // newFolderBrowserContextMenuItem
+            // 
+            this.newFolderBrowserContextMenuItem.Index = 16;
+            this.newFolderBrowserContextMenuItem.Text = "New Folder…";
+            // 
+            // newFileBrowserContextMenuItem
+            // 
+            this.newFileBrowserContextMenuItem.Index = 17;
+            this.newFileBrowserContextMenuItem.Text = "New File…";
+            // 
+            // menuItem110
+            // 
+            this.menuItem110.Index = 18;
+            this.menuItem110.Text = "-";
+            // 
+            // createArchiveBrowserContextMenuItem
+            // 
+            this.createArchiveBrowserContextMenuItem.Index = 19;
+            this.createArchiveBrowserContextMenuItem.Text = "Create Archive";
+            // 
+            // expandArchiveBrowserContextMnuItem
+            // 
+            this.expandArchiveBrowserContextMnuItem.Index = 20;
+            this.expandArchiveBrowserContextMnuItem.Text = "Expand Archive";
+            // 
+            // menuItem113
+            // 
+            this.menuItem113.Index = 21;
+            this.menuItem113.Text = "-";
+            // 
+            // copyUrlBrowserContextMenuItem
+            // 
+            this.copyUrlBrowserContextMenuItem.Index = 22;
+            this.copyUrlBrowserContextMenuItem.Text = "Copy URL";
+            // 
+            // openWebUrlBrowserContextMenuItem
+            // 
+            this.openWebUrlBrowserContextMenuItem.Index = 23;
+            this.openWebUrlBrowserContextMenuItem.Text = "Open Web URL";
+            // 
+            // menuItem116
+            // 
+            this.menuItem116.Index = 24;
+            this.menuItem116.Text = "-";
+            // 
+            // newBrowserBrowserContextMenuItem
+            // 
+            this.newBrowserBrowserContextMenuItem.Index = 25;
+            this.newBrowserBrowserContextMenuItem.Text = "New Browser";
+            // 
+            // newBookmarkBrowserContextMenuItem
+            // 
+            this.newBookmarkBrowserContextMenuItem.Index = 26;
+            this.newBookmarkBrowserContextMenuItem.Text = "New Bookmark";
+            // 
+            // bookmarkContextMenu
+            // 
+            this.bookmarkContextMenu.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.connectBookmarkContextMenuItem,
+            this.menuItem5,
+            this.newBookmarkContextMenuItem,
+            this.deleteBookmarkContextMenuItem,
+            this.editBookmarkContextMenuItem,
+            this.duplicateBookmarkContextMenuItem});
+            // 
+            // connectBookmarkContextMenuItem
+            // 
+            this.connectBookmarkContextMenuItem.Index = 0;
+            this.connectBookmarkContextMenuItem.Text = "Connect to server";
+            // 
+            // menuItem5
+            // 
+            this.menuItem5.Index = 1;
+            this.menuItem5.Text = "-";
+            // 
+            // newBookmarkContextMenuItem
+            // 
+            this.newBookmarkContextMenuItem.Index = 2;
+            this.newBookmarkContextMenuItem.Text = "New Bookmark";
+            // 
+            // deleteBookmarkContextMenuItem
+            // 
+            this.deleteBookmarkContextMenuItem.Index = 3;
+            this.deleteBookmarkContextMenuItem.Text = "Delete Bookmark";
+            // 
+            // editBookmarkContextMenuItem
+            // 
+            this.editBookmarkContextMenuItem.Index = 4;
+            this.editBookmarkContextMenuItem.Text = "Edit Bookmark";
+            // 
+            // duplicateBookmarkContextMenuItem
+            // 
+            this.duplicateBookmarkContextMenuItem.Index = 5;
+            this.duplicateBookmarkContextMenuItem.Text = "Duplicate Bookmark";
+            // 
             // BrowserForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(903, 638);
+            this.ClientSize = new System.Drawing.Size(1028, 606);
             this.Controls.Add(this.toolStripContainer1);
-            this.Controls.Add(this.statusStrip);
-            this.Controls.Add(this.menuStrip1);
-            this.MainMenuStrip = this.menuStrip1;
             this.MinimumSize = new System.Drawing.Size(460, 38);
             this.Name = "BrowserForm";
             this.Text = "Cyberduck";
@@ -1976,26 +3014,32 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.toolBar.ResumeLayout(false);
             this.toolBar.PerformLayout();
             this.contextMenuStrip.ResumeLayout(false);
+            this.toolStripContainer1.BottomToolStripPanel.ResumeLayout(false);
+            this.toolStripContainer1.BottomToolStripPanel.PerformLayout();
             this.toolStripContainer1.ContentPanel.ResumeLayout(false);
             this.toolStripContainer1.TopToolStripPanel.ResumeLayout(false);
+            this.toolStripContainer1.TopToolStripPanel.PerformLayout();
             this.toolStripContainer1.ResumeLayout(false);
             this.toolStripContainer1.PerformLayout();
+            this.panelManager1.ResumeLayout(false);
+            this.managedBrowserPanel1.ResumeLayout(false);
             this.splitContainer.Panel1.ResumeLayout(false);
             this.splitContainer.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer)).EndInit();
             this.splitContainer.ResumeLayout(false);
-            this.panelManagerMain.ResumeLayout(false);
-            this.bookmarksPanel.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.browser)).EndInit();
+            this.managedBookmarkPanel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.bookmarkListView)).EndInit();
-            this.bookmarkContextMenuStrip.ResumeLayout(false);
             this.actionToolStrip.ResumeLayout(false);
             this.actionToolStrip.PerformLayout();
-            this.browserPanel.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.browser)).EndInit();
             this.viewPanel.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);
+            this.tableLayoutPanel1.PerformLayout();
+            this.viewToolStrip.ResumeLayout(false);
+            this.viewToolStrip.PerformLayout();
+            this.bookmarkContextMenuStrip.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.vistaMenu1)).EndInit();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
@@ -2138,9 +3182,6 @@ namespace Ch.Cyberduck.Ui.Winforms
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator26;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator27;
         private System.Windows.Forms.ToolStripMenuItem revertContxtStripMenuItem;
-        private PanelManager panelManagerMain;
-        private ManagedPanel browserPanel;
-        private ManagedPanel bookmarksPanel;
         private System.Windows.Forms.ToolStrip actionToolStrip;
         private System.Windows.Forms.ToolStripButton newBookmarkToolStripButton;
         private System.Windows.Forms.ToolStripButton editBookmarkToolStripButton;
@@ -2156,11 +3197,6 @@ namespace Ch.Cyberduck.Ui.Winforms
         private System.Windows.Forms.ToolStripMenuItem editBookmarkContextToolStripMenuItem1;
         private LineSeparatedObjectListView bookmarkListView;
         private System.Windows.Forms.Panel viewPanel;
-        private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.CheckBox bonjourCheckBox;
-        private System.Windows.Forms.CheckBox historyCheckBox;
-        private System.Windows.Forms.CheckBox bookmarkCheckBox;
-        private System.Windows.Forms.CheckBox browserCheckBox;
         private System.Windows.Forms.Button parentPathButton;
         private System.Windows.Forms.ComboBox pathComboBox;
         private System.Windows.Forms.Button historyForwardButton;
@@ -2210,6 +3246,158 @@ namespace Ch.Cyberduck.Ui.Winforms
         private ClickThroughToolStrip toolBar;
         private ui.winforms.controls.SearchTextBox2 searchTextBox;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
+        private System.Windows.Forms.MainMenu mainMenu1;
+        private System.Windows.Forms.MenuItem menuItem1;
+        private System.Windows.Forms.MenuItem newBrowserMainMenuItem;
+        private System.Windows.Forms.MenuItem openConnectionMainMenuItem;
+        private System.Windows.Forms.MenuItem menuItem4;
+        private System.Windows.Forms.MenuItem newDownloadMainMenuItem;
+        private System.Windows.Forms.MenuItem menuItem6;
+        private System.Windows.Forms.MenuItem newFolderMainMenuItem;
+        private System.Windows.Forms.MenuItem newFileMainMenuItem;
+        private System.Windows.Forms.MenuItem renameMainMenuItem;
+        private System.Windows.Forms.MenuItem duplicateMainMenuItem;
+        private System.Windows.Forms.MenuItem menuItem11;
+        private System.Windows.Forms.MenuItem openWebUrlMainMenuItem;
+        private System.Windows.Forms.MenuItem editMainMenuItem;
+        private System.Windows.Forms.MenuItem infoMainMenuItem;
+        private System.Windows.Forms.MenuItem downloadMainMenuItem;
+        private System.Windows.Forms.MenuItem downloadAsMainMenuItem;
+        private System.Windows.Forms.MenuItem downloadToMainMenuItem;
+        private System.Windows.Forms.MenuItem uploadMainMenuItem;
+        private System.Windows.Forms.MenuItem synchronizeMainMenuItem;
+        private System.Windows.Forms.MenuItem menuItem21;
+        private System.Windows.Forms.MenuItem deleteMainMenuItem;
+        private System.Windows.Forms.MenuItem revertMainMenuItem;
+        private System.Windows.Forms.MenuItem menuItem24;
+        private System.Windows.Forms.MenuItem createArchiveMainMenuItem;
+        private System.Windows.Forms.MenuItem expandArchiveMainMenuItem;
+        private System.Windows.Forms.MenuItem menuItem27;
+        private System.Windows.Forms.MenuItem printMainMenuItem;
+        private System.Windows.Forms.MenuItem menuItem29;
+        private System.Windows.Forms.MenuItem exitMainMenuItem;
+        private System.Windows.Forms.MenuItem mainMenuItem2;
+        private System.Windows.Forms.MenuItem cutMainMenuItem;
+        private System.Windows.Forms.MenuItem copyMainMenuItem;
+        private System.Windows.Forms.MenuItem copyUrlMainMenuItem;
+        private System.Windows.Forms.MenuItem pasteMainMenuItem;
+        private System.Windows.Forms.MenuItem selectAllMainMenuItem;
+        private System.Windows.Forms.MenuItem menuItem37;
+        private System.Windows.Forms.MenuItem preferencesMainMenuItem;
+        private System.Windows.Forms.MenuItem menuItem39;
+        private System.Windows.Forms.MenuItem toggleToolbarMainMenuItem;
+        private System.Windows.Forms.MenuItem customizeToolbarMainMenuItem;
+        private System.Windows.Forms.MenuItem menuItem42;
+        private System.Windows.Forms.MenuItem menuItem43;
+        private System.Windows.Forms.MenuItem columnMainMenuItem;
+        private System.Windows.Forms.MenuItem menuItem45;
+        private System.Windows.Forms.MenuItem showHiddenFilesMainMenuItem;
+        private System.Windows.Forms.MenuItem textEncodingMainMenuItem;
+        private System.Windows.Forms.MenuItem menuItem48;
+        private System.Windows.Forms.MenuItem toggleLogDrawerMainMenuItem;
+        private System.Windows.Forms.MenuItem menuItem50;
+        private System.Windows.Forms.MenuItem refreshMainMenuItem;
+        private System.Windows.Forms.MenuItem menuItem52;
+        private System.Windows.Forms.MenuItem goToFolderMainMenuItem;
+        private System.Windows.Forms.MenuItem backMainMenuItem;
+        private System.Windows.Forms.MenuItem forwardMainMenuItem;
+        private System.Windows.Forms.MenuItem enclosingFolderMainMenuItem;
+        private System.Windows.Forms.MenuItem insideMainMenuItem;
+        private System.Windows.Forms.MenuItem searchMainMenuItem;
+        private System.Windows.Forms.MenuItem menuItem59;
+        private System.Windows.Forms.MenuItem sendCommandMainMenuItem;
+        private System.Windows.Forms.MenuItem menuItem61;
+        private System.Windows.Forms.MenuItem stopMainMenuItem;
+        private System.Windows.Forms.MenuItem disconnectMainMenuItem;
+        private System.Windows.Forms.MenuItem menuItem64;
+        private System.Windows.Forms.MenuItem toggleBookmarksMainMenuItem;
+        private System.Windows.Forms.MenuItem menuItem66;
+        private System.Windows.Forms.MenuItem newBookmarkMainMenuItem;
+        private System.Windows.Forms.MenuItem deleteBookmarkMainMenuItem;
+        private System.Windows.Forms.MenuItem editBookmarkMainMenuItem;
+        private System.Windows.Forms.MenuItem duplicateBookmarkMainMenuItem;
+        private System.Windows.Forms.MenuItem menuItem71;
+        private System.Windows.Forms.MenuItem historyMainMenuItem;
+        private System.Windows.Forms.MenuItem bonjourMainMenuItem;
+        private System.Windows.Forms.MenuItem menuItem74;
+        private System.Windows.Forms.MenuItem menuItem75;
+        private System.Windows.Forms.MenuItem minimizeMainMenuItem;
+        private System.Windows.Forms.MenuItem menuItem77;
+        private System.Windows.Forms.MenuItem transfersMainMenuItem;
+        private System.Windows.Forms.MenuItem activityMainMenuItem;
+        private System.Windows.Forms.MenuItem menuItem80;
+        private System.Windows.Forms.MenuItem helpMainMenuItem;
+        private System.Windows.Forms.MenuItem licenseMainMenuItem;
+        private System.Windows.Forms.MenuItem acknowledgmentsMainMenuItem;
+        private System.Windows.Forms.MenuItem menuItem84;
+        private System.Windows.Forms.MenuItem bugMainMenuItem;
+        private System.Windows.Forms.MenuItem menuItem86;
+        private System.Windows.Forms.MenuItem updateMainMenuItem;
+        private System.Windows.Forms.MenuItem menuItem88;
+        private System.Windows.Forms.MenuItem aboutMainMenuItem;
+        private VistaMenu vistaMenu1;
+        private System.Windows.Forms.ContextMenu toolbarContextMenu1;
+        private System.Windows.Forms.MenuItem openConnectionToolbarMenuItem;
+        private System.Windows.Forms.MenuItem menuItem91;
+        private System.Windows.Forms.MenuItem quickConnectToolbarMenuItem;
+        private System.Windows.Forms.MenuItem actionContextToolbarMenuItem;
+        private System.Windows.Forms.MenuItem menuItem94;
+        private System.Windows.Forms.MenuItem infoToolbarMenuItem;
+        private System.Windows.Forms.MenuItem refreshToolbarMenuItem;
+        private System.Windows.Forms.MenuItem menuItem97;
+        private System.Windows.Forms.MenuItem editToolbarMenuItem;
+        private System.Windows.Forms.MenuItem openInWebBrowserToolbarMenuItem;
+        private System.Windows.Forms.MenuItem newFolderToolbarMenuItem;
+        private System.Windows.Forms.MenuItem deleteToolbarMenuItem;
+        private System.Windows.Forms.MenuItem menuItem102;
+        private System.Windows.Forms.MenuItem downloadToolbarMenuItem;
+        private System.Windows.Forms.MenuItem uploadToolbarMenuItem;
+        private System.Windows.Forms.MenuItem transfersToolbarMenuItem;
+        private System.Windows.Forms.ContextMenu browserContextMenu;
+        private System.Windows.Forms.MenuItem refreshBrowserContextMenuItem;
+        private System.Windows.Forms.MenuItem menuItem44;
+        private System.Windows.Forms.MenuItem infoBrowserContextMenuItem;
+        private System.Windows.Forms.MenuItem editBrowserContextMenuItem;
+        private System.Windows.Forms.MenuItem renameBrowserContextMenuItem;
+        private System.Windows.Forms.MenuItem duplicateFileBrowserContextMenuItem;
+        private System.Windows.Forms.MenuItem menuItem96;
+        private System.Windows.Forms.MenuItem downloadBrowserContextMenuItem;
+        private System.Windows.Forms.MenuItem downloadAsBrowserContextMenuItem;
+        private System.Windows.Forms.MenuItem downloadToBrowserContextMenuItem;
+        private System.Windows.Forms.MenuItem menuItem101;
+        private System.Windows.Forms.MenuItem deleteBrowserContextMenuItem;
+        private System.Windows.Forms.MenuItem revertBrowserContextMenuItem;
+        private System.Windows.Forms.MenuItem menuItem105;
+        private System.Windows.Forms.MenuItem uploadBrowserContextMenuItem;
+        private System.Windows.Forms.MenuItem synchronizeBrowserContextMenuItem;
+        private System.Windows.Forms.MenuItem newFolderBrowserContextMenuItem;
+        private System.Windows.Forms.MenuItem newFileBrowserContextMenuItem;
+        private System.Windows.Forms.MenuItem menuItem110;
+        private System.Windows.Forms.MenuItem createArchiveBrowserContextMenuItem;
+        private System.Windows.Forms.MenuItem expandArchiveBrowserContextMnuItem;
+        private System.Windows.Forms.MenuItem menuItem113;
+        private System.Windows.Forms.MenuItem copyUrlBrowserContextMenuItem;
+        private System.Windows.Forms.MenuItem openWebUrlBrowserContextMenuItem;
+        private System.Windows.Forms.MenuItem menuItem116;
+        private System.Windows.Forms.MenuItem newBrowserBrowserContextMenuItem;
+        private System.Windows.Forms.MenuItem newBookmarkBrowserContextMenuItem;
+        private PanelManager panelManager1;
+        private ManagedPanel managedBrowserPanel1;
+        private ManagedPanel managedBookmarkPanel2;
+        private System.Windows.Forms.ContextMenu bookmarkContextMenu;
+        private System.Windows.Forms.MenuItem connectBookmarkContextMenuItem;
+        private System.Windows.Forms.MenuItem menuItem5;
+        private System.Windows.Forms.MenuItem newBookmarkContextMenuItem;
+        private System.Windows.Forms.MenuItem deleteBookmarkContextMenuItem;
+        private System.Windows.Forms.MenuItem editBookmarkContextMenuItem;
+        private System.Windows.Forms.MenuItem duplicateBookmarkContextMenuItem;
+        private System.Windows.Forms.MenuItem menuItem2;
+        private ClickThroughToolStrip viewToolStrip;
+        private System.Windows.Forms.ToolStripButton browserToolStripButton;
+        private System.Windows.Forms.ToolStripButton bookmarksToolStripButton;
+        private System.Windows.Forms.ToolStripButton historyToolStripButton;
+        private System.Windows.Forms.ToolStripButton bonjourToolStripButton;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator23;
     }
 }
 

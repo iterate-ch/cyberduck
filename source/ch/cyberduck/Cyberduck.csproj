@@ -187,6 +187,12 @@
     <Compile Include="ui\winforms\controls\SearchTextBox2.Designer.cs">
       <DependentUpon>SearchTextBox2.cs</DependentUpon>
     </Compile>
+    <Compile Include="ui\winforms\controls\VistaMenu.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ui\winforms\controls\VistaMenuOwnerDrawn.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="ui\winforms\UpdateForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -366,7 +372,6 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="ui\controller\SettingsDictionary.cs" />
-    <Compile Include="ui\controller\StreamLocal.cs" />
     <Compile Include="ui\controller\TcpReachability.cs" />
     <Compile Include="ui\controller\threading\AlertRepeatableBackgroundAction.cs" />
     <Compile Include="ui\controller\threading\BrowserBackgroundAction.cs" />

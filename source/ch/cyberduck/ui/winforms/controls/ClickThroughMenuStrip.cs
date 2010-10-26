@@ -29,7 +29,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Controls
     {
         protected override void WndProc(ref Message m)
         {
-            base.WndProc(ref m);
+            base.WndProc(ref m);            
             if (m.Msg == NativeConstants.WM_MOUSEACTIVATE &&
                 m.Result == (IntPtr) NativeConstants.MA_ACTIVATEANDEAT)
             {

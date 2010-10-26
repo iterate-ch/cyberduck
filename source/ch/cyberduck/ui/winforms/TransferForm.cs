@@ -342,21 +342,21 @@ namespace Ch.Cyberduck.Ui.Winforms
             ConfigureToolbarMenu(openToolStripMenuItem, openToolStripButton, "transfer.toolbar.open");
             ConfigureToolbarMenu(showToolStripMenuItem, showToolStripButton, "transfer.toolbar.show");
 
-            Commands.Add(new ToolStripItem[] {resumeToolStripButton}, (sender, args) => ResumeEvent(),
+            Commands.Add(new ToolStripItem[] {resumeToolStripButton}, null, (sender, args) => ResumeEvent(),
                          () => ValidateResumeEvent());
-            Commands.Add(new ToolStripItem[] {reloadToolStripButton}, (sender, args) => ReloadEvent(),
+            Commands.Add(new ToolStripItem[] {reloadToolStripButton}, null, (sender, args) => ReloadEvent(),
                          () => ValidateReloadEvent());
-            Commands.Add(new ToolStripItem[] {stopToolStripButton}, (sender, args) => StopEvent(),
+            Commands.Add(new ToolStripItem[] {stopToolStripButton}, null, (sender, args) => StopEvent(),
                          () => ValidateStopEvent());
-            Commands.Add(new ToolStripItem[] {removeToolStripButton}, (sender, args) => RemoveEvent(),
+            Commands.Add(new ToolStripItem[] {removeToolStripButton}, null, (sender, args) => RemoveEvent(),
                          () => ValidateRemoveEvent());
-            Commands.Add(new ToolStripItem[] {cleanUptoolStripButton}, (sender, args) => CleanEvent(),
+            Commands.Add(new ToolStripItem[] {cleanUptoolStripButton}, null, (sender, args) => CleanEvent(),
                          () => ValidateCleanEvent());
-            Commands.Add(new ToolStripItem[] {logToolStripButton}, (sender, args) => ToggleTranscriptEvent(), () => true);
-
-            Commands.Add(new ToolStripItem[] {openToolStripButton}, (sender, args) => OpenEvent(),
+            Commands.Add(new ToolStripItem[] {logToolStripButton}, null, (sender, args) => ToggleTranscriptEvent(),
+                         () => true);
+            Commands.Add(new ToolStripItem[] {openToolStripButton}, null, (sender, args) => OpenEvent(),
                          () => ValidateOpenEvent());
-            Commands.Add(new ToolStripItem[] {showToolStripButton}, (sender, args) => ShowEvent(),
+            Commands.Add(new ToolStripItem[] {showToolStripButton}, null, (sender, args) => ShowEvent(),
                          () => ValidateShowEvent());
         }
 

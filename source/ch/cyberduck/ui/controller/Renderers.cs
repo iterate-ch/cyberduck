@@ -20,9 +20,9 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Globalization;
+using System.Windows.Forms;
 using System.Windows.Forms.VisualStyles;
 using BrightIdeasSoftware;
-using ch.cyberduck;
 using Ch.Cyberduck.Core;
 
 namespace Ch.Cyberduck.Ui.Controller
@@ -847,6 +847,23 @@ namespace Ch.Cyberduck.Ui.Controller
     }
 
     /// <summary>
+    /// ToolStrip renderer that does not have this ugly white line at the bottom.
+    /// </summary>
+    public class ToolStripRenderer : ToolStripSystemRenderer
+    {
+        protected override void OnRenderToolStripBorder(ToolStripRenderEventArgs e)
+        {
+            base.OnRenderToolStripBorder(e);
+
+            Rectangle rect = e.AffectedBounds;
+            rect.Height = 2;
+            rect.Offset(0, e.AffectedBounds.Height - 2);
+            e.Graphics.FillRectangle(new SolidBrush(e.BackColor), rect);
+            return;
+        }
+    }
+
+    /// <summary>
     /// Renderer to make the browser tree Explorer like (default explorer theme)
     /// </summary>
     public class BrowserRenderer : TreeListView.TreeRenderer
@@ -859,22 +876,26 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             if (Utils.IsVistaOrLater && VisualStyleRenderer.IsSupported)
             {
-                ClosedGlyphRenderer = new VisualStyleRenderer(VisualStyleElement.CreateElement("Explorer::TreeView", 2, 1));
-                OpenedGlyphRenderer = new VisualStyleRenderer(VisualStyleElement.CreateElement("Explorer::TreeView", 2, 2));
+                ClosedGlyphRenderer =
+                    new VisualStyleRenderer(VisualStyleElement.CreateElement("Explorer::TreeView", 2, 1));
+                OpenedGlyphRenderer =
+                    new VisualStyleRenderer(VisualStyleElement.CreateElement("Explorer::TreeView", 2, 2));
             }
         }
 
         public BrowserRenderer()
         {
-            IsShowLines = false;            
+            IsShowLines = false;
         }
 
         protected override void DrawExpansionGlyph(Graphics g, Rectangle r, bool isExpanded)
         {
-            if (Utils.IsVistaOrLater && VisualStyleRenderer.IsSupported){
+            if (Utils.IsVistaOrLater && VisualStyleRenderer.IsSupported)
+            {
                 VisualStyleRenderer renderer = isExpanded ? OpenedGlyphRenderer : ClosedGlyphRenderer;
                 renderer.DrawBackground(g, r);
-            } else
+            }
+            else
             {
                 base.DrawExpansionGlyph(g, r, isExpanded);
             }

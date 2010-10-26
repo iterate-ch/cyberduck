@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using BrightIdeasSoftware;
+using ch.cyberduck.core.i18n;
 using Ch.Cyberduck.Ui.Controller;
 
 namespace Ch.Cyberduck.Ui.Winforms.Controls
@@ -62,6 +63,21 @@ namespace Ch.Cyberduck.Ui.Winforms.Controls
                 e.Item.ForeColor = ActiveGetter(r) ? ActiveForegroudColor : InactiveForegroudColor;
             }
             base.OnDrawSubItem(e);
+        }
+
+        protected override void ShowColumnSelectMenu(Point pt)
+        {
+            ToolStripDropDown m = MakeColumnSelectMenu(new ContextMenuStrip());
+            ContextMenu cm = new ContextMenu();
+            foreach (ToolStripMenuItem item in m.Items)
+            {
+                ToolStripMenuItem item1 = item;
+                MenuItem nItem = new MenuItem(Locale.localizedString(item.Text, "Localizable"),
+                                              delegate { item1.PerformClick(); }); //forward click event
+                nItem.Checked = item.Checked;
+                cm.MenuItems.Add(nItem);
+            }
+            cm.Show(this, PointToClient(pt)); //transform coordinates
         }
 
         private class Comp : IComparer<TreePathReference>

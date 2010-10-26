@@ -214,6 +214,13 @@ namespace Ch.Cyberduck {
             }
         }
         
+        internal static System.Drawing.Bitmap connect {
+            get {
+                object obj = ResourceManager.GetObject("connect", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
         internal static System.Drawing.Bitmap connection {
             get {
                 object obj = ResourceManager.GetObject("connection", resourceCulture);

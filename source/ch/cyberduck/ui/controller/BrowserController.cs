@@ -2194,15 +2194,18 @@ namespace Ch.Cyberduck.Ui.Controller
 
         protected void ReloadData(ICollection<Path> selected)
         {
-            List<TreePathReference> toUpdate = new List<TreePathReference>();
-            foreach (TreePathReference reference in View.VisiblePaths)
+            if (null != Workdir)
             {
-                if (reference.Unique.attributes().isDirectory())
+                List<TreePathReference> toUpdate = new List<TreePathReference>();
+                foreach (TreePathReference reference in View.VisiblePaths)
                 {
-                    toUpdate.Add(reference);
+                    if (reference.Unique.attributes().isDirectory())
+                    {
+                        toUpdate.Add(reference);
+                    }
                 }
+                View.RefreshBrowserObjects(toUpdate);
             }
-            View.RefreshBrowserObjects(toUpdate);
 
             //refresh root objects
             View.SetBrowserModel(null == Workdir ? null : _browserModel.ChildrenGetter(new TreePathReference(Workdir)));

@@ -17,7 +17,9 @@
 // 
 using System;
 using System.Collections;
+using System.ComponentModel;
 using System.Drawing;
+using System.Reflection;
 using System.Windows.Forms;
 using BrightIdeasSoftware;
 using Ch.Cyberduck.Core;
@@ -32,8 +34,8 @@ namespace Ch.Cyberduck.Ui.Winforms
     {
         //private static readonly Logger Log = Logger.getLogger(typeof (BaseForm).Name);
         protected Commands Commands = new Commands();
+        private Font _defaultFontBold;
         private bool _releaseWhenClose = true;
-        private Font _defaultFontBold = null;
 
         public BaseForm()
         {
@@ -58,7 +60,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             FormClosed += delegate
                               {
                                   VoidHandler closedEvent = ViewClosedEvent;
-                                  if (null != closedEvent) ViewClosedEvent();                                  
+                                  if (null != closedEvent) ViewClosedEvent();
                               };
 
             Load += delegate
@@ -117,6 +119,14 @@ namespace Ch.Cyberduck.Ui.Winforms
         public virtual string[] BundleNames
         {
             get { return new string[] {}; }
+        }
+
+        /// <summary>
+        /// Since we have no access to the collection of ContextMenu components we need to specify them manually.
+        /// </summary>
+        protected virtual ContextMenu[] ContextMenuCollection
+        {
+            get { return new ContextMenu[0]; }
         }
 
         public DialogResult MessageBox(string title, string message, string content, eTaskDialogButtons buttons,
@@ -322,7 +332,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                 object obj = items.Dequeue();
                 yield return obj;
                 Control control = obj as Control;
-                if (control != null)
+                if (null != control)
                 {
                     // regular controls and sub-controls
                     foreach (Control item in control.Controls)
@@ -341,9 +351,30 @@ namespace Ch.Cyberduck.Ui.Winforms
                 }
                 // child menus
                 ToolStripDropDownItem tsddi = obj as ToolStripDropDownItem;
-                if (tsddi != null && tsddi.HasDropDownItems)
+                if (null != tsddi && tsddi.HasDropDownItems)
                 {
                     foreach (ToolStripItem item in tsddi.DropDownItems)
+                    {
+                        items.Enqueue(item);
+                    }
+                }
+                //catch MainMenu and MenuItem components
+                ComponentCollection componentCollection = obj as ComponentCollection;
+                if (null != componentCollection)
+                {
+                    foreach (var item in componentCollection)
+                    {
+                        if (item is MainMenu)
+                        {
+                            items.Enqueue(item);
+                            break; //there is only one MainMenu per Form
+                        }
+                    }
+                }
+                Menu menu = obj as Menu;
+                if (null != menu)
+                {
+                    foreach (var item in menu.MenuItems)
                     {
                         items.Enqueue(item);
                     }
@@ -383,6 +414,34 @@ namespace Ch.Cyberduck.Ui.Winforms
                         column.Text = LookupInMultipleBundles(column.Text, BundleNames);
                     }
                     continue;
+                }
+            }
+            //Use reflection to get access to the form components collection which is defined private in
+            //each form designer class. The MainMenu items are members of this collection for example.
+            FieldInfo fieldInfo = GetType().GetField("components",
+                                                     BindingFlags.Instance |
+                                                     BindingFlags.NonPublic);
+            IContainer comp = (IContainer) fieldInfo.GetValue(this);
+            if (null != comp)
+            {
+                foreach (var o in RecurseObjects(comp.Components))
+                {
+                    if (o is MenuItem)
+                    {
+                        MenuItem m = (MenuItem) o;
+                        m.Text = LookupInMultipleBundles(m.Text.Replace("&", String.Empty), BundleNames);
+                    }
+                }
+            }
+            foreach (ContextMenu menu in ContextMenuCollection)
+            {
+                foreach (var o in RecurseObjects(menu))
+                {
+                    if (o is MenuItem)
+                    {
+                        MenuItem m = (MenuItem) o;
+                        m.Text = LookupInMultipleBundles(m.Text.Replace("&", String.Empty), BundleNames);
+                    }
                 }
             }
         }
