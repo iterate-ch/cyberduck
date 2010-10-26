@@ -345,7 +345,7 @@ namespace Ch.Cyberduck.Core
                     if (!c.isEmpty())
                     {
                         int r =
-                            cTaskDialog.ShowCommandBox(
+                            cTaskDialog.ShowCommandBox(MainForm,
                                 String.Format(Locale.localizedString("Import {0} Bookmarks", "Configuration"),
                                               c.getName()),
                                 null,
