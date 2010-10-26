@@ -23,9 +23,6 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.core.cloud.CloudHTTP4Session;
 import ch.cyberduck.core.cloud.Distribution;
 import ch.cyberduck.core.i18n.Locale;
-import ch.cyberduck.core.ssl.AbstractX509TrustManager;
-import ch.cyberduck.core.ssl.IgnoreX509TrustManager;
-import ch.cyberduck.core.ssl.KeychainX509TrustManager;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpEntity;
@@ -114,22 +111,6 @@ public class AzureSession extends CloudHTTP4Session {
     @Override
     public List<String> getSupportedStorageClasses() {
         return Collections.emptyList();
-    }
-
-    private AbstractX509TrustManager trustManager;
-
-    @Override
-    public AbstractX509TrustManager getTrustManager() {
-        if(null == trustManager) {
-            if(Preferences.instance().getBoolean("azure.tls.acceptAnyCertificate")) {
-                trustManager = new IgnoreX509TrustManager();
-            }
-            else {
-                trustManager = new KeychainX509TrustManager(
-                        this.getHostnameForContainer(this.getHost().getCredentials().getUsername()));
-            }
-        }
-        return trustManager;
     }
 
     private BlobStorageRest client;

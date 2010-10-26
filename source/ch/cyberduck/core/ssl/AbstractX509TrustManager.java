@@ -43,16 +43,12 @@ public abstract class AbstractX509TrustManager implements X509TrustManager, X509
 
     private String hostname;
 
-    public void setHostname(String hostname) {
+    protected AbstractX509TrustManager(String hostname) {
         this.hostname = hostname;
     }
 
     public String getHostname() {
         return hostname;
-    }
-
-    protected AbstractX509TrustManager(String hostname) {
-        this.hostname = hostname;
     }
 
     /**

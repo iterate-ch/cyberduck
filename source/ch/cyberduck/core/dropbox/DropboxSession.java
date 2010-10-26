@@ -22,10 +22,6 @@ package ch.cyberduck.core.dropbox;
 import oauth.signpost.exception.OAuthException;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.http.HTTP4Session;
-import ch.cyberduck.core.ssl.AbstractX509TrustManager;
-import ch.cyberduck.core.ssl.IgnoreX509TrustManager;
-import ch.cyberduck.core.ssl.KeychainX509TrustManager;
-import ch.cyberduck.core.ssl.SSLSession;
 
 import org.apache.http.HttpException;
 import org.apache.log4j.Logger;
@@ -54,21 +50,6 @@ public class DropboxSession extends HTTP4Session {
 
     protected DropboxSession(Host h) {
         super(h);
-    }
-
-    private AbstractX509TrustManager trustManager;
-
-    @Override
-    public AbstractX509TrustManager getTrustManager() {
-        if(null == trustManager) {
-            if(Preferences.instance().getBoolean("azure.tls.acceptAnyCertificate")) {
-                trustManager = new IgnoreX509TrustManager();
-            }
-            else {
-                trustManager = new KeychainX509TrustManager(this.getHost().getHostname());
-            }
-        }
-        return trustManager;
     }
 
     private DropboxClient client;

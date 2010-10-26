@@ -20,9 +20,7 @@ package ch.cyberduck.core.http;
  */
 
 import ch.cyberduck.core.*;
-import ch.cyberduck.core.ssl.AbstractX509TrustManager;
 import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
-import ch.cyberduck.core.ssl.IgnoreX509TrustManager;
 import ch.cyberduck.core.ssl.SSLSession;
 
 import org.apache.commons.lang.StringUtils;
@@ -49,7 +47,7 @@ import java.net.UnknownHostException;
 /**
  * @version $Id: HTTPSession.java 7171 2010-10-02 15:06:28Z dkocher $
  */
-public abstract class HTTP4Session extends Session implements SSLSession {
+public abstract class HTTP4Session extends SSLSession {
 
     private Appender appender = new AppenderSkeleton() {
 
@@ -147,13 +145,6 @@ public abstract class HTTP4Session extends Session implements SSLSession {
         finally {
             http = null;
         }
-    }
-
-    /**
-     * @return
-     */
-    public AbstractX509TrustManager getTrustManager() {
-        return new IgnoreX509TrustManager();
     }
 
     @Override

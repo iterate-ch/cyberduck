@@ -1991,12 +1991,13 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     @Action
     public void securityLabelClicked(final ID sender) {
         if(session instanceof SSLSession) {
-            final X509Certificate[] certificates = ((SSLSession) this.session).getTrustManager().getAcceptedIssuers();
-            if(0 == certificates.length) {
+            List<X509Certificate> certificates = ((SSLSession) this.session).getAcceptedIssuers();
+            if(0 == certificates.size()) {
                 log.warn("No accepted certificates found");
                 return;
             }
-            KeychainFactory.instance().displayCertificates(certificates);
+            KeychainFactory.instance().displayCertificates(
+                    certificates.toArray(new X509Certificate[certificates.size()]));
         }
     }
 

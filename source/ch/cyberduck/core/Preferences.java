@@ -493,10 +493,6 @@ public abstract class Preferences {
          */
         defaults.put("ftp.tls.datachannel.failOnError", String.valueOf(false));
         /**
-         * Do not accept certificates that can't be found in the Keychain
-         */
-        defaults.put("ftp.tls.acceptAnyCertificate", String.valueOf(false));
-        /**
          * If the parser should not trim whitespace from filenames
          */
         defaults.put("ftp.parser.whitespaceAware", String.valueOf(true));
@@ -519,7 +515,6 @@ public abstract class Preferences {
          * Validaty for public S3 URLs
          */
         defaults.put("s3.url.expire.seconds", String.valueOf(24 * 60 * 60)); //expiry time for public URL
-        defaults.put("s3.tls.acceptAnyCertificate", String.valueOf(false));
 
         defaults.put("s3.mfa.serialnumber", StringUtils.EMPTY);
 
@@ -539,12 +534,7 @@ public abstract class Preferences {
         final int MONTH = 60 * 60 * 24 * 30; //30 days in seconds
         defaults.put("s3.cache.seconds", String.valueOf(MONTH));
 
-        defaults.put("azure.tls.acceptAnyCertificate", String.valueOf(false));
-
         defaults.put("webdav.followRedirects", String.valueOf(true));
-        defaults.put("webdav.tls.acceptAnyCertificate", String.valueOf(false));
-
-        defaults.put("cf.tls.acceptAnyCertificate", String.valueOf(false));
 
         defaults.put("cf.authentication.host", "auth.api.rackspacecloud.com");
         defaults.put("cf.authentication.context", "/v1.0");
@@ -578,13 +568,16 @@ public abstract class Preferences {
         defaults.put("google.docs.upload.convert", String.valueOf(true));
         defaults.put("google.docs.upload.ocr", String.valueOf(false));
 
-        defaults.put("dropbox.key", "");
-        defaults.put("dropbox.secret", "");
-
         /**
          * Show revisions as hidden files in browser
          */
         defaults.put("google.docs.revisions.enable", String.valueOf(false));
+
+        /**
+         * Dropbox OAuth Application Secrets
+         */
+        defaults.put("dropbox.key", "");
+        defaults.put("dropbox.secret", "");
 
         /**
          * NTLM Windows Domain

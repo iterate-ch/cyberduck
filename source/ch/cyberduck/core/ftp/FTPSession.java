@@ -24,9 +24,6 @@ import ch.cyberduck.core.ftp.parser.LaxUnixFTPEntryParser;
 import ch.cyberduck.core.ftp.parser.RumpusFTPEntryParser;
 import ch.cyberduck.core.ftps.FTPSClient;
 import ch.cyberduck.core.i18n.Locale;
-import ch.cyberduck.core.ssl.AbstractX509TrustManager;
-import ch.cyberduck.core.ssl.IgnoreX509TrustManager;
-import ch.cyberduck.core.ssl.KeychainX509TrustManager;
 import ch.cyberduck.core.ssl.SSLSession;
 
 import org.apache.commons.lang.StringUtils;
@@ -48,7 +45,7 @@ import java.util.*;
  *
  * @version $Id$
  */
-public class FTPSession extends Session implements SSLSession {
+public class FTPSession extends SSLSession {
     private static Logger log = Logger.getLogger(FTPSession.class);
 
     private static class Factory extends SessionFactory {
@@ -75,23 +72,6 @@ public class FTPSession extends Session implements SSLSession {
             throw new ConnectionCanceledException();
         }
         return FTP;
-    }
-
-    private AbstractX509TrustManager trustManager;
-
-    /**
-     * @return
-     */
-    public AbstractX509TrustManager getTrustManager() {
-        if(null == trustManager) {
-            if(Preferences.instance().getBoolean("ftp.tls.acceptAnyCertificate")) {
-                trustManager = new IgnoreX509TrustManager();
-            }
-            else {
-                trustManager = new KeychainX509TrustManager(host.getHostname(true));
-            }
-        }
-        return trustManager;
     }
 
     @Override

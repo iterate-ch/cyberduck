@@ -24,8 +24,6 @@ import ch.cyberduck.core.cloud.CloudHTTP3Session;
 import ch.cyberduck.core.cloud.Distribution;
 import ch.cyberduck.core.http.StickyHostConfiguration;
 import ch.cyberduck.core.i18n.Locale;
-import ch.cyberduck.core.ssl.AbstractX509TrustManager;
-import ch.cyberduck.core.ssl.IgnoreX509TrustManager;
 import ch.cyberduck.core.ssl.KeychainX509TrustManager;
 
 import org.apache.commons.httpclient.HostConfiguration;
@@ -120,27 +118,6 @@ public class S3Session extends CloudHTTP3Session {
                                                    RequestEntity requestEntity) throws ServiceException {
             super.pubObjectWithRequestEntityImpl(bucketName, object, requestEntity);
         }
-    }
-
-    /**
-     *
-     */
-    private AbstractX509TrustManager trustManager;
-
-    /**
-     * @return
-     */
-    @Override
-    public AbstractX509TrustManager getTrustManager() {
-        if(null == trustManager) {
-            if(Preferences.instance().getBoolean("s3.tls.acceptAnyCertificate")) {
-                trustManager = new IgnoreX509TrustManager();
-            }
-            else {
-                trustManager = new KeychainX509TrustManager(host.getHostname(true));
-            }
-        }
-        return trustManager;
     }
 
     /**

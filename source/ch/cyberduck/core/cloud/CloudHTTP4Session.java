@@ -21,6 +21,7 @@ package ch.cyberduck.core.cloud;
 
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.http.HTTP4Session;
+import ch.cyberduck.core.ssl.AbstractX509TrustManager;
 
 import java.util.List;
 
@@ -83,5 +84,10 @@ public abstract class CloudHTTP4Session extends HTTP4Session implements CloudSes
      */
     public String getHostnameForContainer(String container) {
         return container + "." + this.getHost().getHostname(true);
+    }
+
+    @Override
+    public AbstractX509TrustManager getTrustManager() {
+        return this.getTrustManager(this.getHostnameForContainer(this.getHost().getCredentials().getUsername()));
     }
 }

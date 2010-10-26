@@ -21,7 +21,6 @@ package ch.cyberduck.core.http;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.ssl.AbstractX509TrustManager;
 import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
-import ch.cyberduck.core.ssl.IgnoreX509TrustManager;
 import ch.cyberduck.core.ssl.SSLSession;
 
 import org.apache.commons.httpclient.HostConfiguration;
@@ -46,7 +45,7 @@ import java.net.UnknownHostException;
 /**
  * @version $Id$
  */
-public abstract class HTTP3Session extends Session implements SSLSession {
+public abstract class HTTP3Session extends SSLSession {
 
     private Appender appender = new AppenderSkeleton() {
 
@@ -76,13 +75,6 @@ public abstract class HTTP3Session extends Session implements SSLSession {
 
     protected HTTP3Session(Host h) {
         super(h);
-    }
-
-    /**
-     * @return
-     */
-    public AbstractX509TrustManager getTrustManager() {
-        return new IgnoreX509TrustManager();
     }
 
     /**
@@ -123,7 +115,7 @@ public abstract class HTTP3Session extends Session implements SSLSession {
             // Configuration with custom socket factory using the trust manager
             configuration.setHost(hostname, port,
                     new org.apache.commons.httpclient.protocol.Protocol(scheme,
-                            new SSLSocketFactory(this.getTrustManager()), port)
+                            new SSLSocketFactory(this.getTrustManager(hostname)), port)
             );
             if(Preferences.instance().getBoolean("connection.proxy.enable")) {
                 final Proxy proxy = ProxyFactory.instance();

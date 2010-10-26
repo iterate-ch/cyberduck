@@ -24,8 +24,6 @@ import ch.cyberduck.core.cloud.CloudHTTP3Session;
 import ch.cyberduck.core.cloud.Distribution;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.ssl.AbstractX509TrustManager;
-import ch.cyberduck.core.ssl.IgnoreX509TrustManager;
-import ch.cyberduck.core.ssl.KeychainX509TrustManager;
 
 import org.apache.log4j.Logger;
 
@@ -57,24 +55,6 @@ public class CFSession extends CloudHTTP3Session {
         return new Factory();
     }
 
-    private AbstractX509TrustManager trustManager;
-
-    /**
-     * @return
-     */
-    @Override
-    public AbstractX509TrustManager getTrustManager() {
-        if(null == trustManager) {
-            if(Preferences.instance().getBoolean("cf.tls.acceptAnyCertificate")) {
-                trustManager = new IgnoreX509TrustManager();
-            }
-            else {
-                trustManager = new KeychainX509TrustManager(host.getHostname(true));
-            }
-        }
-        return trustManager;
-    }
-
     private FilesClient CF;
 
     public CFSession(Host h) {
@@ -98,23 +78,22 @@ public class CFSession extends CloudHTTP3Session {
         this.fireConnectionWillOpenEvent();
 
         // Configure for authentication URL
-        this.configure(this.getClient());
+        this.configure();
 
         // Prompt the login credentials first
         this.login();
 
         // Configure for storage URL
-        this.configure(this.getClient());
+        this.configure();
 
         this.fireConnectionDidOpenEvent();
     }
 
     /**
      * Set connection properties
-     *
-     * @param client
      */
-    protected void configure(FilesClient client) {
+    protected void configure() throws ConnectionCanceledException {
+        FilesClient client = this.getClient();
         client.setConnectionTimeOut(this.timeout());
         client.setUserAgent(this.getUserAgent());
         if(!client.isLoggedin()) {
@@ -134,21 +113,19 @@ public class CFSession extends CloudHTTP3Session {
             client.setAuthenticationURL(authentication.toString());
             URI url = URI.create(authentication.toString());
             client.setHostConfiguration(this.getHostConfiguration(url.getScheme(), url.getHost(), url.getPort()));
-            this.getTrustManager().setHostname(url.getHost());
         }
         else {
             URI url = URI.create(client.getStorageURL());
             client.setHostConfiguration(this.getHostConfiguration(url.getScheme(), url.getHost(), url.getPort()));
-            this.getTrustManager().setHostname(url.getHost());
         }
     }
 
     @Override
     protected void login(LoginController controller, Credentials credentials) throws IOException {
-        this.getClient().setUserName(credentials.getUsername());
-        this.getClient().setPassword(credentials.getPassword());
-        this.getTrustManager().setHostname(URI.create(this.getClient().getAuthenticationURL()).getHost());
-        if(!this.getClient().login()) {
+        FilesClient client = this.getClient();
+        client.setUserName(credentials.getUsername());
+        client.setPassword(credentials.getPassword());
+        if(!client.login()) {
             this.message(Locale.localizedString("Login failed", "Credentials"));
             controller.fail(host.getProtocol(), credentials);
             this.login();
@@ -228,7 +205,9 @@ public class CFSession extends CloudHTTP3Session {
         final AbstractX509TrustManager trust = this.getTrustManager();
         try {
             this.check();
-            trust.setHostname(URI.create(this.getClient().getCdnManagementURL()).getHost());
+            URI url = URI.create(this.getClient().getCdnManagementURL());
+            this.getClient().setHostConfiguration(
+                    this.getHostConfiguration(url.getScheme(), url.getHost(), url.getPort()));
             if(enabled) {
                 this.message(MessageFormat.format(Locale.localizedString("Enable {0} Distribution", "Status"),
                         Locale.localizedString("Rackspace Cloud Files", "Mosso")));
@@ -255,7 +234,8 @@ public class CFSession extends CloudHTTP3Session {
         }
         finally {
             try {
-                trust.setHostname(URI.create(this.getClient().getStorageURL()).getHost());
+                // Configure for storage URL
+                this.configure();
             }
             catch(ConnectionCanceledException e) {
                 log.error(e.getMessage());
@@ -270,7 +250,9 @@ public class CFSession extends CloudHTTP3Session {
             final AbstractX509TrustManager trust = this.getTrustManager();
             try {
                 this.check();
-                trust.setHostname(URI.create(this.getClient().getCdnManagementURL()).getHost());
+                URI url = URI.create(this.getClient().getCdnManagementURL());
+                this.getClient().setHostConfiguration(
+                        this.getHostConfiguration(url.getScheme(), url.getHost(), url.getPort()));
                 try {
                     final FilesCDNContainer info = this.getClient().getCDNContainerInfo(container);
                     final Distribution distribution = new Distribution(info.getName(), info.isEnabled(), info.getCdnURL(),
@@ -292,7 +274,8 @@ public class CFSession extends CloudHTTP3Session {
             }
             finally {
                 try {
-                    trust.setHostname(URI.create(this.getClient().getStorageURL()).getHost());
+                    // Configure for storage URL
+                    this.configure();
                 }
                 catch(ConnectionCanceledException e) {
                     log.error(e.getMessage());

@@ -19,9 +19,6 @@ package ch.cyberduck.core.cloud;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.TranscriptListener;
-import ch.cyberduck.core.ssl.SSLSession;
-
 import java.util.List;
 
 /**
@@ -42,7 +39,7 @@ public interface CloudSession {
      * @param logging
      */
     void writeDistribution(boolean enabled, String container, Distribution.Method method,
-                                           String[] cnames, boolean logging, String defaultRootObject);
+                           String[] cnames, boolean logging, String defaultRootObject);
 
     /**
      * @return

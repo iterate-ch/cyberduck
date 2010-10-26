@@ -22,9 +22,6 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.http.HTTP3Session;
 import ch.cyberduck.core.i18n.Locale;
-import ch.cyberduck.core.ssl.AbstractX509TrustManager;
-import ch.cyberduck.core.ssl.IgnoreX509TrustManager;
-import ch.cyberduck.core.ssl.KeychainX509TrustManager;
 
 import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.auth.*;
@@ -75,24 +72,6 @@ public class DAVSession extends HTTP3Session {
             throw new ConnectionCanceledException();
         }
         return DAV;
-    }
-
-    private AbstractX509TrustManager trustManager;
-
-    /**
-     * @return
-     */
-    @Override
-    public AbstractX509TrustManager getTrustManager() {
-        if(null == trustManager) {
-            if(Preferences.instance().getBoolean("webdav.tls.acceptAnyCertificate")) {
-                trustManager = new IgnoreX509TrustManager();
-            }
-            else {
-                trustManager = new KeychainX509TrustManager(host.getHostname(true));
-            }
-        }
-        return trustManager;
     }
 
     protected void configure() throws IOException {

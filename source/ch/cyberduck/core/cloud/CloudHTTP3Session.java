@@ -21,6 +21,7 @@ package ch.cyberduck.core.cloud;
 
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.http.HTTP3Session;
+import ch.cyberduck.core.ssl.AbstractX509TrustManager;
 
 import java.util.List;
 
@@ -75,6 +76,11 @@ public abstract class CloudHTTP3Session extends HTTP3Session implements CloudSes
             return hostname.substring(0, hostname.length() - host.getProtocol().getDefaultHostname().length() - 1);
         }
         return null;
+    }
+
+    @Override
+    public AbstractX509TrustManager getTrustManager() {
+        return this.getTrustManager(this.getHostnameForContainer(this.getHost().getCredentials().getUsername()));
     }
 
     /**
