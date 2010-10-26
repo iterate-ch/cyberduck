@@ -84,6 +84,9 @@ public abstract class ThirdpartyBookmarkCollection extends AbstractHostCollectio
         comment.append(MessageFormat.format(Locale.localizedString("Imported from {0}", "Configuration"),
                 this.getName()));
         bookmark.setComment(comment.toString());
+        if(log.isDebugEnabled()) {
+            log.debug("Create new bookmark from import: " + bookmark);
+        }
         return super.add(bookmark);
     }
 }

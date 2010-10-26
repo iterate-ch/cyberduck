@@ -165,9 +165,6 @@ public class SmartFtpBookmarkCollection extends XmlBookmarkCollection {
                 current.getCredentials().setIdentity(LocalFactory.createLocal(elementText));
             }
             else if(name.equals("FavoriteItem")) {
-                if(log.isDebugEnabled()) {
-                    log.debug("Created new bookmark from listing: " + current);
-                }
                 add(current);
             }
         }

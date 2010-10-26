@@ -164,9 +164,6 @@ public class FilezillaBookmarkCollection extends XmlBookmarkCollection {
                 ;
             }
             else if(name.equals("Server")) {
-                if(log.isDebugEnabled()) {
-                    log.debug("Created new bookmark from listing: " + current);
-                }
                 add(current);
                 if(current.getCredentials().validate(current.getProtocol())) {
                     // Save password in keychain instead of bookmark.

@@ -73,9 +73,6 @@ public class FlashFxpBookmarkCollection extends ThirdpartyBookmarkCollection {
                         }
                     }
                     else if(StringUtils.isBlank(line)) {
-                        if(log.isDebugEnabled()) {
-                            log.debug("Created new bookmark from listing: " + current);
-                        }
                         this.add(current);
                     }
                     else {
