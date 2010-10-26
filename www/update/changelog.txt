@@ -1,5 +1,7 @@
 4.0b5 [http://trac.cyberduck.ch/milestone/4.0b5]
 - [Feature] FlashFXP Bookmarks Importer
+- [Feature] WS_FTP Bookmarks Importer
+- [Feature] Display file transfer progress in taskbar icon (#5332)
 - [Bugfix] Bugfixes and usability improvements
 
 4.0b4 [http://trac.cyberduck.ch/milestone/4.0b4]
