@@ -142,4 +142,28 @@ public class TransferCollection extends Collection<Transfer> {
         log.debug("numberOfQueuedTransfers:" + queued);
         return queued;
     }
+
+    /**
+     *
+     * @return Transfer progress of all transfers in this collection
+     */
+    public double getDataTransferred() {
+        double size = 0;
+        for(Transfer t : this) {
+            size += t.getTransferred();
+        }
+        return size;
+    }
+
+    /**
+     *
+     * @return Transfer size of all transfers in this collection
+     */
+    public double getDataSize() {
+        double size = 0;
+        for(Transfer t : this) {
+            size += t.getSize();
+        }
+        return size;
+    }
 }
