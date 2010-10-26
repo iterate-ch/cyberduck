@@ -19,10 +19,7 @@ package ch.cyberduck.core.importer;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LocalFactory;
-import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.*;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -68,6 +65,7 @@ public class FlashFxpBookmarkCollection extends ThirdpartyBookmarkCollection {
                         current = new Host(Preferences.instance().getProperty("connection.hostname.default"));
                         current.getCredentials().setUsername(
                                 Preferences.instance().getProperty("connection.login.anon.name"));
+                        current.setProtocol(Protocol.FTP);
                         Pattern pattern = Pattern.compile("\\[(.*)\\]");
                         Matcher matcher = pattern.matcher(line);
                         if(matcher.matches()) {
@@ -100,7 +98,7 @@ public class FlashFxpBookmarkCollection extends ThirdpartyBookmarkCollection {
                         if("ip".equals(name)) {
                             current.setHostname(value);
                         }
-                        if("port".equals(name)) {
+                        else if("port".equals(name)) {
                             try {
                                 current.setPort(Integer.parseInt(value));
                             }
@@ -108,13 +106,13 @@ public class FlashFxpBookmarkCollection extends ThirdpartyBookmarkCollection {
                                 log.warn("Invalid Port:" + e.getMessage());
                             }
                         }
-                        if("path".equals(name)) {
+                        else if("path".equals(name)) {
                             current.setDefaultPath(value);
                         }
-                        if("notes".equals(name)) {
+                        else if("notes".equals(name)) {
                             current.setComment(value);
                         }
-                        if("user".equals(name)) {
+                        else if("user".equals(name)) {
                             current.getCredentials().setUsername(value);
                         }
                     }
