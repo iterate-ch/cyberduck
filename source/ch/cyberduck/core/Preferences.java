@@ -534,6 +534,11 @@ public abstract class Preferences {
         final int MONTH = 60 * 60 * 24 * 30; //30 days in seconds
         defaults.put("s3.cache.seconds", String.valueOf(MONTH));
 
+        /**
+         * Default metadata for uploads. Format must be "key1=value1 key2=value2"
+         */
+        defaults.put("s3.metadata.default", "");
+
         defaults.put("webdav.followRedirects", String.valueOf(true));
 
         defaults.put("cf.authentication.host", "auth.api.rackspacecloud.com");

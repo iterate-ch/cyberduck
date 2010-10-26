@@ -540,7 +540,31 @@ public class S3Path extends CloudPath {
                 else {
                     object.setAcl(this.convert(acl));
                 }
+                // Storage class
                 object.setStorageClass(Preferences.instance().getProperty("s3.storage.class"));
+                // Default metadata for new files
+                for(String m : Preferences.instance().getProperty("s3.metadata.default").split("\\p{javaWhitespace}+")) {
+                    if(StringUtils.isBlank(m)) {
+                        log.warn("Invalid header " + m);
+                        continue;
+                    }
+                    if(!m.contains("=")) {
+                        log.warn("Invalid header " + m);
+                        continue;
+                    }
+                    int split = m.indexOf('=');
+                    String name = m.substring(0, split);
+                    if(StringUtils.isBlank(name)) {
+                        log.warn("Missing key in " + m);
+                        continue;
+                    }
+                    String value = m.substring(split + 1);
+                    if(StringUtils.isEmpty(value)) {
+                        log.warn("Missing value in " + m);
+                        continue;
+                    }
+                    object.addMetadata(name, value);
+                }
 
                 this.getSession().message(MessageFormat.format(Locale.localizedString("Uploading {0}", "Status"),
                         this.getName()));
