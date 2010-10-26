@@ -708,6 +708,16 @@ public class S3Path extends CloudPath {
                         p.attributes().setPlaceholder(true);
                     }
                 }
+                Object etag = object.getMetadataMap().get(StorageObject.METADATA_HEADER_ETAG);
+                if(null != etag) {
+                    String s = etag.toString().replaceAll("\"", "");
+                    p.attributes().setChecksum(s);
+                    if(s.equals("d66759af42f282e1ba19144df2d405d0")) {
+                        // Fix #5374 s3sync.rb interoperability
+                        p.attributes().setType(Path.DIRECTORY_TYPE);
+                        p.attributes().setPlaceholder(true);
+                    }
+                }
                 p.attributes().setStorageClass(object.getStorageClass());
                 if(object instanceof S3Object) {
                     p.attributes().setVersionId(((S3Object) object).getVersionId());
