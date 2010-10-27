@@ -300,6 +300,15 @@ public class TransferController extends WindowController implements NSToolbar.De
         this.loadBundle();
         TransferCollection.defaultCollection().addListener(new AbstractCollectionListener<Transfer>() {
             @Override
+            public void collectionLoaded() {
+                invoke(new ControllerMainAction(TransferController.this) {
+                    public void run() {
+                        reload();
+                    }
+                });
+            }
+
+            @Override
             public void collectionItemAdded(Transfer item) {
                 invoke(new ControllerMainAction(TransferController.this) {
                     public void run() {

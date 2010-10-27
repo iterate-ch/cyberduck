@@ -52,6 +52,15 @@ public class TransferCollection extends Collection<Transfer> {
     }
 
     @Override
+    public void collectionItemAdded(Transfer item) {
+        if(locked) {
+            log.debug("Do not notify changes of locked collection");
+            return;
+        }
+        super.collectionItemAdded(item);
+    }
+
+    @Override
     public boolean add(Transfer o) {
         boolean r = super.add(o);
         this.save();
@@ -95,8 +104,13 @@ public class TransferCollection extends Collection<Transfer> {
         }
     }
 
+    private boolean locked = true;
+
+    @Override
     public void load() {
         this.load(file);
+        locked = false;
+        this.collectionLoaded();
     }
 
     private void load(Local f) {
@@ -144,13 +158,12 @@ public class TransferCollection extends Collection<Transfer> {
     }
 
     /**
-     *
      * @return Transfer progress of all transfers in this collection
      */
     public double getDataTransferred() {
         double size = 0;
         for(Transfer t : this) {
-            if (t.isRunning() || t.isQueued()){
+            if(t.isRunning() || t.isQueued()) {
                 size += t.getTransferred();
             }
         }
@@ -158,13 +171,12 @@ public class TransferCollection extends Collection<Transfer> {
     }
 
     /**
-     *
      * @return Transfer size of all transfers in this collection
      */
     public double getDataSize() {
         double size = 0;
         for(Transfer t : this) {
-            if (t.isRunning() || t.isQueued()){
+            if(t.isRunning() || t.isQueued()) {
                 size += t.getSize();
             }
         }
