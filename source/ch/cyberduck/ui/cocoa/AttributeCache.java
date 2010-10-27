@@ -24,11 +24,12 @@ import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import org.apache.commons.collections.map.LRUMap;
 import org.apache.log4j.Logger;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class AttributeCache<K> {
     private static Logger log = Logger.getLogger(AttributeCache.class);
@@ -36,13 +37,13 @@ public class AttributeCache<K> {
     private Map<K, Map<String, NSObject>> impl;
 
     public AttributeCache(int size) {
-        impl = new LRUMap(size) {
+        impl = Collections.<K, Map<String, NSObject>>synchronizedMap(new LRUMap(size) {
             @Override
             protected boolean removeLRU(LinkEntry entry) {
                 log.debug("Removing from cache:" + entry);
                 return true;
             }
-        };
+        });
     }
 
     public NSObject put(K key, String attribute, NSObject value) {
