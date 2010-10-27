@@ -33,6 +33,10 @@ public class Collection<E> extends ArrayList<E> implements CollectionListener<E>
         super(c);
     }
 
+    public void load() {
+        this.collectionLoaded();
+    }
+
     @Override
     public int indexOf(Object elem) {
         for(int i = 0; i < this.size(); i++) {
@@ -67,7 +71,9 @@ public class Collection<E> extends ArrayList<E> implements CollectionListener<E>
     @Override
     public boolean addAll(java.util.Collection<? extends E> es) {
         super.addAll(es);
-        this.collectionItemAdded(null);
+        for(E item : es) {
+            this.collectionItemAdded(item);
+        }
         return true;
     }
 
@@ -124,6 +130,12 @@ public class Collection<E> extends ArrayList<E> implements CollectionListener<E>
             }
         }
         return modified;
+    }
+
+    public void collectionLoaded() {
+        for(CollectionListener<E> listener : listeners.toArray(new CollectionListener[listeners.size()])) {
+            listener.collectionLoaded();
+        }
     }
 
     public void collectionItemAdded(E item) {

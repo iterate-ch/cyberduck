@@ -18,6 +18,8 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.i18n.Locale;
+
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
@@ -26,13 +28,18 @@ import java.util.List;
 /**
  * @version $Id$
  */
-public abstract class AbstractHostCollection extends Collection<Host> {
+public abstract class AbstractHostCollection extends Collection<Host> implements EditableCollection {
     private static Logger log = Logger.getLogger(AbstractHostCollection.class);
 
     private static final AbstractHostCollection EMPTY = new AbstractHostCollection() {
         @Override
         public void load() {
             ;
+        }
+
+        @Override
+        public String getName() {
+            return Locale.localizedString("None");
         }
     };
 
@@ -47,6 +54,11 @@ public abstract class AbstractHostCollection extends Collection<Host> {
     public AbstractHostCollection(java.util.Collection<Host> c) {
         super(c);
     }
+
+    /**
+     * @return Group label
+     */
+    public abstract String getName();
 
     @Override
     public boolean addAll(java.util.Collection<? extends Host> c) {
@@ -83,6 +95,12 @@ public abstract class AbstractHostCollection extends Collection<Host> {
     public void collectionItemAdded(Host item) {
         this.sort();
         super.collectionItemAdded(item);
+    }
+
+    @Override
+    public void collectionItemRemoved(Host item) {
+        this.sort();
+        super.collectionItemRemoved(item);
     }
 
     protected void sort() {
@@ -135,5 +153,8 @@ public abstract class AbstractHostCollection extends Collection<Host> {
         ; // Not persistent by default
     }
 
-    public abstract void load();
+    public void load(Collection<Host> c) {
+        this.addAll(c);
+        this.collectionLoaded();
+    }
 }

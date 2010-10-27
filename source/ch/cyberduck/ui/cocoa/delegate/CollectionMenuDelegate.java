@@ -1,8 +1,5 @@
 package ch.cyberduck.ui.cocoa.delegate;
 
-import ch.cyberduck.core.Collection;
-import ch.cyberduck.core.CollectionListener;
-
 /*
  * Copyright (c) 2002-2009 David Kocher. All rights reserved.
  *
@@ -21,6 +18,9 @@ import ch.cyberduck.core.CollectionListener;
  * Bug fixes, suggestions and comments should be sent to:
  * dkocher@cyberduck.ch
  */
+
+import ch.cyberduck.core.Collection;
+import ch.cyberduck.core.CollectionListener;
 
 /**
  * @version $Id$
@@ -43,6 +43,10 @@ public abstract class CollectionMenuDelegate<T> extends AbstractMenuDelegate imp
     }
 
     public void collectionItemChanged(T item) {
+        this.setNeedsUpdate(true);
+    }
+
+    public void collectionLoaded() {
         this.setNeedsUpdate(true);
     }
 

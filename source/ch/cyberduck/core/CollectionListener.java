@@ -23,21 +23,20 @@ package ch.cyberduck.core;
  */
 public interface CollectionListener<L> {
 
-    /**
-     *
-     * @param item
-     */
-    abstract void collectionItemAdded(L item);
+    void collectionLoaded();
 
     /**
-     *
      * @param item
      */
-    abstract void collectionItemRemoved(L item);
+    void collectionItemAdded(L item);
 
     /**
-     *
      * @param item
      */
-    abstract void collectionItemChanged(L item);
+    void collectionItemRemoved(L item);
+
+    /**
+     * @param item
+     */
+    void collectionItemChanged(L item);
 }

@@ -74,6 +74,15 @@ public class BookmarkTableDataSource extends ListDataSource {
         this.source.addListener(listener = new CollectionListener<Host>() {
             private ScheduledFuture<?> delayed = null;
 
+            public void collectionLoaded() {
+                cache.clear();
+                invoke(new WindowMainAction(controller) {
+                    public void run() {
+                        controller.reloadBookmarks();
+                    }
+                });
+            }
+
             public void collectionItemAdded(Host item) {
                 cache.clear();
                 invoke(new WindowMainAction(controller) {
@@ -149,6 +158,11 @@ public class BookmarkTableDataSource extends ListDataSource {
         if(null == filtered) {
             filtered = new AbstractHostCollection() {
                 @Override
+                public String getName() {
+                    return source.getName();
+                }
+
+                @Override
                 public boolean allowsAdd() {
                     return source.allowsAdd();
                 }
@@ -179,6 +193,10 @@ public class BookmarkTableDataSource extends ListDataSource {
                 }
             }
             filtered.addListener(new CollectionListener<Host>() {
+                public void collectionLoaded() {
+                    source.collectionLoaded();
+                }
+
                 public void collectionItemAdded(Host item) {
                     source.add(item);
                 }
