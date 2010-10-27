@@ -57,6 +57,7 @@ public abstract class ThirdpartyBookmarkCollection extends AbstractHostCollectio
 
     protected abstract void parse(Local file);
 
+    @Override
     public String getName() {
         return EditorFactory.getApplicationName(this.getBundleIdentifier());
     }
