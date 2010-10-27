@@ -4,6 +4,14 @@ http://cyberduck.ch/
 
 Changelog. Last modified: $Date$
 
+4.0 [http://trac.cyberduck.ch/milestone/4.0]
+- [Feature] Version for Microsoft Windows XP, Windows Vista & Windows 7.
+- [Feature] Connecting to Windows Azure Blob Storage (Azure) (#3938)
+- [Bugfix] Support for S3Fox directory placeholders (S3)
+- [Bugfix] Support for Google Storage Console directory placeholders (S3)
+- [Bugfix] Support for s3sync.rb directory placeholders (#5374) (S3)
+- [Bugfix] Connect through HTTP/HTTPS proxy (#5379) (Google Docs)
+
 3.7 (Oct-21-2010) [http://trac.cyberduck.ch/milestone/3.7]
 - [Feature] Option to upload with temporary name and rename file after transfer is complete (#4165)
 - [Feature] Copy files between browser windows with different sessions (#21)

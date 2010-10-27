@@ -701,12 +701,10 @@ public class S3Path extends CloudPath {
                 p.attributes().setSize(object.getContentLength());
                 p.attributes().setModificationDate(object.getLastModifiedDate().getTime());
                 p.attributes().setOwner(this.getContainer().attributes().getOwner());
-                if(0 == object.getContentLength()) {
-                    final StorageObject details = p.getDetails();
-                    if(Mimetypes.MIMETYPE_JETS3T_DIRECTORY.equals(details.getContentType())) {
-                        p.attributes().setType(Path.DIRECTORY_TYPE);
-                        p.attributes().setPlaceholder(true);
-                    }
+                // Directory placholders
+                if(object.isDirectoryPlaceholder()) {
+                    p.attributes().setType(Path.DIRECTORY_TYPE);
+                    p.attributes().setPlaceholder(true);
                 }
                 Object etag = object.getMetadataMap().get(StorageObject.METADATA_HEADER_ETAG);
                 if(null != etag) {
@@ -772,7 +770,7 @@ public class S3Path extends CloudPath {
             path.attributes().setDuplicate(true);
             if(0 == version.getSize()) {
                 final StorageObject details = path.getDetails();
-                if(Mimetypes.MIMETYPE_JETS3T_DIRECTORY.equals(details.getContentType())) {
+                if(details.isDirectoryPlaceholder()) {
                     // No need for versioning delimiters
                     continue;
                 }
