@@ -19,6 +19,8 @@ package ch.cyberduck.core;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.i18n.Locale;
+
 import java.util.Iterator;
 
 /**
@@ -46,6 +48,11 @@ public class RendezvousCollection extends AbstractHostCollection {
      */
     public static RendezvousCollection defaultCollection() {
         return RENDEZVOUS_COLLECTION;
+    }
+
+    @Override
+    public String getName() {
+        return Locale.localizedString("Bonjour");
     }
 
     @Override

@@ -18,61 +18,30 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.serializer.HostReaderFactory;
-import ch.cyberduck.core.serializer.HostWriterFactory;
-import ch.cyberduck.core.serializer.Reader;
-
 import org.apache.log4j.Logger;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 
 /**
  * @version $Id$
  */
-public class HistoryCollection extends AbstractHostCollection {
+public class HistoryCollection extends AbstractFolderHostCollection {
     private static Logger log = Logger.getLogger(HistoryCollection.class);
 
     private static HistoryCollection HISTORY_COLLECTION = new HistoryCollection(
             LocalFactory.createLocal(Preferences.instance().getProperty("application.support.path"), "History")
     );
 
+    public HistoryCollection(Local f) {
+        super(f);
+    }
+
     /**
      * @return
      */
     public static HistoryCollection defaultCollection() {
         return HISTORY_COLLECTION;
-    }
-
-    private Local folder;
-
-    /**
-     * Reading bookmarks from this folder
-     *
-     * @param f Parent directory to look for bookmarks
-     */
-    public HistoryCollection(Local f) {
-        this.folder = f;
-        this.folder.mkdir(true);
-    }
-
-    public void open() {
-        this.folder.open();
-    }
-
-    /**
-     * @param bookmark
-     * @return
-     */
-    public Local getFile(Host bookmark) {
-        return LocalFactory.createLocal(folder, bookmark.getNickname() + ".duck");
-    }
-
-    @Override
-    public void collectionItemAdded(Host bookmark) {
-        HostWriterFactory.instance().write(bookmark, this.getFile(bookmark));
-        super.collectionItemAdded(bookmark);
     }
 
     /**
@@ -104,49 +73,8 @@ public class HistoryCollection extends AbstractHostCollection {
     }
 
     /**
-     * @param row
-     * @return the element that was removed from the list.
+     * Sort by timestamp of bookmark file.
      */
-    @Override
-    public Host remove(int row) {
-        this.getFile(this.get(row)).delete(false);
-        return super.remove(row);
-    }
-
-    @Override
-    public boolean remove(Object item) {
-        if(this.contains(item)) {
-            this.getFile(this.get(this.indexOf(item))).delete(false);
-        }
-        return super.remove(item);
-    }
-
-    @Override
-    public boolean removeAll(Collection<?> c) {
-        for(Object next : c) {
-            if(this.contains(next)) {
-                this.getFile(this.get(this.indexOf(next))).delete(false);
-            }
-        }
-        return super.removeAll(c);
-    }
-
-    @Override
-    public void load() {
-        log.info("Reloading:" + folder);
-        final AttributedList<Local> bookmarks = folder.children(
-                new PathFilter<Local>() {
-                    public boolean accept(Local file) {
-                        return file.getName().endsWith(".duck");
-                    }
-                }
-        );
-        final Reader<Host> reader = HostReaderFactory.instance();
-        for(Local next : bookmarks) {
-            super.add(reader.read(next));
-        }
-    }
-
     @Override
     protected void sort() {
         Collections.sort(this, new Comparator<Host>() {
@@ -164,20 +92,21 @@ public class HistoryCollection extends AbstractHostCollection {
         });
     }
 
-    @Override
-    public void clear() {
-        log.debug("Removing all bookmarks from:" + folder);
-        for(Host next : this) {
-            this.getFile(next).delete(false);
-        }
-        super.clear();
-    }
-
+    /**
+     * Does not allow manual additions
+     *
+     * @return False
+     */
     @Override
     public boolean allowsAdd() {
         return false;
     }
 
+    /**
+     * Does not allow editing entries
+     *
+     * @return False
+     */
     @Override
     public boolean allowsEdit() {
         return false;

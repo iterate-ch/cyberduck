@@ -1996,12 +1996,15 @@ source/ch/cyberduck/Cyberduck.csproj -text
 source/ch/cyberduck/Cyberduck.sln -text
 source/ch/cyberduck/ResourcesBundle.Designer.cs -text
 source/ch/cyberduck/ResourcesBundle.resx -text
+source/ch/cyberduck/core/AbstractFolderHostCollection.java -text
 source/ch/cyberduck/core/AbstractLoginController.java -text
 source/ch/cyberduck/core/AbstractRendezvous.java -text
 source/ch/cyberduck/core/CollectionListener.java -text
 source/ch/cyberduck/core/Commands.cs -text
 source/ch/cyberduck/core/DelegateOutputStream.cs -text
 source/ch/cyberduck/core/DragDropLib.cs -text
+source/ch/cyberduck/core/EditableCollection.java -text
+source/ch/cyberduck/core/FolderBookmarkCollection.java -text
 source/ch/cyberduck/core/GlobalKeyboardHook.cs -text
 source/ch/cyberduck/core/HistoryCollection.java -text
 source/ch/cyberduck/core/HostKeyControllerFactory.java -text
@@ -2009,6 +2012,7 @@ source/ch/cyberduck/core/HostnameVerifier.cs -text
 source/ch/cyberduck/core/ListAdapter.cs -text
 source/ch/cyberduck/core/LoginControllerFactory.java -text
 source/ch/cyberduck/core/MainController.cs -text
+source/ch/cyberduck/core/MultipleBookmarkCollection.java -text
 source/ch/cyberduck/core/NativeConstants.cs -text
 source/ch/cyberduck/core/NativeListEnumerator.cs -text
 source/ch/cyberduck/core/NativeMethods.cs -text

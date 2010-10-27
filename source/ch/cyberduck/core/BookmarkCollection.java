@@ -18,12 +18,15 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.serializer.HostReaderFactory;
-import ch.cyberduck.core.serializer.HostWriterFactory;
 
 import org.apache.log4j.Logger;
 
 import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
 
 /**
  * @version $Id: BookmarkCollection.java 6244 2010-07-04 06:39:24Z dkocher $
@@ -43,6 +46,11 @@ public class BookmarkCollection extends AbstractHostCollection {
      */
     public static BookmarkCollection defaultCollection() {
         return DEFAULT_COLLECTION;
+    }
+
+    @Override
+    public String getName() {
+        return Locale.localizedString("Favorites");
     }
 
     /**
@@ -75,56 +83,138 @@ public class BookmarkCollection extends AbstractHostCollection {
     }
 
     @Override
+    public boolean allowsAdd() {
+        return FolderBookmarkCollection.favoritesCollection().allowsAdd();
+    }
+
+    @Override
+    public boolean allowsDelete() {
+        return FolderBookmarkCollection.favoritesCollection().allowsDelete();
+    }
+
+    @Override
+    public boolean allowsEdit() {
+        return FolderBookmarkCollection.favoritesCollection().allowsEdit();
+    }
+
+    @Override
+    public Host lookup(String uuid) {
+        return FolderBookmarkCollection.favoritesCollection().lookup(uuid);
+    }
+
+    @Override
+    public int size() {
+        return FolderBookmarkCollection.favoritesCollection().size();
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return FolderBookmarkCollection.favoritesCollection().isEmpty();
+    }
+
+    @Override
+    public boolean contains(Object o) {
+        return FolderBookmarkCollection.favoritesCollection().contains(o);
+    }
+
+    @Override
     public Host get(int row) {
-        return super.get(row);
+        return FolderBookmarkCollection.favoritesCollection().get(row);
     }
 
     @Override
     public boolean addAll(Collection<? extends Host> hosts) {
-        super.addAll(hosts);
-        this.save();
-        return true;
+        return FolderBookmarkCollection.favoritesCollection().addAll(hosts);
     }
 
-    /**
-     * @param host
-     * @return
-     * @see Host
-     */
     @Override
     public boolean add(Host host) {
-        super.add(host);
-        this.save();
-        return true;
+        return FolderBookmarkCollection.favoritesCollection().add(host);
     }
 
-    /**
-     * @param row
-     * @param host
-     * @see Host
-     */
     @Override
     public void add(int row, Host host) {
-        super.add(row, host);
-        this.save();
+        FolderBookmarkCollection.favoritesCollection().add(row, host);
     }
 
-    /**
-     * @param row
-     * @return the element that was removed from the list.
-     */
     @Override
     public Host remove(int row) {
-        final Host previous = super.remove(row);
-        this.save();
-        return previous;
+        return FolderBookmarkCollection.favoritesCollection().remove(row);
     }
 
     @Override
     public boolean remove(Object host) {
-        final boolean found = super.remove(host);
-        this.save();
-        return found;
+        return FolderBookmarkCollection.favoritesCollection().remove(host);
+    }
+
+    @Override
+    protected void sort() {
+        FolderBookmarkCollection.favoritesCollection().sort();
+    }
+
+    @Override
+    public int indexOf(Object elem) {
+        return FolderBookmarkCollection.favoritesCollection().indexOf(elem);
+    }
+
+    @Override
+    public int lastIndexOf(Object elem) {
+        return FolderBookmarkCollection.favoritesCollection().lastIndexOf(elem);
+    }
+
+    @Override
+    public void addListener(CollectionListener<Host> l) {
+        FolderBookmarkCollection.favoritesCollection().addListener(l);
+    }
+
+    @Override
+    public void removeListener(CollectionListener<Host> l) {
+        FolderBookmarkCollection.favoritesCollection().removeListener(l);
+    }
+
+    @Override
+    public void clear() {
+        FolderBookmarkCollection.favoritesCollection().clear();
+    }
+
+    @Override
+    public boolean removeAll(Collection<?> c) {
+        return FolderBookmarkCollection.favoritesCollection().removeAll(c);
+    }
+
+    @Override
+    public void collectionItemChanged(Host item) {
+        FolderBookmarkCollection.favoritesCollection().collectionItemChanged(item);
+    }
+
+    @Override
+    public boolean addAll(int index, Collection<? extends Host> c) {
+        return FolderBookmarkCollection.favoritesCollection().addAll(index, c);
+    }
+
+    @Override
+    public Iterator<Host> iterator() {
+        return FolderBookmarkCollection.favoritesCollection().iterator();
+    }
+
+    @Override
+    public ListIterator<Host> listIterator() {
+        return FolderBookmarkCollection.favoritesCollection().listIterator();
+    }
+
+    @Override
+    public ListIterator<Host> listIterator(int index) {
+        return FolderBookmarkCollection.favoritesCollection().listIterator(index);
+    }
+
+    @Override
+    public List<Host> subList(int fromIndex, int toIndex) {
+        return FolderBookmarkCollection.favoritesCollection().subList(fromIndex, toIndex);
+    }
+
+    @Override
+    public boolean containsAll(Collection<?> c) {
+        return FolderBookmarkCollection.favoritesCollection().containsAll(c);
     }
 
     private boolean locked = true;
@@ -139,10 +229,7 @@ public class BookmarkCollection extends AbstractHostCollection {
             log.debug("Do not write locked collection");
             return;
         }
-        if(Preferences.instance().getBoolean("favorites.save")) {
-            log.info("Saving Bookmarks file: " + file.getAbsolute());
-            HostWriterFactory.instance().write(this, file);
-        }
+        FolderBookmarkCollection.favoritesCollection().save();
     }
 
     /**
@@ -150,9 +237,15 @@ public class BookmarkCollection extends AbstractHostCollection {
      */
     @Override
     public void load() {
+        FolderBookmarkCollection favorites = FolderBookmarkCollection.favoritesCollection();
         if(file.exists()) {
             log.info("Found Bookmarks file: " + file.getAbsolute());
-            this.addAll(HostReaderFactory.instance().readCollection(file));
+            favorites.load(HostReaderFactory.instance().readCollection(file));
+            log.info("Moving deprecated bookmarks file to Trash");
+            file.delete(true);
+        }
+        else {
+            favorites.load();
         }
         locked = false;
     }
