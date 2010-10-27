@@ -441,7 +441,7 @@ public class PreferencesController extends ToolbarWindowController {
     @Outlet
     private NSPopUpButton defaultBookmarkCombobox;
 
-    private final CollectionListener<Host> bookmarkCollectionListener = new CollectionListener<Host>() {
+    private final CollectionListener<Host> bookmarkCollectionListener = new AbstractCollectionListener<Host>() {
         public void collectionItemAdded(Host bookmark) {
             defaultBookmarkCombobox.addItemWithTitle(bookmark.getNickname());
             defaultBookmarkCombobox.lastItem().setImage(IconCache.iconNamed("cyberduck-document", 16));
@@ -456,10 +456,6 @@ public class PreferencesController extends ToolbarWindowController {
             if(i.intValue() > -1) {
                 defaultBookmarkCombobox.removeItemAtIndex(i);
             }
-        }
-
-        public void collectionItemChanged(Host bookmark) {
-            ;
         }
     };
 
