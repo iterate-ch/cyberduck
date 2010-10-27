@@ -35,9 +35,7 @@ public class FolderBookmarkCollection extends AbstractFolderHostCollection {
     private static Logger log = Logger.getLogger(FolderBookmarkCollection.class);
 
     private static FolderBookmarkCollection FAVORITES_COLLECTION = new FolderBookmarkCollection(
-            LocalFactory.createLocal(
-                    LocalFactory.createLocal(Preferences.instance().getProperty("application.support.path"), "Bookmarks"),
-                    "Favorites")
+            LocalFactory.createLocal(Preferences.instance().getProperty("application.support.path"), "Bookmarks")
     );
 
     private static final String PREFIX = "bookmark.";
