@@ -28,6 +28,7 @@ import org.rococoa.cocoa.foundation.NSPoint;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
 /// <i>native declaration : :69</i>
+
 public abstract class NSTableView extends NSControl {
 
     /// <i>native declaration : :60</i>
@@ -50,6 +51,16 @@ public abstract class NSTableView extends NSControl {
     public static final NSUInteger NSTableViewReverseSequentialColumnAutoresizingStyle = new NSUInteger(3);
     public static final NSUInteger NSTableViewLastColumnOnlyAutoresizingStyle = new NSUInteger(4);
     public static final NSUInteger NSTableViewFirstColumnOnlyAutoresizingStyle = new NSUInteger(5);
+
+    /**
+     * The regular highlight style of NSTableView. On 10.5, a light blue ([NSColor alternateSelectedControlColor]) or light gray color ([NSColor secondarySelectedControlColor]) is used to highlight selected rows.
+     */
+    public static final NSInteger NSTableViewSelectionHighlightStyleRegular = new NSInteger(0);
+
+    /**
+     * The source list style of NSTableView. On 10.5, a light blue gradient is used to highlight selected rows. Note: Cells that have a drawsBackground property should have it set to NO. Otherwise, they will draw over the highlighting that NSTableView does. Setting this style will have the side effect of setting the background color to the "source list" background color. Additionally in NSOutlineView, the following properties are changed to get the standard "source list" look: indentationPerLevel, rowHeight and intercellSpacing. After calling setSelectionHighlightStyle: one can change any of the other properties as required.
+     */
+    public static final NSInteger NSTableViewSelectionHighlightStyleSourceList = new NSInteger(1);
 
     public static interface DataSource {
         NSInteger numberOfRowsInTableView(NSTableView view);
@@ -594,7 +605,7 @@ public abstract class NSTableView extends NSControl {
      * Conversion Error : /// Original signature : <code>void setSelectionHighlightStyle(null)</code><br>
      * - (void)setSelectionHighlightStyle:(null)selectionHighlightStyle; (Argument selectionHighlightStyle cannot be converted)
      */
-    public abstract void setSelectionHighlightStyle(int selectionHighlightStyle);
+    public abstract void setSelectionHighlightStyle(NSInteger selectionHighlightStyle);
     /**
      * <i>native declaration : :295</i><br>
      * Conversion Error : NSRect

@@ -1368,6 +1368,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
     public void setBookmarkTable(NSTableView view) {
         this.bookmarkTable = view;
+        this.bookmarkTable.setSelectionHighlightStyle(NSTableView.NSTableViewSelectionHighlightStyleSourceList);
         this.bookmarkTable.setDataSource((this.bookmarkModel = new BookmarkTableDataSource(
                 this, BookmarkCollection.defaultCollection())
         ).id());
@@ -1404,7 +1405,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 deleteBookmarkButton.setEnabled(bookmarkModel.getSource().allowsDelete() && selected > 0);
             }
 
-            public CGFloat tableView_heightOfRow(NSTableView tableView, NSInteger row) {
+            public CGFloat tableView_heightOfRow(NSTableView view, NSInteger row) {
                 final int size = Preferences.instance().getInteger("bookmark.icon.size");
                 if(BookmarkCell.SMALL_BOOKMARK_SIZE == size) {
                     return new CGFloat(18);
@@ -1420,10 +1421,14 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 return true;
             }
 
-            public String tableView_typeSelectStringForTableColumn_row(NSTableView tableView,
+            public String tableView_typeSelectStringForTableColumn_row(NSTableView view,
                                                                        NSTableColumn tableColumn,
                                                                        NSInteger row) {
                 return bookmarkModel.getSource().get(row.intValue()).getNickname();
+            }
+
+            public boolean tableView_isGroupRow(NSTableView view, NSInteger row) {
+                return false;
             }
         }).id());
         // receive drag events from types
