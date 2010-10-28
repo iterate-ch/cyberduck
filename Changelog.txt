@@ -11,6 +11,8 @@ Changelog. Last modified: $Date$
 - [Bugfix] Support for Google Storage Console directory placeholders (S3)
 - [Bugfix] Support for s3sync.rb directory placeholders (#5374) (S3)
 - [Bugfix] Connect through HTTP/HTTPS proxy (#5379) (Google Docs)
+- [Bugfix] Proxy support for Google Docs connections (#5379)
+- [Bugfix] Changing storage class fails (S3)
 
 3.7 (Oct-21-2010) [http://trac.cyberduck.ch/milestone/3.7]
 - [Feature] Option to upload with temporary name and rename file after transfer is complete (#4165)
