@@ -351,22 +351,24 @@ public class FTPPath extends Path {
                 if(this.getAbsolute().equals(name)) {
                     continue;
                 }
+                // Workaround for #2434.
+                if(name.contains(String.valueOf(DELIMITER))) {
+                    // The filename should never contain a delimiter
+                    log.warn("Skip listing entry with delimiter:" + name);
+                    continue;
+                }
             }
             success = true; // At least one entry successfully parsed
             if(name.equals(".") || name.equals("..")) {
                 continue;
             }
-            // The filename should never contain a delimiter
-            final Path parsed = PathFactory.createPath(this.getSession(), this.getAbsolute(),
-                    name.substring(name.lastIndexOf(DELIMITER) + 1), Path.FILE_TYPE);
+            final Path parsed = PathFactory.createPath(this.getSession(), this.getAbsolute(), name,
+                    f.getType() == FTPFile.DIRECTORY_TYPE ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
             parsed.setParent(this);
             switch(f.getType()) {
                 case FTPFile.SYMBOLIC_LINK_TYPE:
                     parsed.setSymlinkTarget(this.getAbsolute(), f.getLink());
                     parsed.attributes().setType(Path.SYMBOLIC_LINK_TYPE);
-                    break;
-                case FTPFile.DIRECTORY_TYPE:
-                    parsed.attributes().setType(Path.DIRECTORY_TYPE);
                     break;
             }
             parsed.attributes().setSize(f.getSize());
