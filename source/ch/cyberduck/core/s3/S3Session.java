@@ -599,7 +599,7 @@ public class S3Session extends CloudHTTP3Session {
                 keys.addAll(this.getInvalidationKeys(file.<Path>children()));
             }
             else {
-                keys.add(((S3Path) file).getKey());
+                keys.add(Path.encode(((S3Path) file).getKey()));
             }
         }
         return keys;
@@ -616,6 +616,10 @@ public class S3Session extends CloudHTTP3Session {
             final long reference = System.currentTimeMillis();
             Distribution d = this.getDistribution(bucket, method);
             List<String> keys = this.getInvalidationKeys(files);
+            if(keys.isEmpty()) {
+                log.warn("No keys selected for invalidation");
+                return;
+            }
             CloudFrontService cf = this.createCloudFrontService();
             cf.invalidateObjects(
                     d.getId(),
