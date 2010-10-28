@@ -116,7 +116,15 @@ public class FTPPath extends Path {
             this.getSession().setWorkdir(this);
             // Cached file parser determined from SYST response with the timezone set from the bookmark
             final FTPFileEntryParser parser = this.getSession().getFileParser();
-            boolean success = this.parse(children, parser, this.getSession().getClient().stat(this.getAbsolute()));
+            boolean success = false;
+            try {
+                success = this.parse(children, parser, this.getSession().getClient().stat(this.getAbsolute()));
+            }
+            catch(IOException e) {
+                log.warn("Command STAT failed with:" + e.getMessage());
+                this.getSession().interrupt();
+                this.getSession().check();
+            }
             if(!success || children.isEmpty()) {
                 // STAT listing failed or empty
                 // Set transfer type for traditional data socket file listings
