@@ -706,6 +706,12 @@ public class S3Path extends CloudPath {
                     p.attributes().setType(Path.DIRECTORY_TYPE);
                     p.attributes().setPlaceholder(true);
                 }
+                else if(0 == object.getContentLength()) {
+                    if(Mimetypes.MIMETYPE_JETS3T_DIRECTORY.equals(p.getDetails().getContentType())) {
+                        p.attributes().setType(Path.DIRECTORY_TYPE);
+                        p.attributes().setPlaceholder(true);
+                    }
+                }
                 Object etag = object.getMetadataMap().get(StorageObject.METADATA_HEADER_ETAG);
                 if(null != etag) {
                     String s = etag.toString().replaceAll("\"", "");
