@@ -144,6 +144,7 @@ public class S3Session extends CloudHTTP3Session {
             configuration.setProperty("s3service.s3-endpoint", host.getHostname());
             configuration.setProperty("s3service.disable-dns-buckets", String.valueOf(true));
         }
+        configuration.setProperty("s3service.enable-storage-classes", String.valueOf(true));
         configuration.setProperty("s3service.https-only", String.valueOf(host.getProtocol().isSecure()));
         // The maximum number of retries that will be attempted when an S3 connection fails
         // with an InternalServer error. To disable retries of InternalError failures, set this to 0.
