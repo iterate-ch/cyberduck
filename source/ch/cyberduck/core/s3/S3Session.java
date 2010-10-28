@@ -24,7 +24,6 @@ import ch.cyberduck.core.cloud.CloudHTTP3Session;
 import ch.cyberduck.core.cloud.Distribution;
 import ch.cyberduck.core.http.StickyHostConfiguration;
 import ch.cyberduck.core.i18n.Locale;
-import ch.cyberduck.core.ssl.KeychainX509TrustManager;
 
 import org.apache.commons.httpclient.HostConfiguration;
 import org.apache.commons.httpclient.HttpHost;
@@ -652,7 +651,7 @@ public class S3Session extends CloudHTTP3Session {
                 final HttpHost endpoint = new HttpHost(new URI(CloudFrontService.ENDPOINT, false));
                 hostconfig.setHost(endpoint.getHostName(), endpoint.getPort(),
                         new org.apache.commons.httpclient.protocol.Protocol(endpoint.getProtocol().getScheme(),
-                                new SSLSocketFactory(new KeychainX509TrustManager(endpoint.getHostName())), endpoint.getPort())
+                                new SSLSocketFactory(this.getTrustManager(endpoint.getHostName())), endpoint.getPort())
                 );
             }
             catch(URIException e) {

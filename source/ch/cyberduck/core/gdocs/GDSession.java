@@ -23,7 +23,6 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.core.Proxy;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
-import ch.cyberduck.core.ssl.KeychainX509TrustManager;
 import ch.cyberduck.core.ssl.SSLSession;
 
 import org.apache.commons.lang.StringUtils;
@@ -347,7 +346,7 @@ public class GDSession extends SSLSession {
         c.setReadTimeout(timeout());
         if(c instanceof HttpsURLConnection) {
             ((HttpsURLConnection) c).setSSLSocketFactory(new CustomTrustSSLProtocolSocketFactory(
-                    new KeychainX509TrustManager(url.getHost())));
+                    this.getTrustManager(url.getHost())));
             ((HttpsURLConnection) c).setHostnameVerifier(new HostnameVerifier() {
                 public boolean verify(String s, javax.net.ssl.SSLSession sslSession) {
                     return true;
