@@ -597,7 +597,9 @@ public class S3Session extends CloudHTTP3Session {
             if(file.attributes().isDirectory()) {
                 keys.addAll(this.getInvalidationKeys(file.<Path>children()));
             }
-            keys.add(((S3Path) file).getKey());
+            else {
+                keys.add(((S3Path) file).getKey());
+            }
         }
         return keys;
     }
