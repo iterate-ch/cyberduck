@@ -43,6 +43,7 @@ import org.jets3t.service.acl.GroupGrantee;
 import org.jets3t.service.impl.rest.httpclient.RestS3Service;
 import org.jets3t.service.model.*;
 import org.jets3t.service.model.cloudfront.DistributionConfig;
+import org.jets3t.service.model.cloudfront.InvalidationSummary;
 import org.jets3t.service.model.cloudfront.LoggingStatus;
 import org.jets3t.service.security.AWSCredentials;
 import org.jets3t.service.security.ProviderCredentials;
@@ -518,15 +519,16 @@ public class S3Session extends CloudHTTP3Session {
      * @return Distribution configuration
      * @throws CloudFrontServiceException CloudFront failure details
      */
-    public org.jets3t.service.model.cloudfront.Distribution createDistribution(boolean enabled,
-                                                                               Distribution.Method method,
-                                                                               final String bucket,
-                                                                               String[] cnames,
-                                                                               LoggingStatus logging,
-                                                                               String defaultRootObject) throws CloudFrontServiceException {
+    protected org.jets3t.service.model.cloudfront.Distribution createDistribution(boolean enabled,
+                                                                                  Distribution.Method method,
+                                                                                  final String bucket,
+                                                                                  String[] cnames,
+                                                                                  LoggingStatus logging,
+                                                                                  String defaultRootObject) throws CloudFrontServiceException {
         final long reference = System.currentTimeMillis();
+        CloudFrontService cf = this.createCloudFrontService();
         if(method.equals(Distribution.STREAMING)) {
-            return this.createCloudFrontService().createStreamingDistribution(
+            return cf.createStreamingDistribution(
                     this.getHostnameForContainer(bucket),
                     String.valueOf(reference), // Caller reference - a unique string value
                     cnames, // CNAME aliases for distribution
@@ -535,7 +537,7 @@ public class S3Session extends CloudHTTP3Session {
                     logging
             );
         }
-        return this.createCloudFrontService().createDistribution(
+        return cf.createDistribution(
                 this.getHostnameForContainer(bucket),
                 String.valueOf(reference), // Caller reference - a unique string value
                 cnames, // CNAME aliases for distribution
@@ -559,12 +561,13 @@ public class S3Session extends CloudHTTP3Session {
      * @param logging Access log configuration
      * @throws CloudFrontServiceException CloudFront failure details
      */
-    public void updateDistribution(boolean enabled, Distribution.Method method,
-                                   String id,
-                                   String[] cnames, LoggingStatus logging, String defaultRootObject) throws CloudFrontServiceException {
+    protected void updateDistribution(boolean enabled, Distribution.Method method,
+                                      String id,
+                                      String[] cnames, LoggingStatus logging, String defaultRootObject) throws CloudFrontServiceException {
         final long reference = System.currentTimeMillis();
+        CloudFrontService cf = this.createCloudFrontService();
         if(method.equals(Distribution.STREAMING)) {
-            this.createCloudFrontService().updateStreamingDistributionConfig(
+            cf.updateStreamingDistributionConfig(
                     id,
                     cnames, // CNAME aliases for distribution
                     new Date(reference).toString(), // Comment
@@ -573,7 +576,7 @@ public class S3Session extends CloudHTTP3Session {
             );
         }
         else {
-            this.createCloudFrontService().updateDistributionConfig(
+            cf.updateDistributionConfig(
                     id,
                     cnames, // CNAME aliases for distribution
                     new Date(reference).toString(), // Comment
@@ -589,6 +592,38 @@ public class S3Session extends CloudHTTP3Session {
     }
 
     /**
+     * @param bucket
+     * @param method
+     * @param files
+     * @throws CloudFrontServiceException
+     */
+    public void invalidateDistributionObjects(String bucket, Distribution.Method method, List<Path> files) {
+        try {
+            final long reference = System.currentTimeMillis();
+            List<String> keys = new ArrayList<String>();
+            for(Path file : files) {
+                keys.add(((S3Path) file).getKey());
+            }
+            Distribution d = this.getDistribution(bucket, method);
+            CloudFrontService cf = this.createCloudFrontService();
+            cf.invalidateObjects(
+                    d.getId(),
+                    keys.toArray(new String[keys.size()]), // objects
+                    new Date(reference).toString() // Comment
+            );
+            if(log.isDebugEnabled()) {
+                List<InvalidationSummary> summaries = cf.listInvalidations(d.getId());
+                for(InvalidationSummary s : summaries) {
+                    log.debug(s.toString());
+                }
+            }
+        }
+        catch(CloudFrontServiceException e) {
+            this.error("Cannot write file attributes", e);
+        }
+    }
+
+    /**
      * Amazon CloudFront Extension used to list all configured distributions
      *
      * @param bucket Name of the container
@@ -598,10 +633,11 @@ public class S3Session extends CloudHTTP3Session {
      */
     protected org.jets3t.service.model.cloudfront.Distribution[] listDistributions(String bucket,
                                                                                    Distribution.Method method) throws CloudFrontServiceException {
+        CloudFrontService cf = this.createCloudFrontService();
         if(method.equals(Distribution.STREAMING)) {
-            return this.createCloudFrontService().listStreamingDistributions(bucket);
+            return cf.listStreamingDistributions(bucket);
         }
-        return this.createCloudFrontService().listDistributions(bucket);
+        return cf.listDistributions(bucket);
     }
 
     /**
@@ -610,22 +646,24 @@ public class S3Session extends CloudHTTP3Session {
      * @returann
      */
     protected DistributionConfig getDistributionConfig(final org.jets3t.service.model.cloudfront.Distribution distribution) throws CloudFrontServiceException {
+        CloudFrontService cf = this.createCloudFrontService();
         if(distribution.isStreamingDistribution()) {
-            return this.createCloudFrontService().getStreamingDistributionConfig(distribution.getId());
+            return cf.getStreamingDistributionConfig(distribution.getId());
         }
-        return this.createCloudFrontService().getDistributionConfig(distribution.getId());
+        return cf.getDistributionConfig(distribution.getId());
     }
 
     /**
      * @param distribution A distribution (the distribution must be disabled and deployed first)
      * @throws CloudFrontServiceException CloudFront failure details
      */
-    public void deleteDistribution(final org.jets3t.service.model.cloudfront.Distribution distribution) throws CloudFrontServiceException {
+    protected void deleteDistribution(final org.jets3t.service.model.cloudfront.Distribution distribution) throws CloudFrontServiceException {
+        CloudFrontService cf = this.createCloudFrontService();
         if(distribution.isStreamingDistribution()) {
-            this.createCloudFrontService().deleteStreamingDistribution(distribution.getId());
+            cf.deleteStreamingDistribution(distribution.getId());
         }
         else {
-            this.createCloudFrontService().deleteDistribution(distribution.getId());
+            cf.deleteDistribution(distribution.getId());
         }
     }
 
