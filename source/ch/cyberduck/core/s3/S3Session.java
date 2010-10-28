@@ -591,6 +591,17 @@ public class S3Session extends CloudHTTP3Session {
         }
     }
 
+    private List<String> getInvalidationKeys(List<Path> files) {
+        List<String> keys = new ArrayList<String>();
+        for(Path file : files) {
+            if(file.attributes().isDirectory()) {
+                keys.addAll(this.getInvalidationKeys(file.<Path>children()));
+            }
+            keys.add(((S3Path) file).getKey());
+        }
+        return keys;
+    }
+
     /**
      * @param bucket
      * @param method
@@ -600,11 +611,8 @@ public class S3Session extends CloudHTTP3Session {
     public void invalidateDistributionObjects(String bucket, Distribution.Method method, List<Path> files) {
         try {
             final long reference = System.currentTimeMillis();
-            List<String> keys = new ArrayList<String>();
-            for(Path file : files) {
-                keys.add(((S3Path) file).getKey());
-            }
             Distribution d = this.getDistribution(bucket, method);
+            List<String> keys = this.getInvalidationKeys(files);
             CloudFrontService cf = this.createCloudFrontService();
             cf.invalidateObjects(
                     d.getId(),
