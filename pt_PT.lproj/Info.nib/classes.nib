@@ -54,6 +54,8 @@
 				<string>id</string>
 				<key>distributionEnableButton</key>
 				<string>NSButton</string>
+				<key>distributionInvalidateObjectsButton</key>
+				<string>NSButton</string>
 				<key>distributionLoggingButton</key>
 				<string>NSButton</string>
 				<key>distributionProgress</key>

@@ -46,7 +46,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.text.MessageFormat;
-import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -243,6 +242,15 @@ public class InfoController extends ToolbarWindowController {
         this.distributionLoggingButton = b;
         this.distributionLoggingButton.setTarget(this.id());
         this.distributionLoggingButton.setAction(Foundation.selector("distributionApplyButtonClicked:"));
+    }
+
+    @Outlet
+    private NSButton distributionInvalidateObjectsButton;
+
+    public void setDistributionInvalidateObjectsButton(NSButton b) {
+        this.distributionInvalidateObjectsButton = b;
+        this.distributionInvalidateObjectsButton.setTarget(this.id());
+        this.distributionInvalidateObjectsButton.setAction(Foundation.selector("distributionInvalidateObjectsButtonClicked:"));
     }
 
     @Outlet
@@ -2113,6 +2121,7 @@ public class InfoController extends ToolbarWindowController {
         distributionCnameField.setEnabled(stop && enable);
         distributionCnameField.setEnabled(stop && enable);
         distributionDeliveryPopup.setEnabled(stop && enable);
+        distributionInvalidateObjectsButton.setEnabled(stop && enable && session instanceof S3Session);
         distributionDefaultRootPopup.setEnabled(stop && enable && session instanceof S3Session
                 && Distribution.DOWNLOAD.toString().equals(distributionDeliveryPopup.selectedItem().representedObject()));
         if(stop) {
@@ -2122,6 +2131,41 @@ public class InfoController extends ToolbarWindowController {
             distributionProgress.startAnimation(null);
         }
         return enable;
+    }
+
+    @Action
+    public void distributionInvalidateObjectsButtonClicked(final ID sender) {
+        if(this.toggleDistributionSettings(false)) {
+            controller.background(new BrowserBackgroundAction(controller) {
+                public void run() {
+                    S3Session session = (S3Session) controller.getSession();
+                    Distribution.Method method = null;
+                    if(distributionDeliveryPopup.selectedItem().representedObject().equals(Distribution.STREAMING.toString())) {
+                        method = Distribution.STREAMING;
+                    }
+                    if(distributionDeliveryPopup.selectedItem().representedObject().equals(Distribution.DOWNLOAD.toString())) {
+                        method = Distribution.DOWNLOAD;
+                    }
+                    if(null == method) {
+                        log.error("No distribution selected");
+                        return;
+                    }
+                    final String bucket = files.get(0).getContainerName();
+                    session.invalidateDistributionObjects(bucket, method, files);
+                }
+
+                @Override
+                public void cleanup() {
+                    toggleDistributionSettings(true);
+                }
+
+                @Override
+                public String getActivity() {
+                    return MessageFormat.format(Locale.localizedString("Writing metadata of {0}", "Status"),
+                            this.toString(files));
+                }
+            });
+        }
     }
 
     @Action
@@ -2252,6 +2296,15 @@ public class InfoController extends ToolbarWindowController {
                     else {
                         distributionDefaultRootPopup.selectItemWithTitle(Locale.localizedString("None"));
                     }
+                    StringBuilder tooltip = new StringBuilder();
+                    for(Iterator<Path> iter = files.iterator(); iter.hasNext();) {
+                        Path f = iter.next();
+                        tooltip.append(f.getAbsolute());
+                        if(iter.hasNext()) {
+                            tooltip.append("\n");
+                        }
+                    }
+                    distributionInvalidateObjectsButton.setToolTip(tooltip.toString());
                     toggleDistributionSettings(true);
                 }
 
