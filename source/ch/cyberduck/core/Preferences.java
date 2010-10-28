@@ -200,7 +200,7 @@ public abstract class Preferences {
         defaults.put("protocol.cf.swift.enable", String.valueOf(false));
         defaults.put("protocol.gdocs.enable", String.valueOf(true));
         defaults.put("protocol.gstorage.tls.enable", String.valueOf(true));
-        defaults.put("protocol.azure.tls.enable", String.valueOf(false));
+        defaults.put("protocol.azure.tls.enable", String.valueOf(true));
         defaults.put("protocol.dropbox.tls.enable", String.valueOf(false));
 
         /**
