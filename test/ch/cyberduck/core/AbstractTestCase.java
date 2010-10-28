@@ -180,6 +180,17 @@ public class AbstractTestCase extends TestCase {
             }
         });
         Protocol.register();
+        PathReferenceFactory.addFactory(Factory.NATIVE_PLATFORM, new PathReferenceFactory() {
+            @Override
+            protected PathReference create() {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            protected <T> PathReference<T> create(AbstractPath param) {
+                return new TestPathReference(param);
+            }
+        });
     }
 
     @Override
@@ -258,6 +269,20 @@ public class AbstractTestCase extends TestCase {
 
         public String getVersionId() {
             throw new UnsupportedOperationException();
+        }
+    }
+
+    protected class TestPathReference extends PathReference {
+
+        private AbstractPath reference;
+
+        public TestPathReference(AbstractPath reference) {
+            this.reference = reference;
+        }
+
+        @Override
+        public Object unique() {
+            return reference.getAbsolute();
         }
     }
 }

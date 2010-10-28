@@ -1,15 +1,5 @@
 package ch.cyberduck.core.ftp;
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
-import ch.cyberduck.core.*;
-
-import org.apache.commons.net.ftp.FTPFile;
-import org.apache.commons.net.ftp.FTPFileEntryParser;
-
-import java.io.BufferedReader;
-import java.io.StringReader;
-
 /*
  * Copyright (c) 2002-2009 David Kocher. All rights reserved.
  *
@@ -28,6 +18,16 @@ import java.io.StringReader;
  * Bug fixes, suggestions and comments should be sent to:
  * dkocher@cyberduck.ch
  */
+
+import junit.framework.Test;
+import junit.framework.TestSuite;
+import ch.cyberduck.core.*;
+
+import org.apache.commons.net.ftp.FTPFile;
+import org.apache.commons.net.ftp.FTPFileEntryParser;
+
+import java.io.BufferedReader;
+import java.io.StringReader;
 
 /**
  * @version $Id$
@@ -53,17 +53,55 @@ public class FTPPathTest extends AbstractTestCase {
 
         FTPFile parsed = null;
 
-        FTPPath path = (FTPPath)PathFactory.createPath(SessionFactory.createSession(new Host(Protocol.FTP, "localhost")),
+        FTPPath path = (FTPPath) PathFactory.createPath(SessionFactory.createSession(new Host(Protocol.FTP, "localhost")),
                 "/SunnyD", Path.DIRECTORY_TYPE);
         assertEquals("SunnyD", path.getName());
         assertEquals("/SunnyD", path.getAbsolute());
 
-        final AttributedList<Path> list = AttributedList.emptyList();
+        final AttributedList<Path> list = new AttributedList<Path>();
         final boolean success = path.parse(list, parser,
                 new BufferedReader(new StringReader(" drwxrwx--x 1 owner group          512 Jun 12 15:40 SunnyD")));
 
         assertFalse(success);
         assertTrue(list.isEmpty());
+    }
+
+    public void testParseSymbolicLink() throws Exception {
+        FTPFileEntryParser parser = new FTPParserFactory().createFileEntryParser("UNIX");
+
+        FTPFile parsed = null;
+
+        FTPPath path = (FTPPath) PathFactory.createPath(SessionFactory.createSession(new Host(Protocol.FTP, "localhost")),
+                "/", Path.DIRECTORY_TYPE);
+        assertEquals("/", path.getName());
+        assertEquals("/", path.getAbsolute());
+
+        final AttributedList<Path> list = new AttributedList<Path>();
+        final boolean success = path.parse(list, parser,
+                new BufferedReader(new StringReader("lrwxrwxrwx    1 mk basicgrp       27 Sep 23  2004 www -> /www/basic/mk")));
+
+        assertTrue(success);
+        assertFalse(list.isEmpty());
+
+    }
+
+    public void test3763() throws Exception {
+        FTPFileEntryParser parser = new FTPParserFactory().createFileEntryParser("UNIX");
+
+        FTPFile parsed = null;
+
+        FTPPath path = (FTPPath) PathFactory.createPath(SessionFactory.createSession(new Host(Protocol.FTP, "localhost")),
+                "/www", Path.DIRECTORY_TYPE);
+        assertEquals("www", path.getName());
+        assertEquals("/www", path.getAbsolute());
+
+        final AttributedList<Path> list = new AttributedList<Path>();
+        final boolean success = path.parse(list, parser,
+                new BufferedReader(new StringReader("lrwxrwxrwx    1 mk basicgrp       27 Sep 23  2004 /home/mk/www -> /www/basic/mk")));
+
+        assertFalse(success);
+        assertTrue(list.isEmpty());
+
     }
 
     public static Test suite() {
