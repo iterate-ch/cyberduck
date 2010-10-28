@@ -7,6 +7,7 @@ Changelog. Last modified: $Date$
 4.0 [http://trac.cyberduck.ch/milestone/4.0]
 - [Feature] Version for Microsoft Windows XP, Windows Vista & Windows 7.
 - [Feature] Connecting to Windows Azure Blob Storage (Azure) (#3938)
+- [Feature] CloudFront CDN invalidation requests (S3) (#5197)
 - [Bugfix] Support for S3Fox directory placeholders (S3)
 - [Bugfix] Support for Google Storage Console directory placeholders (S3)
 - [Bugfix] Support for s3sync.rb directory placeholders (#5374) (S3)
