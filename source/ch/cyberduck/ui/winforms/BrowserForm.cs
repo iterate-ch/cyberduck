@@ -618,11 +618,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public void FocusBrowser()
         {
-            if (browser.GetItemCount() > 0)
-            {
-                browser.SelectedIndex = 0;
-                browser.Focus();
-            }
+            browser.Focus();
         }
 
         public TreeListView.ChildrenGetterDelegate ModelChildrenGetterDelegate
@@ -669,6 +665,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         public List<TreePathReference> SelectedPaths
         {
             get { return new List<TreePathReference>(new ListAdapter<TreePathReference>(browser.SelectedObjects)); }
+            set { browser.SelectedObjects = value; }
         }
 
         public List<Host> SelectedBookmarks

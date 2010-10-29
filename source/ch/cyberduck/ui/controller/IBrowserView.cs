@@ -41,7 +41,7 @@ namespace Ch.Cyberduck.Ui.Controller
         string WindowTitle { set; }
         string StatusLabel { set; }
 
-        List<TreePathReference> SelectedPaths { get; }
+        List<TreePathReference> SelectedPaths { get; set; }
         List<Host> SelectedBookmarks { get; }
         int NumberOfFiles { get; }
         int NumberOfBookmarks { get; }
@@ -206,20 +206,12 @@ namespace Ch.Cyberduck.Ui.Controller
         event VoidHandler ShowTransfers;
         event VoidHandler ShowCertificate;
 
-        #region Drag'n'Drop
-
-        #region Browser events
-
         event DropHandler BrowserCanDrop;
         event ModelDropHandler BrowserModelCanDrop;
         event DropHandler BrowserDropped;
         event ModelDropHandler BrowserModelDropped;
         event DragHandler BrowserDrag;
         event EndDragHandler BrowserEndDrag;
-
-        #endregion
-
-        #region Bookmarks events
 
         event DropHandler HostCanDrop;
         event ModelDropHandler HostModelCanDrop;
@@ -228,16 +220,10 @@ namespace Ch.Cyberduck.Ui.Controller
         event DragHandler HostDrag;
         event EndDragHandler HostEndDrag;
 
-        #endregion
-
-        #endregion
-
         void SetBrowserModel(IEnumerable<TreePathReference> model);
         void RefreshBrowserObject(TreePathReference path);
         void RefreshBrowserObjects(List<TreePathReference> list);
         void BrowserActiveStateChanged();
-
-        // model related properties
 
         void AddTranscriptEntry(bool request, string entry);
         void ClearTranscript();

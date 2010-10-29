@@ -23,7 +23,6 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using ch.cyberduck;
 using ch.cyberduck.core;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Core.Collections;
@@ -179,12 +178,13 @@ namespace Ch.Cyberduck.Ui.Controller
                 if (obj is Bitmap)
                 {
                     image = (Bitmap) obj;
-                    
+
                     if (image.RawFormat == ImageFormat.Tiff)
                     {
                         // handle multi-page tiffs
                         image = GetTiffImage(image, size);
-                    } else if (size > 0)
+                    }
+                    else if (size > 0)
                     {
                         image = ResizeImage(image, new Size(size, size));
                     }

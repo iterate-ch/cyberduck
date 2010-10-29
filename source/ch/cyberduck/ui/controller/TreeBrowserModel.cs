@@ -27,7 +27,7 @@ namespace Ch.Cyberduck.Ui.Controller
     internal class TreeBrowserModel
     {
         private readonly BrowserController _controller;
-        private readonly List<Path> _isLoadingListingInBackground = new List<Path>();
+        private readonly List<AbstractPath> _isLoadingListingInBackground = new List<AbstractPath>();
         private readonly string _unknown = Locale.localizedString("Unknown");
 
         public TreeBrowserModel(BrowserController controller)
@@ -37,13 +37,12 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public bool CanExpand(object reference)
         {
-            Path path = ((TreePathReference) reference).Unique;
-            return path.attributes().isDirectory();
+            return GetPath(((TreePathReference) reference)).attributes().isDirectory();
         }
 
         public IEnumerable<TreePathReference> ChildrenGetter(object reference)
         {
-            Path path = ((TreePathReference) reference).Unique;
+            AbstractPath path = ((TreePathReference) reference).Unique;
             AttributedList list;
             lock (_isLoadingListingInBackground)
             {
@@ -93,17 +92,17 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public object GetName(TreePathReference path)
         {
-            return path.Unique.getName();
+            return GetPath(path).getName();
         }
 
         public object GetIcon(TreePathReference path)
         {
-            return IconCache.Instance.IconForPath(path.Unique, IconCache.IconSize.Small);
+            return IconCache.Instance.IconForPath(GetPath(path) as Path, IconCache.IconSize.Small);
         }
 
         public object GetModified(TreePathReference path)
         {
-            long modificationDate = path.Unique.attributes().getModificationDate();
+            long modificationDate = GetPath(path).attributes().getModificationDate();
             if (modificationDate != -1)
             {
                 return UserDefaultsDateFormatter.ConvertJavaMiliSecondToDateTime(modificationDate);
@@ -121,9 +120,14 @@ namespace Ch.Cyberduck.Ui.Controller
             return _unknown;
         }
 
+        private AbstractPath GetPath(TreePathReference path)
+        {
+            return _controller.getSession().cache().lookup(path);
+        }
+
         public object GetSize(TreePathReference path)
         {
-            return path.Unique.attributes().getSize();
+            return GetPath(path).attributes().getSize();
         }
 
         public string GetSizeAsString(object size)
@@ -133,18 +137,17 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public object GetOwner(TreePathReference path)
         {
-            return path.Unique.attributes().getOwner();
+            return GetPath(path).attributes().getOwner();
         }
 
         public object GetGroup(TreePathReference path)
         {
-            return path.Unique.attributes().getGroup();
+            return GetPath(path).attributes().getGroup();
         }
 
         public object GetPermission(TreePathReference path)
         {
-            Path p = path.Unique;
-            Permission permission = p.attributes().getPermission();
+            Permission permission = GetPath(path).attributes().getPermission();
             if (null == permission)
             {
                 return _unknown;
@@ -154,23 +157,23 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public object GetKind(TreePathReference path)
         {
-            return path.Unique.kind();
+            return GetPath(path).kind();
         }
 
         public bool GetActive(TreePathReference reference)
         {
-            return _controller.IsConnected() && BrowserController.HiddenFilter.accept(reference.Unique);
+            return _controller.IsConnected() && BrowserController.HiddenFilter.accept(GetPath(reference));
         }
 
         private class ChildGetterBrowserBackgrounAction : BrowserBackgroundAction
         {
             private readonly BrowserController _controller;
-            private readonly List<Path> _isLoadingListingInBackground;
-            private readonly Path _path;
+            private readonly List<AbstractPath> _isLoadingListingInBackground;
+            private readonly AbstractPath _path;
 
             public ChildGetterBrowserBackgrounAction(BrowserController controller,
-                                                     Path path,
-                                                     List<Path> isLoadingListingInBackground)
+                                                     AbstractPath path,
+                                                     List<AbstractPath> isLoadingListingInBackground)
                 : base(controller)
             {
                 _controller = controller;
@@ -196,8 +199,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
                     if (_isLoadingListingInBackground.Count == 0)
                     {
-                        _controller.ReloadData(true);
-                        //_controller.RefreshObject(_path);
+                        _controller.RefreshObject(_path as Path, true);
                     }
                 }
                 base.cleanup();

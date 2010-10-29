@@ -1055,7 +1055,7 @@ namespace Ch.Cyberduck.Ui.Controller
             int i = 0;
             foreach (Host host in selected)
             {
-                if (i>0)
+                if (i > 0)
                 {
                     alertText.Append("\n");
                 }
@@ -1074,7 +1074,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                              eSysIcons.Question
                 );
             if (result == DialogResult.OK)
-            {                
+            {
                 _bookmarkModel.Source.removeAll(Utils.ConvertToJavaList(selected));
             }
         }
@@ -2167,20 +2167,27 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
-        public void RefreshParentPaths(ICollection<Path> paths)
+        public void RefreshParentPaths(ICollection<Path> paths, List<TreePathReference> selected)
         {
+            bool rootRefreshed = false; //prevent multiple root updates
             foreach (Path path in paths)
             {
                 Path parent = path.getParent();
                 if (Workdir.equals(parent))
                 {
+                    if (rootRefreshed)
+                    {
+                        continue;
+                    }
                     View.SetBrowserModel(_browserModel.ChildrenGetter(new TreePathReference(parent)));
+                    rootRefreshed = true;
                 }
                 else
                 {
                     View.RefreshBrowserObject(new TreePathReference(parent));
                 }
             }
+            View.SelectedPaths = selected;
         }
 
         /// <summary>
@@ -2201,6 +2208,16 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             if (null != Workdir)
             {
+                IEnumerable<TreePathReference> children = _browserModel.ChildrenGetter(new TreePathReference(Workdir));
+                //clear selection before resetting model. Otherwise we have weird selection effects.
+                View.SelectedPaths = new List<TreePathReference>();
+                View.SetBrowserModel(children);
+                List<TreePathReference> s = new List<TreePathReference>();
+                foreach (Path p in selected)
+                {
+                    s.Add(new TreePathReference(p));
+                }
+                View.SelectedPaths = s; //restore selection
                 List<TreePathReference> toUpdate = new List<TreePathReference>();
                 foreach (TreePathReference reference in View.VisiblePaths)
                 {
@@ -2211,13 +2228,11 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
                 View.RefreshBrowserObjects(toUpdate);
             }
-
-            //refresh root objects
-            View.SetBrowserModel(null == Workdir ? null : _browserModel.ChildrenGetter(new TreePathReference(Workdir)));
-
+            else
+            {
+                View.SetBrowserModel(null);
+            }
             View.FilenameFilter = FilenameFilter;
-            //todo Selektion muss beibehalten werden
-            //this.setSelectedPaths(selected);            
             UpdateStatusLabel();
         }
 
@@ -2275,7 +2290,19 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
-        public void RefreshObject(Path path)
+        public void RefreshObject(Path path, bool preserveSelection)
+        {
+            if (preserveSelection)
+            {
+                RefreshObject(path, View.SelectedPaths);
+            }
+            else
+            {
+                RefreshObject(path, new List<TreePathReference>());
+            }
+        }
+
+        public void RefreshObject(Path path, List<TreePathReference> selected)
         {
             if (Workdir.Equals(path))
             {
@@ -2292,6 +2319,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     View.RefreshBrowserObject(new TreePathReference(path));
                 }
             }
+            View.SelectedPaths = selected;
             UpdateStatusLabel();
         }
 
@@ -3034,7 +3062,9 @@ namespace Ch.Cyberduck.Ui.Controller
 
             public override void cleanup()
             {
-                BrowserController.ReloadData(new List<Path> {_archive.getArchive(_selected)});
+                BrowserController.RefreshParentPaths(new List<Path> {_archive.getArchive(_selected)},
+                                                     new List<TreePathReference>
+                                                         {new TreePathReference(_archive.getArchive(_selected))});
             }
         }
 
@@ -3101,7 +3131,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
             public override void cleanup()
             {
-                BrowserController.RefreshParentPaths(_normalized);
+                BrowserController.RefreshParentPaths(_normalized, new List<TreePathReference>());
             }
         }
 
@@ -3170,6 +3200,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
             public override void cleanup()
             {
+                List<TreePathReference> selected = new List<TreePathReference>();
                 foreach (Path duplicate in _normalized.Values)
                 {
                     if (_edit)
@@ -3181,8 +3212,9 @@ namespace Ch.Cyberduck.Ui.Controller
                     {
                         BrowserController.ShowHiddenFiles = true;
                     }
+                    selected.Add(new TreePathReference(duplicate));
                 }
-                BrowserController.RefreshParentPaths(_normalized.Values);
+                BrowserController.RefreshParentPaths(_normalized.Values, selected);
             }
 
             public override string getActivity()
@@ -3371,7 +3403,12 @@ namespace Ch.Cyberduck.Ui.Controller
 
             public override void cleanup()
             {
-                BrowserController.RefreshParentPaths(_normalized.Values);
+                List<TreePathReference> selected = new List<TreePathReference>();
+                foreach (Path p in _normalized.Values)
+                {
+                    selected.Add(new TreePathReference(p));
+                }
+                BrowserController.RefreshParentPaths(_normalized.Values, selected);
             }
 
             public override string getActivity()
@@ -3407,7 +3444,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
             public override void cleanup()
             {
-                BrowserController.RefreshObject(_selected);
+                BrowserController.RefreshObject(_selected, false);
             }
 
             public override string getActivity()
@@ -3542,7 +3579,12 @@ namespace Ch.Cyberduck.Ui.Controller
             public override void cleanup()
             {
                 _expanded.AddRange(Utils.ConvertFromJavaList<Path>(_archive.getExpanded(new ArrayList {_selected})));
-                BrowserController.ReloadData(_expanded);
+                List<TreePathReference> selected = new List<TreePathReference>();
+                foreach (Path p in _expanded)
+                {
+                    selected.Add(new TreePathReference(p));
+                }
+                BrowserController.RefreshParentPaths(_expanded, selected);
             }
         }
 
@@ -3669,7 +3711,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
                 public override void run()
                 {
-                    ((BrowserController) Controller).RefreshObject(_p);
+                    ((BrowserController) Controller).RefreshObject(_p, true);
                 }
             }
         }

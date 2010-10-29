@@ -123,7 +123,8 @@
       <HintPath>..\..\..\lib\IKVM.Runtime.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualBasic" />
-    <Reference Include="ObjectListView">
+    <Reference Include="ObjectListView, Version=2.4.1.27746, Culture=neutral, PublicKeyToken=b1c5bf581481bcd4, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\lib\ObjectListView.dll</HintPath>
     </Reference>
     <Reference Include="StructureMap, Version=2.6.1.0, Culture=neutral, PublicKeyToken=e60ad81abae3c223, processorArchitecture=MSIL">

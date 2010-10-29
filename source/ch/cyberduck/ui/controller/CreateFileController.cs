@@ -16,6 +16,7 @@
 // yves@cyberduck.ch
 // 
 using System;
+using System.Collections.Generic;
 using System.Windows.Forms;
 using ch.cyberduck.core;
 using ch.cyberduck.core.i18n;
@@ -61,39 +62,12 @@ namespace Ch.Cyberduck.Ui.Controller
                 _edit = edit;
                 _file = PathFactory.createPath(getSession(),
                                                _workdir.getAbsolute(),
-                                               LocalFactory.createLocal(
-                                                   Preferences.instance().getProperty("tmp.dir"),
-                                                   _filename));
+                                               _filename, Path.FILE_TYPE);
             }
 
             public override void run()
             {
-                int no = 0;
-                while (_file.getLocal().exists())
-                {
-                    no++;
-
-                    String proposal = System.IO.Path.GetFileNameWithoutExtension(_filename) + "-" + no;
-                    if (!String.IsNullOrEmpty(System.IO.Path.GetExtension(_filename)))
-                    {
-                        proposal += "." + System.IO.Path.GetExtension(_filename);
-                    }
-                    _file.setLocal(
-                        LocalFactory.createLocal(Preferences.instance().getProperty("tmp.dir"),
-                                                 proposal));
-                }
-                _file.getLocal().touch();
-                TransferOptions options = new TransferOptions {closeSession = false};
-                try
-                {
-                    UploadTransfer upload = new UploadTransfer(_file);
-                    upload.start(new OverwriteTransferPrompt(), options);
-                    _file.getParent().invalidate();
-                }
-                finally
-                {
-                    _file.getLocal().delete(false);
-                }
+                _file.touch();                
                 if (_file.exists())
                 {
                     if (_edit)
@@ -110,7 +84,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     BrowserController.ShowHiddenFiles = true;
                 }
-                BrowserController.RefreshObject(_workdir);
+                BrowserController.RefreshObject(_workdir, new List<TreePathReference>(){new TreePathReference(_file)});
             }
 
             public override string getActivity()

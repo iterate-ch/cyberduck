@@ -51,28 +51,14 @@ namespace Ch.Cyberduck.Ui.Controller
                 return false;
             }
 
-            //workaround for a caching issue in the Tree class
-            //see https://sourceforge.net/projects/objectlistview/forums/forum/812922/topic/3912372
-            /*
-            if (!((Path)(other as TreePathReference)._reference).getSession().Equals(((Path) this._reference).getSession()))
+            //workaround for a caching issue in TreeListView.Tree class
+            //see https://sourceforge.net/projects/objectlistview/forums/forum/812922/topic/3912372            
+            if (!((Path) (other as TreePathReference)._reference).getSession().Equals(((Path) _reference).getSession()))
             {
                 return false;
-            }*/
-              
-            //we have to take the attributes into account to make sure that reloadBrowser works correctly
-            //for changed attributes like size and modification date
+            }
 
-            //PathAttributes impl already handles
-            // - getType()
-            // - getSize()
-            // - getModificationDate()
-            // - getPermission()
-
-            //todo handle getOwner/getGroup -> SyncPromptController has a browser view too (with serialized/deserialized PathAttributes)
-            //-> equality checks for getOwner/getGroup would break sync browser            
-
-            return base.equals(other) &&
-                   _reference.attributes().Equals(((TreePathReference) other)._reference.attributes());
+            return base.equals(other);
         }
 
         private class Factory : PathReferenceFactory

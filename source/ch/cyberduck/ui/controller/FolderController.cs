@@ -16,6 +16,7 @@
 // yves@cyberduck.ch
 // 
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using ch.cyberduck.core;
@@ -71,7 +72,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     BrowserController.ShowHiddenFiles = true;
                 }
-                BrowserController.RefreshObject(_workdir);
+                BrowserController.RefreshObject(_workdir,new List<TreePathReference>(){new TreePathReference(_folder)});
             }
 
             public override string getActivity()
