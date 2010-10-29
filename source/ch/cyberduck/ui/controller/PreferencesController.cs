@@ -189,6 +189,11 @@ namespace Ch.Cyberduck.Ui.Controller
             get { return true; }
         }
 
+        public void collectionLoaded()
+        {
+            ;
+        }
+
         public void collectionItemAdded(object obj)
         {
             Host selected = View.DefaultBookmark;

@@ -15,6 +15,7 @@
 // Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
 // 
+using System;
 using System.Threading;
 using ch.cyberduck.core;
 using Ch.Cyberduck.Core;
@@ -147,6 +148,11 @@ namespace Ch.Cyberduck.Ui.Controller
                 _tickler = new Timer(OnTimer, null, Timeout.Infinite, Timeout.Infinite);
             }
 
+            public void collectionLoaded()
+            {
+                ;
+            }
+
             public void collectionItemAdded(object host)
             {
                 _controller.Invoke(() => _controller.ReloadBookmarks());
@@ -177,6 +183,11 @@ namespace Ch.Cyberduck.Ui.Controller
             public FilterBookmarkCollection(AbstractHostCollection source)
             {
                 _source = source;
+            }
+
+            public override string getName()
+            {
+                return _source.getName();
             }
 
             public override bool allowsAdd()

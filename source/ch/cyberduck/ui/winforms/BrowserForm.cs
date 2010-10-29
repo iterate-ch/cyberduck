@@ -2019,6 +2019,11 @@ namespace Ch.Cyberduck.Ui.Winforms
                 _form = f;
             }
 
+            public void collectionLoaded()
+            {
+                ;
+            }
+
             public void collectionItemAdded(object obj)
             {
                 int pos = BookmarkCollection.defaultCollection().indexOf(obj);
@@ -2327,6 +2332,11 @@ namespace Ch.Cyberduck.Ui.Winforms
             public HistoryMenuCollectionListener(BrowserForm f)
             {
                 _form = f;
+            }
+
+            public void collectionLoaded()
+            {
+                ;
             }
 
             public void collectionItemAdded(object obj)

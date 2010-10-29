@@ -387,6 +387,11 @@ namespace Ch.Cyberduck.Ui.Controller
             set { _sessionShouldBeConnected = value; }
         }
 
+        public void collectionLoaded()
+        {
+            ;
+        }
+
         //todo prüfen, ob das nicht anders gelöst werden kann bzw. wie es in java gelöst ist
         public void collectionItemAdded(object obj)
         {
