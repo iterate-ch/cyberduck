@@ -627,6 +627,9 @@ public class S3Session extends CloudHTTP3Session {
         catch(CloudFrontServiceException e) {
             this.error("Cannot write CDN configuration", e);
         }
+        finally {
+            distributionStatus.get(method).clear();
+        }
     }
 
     private List<String> getInvalidationKeys(List<Path> files) {
