@@ -658,17 +658,23 @@ public class S3Session extends CloudHTTP3Session {
             final long reference = System.currentTimeMillis();
             CloudFrontService cf = this.createCloudFrontService();
             boolean complete = false;
-            for(InvalidationSummary s : cf.listInvalidations(distribution.getId())) {
+            int inprogress = 0;
+            List<InvalidationSummary> summaries = cf.listInvalidations(distribution.getId());
+            for(InvalidationSummary s : summaries) {
                 if("Completed".equals(s.getStatus())) {
                     // No schema for status enumeration. Fail.
                     complete = true;
-                    continue;
                 }
-                // InProgress
-                return Locale.localizedString(s.getStatus(), "S3");
+                else {
+                    // InProgress
+                    inprogress++;
+                }
+            }
+            if(inprogress > 0) {
+                return MessageFormat.format(Locale.localizedString("{0} invalidations in progress", "S3"), inprogress);
             }
             if(complete) {
-                return Locale.localizedString("Completed", "S3");
+                return MessageFormat.format(Locale.localizedString("{0} invalidations completed", "S3"), summaries.size());
             }
         }
         catch(CloudFrontServiceException e) {
