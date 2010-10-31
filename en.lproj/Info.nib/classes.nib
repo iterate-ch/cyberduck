@@ -23,11 +23,11 @@
 			<key>OUTLETS</key>
 			<dict>
 				<key>aclAddButton</key>
-				<string>id</string>
+				<string>NSButton</string>
 				<key>aclProgress</key>
 				<string>NSProgressIndicator</string>
 				<key>aclRemoveButton</key>
-				<string>id</string>
+				<string>NSButton</string>
 				<key>aclTable</key>
 				<string>NSTableView</string>
 				<key>aclUrlField</key>
@@ -47,7 +47,7 @@
 				<key>distributionCnameField</key>
 				<string>NSTextField</string>
 				<key>distributionCnameUrlField</key>
-				<string>id</string>
+				<string>NSTextField</string>
 				<key>distributionDefaultRootPopup</key>
 				<string>id</string>
 				<key>distributionDeliveryPopup</key>
@@ -56,14 +56,16 @@
 				<string>NSButton</string>
 				<key>distributionInvalidateObjectsButton</key>
 				<string>NSButton</string>
+				<key>distributionInvalidationStatusField</key>
+				<string>NSTextField</string>
 				<key>distributionLoggingButton</key>
 				<string>NSButton</string>
 				<key>distributionProgress</key>
 				<string>NSProgressIndicator</string>
 				<key>distributionStatusField</key>
-				<string>id</string>
+				<string>NSTextField</string>
 				<key>distributionUrlField</key>
-				<string>id</string>
+				<string>NSTextField</string>
 				<key>filenameField</key>
 				<string>NSTextField</string>
 				<key>groupField</key>
@@ -79,11 +81,11 @@
 				<key>kindField</key>
 				<string>NSTextField</string>
 				<key>metadataAddButton</key>
-				<string>id</string>
+				<string>NSButton</string>
 				<key>metadataProgress</key>
 				<string>NSProgressIndicator</string>
 				<key>metadataRemoveButton</key>
-				<string>id</string>
+				<string>NSButton</string>
 				<key>metadataTable</key>
 				<string>NSTableView</string>
 				<key>modifiedField</key>
