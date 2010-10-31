@@ -54,3 +54,7 @@
 
 /* HTTP Metadata */
 "Custom Header" = "Custom Header";
+
+/* CloudFront object invalidation */
+"{0} invalidations in progress" = "{0} invalidations in progress";
+"{0} invalidations completed" = "{0} invalidations completed";
