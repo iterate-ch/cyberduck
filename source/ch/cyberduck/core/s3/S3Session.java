@@ -303,7 +303,7 @@ public class S3Session extends CloudHTTP3Session {
             }
         }
         catch(ServiceException e) {
-            this.error("Cannot read file attributes", e);
+            this.error("Cannot read container configuration", e);
         }
         throw new ConnectionCanceledException("Bucket not found with name:" + bucketname);
     }
@@ -359,7 +359,7 @@ public class S3Session extends CloudHTTP3Session {
                 this.setBucketLocationSupported(false);
             }
             catch(IOException e) {
-                this.error("Cannot read file attributes", e);
+                this.error("Cannot read container configuration", e);
             }
         }
         return null;
@@ -592,6 +592,43 @@ public class S3Session extends CloudHTTP3Session {
         }
     }
 
+    /**
+     * You can make any number of invalidation requests, but you can have only three invalidation requests
+     * in progress at one time. Each request can contain up to 1,000 objects to invalidate. If you
+     * exceed these limits, you get an error message.
+     * <p/>
+     * It usually takes 10 to 15 minutes to complete your invalidation request, depending on
+     * the size of your request.
+     *
+     * @param bucket
+     * @param method
+     * @param files
+     * @throws CloudFrontServiceException
+     */
+    public void invalidateDistributionObjects(String bucket, Distribution.Method method, List<Path> files) {
+        try {
+            final long reference = System.currentTimeMillis();
+            Distribution d = this.getDistribution(bucket, method);
+            if(null == d) {
+                log.warn("No cached distribution");
+                return;
+            }
+            List<String> keys = this.getInvalidationKeys(files);
+            if(keys.isEmpty()) {
+                log.warn("No keys selected for invalidation");
+                return;
+            }
+            CloudFrontService cf = this.createCloudFrontService();
+            cf.invalidateObjects(d.getId(),
+                    keys.toArray(new String[keys.size()]), // objects
+                    new Date(reference).toString() // Comment
+            );
+        }
+        catch(CloudFrontServiceException e) {
+            this.error("Cannot write CDN configuration", e);
+        }
+    }
+
     private List<String> getInvalidationKeys(List<Path> files) {
         List<String> keys = new ArrayList<String>();
         for(Path file : files) {
@@ -606,36 +643,35 @@ public class S3Session extends CloudHTTP3Session {
     }
 
     /**
-     * @param bucket
-     * @param method
-     * @param files
-     * @throws CloudFrontServiceException
+     * @param distribution
+     * @return
      */
-    public void invalidateDistributionObjects(String bucket, Distribution.Method method, List<Path> files) {
+    protected String readInvalidationStatus(Distribution distribution) {
+        if(this.getHost().getCredentials().isAnonymousLogin()) {
+            log.info("Anonymous cannot write distribution");
+            return Locale.localizedString("None");
+        }
         try {
             final long reference = System.currentTimeMillis();
-            Distribution d = this.getDistribution(bucket, method);
-            List<String> keys = this.getInvalidationKeys(files);
-            if(keys.isEmpty()) {
-                log.warn("No keys selected for invalidation");
-                return;
-            }
             CloudFrontService cf = this.createCloudFrontService();
-            cf.invalidateObjects(
-                    d.getId(),
-                    keys.toArray(new String[keys.size()]), // objects
-                    new Date(reference).toString() // Comment
-            );
-            if(log.isDebugEnabled()) {
-                List<InvalidationSummary> summaries = cf.listInvalidations(d.getId());
-                for(InvalidationSummary s : summaries) {
-                    log.debug(s.toString());
+            boolean complete = false;
+            for(InvalidationSummary s : cf.listInvalidations(distribution.getId())) {
+                if("Completed".equals(s.getStatus())) {
+                    // No schema for status enumeration. Fail.
+                    complete = true;
+                    continue;
                 }
+                // InProgress
+                return Locale.localizedString(s.getStatus(), "S3");
+            }
+            if(complete) {
+                return Locale.localizedString("Completed", "S3");
             }
         }
         catch(CloudFrontServiceException e) {
-            this.error("Cannot write file attributes", e);
+            this.error("Cannot read CDN configuration", e);
         }
+        return Locale.localizedString("None");
     }
 
     /**
@@ -761,6 +797,7 @@ public class S3Session extends CloudHTTP3Session {
                             distributionConfig.getCNAMEs(),
                             distributionConfig.isLoggingEnabled(),
                             method, distributionConfig.getDefaultRootObject());
+                    distribution.setInvalidationStatus(this.readInvalidationStatus(distribution));
                     if(distribution.isDeployed()) {
                         distributionStatus.get(method).put(container, distribution);
                     }
@@ -773,7 +810,7 @@ public class S3Session extends CloudHTTP3Session {
                 this.setSupportedDistributionMethods(Collections.<Distribution.Method>emptyList());
             }
             catch(IOException e) {
-                this.error("Cannot read file attributes", e);
+                this.error("Cannot read CDN configuration", e);
             }
         }
         if(distributionStatus.get(method).containsKey(container)) {
@@ -853,10 +890,10 @@ public class S3Session extends CloudHTTP3Session {
             }
         }
         catch(CloudFrontServiceException e) {
-            this.error("Cannot write file attributes", e);
+            this.error("Cannot write CDN configuration", e);
         }
         catch(IOException e) {
-            this.error("Cannot write file attributes", e);
+            this.error("Cannot write CDN configuration", e);
         }
         finally {
             distributionStatus.get(method).clear();
@@ -943,7 +980,7 @@ public class S3Session extends CloudHTTP3Session {
                     this.setLoggingSupported(false);
                 }
                 catch(IOException e) {
-                    this.error("Cannot read file attributes", e);
+                    this.error("Cannot read container configuration", e);
                 }
             }
             if(loggingStatus.containsKey(container)) {
@@ -1029,7 +1066,7 @@ public class S3Session extends CloudHTTP3Session {
                     this.setVersioningSupported(false);
                 }
                 catch(IOException e) {
-                    this.error("Cannot read file attributes", e);
+                    this.error("Cannot read container configuration", e);
                 }
             }
             if(versioningStatus.containsKey(container)) {
@@ -1168,10 +1205,10 @@ public class S3Session extends CloudHTTP3Session {
                 return this.getClient().isRequesterPaysBucket(container);
             }
             catch(ServiceException e) {
-                this.error("Cannot read file attributes", e);
+                this.error("Cannot read container configuration", e);
             }
             catch(IOException e) {
-                this.error("Cannot read file attributes", e);
+                this.error("Cannot read container configuration", e);
             }
         }
         return false;

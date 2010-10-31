@@ -254,6 +254,13 @@ public class InfoController extends ToolbarWindowController {
     }
 
     @Outlet
+    private NSTextField distributionInvalidationStatusField;
+
+    public void setDistributionInvalidationStatusField(NSTextField t) {
+        this.distributionInvalidationStatusField = t;
+    }
+
+    @Outlet
     private NSPopUpButton distributionDeliveryPopup;
 
     public void setDistributionDeliveryPopup(NSPopUpButton b) {
@@ -1634,6 +1641,7 @@ public class InfoController extends ToolbarWindowController {
         distributionCnameField.cell().setPlaceholderString(Locale.localizedString("None"));
         distributionUrlField.setStringValue(Locale.localizedString("None"));
         distributionCnameField.setStringValue(Locale.localizedString("None"));
+        distributionInvalidationStatusField.setStringValue(Locale.localizedString("None"));
         distributionDeliveryPopup.removeAllItems();
         distributionDeliveryPopup.addItemWithTitle(Locale.localizedString("None"));
         distributionDefaultRootPopup.removeAllItems();
@@ -2119,7 +2127,6 @@ public class InfoController extends ToolbarWindowController {
         distributionEnableButton.setEnabled(stop && enable);
         distributionLoggingButton.setEnabled(stop && enable);
         distributionCnameField.setEnabled(stop && enable);
-        distributionCnameField.setEnabled(stop && enable);
         distributionDeliveryPopup.setEnabled(stop && enable);
         distributionInvalidateObjectsButton.setEnabled(stop && enable && session instanceof S3Session);
         distributionDefaultRootPopup.setEnabled(stop && enable && session instanceof S3Session
@@ -2156,7 +2163,8 @@ public class InfoController extends ToolbarWindowController {
 
                 @Override
                 public void cleanup() {
-                    toggleDistributionSettings(true);
+                    // Refresh the current distribution status
+                    distributionStatusButtonClicked(sender);
                 }
 
                 @Override
@@ -2305,6 +2313,7 @@ public class InfoController extends ToolbarWindowController {
                         }
                     }
                     distributionInvalidateObjectsButton.setToolTip(tooltip.toString());
+                    distributionInvalidationStatusField.setStringValue(distribution.getInvalidationStatus());
                     toggleDistributionSettings(true);
                 }
 

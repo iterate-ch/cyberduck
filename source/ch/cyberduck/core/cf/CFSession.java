@@ -230,7 +230,7 @@ public class CFSession extends CloudHTTP3Session {
             this.getClient().cdnUpdateContainer(container, -1, enabled, logging);
         }
         catch(IOException e) {
-            this.error("Cannot write file attributes", e);
+            this.error("Cannot write CDN configuration", e);
         }
         finally {
             try {
@@ -270,7 +270,7 @@ public class CFSession extends CloudHTTP3Session {
                 }
             }
             catch(IOException e) {
-                this.error("Cannot read file attributes", e);
+                this.error("Cannot read CDN configuration", e);
             }
             finally {
                 try {

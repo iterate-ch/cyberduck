@@ -57,6 +57,8 @@ public class Distribution {
      */
     private String defaultRootObject;
 
+    private String invalidationStatus;
+
     public static interface Method {
         public abstract String toString();
 
@@ -265,6 +267,17 @@ public class Distribution {
             return Locale.localizedString("Unknown");
         }
         return status;
+    }
+
+    public String getInvalidationStatus() {
+        if(null == invalidationStatus) {
+            return Locale.localizedString("None");
+        }
+        return invalidationStatus;
+    }
+
+    public void setInvalidationStatus(String invalidationStatus) {
+        this.invalidationStatus = invalidationStatus;
     }
 
     /**
