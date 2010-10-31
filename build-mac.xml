@@ -174,7 +174,7 @@
         <antcall target="package">
             <param name="url.archive" value="http://update.cyberduck.ch/nightly/Cyberduck-_REVISION_.tar.gz"/>
             <param name="url.changelog" value="http://version.cyberduck.ch/nightly/changelog.html"/>
-            <param name="sparkle.feed" value="http://version.cyberduck.ch/nightly/changelog.rss"/>
+            <param name="sparkle.feed" value="https://version.cyberduck.ch/nightly/changelog.rss"/>
         </antcall>
 	    <echo message="_REVISION_=${svn.revision}"/>
         <scp file="${build}/${app.name}-${svn.revision}.tar.gz"
@@ -205,7 +205,7 @@
         <antcall target="package">
             <param name="url.archive" value="http://update.cyberduck.ch/beta/Cyberduck-_REVISION_.tar.gz"/>
             <param name="url.changelog" value="http://version.cyberduck.ch/beta/changelog.html"/>
-            <param name="sparkle.feed" value="http://version.cyberduck.ch/beta/changelog.rss"/>
+            <param name="sparkle.feed" value="https://version.cyberduck.ch/beta/changelog.rss"/>
         </antcall>
 	    <echo message="_REVISION_=${svn.revision}"/>
         <scp file="${build}/${app.name}-${svn.revision}.tar.gz"
@@ -235,7 +235,7 @@
         <antcall target="package">
             <param name="url.archive" value="http://update.cyberduck.ch/Cyberduck-_REVISION_.tar.gz"/>
             <param name="url.changelog" value="http://version.cyberduck.ch/changelog.html"/>
-            <param name="sparkle.feed" value="http://version.cyberduck.ch/changelog.rss"/>
+            <param name="sparkle.feed" value="https://version.cyberduck.ch/changelog.rss"/>
         </antcall>
         <antcall target="zip"/>
         <scp file="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.zip"
