@@ -1,11 +1,11 @@
 4.0b5 [http://trac.cyberduck.ch/milestone/4.0b5]
-- [Feature] FlashFXP Bookmarks Importer
-- [Feature] WS_FTP Bookmarks Importer
-- [Feature] Display file transfer progress in taskbar icon (#5332)
+- [Feature] FlashFXP Bookmarks Importer
+- [Feature] WS_FTP Bookmarks Importer
+- [Feature] Display file transfer progress in taskbar icon (#5332)
 - [Bugfix] Bugfixes and usability improvements
 
 4.0b4 [http://trac.cyberduck.ch/milestone/4.0b4]
-- [Feature] SmartFTP Bookmarks Importer
+- [Feature] SmartFTP Bookmarks Importer
 - [Bugfix] Bugfixes and usability improvements
 
 4.0b3 [http://trac.cyberduck.ch/milestone/4.0b3]
@@ -17,4 +17,4 @@
 4.0b1 [http://trac.cyberduck.ch/milestone/4.0b1]
 - [Feature] Version for Microsoft Windows XP, Windows Vista & Windows 7.
 - [Feature] Connecting to Windows Azure Blob Storage (Azure) (#3938)
-- [Feature] FileZilla Bookmarks Importer
+- [Feature] FileZilla Bookmarks Importer
