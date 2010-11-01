@@ -307,7 +307,7 @@ public class S3Path extends CloudPath {
 
     @Override
     public void readMetadata() {
-        if(attributes().isFile() || attributes().isPlaceholder()) {
+        if(attributes().isFile()) {
             try {
                 this.getSession().check();
                 this.getSession().message(MessageFormat.format(Locale.localizedString("Reading metadata of {0}", "Status"),
@@ -807,13 +807,16 @@ public class S3Path extends CloudPath {
                             Preferences.instance().getProperty("s3.location"), AccessControlList.REST_CANNED_PUBLIC_READ);
                 }
                 else {
-                    S3Object object = new S3Object(this.getKey());
+                    S3Object object = new S3Object(this.getKey() + Path.DELIMITER);
                     object.setBucketName(this.getContainerName());
                     // Set object explicitly to private access by default.
-                    object.setAcl(AccessControlList.REST_CANNED_PRIVATE);
+                    //AccessControlList acl = this.getAccessControlList(new Permission(
+                    //        Preferences.instance().getProperty("queue.upload.permissions.folder.default")));
+                    AccessControlList acl = AccessControlList.REST_CANNED_PRIVATE;
+                    object.setAcl(acl);
                     object.setContentLength(0);
                     object.setContentType(Mimetypes.MIMETYPE_JETS3T_DIRECTORY);
-                    this.getSession().getClient().putObject(object.getBucketName(), object);
+                    this.getSession().getClient().putObject(this.getContainerName(), object);
                 }
                 this.cache().put(this.getReference(), AttributedList.<Path>emptyList());
                 // The directory listing is no more current
