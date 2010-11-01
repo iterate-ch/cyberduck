@@ -197,25 +197,34 @@ namespace Ch.Cyberduck.Ui.Winforms.Controls
         private void DrawText(object sender, DrawItemEventArgs e, bool isSelected)
         {
             string shortcutText = ShortcutToString(((MenuItem) sender).Shortcut);
+            if (null == shortcutText && ((MenuItem) sender).Text.Contains("\t"))
+            {
+                string sc = ((MenuItem) sender).Text;
+                shortcutText = sc.Substring(sc.IndexOf('\t')+1);
+            }
+            string itemText = ((MenuItem) sender).Text;
+            if (itemText.Contains("\t")){
+                itemText = itemText.Substring(0, itemText.IndexOf('\t'));
+            }
 
-            int yPos = e.Bounds.Top + (e.Bounds.Height - SystemFonts.MenuFont.Height)/2;
+            int yPos = e.Bounds.Top + (e.Bounds.Height - SystemFonts.MenuFont.Height) / 2;
 
-            Font font = ((MenuItem) sender).DefaultItem
+            Font font = ((MenuItem)sender).DefaultItem
                             ? menuBoldFont
                             : SystemFonts.MenuFont;
 
-            Size textSize = TextRenderer.MeasureText(((MenuItem) sender).Text,
+            Size textSize = TextRenderer.MeasureText(itemText,
                                                      font, Size.Empty,
                                                      TextFormatFlags.SingleLine | TextFormatFlags.NoClipping);
 
             Rectangle textRect = new Rectangle(e.Bounds.Left + LEFT_MARGIN + ICON_SIZE + RIGHT_MARGIN, yPos,
                                                textSize.Width, textSize.Height);
 
-            if (!((MenuItem) sender).Enabled && !isSelected) // disabled and not selected
+            if (!((MenuItem)sender).Enabled && !isSelected) // disabled and not selected
             {
                 textRect.Offset(1, 1);
 
-                TextRenderer.DrawText(e.Graphics, ((MenuItem) sender).Text, font,
+                TextRenderer.DrawText(e.Graphics, itemText, font,
                                       textRect,
                                       SystemColors.ControlLightLight,
                                       TextFormatFlags.SingleLine |
@@ -226,9 +235,9 @@ namespace Ch.Cyberduck.Ui.Winforms.Controls
             }
 
             //Draw the menu item text
-            TextRenderer.DrawText(e.Graphics, ((MenuItem) sender).Text, font,
+            TextRenderer.DrawText(e.Graphics, itemText, font,
                                   textRect,
-                                  ((MenuItem) sender).Enabled
+                                  ((MenuItem)sender).Enabled
                                       ? (isSelected ? SystemColors.HighlightText : SystemColors.MenuText)
                                       : SystemColors.GrayText,
                                   TextFormatFlags.SingleLine | (isUsingKeyboardAccel ? 0 : TextFormatFlags.HidePrefix) |
@@ -246,7 +255,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Controls
                 textRect = new Rectangle(e.Bounds.Width - textSize.Width - ARROW_MARGIN, yPos, textSize.Width,
                                          textSize.Height);
 
-                if (!((MenuItem) sender).Enabled && !isSelected) // disabled and not selected
+                if (!((MenuItem)sender).Enabled && !isSelected) // disabled and not selected
                 {
                     textRect.Offset(1, 1);
 
@@ -262,7 +271,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Controls
 
                 TextRenderer.DrawText(e.Graphics, shortcutText, font,
                                       textRect,
-                                      ((MenuItem) sender).Enabled
+                                      ((MenuItem)sender).Enabled
                                           ? (isSelected ? SystemColors.HighlightText : SystemColors.MenuText)
                                           : SystemColors.GrayText,
                                       TextFormatFlags.SingleLine | TextFormatFlags.NoClipping);
