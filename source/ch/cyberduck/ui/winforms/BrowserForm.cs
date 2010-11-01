@@ -111,6 +111,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // since the idle event is fired after showing the menu
             contextMenuStrip.Opening += (sender, args) => Commands.Validate();
             contextMenuStrip.Opening += (sender, args) => args.Cancel = !ContextMenuEnabled();
+            bookmarkContextMenu.Popup += delegate { Commands.Validate(); };
 
             editorMenuStrip.Opening += OnEditorMenuStripOnOpening;
             // add dummy entry to force the right arrow appearing in the menu
@@ -849,7 +850,10 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         private void SetShortcutText(MenuItem target, ToolStripMenuItem source, string shortCutText)
         {
-            target.Text = source.Text + "\t" + ShortcutToText(source.ShortcutKeys, shortCutText);
+            if (-1 == target.Text.IndexOf('\t'))
+            {
+                target.Text = target.Text + "\t" + ShortcutToText(source.ShortcutKeys, shortCutText);
+            }
         }
 
         private void ConfigureActionlessCommands()
@@ -1329,6 +1333,12 @@ namespace Ch.Cyberduck.Ui.Winforms
                                  disconnectStripButton
                              }, new[] {disconnectMainMenuItem},
                          (sender, args) => Disconnect(), () => ValidateDisconnect());
+
+
+            vistaMenu1.SetImage(refreshMainMenuItem, IconCache.Instance.IconForName("reload", 16));
+            vistaMenu1.SetImage(refreshBrowserContextMenuItem, IconCache.Instance.IconForName("reload", 16));
+            refreshContextToolStripMenuItem.Image = IconCache.Instance.IconForName("reload", 16);
+            vistaMenu1.SetImage(disconnectMainMenuItem, IconCache.Instance.IconForName("eject", 16));
         }
 
         private void ConfigureViewCommands()
@@ -1726,6 +1736,24 @@ namespace Ch.Cyberduck.Ui.Winforms
                                  exitToolStripMenuItem
                              }, new[] {exitMainMenuItem},
                          (sender, args) => Exit(), () => true);
+            
+            vistaMenu1.SetImage(openConnectionMainMenuItem, IconCache.Instance.IconForName("connect", 16));            
+            vistaMenu1.SetImage(infoMainMenuItem, IconCache.Instance.IconForName("info", 16));
+            vistaMenu1.SetImage(infoBrowserContextMenuItem, IconCache.Instance.IconForName("info", 16));
+            infoContextToolStripMenuItem.Image = IconCache.Instance.IconForName("info", 16);
+            //todo correct application icon (move SetImage to PopUp handler)
+            vistaMenu1.SetImage(editMainMenuItem, IconCache.Instance.IconForName("pencil", 16));
+            vistaMenu1.SetImage(editBrowserContextMenuItem, IconCache.Instance.IconForName("pencil", 16));
+            editContextToolStripMenuItem.Image = IconCache.Instance.IconForName("pencil", 16);            
+            vistaMenu1.SetImage(deleteMainMenuItem, IconCache.Instance.IconForName("delete", 16));
+            vistaMenu1.SetImage(deleteBrowserContextMenuItem, IconCache.Instance.IconForName("delete", 16));
+            deleteContextToolStripMenuItem.Image = IconCache.Instance.IconForName("delete", 16);            
+            vistaMenu1.SetImage(downloadMainMenuItem, IconCache.Instance.IconForName("download", 16));
+            vistaMenu1.SetImage(downloadBrowserContextMenuItem, IconCache.Instance.IconForName("download", 16));
+            downloadContextToolStripMenuItem.Image = IconCache.Instance.IconForName("download", 16);
+            vistaMenu1.SetImage(uploadMainMenuItem, IconCache.Instance.IconForName("upload", 16));
+            vistaMenu1.SetImage(uploadBrowserContextMenuItem, IconCache.Instance.IconForName("upload", 16));
+            uploadContextToolStripMenuItem.Image = IconCache.Instance.IconForName("upload", 16);
         }
 
         private void SaveUiSettings()

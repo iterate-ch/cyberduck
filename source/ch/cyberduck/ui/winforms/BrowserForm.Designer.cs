@@ -1693,12 +1693,13 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.managedBrowserPanel1.Controls.Add(this.splitContainer);
             this.managedBrowserPanel1.Location = new System.Drawing.Point(0, 0);
             this.managedBrowserPanel1.Name = "managedBrowserPanel1";
-            this.managedBrowserPanel1.Size = new System.Drawing.Size(0, 0);
+            this.managedBrowserPanel1.Size = new System.Drawing.Size(1028, 497);
             this.managedBrowserPanel1.Text = "managedBrowserPanel1";
             // 
             // splitContainer
             // 
             this.splitContainer.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer.FixedPanel = System.Windows.Forms.FixedPanel.Panel2;
             this.splitContainer.Location = new System.Drawing.Point(0, 0);
             this.splitContainer.Name = "splitContainer";
             this.splitContainer.Orientation = System.Windows.Forms.Orientation.Horizontal;
@@ -1711,9 +1712,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             // splitContainer.Panel2
             // 
             this.splitContainer.Panel2.Controls.Add(this.transcriptBox);
-            this.splitContainer.Panel2MinSize = 0;
-            this.splitContainer.Size = new System.Drawing.Size(0, 0);
-            this.splitContainer.SplitterDistance = 25;
+            this.splitContainer.Panel2MinSize = 50;
+            this.splitContainer.Size = new System.Drawing.Size(1028, 497);
+            this.splitContainer.SplitterDistance = 230;
             this.splitContainer.SplitterWidth = 5;
             this.splitContainer.TabIndex = 2;
             // 
@@ -1742,7 +1743,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.browser.Name = "browser";
             this.browser.OwnerDraw = true;
             this.browser.ShowGroups = false;
-            this.browser.Size = new System.Drawing.Size(0, 25);
+            this.browser.Size = new System.Drawing.Size(1028, 230);
             this.browser.TabIndex = 15;
             this.browser.UseCompatibleStateImageBehavior = false;
             this.browser.View = System.Windows.Forms.View.Details;
@@ -1802,7 +1803,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.transcriptBox.Name = "transcriptBox";
             this.transcriptBox.ReadOnly = true;
             this.transcriptBox.ShortcutsEnabled = false;
-            this.transcriptBox.Size = new System.Drawing.Size(0, 24);
+            this.transcriptBox.Size = new System.Drawing.Size(1028, 262);
             this.transcriptBox.TabIndex = 0;
             this.transcriptBox.Text = "";
             this.transcriptBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.transcriptBox_KeyDown);
@@ -1813,7 +1814,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.managedBookmarkPanel2.Controls.Add(this.actionToolStrip);
             this.managedBookmarkPanel2.Location = new System.Drawing.Point(0, 0);
             this.managedBookmarkPanel2.Name = "managedBookmarkPanel2";
-            this.managedBookmarkPanel2.Size = new System.Drawing.Size(0, 0);
+            this.managedBookmarkPanel2.Size = new System.Drawing.Size(1028, 497);
             this.managedBookmarkPanel2.Text = "managedBookmarkPanel2";
             // 
             // bookmarkListView
@@ -1834,7 +1835,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.bookmarkListView.OwnerDraw = true;
             this.bookmarkListView.RowHeight = 37;
             this.bookmarkListView.ShowGroups = false;
-            this.bookmarkListView.Size = new System.Drawing.Size(0, 0);
+            this.bookmarkListView.Size = new System.Drawing.Size(1028, 464);
             this.bookmarkListView.TabIndex = 10;
             this.bookmarkListView.UseCompatibleStateImageBehavior = false;
             this.bookmarkListView.View = System.Windows.Forms.View.Details;
@@ -1870,10 +1871,10 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.editBookmarkToolStripButton,
             this.deleteBookmarkToolStripButton});
             this.actionToolStrip.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.HorizontalStackWithOverflow;
-            this.actionToolStrip.Location = new System.Drawing.Point(0, -33);
+            this.actionToolStrip.Location = new System.Drawing.Point(0, 464);
             this.actionToolStrip.Name = "actionToolStrip";
             this.actionToolStrip.ShowItemToolTips = false;
-            this.actionToolStrip.Size = new System.Drawing.Size(0, 33);
+            this.actionToolStrip.Size = new System.Drawing.Size(1028, 33);
             this.actionToolStrip.Stretch = true;
             this.actionToolStrip.TabIndex = 5;
             this.actionToolStrip.Text = "toolStrip1";
@@ -1970,7 +1971,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // browserToolStripButton
             // 
             this.browserToolStripButton.AutoSize = false;
-            this.browserToolStripButton.CheckOnClick = true;
+            this.browserToolStripButton.AutoToolTip = false;
             this.browserToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.browserToolStripButton.Image = global::Ch.Cyberduck.ResourcesBundle.outline;
             this.browserToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -1983,7 +1984,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // bookmarksToolStripButton
             // 
             this.bookmarksToolStripButton.AutoSize = false;
-            this.bookmarksToolStripButton.CheckOnClick = true;
+            this.bookmarksToolStripButton.AutoToolTip = false;
             this.bookmarksToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.bookmarksToolStripButton.Image = global::Ch.Cyberduck.ResourcesBundle.bookmarks;
             this.bookmarksToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -1996,7 +1997,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // historyToolStripButton
             // 
             this.historyToolStripButton.AutoSize = false;
-            this.historyToolStripButton.CheckOnClick = true;
+            this.historyToolStripButton.AutoToolTip = false;
             this.historyToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.historyToolStripButton.Image = global::Ch.Cyberduck.ResourcesBundle.history;
             this.historyToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
@@ -2009,8 +2010,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             // bonjourToolStripButton
             // 
             this.bonjourToolStripButton.AutoSize = false;
-            this.bonjourToolStripButton.CheckOnClick = true;
+            this.bonjourToolStripButton.AutoToolTip = false;
             this.bonjourToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.bonjourToolStripButton.Enabled = false;
             this.bonjourToolStripButton.Image = global::Ch.Cyberduck.ResourcesBundle.rendezvous;
             this.bonjourToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.bonjourToolStripButton.Margin = new System.Windows.Forms.Padding(2, 1, 5, 2);

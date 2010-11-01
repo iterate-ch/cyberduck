@@ -2419,6 +2419,7 @@ sv.lproj/Transfer.strings -text svneol=unset#text/utf-16
 test/ch/cyberduck/Properties/AssemblyInfo.cs -text
 test/ch/cyberduck/Test.csproj -text
 test/ch/cyberduck/ui/controller/LocalImplTest.cs -text svneol=unset#application/octet-stream
+test/ch/cyberduck/ui/controller/PersistentFormHandlerTest.cs -text
 th.lproj/Alert.nib/classes.nib -text
 th.lproj/Alert.nib/info.nib -text
 th.lproj/Alert.nib/keyedobjects.nib -text
