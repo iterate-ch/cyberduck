@@ -2080,10 +2080,10 @@ namespace Ch.Cyberduck.Ui.Controller
         /// Will reload the data for this directory in the browser after the transfer completes
         /// </summary>
         /// <param name="transfer"></param>
-        /// <param name="workdir"></param>
-        public void transfer(Transfer transfer, Path workdir)
+        /// <param name="destination"></param>
+        public void transfer(Transfer transfer, Path destination)
         {
-            UploadTransferAdapter transferAdapter = new UploadTransferAdapter(this, transfer, workdir, true);
+            UploadTransferAdapter transferAdapter = new UploadTransferAdapter(this, transfer, destination, true);
             transfer.addListener(transferAdapter);
             this.transfer(transfer);
         }
@@ -3663,12 +3663,14 @@ namespace Ch.Cyberduck.Ui.Controller
             private readonly BrowserController _controller;
             private readonly bool _removeListener;
             private readonly Transfer _transfer;
+            private readonly Path _destination;
 
-            public UploadTransferAdapter(BrowserController controller, Transfer transfer, Path workdir,
+            public UploadTransferAdapter(BrowserController controller, Transfer transfer, Path destination,
                                          bool removeListener)
             {
                 _controller = controller;
                 _transfer = transfer;
+                _destination = destination;
                 _removeListener = removeListener;
             }
 
@@ -3676,20 +3678,10 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 if (_controller.IsMounted())
                 {
-                    //_controller.Workdir.invalidate();
+                    _controller.Workdir.invalidate();
                     if (!_transfer.isCanceled())
                     {
-                        //todo review dko, ob das so korrekt
-                        Path p = _transfer.getRoot();
-                        if (!p.attributes().isDirectory())
-                        {
-                            p = _transfer.getRoot().getParent();
-                        }
-                        //invalidate path object of browser session
-                        _controller._session.cache().get(p.getReference()).attributes().setInvalid(true);
-                        //p.invalidate();
-                        _controller.invoke(new ReloadAction(_controller, p));
-                        //_controller.invoke(new ReloadAction(_controller, _workdir));
+                        _controller.invoke(new ReloadAction(_controller, _destination));
                     }
                 }
                 if (_removeListener) _transfer.removeListener(this);

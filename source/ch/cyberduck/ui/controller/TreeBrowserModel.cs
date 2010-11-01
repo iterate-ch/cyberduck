@@ -122,7 +122,13 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private AbstractPath GetPath(TreePathReference path)
         {
-            return _controller.getSession().cache().lookup(path);
+            AbstractPath result = _controller.getSession().cache().lookup(path);
+            if (null == result)
+            {
+                // cache is being updated
+                result = path.Unique;
+            }
+            return result;
         }
 
         public object GetSize(TreePathReference path)
