@@ -1037,16 +1037,6 @@ public abstract class Protocol {
         public String favicon() {
             return this.icon();
         }
-
-        @Override
-        public String icon() {
-            return FTP_TLS.icon();
-        }
-
-        @Override
-        public String disk() {
-            return FTP_TLS.disk();
-        }
     };
 
     /**

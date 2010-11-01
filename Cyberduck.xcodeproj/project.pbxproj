@@ -66,6 +66,8 @@
 		4739EFA90856990900405FD3 /* JavaVM.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4725BE0A05D2E27000C7CCBD /* JavaVM.framework */; };
 		4739EFAC0856990900405FD3 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47C761EA06A88D7600B464FF /* SystemConfiguration.framework */; };
 		4739EFBB0856991200405FD3 /* JavaVM.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4725BE0A05D2E27000C7CCBD /* JavaVM.framework */; };
+		473CEECB127EE6EC003BB028 /* dropbox-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 473CEEC9127EE6EC003BB028 /* dropbox-icon.png */; };
+		473CEECC127EE6EC003BB028 /* dropbox.icns in Resources */ = {isa = PBXBuildFile; fileRef = 473CEECA127EE6EC003BB028 /* dropbox.icns */; };
 		474163C106C4F64100AC0BD2 /* Info.nib in Resources */ = {isa = PBXBuildFile; fileRef = 474163A306C4F64000AC0BD2 /* Info.nib */; };
 		474163C206C4F64100AC0BD2 /* Browser.nib in Resources */ = {isa = PBXBuildFile; fileRef = 474163A506C4F64100AC0BD2 /* Browser.nib */; };
 		474163C306C4F64100AC0BD2 /* Main.nib in Resources */ = {isa = PBXBuildFile; fileRef = 474163A706C4F64100AC0BD2 /* Main.nib */; };
@@ -631,6 +633,8 @@
 		4739EFA20856990000405FD3 /* libGrowl.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libGrowl.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		4739EFB00856990900405FD3 /* libProxy.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libProxy.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		4739EFC10856991300405FD3 /* libLocal.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libLocal.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		473CEEC9127EE6EC003BB028 /* dropbox-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "dropbox-icon.png"; sourceTree = "<group>"; };
+		473CEECA127EE6EC003BB028 /* dropbox.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = dropbox.icns; sourceTree = "<group>"; };
 		4741532006C4F08A00AC0BD2 /* Editor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Editor.h; sourceTree = "<group>"; };
 		4741532206C4F08A00AC0BD2 /* Editor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Editor.m; sourceTree = "<group>"; };
 		4741532306C4F08A00AC0BD2 /* NSAppleEventDescriptor-Extensions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSAppleEventDescriptor-Extensions.h"; sourceTree = "<group>"; };
@@ -1750,6 +1754,8 @@
 				4717BE150F3096FD00BB4496 /* sftp.icns */,
 				47BCB88F119ADF960099C448 /* google.icns */,
 				47C577EA121BF89C0005FDCC /* azure.icns */,
+				473CEEC9127EE6EC003BB028 /* dropbox-icon.png */,
+				473CEECA127EE6EC003BB028 /* dropbox.icns */,
 				47F73AC40F93721B0054C930 /* ftp-icon.png */,
 				47F73AC50F93721B0054C930 /* dav-icon.png */,
 				47F73AC60F93721B0054C930 /* cf-icon.png */,
@@ -2558,6 +2564,8 @@
 				47C577EB121BF89C0005FDCC /* azure.icns in Resources */,
 				47C5F1C3121C39A60037247D /* refresh.tiff in Resources */,
 				4717DFB4122AEA49008A030C /* book.tiff in Resources */,
+				473CEECB127EE6EC003BB028 /* dropbox-icon.png in Resources */,
+				473CEECC127EE6EC003BB028 /* dropbox.icns in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
