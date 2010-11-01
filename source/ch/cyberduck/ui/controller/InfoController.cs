@@ -1,4 +1,4 @@
-﻿// 
+﻿﻿//
 // Copyright (c) 2010 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
@@ -1681,6 +1681,11 @@ namespace Ch.Cyberduck.Ui.Controller
                             _view.DistributionUrl = url;
                             _view.DistributionUrlEnabled = true;
                             _view.DistributionUrlTooltip = Locale.localizedString("Open in Web Browser");
+                        }
+                        else
+                        {
+                            _view.DistributionUrl = Locale.localizedString("None");
+                            _view.DistributionUrlTooltip = null;
                         }
                     }
                     string[] cnames = _distribution.getCNAMEs();

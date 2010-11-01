@@ -2271,6 +2271,10 @@ public class InfoController extends ToolbarWindowController {
                                     NSMutableAttributedString.create(url, TRUNCATE_MIDDLE_ATTRIBUTES), url));
                             distributionUrlField.setToolTip(Locale.localizedString("Open in Web Browser"));
                         }
+                        else {
+                            distributionUrlField.setStringValue(Locale.localizedString("None"));
+                            distributionUrlField.setToolTip("");
+                        }
                     }
                     final String[] cnames = distribution.getCNAMEs();
                     if(0 == cnames.length) {
