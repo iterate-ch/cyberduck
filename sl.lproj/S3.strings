@@ -58,3 +58,5 @@
 /* CloudFront object invalidation */
 "{0} invalidations in progress" = "{0} invalidations in progress";
 "{0} invalidations completed" = "{0} invalidations completed";
+
+"Bucket name is not DNS compatible" = "Bucket name is not DNS compatible";

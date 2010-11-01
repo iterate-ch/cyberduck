@@ -801,8 +801,7 @@ public class S3Path extends CloudPath {
                 if(this.isContainer()) {
                     // Create bucket
                     if(!ServiceUtils.isBucketNameValidDNSName(this.getName())) {
-                        this.error("Bucket name is not DNS compatible");
-                        return;
+                        throw new ServiceException(Locale.localizedString("Bucket name is not DNS compatible", "S3"));
                     }
                     this.getSession().getClient().createBucket(this.getContainerName(),
                             Preferences.instance().getProperty("s3.location"), AccessControlList.REST_CANNED_PUBLIC_READ);
