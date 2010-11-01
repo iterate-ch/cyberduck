@@ -80,6 +80,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 
             viewToolStrip.Renderer = new ToolStripRenderer();
             toolBar.Renderer = new ToolStripRenderer();
+            actionToolStrip.Renderer = new ToolStripRenderer();
 
             // configure browser properties
             browser.UseExplorerTheme = true;
@@ -852,7 +853,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         {
             if (-1 == target.Text.IndexOf('\t'))
             {
-                target.Text = target.Text + "\t" + ShortcutToText(source.ShortcutKeys, shortCutText);
+                target.Text = String.Format("{0}\t{1}", target.Text, ShortcutToText(source.ShortcutKeys, shortCutText));
             }
         }
 

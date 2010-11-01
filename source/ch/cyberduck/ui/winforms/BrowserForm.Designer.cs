@@ -63,7 +63,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.toolStripSeparator11 = new System.Windows.Forms.ToolStripSeparator();
             this.createArchiveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.archiveMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.createArchiveContextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.expandArchiveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator12 = new System.Windows.Forms.ToolStripSeparator();
             this.printToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -148,6 +147,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.checkToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator28 = new System.Windows.Forms.ToolStripSeparator();
             this.aboutCyberduckToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.createArchiveContextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editorMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.editor1ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editor2ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -646,15 +646,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             // archiveMenuStrip
             // 
             this.archiveMenuStrip.Name = "archiveMenuStrip";
-            this.archiveMenuStrip.OwnerItem = this.createArchiveToolStripMenuItem;
+            this.archiveMenuStrip.OwnerItem = this.createArchiveContextToolStripMenuItem;
             this.archiveMenuStrip.Size = new System.Drawing.Size(61, 4);
-            // 
-            // createArchiveContextToolStripMenuItem
-            // 
-            this.createArchiveContextToolStripMenuItem.DropDown = this.archiveMenuStrip;
-            this.createArchiveContextToolStripMenuItem.Name = "createArchiveContextToolStripMenuItem";
-            this.createArchiveContextToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
-            this.createArchiveContextToolStripMenuItem.Text = "Create Archive";
             // 
             // expandArchiveToolStripMenuItem
             // 
@@ -1239,6 +1232,13 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.aboutCyberduckToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
             this.aboutCyberduckToolStripMenuItem.Text = "&About Cyberduck";
             // 
+            // createArchiveContextToolStripMenuItem
+            // 
+            this.createArchiveContextToolStripMenuItem.DropDown = this.archiveMenuStrip;
+            this.createArchiveContextToolStripMenuItem.Name = "createArchiveContextToolStripMenuItem";
+            this.createArchiveContextToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+            this.createArchiveContextToolStripMenuItem.Text = "Create Archive";
+            // 
             // editorMenuStrip
             // 
             this.editorMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -1683,8 +1683,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.panelManager1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panelManager1.Location = new System.Drawing.Point(0, 31);
             this.panelManager1.Name = "panelManager1";
-            this.panelManager1.SelectedIndex = 0;
-            this.panelManager1.SelectedPanel = this.managedBrowserPanel1;
+            this.panelManager1.SelectedIndex = 1;
+            this.panelManager1.SelectedPanel = this.managedBookmarkPanel2;
             this.panelManager1.Size = new System.Drawing.Size(1028, 497);
             this.panelManager1.TabIndex = 3;
             // 
@@ -1693,7 +1693,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.managedBrowserPanel1.Controls.Add(this.splitContainer);
             this.managedBrowserPanel1.Location = new System.Drawing.Point(0, 0);
             this.managedBrowserPanel1.Name = "managedBrowserPanel1";
-            this.managedBrowserPanel1.Size = new System.Drawing.Size(1028, 497);
+            this.managedBrowserPanel1.Size = new System.Drawing.Size(0, 0);
             this.managedBrowserPanel1.Text = "managedBrowserPanel1";
             // 
             // splitContainer
@@ -1713,7 +1713,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.splitContainer.Panel2.Controls.Add(this.transcriptBox);
             this.splitContainer.Panel2MinSize = 50;
-            this.splitContainer.Size = new System.Drawing.Size(1028, 497);
+            this.splitContainer.Size = new System.Drawing.Size(0, 0);
             this.splitContainer.SplitterDistance = 230;
             this.splitContainer.SplitterWidth = 5;
             this.splitContainer.TabIndex = 2;
