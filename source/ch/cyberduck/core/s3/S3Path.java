@@ -741,6 +741,7 @@ public class S3Path extends CloudPath {
                     continue;
                 }
                 p.attributes().setOwner(this.getContainer().attributes().getOwner());
+                p.attributes().setPlaceholder(true);
                 children.add(p);
             }
             priorLastKey = chunk.getPriorLastKey();
