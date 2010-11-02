@@ -381,7 +381,8 @@ namespace Ch.Cyberduck.Core
         private IList<ThirdpartyBookmarkCollection> GetThirdpartyBookmarks()
         {
             return new List<ThirdpartyBookmarkCollection> {new FilezillaBookmarkCollection(),
-                new SmartFtpBookmarkCollection(), new FlashFxpBookmarkCollection(), new WsFtpBookmarkCollection()};
+                new SmartFtpBookmarkCollection(), new FlashFxpBookmarkCollection(), new WsFtpBookmarkCollection(),
+                new FireFtpBookmarkCollection()};
         }
 
         /// <summary>
