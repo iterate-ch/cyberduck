@@ -41,7 +41,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public override object unique()
         {
-            return _reference.getAbsolute();
+            return _reference.unique();
         }
 
         public override bool equals(object other)

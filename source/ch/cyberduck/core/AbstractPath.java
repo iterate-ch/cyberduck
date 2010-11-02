@@ -71,7 +71,25 @@ public abstract class AbstractPath {
     }
 
     /**
+     * Obtain a string representation of the path that is unique for versioned files.
      *
+     * @return The absolute path with version ID and checksum if any.
+     */
+    public String unique() {
+        final StringBuilder reference = new StringBuilder(this.getAbsolute());
+        if(this.attributes().isDuplicate()) {
+            if(StringUtils.isNotBlank(this.attributes().getVersionId())) {
+                reference.append("-").append(this.attributes().getVersionId());
+            }
+            else if(StringUtils.isNotBlank(this.attributes().getChecksum())) {
+                reference.append("-").append(this.attributes().getChecksum());
+            }
+        }
+        return reference.toString();
+    }
+
+    /**
+     * To lookup a copy of the path in the cache.
      */
     protected PathReference reference;
 
@@ -313,7 +331,7 @@ public abstract class AbstractPath {
 
     /**
      * @param created
-     *@param modified
+     * @param modified
      * @param accessed @see ch.cyberduck.core.Session#isTimestampSupported()
      */
     public abstract void writeTimestamp(long created, long modified, long accessed);

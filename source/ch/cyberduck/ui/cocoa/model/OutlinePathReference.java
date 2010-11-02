@@ -27,7 +27,6 @@ import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.foundation.NSString;
 
 import org.apache.commons.collections.map.LRUMap;
-import org.apache.commons.lang.StringUtils;
 
 import java.util.Map;
 
@@ -52,16 +51,7 @@ public class OutlinePathReference extends PathReference<NSObject> {
      * @param path
      */
     private OutlinePathReference(AbstractPath path) {
-        final StringBuilder reference = new StringBuilder(path.getAbsolute());
-        if(path.attributes().isDuplicate()) {
-            if(StringUtils.isNotBlank(path.attributes().getVersionId())) {
-                reference.append("-").append(path.attributes().getVersionId());
-            }
-            else if(StringUtils.isNotBlank(path.attributes().getChecksum())) {
-                reference.append("-").append(path.attributes().getChecksum());
-            }
-        }
-        String unique = reference.toString();
+        String unique = path.unique();
         if(!cache.containsKey(unique)) {
             cache.put(unique, NSString.stringWithString(unique));
         }
