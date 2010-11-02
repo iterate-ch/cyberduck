@@ -44,6 +44,11 @@ public class HistoryCollection extends AbstractFolderHostCollection {
         return HISTORY_COLLECTION;
     }
 
+    @Override
+    public Local getFile(Host bookmark) {
+        return LocalFactory.createLocal(folder, bookmark.getNickname() + ".duck");
+    }
+
     /**
      * Does not allow duplicate entries.
      *

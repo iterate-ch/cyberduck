@@ -32,7 +32,7 @@ import org.apache.log4j.Logger;
 public abstract class AbstractFolderHostCollection extends AbstractHostCollection {
     private static Logger log = Logger.getLogger(AbstractFolderHostCollection.class);
 
-    private Local folder;
+    protected Local folder;
 
     /**
      * Reading bookmarks from this folder
@@ -58,7 +58,7 @@ public abstract class AbstractFolderHostCollection extends AbstractHostCollectio
      * @return
      */
     public Local getFile(Host bookmark) {
-        return LocalFactory.createLocal(folder, bookmark.getNickname() + ".duck");
+        return LocalFactory.createLocal(folder, bookmark.getUuid() + ".duck");
     }
 
     @Override
@@ -79,6 +79,16 @@ public abstract class AbstractFolderHostCollection extends AbstractHostCollectio
         }
         this.getFile(bookmark).delete(false);
         super.collectionItemRemoved(bookmark);
+    }
+
+    @Override
+    public void collectionItemChanged(Host bookmark) {
+        if(locked) {
+            log.debug("Do not notify changes of locked collection");
+            return;
+        }
+        HostWriterFactory.instance().write(bookmark, this.getFile(bookmark));
+        super.collectionItemChanged(bookmark);
     }
 
     private boolean locked = true;
@@ -104,7 +114,13 @@ public abstract class AbstractFolderHostCollection extends AbstractHostCollectio
         );
         final Reader<Host> reader = HostReaderFactory.instance();
         for(Local next : bookmarks) {
-            this.add(reader.read(next));
+            Host bookmark = reader.read(next);
+            // Legacy support.
+            if(!this.getFile(bookmark).equals(next)) {
+                // Rename all files previously saved with nickname to UUID.
+                next.rename(this.getFile(bookmark));
+            }
+            this.add(bookmark);
         }
         locked = false;
         // Sort using previously built index
