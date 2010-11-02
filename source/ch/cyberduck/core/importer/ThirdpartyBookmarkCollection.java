@@ -21,6 +21,7 @@ package ch.cyberduck.core.importer;
 
 import ch.cyberduck.core.AbstractHostCollection;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.KeychainFactory;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.ui.cocoa.odb.EditorFactory;
@@ -88,6 +89,10 @@ public abstract class ThirdpartyBookmarkCollection extends AbstractHostCollectio
         if(log.isDebugEnabled()) {
             log.debug("Create new bookmark from import: " + bookmark);
         }
+        // Save password if any to Keychain
+        KeychainFactory.instance().save(bookmark);
+        // Reset password in memory
+        bookmark.getCredentials().setPassword(null);
         return super.add(bookmark);
     }
 }

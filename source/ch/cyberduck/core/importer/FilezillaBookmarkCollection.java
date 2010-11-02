@@ -165,16 +165,6 @@ public class FilezillaBookmarkCollection extends XmlBookmarkCollection {
             }
             else if(name.equals("Server")) {
                 add(current);
-                if(current.getCredentials().validate(current.getProtocol())) {
-                    // Save password in keychain instead of bookmark.
-                    KeychainFactory.instance().addPassword(
-                            current.getProtocol().getScheme(), current.getPort(),
-                            current.getHostname(), current.getCredentials().getUsername(),
-                            current.getCredentials().getPassword()
-                    );
-                }
-                // Reset password
-                current.getCredentials().setPassword(null);
             }
         }
     }
