@@ -640,7 +640,6 @@ namespace Ch.Cyberduck.Ui.Controller
             return enable;
         }
 
-        //todo doppelt aufgerufen? PermissionFetch, AclFetch
         private void AttachPermissionHandlers()
         {
             View.OwnerReadChanged += OwnerReadChanged;
@@ -1150,14 +1149,9 @@ namespace Ch.Cyberduck.Ui.Controller
 
             View.Permissions = Locale.localizedString("Unknown");
             View.OctalPermissions = Locale.localizedString("Unknown");
-
             if (TogglePermissionSettings(false))
             {
                 _controller.background(new FetchPermissionsBackgroundAction(_controller, this));
-            }
-            else
-            {
-                AttachPermissionHandlers();
             }
         }
 
@@ -1168,6 +1162,10 @@ namespace Ch.Cyberduck.Ui.Controller
         /// <returns>True if controls are enabled for the given protocol in idle state</returns>
         private bool TogglePermissionSettings(bool stop)
         {
+            if (!stop)
+            {
+                DetachPermissionHandlers();
+            }
             Session session = _controller.getSession();
             Credentials credentials = session.getHost().getCredentials();
             bool enable = !credentials.isAnonymousLogin() && session.isUnixPermissionsSupported();
@@ -2179,8 +2177,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
                 public override void cleanup(object obj)
                 {
-                    _infoController.TogglePermissionSettings(true);
-                    _infoController.InitPermissions();
+                    _infoController.background(new FetchPermissionsBackgroundAction(_infoController._controller, _infoController));
                 }
             }
         }
