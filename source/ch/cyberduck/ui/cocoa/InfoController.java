@@ -1579,58 +1579,61 @@ public class InfoController extends ToolbarWindowController {
             controller.background(new WorkerBackgroundAction<List<Permission>>(controller, new ReadPermissionWorker(files) {
                 @Override
                 public void cleanup(List<Permission> permissions) {
-                    boolean overwrite = true;
-                    for(Permission permission : permissions) {
-                        updateCheckbox(ownerr, overwrite, permission.getOwnerPermissions()[Permission.READ]);
-                        updateCheckbox(ownerw, overwrite, permission.getOwnerPermissions()[Permission.WRITE]);
-                        updateCheckbox(ownerx, overwrite, permission.getOwnerPermissions()[Permission.EXECUTE]);
-
-                        updateCheckbox(groupr, overwrite, permission.getGroupPermissions()[Permission.READ]);
-                        updateCheckbox(groupw, overwrite, permission.getGroupPermissions()[Permission.WRITE]);
-                        updateCheckbox(groupx, overwrite, permission.getGroupPermissions()[Permission.EXECUTE]);
-
-                        updateCheckbox(otherr, overwrite, permission.getOtherPermissions()[Permission.READ]);
-                        updateCheckbox(otherw, overwrite, permission.getOtherPermissions()[Permission.WRITE]);
-                        updateCheckbox(otherx, overwrite, permission.getOtherPermissions()[Permission.EXECUTE]);
-
-                        // For more than one file selected, take into account permissions of previous file
-                        overwrite = false;
-                    }
-                    final int count = permissions.size();
-                    if(count > 1) {
-                        permissionsField.setStringValue("(" + Locale.localizedString("Multiple files") + ")");
-                    }
-                    else {
-                        for(Permission permission : permissions) {
-                            permissionsField.setStringValue(permission.toString());
-                            octalField.setStringValue(permission.getOctalString());
-                        }
-                    }
+                    initPermissions(permissions);
                     togglePermissionSettings(true);
-                }
-
-                /**
-                 *
-                 * @param checkbox The checkbox to update
-                 * @param overwrite Overwrite previous state
-                 * @param on Set the checkbox to on state
-                 */
-                private void updateCheckbox(NSButton checkbox, boolean overwrite, boolean on) {
-                    // Sets the cell's state to value, which can be NSCell.NSOnState, NSCell.NSOffState, or NSCell.MixedState.
-                    // If necessary, this method also redraws the receiver.
-                    if((checkbox.state() == NSCell.NSOffState || overwrite) && !on) {
-                        checkbox.setState(NSCell.NSOffState);
-                    }
-                    else if((checkbox.state() == NSCell.NSOnState || overwrite) && on) {
-                        checkbox.setState(NSCell.NSOnState);
-                    }
-                    else {
-                        checkbox.setState(NSCell.NSMixedState);
-                    }
-                    checkbox.setEnabled(true);
                 }
             }));
         }
+    }
+
+    private void initPermissions(List<Permission> permissions) {
+        boolean overwrite = true;
+        for(Permission permission : permissions) {
+            updateCheckbox(ownerr, overwrite, permission.getOwnerPermissions()[Permission.READ]);
+            updateCheckbox(ownerw, overwrite, permission.getOwnerPermissions()[Permission.WRITE]);
+            updateCheckbox(ownerx, overwrite, permission.getOwnerPermissions()[Permission.EXECUTE]);
+
+            updateCheckbox(groupr, overwrite, permission.getGroupPermissions()[Permission.READ]);
+            updateCheckbox(groupw, overwrite, permission.getGroupPermissions()[Permission.WRITE]);
+            updateCheckbox(groupx, overwrite, permission.getGroupPermissions()[Permission.EXECUTE]);
+
+            updateCheckbox(otherr, overwrite, permission.getOtherPermissions()[Permission.READ]);
+            updateCheckbox(otherw, overwrite, permission.getOtherPermissions()[Permission.WRITE]);
+            updateCheckbox(otherx, overwrite, permission.getOtherPermissions()[Permission.EXECUTE]);
+
+            // For more than one file selected, take into account permissions of previous file
+            overwrite = false;
+        }
+        final int count = permissions.size();
+        if(count > 1) {
+            permissionsField.setStringValue("(" + Locale.localizedString("Multiple files") + ")");
+        }
+        else {
+            for(Permission permission : permissions) {
+                permissionsField.setStringValue(permission.toString());
+                octalField.setStringValue(permission.getOctalString());
+            }
+        }
+    }
+
+    /**
+     * @param checkbox  The checkbox to update
+     * @param overwrite Overwrite previous state
+     * @param on        Set the checkbox to on state
+     */
+    private void updateCheckbox(NSButton checkbox, boolean overwrite, boolean on) {
+        // Sets the cell's state to value, which can be NSCell.NSOnState, NSCell.NSOffState, or NSCell.MixedState.
+        // If necessary, this method also redraws the receiver.
+        if((checkbox.state() == NSCell.NSOffState || overwrite) && !on) {
+            checkbox.setState(NSCell.NSOffState);
+        }
+        else if((checkbox.state() == NSCell.NSOnState || overwrite) && on) {
+            checkbox.setState(NSCell.NSOnState);
+        }
+        else {
+            checkbox.setState(NSCell.NSMixedState);
+        }
+        checkbox.setEnabled(true);
     }
 
     /**
@@ -1996,11 +1999,17 @@ public class InfoController extends ToolbarWindowController {
                 }
             }
             if(change) {
+                this.initPermissions(Collections.singletonList(permission));
                 this.changePermissions(permission, false);
             }
         }
     }
 
+    /**
+     * Permission value from input field.
+     *
+     * @return Null if invalid string has been entered entered,
+     */
     private Permission getPermissionFromOctalField() {
         if(StringUtils.isNotBlank(octalField.stringValue())) {
             if(StringUtils.length(octalField.stringValue()) == 3) {
@@ -2009,12 +2018,20 @@ public class InfoController extends ToolbarWindowController {
                 }
             }
         }
+        log.warn("Invalid octal field input:" + octalField.stringValue());
         return null;
     }
 
     @Action
     public void recursiveButtonClicked(final NSButton sender) {
-        this.changePermissions(this.getPermissionFromCheckboxes(), true);
+        Permission permission = this.getPermissionFromOctalField();
+        if(null == permission) {
+            AppKitFunctionsLibrary.beep();
+            this.initPermissions();
+        }
+        else {
+            this.changePermissions(permission, true);
+        }
     }
 
     @Action
@@ -2022,9 +2039,16 @@ public class InfoController extends ToolbarWindowController {
         if(sender.state() == NSCell.NSMixedState) {
             sender.setState(NSCell.NSOnState);
         }
-        this.changePermissions(this.getPermissionFromCheckboxes(), false);
+        Permission p = this.getPermissionFromCheckboxes();
+        this.initPermissions(Collections.singletonList(p));
+        this.changePermissions(p, false);
     }
 
+    /**
+     * Permission selection from checkboxes.
+     *
+     * @return Never null.
+     */
     private Permission getPermissionFromCheckboxes() {
         boolean[][] p = new boolean[3][3];
 
