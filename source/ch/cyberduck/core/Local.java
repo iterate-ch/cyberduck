@@ -418,8 +418,11 @@ public abstract class Local extends AbstractPath {
 
     @Override
     public void rename(AbstractPath renamed) {
-        if(_impl.renameTo(new File(this.getParent().getAbsolute(), renamed.getAbsolute()))) {
-            this.setPath(this.getParent().getAbsolute(), renamed.getAbsolute());
+        if(_impl.renameTo(new File(renamed.getAbsolute()))) {
+            this.setPath(renamed.getAbsolute());
+        }
+        else {
+            log.warn("Rename failed:" + renamed.getAbsolute());
         }
     }
 
