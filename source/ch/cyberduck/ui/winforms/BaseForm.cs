@@ -270,11 +270,10 @@ namespace Ch.Cyberduck.Ui.Winforms
         {
             // Create PersistenceHandler and load values from it
             PersistenceHandler = new PersistentFormHandler(GetType(), (int) FormWindowState.Normal, Bounds);
-            //PersistenceHandler.Load();
             //handlerReady = true;
 
             // Set size and location
-//            Bounds = PersistenceHandler.WindowBounds;
+            Bounds = PersistenceHandler.WindowBounds;
 
             // make sure we are on screen
             if (!BoundsVisible(Bounds))
