@@ -75,6 +75,10 @@ public abstract class ThirdpartyBookmarkCollection extends AbstractHostCollectio
 
     @Override
     public boolean add(Host bookmark) {
+        if(null == bookmark) {
+            log.warn("Parsing bookmark failed.");
+            return false;
+        }
         StringBuilder comment = new StringBuilder();
         if(StringUtils.isNotBlank(bookmark.getComment())) {
             comment.append(bookmark.getComment());
