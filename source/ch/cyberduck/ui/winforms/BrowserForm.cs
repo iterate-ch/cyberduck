@@ -113,6 +113,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             contextMenuStrip.Opening += (sender, args) => Commands.Validate();
             contextMenuStrip.Opening += (sender, args) => args.Cancel = !ContextMenuEnabled();
             bookmarkContextMenu.Popup += delegate { Commands.Validate(); };
+            browserContextMenu.Popup += delegate { Commands.Validate(); };
 
             editorMenuStrip.Opening += OnEditorMenuStripOnOpening;
             // add dummy entry to force the right arrow appearing in the menu
