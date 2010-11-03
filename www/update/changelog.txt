@@ -1,5 +1,10 @@
 4.0b6 [http://trac.cyberduck.ch/milestone/4.0b6]
 - [Feature] FireFTP Bookmarks Importer
+- [Feature] CrossFTP Bookmarks Importer
+- [Feature] CloudBerry Explorer for Amazon S3 Bookmarks Importer
+- [Feature] CloudBerry Explorer for Google Storage Bookmarks Importer
+- [Feature] CloudBerry Explorer for Azure Blob Storage Bookmarks Importer
+- [Bugfix] Bugfixes and usability improvements
 
 4.0b5 [http://trac.cyberduck.ch/milestone/4.0b5]
 - [Feature] FlashFXP Bookmarks Importer
