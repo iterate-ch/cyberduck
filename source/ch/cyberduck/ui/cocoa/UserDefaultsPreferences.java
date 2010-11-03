@@ -161,6 +161,7 @@ public class UserDefaultsPreferences extends Preferences {
         defaults.put("bookmark.import.flow.location", "~/Library/Application Support/Flow/Bookmarks.plist");
         defaults.put("bookmark.import.interarchy.location", "~/Library/Application Support/Interarchy/Bookmarks.plist");
         defaults.put("bookmark.import.transmit.location", "~/Library/Preferences/com.panic.Transmit.plist");
+        defaults.put("bookmark.import.crossftp.location", "~/.crossftp/sites.xml");
     }
 
     /**
