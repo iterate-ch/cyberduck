@@ -92,6 +92,7 @@ public abstract class CloudberryBookmarkCollection extends XmlBookmarkCollection
             }
             else if(name.equals("Settings")) {
                 add(current);
+                current = null;
             }
         }
     }

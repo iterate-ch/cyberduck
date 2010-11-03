@@ -74,6 +74,7 @@ public class FlashFxpBookmarkCollection extends ThirdpartyBookmarkCollection {
                     }
                     else if(StringUtils.isBlank(line)) {
                         this.add(current);
+                        current = null;
                     }
                     else {
                         if(null == current) {
