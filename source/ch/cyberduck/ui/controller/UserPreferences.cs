@@ -240,16 +240,27 @@ namespace Ch.Cyberduck.Ui.Controller
             defaults.put("application.revision", ApplicationRevision);
             defaults.put("application.language", GetDefaultLanguage());
             defaults.put("application.language.custom", false.ToString());
-            
-            defaults.put("bookmark.import.filezilla.location", Path.Combine(RoamingApplicationDataPath, "FileZilla", "sitemanager.xml"));
-            defaults.put("bookmark.import.smartftp.location", Path.Combine(RoamingApplicationDataPath, "SmartFTP", "Client 2.0", "Favorites"));
-            defaults.put("bookmark.import.flashfxp.location", Path.Combine(RoamingApplicationDataPath, "FlashFXP", "3", "Sites.dat"));
-            defaults.put("bookmark.import.wsftp.location", Path.Combine(RoamingApplicationDataPath, "Ipswitch", "WS_FTP", "Sites"));
-            defaults.put("bookmark.import.fireftp.location", Path.Combine(RoamingApplicationDataPath, "Mozilla", "Firefox", "Profiles"));
+
+            // Importers
+            defaults.put("bookmark.import.filezilla.location", Path.Combine(Environment.GetFolderPath(
+                Environment.SpecialFolder.ApplicationData), "FileZilla", "sitemanager.xml"));
+            defaults.put("bookmark.import.smartftp.location", Path.Combine(Environment.GetFolderPath(
+                Environment.SpecialFolder.ApplicationData), "SmartFTP", "Client 2.0", "Favorites"));
+            defaults.put("bookmark.import.flashfxp.location", Path.Combine(Environment.GetFolderPath(
+                Environment.SpecialFolder.ApplicationData), "FlashFXP", "3", "Sites.dat"));
+            defaults.put("bookmark.import.wsftp.location", Path.Combine(Environment.GetFolderPath(
+                Environment.SpecialFolder.ApplicationData), "Ipswitch", "WS_FTP", "Sites"));
+            defaults.put("bookmark.import.fireftp.location", Path.Combine(Environment.GetFolderPath(
+                Environment.SpecialFolder.ApplicationData), "Mozilla", "Firefox", "Profiles"));
+            defaults.put("bookmark.import.s3browser.location", Path.Combine(Environment.GetFolderPath(
+                Environment.SpecialFolder.ApplicationData), "S3Browser", "settings.ini"));
             defaults.put("bookmark.import.crossftp.location", Path.Combine(HomeFolder, ".crossftp", "sites.xml"));
-            defaults.put("bookmark.import.cloudberry.s3.location", Path.Combine(LocalApplicationDataPath, "CloudBerry S3 Explorer for Amazon S3", "settings.list"));
-            defaults.put("bookmark.import.cloudberry.google.location", Path.Combine(LocalApplicationDataPath, "CloudBerry Explorer for Google Storage", "settings.list"));
-            defaults.put("bookmark.import.cloudberry.azure.location", Path.Combine(LocalApplicationDataPath, "CloudBerry Explorer for Azure Blob Storage", "settings.list"));
+            defaults.put("bookmark.import.cloudberry.s3.location", Path.Combine(Environment.GetFolderPath(
+                Environment.SpecialFolder.LocalApplicationData), "CloudBerry S3 Explorer for Amazon S3", "settings.list"));
+            defaults.put("bookmark.import.cloudberry.google.location", Path.Combine(Environment.GetFolderPath(
+                Environment.SpecialFolder.LocalApplicationData), "CloudBerry Explorer for Google Storage", "settings.list"));
+            defaults.put("bookmark.import.cloudberry.azure.location", Path.Combine(Environment.GetFolderPath(
+                Environment.SpecialFolder.LocalApplicationData), "CloudBerry Explorer for Azure Blob Storage", "settings.list"));
 
             base.setDefaults();
 
