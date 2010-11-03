@@ -760,7 +760,7 @@ public class MainController extends BundleController implements NSApplication.De
 
     private List<ThirdpartyBookmarkCollection> getThirdpartyBookmarks() {
         return Arrays.asList(new TransmitBookmarkCollection(), new FilezillaBookmarkCollection(), new FetchBookmarkCollection(),
-                new FlowBookmarkCollection(), new InterarchyBookmarkCollection(), new CrossFtpBookmarkCollection());
+                new FlowBookmarkCollection(), new InterarchyBookmarkCollection(), new CrossFtpBookmarkCollection(), new FireFtpBookmarkCollection());
     }
 
     /**
