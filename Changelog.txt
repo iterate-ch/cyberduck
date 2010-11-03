@@ -8,6 +8,12 @@ Changelog. Last modified: $Date$
 - [Feature] Version for Microsoft Windows XP, Windows Vista & Windows 7.
 - [Feature] Connecting to Windows Azure Blob Storage (Azure) (#3938)
 - [Feature] CloudFront CDN invalidation requests (S3) (#5197)
+- [Feature] FireFTP Bookmarks Importer
+- [Feature] CrossFTP Bookmarks Importer
+- [Feature] S3Browser Bookmarks Importer (Windows)
+- [Feature] CloudBerry Explorer for Amazon S3 Bookmarks Importer (Windows)
+- [Feature] CloudBerry Explorer for Google Storage Bookmarks Importer (Windows)
+- [Feature] CloudBerry Explorer for Azure Blob Storage Bookmarks Importer (Windows)
 - [Bugfix] Support for S3Fox directory placeholders (S3)
 - [Bugfix] Support for Google Storage Console directory placeholders (S3)
 - [Bugfix] Support for s3sync.rb directory placeholders (#5374) (S3)
