@@ -383,7 +383,7 @@ namespace Ch.Cyberduck.Core
             return new List<ThirdpartyBookmarkCollection> {new FilezillaBookmarkCollection(),
                 new SmartFtpBookmarkCollection(), new FlashFxpBookmarkCollection(), new WsFtpBookmarkCollection(),
                 new FireFtpBookmarkCollection(), new CrossFtpBookmarkCollection(), new CloudberryS3BookmarkCollection(),
-                new CloudberryGoogleBookmarkCollection(), new CloudberryAzureBookmarkCollection()};
+                new CloudberryGoogleBookmarkCollection(), new CloudberryAzureBookmarkCollection(), new S3BrowserBookmarkCollection()};
         }
 
         /// <summary>
