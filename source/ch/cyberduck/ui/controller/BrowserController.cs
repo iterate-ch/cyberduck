@@ -405,7 +405,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public void collectionItemChanged(object obj)
         {
-//            PopulateQuickConnect();
+            PopulateQuickConnect();
         }
 
         public void log(bool request, string transcript)
