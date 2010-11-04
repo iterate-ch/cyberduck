@@ -102,7 +102,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 if (path.attributes().isDirectory())
                 {
-                    return IconForFolder(IconForName("aliasbadge", size));
+                    return IconForFolder(IconForName("aliasbadge"), size);
                 }
                 Bitmap symlink = IconForFilename(path.getName(), size);
                 return OverlayImages(symlink, IconForName("aliasbadge", size));
@@ -129,21 +129,21 @@ namespace Ch.Cyberduck.Ui.Controller
                     if (!path.attributes().getPermission().isExecutable()
                         || (path.isCached() && !path.cache().get(path.getReference()).attributes().isReadable()))
                     {
-                        return IconForFolder(IconForName("privatefolderbadge"));
+                        return IconForFolder(IconForName("privatefolderbadge"), size);
                     }
                     if (!path.attributes().getPermission().isReadable())
                     {
                         if (path.attributes().getPermission().isWritable())
                         {
-                            return IconForFolder(IconForName("dropfolderbadge"));
+                            return IconForFolder(IconForName("dropfolderbadge"), size);
                         }
                     }
                     if (!path.attributes().getPermission().isWritable())
                     {
-                        return IconForFolder(IconForName("readonlyfolderbadge"));
+                        return IconForFolder(IconForName("readonlyfolderbadge"), size);
                     }
                 }
-                return IconForFolder();
+                return IconForFolder(size);
             }
             return ResizeImage(IconForName("notfound"), size);
         }
@@ -204,22 +204,23 @@ namespace Ch.Cyberduck.Ui.Controller
         /// </summary>
         /// <param name="overlay"></param>
         /// <returns></returns>
-        public Bitmap IconForFolder(Bitmap overlay)
+        public Bitmap IconForFolder(Bitmap overlay, IconSize size)
         {
-            return OverlayImages(IconForFolder(), overlay);
+            return OverlayImages(IconForFolder(size), overlay);
         }
 
         /// <summary>
         /// Return our standard folder image
         /// </summary>
         /// <returns></returns>
-        public Bitmap IconForFolder()
+        public Bitmap IconForFolder(IconSize size)
         {
-            Icon icon = _iconCache.Get("folder", 16);
+            int s = size == IconSize.Small ? 16 : 32;
+            Icon icon = _iconCache.Get("folder", s);
             if (null == icon)
             {
-                icon = GetFolderIcon(IconSize.Small, FolderType.Open);
-                _iconCache.Put("folder", icon, 16);
+                icon = GetFolderIcon(size, FolderType.Open);
+                _iconCache.Put("folder", icon, s);
             }
             return icon.ToBitmap();
         }
