@@ -109,7 +109,7 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             if (path.attributes().isFile())
             {
-                if (String.IsNullOrEmpty(path.getExtension()) && null != path.attributes().getPermission())
+                if (String.IsNullOrEmpty(path.getExtension()))
                 {
                     if (path.attributes().getPermission().isExecutable())
                     {
@@ -124,7 +124,7 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             if (path.attributes().isDirectory())
             {
-                if (OverlayFolderImage && null != path.attributes().getPermission())
+                if (OverlayFolderImage)
                 {
                     if (!path.attributes().getPermission().isExecutable()
                         || (path.isCached() && !path.cache().get(path.getReference()).attributes().isReadable()))
