@@ -24,12 +24,15 @@ import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.serializer.Serializer;
 import ch.cyberduck.ui.growl.Growl;
 
+import org.apache.log4j.Logger;
+
 import java.util.*;
 
 /**
  * @version $Id$
  */
 public class SyncTransfer extends Transfer {
+    private static Logger log = Logger.getLogger(SyncTransfer.class);
 
     public SyncTransfer(Path root) {
         super(root);
@@ -65,6 +68,7 @@ public class SyncTransfer extends Transfer {
 
     @Override
     protected void normalize() {
+        log.debug("normalize");
         _delegateUpload.normalize();
         _delegateDownload.normalize();
     }
@@ -217,6 +221,7 @@ public class SyncTransfer extends Transfer {
 
     @Override
     public AttributedList<Path> children(final Path parent) {
+        log.debug("children:" + parent);
         final Set<Path> children = new HashSet<Path>();
         if(parent.exists()) {
             children.addAll(_delegateDownload.children(parent));
@@ -319,17 +324,18 @@ public class SyncTransfer extends Transfer {
     }
 
     /**
-     * @param p
+     * @param file
      * @see #compare(Path)
      */
     @Override
-    protected void transfer(final Path p) {
-        final Comparison compare = this.compare(p);
+    protected void transfer(final Path file) {
+        log.debug("transfer:" + file);
+        final Comparison compare = this.compare(file);
         if(compare.equals(COMPARISON_REMOTE_NEWER)) {
-            _delegateDownload.transfer(p);
+            _delegateDownload.transfer(file);
         }
         else if(compare.equals(COMPARISON_LOCAL_NEWER)) {
-            _delegateUpload.transfer(p);
+            _delegateUpload.transfer(file);
         }
     }
 

@@ -36,7 +36,7 @@ import java.util.*;
  * @version $Id$
  */
 public abstract class Transfer implements Serializable {
-    protected static Logger log = Logger.getLogger(Transfer.class);
+    private static Logger log = Logger.getLogger(Transfer.class);
 
     /**
      * Files and folders initially selected to be part of this transfer
@@ -203,6 +203,7 @@ public abstract class Transfer implements Serializable {
     }
 
     protected void fireTransferWillStart() {
+        log.debug("fireTransferWillStart");
         canceled = false;
         running = true;
         queued = false;
@@ -212,6 +213,7 @@ public abstract class Transfer implements Serializable {
     }
 
     public void fireTransferQueued() {
+        log.debug("fireTransferQueued");
         final Session session = this.getSession();
         Growl.instance().notify("Transfer queued", session.getHost().getHostname());
         session.message(Locale.localizedString("Maximum allowed connections exceeded. Waiting", "Status"));
@@ -222,6 +224,7 @@ public abstract class Transfer implements Serializable {
     }
 
     public void fireTransferResumed() {
+        log.debug("fireTransferResumed");
         queued = false;
         for(TransferListener listener : listeners.toArray(new TransferListener[listeners.size()])) {
             listener.transferResumed();
@@ -229,6 +232,7 @@ public abstract class Transfer implements Serializable {
     }
 
     protected void fireTransferDidEnd() {
+        log.debug("fireTransferDidEnd");
         running = false;
         queued = false;
         timestamp = new Date();
@@ -424,6 +428,7 @@ public abstract class Transfer implements Serializable {
      */
     private void transfer(final Path p, final TransferFilter filter) {
         if(!this.isIncluded(p)) {
+            log.info("Not included in transfer:" + p);
             p.status().setComplete(true);
             return;
         }
@@ -474,11 +479,11 @@ public abstract class Transfer implements Serializable {
     /**
      * The actual transfer implementation
      *
-     * @param p
+     * @param file
      * @see ch.cyberduck.core.Path#download()
      * @see ch.cyberduck.core.Path#upload()
      */
-    protected abstract void transfer(final Path p);
+    protected abstract void transfer(final Path file);
 
     /**
      * @param options
@@ -487,11 +492,13 @@ public abstract class Transfer implements Serializable {
         final Session session = this.getSession();
         try {
             try {
+                log.debug("Checking connnection");
                 // We manually open the connection here first as otherwise
                 // every transfer will try again if it should fail
                 session.check();
             }
             catch(IOException e) {
+                log.warn(e.getMessage());
                 return;
             }
 
@@ -502,6 +509,7 @@ public abstract class Transfer implements Serializable {
             // Determine the filter to match files against
             final TransferAction action = this.action(options.resumeRequested, options.reloadRequested);
             if(action.equals(TransferAction.ACTION_CANCEL)) {
+                log.info("Transfer canceled by user:" + this.toString());
                 this.cancel();
                 return;
             }
@@ -552,11 +560,13 @@ public abstract class Transfer implements Serializable {
         }
 
         if(!this.isIncluded(p)) {
+            log.info("Not included in transfer:" + p);
             return;
         }
 
         // Only prepare the path it will be actually transferred
         if(filter.accept(p)) {
+            log.info("Accepted in transfer:" + p);
             filter.prepare(p);
         }
 
@@ -574,12 +584,18 @@ public abstract class Transfer implements Serializable {
      */
     private boolean check() {
         log.debug("check:" + this.toString());
-        if(!this.getSession().isConnected()) {
+        boolean connected = this.getSession().isConnected();
+        if(!connected) {
             // Bail out if no more connected
+            log.warn("Disconnected transfer in progress:" + this.toString());
             return false;
         }
         // Bail out if canceled
-        return !this.isCanceled();
+        boolean canceled = this.isCanceled();
+        if(canceled) {
+            log.warn("Canceled transfer in progress:" + this.toString());
+        }
+        return !canceled;
     }
 
     /**
@@ -638,6 +654,7 @@ public abstract class Transfer implements Serializable {
     }
 
     private void queue() {
+        log.debug("queue");
         final TransferCollection q = TransferCollection.defaultCollection();
         // This transfer should respect the settings for maximum number of transfers
         if(q.numberOfRunningTransfers() - q.numberOfQueuedTransfers() - 1

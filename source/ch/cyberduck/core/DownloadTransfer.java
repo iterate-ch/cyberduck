@@ -25,6 +25,7 @@ import ch.cyberduck.ui.growl.Growl;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
 import java.text.MessageFormat;
 import java.util.Iterator;
@@ -36,6 +37,7 @@ import java.util.regex.PatternSyntaxException;
  * @version $Id$
  */
 public class DownloadTransfer extends Transfer {
+    private static Logger log = Logger.getLogger(DownloadTransfer.class);
 
     public DownloadTransfer(Path root) {
         super(root);
@@ -51,6 +53,7 @@ public class DownloadTransfer extends Transfer {
 
     @Override
     protected void normalize() {
+        log.debug("normalize");
         final List<Path> normalized = new Collection<Path>();
         for(Path download : this.getRoots()) {
             if(this.isCanceled()) {
@@ -186,6 +189,7 @@ public class DownloadTransfer extends Transfer {
 
     @Override
     public AttributedList<Path> children(final Path parent) {
+        log.debug("children:" + parent);
         final AttributedList<Path> list = parent.children(childFilter);
         for(Path download : list) {
             // Change download path relative to parent local folder
@@ -334,42 +338,43 @@ public class DownloadTransfer extends Transfer {
     }
 
     @Override
-    protected void transfer(final Path p) {
-        final Local local = p.getLocal();
-        if(p.attributes().isFile()) {
-            p.download(bandwidth, new AbstractStreamListener() {
+    protected void transfer(final Path file) {
+        log.debug("transfer:" + file);
+        final Local local = file.getLocal();
+        if(file.attributes().isFile()) {
+            file.download(bandwidth, new AbstractStreamListener() {
                 @Override
                 public void bytesReceived(long bytes) {
                     transferred += bytes;
                 }
             });
         }
-        else if(p.attributes().isDirectory()) {
+        else if(file.attributes().isDirectory()) {
             local.mkdir(true);
         }
         if(Preferences.instance().getBoolean("queue.download.changePermissions")) {
             Permission permission = Permission.EMPTY;
             if(Preferences.instance().getBoolean("queue.download.permissions.useDefault")) {
-                if(p.attributes().isFile()) {
+                if(file.attributes().isFile()) {
                     permission = new Permission(
                             Preferences.instance().getInteger("queue.download.permissions.file.default"));
                 }
-                if(p.attributes().isDirectory()) {
+                if(file.attributes().isDirectory()) {
                     permission = new Permission(
                             Preferences.instance().getInteger("queue.download.permissions.folder.default"));
                 }
             }
             else {
-                permission = p.attributes().getPermission();
+                permission = file.attributes().getPermission();
             }
             if(!Permission.EMPTY.equals(permission)) {
-                if(p.attributes().isDirectory()) {
+                if(file.attributes().isDirectory()) {
                     // Make sure we can read & write files to directory created.
                     permission.getOwnerPermissions()[Permission.READ] = true;
                     permission.getOwnerPermissions()[Permission.WRITE] = true;
                     permission.getOwnerPermissions()[Permission.EXECUTE] = true;
                 }
-                if(p.attributes().isFile()) {
+                if(file.attributes().isFile()) {
                     // Make sure the owner can always read and write.
                     permission.getOwnerPermissions()[Permission.READ] = true;
                     permission.getOwnerPermissions()[Permission.WRITE] = true;
@@ -379,8 +384,8 @@ public class DownloadTransfer extends Transfer {
             }
         }
         if(Preferences.instance().getBoolean("queue.download.preserveDate")) {
-            if(p.attributes().getModificationDate() != -1) {
-                long timestamp = p.attributes().getModificationDate();
+            if(file.attributes().getModificationDate() != -1) {
+                long timestamp = file.attributes().getModificationDate();
                 log.info("Updating timestamp:" + local + "," + timestamp);
                 local.writeTimestamp(-1, timestamp, -1);
             }

@@ -25,6 +25,7 @@ import ch.cyberduck.ui.growl.Growl;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
 import java.text.MessageFormat;
 import java.util.Iterator;
@@ -37,6 +38,7 @@ import java.util.regex.PatternSyntaxException;
  * @version $Id$
  */
 public class UploadTransfer extends Transfer {
+    private static Logger log = Logger.getLogger(UploadTransfer.class);
 
     public UploadTransfer(Path root) {
         super(root);
@@ -66,6 +68,7 @@ public class UploadTransfer extends Transfer {
 
     @Override
     protected void normalize() {
+        log.debug("normalize");
         final List<Path> normalized = new Collection<Path>();
         for(Path upload : this.getRoots()) {
             if(this.isCanceled()) {
@@ -184,6 +187,7 @@ public class UploadTransfer extends Transfer {
 
     @Override
     public AttributedList<Path> children(final Path parent) {
+        log.debug("children:" + parent);
         if(!this.cache().containsKey(parent.<Object>getReference())) {
             if(!parent.getLocal().exists()) {
                 // Cannot fetch file listing of non existant file
@@ -365,6 +369,7 @@ public class UploadTransfer extends Transfer {
 
     @Override
     protected void transfer(Path file) {
+        log.debug("transfer:" + file);
         Permission perm = Permission.EMPTY;
         if(file.attributes().isFile()) {
             if(this.getSession().isUnixPermissionsSupported()) {
