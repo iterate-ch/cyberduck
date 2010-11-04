@@ -153,10 +153,11 @@
   <ItemGroup>
     <Compile Include="core\aquaticprime\LicenseVerifier.cs" />
     <Compile Include="core\aquaticprime\LicenseImpl.cs" />
+    <Compile Include="core\CrashReporter.cs" />
+    <Compile Include="core\URLSchemeHandlerConfiguration.cs" />
     <Compile Include="core\collections\IndexedLinkedList.cs" />
     <Compile Include="core\collections\LRUCache.cs" />
     <Compile Include="core\Commands.cs" />
-    <Compile Include="core\DelegateOutputStream.cs" />
     <Compile Include="core\DragDropLib.cs" />
     <Compile Include="core\GlobalKeyboardHook.cs" />
     <Compile Include="core\HostnameVerifier.cs" />

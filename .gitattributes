@@ -2003,6 +2003,7 @@ source/ch/cyberduck/core/AbstractLoginController.java -text
 source/ch/cyberduck/core/AbstractRendezvous.java -text
 source/ch/cyberduck/core/CollectionListener.java -text
 source/ch/cyberduck/core/Commands.cs -text
+source/ch/cyberduck/core/CrashReporter.cs -text
 source/ch/cyberduck/core/DragDropLib.cs -text
 source/ch/cyberduck/core/EditableCollection.java -text
 source/ch/cyberduck/core/FolderBookmarkCollection.java -text
@@ -2030,6 +2031,7 @@ source/ch/cyberduck/core/SerializableDictionary.cs -text
 source/ch/cyberduck/core/Speedometer.java -text
 source/ch/cyberduck/core/StructureMapBootstrapper.cs -text
 source/ch/cyberduck/core/SystemConfigurationReachability.m -text
+source/ch/cyberduck/core/URLSchemeHandlerConfiguration.cs -text
 source/ch/cyberduck/core/Utils.cs -text
 source/ch/cyberduck/core/VirtualFileDataObject.cs -text
 source/ch/cyberduck/core/aquaticprime/LicenseImpl.cs -text

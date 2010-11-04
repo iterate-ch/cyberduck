@@ -33,7 +33,6 @@ using Ch.Cyberduck.Ui.Controller.Growl;
 using Ch.Cyberduck.Ui.Winforms;
 using Ch.Cyberduck.Ui.Winforms.Serializer;
 using Ch.Cyberduck.Ui.Winforms.Taskdialog;
-using ExceptionReporting.Core;
 using Microsoft.VisualBasic.ApplicationServices;
 using org.apache.log4j;
 using HostKeyController = Ch.Cyberduck.Ui.Controller.HostKeyController;
@@ -137,36 +136,7 @@ namespace Ch.Cyberduck.Core
 
         public static void ExceptionHandler(object sender, ThreadExceptionEventArgs e)
         {
-            string report = WriteCrashReport(e.Exception);
-
-            int result = cTaskDialog.ShowCommandBox("Crash",
-                                                    Locale.localizedString("Do you want to report the last crash?",
-                                                                           "Crash"),
-                                                    Locale.localizedString(
-                                                        "The application %@ has recently crashed. To help improve it, you can send the crash log to the author.",
-                                                        "Crash").Replace("%@",
-                                                                         Preferences.instance().getProperty(
-                                                                             "application.name")),
-                                                    null, null, null, Locale.localizedString("Send", "Crash") + "|" +
-                                                                      Locale.localizedString("Don't Send", "Crash"),
-                                                    false,
-                                                    eSysIcons.Error, eSysIcons.Error
-                );
-
-            if (0 == result)
-            {
-                Dictionary<string, object> postParameters = new Dictionary<string, object>
-                                                                {{"crashlog", report}};
-                string revision = Preferences.instance().getProperty("application.revision");
-
-                //this might take some time as the WebRequest tries to detect the proxy settings first
-                Utils.MultipartFormDataPost(
-                    Preferences.instance().getProperty("website.crash") + String.Format("?revision={0}&os={1}",
-                                                                                        revision, Environment.OSVersion),
-                    String.Format("{0} ({1})", Preferences.instance().getProperty("application.name"), revision),
-                    postParameters);
-            }
-
+            CrashReporter.Instance.Write(e.Exception);
             Environment.Exit(1);
         }
 
@@ -628,28 +598,7 @@ namespace Ch.Cyberduck.Core
 
         public static void UnhandledExceptionHandler(object sender, UnhandledExceptionEventArgs e)
         {
-            WriteCrashReport(e.ExceptionObject as Exception);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="e"></param>
-        /// <returns>Crash report as string</returns>
-        private static string WriteCrashReport(Exception e)
-        {
-            ExceptionReportInfo info = new ExceptionReportInfo {MainException = e};
-            ExceptionReportGenerator reportGenerator = new ExceptionReportGenerator(info);
-            ExceptionReport report = reportGenerator.CreateExceptionReport();
-
-            string crashDir = Path.Combine(Preferences.instance().getProperty("application.support.path"),
-                                           "CrashReporter");
-            Directory.CreateDirectory(crashDir);
-            using (StreamWriter outfile = new StreamWriter(Path.Combine(crashDir, DateTime.Now.Ticks + ".txt")))
-            {
-                outfile.Write(report.ToString());
-            }
-            return report.ToString();
+            CrashReporter.Instance.Write(e.ExceptionObject as Exception);
         }
     }
 }

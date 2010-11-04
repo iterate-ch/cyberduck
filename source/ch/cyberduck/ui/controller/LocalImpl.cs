@@ -25,8 +25,10 @@ using java.util;
 using org.apache.commons.io;
 using org.apache.log4j;
 using File = java.io.File;
+using Microsoft.Win32;
 using Locale = ch.cyberduck.core.i18n.Locale;
 using Path = System.IO.Path;
+using Ch.Cyberduck.Core.Collections;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -35,6 +37,8 @@ namespace Ch.Cyberduck.Ui.Controller
         protected const int ErrorAccessDenied = 5;
         protected const int ErrorFileNotFound = 2;
         private static readonly Logger Log = Logger.getLogger(typeof (LocalImpl).Name);
+
+        private static readonly LRUCache<string, string> defaultApplicationCache = new LRUCache<string, string>(100);
 
         public LocalImpl(string parent, string name) : base(parent, name)
         {
@@ -56,10 +60,144 @@ namespace Ch.Cyberduck.Ui.Controller
             ;
         }
 
+        /// <summary>
+        /// Return with Explorer registered application by file's extension (for editing)
+        /// </summary>
+        /// <param name="filename"></param>
+        /// <param name="command"></param>
+        /// <returns></returns>
+        /// <see cref="http://windevblog.blogspot.com/2008/09/get-default-application-in-windows-xp.html"/>
+        /// <see cref="http://msdn.microsoft.com/en-us/library/cc144154%28VS.85%29.aspx"/>
+        private string GetExplorerRegisteredApplication(string filename)
+        {
+            string command = null;
+            string strExt = Utils.GetSafeExtension(filename);
+
+            try
+            {
+                strExt = "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FileExts\\" + strExt;
+                using (RegistryKey oApplication = Registry.CurrentUser.OpenSubKey(strExt))
+                {
+                    if (null != oApplication)
+                    {
+                        //for Windows XP and earlier
+                        string strExe = (string)oApplication.GetValue("Application");
+
+                        if (string.IsNullOrEmpty(strExe))
+                        {
+                            //for Vista and later there might be a UserChoice entry
+                            using (RegistryKey userChoice = oApplication.OpenSubKey("UserChoice"))
+                            {
+                                if (null != userChoice)
+                                {
+                                    string progId = (string)userChoice.GetValue("Progid");
+                                    if (!string.IsNullOrEmpty(progId))
+                                    {
+                                        using (RegistryKey p = Registry.ClassesRoot.OpenSubKey(progId))
+                                        {
+                                            command = GetEditCommand(p);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                if (!string.IsNullOrEmpty(command))
+                {
+                    command = Utils.ExtractExeFromCommand(command);
+                }
+                return command;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Extract edit command, fallback is the open command
+        /// </summary>
+        /// <param name="root">expected substructure shell/edit/command or shell/open/command</param>
+        /// <returns>null if not found</returns>
+        private string GetEditCommand(RegistryKey root)
+        {
+            if (null != root)
+            {
+                using (var editSk = root.OpenSubKey("shell\\edit\\command"))
+                {
+                    if (null != editSk)
+                    {
+                        return (string)editSk.GetValue("");
+                    }
+
+                    using (var openSk = root.OpenSubKey("shell\\open\\command"))
+                    {
+                        if (null != openSk)
+                        {
+                            return (string)openSk.GetValue("");
+                        }
+                    }
+                }
+            }
+            return null;
+        }
+
         public override string getDefaultApplication()
         {
-            //Todo. Move here.
-            return Utils.GetRegisteredDefaultApplication(getAbsolute());
+            //see http://windevblog.blogspot.com/2008/09/get-default-application-in-windows-xp.html
+            string strExt = Utils.GetSafeExtension(this.getName());
+            string command;
+            Log.debug(string.Format("GetRegisteredDefaultApplication for filname {0}", this.getName()));
+
+            if (defaultApplicationCache.TryGetValue(strExt, out command))
+            {
+                Log.debug(string.Format("Return cached default application {0} for extension {1}", command, strExt));
+                return command;
+            }
+
+            command = GetExplorerRegisteredApplication(this.getName());
+            if (null != command)
+            {
+                defaultApplicationCache.Add(strExt, command);
+                return command;
+            }
+
+            try
+            {
+                string strProgID;
+                using (var extSubKey = Registry.ClassesRoot.OpenSubKey(strExt))
+                {
+                    if (null != extSubKey)
+                    {
+                        strProgID = (string)extSubKey.GetValue(null);
+
+                        if (null != strProgID)
+                        {
+                            // Get associated application and its edit command
+                            using (var oProgId = Registry.ClassesRoot.OpenSubKey(strProgID))
+                            {
+                                if (null != oProgId)
+                                {
+                                    string strExe = GetEditCommand(oProgId.OpenSubKey(strProgID));
+
+                                    if (!string.IsNullOrEmpty(strExe))
+                                    {
+                                        command = Utils.ExtractExeFromCommand(strExe);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    defaultApplicationCache.Add(strExt, command);
+                    return command;
+                }
+            }
+            catch (Exception)
+            {
+                defaultApplicationCache.Add(strExt, command);
+                return command;
+            }
         }
 
         public override char getPathDelimiter()

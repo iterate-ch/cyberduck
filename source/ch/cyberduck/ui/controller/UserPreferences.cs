@@ -180,7 +180,7 @@ namespace Ch.Cyberduck.Ui.Controller
                             "ko".Equals(cand) ||
                             "ka".Equals(cand) ||
                             "zh-CN".Equals(cand) ||
-                            "zh-TW".Equals(cand)) && !Utils.HasEastAsianFontSupport())
+                            "zh-TW".Equals(cand)) && !this.HasEastAsianFontSupport())
                         {
                             continue;
                         }
@@ -189,6 +189,17 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
             }
             return Utils.ConvertToJavaList(distinctNames);
+        }
+
+        private bool HasEastAsianFontSupport()
+        {
+            if (Utils.IsVistaOrLater)
+            {
+                return true;
+            }
+            return
+                Convert.ToBoolean(NativeMethods.IsValidLocale(CultureInfo.CreateSpecificCulture("zh").LCID,
+                                                              NativeConstants.LCID_INSTALLED));
         }
 
         public object GetSpecialObject(string property)
