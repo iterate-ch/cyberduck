@@ -68,7 +68,8 @@ namespace Ch.Cyberduck.Ui.Winforms
 
             if (!DesignMode)
             {
-                vistaMenu1.SetImage(historyMainMenuItem, ResourcesBundle.history);
+                vistaMenu1.SetImage(newBookmarkMainMenuItem, IconCache.Instance.IconForName("bookmark", 16));
+                vistaMenu1.SetImage(historyMainMenuItem, IconCache.Instance.IconForName("history", 16));
                 vistaMenu1.SetImage(bonjourMainMenuItem, IconCache.Instance.IconForName("rendezvous", 16));
                 vistaMenu1.SetImage(transfersMainMenuItem, IconCache.Instance.IconForName("queue", 16));
 
@@ -1340,6 +1341,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             vistaMenu1.SetImage(refreshMainMenuItem, IconCache.Instance.IconForName("reload", 16));
             vistaMenu1.SetImage(refreshBrowserContextMenuItem, IconCache.Instance.IconForName("reload", 16));
             refreshContextToolStripMenuItem.Image = IconCache.Instance.IconForName("reload", 16);
+            vistaMenu1.SetImage(stopMainMenuItem, IconCache.Instance.IconForName("stop", 16));
             vistaMenu1.SetImage(disconnectMainMenuItem, IconCache.Instance.IconForName("eject", 16));
         }
 
@@ -1746,16 +1748,22 @@ namespace Ch.Cyberduck.Ui.Winforms
             //todo correct application icon (move SetImage to PopUp handler)
             vistaMenu1.SetImage(editMainMenuItem, IconCache.Instance.IconForName("pencil", 16));
             vistaMenu1.SetImage(editBrowserContextMenuItem, IconCache.Instance.IconForName("pencil", 16));
-            editContextToolStripMenuItem.Image = IconCache.Instance.IconForName("pencil", 16);            
+            editContextToolStripMenuItem.Image = IconCache.Instance.IconForName("pencil", 16);
             vistaMenu1.SetImage(deleteMainMenuItem, IconCache.Instance.IconForName("delete", 16));
             vistaMenu1.SetImage(deleteBrowserContextMenuItem, IconCache.Instance.IconForName("delete", 16));
             deleteContextToolStripMenuItem.Image = IconCache.Instance.IconForName("delete", 16);            
+            vistaMenu1.SetImage(newFolderMainMenuItem, IconCache.Instance.IconForName("newfolder", 16));
+            vistaMenu1.SetImage(newFolderBrowserContextMenuItem, IconCache.Instance.IconForName("newfolder", 16));
+            newFolderContextToolStripMenuItem.Image = IconCache.Instance.IconForName("newfolder", 16);            
             vistaMenu1.SetImage(downloadMainMenuItem, IconCache.Instance.IconForName("download", 16));
             vistaMenu1.SetImage(downloadBrowserContextMenuItem, IconCache.Instance.IconForName("download", 16));
             downloadContextToolStripMenuItem.Image = IconCache.Instance.IconForName("download", 16);
             vistaMenu1.SetImage(uploadMainMenuItem, IconCache.Instance.IconForName("upload", 16));
             vistaMenu1.SetImage(uploadBrowserContextMenuItem, IconCache.Instance.IconForName("upload", 16));
             uploadContextToolStripMenuItem.Image = IconCache.Instance.IconForName("upload", 16);
+            vistaMenu1.SetImage(synchronizeMainMenuItem, IconCache.Instance.IconForName("sync", 16));
+            vistaMenu1.SetImage(synchronizeBrowserContextMenuItem, IconCache.Instance.IconForName("sync", 16));
+            synchronizeContextToolStripMenuItem.Image = IconCache.Instance.IconForName("sync", 16);
         }
 
         private void SaveUiSettings()
