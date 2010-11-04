@@ -21,7 +21,7 @@ using System.Drawing;
 using System.Security.Permissions;
 using System.Windows.Forms;
 using Ch.Cyberduck.Core;
-using Ch.Cyberduck.Ui.Controller;
+using ch.cyberduck.core.i18n;
 using Ch.Cyberduck.Ui.Winforms.Controls.Design;
 
 namespace Ch.Cyberduck.Ui.Winforms.Controls
@@ -36,7 +36,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Controls
     public partial class SearchTextBox : Control
     {
         //todo Localize
-        private const string DefaultInactiveText = "Search";
+        private string DefaultInactiveText = Locale.localizedString("Search");
         private const int DefaultTimerInterval = 500;
         private readonly Timer _timer;
 
