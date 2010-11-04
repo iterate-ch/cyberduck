@@ -1,4 +1,4 @@
-﻿// 
+﻿//
 // Copyright (c) 2010 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
@@ -244,11 +244,6 @@ namespace Ch.Cyberduck.Ui.Controller
         private void View_ChangedPathEvent()
         {
             UpdateUrlLabel();
-            if (String.IsNullOrEmpty(View.Path))
-            {
-                return;
-            }
-            View.Path = Path.normalize(View.Path, false);
         }
 
         private void View_ChangedEncodingEvent()

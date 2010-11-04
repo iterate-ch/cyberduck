@@ -351,10 +351,6 @@ public class ConnectionController extends SheetController {
 
     public void pathInputDidEndEditing(final NSNotification sender) {
         this.updateURLLabel();
-        if(StringUtils.isBlank(pathField.stringValue())) {
-            return;
-        }
-        this.pathField.setStringValue(Path.normalize(pathField.stringValue(), false));
     }
 
     @Outlet
@@ -600,7 +596,7 @@ public class ConnectionController extends SheetController {
     public void helpButtonClicked(final ID sender) {
         final Protocol protocol = Protocol.forName(protocolPopup.selectedItem().representedObject());
         openUrl(Preferences.instance().getProperty("website.help")
-                        + "/" + protocol.getIdentifier());
+                + "/" + protocol.getIdentifier());
     }
 
     @Override
