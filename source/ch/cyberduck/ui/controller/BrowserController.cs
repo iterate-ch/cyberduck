@@ -1042,8 +1042,6 @@ namespace Ch.Cyberduck.Ui.Controller
             View.SelectBookmark(item);
             View.EnsureBookmarkVisible(item);
             BookmarkController.Factory.Create(item).View.Show(View);
-
-            //todo prüfen, ob Bookmark auch gespeichert wird            
         }
 
         private void View_DeleteBookmark()
@@ -2999,8 +2997,6 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 AsyncDelegate mainAction = delegate
                                                {
-                                                   //todo why??
-                                                   //getSelectedBrowserView().setNeedsDisplay();
                                                    _controller.View.RefreshBookmark(_controller.getSession().getHost());
                                                    ch.cyberduck.ui.growl.Growl.instance().notify("Connection opened",
                                                                                                  _host.getHostname());
@@ -3606,9 +3602,6 @@ namespace Ch.Cyberduck.Ui.Controller
 
             public override void cleanup()
             {
-                //todo ???
-                //inspector = null;
-
                 // Clear the cache on the main thread to make sure the browser model is not in an invalid state
                 _controller._session.cache().clear();
                 _controller._session.getHost().getCredentials().setPassword(null);

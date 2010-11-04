@@ -328,7 +328,6 @@ namespace Ch.Cyberduck.Ui.Controller
         private void View_ChangedUsernameEvent()
         {
             UpdateUrlLabel();
-            //todo check if this is an expensive operation as in the java version this is done after leaving the field
             ReadPasswordFromKeychain();
         }
 
