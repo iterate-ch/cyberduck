@@ -35,7 +35,6 @@ namespace Ch.Cyberduck.Ui.Winforms.Controls
     [DefaultProperty("Text")]
     public partial class SearchTextBox : Control
     {
-        //todo Localize
         private string DefaultInactiveText = Locale.localizedString("Search");
         private const int DefaultTimerInterval = 500;
         private readonly Timer _timer;
@@ -205,7 +204,6 @@ namespace Ch.Cyberduck.Ui.Winforms.Controls
 
         /// <summary>Gets or sets the text that is shown on top of the text box when the user hasn't entered any text.</summary>
         [Category("Appearance")]
-        [DefaultValue(DefaultInactiveText)]
         public string InactiveText
         {
             get { return _inactiveText; }
