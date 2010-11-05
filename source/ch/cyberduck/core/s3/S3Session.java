@@ -639,7 +639,7 @@ public class S3Session extends CloudHTTP3Session {
                 keys.addAll(this.getInvalidationKeys(file.<Path>children()));
             }
             else {
-                keys.add(Path.encode(((S3Path) file).getKey()));
+                keys.add(((S3Path) file).getKey());
             }
         }
         return keys;
