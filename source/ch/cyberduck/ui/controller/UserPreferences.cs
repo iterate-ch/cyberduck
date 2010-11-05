@@ -257,8 +257,10 @@ namespace Ch.Cyberduck.Ui.Controller
                 Environment.SpecialFolder.ApplicationData), "FileZilla", "sitemanager.xml"));
             defaults.put("bookmark.import.smartftp.location", Path.Combine(Environment.GetFolderPath(
                 Environment.SpecialFolder.ApplicationData), "SmartFTP", "Client 2.0", "Favorites"));
-            defaults.put("bookmark.import.flashfxp.location", Path.Combine(Environment.GetFolderPath(
+            defaults.put("bookmark.import.flashfxp3.location", Path.Combine(Environment.GetFolderPath(
                 Environment.SpecialFolder.ApplicationData), "FlashFXP", "3", "Sites.dat"));
+            defaults.put("bookmark.import.flashfxp4.location", Path.Combine(Environment.GetFolderPath(
+                Environment.SpecialFolder.ApplicationData), "FlashFXP", "4", "Sites.dat"));
             defaults.put("bookmark.import.wsftp.location", Path.Combine(Environment.GetFolderPath(
                 Environment.SpecialFolder.ApplicationData), "Ipswitch", "WS_FTP", "Sites"));
             defaults.put("bookmark.import.fireftp.location", Path.Combine(Environment.GetFolderPath(

@@ -19,7 +19,10 @@ package ch.cyberduck.core.importer;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Protocol;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -33,25 +36,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * @version $Id$
+ * @version $Id:$
  */
-public class FlashFxpBookmarkCollection extends ThirdpartyBookmarkCollection {
+public abstract class FlashFxpBookmarkCollection extends ThirdpartyBookmarkCollection {
     private static Logger log = Logger.getLogger(FlashFxpBookmarkCollection.class);
-
-    @Override
-    public String getBundleIdentifier() {
-        return "com.flashfxp";
-    }
-
-    @Override
-    public String getName() {
-        return "FlashFXP";
-    }
-
-    @Override
-    public Local getFile() {
-        return LocalFactory.createLocal(Preferences.instance().getProperty("bookmark.import.flashfxp.location"));
-    }
 
     @Override
     protected void parse(Local file) {

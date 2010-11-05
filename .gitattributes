@@ -2067,6 +2067,8 @@ source/ch/cyberduck/core/importer/CloudberryAzureBookmarkCollection.java -text
 source/ch/cyberduck/core/importer/CloudberryBookmarkCollection.java -text
 source/ch/cyberduck/core/importer/CloudberryGoogleBookmarkCollection.java -text
 source/ch/cyberduck/core/importer/CrossFtpBookmarkCollection.java -text
+source/ch/cyberduck/core/importer/FlashFxp4BookmarkCollection.java -text
+source/ch/cyberduck/core/importer/FlashFxpBookmarkCollection.java -text
 source/ch/cyberduck/core/importer/ThirdpartyBookmarkCollection.java -text
 source/ch/cyberduck/core/importer/TransmitBookmarkCollection.java -text
 source/ch/cyberduck/core/importer/XmlBookmarkCollection.java -text
