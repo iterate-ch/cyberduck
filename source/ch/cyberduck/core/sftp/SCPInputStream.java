@@ -18,20 +18,19 @@ package ch.cyberduck.core.sftp;
  * dkocher@cyberduck.ch
  */
 
+import ch.ethz.ssh2.SCPClient;
+import ch.ethz.ssh2.Session;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import ch.ethz.ssh2.SCPClient;
-import ch.ethz.ssh2.Session;
-
 /**
  * @author David Kocher, dkocher@cyberduck.ch
  * @version $Id$
  */
-public class SCPInputStream extends BufferedInputStream
-{
+public class SCPInputStream extends BufferedInputStream {
 
     private Session session;
 
@@ -42,9 +41,8 @@ public class SCPInputStream extends BufferedInputStream
      */
     private long remaining;
 
-    public SCPInputStream(SCPClient client, Session session) throws IOException
-    {
-        super(session.getStdout(), 40000);
+    public SCPInputStream(SCPClient client, Session session) throws IOException {
+        super(session.getStdout());
 
         this.scp = client;
         this.session = session;
@@ -56,25 +54,24 @@ public class SCPInputStream extends BufferedInputStream
 
         final SCPClient.LenNamePair lnp;
 
-        while (true)
-        {
+        while(true) {
             int c = session.getStdout().read();
-            if (c < 0)
+            if(c < 0) {
                 throw new IOException("Remote scp terminated unexpectedly.");
+            }
 
             String line = client.receiveLine(session.getStdout());
 
-            if (c == 'T')
-            {
+            if(c == 'T') {
                 /* Ignore modification times */
                 continue;
             }
 
-            if ((c == 1) || (c == 2))
+            if((c == 1) || (c == 2)) {
                 throw new IOException("Remote SCP error: " + line);
+            }
 
-            if (c == 'C')
-            {
+            if(c == 'C') {
                 lnp = client.parseCLine(line);
                 break;
 
@@ -89,15 +86,15 @@ public class SCPInputStream extends BufferedInputStream
     }
 
     @Override
-    public int read() throws IOException
-    {
+    public int read() throws IOException {
         if(!(remaining > 0)) {
             return -1;
         }
 
         int read = super.read();
-        if (read < 0)
+        if(read < 0) {
             throw new IOException("Remote scp terminated connection unexpectedly");
+        }
 
         remaining -= read;
 
@@ -105,19 +102,20 @@ public class SCPInputStream extends BufferedInputStream
     }
 
     @Override
-    public int read(byte b[], int off, int len) throws IOException
-    {
+    public int read(byte b[], int off, int len) throws IOException {
         if(!(remaining > 0)) {
             return -1;
         }
 
         int trans = (int) remaining;
-        if (remaining > len)
+        if(remaining > len) {
             trans = len;
+        }
 
         int read = super.read(b, off, trans);
-        if (read < 0)
+        if(read < 0) {
             throw new IOException("Remote scp terminated connection unexpectedly");
+        }
 
         remaining -= read;
 
@@ -125,17 +123,15 @@ public class SCPInputStream extends BufferedInputStream
     }
 
     @Override
-    public void close() throws IOException
-    {
+    public void close() throws IOException {
         try {
-//            scp.readResponse(session.getStdout());
-            
             session.getStdin().write(0x0);
             session.getStdin().flush();
         }
         finally {
-            if(session != null)
+            if(session != null) {
                 session.close();
+            }
         }
     }
 }

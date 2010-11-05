@@ -18,17 +18,16 @@ package ch.cyberduck.core.sftp;
  * dkocher@cyberduck.ch
  */
 
+import ch.ethz.ssh2.sftp.SFTPv3FileHandle;
+
 import java.io.IOException;
 import java.io.InputStream;
-
-import ch.ethz.ssh2.sftp.SFTPv3FileHandle;
 
 /**
  * @author David Kocher, dkocher@cyberduck.ch
  * @version $Id$
  */
-public class SFTPInputStream extends InputStream
-{
+public class SFTPInputStream extends InputStream {
 
     private SFTPv3FileHandle handle;
 
@@ -37,12 +36,13 @@ public class SFTPInputStream extends InputStream
      */
     private long readOffset = 0;
 
-    public SFTPInputStream(SFTPv3FileHandle handle)
-    {
-        if(null == handle)
+    public SFTPInputStream(SFTPv3FileHandle handle) {
+        if(null == handle) {
             throw new IllegalArgumentException("Cannot accept null argument!");
-        if(null == handle.getClient())
+        }
+        if(null == handle.getClient()) {
             throw new IllegalArgumentException("Cannot accept null client!");
+        }
         this.handle = handle;
     }
 
@@ -52,16 +52,13 @@ public class SFTPInputStream extends InputStream
      * <code>len</code> bytes, but a smaller number may be read, possibly
      * zero. The number of bytes actually read is returned as an integer.
      *
-     * @see ch.ethz.ssh2.sftp.SFTPv3Client#read(SFTPv3FileHandle,long,byte[],int,int)
+     * @see ch.ethz.ssh2.sftp.SFTPv3Client#download(SFTPv3FileHandle,long,byte[],int,int)
      */
     @Override
-    public int read(byte[] buffer, int offset, int len)
-            throws IOException
-    {
-        int read = handle.getClient().read(handle,
+    public int read(byte[] buffer, int offset, int len) throws IOException {
+        int read = handle.getClient().download(handle,
                 readOffset, buffer, offset, len);
-        if(read > 0)
-        {
+        if(read > 0) {
             readOffset += read;
         }
         return read;
@@ -82,14 +79,11 @@ public class SFTPInputStream extends InputStream
      * @throws IOException if an I/O error occurs.
      */
     @Override
-    public int read()
-            throws IOException
-    {
+    public int read() throws IOException {
         byte[] buffer = new byte[1];
-        int read = handle.getClient().read(handle,
+        int read = handle.getClient().download(handle,
                 readOffset, buffer, 0, 1);
-        if(read > 0)
-        {
+        if(read > 0) {
             readOffset += read;
         }
         return read;
@@ -103,16 +97,14 @@ public class SFTPInputStream extends InputStream
      * @return the actual number of bytes skipped.
      */
     @Override
-    public long skip(long n)
-    {
+    public long skip(long n) {
         readOffset += n;
         return n;
     }
 
     @Override
     public void close()
-            throws IOException
-    {
+            throws IOException {
         handle.getClient().closeFile(handle);
     }
 }
