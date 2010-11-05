@@ -1096,7 +1096,6 @@ public class SFTPv3Client {
         int clientOffset;
         int len;
         int req_id;
-        byte[] data;
     }
 
     private void sendReadRequest(int id, SFTPv3FileHandle handle, long offset, int len) throws IOException {
@@ -1110,7 +1109,7 @@ public class SFTPv3Client {
     }
 
     /**
-     * Read bytes from a file in a parallel fashion. Test method for David. As many bytes as you want will be read.
+     * Read bytes from a file in a parallel fashion. As many bytes as you want will be read.
      * <p/>
      * <ul>
      * <li>The server will read as many bytes as it can from the file (up to <code>len</code>),
@@ -1140,7 +1139,11 @@ public class SFTPv3Client {
         String errorMessage = null;
         int errorClientOffset = 0;
 
-        List<OutstandingRequest> pendingQ = new Vector<OutstandingRequest>();
+        /**
+         * Mapping request ID to request.
+         */
+        Map<Integer, OutstandingRequest> pendingQueue
+                = new HashMap<Integer, OutstandingRequest>();
 
         checkHandleValidAndOpen(handle);
 
@@ -1156,13 +1159,13 @@ public class SFTPv3Client {
         while(true) {
             /* If there was an error and no outstanding request - stop */
 
-            if((pendingQ.size() == 0) && (parallelism == 0)) {
+            if((pendingQueue.size() == 0) && (parallelism == 0)) {
                 break;
             }
 
             /* Send as many requests as we are allowed to */
 
-            while(pendingQ.size() < parallelism) {
+            while(pendingQueue.size() < parallelism) {
                 /* Anything left? No, don't send a request. */
 
                 if(remaining == 0) {
@@ -1183,12 +1186,12 @@ public class SFTPv3Client {
 
                 sendReadRequest(req.req_id, handle, req.serverOffset, req.len);
 
-                pendingQ.add(req);
+                pendingQueue.put(req.req_id, req);
             }
 
             /* Are we done? */
 
-            if(pendingQ.size() == 0) {
+            if(pendingQueue.size() == 0) {
                 break;
             }
 
@@ -1202,28 +1205,16 @@ public class SFTPv3Client {
             int rep_id = tr.readUINT32();
 
             /* Search the pendingQ */
-
-            OutstandingRequest req = null;
-
-            for(int i = 0; i < pendingQ.size(); i++) {
-                OutstandingRequest tmp = pendingQ.get(i);
-
-                if(tmp.req_id == rep_id) {
-                    req = tmp;
-                    break;
-                }
-            }
+            OutstandingRequest req = pendingQueue.get(rep_id);
 
             /* Should shutdown here, no point in going on */
-
             if(req == null) {
                 throw new IOException("The server sent an invalid id field.");
             }
 
-            pendingQ.remove(req);
+            pendingQueue.remove(rep_id);
 
             /* Evaluate the answer */
-
             if(type == Packet.SSH_FXP_STATUS) {
                 /* In any case, stop sending more packets */
 
@@ -1255,7 +1246,6 @@ public class SFTPv3Client {
             }
 
             /* OK, collect data */
-
             int readLen = tr.readUINT32();
 
             if((readLen < 0) || (readLen > req.len)) {
@@ -1265,14 +1255,12 @@ public class SFTPv3Client {
             if(log.isEnabled()) {
                 log.log("Got SSH_FXP_DATA (" + req.req_id + ") " + req.serverOffset + "/" + readLen
                         + " (requested: " + req.len + ")");
-
             }
 
             tr.readBytes(dst, req.clientOffset, readLen);
 
             if(readLen < req.len) {
                 /* Send this request packet again to request the remaing data in this slot. */
-
                 req.req_id = generateNextRequestID();
                 req.serverOffset += readLen;
                 req.clientOffset += readLen;
@@ -1281,10 +1269,9 @@ public class SFTPv3Client {
                 log.log("Requesting again: " + req.serverOffset + "/" + req.len);
                 sendReadRequest(req.req_id, handle, req.serverOffset, req.len);
 
-                pendingQ.add(req);
+                pendingQueue.put(req.req_id, req);
 
                 /* Stop sending parallel requests for the moment */
-
                 continue;
             }
 
@@ -1296,90 +1283,18 @@ public class SFTPv3Client {
 
         if(errorOccured) {
             if(errorCode == ErrorCodes.SSH_FX_EOF) {
+                log.log("Got SSH_FX_EOF.");
                 if(0 == errorClientOffset) {
+                    return -1;
+                }
+                if(errorClientOffset == dstoff) {
                     return -1;
                 }
                 return errorClientOffset - dstoff;
             }
-
             throw new SFTPException(errorMessage, errorCode);
         }
-
         return len;
-    }
-
-    /**
-     * Read bytes from a file. No more than 32768 bytes may be read at once.
-     * Be aware that the semantics of read() are different than for Java streams.
-     * <p/>
-     * <ul>
-     * <li>The server will read as many bytes as it can from the file (up to <code>len</code>),
-     * and return them.</li>
-     * <li>If EOF is encountered before reading any data, <code>-1</code> is returned.
-     * <li>If an error occurs, an exception is thrown</li>.
-     * <li>For normal disk files, it is guaranteed that the server will return the specified
-     * number of bytes, or up to end of file. For, e.g., device files this may return
-     * fewer bytes than requested.</li>
-     * </ul>
-     *
-     * @param handle     a SFTPv3FileHandle handle
-     * @param fileOffset offset (in bytes) in the file
-     * @param dst        the destination byte array
-     * @param dstoff     offset in the destination byte array
-     * @param len        how many bytes to read, 0 &lt; len &lt;= 32768 bytes
-     * @return the number of bytes that could be read, may be less than requested if
-     *         the end of the file is reached, -1 is returned in case of <code>EOF</code>
-     * @throws IOException
-     */
-    public int read(SFTPv3FileHandle handle, long fileOffset, byte[] dst, int dstoff, int len) throws IOException {
-        checkHandleValidAndOpen(handle);
-
-        if((len > 32768) || (len <= 0)) {
-            throw new IOException("invalid len argument");
-        }
-
-        int req_id = generateNextRequestID();
-
-        sendReadRequest(req_id, handle, fileOffset, len);
-
-        byte[] resp = receiveMessage(34000);
-
-        TypesReader tr = new TypesReader(resp);
-
-        int t = tr.readByte();
-
-        int rep_id = tr.readUINT32();
-        if(rep_id != req_id) {
-            throw new IOException("The server sent an invalid id field.");
-        }
-
-        if(t == Packet.SSH_FXP_DATA) {
-            log.log("Got SSH_FXP_DATA...");
-            int readLen = tr.readUINT32();
-
-            if((readLen < 0) || (readLen > len)) {
-                throw new IOException("The server sent an invalid length field.");
-            }
-
-            tr.readBytes(dst, dstoff, readLen);
-
-            return readLen;
-        }
-
-        if(t != Packet.SSH_FXP_STATUS) {
-            throw new IOException("The SFTP server sent an unexpected packet type (" + t + ")");
-        }
-
-        int errorCode = tr.readUINT32();
-
-        if(errorCode == ErrorCodes.SSH_FX_EOF) {
-            log.log("Got SSH_FX_EOF.");
-            return -1;
-        }
-
-        String errorMessage = tr.readString();
-
-        throw new SFTPException(errorMessage, errorCode);
     }
 
     /**
