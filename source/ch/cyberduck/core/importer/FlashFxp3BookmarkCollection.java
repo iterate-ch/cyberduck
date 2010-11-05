@@ -38,7 +38,7 @@ public class FlashFxp3BookmarkCollection extends FlashFxpBookmarkCollection {
 
     @Override
     public String getName() {
-        return "FlashFXP";
+        return "FlashFXP 3";
     }
 
     @Override
