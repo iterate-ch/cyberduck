@@ -42,11 +42,11 @@ public abstract class XmlBookmarkCollection extends ThirdpartyBookmarkCollection
     private static Logger log = Logger.getLogger(XmlBookmarkCollection.class);
 
     protected static abstract class AbstractHandler extends DefaultHandler {
-        private StringBuffer currentText = null;
+        private StringBuilder currentText = null;
 
         @Override
         public void startElement(String uri, String name, String qName, Attributes attrs) {
-            this.currentText = new StringBuffer();
+            this.currentText = new StringBuilder();
             this.startElement(name);
         }
 
