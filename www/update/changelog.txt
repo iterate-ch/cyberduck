@@ -1,4 +1,5 @@
 4.0b6 [http://trac.cyberduck.ch/milestone/4.0b6]
+- [Bugfix] Slow SFTP transfers (#185)
 - [Feature] FireFTP Bookmarks Importer
 - [Feature] CrossFTP Bookmarks Importer
 - [Feature] S3Browser Bookmarks Importer
