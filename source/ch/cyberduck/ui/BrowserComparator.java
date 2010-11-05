@@ -1,4 +1,4 @@
-package ch.cyberduck.core;
+package ch.cyberduck.ui;
 
 /*
  *  Copyright (c) 2005 David Kocher. All rights reserved.
@@ -18,10 +18,13 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Path;
+
 import java.util.Comparator;
 
 /**
  * The base class for comparators used to sort by column type in the browser
+ *
  * @version $Id$
  */
 public abstract class BrowserComparator implements Comparator<Path> {
@@ -29,10 +32,9 @@ public abstract class BrowserComparator implements Comparator<Path> {
     protected boolean ascending;
 
     /**
-     *
      * @param ascending The items should be sorted in a ascending manner.
-     * Usually this means lower numbers first or natural language sorting
-     * for alphabetic comparators
+     *                  Usually this means lower numbers first or natural language sorting
+     *                  for alphabetic comparators
      */
     public BrowserComparator(boolean ascending) {
         this.ascending = ascending;
@@ -43,17 +45,16 @@ public abstract class BrowserComparator implements Comparator<Path> {
     }
 
     /**
-     *
      * @param object
-     * @see #toString()
-     * @see #isAscending()
      * @return True if the same identifier and ascending boolean value
+     * @see #getIdentifier()
+     * @see #isAscending()
      */
     @Override
     public boolean equals(Object object) {
-        if (object instanceof BrowserComparator) {
+        if(object instanceof BrowserComparator) {
             BrowserComparator other = (BrowserComparator) object;
-            if (other.toString().equals(this.toString())) {
+            if(other.getIdentifier().equals(this.getIdentifier())) {
                 return other.isAscending() == this.isAscending();
             }
         }
@@ -65,5 +66,5 @@ public abstract class BrowserComparator implements Comparator<Path> {
     /**
      * @return An unique identifer for this comparator
      */
-    public abstract String toString();
+    public abstract String getIdentifier();
 }

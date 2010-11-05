@@ -28,7 +28,6 @@ import ch.cyberduck.core.ssl.SSLSession;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.threading.BackgroundActionRegistry;
-import ch.cyberduck.ui.AbstractPathTableDelegate;
 import ch.cyberduck.ui.PathPasteboard;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.application.NSImage;

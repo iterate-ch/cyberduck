@@ -2083,7 +2083,13 @@ source/ch/cyberduck/properties/Settings.Designer.cs -text
 source/ch/cyberduck/properties/Settings.cs -text
 source/ch/cyberduck/properties/Settings.settings -text
 source/ch/cyberduck/properties/app.manifest -text
-source/ch/cyberduck/ui/AbstractPathTableDelegate.java -text
+source/ch/cyberduck/ui/FileTypeComparator.java -text
+source/ch/cyberduck/ui/FilenameComparator.java -text
+source/ch/cyberduck/ui/GroupComparator.java -text
+source/ch/cyberduck/ui/OwnerComparator.java -text
+source/ch/cyberduck/ui/PermissionsComparator.java -text
+source/ch/cyberduck/ui/SizeComparator.java -text
+source/ch/cyberduck/ui/TimestampComparator.java -text
 source/ch/cyberduck/ui/action/CalculateSizeWorker.java -text
 source/ch/cyberduck/ui/action/ChecksumWorker.java -text
 source/ch/cyberduck/ui/action/ReadAclWorker.java -text
@@ -2095,6 +2101,7 @@ source/ch/cyberduck/ui/action/WriteAclWorker.java -text
 source/ch/cyberduck/ui/action/WriteDistributionWorker.java -text
 source/ch/cyberduck/ui/action/WriteMetadataWorker.java -text
 source/ch/cyberduck/ui/action/WritePermissionWorker.java -text
+source/ch/cyberduck/ui/cocoa/AbstractPathTableDelegate.java -text
 source/ch/cyberduck/ui/cocoa/BundleController.java -text
 source/ch/cyberduck/ui/cocoa/ErrorController.java -text
 source/ch/cyberduck/ui/cocoa/TranscriptController.java -text

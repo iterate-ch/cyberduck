@@ -87,7 +87,7 @@ public class AttributedList<E extends AbstractPath> extends CopyOnWriteArrayList
      * Container for file listing attributes, such as a sorting comparator and filter
      *
      * @see PathFilter
-     * @see BrowserComparator
+     * @see ch.cyberduck.ui.BrowserComparator
      */
     public class Attributes<E> {
 
