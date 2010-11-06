@@ -29,7 +29,6 @@ namespace Ch.Cyberduck.Ui.Controller
     {
         private static readonly Logger Log = Logger.getLogger(typeof (WatchEditor).Name);
         private Timer _atomicSaveTimer;
-        private bool _handlerAttached;
         private DateTime _lastWriteTime;
         private FileSystemWatcher _watcher;
 
@@ -151,7 +150,6 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void RegisterHandlers()
         {
-            _handlerAttached = true;
             _watcher.Changed += HasChanged;
             _watcher.Deleted += HasDeleted;
             _watcher.Renamed += HasRenamed;
@@ -162,7 +160,6 @@ namespace Ch.Cyberduck.Ui.Controller
             _watcher.Changed -= HasChanged;
             _watcher.Deleted -= HasDeleted;
             _watcher.Renamed -= HasRenamed;
-            _handlerAttached = false;
         }
 
         protected override void setDeferredDelete(Boolean deferredDelete)
