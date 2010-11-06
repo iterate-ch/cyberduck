@@ -19,6 +19,7 @@ using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Threading;
 using org.apache.log4j;
 using Path = ch.cyberduck.core.Path;
 
@@ -27,6 +28,8 @@ namespace Ch.Cyberduck.Ui.Controller
     public class WatchEditor : Editor
     {
         private static readonly Logger Log = Logger.getLogger(typeof (WatchEditor).Name);
+        private Timer _atomicSaveTimer;
+        private bool _handlerAttached;
         private DateTime _lastWriteTime;
         private FileSystemWatcher _watcher;
 
@@ -78,6 +81,12 @@ namespace Ch.Cyberduck.Ui.Controller
 
             RegisterHandlers();
 
+            _atomicSaveTimer = new Timer(delegate
+                                             {
+                                                 RemoveHandlers();
+                                                 _atomicSaveTimer.Change(Timeout.Infinite, Timeout.Infinite);
+                                             }, null, Timeout.Infinite, Timeout.Infinite);
+
             // Begin watching.
             _watcher.EnableRaisingEvents = true;
         }
@@ -95,25 +104,12 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
-        private void HasRenamed(object sender, RenamedEventArgs e)
+        private void FileNeedsToBeUpdated(string path)
         {
-            Log.info("HasRenamed:" + e.FullPath);
-        }
-
-        private void HasDeleted(object sender, FileSystemEventArgs e)
-        {
-            Log.info("HasDeleted:" + e.FullPath);
-            _watcher.EnableRaisingEvents = false;
-            RemoveHandlers();
-        }
-
-        private void HasChanged(object sender, FileSystemEventArgs e)
-        {
-            Log.info("HasChanged:" + e.FullPath);
             try
             {
                 _watcher.EnableRaisingEvents = false;
-                DateTime lastWriteTime = File.GetLastWriteTime(e.FullPath);
+                DateTime lastWriteTime = File.GetLastWriteTime(path);
                 if (lastWriteTime.Equals(_lastWriteTime)) return;
                 //workaround: http://stackoverflow.com/questions/1764809/filesystemwatcher-changed-event-is-raised-twice                                
                 save();
@@ -125,6 +121,27 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
+        private void HasRenamed(object sender, RenamedEventArgs e)
+        {
+            Log.info(String.Format("HasRenamed: from {0} to {1}", e.OldFullPath, e.FullPath));
+            //prevent removing handlers
+            _atomicSaveTimer.Change(Timeout.Infinite, Timeout.Infinite);
+            FileNeedsToBeUpdated(e.FullPath);
+        }
+
+        private void HasDeleted(object sender, FileSystemEventArgs e)
+        {
+            Log.info("HasDeleted:" + e.FullPath);
+            //an atomic must not last longer than 5 seconds. After elapsing the handlers are removed.
+            _atomicSaveTimer.Change(5000, Timeout.Infinite);
+        }
+
+        private void HasChanged(object sender, FileSystemEventArgs e)
+        {
+            Log.info("HasChanged:" + e.FullPath);
+            FileNeedsToBeUpdated(e.FullPath);
+        }
+
         protected override void delete()
         {
             _watcher.EnableRaisingEvents = false;
@@ -134,6 +151,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void RegisterHandlers()
         {
+            _handlerAttached = true;
             _watcher.Changed += HasChanged;
             _watcher.Deleted += HasDeleted;
             _watcher.Renamed += HasRenamed;
@@ -144,6 +162,7 @@ namespace Ch.Cyberduck.Ui.Controller
             _watcher.Changed -= HasChanged;
             _watcher.Deleted -= HasDeleted;
             _watcher.Renamed -= HasRenamed;
+            _handlerAttached = false;
         }
 
         protected override void setDeferredDelete(Boolean deferredDelete)
