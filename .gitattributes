@@ -2013,14 +2013,12 @@ source/ch/cyberduck/core/HostKeyControllerFactory.java -text
 source/ch/cyberduck/core/HostnameVerifier.cs -text
 source/ch/cyberduck/core/ListAdapter.cs -text
 source/ch/cyberduck/core/LoginControllerFactory.java -text
-source/ch/cyberduck/core/MainController.cs -text
 source/ch/cyberduck/core/MultipleBookmarkCollection.java -text
 source/ch/cyberduck/core/NativeConstants.cs -text
 source/ch/cyberduck/core/NativeListEnumerator.cs -text
 source/ch/cyberduck/core/NativeMethods.cs -text
 source/ch/cyberduck/core/NaturalOrderComparator.java -text
 source/ch/cyberduck/core/OSVersion.cs -text
-source/ch/cyberduck/core/Program.cs -text
 source/ch/cyberduck/core/Protocol.java -text
 source/ch/cyberduck/core/RFC2253.cs -text
 source/ch/cyberduck/core/Rendezvous.cs -text
@@ -2164,6 +2162,7 @@ source/ch/cyberduck/ui/controller/Keychain.cs -text
 source/ch/cyberduck/ui/controller/LocalImpl.cs -text
 source/ch/cyberduck/ui/controller/LocaleImpl.cs -text
 source/ch/cyberduck/ui/controller/LoginController.cs -text
+source/ch/cyberduck/ui/controller/MainController.cs -text
 source/ch/cyberduck/ui/controller/PathClipboard.cs -text
 source/ch/cyberduck/ui/controller/PersistentFormHandler.cs -text
 source/ch/cyberduck/ui/controller/PreferencesController.cs -text

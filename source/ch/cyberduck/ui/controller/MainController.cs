@@ -18,32 +18,27 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using System.Reflection;
 using System.Threading;
 using System.Windows.Forms;
 using ch.cyberduck.core;
+using Ch.Cyberduck.Core;
 using ch.cyberduck.core.aquaticprime;
 using ch.cyberduck.core.i18n;
 using ch.cyberduck.core.importer;
 using ch.cyberduck.core.sftp;
 using ch.cyberduck.ui;
-using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Controller.Growl;
 using Ch.Cyberduck.Ui.Winforms;
 using Ch.Cyberduck.Ui.Winforms.Serializer;
 using Ch.Cyberduck.Ui.Winforms.Taskdialog;
 using Microsoft.VisualBasic.ApplicationServices;
 using org.apache.log4j;
-using HostKeyController = Ch.Cyberduck.Ui.Controller.HostKeyController;
-using Keychain = Ch.Cyberduck.Ui.Controller.Keychain;
-using LoginController = Ch.Cyberduck.Ui.Controller.LoginController;
 using Path = System.IO.Path;
-using Proxy = Ch.Cyberduck.Ui.Controller.Proxy;
 using ThreadPool = ch.cyberduck.core.threading.ThreadPool;
 using UnhandledExceptionEventArgs = System.UnhandledExceptionEventArgs;
 
-namespace Ch.Cyberduck.Core
+namespace Ch.Cyberduck.Ui.Controller
 {
     /// <summary>
     /// A potential alternative for the VB.WindowsFormsApplicationBase: http://www.ai.uga.edu/mc/SingleInstance.html
@@ -109,7 +104,8 @@ namespace Ch.Cyberduck.Core
             Startup += ApplicationDidFinishLaunching;
             Shutdown += delegate
                             {
-                                if(Preferences.instance().getBoolean("rendezvous.enable")) {
+                                if (Preferences.instance().getBoolean("rendezvous.enable"))
+                                {
                                     RendezvousFactory.instance().quit();
                                 }
                                 Preferences.instance().setProperty("uses", Preferences.instance().getInteger("uses") + 1);
@@ -132,6 +128,17 @@ namespace Ch.Cyberduck.Core
         public static IList<BrowserController> Browsers
         {
             get { return _browsers; }
+        }
+
+        /// <summary>
+        /// The main entry point for the application.
+        /// </summary>
+        [STAThread]
+        private static void Main()
+        {
+            System.Windows.Forms.Application.EnableVisualStyles();
+            System.Windows.Forms.Application.SetCompatibleTextRenderingDefault(false);
+            Application.Run();
         }
 
         public static void ExceptionHandler(object sender, ThreadExceptionEventArgs e)
@@ -297,8 +304,9 @@ namespace Ch.Cyberduck.Core
             _bc.Background(delegate { ch.cyberduck.ui.growl.Growl.instance().register(); }, delegate { });
 
             // Bonjour initialization
-            if(Preferences.instance().getBoolean("rendezvous.enable")) {
-                 RendezvousFactory.instance().init();
+            if (Preferences.instance().getBoolean("rendezvous.enable"))
+            {
+                RendezvousFactory.instance().init();
             }
 
             // Import thirdparty bookmarks.
@@ -316,20 +324,25 @@ namespace Ch.Cyberduck.Core
                     {
                         int r =
                             cTaskDialog.ShowCommandBox(MainForm,
-                                String.Format(Locale.localizedString("Import {0} Bookmarks", "Configuration"),
-                                              c.getName()),
-                                null,
-                                String.Format(
-                                    Locale.localizedString(
-                                        "{0} bookmarks found. Do you want to add these to your bookmarks?",
-                                        "Configuration"), c.size()),
-                                null,
-                                null,
-                                null, String.Format("{0}|{1}|{2}", Locale.localizedString("Import", "Configuration"),
-                                                    Locale.localizedString("Don't Ask Again", "Configuration"),
-                                                    Locale.localizedString("Cancel", "Configuration")),
-                                false,
-                                eSysIcons.Warning, eSysIcons.Warning);
+                                                       String.Format(
+                                                           Locale.localizedString("Import {0} Bookmarks",
+                                                                                  "Configuration"),
+                                                           c.getName()),
+                                                       null,
+                                                       String.Format(
+                                                           Locale.localizedString(
+                                                               "{0} bookmarks found. Do you want to add these to your bookmarks?",
+                                                               "Configuration"), c.size()),
+                                                       null,
+                                                       null,
+                                                       null,
+                                                       String.Format("{0}|{1}|{2}",
+                                                                     Locale.localizedString("Import", "Configuration"),
+                                                                     Locale.localizedString("Don't Ask Again",
+                                                                                            "Configuration"),
+                                                                     Locale.localizedString("Cancel", "Configuration")),
+                                                       false,
+                                                       eSysIcons.Warning, eSysIcons.Warning);
                         switch (r)
                         {
                             case 0:
@@ -350,10 +363,20 @@ namespace Ch.Cyberduck.Core
 
         private IList<ThirdpartyBookmarkCollection> GetThirdpartyBookmarks()
         {
-            return new List<ThirdpartyBookmarkCollection> {new FilezillaBookmarkCollection(),
-                new SmartFtpBookmarkCollection(), new FlashFxp4BookmarkCollection(), new FlashFxp3BookmarkCollection(), new WsFtpBookmarkCollection(),
-                new FireFtpBookmarkCollection(), new CrossFtpBookmarkCollection(), new CloudberryS3BookmarkCollection(),
-                new CloudberryGoogleBookmarkCollection(), new CloudberryAzureBookmarkCollection(), new S3BrowserBookmarkCollection()};
+            return new List<ThirdpartyBookmarkCollection>
+                       {
+                           new FilezillaBookmarkCollection(),
+                           new SmartFtpBookmarkCollection(),
+                           new FlashFxp4BookmarkCollection(),
+                           new FlashFxp3BookmarkCollection(),
+                           new WsFtpBookmarkCollection(),
+                           new FireFtpBookmarkCollection(),
+                           new CrossFtpBookmarkCollection(),
+                           new CloudberryS3BookmarkCollection(),
+                           new CloudberryGoogleBookmarkCollection(),
+                           new CloudberryAzureBookmarkCollection(),
+                           new S3BrowserBookmarkCollection()
+                       };
         }
 
         /// <summary>

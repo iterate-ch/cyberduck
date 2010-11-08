@@ -3654,9 +3654,9 @@ namespace Ch.Cyberduck.Ui.Controller
         internal class UploadTransferAdapter : ch.cyberduck.core.TransferAdapter
         {
             private readonly BrowserController _controller;
+            private readonly Path _destination;
             private readonly bool _removeListener;
             private readonly Transfer _transfer;
-            private readonly Path _destination;
 
             public UploadTransferAdapter(BrowserController controller, Transfer transfer, Path destination,
                                          bool removeListener)

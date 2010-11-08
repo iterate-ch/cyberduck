@@ -171,10 +171,9 @@
     <Compile Include="core\SerializableDictionary.cs" />
     <Compile Include="core\Utils.cs" />
     <Compile Include="core\VirtualFileDataObject.cs" />
-    <Compile Include="core\MainController.cs" />
-    <Compile Include="core\Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ui\controller\IUpdateView.cs" />
+    <Compile Include="ui\controller\MainController.cs" />
     <Compile Include="ui\controller\threading\InfoBackgroundAction.cs" />
     <Compile Include="ui\controller\UpdateController.cs" />
     <Compile Include="ui\winforms\controls\ClickThroughMenuStrip.cs">

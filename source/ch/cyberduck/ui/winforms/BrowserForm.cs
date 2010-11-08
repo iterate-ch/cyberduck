@@ -1740,8 +1740,8 @@ namespace Ch.Cyberduck.Ui.Winforms
                                  exitToolStripMenuItem
                              }, new[] {exitMainMenuItem},
                          (sender, args) => Exit(), () => true);
-            
-            vistaMenu1.SetImage(openConnectionMainMenuItem, IconCache.Instance.IconForName("connect", 16));            
+
+            vistaMenu1.SetImage(openConnectionMainMenuItem, IconCache.Instance.IconForName("connect", 16));
             vistaMenu1.SetImage(infoMainMenuItem, IconCache.Instance.IconForName("info", 16));
             vistaMenu1.SetImage(infoBrowserContextMenuItem, IconCache.Instance.IconForName("info", 16));
             infoContextToolStripMenuItem.Image = IconCache.Instance.IconForName("info", 16);
@@ -1751,7 +1751,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             editContextToolStripMenuItem.Image = IconCache.Instance.IconForName("pencil", 16);
             vistaMenu1.SetImage(deleteMainMenuItem, IconCache.Instance.IconForName("delete", 16));
             vistaMenu1.SetImage(deleteBrowserContextMenuItem, IconCache.Instance.IconForName("delete", 16));
-            deleteContextToolStripMenuItem.Image = IconCache.Instance.IconForName("delete", 16);            
+            deleteContextToolStripMenuItem.Image = IconCache.Instance.IconForName("delete", 16);
             vistaMenu1.SetImage(newFolderMainMenuItem, IconCache.Instance.IconForName("newfolder", 16));
             vistaMenu1.SetImage(newFolderBrowserContextMenuItem, IconCache.Instance.IconForName("newfolder", 16));
             newFolderContextToolStripMenuItem.Image = IconCache.Instance.IconForName("newfolder", 16);            
