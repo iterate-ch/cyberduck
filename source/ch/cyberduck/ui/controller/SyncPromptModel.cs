@@ -41,9 +41,6 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public override object GetSize(object reference)
         {
-            //todo
-            return Convert.ToInt64(100);
-
             Path p = ((TreePathReference)reference).Unique;
             SyncTransfer.Comparison compare = ((SyncTransfer) Transfer).compare(p);
             return compare.equals(SyncTransfer.COMPARISON_REMOTE_NEWER)
@@ -53,9 +50,6 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public override object GetWarningImage(object reference)
         {
-            //todo
-            return null;
-
             Path p = ((TreePathReference)reference).Unique;
             if (p.attributes().isFile())
             {
@@ -79,12 +73,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public override object GetCreateImage(object reference)
         {
-            return null;
-
-            //todo
             Path p = ((TreePathReference)reference).Unique;
-            //todo p.exists() gibt immer false zurück wegen Path.getParent().childs().contains(this) -> equals -> TreePathReference nimmt noch Attribute rein
-            //todo bei GetSyncGetter wohl dasselbe
             if (!(p.exists() && p.getLocal().exists()))
             {
                 return IconCache.Instance.IconForName("plus");
@@ -94,9 +83,6 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public override object GetSyncGetter(object reference)
         {
-            return null;
-
-            //todo
             Path p = ((TreePathReference)reference).Unique;
             SyncTransfer.Comparison compare = ((SyncTransfer)Transfer).compare(p);
             if (compare.equals(SyncTransfer.COMPARISON_REMOTE_NEWER))

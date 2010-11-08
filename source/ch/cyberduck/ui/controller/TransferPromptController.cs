@@ -68,8 +68,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                                    _progressListener = new StatusLabelProgressListener(this));
 
                                                View.ToggleDetailsEvent += View_ToggleDetailsEvent;
-                                               View.DetailsVisible =
-                                                   Preferences.instance().getBoolean(
+                                               View.DetailsVisible = Preferences.instance().getBoolean(
                                                        "transfer.toggle.details");
 
                                                View.ChangedActionEvent += View_ChangedActionEvent;
@@ -203,13 +202,11 @@ namespace Ch.Cyberduck.Ui.Controller
 
             Action = selected;
             Transfer.cache().clear();
-            //todo für was reloadData?
-            //this.reloadData();
+            ReloadData();
         }
 
         public void ReloadData()
         {
-            //View.RefreshBrowserObject(null);
             View.RefreshBrowserObject(null);
             //View.SetModel(TransferPromptModel.GetEnumerator());
             UpdateStatusLabel();
@@ -226,9 +223,7 @@ namespace Ch.Cyberduck.Ui.Controller
             actions.Add(TransferAction.ACTION_RENAME, TransferAction.ACTION_RENAME.getLocalizableString());
             View.PopulateActions(actions);
 
-            TransferAction defaultAction
-                =
-                TransferAction.forName(
+            TransferAction defaultAction = TransferAction.forName(
                     Preferences.instance().getProperty("queue.prompt.action.default"));
             View.SelectedAction = defaultAction;
             Action = defaultAction;
