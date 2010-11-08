@@ -120,7 +120,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                                String.Format("{0}|{1}",
                                                              continueButton,
                                                              disconnectButton),
-                                               false, eSysIcons.Error, eSysIcons.Error);
+                                               false, eSysIcons.Warning, eSysIcons.Warning);
             if (cTaskDialog.VerificationChecked)
             {
                 // Never show again.
