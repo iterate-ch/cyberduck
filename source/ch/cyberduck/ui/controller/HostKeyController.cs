@@ -15,6 +15,7 @@
 // Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
 // 
+using System;
 using ch.cyberduck.core;
 using ch.cyberduck.core.i18n;
 using ch.cyberduck.core.sftp;
@@ -36,17 +37,11 @@ namespace Ch.Cyberduck.Ui.Controller
         protected override bool isUnknownKeyAccepted(string hostname, int port, string serverHostKeyAlgorithm,
                                                      byte[] serverHostKey)
         {
-            if (base.isUnknownKeyAccepted(hostname, port, serverHostKeyAlgorithm, serverHostKey)) {
+            if (base.isUnknownKeyAccepted(hostname, port, serverHostKeyAlgorithm, serverHostKey))
+            {
                 return true;
             }
-            string commands = Locale.localizedString("Allow") + "|" +
-                              Locale.localizedString("Deny") +
-                              (isHostKeyDatabaseWritable()
-                                   ? "|" + Locale.localizedString("Always")
-                                   : string.Empty);
-
-            int r = cTaskDialog.ShowCommandBox(Locale.localizedString("Unknown host key for") + " "
-                                               + hostname,
+            int r = cTaskDialog.ShowCommandBox(Locale.localizedString("Unknown host key for") + " " + hostname,
                                                null,
                                                Locale.localizedString(
                                                    "The host is currently unknown to the system. The host key fingerprint is")
@@ -55,20 +50,20 @@ namespace Ch.Cyberduck.Ui.Controller
                                                ".",
                                                null,
                                                null,
-                                               null, commands,
+                                               isHostKeyDatabaseWritable() ? Locale.localizedString("Always") : null,
+                                               String.Format("{0}|{1}",
+                                                             Locale.localizedString("Allow"),
+                                                             Locale.localizedString("Deny")),
                                                false,
                                                eSysIcons.Warning, eSysIcons.Information);
             switch (r)
             {
                 case 0:
-                    allow(hostname, serverHostKeyAlgorithm, serverHostKey, false);
+                    allow(hostname, serverHostKeyAlgorithm, serverHostKey, cTaskDialog.VerificationChecked);
                     return true;
                 case 1:
                     Log.warn("Cannot continue without a valid host key");
                     break;
-                case 2:
-                    allow(hostname, serverHostKeyAlgorithm, serverHostKey, true);
-                    return true;
             }
             throw new ConnectionCanceledException();
         }
