@@ -1593,10 +1593,11 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         private void OnArchiveMenuItemOnPopup(object sender, EventArgs eventArgs)
         {
-            createArchiveMainMenuItem.MenuItems.Clear();
+            MenuItem mainItem = sender as MenuItem;
+            mainItem.MenuItems.Clear();
             foreach (string archive in GetArchives())
             {
-                MenuItem item = createArchiveMainMenuItem.MenuItems.Add(archive);
+                MenuItem item = mainItem.MenuItems.Add(archive);
                 string archiveName = archive;
                 item.Click += delegate { CreateArchive(this, new CreateArchiveEventArgs(archiveName)); };
             }
