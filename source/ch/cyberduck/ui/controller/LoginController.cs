@@ -109,16 +109,18 @@ namespace Ch.Cyberduck.Ui.Controller
             Update();
         }
 
-        public override void warn(String title, String message, String continueButton, String disconnectButton, String preference)
+        public override void warn(String title, String message, String continueButton, String disconnectButton,
+                                  String preference)
         {
-
             int r = cTaskDialog.ShowCommandBox(title,
-                                 title,
-                                 message,
-                                 null, null,
-                                 Locale.localizedString("Don't show again", "Credentials"),
-                                 continueButton + "|" + disconnectButton,
-                                 false, eSysIcons.Error, eSysIcons.Error);
+                                               title,
+                                               message,
+                                               null, null,
+                                               Locale.localizedString("Don't show again", "Credentials"),
+                                               String.Format("{0}|{1}",
+                                                             continueButton,
+                                                             disconnectButton),
+                                               false, eSysIcons.Error, eSysIcons.Error);
             if (cTaskDialog.VerificationChecked)
             {
                 // Never show again.
@@ -236,11 +238,12 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 foreach (BrowserController c in MainController.Browsers)
                 {
-                    if(c.getSession() == s) {
+                    if (c.getSession() == s)
+                    {
                         return this.create(c);
                     }
                 }
-                return (ch.cyberduck.core.LoginController)this.create();
+                return (ch.cyberduck.core.LoginController) this.create();
             }
 
             public override ch.cyberduck.core.LoginController create(ch.cyberduck.ui.Controller c)
