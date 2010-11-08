@@ -308,6 +308,41 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 RendezvousFactory.instance().init();
             }
+            if (Preferences.instance().getBoolean("defaulthandler.reminder")
+                && Preferences.instance().getInteger("uses") > 0)
+            {
+                if (!URLSchemeHandlerConfiguration.Instance.IsDefaultApplicationForFtp()
+                    || !URLSchemeHandlerConfiguration.Instance.IsDefaultApplicationForSftp())
+                {
+                    int r =
+                        cTaskDialog.ShowCommandBox(
+                            Locale.localizedString("Set Cyberduck as default application for FTP and SFTP locations?",
+                                                   "Configuration"),
+                            Locale.localizedString("Set Cyberduck as default application for FTP and SFTP locations?",
+                                                   "Configuration"),
+                            Locale.localizedString(
+                                "As the default application, Cyberduck will open when you click on FTP or SFTP links in other applications, such as your web browser. You can change this setting in the Preferences later.",
+                                "Configuration"),
+                            null, null,
+                            Locale.localizedString("Don't Ask Again", "Configuration"),
+                            String.Format("{0}|{1}",
+                                          Locale.localizedString("Change", "Configuration"),
+                                          Locale.localizedString("Cancel", "Configuration")),
+                            false, eSysIcons.Question, eSysIcons.Information);
+                    if (cTaskDialog.VerificationChecked)
+                    {
+                        // Never show again.
+                        Preferences.instance().setProperty("defaulthandler.reminder", false);
+                    }
+                    switch (r)
+                    {
+                        case 0:
+                            URLSchemeHandlerConfiguration.Instance.RegisterFtpProtocol();
+                            URLSchemeHandlerConfiguration.Instance.RegisterSftpProtocol();
+                            break;
+                    }
+                }
+            }
 
             // Import thirdparty bookmarks.
             foreach (ThirdpartyBookmarkCollection c in GetThirdpartyBookmarks())
@@ -340,7 +375,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                                                      Locale.localizedString("Import", "Configuration"),
                                                                      Locale.localizedString("Cancel", "Configuration")),
                                                        false,
-                                                       eSysIcons.Warning, eSysIcons.Warning);
+                                                       eSysIcons.Question, eSysIcons.Information);
                         if (cTaskDialog.VerificationChecked)
                         {
                             // Flag as imported
@@ -536,7 +571,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                                                 Locale.localizedString("Quit Anyway"),
                                                                 true,
                                                                 eSysIcons.Warning,
-                                                                eSysIcons.Warning);
+                                                                eSysIcons.Information);
                         switch (result)
                         {
                             case -1: // Cancel

@@ -21,7 +21,7 @@ using Microsoft.Win32;
 
 namespace Ch.Cyberduck.Core
 {
-    class URLSchemeHandlerConfiguration
+    internal class URLSchemeHandlerConfiguration
     {
         private static readonly URLSchemeHandlerConfiguration instance = new URLSchemeHandlerConfiguration();
 
@@ -34,6 +34,10 @@ namespace Ch.Cyberduck.Core
             get { return instance; }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="registry"></param>
         private void RegisterCyberduckUrlHandler(RegistryKey registry)
         {
             CreateCustomUrlHandler(registry, "CyberduckURL", "Cyberduck URL", Application.ExecutablePath,
@@ -41,9 +45,16 @@ namespace Ch.Cyberduck.Core
         }
 
         /// <summary>
-        /// Register Cyberduck as default application for the FTP protocol. To make it work with the Windows Search box we need
+        /// Register Cyberduck as default application for the FTP URLs in the current user domain.
+        /// </summary>
+        public void RegisterFtpProtocol()
+        {
+            RegisterFtpProtocol(Registry.CurrentUser);
+        }
+
+        /// <summary>
+        /// Register Cyberduck as default application for the FTP URLs. To make it work with the Windows Search box we need
         /// some more tweaking (e.g. remove the ShellFolder from the ftp entry in the registry).
-        /// TODO !! braucht es admin Rechte dazu etc. -> sauber testen
         /// </summary>
         /// <param name="registry"></param>
         public void RegisterFtpProtocol(RegistryKey registry)
@@ -56,7 +67,7 @@ namespace Ch.Cyberduck.Core
         }
 
         /// <summary>
-        /// Check if Cyberduck is the default application for FTP URLs
+        /// Check if Cyberduck is the default application for FTP URLs in the current user domain.
         /// </summary>
         /// <returns></returns>
         public bool IsDefaultApplicationForFtp()
@@ -67,7 +78,7 @@ namespace Ch.Cyberduck.Core
         }
 
         /// <summary>
-        /// Check if Cyberduck is the default application for SFTP URLs
+        /// Check if Cyberduck is the default application for SFTP URLs in the current user domain.
         /// </summary>
         /// <returns></returns>
         public bool IsDefaultApplicationForSftp()
@@ -85,6 +96,19 @@ namespace Ch.Cyberduck.Core
             return false;
         }
 
+        /// <summary>
+        /// Register Cyberduck as default application for the SFTP URLs in the current user domain.
+        /// </summary>
+        /// <param name="registry"></param>
+        public void RegisterSftpProtocol()
+        {
+            RegisterSftpProtocol(Registry.CurrentUser);
+        }
+
+        /// <summary>
+        /// Register Cyberduck as default application for the SFTP URLs.
+        /// </summary>
+        /// <param name="registry"></param>
         public void RegisterSftpProtocol(RegistryKey registry)
         {
             CreateCustomUrlHandler(registry, "sftp", "sftp protocol", Application.ExecutablePath,
