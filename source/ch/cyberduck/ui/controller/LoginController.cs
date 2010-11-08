@@ -21,6 +21,7 @@ using ch.cyberduck.core;
 using Ch.Cyberduck.Core;
 using ch.cyberduck.core.i18n;
 using ch.cyberduck.ui.controller;
+using Ch.Cyberduck.Ui.Winforms.Taskdialog;
 using org.apache.log4j;
 using StructureMap;
 
@@ -36,10 +37,12 @@ namespace Ch.Cyberduck.Ui.Controller
         private bool _enablePublicKey;
         private Protocol _protocol;
         private ILoginView _view;
+        private WindowController _browser;
 
         private LoginController(WindowController c)
         {
             _view = ObjectFactory.GetInstance<ILoginView>();
+            _browser = c;
             InitEventHandlers();
         }
 
@@ -106,10 +109,27 @@ namespace Ch.Cyberduck.Ui.Controller
             Update();
         }
 
-        public override void warn(String title, String message, String defaultButton, String otherButton,
-                                  String preference)
+        public override void warn(String title, String message, String continueButton, String disconnectButton, String preference)
         {
-            //todo implement, e.g. for insecure connections if a secure one would be possible            
+
+            int r = cTaskDialog.ShowCommandBox(title,
+                                 title,
+                                 message,
+                                 null, null,
+                                 Locale.localizedString("Don't show again", "Credentials"),
+                                 continueButton + "|" + disconnectButton,
+                                 false, eSysIcons.Error, eSysIcons.Error);
+            if (cTaskDialog.VerificationChecked)
+            {
+                // Never show again.
+                Preferences.instance().setProperty(preference, true);
+            }
+            switch (r)
+            {
+                case 1:
+                    throw new LoginCanceledException();
+            }
+            //Proceed nevertheless.
         }
 
         public override void prompt(Protocol protocol, Credentials credentials, string title, string reason)
@@ -142,11 +162,9 @@ namespace Ch.Cyberduck.Ui.Controller
 
             Update();
 
-            //workaround to make sure we are running on the Main Thread
-            Form f = MainController.Application.ActiveMainForm;
             AsyncController.AsyncDelegate d = delegate
                                                   {
-                                                      if (DialogResult.Cancel == _view.ShowDialog(f))
+                                                      if (DialogResult.Cancel == _view.ShowDialog(_browser.View))
                                                       {
                                                           throw new LoginCanceledException();
                                                       }
@@ -154,7 +172,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                                       credentials.setUsername(Utils.SafeString(_view.Username));
                                                       credentials.setPassword(Utils.SafeString(_view.Password));
                                                   };
-            f.Invoke(d);
+            _browser.Invoke(d);
         }
 
         private void InitEventHandlers()
@@ -211,12 +229,18 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             protected override object create()
             {
-                return new LoginController(null);
+                return new LoginController(TransferController.Instance);
             }
 
             public override ch.cyberduck.core.LoginController create(Session s)
             {
-                return new LoginController(null);
+                foreach (BrowserController c in MainController.Browsers)
+                {
+                    if(c.getSession() == s) {
+                        return this.create(c);
+                    }
+                }
+                return (ch.cyberduck.core.LoginController)this.create();
             }
 
             public override ch.cyberduck.core.LoginController create(ch.cyberduck.ui.Controller c)
