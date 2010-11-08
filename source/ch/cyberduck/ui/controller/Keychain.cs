@@ -112,7 +112,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                                    Locale.localizedString("Disconnect") + "|" +
                                                    Locale.localizedString("Show Certificate", "Keychain"),
                                                    false,
-                                                   eSysIcons.Warning, eSysIcons.Warning);
+                                                   eSysIcons.Warning, eSysIcons.Information);
                     if (r == 0)
                     {
                         if (cTaskDialog.VerificationChecked)

@@ -66,7 +66,7 @@ namespace Ch.Cyberduck.Core
                                                         "Crash").Replace("%@", Preferences.instance().getProperty("application.name")),
                                                     null, null, null, 
                                                     Locale.localizedString("Send", "Crash") + "|" + Locale.localizedString("Don't Send", "Crash"),
-                                                    false, eSysIcons.Error, eSysIcons.Error);
+                                                    false, eSysIcons.Error, eSysIcons.Information);
             if (0 == result)
             {
                 CrashReporter.Instance.Post(report.ToString());

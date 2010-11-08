@@ -57,7 +57,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                                null,
                                                null, commands,
                                                false,
-                                               eSysIcons.Warning, eSysIcons.Warning);
+                                               eSysIcons.Warning, eSysIcons.Information);
             switch (r)
             {
                 case 0:
@@ -94,7 +94,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                                null,
                                                null, commands,
                                                false,
-                                               eSysIcons.Warning, eSysIcons.Warning);
+                                               eSysIcons.Warning, eSysIcons.Information);
             switch (r)
             {
                 case 0:
