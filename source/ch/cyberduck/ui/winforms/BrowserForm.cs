@@ -1268,7 +1268,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                          (sender, args) => new AboutBox().ShowDialog(), () => true);
             Commands.Add(new ToolStripItem[] {licenseToolStripMenuItem}, new[] {licenseMainMenuItem},
                          (sender, args) =>
-                         Utils.StartProcess(MainController.StartupLanguage.Replace('-', '_') + ".lproj\\License.txt"),
+                         Utils.StartProcess("License.txt"),
                          () => true);
             Commands.Add(new ToolStripItem[] {checkToolStripMenuItem}, new[] {updateMainMenuItem},
                          (sender, args) => UpdateController.Instance.ForceCheckForUpdates(false),

@@ -198,11 +198,12 @@ Section "MainSection" SEC01
   File "${BASEDIR}\Cyberduck.exe"
   File "${BASEDIR}\Cyberduck.exe.config"
   File "${BASEDIR}\Acknowledgments.rtf"
+  File "${BASEDIR}\..\..\en.lproj\License.txt"  
   File "${BASEDIR}\cyberduck-document.ico"
   File "${BASEDIR}\*.dll"
   File "${BASEDIR}\..\update\wyUpdate.exe"
   File "${BASEDIR}\..\update\*.wyc"
-
+  
   Push "v4.0"
   Call GetDotNetDir
   Pop $R0 ; .net framework v4.0 installation directory
