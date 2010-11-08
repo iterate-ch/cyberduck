@@ -335,25 +335,23 @@ namespace Ch.Cyberduck.Ui.Controller
                                                                "Configuration"), c.size()),
                                                        null,
                                                        null,
-                                                       null,
-                                                       String.Format("{0}|{1}|{2}",
+                                                       Locale.localizedString("Don't Ask Again", "Configuration"),
+                                                       String.Format("{0}|{1}",
                                                                      Locale.localizedString("Import", "Configuration"),
-                                                                     Locale.localizedString("Don't Ask Again",
-                                                                                            "Configuration"),
                                                                      Locale.localizedString("Cancel", "Configuration")),
                                                        false,
                                                        eSysIcons.Warning, eSysIcons.Warning);
+                        if (cTaskDialog.VerificationChecked)
+                        {
+                            // Flag as imported
+                            Preferences.instance().setProperty(c.getConfiguration(), true);
+                        }
                         switch (r)
                         {
                             case 0:
                                 BookmarkCollection.defaultCollection().addAll(c);
                                 // Flag as imported
                                 Preferences.instance().setProperty(c.getConfiguration(), true);
-                                break;
-                            case 1: // Flag as imported
-                                Preferences.instance().setProperty(c.getConfiguration(), true);
-                                break;
-                            default:
                                 break;
                         }
                     }
