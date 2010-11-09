@@ -73,6 +73,11 @@ public abstract class Path extends AbstractPath implements Serializable {
      */
     private Pattern TEXT_FILETYPE_PATTERN = null;
 
+    /**
+     *
+     */
+    private static final int CHUNKSIZE = Preferences.instance().getInteger("connection.chunksize");
+
     public Pattern getTextFiletypePattern() {
         final String regex = Preferences.instance().getProperty("filetype.text.regex");
         if(null == TEXT_FILETYPE_PATTERN ||
@@ -796,11 +801,10 @@ public abstract class Path extends AbstractPath implements Serializable {
      *                                     status flag to cancel.
      */
     private void transfer(InputStream in, OutputStream out, StreamListener listener) throws IOException {
-        final int chunksize = Preferences.instance().getInteger("connection.chunksize");
-        byte[] chunk = new byte[chunksize];
+        byte[] chunk = new byte[CHUNKSIZE];
         long bytesTransferred = status().getCurrent();
         while(!status().isCanceled()) {
-            int read = in.read(chunk, 0, chunksize);
+            int read = in.read(chunk, 0, CHUNKSIZE);
             listener.bytesReceived(read);
             if(-1 == read) {
                 // End of file
