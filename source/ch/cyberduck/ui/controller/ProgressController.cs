@@ -1,4 +1,4 @@
-﻿// 
+﻿//
 // Copyright (c) 2010 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
@@ -168,7 +168,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private class TransferAdapter : ch.cyberduck.core.TransferAdapter
         {
             private const long Delay = 0;
-            private const long Period = 500; //in milliseconds
+            private const long Period = 200; //in milliseconds
             private static readonly Logger Log = Logger.getLogger(typeof (TransferAdapter).Name);
             private readonly ProgressController _controller;
             private readonly IProgressView _view;
