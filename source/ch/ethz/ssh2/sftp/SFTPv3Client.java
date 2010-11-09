@@ -1158,9 +1158,6 @@ public class SFTPv3Client {
      */
     public int download(SFTPv3FileHandle handle, long fileOffset, byte[] dst, int dstoff, int len) throws IOException {
         boolean errorOccured = false;
-        int errorCode = 0;
-        String errorMessage = null;
-        int errorClientOffset = 0;
 
         checkHandleValidAndOpen(handle);
 
@@ -1219,7 +1216,7 @@ public class SFTPv3Client {
             OutstandingRequest req = pendingQueue.get(rep_id);
 
             /* Should shutdown here, no point in going on */
-            if(req == null) {
+            if(null == req) {
                 throw new IOException("The server sent an invalid id field.");
             }
 
@@ -1236,11 +1233,13 @@ public class SFTPv3Client {
                     String[] desc = ErrorCodes.getDescription(code);
                     log.log("Got SSH_FXP_STATUS (" + req.req_id + ") (" + ((desc != null) ? desc[0] : "UNKNOWN") + ")");
                 }
-                if((!errorOccured) || (errorClientOffset > req.clientOffset)) {
-                    errorOccured = true;
-                    errorCode = code;
-                    errorMessage = msg;
-                    errorClientOffset = req.clientOffset;
+                // Flag to read all pending requests but don't send any more.
+                errorOccured = true;
+                if(pendingQueue.isEmpty()) {
+                    if(ErrorCodes.SSH_FX_EOF == code) {
+                        return -1;
+                    }
+                    throw new SFTPException(msg, code);
                 }
             }
             else if(type == Packet.SSH_FXP_DATA) {
@@ -1277,19 +1276,7 @@ public class SFTPv3Client {
                 throw new IOException("The SFTP server sent an unexpected packet type (" + type + ")");
             }
         }
-        if(errorOccured) {
-            if(ErrorCodes.SSH_FX_EOF == errorCode) {
-                log.log("Got SSH_FX_EOF.");
-                if(0 == errorClientOffset) {
-                    return -1;
-                }
-                if(dstoff == errorClientOffset) {
-                    return -1;
-                }
-                return errorClientOffset;
-            }
-            throw new SFTPException(errorMessage, errorCode);
-        }
+        // Should never reach here.
         throw new SFTPException("No EOF reached", -1);
     }
 
