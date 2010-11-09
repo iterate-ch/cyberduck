@@ -1,13 +1,16 @@
 4.0b6 [http://trac.cyberduck.ch/milestone/4.0b6]
-- [Bugfix] Slow SFTP transfers (#185)
 - [Feature] FireFTP Bookmarks Importer
 - [Feature] CrossFTP Bookmarks Importer
-- [Feature] S3Browser Bookmarks Importer
-- [Feature] CloudBerry Explorer for Amazon S3 Bookmarks Importer
-- [Feature] CloudBerry Explorer for Google Storage Bookmarks Importer
-- [Feature] CloudBerry Explorer for Azure Blob Storage Bookmarks Importer
-- [Feature] FlashFXP 4 Bookmarks Importer
-- [Bugfix] Bugfixes and usability improvements
+- [Feature] S3Browser Bookmarks Importer (Windows)
+- [Feature] CloudBerry Explorer for Amazon S3 Bookmarks Importer (Windows)
+- [Feature] CloudBerry Explorer for Google Storage Bookmarks Importer (Windows)
+- [Feature] CloudBerry Explorer for Azure Blob Storage Bookmarks Importer (Windows)
+- [Bugfix] Slow SFTP transfers (#185)
+- [Bugfix] Support for S3Fox directory placeholders (S3)
+- [Bugfix] Support for Google Storage Console directory placeholders (S3)
+- [Bugfix] Support for s3sync.rb directory placeholders (#5374) (S3)
+- [Bugfix] Connect through HTTP/HTTPS proxy (#5379) (Google Docs)
+- [Bugfix] Changing storage class fails (S3)
 
 4.0b5 [http://trac.cyberduck.ch/milestone/4.0b5]
 - [Feature] FlashFXP 3 Bookmarks Importer

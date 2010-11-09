@@ -5,7 +5,6 @@ http://cyberduck.ch/
 Changelog. Last modified: $Date$
 
 4.0 [http://trac.cyberduck.ch/milestone/4.0]
-- [Bugfix] Slow SFTP transfers (#185)
 - [Feature] Version for Microsoft Windows XP, Windows Vista & Windows 7.
 - [Feature] Connecting to Windows Azure Blob Storage (Azure) (#3938)
 - [Feature] CloudFront CDN invalidation requests (S3) (#5197)
@@ -15,11 +14,11 @@ Changelog. Last modified: $Date$
 - [Feature] CloudBerry Explorer for Amazon S3 Bookmarks Importer (Windows)
 - [Feature] CloudBerry Explorer for Google Storage Bookmarks Importer (Windows)
 - [Feature] CloudBerry Explorer for Azure Blob Storage Bookmarks Importer (Windows)
+- [Bugfix] Slow SFTP transfers (#185)
 - [Bugfix] Support for S3Fox directory placeholders (S3)
 - [Bugfix] Support for Google Storage Console directory placeholders (S3)
 - [Bugfix] Support for s3sync.rb directory placeholders (#5374) (S3)
 - [Bugfix] Connect through HTTP/HTTPS proxy (#5379) (Google Docs)
-- [Bugfix] Proxy support for Google Docs connections (#5379)
 - [Bugfix] Changing storage class fails (S3)
 
 3.7 (Oct-21-2010) [http://trac.cyberduck.ch/milestone/3.7]
