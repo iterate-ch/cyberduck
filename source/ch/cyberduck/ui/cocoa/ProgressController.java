@@ -104,7 +104,7 @@ public class ProgressController extends BundleController {
             private ScheduledFuture progressTimer;
 
             final static long delay = 0;
-            final static long period = 500; //in milliseconds
+            final static long period = 200; //in milliseconds
 
             @Override
             public void transferWillStart() {
