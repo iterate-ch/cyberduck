@@ -39,8 +39,7 @@ public class ThrottledInputStream extends InputStream {
      */
     private BandwidthThrottle _throttle;
 
-    public ThrottledInputStream(InputStream delegate,
-                                 BandwidthThrottle throttle) {
+    public ThrottledInputStream(InputStream delegate, BandwidthThrottle throttle) {
         this._delegate = delegate;
         this._throttle = throttle;
     }
@@ -52,8 +51,6 @@ public class ThrottledInputStream extends InputStream {
      */
     @Override
     public int read() throws IOException {
-        int allow = _throttle.request(1); //Note that BandwidthRequeset#request never returns zero.
-        assert (allow == 1);
         return _delegate.read();
     }
 
@@ -62,27 +59,12 @@ public class ThrottledInputStream extends InputStream {
      *
      * @param data   the bytes to read.
      * @param offset the index in the array to start at.
-     * @param totalLength the number of bytes to read.
+     * @param len    the number of bytes to read.
      * @throws IOException if an I/O error occurs on the InputStream.
      */
     @Override
-    public int read(byte[] data, int offset, int totalLength) throws IOException {
-        int totalRead = 0;
-        while(totalLength > 0) {
-            int length = _throttle.request(totalLength);
-            assert (length + offset <= data.length);
-            final int read = _delegate.read(data, offset, length);
-            if(-1 == read) {
-                if(0 == totalRead) {
-                    totalRead = -1;
-                }
-                break;
-            }
-            totalRead += read;
-            totalLength -= read;
-            offset += read;
-        }
-        return totalRead;
+    public int read(byte[] data, int offset, int len) throws IOException {
+        return _delegate.read(data, offset, _throttle.request(len));
     }
 
     @Override
