@@ -37,12 +37,6 @@ public class SFTPInputStream extends InputStream {
     private long readOffset = 0;
 
     public SFTPInputStream(SFTPv3FileHandle handle) {
-        if(null == handle) {
-            throw new IllegalArgumentException("Cannot accept null argument!");
-        }
-        if(null == handle.getClient()) {
-            throw new IllegalArgumentException("Cannot accept null client!");
-        }
         this.handle = handle;
     }
 
@@ -56,8 +50,7 @@ public class SFTPInputStream extends InputStream {
      */
     @Override
     public int read(byte[] buffer, int offset, int len) throws IOException {
-        int read = handle.getClient().download(handle,
-                readOffset, buffer, offset, len);
+        int read = handle.getClient().download(handle, readOffset, buffer, offset, len);
         if(read > 0) {
             readOffset += read;
         }
@@ -103,8 +96,7 @@ public class SFTPInputStream extends InputStream {
     }
 
     @Override
-    public void close()
-            throws IOException {
+    public void close() throws IOException {
         handle.getClient().closeFile(handle);
     }
 }

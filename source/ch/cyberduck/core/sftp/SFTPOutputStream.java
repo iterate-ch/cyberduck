@@ -18,17 +18,16 @@ package ch.cyberduck.core.sftp;
  * dkocher@cyberduck.ch
  */
 
+import ch.ethz.ssh2.sftp.SFTPv3FileHandle;
+
 import java.io.IOException;
 import java.io.OutputStream;
-
-import ch.ethz.ssh2.sftp.SFTPv3FileHandle;
 
 /**
  * @author David Kocher, dkocher@cyberduck.ch
  * @version $Id$
  */
-public class SFTPOutputStream extends OutputStream
-{
+public class SFTPOutputStream extends OutputStream {
 
     private SFTPv3FileHandle handle;
 
@@ -37,12 +36,7 @@ public class SFTPOutputStream extends OutputStream
      */
     private long writeOffset = 0;
 
-    public SFTPOutputStream(SFTPv3FileHandle handle)
-    {
-        if(null == handle)
-            throw new IllegalArgumentException("Cannot accept null argument!");
-        if(null == handle.getClient())
-            throw new IllegalArgumentException("Cannot accept null client!");
+    public SFTPOutputStream(SFTPv3FileHandle handle) {
         this.handle = handle;
     }
 
@@ -59,8 +53,7 @@ public class SFTPOutputStream extends OutputStream
      */
     @Override
     public void write(byte[] buffer, int offset, int len)
-            throws IOException
-    {
+            throws IOException {
         // We can just blindly write the whole buffer at once.
         // if <code>len</code> &gt; 32768, then the write operation will
         // be split into multiple writes in SFTPv3Client#write.
@@ -71,8 +64,7 @@ public class SFTPOutputStream extends OutputStream
 
     @Override
     public void write(int b)
-            throws IOException
-    {
+            throws IOException {
         byte[] buffer = new byte[1];
         buffer[0] = (byte) b;
         handle.getClient().upload(handle, writeOffset, buffer, 0, 1);
@@ -80,16 +72,14 @@ public class SFTPOutputStream extends OutputStream
         writeOffset += 1;
     }
 
-    public long skip(long n)
-    {
+    public long skip(long n) {
         writeOffset += n;
         return n;
     }
 
     @Override
     public void close()
-            throws IOException
-    {
+            throws IOException {
         handle.getClient().closeFile(handle);
     }
 }
