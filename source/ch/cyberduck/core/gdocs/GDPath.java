@@ -643,7 +643,7 @@ public class GDPath extends Path {
                     }
                 }
                 if(!include) {
-                    log.warn("Skip document with different owner");
+                    log.warn("Skip document with different owner:" + entry);
                     continue;
                 }
                 final String type = entry.getType();
