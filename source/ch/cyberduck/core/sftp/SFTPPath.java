@@ -447,6 +447,10 @@ public class SFTPPath extends Path {
                     in = scp.get(this.getAbsolute());
                 }
                 out = this.getLocal().getOutputStream(this.status().isResume());
+                // No parallel requests if the file size is smaller than the buffer.
+                this.getSession().sftp().setDownloadRequestParallelism(
+                        (int) (this.attributes().getSize() / Preferences.instance().getInteger("connection.chunksize")) + 1
+                );
                 this.download(in, out, throttle, listener);
             }
         }
