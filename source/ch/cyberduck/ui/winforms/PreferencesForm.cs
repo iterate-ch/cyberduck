@@ -29,6 +29,11 @@ namespace Ch.Cyberduck.Ui.Winforms
 {
     public partial class PreferencesForm : BaseForm, IPreferencesView
     {
+        private static readonly int MaxHeight = 800;
+        private static readonly int MaxWidth = 1000;
+        private static readonly int MinHeight = 250;
+        private static readonly int MinWidth = 450;
+
         public PreferencesForm()
         {
             InitializeComponent();
@@ -42,6 +47,9 @@ namespace Ch.Cyberduck.Ui.Winforms
                             }
                             Width = newWidth;
                         };
+
+            MaximumSize = new Size(MaxWidth, MaxHeight);
+            MinimumSize = new Size(MinWidth, MinHeight);
 
             ftpButton.Image = IconCache.Instance.IconForName("ftp", 32);
             sftpButton.Image = IconCache.Instance.IconForName("sftp", 32);
