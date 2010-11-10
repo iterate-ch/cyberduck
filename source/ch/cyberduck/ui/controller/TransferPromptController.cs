@@ -46,9 +46,12 @@ namespace Ch.Cyberduck.Ui.Controller
             View = ObjectFactory.GetInstance<ITransferPromptView>();
             _parent = parent;
             Transfer = transfer;
+            View.Title = Locale.localizedString(TransferName);
 
             PopulateActions();
         }
+
+        protected abstract string TransferName { get; }
 
         public virtual TransferAction prompt()
         {
@@ -69,13 +72,13 @@ namespace Ch.Cyberduck.Ui.Controller
 
                                                View.ToggleDetailsEvent += View_ToggleDetailsEvent;
                                                View.DetailsVisible = Preferences.instance().getBoolean(
-                                                       "transfer.toggle.details");
+                                                   "transfer.toggle.details");
 
                                                View.ChangedActionEvent += View_ChangedActionEvent;
                                                View.ChangedSelectionEvent += View_ChangedSelectionEvent;
 
-                                               View.ModelCanExpandDelegate(TransferPromptModel.CanExpand);
-                                               View.ModelChildrenGetterDelegate(TransferPromptModel.ChildrenGetter);
+                                               View.ModelCanExpandDelegate = TransferPromptModel.CanExpand;
+                                               View.ModelChildrenGetterDelegate = TransferPromptModel.ChildrenGetter;
                                                View.ModelCheckStateGetter = TransferPromptModel.GetCheckState;
                                                View.ModelCheckStateSetter = TransferPromptModel.SetCheckState;
                                                View.ModelSizeGetter = TransferPromptModel.GetSize;
@@ -87,8 +90,16 @@ namespace Ch.Cyberduck.Ui.Controller
                                                View.ModelSyncGetter = TransferPromptModel.GetSyncGetter;
                                                View.ModelActiveGetter = TransferPromptModel.IsActive;
 
-//                                               View.ItemsChanged += UpdateStatusLabel;
+                                               View.ItemsChanged += UpdateStatusLabel;
                                                View.SetModel(TransferPromptModel.GetEnumerator());
+
+                                               //select first one if there is any
+                                               IEnumerator<TreePathReference> en =
+                                                   TransferPromptModel.GetEnumerator().GetEnumerator();
+                                               if (en.MoveNext())
+                                               {
+                                                   View.SelectedPath = en.Current;
+                                               }
 
                                                DialogResult result = View.ShowDialog(_parent.View);
 
@@ -197,18 +208,14 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 return;
             }
-
             Preferences.instance().setProperty("queue.prompt.action.default", selected.toString());
-
             Action = selected;
-            Transfer.cache().clear();
             ReloadData();
         }
 
         public void ReloadData()
         {
-            View.RefreshBrowserObject(null);
-            //View.SetModel(TransferPromptModel.GetEnumerator());
+            View.SetModel(TransferPromptModel.GetEnumerator());
             UpdateStatusLabel();
         }
 
@@ -224,7 +231,7 @@ namespace Ch.Cyberduck.Ui.Controller
             View.PopulateActions(actions);
 
             TransferAction defaultAction = TransferAction.forName(
-                    Preferences.instance().getProperty("queue.prompt.action.default"));
+                Preferences.instance().getProperty("queue.prompt.action.default"));
             View.SelectedAction = defaultAction;
             Action = defaultAction;
         }

@@ -25,6 +25,11 @@ namespace Ch.Cyberduck.Ui.Controller
         {
         }
 
+        protected override string TransferName
+        {
+            get { return "Upload"; }
+        }
+
         public override TransferAction prompt()
         {
             TransferPromptModel = new UploadPromptModel(this, Transfer);

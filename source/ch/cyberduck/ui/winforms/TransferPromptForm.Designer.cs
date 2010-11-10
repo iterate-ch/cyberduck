@@ -51,16 +51,16 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.cancelButton = new System.Windows.Forms.Button();
             this.continueButton = new System.Windows.Forms.Button();
             this.mainTableLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
+            this.animation = new System.Windows.Forms.PictureBox();
             this.separatorLine = new System.Windows.Forms.Label();
             this.statusLabel = new System.Windows.Forms.Label();
             this.toggleDetailsLabel = new System.Windows.Forms.Label();
             this.imageList = new System.Windows.Forms.ImageList(this.components);
             this.detailsTableLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
-            this.animation = new System.Windows.Forms.PictureBox();
             ((System.ComponentModel.ISupportInitialize)(this.browser)).BeginInit();
             this.mainTableLayoutPanel.SuspendLayout();
-            this.detailsTableLayoutPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.animation)).BeginInit();
+            this.detailsTableLayoutPanel.SuspendLayout();
             this.SuspendLayout();
             // 
             // comboBoxAction
@@ -266,6 +266,18 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.mainTableLayoutPanel.Size = new System.Drawing.Size(715, 347);
             this.mainTableLayoutPanel.TabIndex = 3;
             // 
+            // animation
+            // 
+            this.animation.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.animation.Image = global::Ch.Cyberduck.ResourcesBundle.throbber_small;
+            this.animation.Location = new System.Drawing.Point(13, 282);
+            this.animation.Name = "animation";
+            this.animation.Size = new System.Drawing.Size(24, 20);
+            this.animation.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
+            this.animation.TabIndex = 45;
+            this.animation.TabStop = false;
+            this.animation.Visible = false;
+            // 
             // separatorLine
             // 
             this.separatorLine.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
@@ -347,18 +359,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.detailsTableLayoutPanel.Size = new System.Drawing.Size(715, 108);
             this.detailsTableLayoutPanel.TabIndex = 4;
             // 
-            // animation
-            // 
-            this.animation.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.animation.Image = global::Ch.Cyberduck.ResourcesBundle.throbber_small;
-            this.animation.Location = new System.Drawing.Point(13, 282);
-            this.animation.Name = "animation";
-            this.animation.Size = new System.Drawing.Size(24, 20);
-            this.animation.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
-            this.animation.TabIndex = 45;
-            this.animation.TabStop = false;
-            this.animation.Visible = false;
-            // 
             // TransferPromptForm
             // 
             this.AcceptButton = this.continueButton;
@@ -374,9 +374,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             ((System.ComponentModel.ISupportInitialize)(this.browser)).EndInit();
             this.mainTableLayoutPanel.ResumeLayout(false);
             this.mainTableLayoutPanel.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.animation)).EndInit();
             this.detailsTableLayoutPanel.ResumeLayout(false);
             this.detailsTableLayoutPanel.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.animation)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 

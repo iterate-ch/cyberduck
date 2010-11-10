@@ -1,4 +1,4 @@
-﻿//
+﻿// 
 // Copyright (c) 2010 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
@@ -21,14 +21,13 @@ using System.Runtime.InteropServices;
 using System.Text;
 using ch.cyberduck.core;
 using Ch.Cyberduck.Core;
+using Ch.Cyberduck.Core.Collections;
 using java.util;
+using Microsoft.Win32;
 using org.apache.commons.io;
 using org.apache.log4j;
 using File = java.io.File;
-using Microsoft.Win32;
-using Locale = ch.cyberduck.core.i18n.Locale;
 using Path = System.IO.Path;
-using Ch.Cyberduck.Core.Collections;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -81,7 +80,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     if (null != oApplication)
                     {
                         //for Windows XP and earlier
-                        string strExe = (string)oApplication.GetValue("Application");
+                        string strExe = (string) oApplication.GetValue("Application");
 
                         if (string.IsNullOrEmpty(strExe))
                         {
@@ -90,7 +89,7 @@ namespace Ch.Cyberduck.Ui.Controller
                             {
                                 if (null != userChoice)
                                 {
-                                    string progId = (string)userChoice.GetValue("Progid");
+                                    string progId = (string) userChoice.GetValue("Progid");
                                     if (!string.IsNullOrEmpty(progId))
                                     {
                                         using (RegistryKey p = Registry.ClassesRoot.OpenSubKey(progId))
@@ -128,14 +127,14 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     if (null != editSk)
                     {
-                        return (string)editSk.GetValue("");
+                        return (string) editSk.GetValue("");
                     }
 
                     using (var openSk = root.OpenSubKey("shell\\open\\command"))
                     {
                         if (null != openSk)
                         {
-                            return (string)openSk.GetValue("");
+                            return (string) openSk.GetValue("");
                         }
                     }
                 }
@@ -146,9 +145,9 @@ namespace Ch.Cyberduck.Ui.Controller
         public override string getDefaultApplication()
         {
             //see http://windevblog.blogspot.com/2008/09/get-default-application-in-windows-xp.html
-            string strExt = Utils.GetSafeExtension(this.getName());
+            string strExt = Utils.GetSafeExtension(getName());
             string command;
-            Log.debug(string.Format("GetRegisteredDefaultApplication for filname {0}", this.getName()));
+            Log.debug(string.Format("GetRegisteredDefaultApplication for filname {0}", getName()));
 
             if (defaultApplicationCache.TryGetValue(strExt, out command))
             {
@@ -156,7 +155,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 return command;
             }
 
-            command = GetExplorerRegisteredApplication(this.getName());
+            command = GetExplorerRegisteredApplication(getName());
             if (null != command)
             {
                 defaultApplicationCache.Add(strExt, command);
@@ -170,7 +169,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     if (null != extSubKey)
                     {
-                        strProgID = (string)extSubKey.GetValue(null);
+                        strProgID = (string) extSubKey.GetValue(null);
 
                         if (null != strProgID)
                         {
@@ -217,12 +216,12 @@ namespace Ch.Cyberduck.Ui.Controller
         }
 
         public override bool exists()
-        {
-            if(this.attributes().isDirectory())
+        {            
+            if (System.IO.File.Exists(getAbsolute()))
             {
-                return System.IO.Directory.Exists(getAbsolute());
+                return true;
             }
-            return System.IO.File.Exists(getAbsolute());
+            return Directory.Exists(getAbsolute());
         }
 
         public override void writeUnixPermission(Permission p, bool b)

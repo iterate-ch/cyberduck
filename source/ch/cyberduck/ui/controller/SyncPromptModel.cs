@@ -15,7 +15,6 @@
 // Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
 // 
-using System;
 using ch.cyberduck.core;
 using org.apache.log4j;
 
@@ -23,10 +22,11 @@ namespace Ch.Cyberduck.Ui.Controller
 {
     internal class SyncPromptModel : TransferPromptModel
     {
-        private readonly PathFilter _filter = new SyncPathFilter();
+        private readonly PathFilter _filter;
 
         public SyncPromptModel(TransferPromptController controller, Transfer transfer) : base(controller, transfer)
         {
+            _filter = new SyncPathFilter(transfer);
         }
 
         /// <summary>
@@ -39,18 +39,18 @@ namespace Ch.Cyberduck.Ui.Controller
             return _filter;
         }
 
-        public override object GetSize(object reference)
+        public override object GetSize(TreePathReference reference)
         {
-            Path p = ((TreePathReference)reference).Unique;
+            Path p = GetPath(reference);
             SyncTransfer.Comparison compare = ((SyncTransfer) Transfer).compare(p);
             return compare.equals(SyncTransfer.COMPARISON_REMOTE_NEWER)
                        ? p.attributes().getSize()
-                       : p.getLocal().attributes().getSize();            
+                       : p.getLocal().attributes().getSize();
         }
 
-        public override object GetWarningImage(object reference)
+        public override object GetWarningImage(TreePathReference reference)
         {
-            Path p = ((TreePathReference)reference).Unique;
+            Path p = GetPath(reference);
             if (p.attributes().isFile())
             {
                 if (p.exists())
@@ -71,9 +71,9 @@ namespace Ch.Cyberduck.Ui.Controller
             return null;
         }
 
-        public override object GetCreateImage(object reference)
+        public override object GetCreateImage(TreePathReference reference)
         {
-            Path p = ((TreePathReference)reference).Unique;
+            Path p = GetPath(reference);
             if (!(p.exists() && p.getLocal().exists()))
             {
                 return IconCache.Instance.IconForName("plus");
@@ -81,10 +81,10 @@ namespace Ch.Cyberduck.Ui.Controller
             return null;
         }
 
-        public override object GetSyncGetter(object reference)
+        public override object GetSyncGetter(TreePathReference reference)
         {
-            Path p = ((TreePathReference)reference).Unique;
-            SyncTransfer.Comparison compare = ((SyncTransfer)Transfer).compare(p);
+            Path p = (reference).Unique;
+            SyncTransfer.Comparison compare = ((SyncTransfer) Transfer).compare(p);
             if (compare.equals(SyncTransfer.COMPARISON_REMOTE_NEWER))
             {
                 return IconCache.Instance.IconForName("arrowDown", 16);
@@ -99,12 +99,18 @@ namespace Ch.Cyberduck.Ui.Controller
         internal class SyncPathFilter : PromptFilter
         {
             protected static Logger Log = Logger.getLogger(typeof (SyncPathFilter));
+            private readonly Transfer _transfer;
+
+            public SyncPathFilter(Transfer transfer)
+            {
+                _transfer = transfer;
+            }
 
             public override bool accept(AbstractPath ap)
             {
                 Path child = (Path) ap;
                 Log.debug("accept:" + child);
-                return base.accept(child);
+                return base.accept(child) && _transfer.isIncluded(child);
             }
         }
     }

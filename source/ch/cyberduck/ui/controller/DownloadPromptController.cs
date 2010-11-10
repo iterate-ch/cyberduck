@@ -13,7 +13,7 @@
 // GNU General Public License for more details.
 // 
 // Bug fixes, suggestions and comments should be sent to:
-// yves@langisch.ch
+// yves@cyberduck.ch
 // 
 using ch.cyberduck.core;
 
@@ -24,6 +24,11 @@ namespace Ch.Cyberduck.Ui.Controller
         public DownloadPromptController(WindowController parent, Transfer transfer) : base(parent, transfer)
         {
             ;
+        }
+
+        protected override string TransferName
+        {
+            get { return "Download"; }
         }
 
         public override TransferAction prompt()

@@ -28,6 +28,11 @@ namespace ch.cyberduck.ui.controller
             ;
         }
 
+        protected override string TransferName
+        {
+            get { return "Synchronize"; }
+        }
+
         public override TransferAction prompt()
         {
             TransferPromptModel = new SyncPromptModel(this, Transfer);
@@ -42,18 +47,15 @@ namespace ch.cyberduck.ui.controller
             {
                 return;
             }
-
-            core.Preferences.instance().setProperty("queue.sync.action.default", selected.toString());
-
-            ((SyncTransfer)Transfer).setTransferAction(selected);
-            Transfer.cache().clear();
+            Preferences.instance().setProperty("queue.sync.action.default", selected.toString());
+            ((SyncTransfer) Transfer).setTransferAction(selected);
             ReloadData();
         }
 
         protected override void PopulateActions()
         {
             IDictionary<TransferAction, string> actions = new Dictionary<TransferAction, string>();
-            
+
             TransferAction defaultAction = ((SyncTransfer) Transfer).getAction();
 
             actions.Add(SyncTransfer.ACTION_DOWNLOAD, SyncTransfer.ACTION_DOWNLOAD.getLocalizableString());

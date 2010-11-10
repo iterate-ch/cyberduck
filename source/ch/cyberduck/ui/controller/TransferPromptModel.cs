@@ -20,7 +20,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using ch.cyberduck.core;
-using Ch.Cyberduck.Core;
 using ch.cyberduck.core.i18n;
 using ch.cyberduck.core.threading;
 using Ch.Cyberduck.Ui.Winforms;
@@ -58,8 +57,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public bool CanExpand(object reference)
         {
-            Path path = ((TreePathReference) reference).Unique;            
-            return path.attributes().isDirectory();
+            return GetPath(((TreePathReference) reference)).attributes().isDirectory();
         }
 
         public IEnumerable<TreePathReference> ChildrenGetter(object reference)
@@ -97,14 +95,25 @@ namespace Ch.Cyberduck.Ui.Controller
             yield break;
         }
 
-        public object GetName(object reference)
+        protected Path GetPath(TreePathReference path)
         {
-            return ((TreePathReference) reference).Unique.getName();
+            Path result = Transfer.lookup(path);
+            if (null == result)
+            {
+                // cache is being updated
+                result = path.Unique;
+            }
+            return result;
         }
 
-        public object GetModified(object reference)
+        public object GetName(TreePathReference reference)
         {
-            long modificationDate = ((TreePathReference) reference).Unique.attributes().getModificationDate();
+            return GetPath(reference).getName();
+        }
+
+        public object GetModified(TreePathReference reference)
+        {
+            long modificationDate = GetPath(reference).attributes().getModificationDate();
             if (modificationDate != -1)
             {
                 return UserDefaultsDateFormatter.ConvertJavaMiliSecondToDateTime(modificationDate);
@@ -112,22 +121,22 @@ namespace Ch.Cyberduck.Ui.Controller
             return UNKNOWN;
         }
 
-        public abstract object GetSize(object path);
+        public abstract object GetSize(TreePathReference reference);
 
         public string GetSizeAsString(object size)
         {
             return Status.getSizeAsString((long) size);
         }
 
-        public object GetIcon(object rowobject)
+        public object GetIcon(TreePathReference reference)
         {
-            return IconCache.Instance.IconForPath(((TreePathReference) rowobject).Unique, IconCache.IconSize.Small);
+            return IconCache.Instance.IconForPath(GetPath(reference), IconCache.IconSize.Small);
         }
 
         public CheckState GetCheckState(Object reference)
         {
-            Path path = ((TreePathReference) reference).Unique;
-            bool included = Transfer.isIncluded(path) && !_controller.Action.equals(TransferAction.ACTION_SKIP);
+            bool included = Transfer.isIncluded(GetPath((TreePathReference) reference)) &&
+                            !_controller.Action.equals(TransferAction.ACTION_SKIP);
             if (included)
             {
                 return CheckState.Checked;
@@ -145,7 +154,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public CheckState SetCheckState(object reference, CheckState newValue)
         {
-            Path path = ((TreePathReference) reference).Unique;
+            Path path = GetPath((TreePathReference) reference);
             if (!path.status().isSkipped())
             {
                 Transfer.setSelected(path, newValue == CheckState.Checked ? true : false);
@@ -156,21 +165,23 @@ namespace Ch.Cyberduck.Ui.Controller
             return newValue == CheckState.Checked ? CheckState.Unchecked : CheckState.Checked;
         }
 
-        public abstract object GetWarningImage(object reference);
+        public abstract object GetWarningImage(TreePathReference reference);
 
-        public virtual object GetCreateImage(object reference)
+        public virtual object GetCreateImage(TreePathReference reference)
         {
+            //todo was ist das?
             return null;
         }
 
-        public virtual object GetSyncGetter(object reference)
+        public virtual object GetSyncGetter(TreePathReference reference)
         {
+            //todo was ist das?
             return null;
         }
 
         public bool IsActive(TreePathReference reference)
         {
-            return Transfer.isIncluded(reference.Unique);
+            return Transfer.isIncluded(GetPath(reference));
         }
 
         private class ChildGetterTransferPromptBackgrounAction : AbstractBackgroundAction
@@ -220,7 +231,6 @@ namespace Ch.Cyberduck.Ui.Controller
                     _isLoadingListingInBackground.Remove(_path);
                     if (_isLoadingListingInBackground.Count == 0)
                     {
-                        //_controller.ReloadData();
                         _controller.RefreshObject(_path);
                     }
                 }

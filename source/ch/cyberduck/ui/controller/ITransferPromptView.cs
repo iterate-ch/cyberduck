@@ -25,8 +25,9 @@ namespace Ch.Cyberduck.Ui.Controller
 {
     public interface ITransferPromptView : IView
     {
+        string Title { set; }
         TransferAction SelectedAction { get; set; }
-        TreePathReference SelectedPath { get; }
+        TreePathReference SelectedPath { get; set; }
         string LocalFileUrl { set; }
         string LocalFileSize { set; }
         string LocalFileModificationDate { set; }
@@ -38,21 +39,22 @@ namespace Ch.Cyberduck.Ui.Controller
 
         CheckStateGetterDelegate ModelCheckStateGetter { set; }
         CheckStatePutterDelegate ModelCheckStateSetter { set; }
-        ImageGetterDelegate ModelIconGetter { set; }
-        AspectGetterDelegate ModelFilenameGetter { set; }
-        AspectGetterDelegate ModelSizeGetter { set; }
+
+        TreeListView.CanExpandGetterDelegate ModelCanExpandDelegate { set; }
+        TreeListView.ChildrenGetterDelegate ModelChildrenGetterDelegate { set; }
+
+        TypedColumn<TreePathReference>.TypedImageGetterDelegate ModelIconGetter { set; }
+        TypedColumn<TreePathReference>.TypedAspectGetterDelegate ModelFilenameGetter { set; }
+        TypedColumn<TreePathReference>.TypedAspectGetterDelegate ModelSizeGetter { set; }
         AspectToStringConverterDelegate ModelSizeAsStringGetter { set; }
-        ImageGetterDelegate ModelWarningGetter { set; }
-        ImageGetterDelegate ModelCreateGetter { set; }
-        ImageGetterDelegate ModelSyncGetter { set; }
+        TypedColumn<TreePathReference>.TypedImageGetterDelegate ModelWarningGetter { set; }
+        TypedColumn<TreePathReference>.TypedImageGetterDelegate ModelCreateGetter { set; }
+        TypedColumn<TreePathReference>.TypedImageGetterDelegate ModelSyncGetter { set; }
         MulticolorTreeListView.ActiveGetterDelegate ModelActiveGetter { set; }
         string StatusLabel { set; }
         void SetModel(IEnumerable<TreePathReference> model);
         void RefreshBrowserObject(TreePathReference reference);
         void PopulateActions(IDictionary<TransferAction, string> actions);
-
-        void ModelCanExpandDelegate(TreeListView.CanExpandGetterDelegate canExpandDelegate);
-        void ModelChildrenGetterDelegate(TreeListView.ChildrenGetterDelegate childrenGetterDelegate);
 
         event VoidHandler ChangedActionEvent;
         event VoidHandler ChangedSelectionEvent;

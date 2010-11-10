@@ -16,12 +16,12 @@
 // yves@cyberduck.ch
 // 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using BrightIdeasSoftware;
 using ch.cyberduck.core;
+using ch.cyberduck.core.i18n;
 using ch.cyberduck.ui.controller;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Winforms.Controls;
@@ -35,6 +35,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         private static readonly int MinHeight = 250;
         private static readonly int MinWidth = 450;
         private bool _expanded = true;
+        private ListViewItem _lastSelectedListViewItem;
 
         public TransferPromptForm()
         {
@@ -54,57 +55,61 @@ namespace Ch.Cyberduck.Ui.Winforms
             browser.TreeColumnRenderer = new BrowserRenderer();
             browser.SelectedRowDecoration = new ExplorerRowBorderDecoration();
             browser.MultiSelect = false;
-            browser.FullRowSelect = true;            
-            //browser.ItemsChanged += (sender, args) => ItemsChanged();
+            browser.FullRowSelect = true;
+            browser.ItemsChanged += (sender, args) => ItemsChanged();
 
             //due to the checkbox feature the highlight bar is not being redrawn properly -> redraw the entire control instead
-            browser.SelectedIndexChanged += (sender, args) => browser.Refresh();
+            //todo report this bug to the ObjectListView forum
+            browser.SelectedIndexChanged += delegate
+                                                {
+                                                    if (null != browser.SelectedItem)
+                                                    {
+                                                        browser.Invalidate(browser.SelectedItem.Bounds);
+                                                        if (null != _lastSelectedListViewItem)
+                                                        {
+                                                            browser.Invalidate(_lastSelectedListViewItem.Bounds);
+                                                        }
+                                                        _lastSelectedListViewItem = browser.SelectedItem;
+                                                    }
+                                                };
 
             ScaledImageRenderer sir = new ScaledImageRenderer();
 
             treeColumnWarning.Renderer = sir;
             treeColumnCreate.Renderer = sir;
             treeColumnSync.Renderer = sir;
-            
-            treeColumnName.FillsFreeSpace = true;            
 
+            treeColumnName.FillsFreeSpace = true;
+
+            toggleDetailsLabel.Text = String.Format("        {0}", Locale.localizedString("Details"));
             toggleDetailsLabel.Click += delegate { ToggleDetailsEvent(); };
             toggleDetailsLabel.MouseDown += delegate { toggleDetailsLabel.ImageIndex = (_expanded ? 2 : 5); };
             toggleDetailsLabel.MouseEnter += delegate { toggleDetailsLabel.ImageIndex = (_expanded ? 1 : 4); };
             toggleDetailsLabel.MouseLeave += delegate { toggleDetailsLabel.ImageIndex = (_expanded ? 0 : 3); };
             toggleDetailsLabel.MouseUp += delegate { toggleDetailsLabel.ImageIndex = (_expanded ? 1 : 4); };
+
+            browser.Focus();
         }
 
-        private class ScaledImageRenderer : BaseRenderer
+        public override string[] BundleNames
         {
-            protected override int DrawImage(Graphics g, Rectangle r, object imageSelector)
-            {
-                if (imageSelector is Image)
-                {
-                    Image image = imageSelector as Image;
-                    int top = r.Y;
-                    if (image.Size.Height < r.Height)
-                        top += ((r.Height - image.Size.Height) / 2);
-
-                    //make sure that 72dpi images are being scaled correctly
-                    g.DrawImage(image, new Rectangle(r.X, top, image.Width, image.Height));
-                    return image.Width;
-                }
-                return base.DrawImage(g, r, imageSelector);
-            }
+            get { return new[] {"Prompt"}; }
         }
 
         public void SetModel(IEnumerable<TreePathReference> model)
         {
-            //browser.ClearObjects();
-            browser.Roots = model;            
+            browser.ClearCachedInfo();
+            browser.SetObjects(model);
+            //browser.Roots = model;            
         }
 
         public void RefreshBrowserObject(TreePathReference reference)
         {
-            if (reference != null){
-            browser.RefreshObject(reference);
-            } else
+            if (reference != null)
+            {
+                browser.RefreshObject(reference);
+            }
+            else
             {
                 //browser.ReloadTree();
             }
@@ -116,11 +121,11 @@ namespace Ch.Cyberduck.Ui.Winforms
             set
             {
                 if (_expanded != value)
-                {                    
+                {
                     _expanded = value;
                     //todo make it flickerfree
                     //try http://stackoverflow.com/questions/487661/how-do-i-suspend-painting-for-a-control-and-its-children
-                    SuspendLayout();                    
+                    SuspendLayout();
                     if (_expanded)
                     {
                         MaximumSize = new Size(MaxWidth, MaxHeight + detailsTableLayoutPanel.Height);
@@ -137,7 +142,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 
                     detailsTableLayoutPanel.Visible = _expanded;
                     ResumeLayout();
-                    toggleDetailsLabel.ImageIndex = (_expanded ? 1 : 4);                   
+                    toggleDetailsLabel.ImageIndex = (_expanded ? 1 : 4);
                 }
             }
         }
@@ -155,6 +160,11 @@ namespace Ch.Cyberduck.Ui.Winforms
             comboBoxAction.ValueMember = "Key";
         }
 
+        public string Title
+        {
+            set { Text = value; }
+        }
+
         public TransferAction SelectedAction
         {
             get { return (TransferAction) comboBoxAction.SelectedValue; }
@@ -163,7 +173,8 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public TreePathReference SelectedPath
         {
-            get { return (TreePathReference)browser.SelectedObject; }
+            get { return (TreePathReference) browser.SelectedObject; }
+            set { browser.SelectedObject = value; }
         }
 
         public string LocalFileUrl
@@ -196,16 +207,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             set { remoteFileModificationDate.Text = value; }
         }
 
-        public void ModelCanExpandDelegate(TreeListView.CanExpandGetterDelegate canExpandDelegate)
-        {
-            browser.CanExpandGetter = canExpandDelegate;
-        }
-
-        public void ModelChildrenGetterDelegate(TreeListView.ChildrenGetterDelegate childrenGetterDelegate)
-        {
-            browser.ChildrenGetter = childrenGetterDelegate;
-        }
-
         public CheckStateGetterDelegate ModelCheckStateGetter
         {
             set { browser.CheckStateGetter = value; }
@@ -216,19 +217,33 @@ namespace Ch.Cyberduck.Ui.Winforms
             set { browser.CheckStatePutter = value; }
         }
 
-        public AspectGetterDelegate ModelFilenameGetter
+        public TreeListView.CanExpandGetterDelegate ModelCanExpandDelegate
         {
-            set { treeColumnName.AspectGetter = value; }
+            set { browser.CanExpandGetter = value; }
         }
 
-        public ImageGetterDelegate ModelIconGetter
+        public TreeListView.ChildrenGetterDelegate ModelChildrenGetterDelegate
         {
-            set { treeColumnName.ImageGetter = value; }
+            set { browser.ChildrenGetter = value; }
         }
 
-        public AspectGetterDelegate ModelSizeGetter
+        public TypedColumn<TreePathReference>.TypedAspectGetterDelegate ModelFilenameGetter
         {
-            set { treeColumnSize.AspectGetter = value; }
+            set { new TypedColumn<TreePathReference>(treeColumnName) {AspectGetter = value}; }
+        }
+
+        public TypedColumn<TreePathReference>.TypedImageGetterDelegate ModelIconGetter
+        {
+            set
+            {
+                new TypedColumn<TreePathReference>(treeColumnName)
+                    {ImageGetter = value};
+            }
+        }
+
+        public TypedColumn<TreePathReference>.TypedAspectGetterDelegate ModelSizeGetter
+        {
+            set { new TypedColumn<TreePathReference>(treeColumnSize) {AspectGetter = value}; }
         }
 
         public AspectToStringConverterDelegate ModelSizeAsStringGetter
@@ -236,19 +251,19 @@ namespace Ch.Cyberduck.Ui.Winforms
             set { treeColumnSize.AspectToStringConverter = value; }
         }
 
-        public ImageGetterDelegate ModelWarningGetter
+        public TypedColumn<TreePathReference>.TypedImageGetterDelegate ModelWarningGetter
         {
-            set { treeColumnWarning.ImageGetter = value; }
+            set { new TypedColumn<TreePathReference>(treeColumnWarning) {ImageGetter = value}; }
         }
 
-        public ImageGetterDelegate ModelCreateGetter
+        public TypedColumn<TreePathReference>.TypedImageGetterDelegate ModelCreateGetter
         {
-            set { treeColumnCreate.ImageGetter = value; }
+            set { new TypedColumn<TreePathReference>(treeColumnCreate) {ImageGetter = value}; }
         }
 
-        public ImageGetterDelegate ModelSyncGetter
+        public TypedColumn<TreePathReference>.TypedImageGetterDelegate ModelSyncGetter
         {
-            set { treeColumnSync.ImageGetter = value; }
+            set { new TypedColumn<TreePathReference>(treeColumnSync) {ImageGetter = value}; }
         }
 
         public MulticolorTreeListView.ActiveGetterDelegate ModelActiveGetter
@@ -286,9 +301,23 @@ namespace Ch.Cyberduck.Ui.Winforms
             ChangedSelectionEvent();
         }
 
-        public override string[] BundleNames
+        private class ScaledImageRenderer : BaseRenderer
         {
-            get { return new[]{"Prompt"}; }
+            protected override int DrawImage(Graphics g, Rectangle r, object imageSelector)
+            {
+                if (imageSelector is Image)
+                {
+                    Image image = imageSelector as Image;
+                    int top = r.Y;
+                    if (image.Size.Height < r.Height)
+                        top += ((r.Height - image.Size.Height)/2);
+
+                    //make sure that 72dpi images are being scaled correctly
+                    g.DrawImage(image, new Rectangle(r.X, top, image.Width, image.Height));
+                    return image.Width;
+                }
+                return base.DrawImage(g, r, imageSelector);
+            }
         }
     }
 }

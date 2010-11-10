@@ -319,14 +319,16 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public void UpdateOverallProgressState(double progress, double maximum)
         {
-            if (Utils.IsWin7OrLater){
+            if (Utils.IsWin7OrLater)
+            {
                 if (progress == 0 || maximum == 0)
                 {
-                    Windows7Taskbar.SetProgressState(this.Handle, Windows7Taskbar.ThumbnailProgressState.NoProgress);    
-                } else
+                    Windows7Taskbar.SetProgressState(Handle, Windows7Taskbar.ThumbnailProgressState.NoProgress);
+                }
+                else
                 {
-                    Windows7Taskbar.SetProgressState(this.Handle, Windows7Taskbar.ThumbnailProgressState.Normal);
-                    Windows7Taskbar.SetProgressValue(this.Handle, (ulong) progress, (ulong) maximum);  
+                    Windows7Taskbar.SetProgressState(Handle, Windows7Taskbar.ThumbnailProgressState.Normal);
+                    Windows7Taskbar.SetProgressValue(Handle, (ulong) progress, (ulong) maximum);
                 }
             }
         }

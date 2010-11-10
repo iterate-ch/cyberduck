@@ -39,15 +39,14 @@ namespace Ch.Cyberduck.Ui.Controller
             return _filter;
         }
 
-        public override object GetSize(object reference)
+        public override object GetSize(TreePathReference reference)
         {
-            Path p = ((TreePathReference)reference).Unique;
-            return p.getLocal().attributes().getSize();
+            return GetPath(reference).getLocal().attributes().getSize();
         }
 
-        public override object GetWarningImage(object reference)
+        public override object GetWarningImage(TreePathReference reference)
         {
-            Path p = ((TreePathReference)reference).Unique;
+            Path p = GetPath(reference);
             if (p.attributes().isFile())
             {
                 if (p.attributes().getSize() == 0)

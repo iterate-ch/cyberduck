@@ -1,4 +1,4 @@
-﻿//
+﻿// 
 // Copyright (c) 2010 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
@@ -17,8 +17,6 @@
 // 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
 using System.Windows.Forms;
 using ch.cyberduck.core;
 using Ch.Cyberduck.Core;
@@ -28,7 +26,6 @@ using Ch.Cyberduck.Ui.Controller.Threading;
 using Ch.Cyberduck.Ui.Winforms.Taskdialog;
 using org.apache.log4j;
 using StructureMap;
-using Path = ch.cyberduck.core.Path;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -180,8 +177,9 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             return ValidateToolbarItem(delegate(Transfer transfer)
                                            {
-                                               if (!transfer.isComplete()) {
-                                                    return false;
+                                               if (!transfer.isComplete())
+                                               {
+                                                   return false;
                                                }
                                                if (!transfer.isRunning())
                                                {
@@ -397,7 +395,8 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     Path path = (Path) transfer.getRoots().get(i);
                     Local l = path.getLocal();
-                    if(l.reveal()) {
+                    if (l.reveal())
+                    {
                         break;
                     }
                 }
@@ -415,7 +414,8 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     Path path = (Path) transfer.getRoots().get(i);
                     Local l = path.getLocal();
-                    if (l.open()) {
+                    if (l.open())
+                    {
                         break;
                     }
                 }
@@ -579,7 +579,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     _transfer.addListener(_listener);
                 }
                 // Attach listeners
-                return base.prepare();
+                base.prepare();
                 // Always continue. Current status might be canceled if interrupted before.
                 return true;
             }
