@@ -130,7 +130,7 @@ public class SFTPSession extends Session {
         SSH = new Connection(this.getHostname(), host.getPort(), this.getUserAgent());
         SSH.addConnectionMonitor(new ConnectionMonitor() {
             public void connectionLost(Throwable reason) {
-                log.warn(reason.getMessage());
+                log.warn("Connection lost:" + ((null == reason) ? "Unknown" : reason.getMessage()));
             }
         });
 
