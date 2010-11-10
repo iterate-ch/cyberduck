@@ -36,7 +36,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         private static readonly int MaxHeight = 800;
         private static readonly int MaxWidth = 800;
-        private static readonly int MinHeight = 400;
+        private static readonly int MinHeight = 250;
         private static readonly int MinWidth = 450;
         private string _currentImage = string.Empty;
         private ToolStripMenuItem _lastMenuItemClicked;
