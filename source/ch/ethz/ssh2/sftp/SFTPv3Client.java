@@ -71,7 +71,6 @@ public class SFTPv3Client {
     private OutputStream os;
 
     private int protocol_version = 0;
-    private Map<String, byte[]> server_extensions = new HashMap<String, byte[]>();
 
     private int next_request_id = 1000;
 
@@ -738,9 +737,7 @@ public class SFTPv3Client {
         while(tr.remain() != 0) {
             String name = tr.readString();
             byte[] value = tr.readByteString();
-            log.log("SSH_FXP_VERSION: extension: " + name + " = '" + expandString(value, 0, value.length)
-                    + "'");
-            server_extensions.put(name, value);
+            log.log("SSH_FXP_VERSION: extension: " + name + " = '" + expandString(value, 0, value.length) + "'");
         }
     }
 
