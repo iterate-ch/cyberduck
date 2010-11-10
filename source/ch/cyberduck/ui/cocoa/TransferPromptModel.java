@@ -94,9 +94,6 @@ public abstract class TransferPromptModel extends OutlineDataSource {
      * @return
      */
     protected Path lookup(PathReference reference) {
-        if(roots.contains(reference)) {
-            return roots.get(reference);
-        }
         return transfer.lookup(reference);
     }
 

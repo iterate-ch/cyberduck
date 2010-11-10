@@ -371,6 +371,11 @@ public abstract class Transfer implements Serializable {
      * @see ch.cyberduck.core.Cache#lookup(PathReference)
      */
     public Path lookup(PathReference r) {
+        for(Path root: roots) {
+            if(r.equals(root.<Object>getReference())) {
+                return root;
+            }
+        }
         return this.cache().lookup(r);
     }
 
