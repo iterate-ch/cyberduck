@@ -2081,7 +2081,7 @@ namespace Ch.Cyberduck.Ui.Controller
         /// <param name="destination"></param>
         public void transfer(Transfer transfer, Path destination)
         {
-            UploadTransferAdapter transferAdapter = new UploadTransferAdapter(this, transfer, destination, true);
+            ReloadTransferAdapter transferAdapter = new ReloadTransferAdapter(this, transfer, destination, true);
             transfer.addListener(transferAdapter);
             this.transfer(transfer);
         }
@@ -3651,14 +3651,14 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
-        internal class UploadTransferAdapter : ch.cyberduck.core.TransferAdapter
+        internal class ReloadTransferAdapter : ch.cyberduck.core.TransferAdapter
         {
             private readonly BrowserController _controller;
             private readonly Path _destination;
             private readonly bool _removeListener;
             private readonly Transfer _transfer;
 
-            public UploadTransferAdapter(BrowserController controller, Transfer transfer, Path destination,
+            public ReloadTransferAdapter(BrowserController controller, Transfer transfer, Path destination,
                                          bool removeListener)
             {
                 _controller = controller;
