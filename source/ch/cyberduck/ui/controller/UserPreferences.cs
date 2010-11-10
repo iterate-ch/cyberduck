@@ -280,6 +280,8 @@ namespace Ch.Cyberduck.Ui.Controller
             defaults.put("logging", "debug");
             defaults.put("rendezvous.enable", false.ToString());
 
+            //disable reminder for procotol handler registration
+            defaults.put("defaulthandler.reminder", false.ToString());
             defaults.put("protocol.azure.tls.enable", true.ToString());
             defaults.put("application.support.path", RoamingApplicationDataPath);
             defaults.put("update.check.last", "0");
