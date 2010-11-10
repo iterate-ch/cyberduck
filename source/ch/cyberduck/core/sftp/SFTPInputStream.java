@@ -74,8 +74,7 @@ public class SFTPInputStream extends InputStream {
     @Override
     public int read() throws IOException {
         byte[] buffer = new byte[1];
-        int read = handle.getClient().download(handle,
-                readOffset, buffer, 0, 1);
+        int read = handle.getClient().download(handle, readOffset, buffer, 0, 1);
         if(read > 0) {
             readOffset += read;
         }
