@@ -1091,12 +1091,27 @@ public class SFTPv3Client {
         throw new SFTPException(errorMessage, errorCode);
     }
 
+    /**
+     * A read  is divided into multiple requests sent sequentially before
+     * reading any status from the server
+     */
     private static class OutstandingRequest {
-        long serverOffset;
-        int clientOffset;
-        int len;
         int req_id;
-        int offset;
+        /**
+         * Read offset to request on server starting at the file offset for the first request.
+         */
+        long serverOffset;
+        /**
+         * Length of requested data
+         */
+        int len;
+        /**
+         * Offset in destination buffer
+         */
+        int dstOffset;
+        /**
+         * Temporary buffer
+         */
         byte[] buffer;
     }
 
@@ -1185,10 +1200,9 @@ public class SFTPv3Client {
                 OutstandingRequest req = new OutstandingRequest();
                 req.req_id = generateNextRequestID();
                 req.serverOffset = serverOffset;
-                req.clientOffset = clientOffset;
                 req.len = (remaining > len) ? len : remaining;
                 req.buffer = dst;
-                req.offset = dstoff;
+                req.dstOffset = dstoff;
 
                 serverOffset += req.len;
                 clientOffset += req.len;
@@ -1256,13 +1270,12 @@ public class SFTPv3Client {
                 }
 
                 // Read bytes into buffer
-                tr.readBytes(req.buffer, req.offset, readLen);
+                tr.readBytes(req.buffer, req.dstOffset, readLen);
 
                 if(readLen < req.len) {
                     /* Send this request packet again to request the remaing data in this slot. */
                     req.req_id = generateNextRequestID();
                     req.serverOffset += readLen;
-                    req.clientOffset += readLen;
                     req.len -= readLen;
 
                     log.log("Requesting again: " + req.serverOffset + "/" + req.len);
