@@ -442,12 +442,14 @@ public class PreferencesController extends ToolbarWindowController {
     private NSPopUpButton defaultBookmarkCombobox;
 
     private final CollectionListener<Host> bookmarkCollectionListener = new AbstractCollectionListener<Host>() {
+        @Override
         public void collectionItemAdded(Host bookmark) {
             defaultBookmarkCombobox.addItemWithTitle(bookmark.getNickname());
             defaultBookmarkCombobox.lastItem().setImage(IconCache.iconNamed("cyberduck-document", 16));
             defaultBookmarkCombobox.lastItem().setRepresentedObject(bookmark.getUuid());
         }
 
+        @Override
         public void collectionItemRemoved(Host bookmark) {
             if(defaultBookmarkCombobox.selectedItem().representedObject().equals(bookmark.getUuid())) {
                 Preferences.instance().deleteProperty("browser.defaultBookmark");
@@ -2018,7 +2020,14 @@ public class PreferencesController extends ToolbarWindowController {
     @Action
     public void updateFeedPopupClicked(NSPopUpButton sender) {
         // Update sparkle feed property. Default is in Info.plist
-        Preferences.instance().setProperty("SUFeedURL", sender.selectedItem().representedObject());
+        String selected = sender.selectedItem().representedObject();
+        if(null == selected || Preferences.instance().getDefault("SUFeedURL").equals(selected)) {
+            // Remove custom value
+            Preferences.instance().deleteProperty("SUFeedURL");
+        }
+        else {
+            Preferences.instance().setProperty("SUFeedURL", selected);
+        }
     }
 
     @Outlet
