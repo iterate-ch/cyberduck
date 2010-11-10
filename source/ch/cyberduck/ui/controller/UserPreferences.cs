@@ -139,13 +139,13 @@ namespace Ch.Cyberduck.Ui.Controller
             save();
         }
 
-        public override string getDefault(string property)
+        public override string getProperty(string property)
         {
             if (_settings.ContainsKey(property))
             {
                 return _settings[property];
             }
-            return (string) defaults.get(property);
+            return this.getDefault(property);
         }
 
         public override string getDisplayName(string locale)

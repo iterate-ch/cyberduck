@@ -713,11 +713,10 @@ public abstract class Preferences {
     }
 
     /**
-     * Should be overriden by the implementation and only called if the property
-     * can't be found in the users's defaults table
+     * Default value for a given property.
      *
      * @param property The property to query.
-     * @return The value of the property
+     * @return A default value if any or null if not found.
      */
     public String getDefault(String property) {
         String value = defaults.get(property);
@@ -733,66 +732,65 @@ public abstract class Preferences {
      */
     public abstract List<String> getList(String property);
 
-    public String getProperty(String property) {
-        final Object v = this.getDefault(property);
-        if(null == v) {
-            return null;
-        }
-        return v.toString();
-    }
+    /**
+     * Give value in user settings or default value if not customized.
+     *
+     * @param property The property to query.
+     * @return The user configured value or default.
+     */
+    public abstract String getProperty(String property);
 
     public int getInteger(String property) {
-        final Object v = this.getDefault(property);
+        final String v = this.getProperty(property);
         if(null == v) {
             return -1;
         }
-        return Integer.parseInt(v.toString());
+        return Integer.parseInt(v);
     }
 
     public float getFloat(String property) {
-        final Object v = this.getDefault(property);
+        final String v = this.getProperty(property);
         if(null == v) {
             return -1;
         }
-        return Float.parseFloat(v.toString());
+        return Float.parseFloat(v);
     }
 
     public long getLong(String property) {
-        final Object v = this.getDefault(property);
+        final String v = this.getProperty(property);
         if(null == v) {
             return -1;
         }
-        return Long.parseLong(v.toString());
+        return Long.parseLong(v);
     }
 
     public double getDouble(String property) {
-        final Object v = this.getDefault(property);
+        final String v = this.getProperty(property);
         if(null == v) {
             return -1;
         }
-        return Double.parseDouble(v.toString());
+        return Double.parseDouble(v);
     }
 
     public boolean getBoolean(String property) {
-        final Object v = this.getDefault(property);
+        final String v = this.getProperty(property);
         if(null == v) {
             return false;
         }
-        String value = v.toString();
-        if(value.equalsIgnoreCase(String.valueOf(true))) {
+        if(v.equalsIgnoreCase(String.valueOf(true))) {
             return true;
         }
-        if(value.equalsIgnoreCase(String.valueOf(false))) {
+        if(v.equalsIgnoreCase(String.valueOf(false))) {
             return false;
         }
-        if(value.equalsIgnoreCase(String.valueOf(1))) {
+        if(v.equalsIgnoreCase(String.valueOf(1))) {
             return true;
         }
-        if(value.equalsIgnoreCase(String.valueOf(0))) {
+        if(v.equalsIgnoreCase(String.valueOf(0))) {
             return false;
         }
         try {
-            return value.equalsIgnoreCase("yes");
+            return v.equalsIgnoreCase("yes");
         }
         catch(NumberFormatException e) {
             return false;

@@ -58,21 +58,34 @@ public class UserDefaultsPreferences extends Preferences {
 
     private NSUserDefaults props;
 
+    /**
+     * Additionally look for default values in Info.plist of application bundle.
+     *
+     * @param property The property to query.
+     * @return A default value if any or null if not found.
+     */
     @Override
     public String getDefault(final String property) {
+        // Lookup in the default map
+        String value = super.getDefault(property);
+        if(null == value) {
+            // Missing in default. Lookup in Info.plist
+            NSObject plist = NSBundle.mainBundle().infoDictionary().objectForKey(property);
+            if(null == plist) {
+                log.warn("No default value for property:" + property);
+                return null;
+            }
+            return plist.toString();
+        }
+        // Default value of property found
+        return value;
+    }
+
+    @Override
+    public String getProperty(final String property) {
         NSObject value = props.objectForKey(property);
         if(null == value) {
-            // Lookup in the default map
-            String s = super.getDefault(property);
-            if(null == s) {
-                // Missing in default. Lookup in Info.plist
-                NSObject plist = NSBundle.mainBundle().infoDictionary().objectForKey(property);
-                if(null == plist) {
-                    return null;
-                }
-                return plist.toString();
-            }
-            return s;
+            return this.getDefault(property);
         }
         // Customized property found
         return value.toString();
@@ -141,7 +154,7 @@ public class UserDefaultsPreferences extends Preferences {
 
         if(this.getBoolean("update.check")) {
             // Will override SUCheckAtStartup
-            this.props.setInteger_forKey(new NSInteger(Long.parseLong(super.getProperty("update.check.interval"))),
+            this.props.setInteger_forKey(new NSInteger(Long.parseLong(this.getProperty("update.check.interval"))),
                     "SUScheduledCheckInterval");
         }
     }
@@ -173,7 +186,7 @@ public class UserDefaultsPreferences extends Preferences {
     private void _init(final String property) {
         if(null == props.objectForKey(property)) {
             // Set the default value
-            this.setProperty(property, super.getProperty(property));
+            this.setProperty(property, this.getDefault(property));
         }
     }
 
