@@ -418,10 +418,13 @@ namespace Ch.Cyberduck.Ui.Winforms
         {
             //prevent cursor from being positioned at the beginning after trimming trailing spaces
             //see Host.setDefaultPath
-            if (textBoxPath.Focused)
+            int sel = textBoxPath.SelectionStart;
+            String trimmed = textBoxPath.Text.Trim();
+            if (!trimmed.Equals(textBoxPath))
             {
-                textBoxPath.Select(textBoxPath.Text.Length, 0);
-            }
+                textBoxPath.Text = trimmed;
+                textBoxPath.SelectionStart = sel;
+            }        
             ChangedPathEvent();
         }
 

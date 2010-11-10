@@ -356,7 +356,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.optionsPanel.SetColumnSpan(this.comboBoxTimezone, 3);
             this.comboBoxTimezone.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBoxTimezone.FormattingEnabled = true;
-            this.comboBoxTimezone.Location = new System.Drawing.Point(133, 302);
+            this.comboBoxTimezone.Location = new System.Drawing.Point(133, 300);
             this.comboBoxTimezone.Name = "comboBoxTimezone";
             this.comboBoxTimezone.Size = new System.Drawing.Size(336, 23);
             this.comboBoxTimezone.TabIndex = 31;
@@ -366,7 +366,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.label8.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(65, 305);
+            this.label8.Location = new System.Drawing.Point(65, 304);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(62, 15);
             this.label8.TabIndex = 27;
@@ -388,7 +388,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.optionsPanel.SetColumnSpan(this.richTextBoxNotes, 3);
             this.richTextBoxNotes.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.richTextBoxNotes.Location = new System.Drawing.Point(133, 232);
+            this.richTextBoxNotes.Location = new System.Drawing.Point(133, 230);
             this.richTextBoxNotes.Name = "richTextBoxNotes";
             this.richTextBoxNotes.Size = new System.Drawing.Size(336, 64);
             this.richTextBoxNotes.TabIndex = 25;
@@ -399,7 +399,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.labelNotes.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.labelNotes.AutoSize = true;
-            this.labelNotes.Location = new System.Drawing.Point(86, 256);
+            this.labelNotes.Location = new System.Drawing.Point(86, 254);
             this.labelNotes.Name = "labelNotes";
             this.labelNotes.Size = new System.Drawing.Size(41, 15);
             this.labelNotes.TabIndex = 26;
@@ -437,7 +437,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.buttonWebURL.FlatAppearance.BorderSize = 0;
             this.buttonWebURL.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.buttonWebURL.Image = global::Ch.Cyberduck.ResourcesBundle.site;
-            this.buttonWebURL.Location = new System.Drawing.Point(446, 203);
+            this.buttonWebURL.Location = new System.Drawing.Point(446, 201);
             this.buttonWebURL.MaximumSize = new System.Drawing.Size(23, 23);
             this.buttonWebURL.Name = "buttonWebURL";
             this.buttonWebURL.Size = new System.Drawing.Size(23, 23);
@@ -487,7 +487,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.textBoxWebUrl.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.optionsPanel.SetColumnSpan(this.textBoxWebUrl, 2);
-            this.textBoxWebUrl.Location = new System.Drawing.Point(133, 203);
+            this.textBoxWebUrl.Location = new System.Drawing.Point(133, 201);
             this.textBoxWebUrl.Name = "textBoxWebUrl";
             this.textBoxWebUrl.Size = new System.Drawing.Size(298, 23);
             this.textBoxWebUrl.TabIndex = 23;
@@ -510,7 +510,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.labelWebURL.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.labelWebURL.AutoSize = true;
-            this.labelWebURL.Location = new System.Drawing.Point(69, 207);
+            this.labelWebURL.Location = new System.Drawing.Point(69, 205);
             this.labelWebURL.Name = "labelWebURL";
             this.labelWebURL.Size = new System.Drawing.Size(58, 15);
             this.labelWebURL.TabIndex = 22;
@@ -521,7 +521,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.labelTransferFiles.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.labelTransferFiles.AutoSize = true;
-            this.labelTransferFiles.Location = new System.Drawing.Point(48, 178);
+            this.labelTransferFiles.Location = new System.Drawing.Point(48, 177);
             this.labelTransferFiles.Name = "labelTransferFiles";
             this.labelTransferFiles.Size = new System.Drawing.Size(79, 15);
             this.labelTransferFiles.TabIndex = 20;
