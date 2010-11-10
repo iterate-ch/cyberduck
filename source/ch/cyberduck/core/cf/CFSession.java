@@ -183,6 +183,17 @@ public class CFSession extends CloudHTTP3Session {
     }
 
     /**
+     * Creating files is only possible inside a bucket.
+     *
+     * @param workdir The workdir to create query
+     * @return False if directory is root.
+     */
+    @Override
+    public boolean isCreateFileSupported(Path workdir) {
+        return !workdir.isRoot();
+    }
+    
+    /**
      * Cache distribution status result.
      */
     private Map<String, Distribution> distributionStatus
