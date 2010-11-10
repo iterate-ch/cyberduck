@@ -66,21 +66,25 @@ public class DownloadPromptModel extends TransferPromptModel {
 
     @Override
     protected NSObject objectValueForItem(final Path item, final String identifier) {
-        if(identifier.equals(TransferPromptModel.SIZE_COLUMN)) {
-            return NSAttributedString.attributedStringWithAttributes(Status.getSizeAsString(item.getLocal().attributes().getSize()),
-                    TableCellAttributes.browserFontRightAlignment());
-        }
-        if(identifier.equals(TransferPromptModel.WARNING_COLUMN)) {
-            if(item.attributes().isFile()) {
-                if(item.attributes().getSize() == 0) {
-                    return IconCache.iconNamed("alert.tiff");
-                }
-                if(item.getLocal().attributes().getSize() > item.attributes().getSize()) {
-                    return IconCache.iconNamed("alert.tiff");
-                }
+        final NSObject cached = tableViewCache.get(item, identifier);
+        if(null == cached) {
+            if(identifier.equals(TransferPromptModel.SIZE_COLUMN)) {
+                return tableViewCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(Status.getSizeAsString(item.getLocal().attributes().getSize()),
+                        TableCellAttributes.browserFontRightAlignment()));
             }
-            return null;
+            if(identifier.equals(TransferPromptModel.WARNING_COLUMN)) {
+                if(item.attributes().isFile()) {
+                    if(item.attributes().getSize() == 0) {
+                        return tableViewCache.put(item, identifier, IconCache.iconNamed("alert.tiff"));
+                    }
+                    if(item.getLocal().attributes().getSize() > item.attributes().getSize()) {
+                        return tableViewCache.put(item, identifier, IconCache.iconNamed("alert.tiff"));
+                    }
+                }
+                return null;
+            }
+            return super.objectValueForItem(item, identifier);
         }
-        return super.objectValueForItem(item, identifier);
+        return cached;
     }
 }

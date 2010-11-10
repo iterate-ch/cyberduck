@@ -62,43 +62,47 @@ public class SyncPromptModel extends TransferPromptModel {
 
     @Override
     protected NSObject objectValueForItem(final Path item, final String identifier) {
-        if(identifier.equals(SIZE_COLUMN)) {
-            SyncTransfer.Comparison compare = ((SyncTransfer) transfer).compare(item);
-            return NSAttributedString.attributedStringWithAttributes(Status.getSizeAsString(
-                    compare.equals(SyncTransfer.COMPARISON_REMOTE_NEWER) ? item.attributes().getSize() : item.getLocal().attributes().getSize()),
-                    TableCellAttributes.browserFontRightAlignment());
-        }
-        if(identifier.equals(SYNC_COLUMN)) {
-            SyncTransfer.Comparison compare = ((SyncTransfer) transfer).compare(item);
-            if(compare.equals(SyncTransfer.COMPARISON_REMOTE_NEWER)) {
-                return IconCache.iconNamed("arrowDown.tiff", 16);
+        final NSObject cached = tableViewCache.get(item, identifier);
+        if(null == cached) {
+            if(identifier.equals(SIZE_COLUMN)) {
+                SyncTransfer.Comparison compare = ((SyncTransfer) transfer).compare(item);
+                return tableViewCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(Status.getSizeAsString(
+                        compare.equals(SyncTransfer.COMPARISON_REMOTE_NEWER) ? item.attributes().getSize() : item.getLocal().attributes().getSize()),
+                        TableCellAttributes.browserFontRightAlignment()));
             }
-            if(compare.equals(SyncTransfer.COMPARISON_LOCAL_NEWER)) {
-                return IconCache.iconNamed("arrowUp.tiff", 16);
+            if(identifier.equals(SYNC_COLUMN)) {
+                SyncTransfer.Comparison compare = ((SyncTransfer) transfer).compare(item);
+                if(compare.equals(SyncTransfer.COMPARISON_REMOTE_NEWER)) {
+                    return tableViewCache.put(item, identifier, IconCache.iconNamed("arrowDown.tiff", 16));
+                }
+                if(compare.equals(SyncTransfer.COMPARISON_LOCAL_NEWER)) {
+                    return tableViewCache.put(item, identifier, IconCache.iconNamed("arrowUp.tiff", 16));
+                }
+                return null;
             }
-            return null;
-        }
-        if(identifier.equals(WARNING_COLUMN)) {
-            if(item.attributes().isFile()) {
-                if(item.exists()) {
-                    if(item.attributes().getSize() == 0) {
-                        return IconCache.iconNamed("alert.tiff");
+            if(identifier.equals(WARNING_COLUMN)) {
+                if(item.attributes().isFile()) {
+                    if(item.exists()) {
+                        if(item.attributes().getSize() == 0) {
+                            return tableViewCache.put(item, identifier, IconCache.iconNamed("alert.tiff"));
+                        }
+                    }
+                    if(item.getLocal().exists()) {
+                        if(item.getLocal().attributes().getSize() == 0) {
+                            return tableViewCache.put(item, identifier, IconCache.iconNamed("alert.tiff"));
+                        }
                     }
                 }
-                if(item.getLocal().exists()) {
-                    if(item.getLocal().attributes().getSize() == 0) {
-                        return IconCache.iconNamed("alert.tiff");
-                    }
+                return null;
+            }
+            if(identifier.equals(CREATE_COLUMN)) {
+                if(!(item.exists() && item.getLocal().exists())) {
+                    return tableViewCache.put(item, identifier, IconCache.iconNamed("plus.tiff", 16));
                 }
+                return null;
             }
-            return null;
+            return super.objectValueForItem(item, identifier);
         }
-        if(identifier.equals(CREATE_COLUMN)) {
-            if(!(item.exists() && item.getLocal().exists())) {
-                return IconCache.iconNamed("plus.tiff", 16);
-            }
-            return null;
-        }
-        return super.objectValueForItem(item, identifier);
+        return cached;
     }
 }

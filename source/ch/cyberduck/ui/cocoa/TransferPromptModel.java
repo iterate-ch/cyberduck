@@ -22,7 +22,6 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.ui.cocoa.application.NSCell;
-import ch.cyberduck.ui.cocoa.application.NSImage;
 import ch.cyberduck.ui.cocoa.application.NSOutlineView;
 import ch.cyberduck.ui.cocoa.application.NSTableColumn;
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
@@ -31,9 +30,10 @@ import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.foundation.NSString;
 import ch.cyberduck.ui.cocoa.model.OutlinePathReference;
 
-import org.apache.log4j.Logger;
 import org.rococoa.Rococoa;
 import org.rococoa.cocoa.foundation.NSInteger;
+
+import org.apache.log4j.Logger;
 
 import java.text.MessageFormat;
 import java.util.List;
@@ -184,26 +184,37 @@ public abstract class TransferPromptModel extends OutlineDataSource {
     }
 
     /**
+     * Second cache because it is expensive to create proxy instances
+     */
+    protected AttributeCache<Path> tableViewCache = new AttributeCache<Path>(
+            Preferences.instance().getInteger("browser.model.cache.size")
+    );
+
+    /**
      * @param item
      * @param identifier
      * @return
      */
     protected NSObject objectValueForItem(final Path item, final String identifier) {
-        if(identifier.equals(INCLUDE_COLUMN)) {
-            // Not included if the particular path should be skipped or skip
-            // existing is selected as the default transfer action for duplicate
-            // files
-            final boolean included = transfer.isIncluded(item) && !controller.getAction().equals(TransferAction.ACTION_SKIP);
-            return NSNumber.numberWithInt(included ? NSCell.NSOnState : NSCell.NSOffState);
+        final NSObject cached = tableViewCache.get(item, identifier);
+        if(null == cached) {
+            if(identifier.equals(INCLUDE_COLUMN)) {
+                // Not included if the particular path should be skipped or skip
+                // existing is selected as the default transfer action for duplicate
+                // files
+                final boolean included = transfer.isIncluded(item) && !controller.getAction().equals(TransferAction.ACTION_SKIP);
+                return NSNumber.numberWithInt(included ? NSCell.NSOnState : NSCell.NSOffState);
+            }
+            if(identifier.equals(FILENAME_COLUMN)) {
+                return tableViewCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(item.getName(),
+                        TableCellAttributes.browserFontLeftAlignment()));
+            }
+            if(identifier.equals(TYPEAHEAD_COLUMN)) {
+                return tableViewCache.put(item, identifier, NSString.stringWithString(item.getName()));
+            }
+            throw new IllegalArgumentException("Unknown identifier: " + identifier);
         }
-        if(identifier.equals(FILENAME_COLUMN)) {
-            return NSAttributedString.attributedStringWithAttributes(item.getName(),
-                    TableCellAttributes.browserFontLeftAlignment());
-        }
-        if(identifier.equals(TYPEAHEAD_COLUMN)) {
-            return NSString.stringWithString(item.getName());
-        }
-        throw new IllegalArgumentException("Unknown identifier: " + identifier);
+        return cached;
     }
 
     public boolean outlineView_isItemExpandable(final NSOutlineView view, final NSObject item) {
@@ -236,5 +247,18 @@ public abstract class TransferPromptModel extends OutlineDataSource {
             return null;
         }
         return this.objectValueForItem(this.lookup(new OutlinePathReference(item)), tableColumn.identifier());
+    }
+
+    /**
+     * Clear the view cache
+     */
+    protected void clear() {
+        tableViewCache.clear();
+    }
+
+    @Override
+    protected void invalidate() {
+        this.clear();
+        super.invalidate();
     }
 }
