@@ -118,6 +118,9 @@ public class SFTPPath extends Path {
         catch(IOException e) {
             log.warn("Listing directory failed:" + e.getMessage());
             children.attributes().setReadable(false);
+            if(this.cache().isEmpty()) {
+                this.error(e.getMessage(), e);
+            }
         }
         return children;
     }
@@ -528,6 +531,10 @@ public class SFTPPath extends Path {
                             this.getParent().getAbsolute(),
                             "0" + this.attributes().getPermission().getOctalString());
                 }
+                // No parallel requests if the file size is smaller than the buffer.
+                this.getSession().sftp().setDownloadRequestParallelism(
+                        (int) (this.attributes().getSize() / Preferences.instance().getInteger("connection.chunksize")) + 1
+                );
                 this.upload(out, in, throttle, listener);
             }
         }

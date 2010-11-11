@@ -173,6 +173,9 @@ public class FTPPath extends Path {
         catch(IOException e) {
             log.warn("Listing directory failed:" + e.getMessage());
             children.attributes().setReadable(false);
+            if(this.cache().isEmpty()) {
+                this.error(e.getMessage(), e);
+            }
         }
         return children;
     }

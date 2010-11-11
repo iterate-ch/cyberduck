@@ -614,10 +614,16 @@ public class GDPath extends Path {
         catch(ServiceException e) {
             log.warn("Listing directory failed:" + e.getMessage());
             children.attributes().setReadable(false);
+            if(this.cache().isEmpty()) {
+                this.error(e.getMessage(), e);
+            }
         }
         catch(IOException e) {
             log.warn("Listing directory failed:" + e.getMessage());
             children.attributes().setReadable(false);
+            if(this.cache().isEmpty()) {
+                this.error(e.getMessage(), e);
+            }
         }
         return children;
     }

@@ -63,6 +63,10 @@ public class Cache<E extends AbstractPath> {
         log.warn("Lookup failed for " + reference + " in cache");
         return null;
     }
+    
+    public boolean isEmpty() {
+        return _impl.isEmpty();
+    }
 
     /**
      * @param reference Absolute path
