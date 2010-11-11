@@ -102,6 +102,11 @@ public class AbstractTestCase extends TestCase {
                     }
 
                     @Override
+                    public String getProperty(String property) {
+                        return null;
+                    }
+
+                    @Override
                     public void save() {
                         ;
                     }
