@@ -106,7 +106,7 @@ public abstract class NSDateFormatter extends NSFormatter {
      * Original signature : <code>void setLocale(NSLocale*)</code><br>
      * <i>native declaration : :48</i>
      */
-    public abstract void setLocale(com.sun.jna.Pointer locale);
+    public abstract void setLocale(NSLocale locale);
 
     /**
      * Original signature : <code>BOOL generatesCalendarDates()</code><br>

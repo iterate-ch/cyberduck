@@ -23,6 +23,7 @@ import ch.cyberduck.ui.DateFormatter;
 import ch.cyberduck.ui.DateFormatterFactory;
 import ch.cyberduck.ui.cocoa.foundation.NSDate;
 import ch.cyberduck.ui.cocoa.foundation.NSDateFormatter;
+import ch.cyberduck.ui.cocoa.foundation.NSLocale;
 
 import org.apache.log4j.Logger;
 
@@ -51,6 +52,7 @@ public class UserDefaultsDateFormatter implements DateFormatter {
     static {
         longDateFormatter.setDateStyle(NSDateFormatter.kCFDateFormatterLongStyle);
         longDateFormatter.setTimeStyle(NSDateFormatter.kCFDateFormatterLongStyle);
+        longDateFormatter.setLocale(NSLocale.currentLocale());
     }
 
     /**
@@ -61,6 +63,7 @@ public class UserDefaultsDateFormatter implements DateFormatter {
     static {
         shortDateFormatter.setDateStyle(NSDateFormatter.kCFDateFormatterShortStyle);
         shortDateFormatter.setTimeStyle(NSDateFormatter.kCFDateFormatterShortStyle);
+        shortDateFormatter.setLocale(NSLocale.currentLocale());
     }
 
     private static final NSDateFormatter mediumDateFormatter = NSDateFormatter.dateFormatter();
@@ -68,6 +71,7 @@ public class UserDefaultsDateFormatter implements DateFormatter {
     static {
         mediumDateFormatter.setDateStyle(NSDateFormatter.kCFDateFormatterMediumStyle);
         mediumDateFormatter.setTimeStyle(NSDateFormatter.kCFDateFormatterMediumStyle);
+        mediumDateFormatter.setLocale(NSLocale.currentLocale());
     }
 
     /**
