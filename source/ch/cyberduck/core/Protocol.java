@@ -426,6 +426,11 @@ public abstract class Protocol {
         }
 
         @Override
+        public String getPasswordPlaceholder() {
+            return Locale.localizedString("Secret Access Key", "S3");
+        }
+
+        @Override
         public String disk() {
             return S3_SSL.disk();
         }
