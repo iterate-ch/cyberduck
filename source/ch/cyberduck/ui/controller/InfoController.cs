@@ -1130,7 +1130,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     methods.Add(new KeyValuePair<string, Distribution.Method>(method.ToString(), method));
                 }
                 View.PopulateDistributionDeliveryMethod(methods);
-                View.DistributionDeliveryMethod = Distribution.DOWNLOAD;
+                View.DistributionDeliveryMethod = session.getSupportedDistributionMethods().iterator().next().getMethod();
                 DistributionDeliveryMethodChanged();
             }
             AttachDistributionHandlers();
