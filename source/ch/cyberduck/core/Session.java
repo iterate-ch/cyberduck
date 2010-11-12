@@ -185,20 +185,27 @@ public abstract class Session implements TranscriptListener {
      * @throws IOException
      */
     protected void login() throws IOException {
-        LoginController login = LoginControllerFactory.instance(this);
-        this.prompt(login);
+        this.login(LoginControllerFactory.instance(this));
+    }
+
+    /**
+     * @param controller
+     * @throws IOException
+     */
+    protected void login(LoginController controller) throws IOException {
+        this.prompt(controller);
 
         final Credentials credentials = host.getCredentials();
-        this.warn(login, credentials);
+        this.warn(controller, credentials);
 
         this.message(MessageFormat.format(Locale.localizedString("Authenticating as {0}", "Status"),
                 credentials.getUsername()));
-        this.login(login, credentials);
+        this.login(controller, credentials);
 
         if(!this.isConnected()) {
             throw new ConnectionCanceledException();
         }
-        login.success(host);
+        controller.success(host);
     }
 
     /**
