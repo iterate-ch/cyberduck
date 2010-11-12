@@ -128,4 +128,9 @@ public class DropboxSession extends HTTP4Session {
     public boolean isUploadResumable() {
         return false;
     }
+
+    @Override
+    public boolean isCDNSupported() {
+        return false;
+    }
 }

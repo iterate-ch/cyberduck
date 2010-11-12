@@ -1273,11 +1273,8 @@ public class InfoController extends ToolbarWindowController {
             if(anonymous) {
                 return false;
             }
-            if(session instanceof CloudSession) {
-                return ((CloudSession) session).getSupportedDistributionMethods().size() > 0;
-            }
             // Not enabled if not a cloud session
-            return false;
+            return session.isCDNSupported();
         }
         if(itemIdentifier.equals(TOOLBAR_ITEM_S3)) {
             if(session instanceof S3Session) {
@@ -2128,14 +2125,9 @@ public class InfoController extends ToolbarWindowController {
      */
     private boolean toggleDistributionSettings(final boolean stop) {
         this.window().endEditingFor(null);
-        // Not all cloud providers support different distributions
         final Session session = controller.getSession();
-        boolean enable = session instanceof CloudSession;
         final Credentials credentials = session.getHost().getCredentials();
-        enable = enable && !credentials.isAnonymousLogin();
-        if(enable) {
-            enable = ((CloudSession) session).getSupportedDistributionMethods().size() > 0;
-        }
+        boolean enable = !credentials.isAnonymousLogin() && session.isCDNSupported();
         if(enable) {
             String container = files.get(0).getContainerName();
             // Not enabled if multiple files selected with not same parent container

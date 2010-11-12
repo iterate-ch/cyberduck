@@ -459,4 +459,9 @@ public class GDSession extends SSLSession {
                 }
         );
     }
+
+    @Override
+    public boolean isCDNSupported() {
+        return false;
+    }
 }

@@ -1284,4 +1284,9 @@ public class S3Session extends CloudHTTP3Session {
         }
         return acl;
     }
+
+    @Override
+    public boolean isCDNSupported() {
+        return true;
+    }
 }

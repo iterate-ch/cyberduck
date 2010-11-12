@@ -144,4 +144,9 @@ public class GSSession extends S3Session {
     public boolean isBucketLocationSupported() {
         return false;
     }
+
+    @Override
+    public boolean isCDNSupported() {
+        return false;
+    }
 }

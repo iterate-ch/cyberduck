@@ -303,4 +303,9 @@ public class CFSession extends CloudHTTP3Session {
     public List<String> getSupportedStorageClasses() {
         return Collections.emptyList();
     }
+
+    @Override
+    public boolean isCDNSupported() {
+        return true;
+    }
 }

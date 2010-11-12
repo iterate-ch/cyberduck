@@ -610,4 +610,9 @@ public class AzureSession extends CloudHTTP4Session {
     public boolean isCreateFileSupported(Path workdir) {
         return !workdir.isRoot();
     }
+
+    @Override
+    public boolean isCDNSupported() {
+        return false;
+    }
 }

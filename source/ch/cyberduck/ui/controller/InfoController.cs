@@ -599,15 +599,9 @@ namespace Ch.Cyberduck.Ui.Controller
         /// <returns>True if controls are enabled for the given protocol in idle state</returns>
         private bool ToggleDistributionSettings(bool stop)
         {
-            // Not all cloud providers support different distributions
             Session session = _controller.getSession();
-            bool enable = session is CloudSession;
             Credentials credentials = session.getHost().getCredentials();
-            enable = enable && !credentials.isAnonymousLogin();
-            if (enable)
-            {
-                enable = ((CloudSession) session).getSupportedDistributionMethods().size() > 0;
-            }
+            boolean enable = !credentials.isAnonymousLogin() && session.isCDNSupported();
             if (enable)
             {
                 String container = _files[0].getContainerName();

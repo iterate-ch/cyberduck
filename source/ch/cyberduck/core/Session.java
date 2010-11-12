@@ -711,6 +711,14 @@ public abstract class Session implements TranscriptListener {
     }
 
     /**
+     *
+     * @return
+     */
+    public boolean isCDNSupported() {
+        return false;
+    }
+
+    /**
      * Roles available for users in a configurable ACL.
      *
      * @return A list of role names.
