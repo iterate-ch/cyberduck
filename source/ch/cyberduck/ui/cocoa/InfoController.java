@@ -1195,8 +1195,8 @@ public class InfoController extends ToolbarWindowController {
     private InfoController(final BrowserController controller, List<Path> files) {
         this.controller = controller;
         this.controller.addListener(browserWindowListener);
+        this.files = files;
         this.loadBundle();
-        this.setFiles(files);
     }
 
     private static final String TOOLBAR_ITEM_GENERAL = "info";
@@ -1211,12 +1211,34 @@ public class InfoController extends ToolbarWindowController {
         if(-1 == tab) {
             tab = 0;
         }
-        final String item = tabView.tabViewItemAtIndex(tab).identifier();
-        if(this.validateTabWithIdentifier(item)) {
+        final String identifier = tabView.tabViewItemAtIndex(tab).identifier();
+        if(this.validateTabWithIdentifier(identifier)) {
             super.setSelectedTab(tab);
+            this.initTab(identifier);
         }
         else {
             super.setSelectedTab(-1);
+        }
+    }
+
+    private void initTab(String identifier) {
+        if(identifier.equals(TOOLBAR_ITEM_GENERAL)) {
+            this.initGeneral();
+        }
+        if(identifier.equals(TOOLBAR_ITEM_PERMISSIONS)) {
+            this.initPermissions();
+        }
+        if(identifier.equals(TOOLBAR_ITEM_ACL)) {
+            this.initAcl();
+        }
+        if(identifier.equals(TOOLBAR_ITEM_DISTRIBUTION)) {
+            this.initDistribution();
+        }
+        if(identifier.equals(TOOLBAR_ITEM_S3)) {
+            this.initS3();
+        }
+        if(identifier.equals(TOOLBAR_ITEM_METADATA)) {
+            this.initMetadata();
         }
     }
 
@@ -1362,20 +1384,7 @@ public class InfoController extends ToolbarWindowController {
             return;
         }
         this.files = files;
-        this.initGeneral();
-        // Sum of files
-        this.initSize();
-        this.initChecksum();
-        // Read HTTP URL
-        this.initWebUrl();
-        // Read permissions
-        this.initPermissions();
-        this.initAcl();
-        // S3 Bucket attributes
-        this.initS3();
-        // HTTP custom headers
-        this.initMetadata();
-        this.initDistribution();
+        this.initTab(this.getSelectedTab());
     }
 
     private static NSPoint cascadedWindowPoint;
@@ -1534,6 +1543,11 @@ public class InfoController extends ToolbarWindowController {
                 iconImageView.setImage(IconCache.instance().iconForPath(files.get(0), 32));
             }
         }
+        // Sum of files
+        this.initSize();
+        this.initChecksum();
+        // Read HTTP URL
+        this.initWebUrl();
     }
 
     private void initWebUrl() {
