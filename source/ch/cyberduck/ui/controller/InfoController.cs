@@ -1,4 +1,4 @@
-﻿
+﻿﻿
 //
 // Copyright (c) 2010 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
@@ -1745,7 +1745,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
             public override string getActivity()
             {
-                return String.Format(Locale.localizedString("Reading metadata of {0}", "Status"),
+                return String.Format(Locale.localizedString("Reading CDN configuration of {0}", "Status"),
                                      toString(Utils.ConvertToJavaList(_infoController.Files)));
             }
         }
@@ -2088,7 +2088,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
             public override string getActivity()
             {
-                return String.Format(Locale.localizedString("Writing metadata of {0}", "Status"),
+                return String.Format(Locale.localizedString("Writing CDN configuration of {0}", "Status"),
                                      toString(Utils.ConvertToJavaList(_infoController.Files)));
             }
         }
