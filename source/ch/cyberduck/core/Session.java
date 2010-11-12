@@ -736,7 +736,7 @@ public abstract class Session implements TranscriptListener {
         errorListeners.remove(listener);
     }
 
-    public void error(String message, Throwable e) {
+    protected void error(String message, Throwable e) {
         this.error(null, message, e);
     }
 
@@ -747,11 +747,11 @@ public abstract class Session implements TranscriptListener {
      * @param message The error message to be displayed in the alert sheet
      * @param e       The cause of the error
      */
-    public void error(Path path, String message, Throwable e) {
+    protected void error(Path path, String message, Throwable e) {
         this.error(new BackgroundException(this, path, message, e));
     }
 
-    public void error(BackgroundException failure) {
+    protected void error(BackgroundException failure) {
         this.message(failure.getMessage());
         for(ErrorListener listener : errorListeners.toArray(new ErrorListener[errorListeners.size()])) {
             listener.error(failure);
