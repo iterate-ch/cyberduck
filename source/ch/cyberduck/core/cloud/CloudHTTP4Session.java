@@ -90,4 +90,9 @@ public abstract class CloudHTTP4Session extends HTTP4Session implements CloudSes
     public AbstractX509TrustManager getTrustManager() {
         return this.getTrustManager(this.getHostnameForContainer(this.getHost().getCredentials().getUsername()));
     }
+
+    @Override
+    public boolean isMetadataSupported() {
+        return true;
+    }
 }

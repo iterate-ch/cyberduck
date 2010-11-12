@@ -90,4 +90,9 @@ public abstract class CloudHTTP3Session extends HTTP3Session implements CloudSes
     public String getHostnameForContainer(String container) {
         return container + "." + this.getHost().getHostname(true);
     }
+
+    @Override
+    public boolean isMetadataSupported() {
+        return true;
+    }
 }
