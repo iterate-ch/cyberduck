@@ -1290,11 +1290,11 @@ public class InfoController extends ToolbarWindowController {
             return false;
         }
         if(itemIdentifier.equals(TOOLBAR_ITEM_METADATA)) {
-            if(session instanceof CloudSession) {
-                return !anonymous;
+            if(anonymous) {
+                return false;
             }
             // Not enabled if not a cloud session
-            return false;
+            return session.isMetadataSupported();
         }
         return true;
     }
@@ -1777,7 +1777,7 @@ public class InfoController extends ToolbarWindowController {
                             storageClassPopup.removeItemWithTitle(Locale.localizedString("Unknown"));
                             storageClassPopup.selectItemWithTitle(Locale.localizedString(redundancy, "S3"));
                         }
-                        final CloudPath.DescriptiveUrl url = s3.toSignedUrl();
+                        final AbstractPath.DescriptiveUrl url = s3.toSignedUrl();
                         if(StringUtils.isNotBlank(url.getUrl())) {
                             s3PublicUrlField.setAttributedStringValue(
                                     HyperlinkAttributedStringFactory.create(
@@ -1789,7 +1789,7 @@ public class InfoController extends ToolbarWindowController {
                         if(StringUtils.isNotBlank(url.getHelp())) {
                             s3PublicUrlValidityField.setStringValue(url.getHelp());
                         }
-                        final CloudPath.DescriptiveUrl torrent = s3.toTorrentUrl();
+                        final AbstractPath.DescriptiveUrl torrent = s3.toTorrentUrl();
                         if(StringUtils.isNotBlank(torrent.getUrl())) {
                             s3torrentUrlField.setAttributedStringValue(
                                     HyperlinkAttributedStringFactory.create(
@@ -1871,12 +1871,11 @@ public class InfoController extends ToolbarWindowController {
      */
     private boolean toggleMetadataSettings(final boolean stop) {
         this.window().endEditingFor(null);
-        boolean enable = this.numberOfFiles() > 0;
+        final Session session = controller.getSession();
+        final Credentials credentials = session.getHost().getCredentials();
+        boolean enable = !credentials.isAnonymousLogin() && session.isMetadataSupported();
         if(enable) {
             for(Path file : files) {
-                final Credentials credentials = file.getHost().getCredentials();
-                enable = enable && !credentials.isAnonymousLogin();
-                enable = enable && file instanceof CloudPath;
                 enable = enable && (file.attributes().isFile() || file.attributes().isPlaceholder());
             }
         }

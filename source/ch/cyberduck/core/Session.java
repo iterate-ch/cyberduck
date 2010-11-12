@@ -697,6 +697,13 @@ public abstract class Session implements TranscriptListener {
     }
 
     /**
+     * @return
+     */
+    public boolean isMetadataSupported() {
+        return false;
+    }
+
+    /**
      * Roles available for users in a configurable ACL.
      *
      * @return A list of role names.

@@ -1,4 +1,4 @@
-﻿﻿//
+﻿//
 // Copyright (c) 2010 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
@@ -220,7 +220,7 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             else
             {
-                View.ToolbarMetadataEnabled = session is CloudSession;
+                View.ToolbarMetadataEnabled = session.isMetadataSupported();
             }
         }
 
@@ -243,15 +243,14 @@ namespace Ch.Cyberduck.Ui.Controller
         /// <returns>True if progress animation has started and settings are toggled</returns>
         private bool ToggleMetadataSettings(bool stop)
         {
-            bool enable = NumberOfFiles > 0;
+            Session session = _controller.getSession();
+            Credentials credentials = session.getHost().getCredentials();
+            boolean enable = !credentials.isAnonymousLogin() && session.isMetadataSupported();
             if (enable)
             {
                 foreach (Path file in _files)
                 {
-                    Credentials credentials = file.getHost().getCredentials();
-                    enable = enable && !credentials.isAnonymousLogin();
-                    enable = enable && file is CloudPath;
-                    enable = enable && file.attributes().isFile();
+                    enable = enable && file.attributes().isFile() || file.attributes().isPlaceholder();
                 }
             }
             View.MetadataTableEnabled = stop && enable;
