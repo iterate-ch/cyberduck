@@ -1656,7 +1656,9 @@ public class InfoController extends ToolbarWindowController {
                 distributionDeliveryPopup.addItemWithTitle(method.toString());
                 distributionDeliveryPopup.itemWithTitle(method.toString()).setRepresentedObject(method.toString());
             }
-            distributionDeliveryPopup.selectItemWithTitle(Distribution.DOWNLOAD.toString());
+            // Select first distribution option
+            distributionDeliveryPopup.selectItemWithTitle(
+                    session.getSupportedDistributionMethods().iterator().next().toString());
 
             this.distributionStatusButtonClicked(null);
         }
