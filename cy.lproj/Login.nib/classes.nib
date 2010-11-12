@@ -9,6 +9,8 @@
 			<dict>
 				<key>closeSheet</key>
 				<string>id</string>
+				<key>helpButtonClicked</key>
+				<string>id</string>
 			</dict>
 			<key>CLASS</key>
 			<string>CDLoginController</string>
