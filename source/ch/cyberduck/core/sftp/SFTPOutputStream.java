@@ -52,8 +52,7 @@ public class SFTPOutputStream extends OutputStream {
      * @see ch.ethz.ssh2.sftp.SFTPv3Client#upload(SFTPv3FileHandle,long,byte[],int,int)
      */
     @Override
-    public void write(byte[] buffer, int offset, int len)
-            throws IOException {
+    public void write(byte[] buffer, int offset, int len) throws IOException {
         // We can just blindly write the whole buffer at once.
         // if <code>len</code> &gt; 32768, then the write operation will
         // be split into multiple writes in SFTPv3Client#write.
@@ -63,8 +62,7 @@ public class SFTPOutputStream extends OutputStream {
     }
 
     @Override
-    public void write(int b)
-            throws IOException {
+    public void write(int b) throws IOException {
         byte[] buffer = new byte[1];
         buffer[0] = (byte) b;
         handle.getClient().upload(handle, writeOffset, buffer, 0, 1);
@@ -78,8 +76,7 @@ public class SFTPOutputStream extends OutputStream {
     }
 
     @Override
-    public void close()
-            throws IOException {
+    public void close() throws IOException {
         handle.getClient().closeFile(handle);
     }
 }
