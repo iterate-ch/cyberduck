@@ -1,4 +1,4 @@
-﻿// 
+﻿//
 // Copyright (c) 2010 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
@@ -23,6 +23,7 @@ using ch.cyberduck.core.i18n;
 using ch.cyberduck.ui.controller;
 using Ch.Cyberduck.Ui.Winforms.Taskdialog;
 using org.apache.log4j;
+using org.apache.commons.lang;
 using StructureMap;
 
 namespace Ch.Cyberduck.Ui.Controller
@@ -106,6 +107,13 @@ namespace Ch.Cyberduck.Ui.Controller
         private void View_ChangedUsernameEvent()
         {
             _credentials.setUsername(_view.Username);
+            if(StringUtils.isNotBlank(credentials.getUsername())) {
+                String password = KeychainFactory.instance().getPassword(protocol.getScheme(), protocol.getDefaultPort(),
+                        protocol.getDefaultHostname(), credentials.getUsername());
+                if(StringUtils.isNotBlank(password)) {
+                    _view.Password = password;
+                }
+            }
             Update();
         }
 

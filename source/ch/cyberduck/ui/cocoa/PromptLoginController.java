@@ -27,6 +27,7 @@ import ch.cyberduck.ui.cocoa.foundation.*;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 /**
@@ -159,6 +160,14 @@ public class PromptLoginController extends AbstractLoginController {
 
             public void userFieldTextDidChange(NSNotification notification) {
                 credentials.setUsername(usernameField.stringValue());
+                if(StringUtils.isNotBlank(credentials.getUsername())) {
+                    String password = KeychainFactory.instance().getPassword(protocol.getScheme(), protocol.getDefaultPort(),
+                            protocol.getDefaultHostname(), credentials.getUsername());
+                    if(StringUtils.isNotBlank(password)) {
+                        passwordField.setStringValue(password);
+                        this.passFieldTextDidChange(notification);
+                    }
+                }
                 this.update();
             }
 
