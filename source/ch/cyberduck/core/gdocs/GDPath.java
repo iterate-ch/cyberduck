@@ -537,6 +537,7 @@ public class GDPath extends Path {
                                 public void run() {
                                     try {
                                         multipart.writeTo(pipe);
+                                        pipe.flush();
                                         pipe.close();
                                     }
                                     catch(IOException e) {
