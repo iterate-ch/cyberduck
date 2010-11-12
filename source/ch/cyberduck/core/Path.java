@@ -341,7 +341,7 @@ public abstract class Path extends AbstractPath implements Serializable {
     }
 
     public String getContainerName() {
-        return this.getContainer().getAbsolute();
+        return this.getHost().getHostname(true);
     }
 
     public Path getContainer() {
@@ -484,6 +484,10 @@ public abstract class Path extends AbstractPath implements Serializable {
         final String abs = this.getAbsolute();
         int index = abs.lastIndexOf(DELIMITER);
         return abs.substring(index + 1);
+    }
+
+    public String getKey() {
+        return this.getAbsolute();
     }
 
     /**

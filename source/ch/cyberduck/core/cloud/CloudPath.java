@@ -99,6 +99,7 @@ public abstract class CloudPath extends Path {
     /**
      * @return Absolute path without the container name
      */
+    @Override
     public String getKey() {
         if(this.isContainer()) {
             return null;
@@ -158,7 +159,7 @@ public abstract class CloudPath extends Path {
                 new DescriptiveUrl(this.toURL(), MessageFormat.format(Locale.localizedString("{0} URL"),
                         this.getHost().getProtocol().getScheme().toUpperCase())))
         );
-        CloudSession session = (CloudSession)this.getSession();
+        CloudSession session = (CloudSession) this.getSession();
         for(Distribution.Method method : session.getSupportedDistributionMethods()) {
             Distribution distribution = session.getDistribution(this.getContainerName(), method);
             if(null != distribution) {
