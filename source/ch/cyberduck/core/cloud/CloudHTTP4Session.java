@@ -23,8 +23,6 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.http.HTTP4Session;
 import ch.cyberduck.core.ssl.AbstractX509TrustManager;
 
-import java.util.List;
-
 /**
  * @version $Id: CloudSession.java 7011 2010-09-18 15:20:05Z dkocher $
  */
@@ -33,19 +31,6 @@ public abstract class CloudHTTP4Session extends HTTP4Session implements CloudSes
     protected CloudHTTP4Session(Host h) {
         super(h);
     }
-
-    public abstract Distribution getDistribution(String container, Distribution.Method method);
-
-    public abstract void writeDistribution(boolean enabled, String container, Distribution.Method method,
-                                           String[] cnames, boolean logging, String defaultRootObject);
-
-    public abstract Distribution readDistribution(String container, Distribution.Method method);
-
-    public abstract List<Distribution.Method> getSupportedDistributionMethods();
-
-    public abstract String getDistributionServiceName();
-
-    public abstract List<String> getSupportedStorageClasses();
 
     /**
      * Use ACL support.

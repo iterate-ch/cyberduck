@@ -23,8 +23,6 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.http.HTTP3Session;
 import ch.cyberduck.core.ssl.AbstractX509TrustManager;
 
-import java.util.List;
-
 /**
  * @version $Id$
  */
@@ -33,19 +31,6 @@ public abstract class CloudHTTP3Session extends HTTP3Session implements CloudSes
     protected CloudHTTP3Session(Host h) {
         super(h);
     }
-
-    public abstract Distribution getDistribution(String container, Distribution.Method method);
-
-    public abstract void writeDistribution(boolean enabled, String container, Distribution.Method method,
-                                           String[] cnames, boolean logging, String defaultRootObject);
-
-    public abstract Distribution readDistribution(String container, Distribution.Method method);
-
-    public abstract List<Distribution.Method> getSupportedDistributionMethods();
-
-    public abstract String getDistributionServiceName();
-
-    public abstract List<String> getSupportedStorageClasses();
 
     /**
      * Use ACL support.
