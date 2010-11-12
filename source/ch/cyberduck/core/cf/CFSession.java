@@ -146,16 +146,6 @@ public class CFSession extends CloudHTTP3Session {
         }
     }
 
-    @Override
-    protected void noop() {
-        ;
-    }
-
-    @Override
-    public void sendCommand(String command) throws IOException {
-        throw new UnsupportedOperationException();
-    }
-
     /**
      * @return No Content-Range support
      */

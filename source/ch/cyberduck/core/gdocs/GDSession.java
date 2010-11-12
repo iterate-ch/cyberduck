@@ -392,16 +392,6 @@ public class GDSession extends SSLSession {
         }
     }
 
-    @Override
-    protected void noop() throws IOException {
-        ;
-    }
-
-    @Override
-    public void sendCommand(String command) throws IOException {
-        ;
-    }
-
     /**
      * @return No Content-Range support
      */

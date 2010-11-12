@@ -426,7 +426,9 @@ public abstract class Session implements TranscriptListener {
      *
      * @throws IOException
      */
-    protected abstract void noop() throws IOException;
+    protected void noop() throws IOException {
+        ;
+    }
 
     /**
      * Interrupt any running operation asynchroneously by closing the underlying socket.
@@ -450,7 +452,9 @@ public abstract class Session implements TranscriptListener {
      * @param command
      * @see #isSendCommandSupported()
      */
-    public abstract void sendCommand(String command) throws IOException;
+    public void sendCommand(String command) throws IOException {
+        throw new UnsupportedOperationException();
+    }
 
     /**
      * @return False

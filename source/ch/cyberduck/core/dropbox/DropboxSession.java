@@ -110,16 +110,6 @@ public class DropboxSession extends HTTP4Session {
     }
 
     @Override
-    protected void noop() throws IOException {
-        ;
-    }
-
-    @Override
-    public void sendCommand(String command) throws IOException {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public boolean isAclSupported() {
         return false;
     }

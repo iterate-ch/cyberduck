@@ -242,11 +242,6 @@ public class DAVSession extends HTTP3Session {
     }
 
     @Override
-    protected void noop() throws IOException {
-        ;
-    }
-
-    @Override
     public boolean isUnixPermissionsSupported() {
         return false;
     }
@@ -254,11 +249,6 @@ public class DAVSession extends HTTP3Session {
     @Override
     public boolean isTimestampSupported() {
         return false;
-    }
-
-    @Override
-    public void sendCommand(String command) {
-        throw new UnsupportedOperationException();
     }
 
     @Override

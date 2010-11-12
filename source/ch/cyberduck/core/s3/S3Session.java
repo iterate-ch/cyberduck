@@ -478,16 +478,6 @@ public class S3Session extends CloudHTTP3Session {
         return true;
     }
 
-    @Override
-    protected void noop() throws IOException {
-        ;
-    }
-
-    @Override
-    public void sendCommand(String command) throws IOException {
-        throw new UnsupportedOperationException();
-    }
-
     /**
      * Creating files is only possible inside a bucket.
      *
