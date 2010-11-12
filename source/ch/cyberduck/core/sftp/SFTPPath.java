@@ -451,7 +451,7 @@ public class SFTPPath extends Path {
                 }
                 out = this.getLocal().getOutputStream(this.status().isResume());
                 // No parallel requests if the file size is smaller than the buffer.
-                this.getSession().sftp().setDownloadRequestParallelism(
+                this.getSession().sftp().setRequestParallelism(
                         (int) (this.attributes().getSize() / Preferences.instance().getInteger("connection.chunksize")) + 1
                 );
                 this.download(in, out, throttle, listener);
@@ -532,7 +532,7 @@ public class SFTPPath extends Path {
                             "0" + this.attributes().getPermission().getOctalString());
                 }
                 // No parallel requests if the file size is smaller than the buffer.
-                this.getSession().sftp().setDownloadRequestParallelism(
+                this.getSession().sftp().setRequestParallelism(
                         (int) (this.attributes().getSize() / Preferences.instance().getInteger("connection.chunksize")) + 1
                 );
                 this.upload(out, in, throttle, listener);

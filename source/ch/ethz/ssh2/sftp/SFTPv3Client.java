@@ -1092,7 +1092,7 @@ public class SFTPv3Client {
      * A read  is divided into multiple requests sent sequentially before
      * reading any status from the server
      */
-    private static class OutstandingRequest {
+    private static class OutstandingReadRequest {
         int req_id;
         /**
          * Read offset to request on server starting at the file offset for the first request.
@@ -1135,7 +1135,7 @@ public class SFTPv3Client {
     /**
      * @param parallelism
      */
-    public void setDownloadRequestParallelism(int parallelism) {
+    public void setRequestParallelism(int parallelism) {
         this.parallelism = Math.min(parallelism, DEFAULT_MAX_PARALLELISM);
         log.log("setDownloadRequestParallelism:" + this.parallelism);
     }
@@ -1143,8 +1143,8 @@ public class SFTPv3Client {
     /**
      * Mapping request ID to request.
      */
-    Map<Integer, OutstandingRequest> pendingQueue
-            = new HashMap<Integer, OutstandingRequest>();
+    Map<Integer, OutstandingReadRequest> pendingReadQueue
+            = new HashMap<Integer, OutstandingReadRequest>();
 
     /**
      * Read bytes from a file in a parallel fashion. As many bytes as you want will be read.
@@ -1177,24 +1177,24 @@ public class SFTPv3Client {
         int clientOffset = dstoff;
 
         long serverOffset = fileOffset;
-        for(OutstandingRequest r : pendingQueue.values()) {
+        for(OutstandingReadRequest r : pendingReadQueue.values()) {
             // Server offset should take pending requests into account.
             serverOffset += r.len;
         }
 
         while(true) {
-            /* If there was an error and no outstanding request - stop */
-            if((pendingQueue.size() == 0) && errorOccured) {
+            // Stop if there was an error and no outstanding request
+            if((pendingReadQueue.size() == 0) && errorOccured) {
                 break;
             }
 
-            /* Send as many requests as we are allowed to */
-            while(pendingQueue.size() < parallelism) {
+            // Send as many requests as we are allowed to
+            while(pendingReadQueue.size() < parallelism) {
                 if(errorOccured) {
                     break;
                 }
-                /* Send the next request */
-                OutstandingRequest req = new OutstandingRequest();
+                // Send the next read request
+                OutstandingReadRequest req = new OutstandingReadRequest();
                 req.req_id = generateNextRequestID();
                 req.serverOffset = serverOffset;
                 req.len = (remaining > len) ? len : remaining;
@@ -1207,33 +1207,22 @@ public class SFTPv3Client {
 
                 sendReadRequest(req.req_id, handle, req.serverOffset, req.len);
 
-                pendingQueue.put(req.req_id, req);
+                pendingReadQueue.put(req.req_id, req);
             }
-
-            /* Are we done? */
-            if(pendingQueue.size() == 0) {
+            if(pendingReadQueue.size() == 0) {
                 break;
             }
 
-            /* No, receive a single answer */
+            // Receive a single answer
             byte[] resp = receiveMessage(34000);
-
             TypesReader tr = new TypesReader(resp);
-
             int type = tr.readByte();
-            int rep_id = tr.readUINT32();
-
-            /* Search the pending queue */
-            OutstandingRequest req = pendingQueue.get(rep_id);
-
-            /* Should shutdown here, no point in going on */
+            // Search the pending queue
+            OutstandingReadRequest req = pendingReadQueue.remove(tr.readUINT32());
             if(null == req) {
                 throw new IOException("The server sent an invalid id field.");
             }
-
-            pendingQueue.remove(rep_id);
-
-            /* Evaluate the answer */
+            // Evaluate the answer
             if(type == Packet.SSH_FXP_STATUS) {
                 /* In any case, stop sending more packets */
 
@@ -1246,7 +1235,7 @@ public class SFTPv3Client {
                 }
                 // Flag to read all pending requests but don't send any more.
                 errorOccured = true;
-                if(pendingQueue.isEmpty()) {
+                if(pendingReadQueue.isEmpty()) {
                     if(ErrorCodes.SSH_FX_EOF == code) {
                         return -1;
                     }
@@ -1254,7 +1243,7 @@ public class SFTPv3Client {
                 }
             }
             else if(type == Packet.SSH_FXP_DATA) {
-                /* OK, collect data */
+                // OK, collect data
                 int readLen = tr.readUINT32();
 
                 if((readLen < 0) || (readLen > req.len)) {
@@ -1278,7 +1267,7 @@ public class SFTPv3Client {
                     log.log("Requesting again: " + req.serverOffset + "/" + req.len);
                     sendReadRequest(req.req_id, handle, req.serverOffset, req.len);
 
-                    pendingQueue.put(req.req_id, req);
+                    pendingReadQueue.put(req.req_id, req);
                 }
                 return readLen;
             }
@@ -1360,9 +1349,6 @@ public class SFTPv3Client {
      * @throws IOException
      */
     public void closeFile(SFTPv3FileHandle handle) throws IOException {
-        if(handle == null) {
-            throw new IllegalArgumentException("the handle argument may not be null");
-        }
         try {
             if(!handle.isClosed) {
                 closeHandle(handle.fileHandle);
