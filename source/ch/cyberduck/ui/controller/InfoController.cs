@@ -1,4 +1,5 @@
-﻿//
+﻿
+//
 // Copyright (c) 2010 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
@@ -1196,7 +1197,6 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void InitWebUrl()
         {
-            DetachGeneralHandlers();
             if (NumberOfFiles > 1)
             {
                 View.WebUrl = _multipleFilesString;
@@ -1204,8 +1204,20 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             else
             {
-                View.WebUrl = Locale.localizedString("Unknown");
-                _controller.Background(new WebUrlBackgroundAction(_controller, this));
+                foreach (Path file in _infoController.Files)
+                {
+                    _url = file.toHttpURL();
+                    if (Utils.IsNotBlank(_url))
+                    {
+                        View.WebUrl = _url;
+                        View.WebUrlTooltip = _url;
+                    }
+                    else
+                    {
+                        View.WebUrl = Locale.localizedString("Unknown");
+                    }
+                    break;
+                }
             }
         }
 
@@ -1969,37 +1981,6 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     PropertyChanged(this, new PropertyChangedEventArgs(info));
                 }
-            }
-        }
-
-        private class WebUrlBackgroundAction : BrowserBackgroundAction
-        {
-            private readonly InfoController _infoController;
-            private String _url;
-
-            public WebUrlBackgroundAction(BrowserController browserController, InfoController infoController)
-                : base(browserController)
-            {
-                _infoController = infoController;
-            }
-
-            public override void run()
-            {
-                foreach (Path file in _infoController.Files)
-                {
-                    _url = file.toHttpURL();
-                    break;
-                }
-            }
-
-            public override void cleanup()
-            {
-                if (Utils.IsNotBlank(_url))
-                {
-                    _infoController.View.WebUrl = _url;
-                    _infoController.View.WebUrlTooltip = _url;
-                }
-                _infoController.AttachGeneralHandlers();
             }
         }
 
