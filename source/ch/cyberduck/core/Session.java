@@ -253,6 +253,9 @@ public abstract class Session implements TranscriptListener {
         catch(IOException e) {
             this.interrupt();
         }
+        finally {
+            host.setWorkdir(null);
+        }
         return null;
     }
 
