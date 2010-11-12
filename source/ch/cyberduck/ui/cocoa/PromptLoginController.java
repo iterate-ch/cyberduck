@@ -107,6 +107,13 @@ public class PromptLoginController extends AbstractLoginController {
                 super.awakeFromNib();
             }
 
+            @Override
+            public void helpButtonClicked(NSButton sender) {
+                StringBuilder site = new StringBuilder(Preferences.instance().getProperty("website.help"));
+                site.append("/").append(protocol.getIdentifier());
+                openUrl(site.toString());
+            }
+
             @Outlet
             protected NSImageView iconView;
 
