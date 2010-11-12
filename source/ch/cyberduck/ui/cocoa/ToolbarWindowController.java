@@ -209,7 +209,7 @@ public abstract class ToolbarWindowController extends WindowController implement
     }
 
     public void select(NSToolbarItem sender) {
-        tabView.selectTabViewItemWithIdentifier(sender.itemIdentifier());
+        this.setSelectedTab(tabView.indexOfTabViewItemWithIdentifier(sender.itemIdentifier()));
     }
 
     /**
