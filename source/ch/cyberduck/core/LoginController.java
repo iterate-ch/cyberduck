@@ -35,11 +35,11 @@ public interface LoginController {
     /**
      * Display warning sheet. Block connection until decision is made.
      *
-     * @param title         Title in alert window
-     * @param message       Message in alert window
-     * @param continueButton Button title for default button
-     * @param disconnectButton   Button title for other button
-     * @param preference    Where to save preference if dismissed
+     * @param title            Title in alert window
+     * @param message          Message in alert window
+     * @param continueButton   Button title for default button
+     * @param disconnectButton Button title for other button
+     * @param preference       Where to save preference if dismissed
      * @throws LoginCanceledException If the other option has been selected.
      */
     void warn(String title, String message, String continueButton, String disconnectButton, String preference) throws LoginCanceledException;
@@ -54,6 +54,18 @@ public interface LoginController {
      * @throws LoginCanceledException
      */
     void check(Host host, String title, String reason) throws LoginCanceledException;
+
+    /**
+     * Check the credentials for validity and prompt the user for the password if not found
+     * in the login keychain
+     *
+     * @param host
+     * @param title           The title for the login prompt
+     * @param enableKeychain  Enable checkbox to save password in keychain
+     * @param enablePublicKey Enable public key authentication checkbox
+     * @param enableAnonymous Enable anynomous login option checkbox
+     */
+    void check(final Host host, String title, String message, boolean enableKeychain, boolean enablePublicKey, boolean enableAnonymous) throws LoginCanceledException;
 
     /**
      * Call this to allow the user to reenter the new login credentials.
@@ -103,7 +115,7 @@ public interface LoginController {
      * @param reason          The detail message for the login prompt. Any additional information why the login failed.
      * @param enableKeychain  Enable checkbox to save password in keychain
      * @param enablePublicKey Enable public key authentication checkbox
-     * @param enableAnonymous
+     * @param enableAnonymous Enable anynomous login option checkbox
      * @throws LoginCanceledException
      */
     void prompt(final Protocol protocol, final Credentials credentials,

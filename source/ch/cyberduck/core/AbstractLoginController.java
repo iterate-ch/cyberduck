@@ -46,6 +46,18 @@ public abstract class AbstractLoginController implements LoginController {
             throws LoginCanceledException;
 
     /**
+     * @param host
+     * @param title   The title for the login prompt
+     * @param message
+     * @throws LoginCanceledException
+     */
+    public void check(final Host host, String title, String message)
+            throws LoginCanceledException {
+        this.check(host, title, message, Preferences.instance().getBoolean("connection.login.useKeychain"),
+                host.getProtocol().equals(Protocol.SFTP), true);
+    }
+
+    /**
      * Check the credentials for validity and prompt the user for the password if not found
      * in the login keychain
      *
@@ -53,7 +65,7 @@ public abstract class AbstractLoginController implements LoginController {
      * @param message Additional message displayed in the password prompt
      * @throws LoginCanceledException
      */
-    public void check(final Host host, String title, String message)
+    public void check(final Host host, String title, String message, boolean enableKeychain, boolean enablePublicKey, boolean enableAnonymous)
             throws LoginCanceledException {
 
         final Credentials credentials = host.getCredentials();
@@ -74,7 +86,8 @@ public abstract class AbstractLoginController implements LoginController {
                         else {
                             reason.append(Locale.localizedString(
                                     "No login credentials could be found in the Keychain", "Credentials")).append(".");
-                            this.prompt(host.getProtocol(), credentials, title, reason.toString());
+                            this.prompt(host.getProtocol(), credentials, title, reason.toString(),
+                                    enableKeychain, enablePublicKey, enableAnonymous);
                         }
                     }
                     else {
@@ -86,14 +99,16 @@ public abstract class AbstractLoginController implements LoginController {
                 else {
                     reason.append(Locale.localizedString(
                             "The use of the Keychain is disabled in the Preferences", "Credentials")).append(".");
-                    this.prompt(host.getProtocol(), credentials, title, reason.toString());
+                    this.prompt(host.getProtocol(), credentials, title, reason.toString(),
+                            enableKeychain, enablePublicKey, enableAnonymous);
                 }
             }
             else {
                 reason.append(Locale.localizedString(
                         "No login credentials could be found in the Keychain", "Credentials")).append(".");
                 ;
-                this.prompt(host.getProtocol(), credentials, title, reason.toString());
+                this.prompt(host.getProtocol(), credentials, title, reason.toString(),
+                        enableKeychain, enablePublicKey, enableAnonymous);
             }
         }
     }
