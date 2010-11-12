@@ -1653,6 +1653,8 @@ namespace Ch.Cyberduck.Ui.Controller
                     {
                         _distribution = session.readDistribution(cloud.getContainerName(), _deliveryMethod);
                     }
+                    // Make sure container items are cached for default root object.
+                    _files[0].getContainer().children();
                     break;
                 }
             }
