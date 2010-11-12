@@ -1640,7 +1640,6 @@ public class InfoController extends ToolbarWindowController {
         distributionStatusField.setStringValue(Locale.localizedString("Unknown"));
         distributionCnameField.cell().setPlaceholderString(Locale.localizedString("None"));
         distributionUrlField.setStringValue(Locale.localizedString("None"));
-        distributionCnameField.setStringValue(Locale.localizedString("None"));
         distributionInvalidationStatusField.setStringValue(Locale.localizedString("None"));
         distributionDeliveryPopup.removeAllItems();
         distributionDeliveryPopup.addItemWithTitle(Locale.localizedString("None"));
