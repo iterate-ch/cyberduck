@@ -395,7 +395,7 @@ public class FTPSession extends SSLSession {
                 // Protocol switch
                 host.setProtocol(Protocol.FTP_TLS);
                 if(BookmarkCollection.defaultCollection().contains(host)) {
-                    BookmarkCollection.defaultCollection().save();
+                    BookmarkCollection.defaultCollection().collectionItemChanged(host);
                 }
                 // Reconfigure client for TLS
                 this.configure(this.getClient());
