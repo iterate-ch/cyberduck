@@ -1,4 +1,4 @@
-﻿// 
+﻿//
 // Copyright (c) 2010 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
@@ -139,13 +139,11 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             private readonly BrowserController _controller;
             private readonly AbstractHostCollection _source;
-            private readonly Timer _tickler;
 
             public BookmarkListener(BrowserController controller, AbstractHostCollection source)
             {
                 _controller = controller;
                 _source = source;
-                _tickler = new Timer(OnTimer, null, Timeout.Infinite, Timeout.Infinite);
             }
 
             public void collectionLoaded()
@@ -166,13 +164,6 @@ namespace Ch.Cyberduck.Ui.Controller
             public void collectionItemChanged(object host)
             {
                 _controller.Invoke(() => _controller.View.RefreshBookmark(host as Host));
-                // Delay to 1 second. When typing changes we don't have to save every iteration.
-                _tickler.Change(1000, Timeout.Infinite);
-            }
-
-            private void OnTimer(object state)
-            {
-                _controller.Invoke(() => _source.save());
             }
         }
 

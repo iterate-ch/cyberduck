@@ -84,7 +84,7 @@ public class BookmarkTableDataSource extends ListDataSource {
             }
 
             public void collectionItemAdded(Host item) {
-                cache.clear();
+                cache.remove(item);
                 invoke(new WindowMainAction(controller) {
                     public void run() {
                         controller.reloadBookmarks();
@@ -93,7 +93,7 @@ public class BookmarkTableDataSource extends ListDataSource {
             }
 
             public void collectionItemRemoved(Host item) {
-                cache.clear();
+                cache.remove(item);
                 invoke(new WindowMainAction(controller) {
                     public void run() {
                         controller.reloadBookmarks();
@@ -102,7 +102,7 @@ public class BookmarkTableDataSource extends ListDataSource {
             }
 
             public void collectionItemChanged(Host item) {
-                cache.clear();
+                cache.remove(item);
                 if(null != delayed) {
                     delayed.cancel(false);
                 }
@@ -112,7 +112,6 @@ public class BookmarkTableDataSource extends ListDataSource {
                         controller.invoke(new WindowMainAction(controller) {
                             public void run() {
                                 controller.reloadBookmarks();
-                                source.save();
                             }
                         });
                     }
