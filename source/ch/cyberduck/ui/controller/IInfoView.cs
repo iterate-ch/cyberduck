@@ -20,7 +20,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
-using ch.cyberduck.core.cloud;
+using ch.cyberduck.core.cdn;
 using ch.cyberduck.ui.controller;
 
 namespace Ch.Cyberduck.Ui.Controller

@@ -25,7 +25,6 @@ using System.Windows.Forms;
 using ch.cyberduck.core;
 using Ch.Cyberduck.Core;
 using ch.cyberduck.core.cloud;
-using ch.cyberduck.core.cdn;
 using ch.cyberduck.core.s3;
 using ch.cyberduck.ui;
 using ch.cyberduck.ui.action;
@@ -36,6 +35,7 @@ using java.lang;
 using java.util;
 using org.apache.log4j;
 using StructureMap;
+using Distribution = ch.cyberduck.core.cdn.Distribution;
 using Locale = ch.cyberduck.core.i18n.Locale;
 using Object = System.Object;
 using String = System.String;
@@ -1123,14 +1123,14 @@ namespace Ch.Cyberduck.Ui.Controller
                 View.DistributionTitle = String.Format(Locale.localizedString("Enable {0} Distribution", "Status"),
                                                        session.cdn().toString());
                 methods = new List<KeyValuePair<string, Distribution.Method>>();
-                List list = session.getSupportedDistributionMethods();
+                List list = session.cdn().getMethods();
                 for (int i = 0; i < list.size(); i++)
                 {
                     Distribution.Method method = (Distribution.Method) list.get(i);
                     methods.Add(new KeyValuePair<string, Distribution.Method>(method.ToString(), method));
                 }
                 View.PopulateDistributionDeliveryMethod(methods);
-                View.DistributionDeliveryMethod = (Distribution.Method)session.getSupportedDistributionMethods().iterator().next();
+                View.DistributionDeliveryMethod = (Distribution.Method)session.cdn().getMethods().iterator().next();
                 DistributionDeliveryMethodChanged();
             }
             AttachDistributionHandlers();
@@ -1665,7 +1665,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     _view.DistributionLoggingEnabled = _distribution.isEnabled();
                     _view.DistributionLogging = _distribution.isLogging();
 
-                    CloudPath file = ((CloudPath) _infoController._files[0]);
+                    Path file = _infoController._files[0];
                     // Concatenate URLs
                     if (_infoController.NumberOfFiles > 1)
                     {
@@ -1675,7 +1675,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     }
                     else
                     {
-                        String url = _distribution.getURL(file));
+                        String url = _distribution.getURL(file);
                         if (Utils.IsNotBlank(url))
                         {
                             _view.DistributionUrl = url;
@@ -2057,8 +2057,8 @@ namespace Ch.Cyberduck.Ui.Controller
                     Session session = BrowserController.getSession();
                     if (Utils.IsNotBlank(_cname))
                     {
-                        session.cdn().write(_distribution, next.getContainerName(),
-                                                  session.cdn().getOrigin(method, next.getContainerName())
+                        session.cdn().write(_distribution,
+                                                  session.cdn().getOrigin(_deliveryMethod, next.getContainerName()),
                                                   _deliveryMethod,
                                                   _cname.Split(new[] {' '},
                                                                StringSplitOptions.RemoveEmptyEntries),
@@ -2067,8 +2067,8 @@ namespace Ch.Cyberduck.Ui.Controller
                     }
                     else
                     {
-                        session.cdn().write(_distribution, next.getContainerName(),
-                                                  session.cdn().getOrigin(method, next.getContainerName()),
+                        session.cdn().write(_distribution,
+                                                  session.cdn().getOrigin(_deliveryMethod, next.getContainerName()),
                                                   _deliveryMethod,
                                                   new string[] {}, _logging, _defaultRoot);
                     }
