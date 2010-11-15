@@ -178,7 +178,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.expandArchiveContextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
-            this.copyURLContextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openWebURLContextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
             this.newBrowserContextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -1367,13 +1366,11 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.createArchiveContextToolStripMenuItem,
             this.expandArchiveContextToolStripMenuItem,
             this.toolStripSeparator5,
-            this.copyURLContextToolStripMenuItem,
             this.openWebURLContextToolStripMenuItem,
             this.toolStripSeparator6,
             this.newBrowserContextToolStripMenuItem,
             this.newBookmarkContextToolStripMenuItem});
             this.contextMenuStrip.Name = "contextMenuStrip1";
-            this.contextMenuStrip.OwnerItem = this.actionToolStripDropDownButton;
             this.contextMenuStrip.Size = new System.Drawing.Size(156, 486);
             // 
             // refreshContextToolStripMenuItem
@@ -1489,12 +1486,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.toolStripSeparator5.Name = "toolStripSeparator5";
             this.toolStripSeparator5.Size = new System.Drawing.Size(152, 6);
-            // 
-            // copyURLContextToolStripMenuItem
-            // 
-            this.copyURLContextToolStripMenuItem.Name = "copyURLContextToolStripMenuItem";
-            this.copyURLContextToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
-            this.copyURLContextToolStripMenuItem.Text = "Copy URL";
             // 
             // openWebURLContextToolStripMenuItem
             // 
@@ -1713,9 +1704,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.splitContainer.Panel2.Controls.Add(this.transcriptBox);
             this.splitContainer.Panel2MinSize = 50;
-            this.splitContainer.Size = new System.Drawing.Size(0, 0);
-            this.splitContainer.SplitterDistance = 230;
-            this.splitContainer.SplitterWidth = 5;
+            this.splitContainer.Size = new System.Drawing.Size(0, 54);
+            this.splitContainer.SplitterDistance = 0;
             this.splitContainer.TabIndex = 2;
             // 
             // browser
@@ -1743,7 +1733,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.browser.Name = "browser";
             this.browser.OwnerDraw = true;
             this.browser.ShowGroups = false;
-            this.browser.Size = new System.Drawing.Size(1028, 230);
+            this.browser.Size = new System.Drawing.Size(0, 0);
             this.browser.TabIndex = 15;
             this.browser.UseCompatibleStateImageBehavior = false;
             this.browser.View = System.Windows.Forms.View.Details;
@@ -1803,7 +1793,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.transcriptBox.Name = "transcriptBox";
             this.transcriptBox.ReadOnly = true;
             this.transcriptBox.ShortcutsEnabled = false;
-            this.transcriptBox.Size = new System.Drawing.Size(1028, 262);
+            this.transcriptBox.Size = new System.Drawing.Size(0, 50);
             this.transcriptBox.TabIndex = 0;
             this.transcriptBox.Text = "";
             this.transcriptBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.transcriptBox_KeyDown);
@@ -1814,7 +1804,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.managedBookmarkPanel2.Controls.Add(this.actionToolStrip);
             this.managedBookmarkPanel2.Location = new System.Drawing.Point(0, 0);
             this.managedBookmarkPanel2.Name = "managedBookmarkPanel2";
-            this.managedBookmarkPanel2.Size = new System.Drawing.Size(1028, 497);
+            this.managedBookmarkPanel2.Size = new System.Drawing.Size(0, 0);
             this.managedBookmarkPanel2.Text = "managedBookmarkPanel2";
             // 
             // bookmarkListView
@@ -1835,7 +1825,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.bookmarkListView.OwnerDraw = true;
             this.bookmarkListView.RowHeight = 37;
             this.bookmarkListView.ShowGroups = false;
-            this.bookmarkListView.Size = new System.Drawing.Size(1028, 464);
+            this.bookmarkListView.Size = new System.Drawing.Size(0, 0);
             this.bookmarkListView.TabIndex = 10;
             this.bookmarkListView.UseCompatibleStateImageBehavior = false;
             this.bookmarkListView.View = System.Windows.Forms.View.Details;
@@ -1871,10 +1861,10 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.editBookmarkToolStripButton,
             this.deleteBookmarkToolStripButton});
             this.actionToolStrip.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.HorizontalStackWithOverflow;
-            this.actionToolStrip.Location = new System.Drawing.Point(0, 464);
+            this.actionToolStrip.Location = new System.Drawing.Point(0, -33);
             this.actionToolStrip.Name = "actionToolStrip";
             this.actionToolStrip.ShowItemToolTips = false;
-            this.actionToolStrip.Size = new System.Drawing.Size(1028, 33);
+            this.actionToolStrip.Size = new System.Drawing.Size(0, 33);
             this.actionToolStrip.Stretch = true;
             this.actionToolStrip.TabIndex = 5;
             this.actionToolStrip.Text = "toolStrip1";
@@ -3084,7 +3074,6 @@ namespace Ch.Cyberduck.Ui.Winforms
         private System.Windows.Forms.ToolStripMenuItem createArchiveContextToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem expandArchiveContextToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
-        private System.Windows.Forms.ToolStripMenuItem copyURLContextToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem openWebURLContextToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator6;
         private System.Windows.Forms.ToolStripMenuItem newBrowserContextToolStripMenuItem;

@@ -143,6 +143,7 @@ namespace Ch.Cyberduck.Ui.Controller
         event VoidHandler RevertFile;
         event ValidateCommand ValidateRevertFile;
         event ArchivesHandler GetArchives;
+        event CopyUrlHandler GetCopyUrls;
         event BookmarksHandler GetBookmarks;
         event BookmarksHandler GetHistory;
         event VoidHandler ClearHistory;
@@ -157,8 +158,6 @@ namespace Ch.Cyberduck.Ui.Controller
         event ValidateCommand ValidateCut;
         event VoidHandler Copy;
         event ValidateCommand ValidateCopy;
-        event VoidHandler CopyUrl;
-        event ValidateCommand ValidateCopyUrl;
         event VoidHandler Paste;
         event ValidateCommand ValidatePaste;
         event ValidateCommand ValidateSelectAll;

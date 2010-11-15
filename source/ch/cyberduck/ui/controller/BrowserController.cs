@@ -157,6 +157,7 @@ namespace Ch.Cyberduck.Ui.Controller
             View.RevertFile += View_RevertFile;
             View.ValidateRevertFile += View_ValidateRevertFile;
             View.GetArchives += View_GetArchives;
+            View.GetCopyUrls += View_GetCopyUrls;
             View.CreateArchive += View_CreateArchive;
             View.ValidateCreateArchive += View_ValidateCreateArchive;
             View.ExpandArchive += View_ExpandArchive;
@@ -170,8 +171,6 @@ namespace Ch.Cyberduck.Ui.Controller
             View.ValidateCut += View_ValidateCut;
             View.Copy += View_Copy;
             View.ValidateCopy += View_ValidateCopy;
-            View.CopyUrl += View_CopyUrl;
-            View.ValidateCopyUrl += View_ValidateCopyUrl;
             View.Paste += View_Paste;
             View.ValidatePaste += View_ValidatePaste;
             View.ShowPreferences += View_ShowPreferences;
@@ -415,6 +414,36 @@ namespace Ch.Cyberduck.Ui.Controller
                 AsyncDelegate mainAction = delegate { View.AddTranscriptEntry(request, transcript); };
                 Invoke(mainAction);
             }
+        }
+
+        private List<KeyValuePair<String, List<String>>> View_GetCopyUrls()
+        {
+            List<KeyValuePair<String, List<String>>> items = new List<KeyValuePair<String, List<String>>>();
+            List<TreePathReference> selected = View.SelectedPaths;
+            if (selected.Count == 0)
+            {
+                items.Add(
+                    new KeyValuePair<string, List<String>>(
+                        String.Format(Locale.localizedString("{0} URL"), Locale.localizedString("Unknown")),
+                        new List<string>()));
+            }
+            else
+            {
+                for (int i = 0; i < selected[0].Unique.getURLs().size(); i++)
+                {
+                    AbstractPath.DescriptiveUrl descUrl =
+                        (AbstractPath.DescriptiveUrl) selected[0].Unique.getURLs().get(i);
+                    KeyValuePair<String, List<String>> entry =
+                        new KeyValuePair<string, List<string>>(descUrl.getHelp(), new List<string>());
+                    items.Add(entry);
+
+                    foreach (TreePathReference reference in selected)
+                    {
+                        entry.Value.Add(((AbstractPath.DescriptiveUrl) reference.Unique.getURLs().get(i)).getUrl());
+                    }
+                }
+            }
+            return items;
         }
 
         private bool View_ValidateDuplicateBookmark()
@@ -1326,20 +1355,6 @@ namespace Ch.Cyberduck.Ui.Controller
         private void View_Paste()
         {
             //todo implement
-            throw new NotImplementedException();
-        }
-
-        private bool View_ValidateCopyUrl()
-        {
-            //todo
-            return false;
-            return IsMounted();
-        }
-
-        private void View_CopyUrl()
-        {
-            //todo implement
-            return;
             throw new NotImplementedException();
         }
 
@@ -3366,6 +3381,56 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
+        internal class ReloadTransferAdapter : ch.cyberduck.core.TransferAdapter
+        {
+            private readonly BrowserController _controller;
+            private readonly Path _destination;
+            private readonly bool _removeListener;
+            private readonly Transfer _transfer;
+
+            public ReloadTransferAdapter(BrowserController controller, Transfer transfer, Path destination,
+                                         bool removeListener)
+            {
+                _controller = controller;
+                _transfer = transfer;
+                _destination = destination;
+                _removeListener = removeListener;
+            }
+
+            public override void transferDidEnd()
+            {
+                if (_controller.IsMounted())
+                {
+                    _controller.Workdir.invalidate();
+                    if (!_transfer.isCanceled())
+                    {
+                        _controller.invoke(new ReloadAction(_controller, _destination));
+                    }
+                }
+                if (_removeListener) _transfer.removeListener(this);
+            }
+
+            private class ReloadAction : WindowMainAction
+            {
+                private readonly Path _p;
+
+                public ReloadAction(BrowserController c, Path p) : base(c)
+                {
+                    _p = p;
+                }
+
+                public override bool isValid()
+                {
+                    return base.isValid() && ((BrowserController) Controller).IsConnected();
+                }
+
+                public override void run()
+                {
+                    ((BrowserController) Controller).RefreshObject(_p, true);
+                }
+            }
+        }
+
         private class RenameAction : BrowserBackgroundAction
         {
             private readonly IDictionary<Path, Path> _normalized;
@@ -3647,56 +3712,6 @@ namespace Ch.Cyberduck.Ui.Controller
                 if (BrowserController._inspector != null)
                 {
                     BrowserController._inspector.Files = _selected;
-                }
-            }
-        }
-
-        internal class ReloadTransferAdapter : ch.cyberduck.core.TransferAdapter
-        {
-            private readonly BrowserController _controller;
-            private readonly Path _destination;
-            private readonly bool _removeListener;
-            private readonly Transfer _transfer;
-
-            public ReloadTransferAdapter(BrowserController controller, Transfer transfer, Path destination,
-                                         bool removeListener)
-            {
-                _controller = controller;
-                _transfer = transfer;
-                _destination = destination;
-                _removeListener = removeListener;
-            }
-
-            public override void transferDidEnd()
-            {
-                if (_controller.IsMounted())
-                {
-                    _controller.Workdir.invalidate();
-                    if (!_transfer.isCanceled())
-                    {
-                        _controller.invoke(new ReloadAction(_controller, _destination));
-                    }
-                }
-                if (_removeListener) _transfer.removeListener(this);
-            }
-
-            private class ReloadAction : WindowMainAction
-            {
-                private readonly Path _p;
-
-                public ReloadAction(BrowserController c, Path p) : base(c)
-                {
-                    _p = p;
-                }
-
-                public override bool isValid()
-                {
-                    return base.isValid() && ((BrowserController) Controller).IsConnected();
-                }
-
-                public override void run()
-                {
-                    ((BrowserController) Controller).RefreshObject(_p, true);
                 }
             }
         }

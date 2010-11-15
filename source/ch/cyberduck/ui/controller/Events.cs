@@ -19,7 +19,6 @@ using System;
 using System.Collections.Generic;
 using BrightIdeasSoftware;
 using ch.cyberduck.core;
-using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Ui.Controller;
 
 namespace ch.cyberduck.ui.controller
@@ -37,6 +36,7 @@ namespace ch.cyberduck.ui.controller
     public delegate List<string> EditorsHandler();
 
     public delegate List<string> ArchivesHandler();
+    public delegate List<KeyValuePair<String, List<String>>> CopyUrlHandler();
     public delegate List<Host> BookmarksHandler();
 
     /// <summary>

@@ -22,6 +22,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Reflection;
+using System.Text;
 using System.Windows.Forms;
 using BrightIdeasSoftware;
 using ch.cyberduck.core;
@@ -124,6 +125,10 @@ namespace Ch.Cyberduck.Ui.Winforms
             createArchiveMainMenuItem.Popup += OnArchiveMenuItemOnPopup;
             createArchiveBrowserContextMenuItem.MenuItems.Add(string.Empty);
             createArchiveBrowserContextMenuItem.Popup += OnArchiveMenuItemOnPopup;
+            copyUrlMainMenuItem.MenuItems.Add(string.Empty);
+            copyUrlMainMenuItem.Popup += OnCopyUrlMenuItemPopup;
+            copyUrlBrowserContextMenuItem.MenuItems.Add(string.Empty);
+            copyUrlBrowserContextMenuItem.Popup += OnCopyUrlMenuItemPopup;
 
             textEncodingMenuStrip.Items.Add(string.Empty);
             textEncodingMainMenuItem.MenuItems.Add(string.Empty);
@@ -216,6 +221,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         public event ValidateCommand ValidateEditWith;
         public event ValidateCommand ValidateDelete;
         public event ArchivesHandler GetArchives;
+        public event CopyUrlHandler GetCopyUrls;
         public event EventHandler<CreateArchiveEventArgs> CreateArchive;
         public event ValidateCommand ValidateCreateArchive;
         public event VoidHandler ExpandArchive;
@@ -257,8 +263,6 @@ namespace Ch.Cyberduck.Ui.Winforms
         public event ValidateCommand ValidateCut;
         public event VoidHandler Copy;
         public event ValidateCommand ValidateCopy;
-        public event VoidHandler CopyUrl;
-        public event ValidateCommand ValidateCopyUrl;
         public event VoidHandler Paste;
         public event ValidateCommand ValidatePaste;
         public event ValidateCommand ValidateSelectAll;
@@ -851,6 +855,45 @@ namespace Ch.Cyberduck.Ui.Winforms
             set { securityToolStripStatusLabel.Image = IconCache.Instance.IconForName(value ? "locked" : "unlocked"); }
         }
 
+        private void OnCopyUrlMenuItemPopup(object sender, EventArgs e)
+        {
+            MenuItem mainItem = sender as MenuItem;
+            mainItem.MenuItems.Clear();
+
+            int c = 0;
+            foreach (KeyValuePair<string, List<string>> pair in GetCopyUrls())
+            {
+                if (c > 0)
+                {
+                    //add separator
+                    mainItem.MenuItems.Add("-");
+                }
+                MenuItem item = mainItem.MenuItems.Add(pair.Key);
+                if (pair.Value.Count > 0)
+                {
+                    item.Click += delegate
+                                      {
+                                          StringBuilder sb = new StringBuilder();
+                                          for (int i = 0; i < pair.Value.Count; i++)
+                                          {
+                                              if (i > 0) sb.Append(Environment.NewLine);
+                                              sb.Append(pair.Value[i]);
+                                          }
+                                          Clipboard.SetText(sb.ToString());
+                                      };
+                    foreach (string url in pair.Value)
+                    {
+                        mainItem.MenuItems.Add(url).Enabled = false;
+                    }
+                }
+                else
+                {
+                    item.Enabled = false;
+                }
+                c++;
+            }
+        }
+
         private void SetShortcutText(MenuItem target, ToolStripMenuItem source, string shortCutText)
         {
             if (-1 == target.Text.IndexOf('\t'))
@@ -1405,12 +1448,6 @@ namespace Ch.Cyberduck.Ui.Winforms
                          (sender, args) => Copy(), () => ValidateCopy());
             Commands.Add(new ToolStripItem[]
                              {
-                                 copyURLToolStripMenuItem,
-                                 copyURLContextToolStripMenuItem
-                             }, new[] {copyUrlBrowserContextMenuItem, copyUrlMainMenuItem},
-                         (sender, args) => CopyUrl(), () => ValidateCopyUrl());
-            Commands.Add(new ToolStripItem[]
-                             {
                                  pasteToolStripMenuItem
                              }, new[] {pasteMainMenuItem},
                          (sender, args) => Paste(), () => ValidatePaste());
@@ -1537,8 +1574,6 @@ namespace Ch.Cyberduck.Ui.Winforms
                                           newFolderToolStripMenuItem.ShortcutKeys);
                         ConfigureShortcut(newFileContextToolStripMenuItem, newFileBrowserContextMenuItem,
                                           newFileToolStripMenuItem.ShortcutKeys);
-                        ConfigureShortcut(copyURLContextToolStripMenuItem, copyUrlBrowserContextMenuItem,
-                                          copyURLToolStripMenuItem.ShortcutKeys);
                         ConfigureShortcut(openWebURLContextToolStripMenuItem, openWebUrlBrowserContextMenuItem,
                                           openWebURLToolStripMenuItem.ShortcutKeys);
                         ConfigureShortcut(newBookmarkContextToolStripMenuItem,
@@ -1755,7 +1790,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             deleteContextToolStripMenuItem.Image = IconCache.Instance.IconForName("delete", 16);
             vistaMenu1.SetImage(newFolderMainMenuItem, IconCache.Instance.IconForName("newfolder", 16));
             vistaMenu1.SetImage(newFolderBrowserContextMenuItem, IconCache.Instance.IconForName("newfolder", 16));
-            newFolderContextToolStripMenuItem.Image = IconCache.Instance.IconForName("newfolder", 16);            
+            newFolderContextToolStripMenuItem.Image = IconCache.Instance.IconForName("newfolder", 16);
             vistaMenu1.SetImage(downloadMainMenuItem, IconCache.Instance.IconForName("download", 16));
             vistaMenu1.SetImage(downloadBrowserContextMenuItem, IconCache.Instance.IconForName("download", 16));
             downloadContextToolStripMenuItem.Image = IconCache.Instance.IconForName("download", 16);
