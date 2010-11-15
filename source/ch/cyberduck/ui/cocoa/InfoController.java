@@ -60,6 +60,13 @@ public class InfoController extends ToolbarWindowController {
      */
     private List<Path> files = Collections.emptyList();
 
+    private Path getSelected() {
+        for(Path file : files) {
+            return file;
+        }
+        return null;
+    }
+
     @Outlet
     private NSTextField filenameField;
 
@@ -372,13 +379,10 @@ public class InfoController extends ToolbarWindowController {
         if(this.toggleS3Settings(false)) {
             controller.background(new BrowserBackgroundAction(controller) {
                 public void run() {
-                    for(Path next : files) {
-                        final String container = next.getContainerName();
-                        ((S3Session) controller.getSession()).setVersioning(container,
-                                bucketMfaButton.state() == NSCell.NSOnState,
-                                bucketVersioningButton.state() == NSCell.NSOnState);
-                        break;
-                    }
+                    final String container = getSelected().getContainerName();
+                    ((S3Session) controller.getSession()).setVersioning(container,
+                            bucketMfaButton.state() == NSCell.NSOnState,
+                            bucketVersioningButton.state() == NSCell.NSOnState);
                 }
 
                 @Override
@@ -403,14 +407,11 @@ public class InfoController extends ToolbarWindowController {
         if(this.toggleS3Settings(false)) {
             controller.background(new BrowserBackgroundAction(controller) {
                 public void run() {
-                    for(Path next : files) {
-                        final String container = next.getContainerName();
-                        ((S3Session) controller.getSession()).setVersioning(container,
-                                bucketMfaButton.state() == NSCell.NSOnState,
-                                bucketVersioningButton.state() == NSCell.NSOnState
-                        );
-                        break;
-                    }
+                    final String container = getSelected().getContainerName();
+                    ((S3Session) controller.getSession()).setVersioning(container,
+                            bucketMfaButton.state() == NSCell.NSOnState,
+                            bucketVersioningButton.state() == NSCell.NSOnState
+                    );
                 }
 
                 @Override
@@ -1473,10 +1474,7 @@ public class InfoController extends ToolbarWindowController {
         if(count > 1) {
             return "(" + Locale.localizedString("Multiple files") + ")";
         }
-        for(Path next : files) {
-            return next.getName();
-        }
-        return null;
+        return this.getSelected().getName();
     }
 
     @Override
@@ -1487,7 +1485,8 @@ public class InfoController extends ToolbarWindowController {
     private void initGeneral() {
         final int count = this.numberOfFiles();
         if(count > 0) {
-            Path file = this.files.get(0);
+            Path file = getSelected();
+            // Filename
             final String filename = this.getName();
             filenameField.setStringValue(filename);
             this.window().setTitle(title + " – " + filename);
@@ -1539,7 +1538,7 @@ public class InfoController extends ToolbarWindowController {
                 iconImageView.setImage(IconCache.iconNamed("NSMultipleDocuments", 32));
             }
             else {
-                iconImageView.setImage(IconCache.instance().iconForPath(files.get(0), 32));
+                iconImageView.setImage(IconCache.instance().iconForPath(this.getSelected(), 32));
             }
         }
         // Sum of files
@@ -1550,32 +1549,21 @@ public class InfoController extends ToolbarWindowController {
     }
 
     private void initWebUrl() {
+        // Web URL
         if(this.numberOfFiles() > 1) {
             this.updateField(webUrlField, "(" + Locale.localizedString("Multiple files") + ")");
             webUrlField.setToolTip("");
         }
         else {
             this.updateField(webUrlField, Locale.localizedString("Unknown"));
-            controller.background(new BrowserBackgroundAction(controller) {
-                String url;
-
-                public void run() {
-                    for(Path next : files) {
-                        url = next.toHttpURL();
-                    }
-                }
-
-                @Override
-                public void cleanup() {
-                    if(StringUtils.isNotBlank(url)) {
-                        webUrlField.setAttributedStringValue(
-                                HyperlinkAttributedStringFactory.create(
-                                        NSMutableAttributedString.create(url, TRUNCATE_MIDDLE_ATTRIBUTES), url)
-                        );
-                        webUrlField.setToolTip(Locale.localizedString("Open in Web Browser"));
-                    }
-                }
-            });
+            String url = getSelected().toHttpURL();
+            if(StringUtils.isNotBlank(url)) {
+                webUrlField.setAttributedStringValue(
+                        HyperlinkAttributedStringFactory.create(
+                                NSMutableAttributedString.create(url, TRUNCATE_MIDDLE_ATTRIBUTES), url)
+                );
+                webUrlField.setToolTip(Locale.localizedString("Open in Web Browser"));
+            }
         }
     }
 
@@ -1819,14 +1807,12 @@ public class InfoController extends ToolbarWindowController {
                 private boolean mfa = false;
 
                 public void run() {
-                    for(Path file : files) {
-                        final S3Session s = (S3Session) controller.getSession();
-                        final String container = file.getContainerName();
-                        location = s.getLocation(container);
-                        logging = s.isLogging(container);
-                        versioning = s.isVersioning(container);
-                        mfa = s.isMultiFactorAuthentication(container);
-                    }
+                    final S3Session s = (S3Session) controller.getSession();
+                    final String container = getSelected().getContainerName();
+                    location = s.getLocation(container);
+                    logging = s.isLogging(container);
+                    versioning = s.isVersioning(container);
+                    mfa = s.isMultiFactorAuthentication(container);
                 }
 
                 @Override
@@ -1975,7 +1961,7 @@ public class InfoController extends ToolbarWindowController {
     @Action
     public void filenameInputDidEndEditing(NSNotification sender) {
         if(this.numberOfFiles() == 1) {
-            final Path current = files.get(0);
+            final Path current = getSelected();
             if(!filenameField.stringValue().equals(current.getName())) {
                 if(StringUtils.contains(filenameField.stringValue(), Path.DELIMITER)) {
                     AppKitFunctionsLibrary.beep();
@@ -2143,7 +2129,7 @@ public class InfoController extends ToolbarWindowController {
         final Credentials credentials = session.getHost().getCredentials();
         boolean enable = !credentials.isAnonymousLogin() && session.isCDNSupported();
         if(enable) {
-            String container = files.get(0).getContainerName();
+            String container = getSelected().getContainerName();
             // Not enabled if multiple files selected with not same parent container
             for(Path next : files) {
                 if(next.getContainerName().equals(container)) {
