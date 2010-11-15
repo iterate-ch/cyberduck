@@ -38,6 +38,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
 import java.net.URLEncoder;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -340,8 +341,18 @@ public abstract class Path extends AbstractPath implements Serializable {
         return normalized;
     }
 
+    /**
+     * @return
+     */
+    public boolean isContainer() {
+        return this.isRoot();
+    }
+
+    /**
+     * @return
+     */
     public String getContainerName() {
-        return this.getHost().getHostname(true);
+        return this.getContainer().getAbsolute();
     }
 
     public Path getContainer() {
@@ -487,7 +498,7 @@ public abstract class Path extends AbstractPath implements Serializable {
     }
 
     public String getKey() {
-        return this.getAbsolute();
+        return this.getWebPath(this.getAbsolute());
     }
 
     /**
@@ -958,19 +969,28 @@ public abstract class Path extends AbstractPath implements Serializable {
     }
 
     /**
-     * @param hostname The hostname to prepend to the path
+     * @param uri The hostname to prepend to the path
      * @return The HTTP accessible URL of this path including the default path
      *         prepended from the bookmark
      */
-    protected String toHttpURL(String hostname) {
+    protected String toHttpURL(String uri) {
         String absolute = encode(this.getAbsolute());
-        if(StringUtils.isNotBlank(this.getHost().getDefaultPath())) {
-            if(absolute.startsWith(this.getHost().getDefaultPath())) {
-                absolute = absolute.substring(this.getHost().getDefaultPath().length());
+        absolute = this.getWebPath(absolute);
+        return URI.create(uri + absolute).normalize().toString();
+    }
+
+    /**
+     * @param path
+     * @return
+     */
+    private String getWebPath(String path) {
+        String documentRoot = this.getHost().getDefaultPath();
+        if(StringUtils.isNotBlank(documentRoot)) {
+            if(path.contains(documentRoot)) {
+                return normalize(path.substring(path.indexOf(documentRoot) + documentRoot.length()), true);
             }
         }
-        absolute = normalize(absolute);
-        return hostname + absolute;
+        return normalize(path, true);
     }
 
     /**
