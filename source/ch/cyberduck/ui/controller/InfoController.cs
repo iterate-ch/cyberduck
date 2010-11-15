@@ -1,4 +1,4 @@
-﻿﻿
+﻿
 //
 // Copyright (c) 2010 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
@@ -25,6 +25,7 @@ using System.Windows.Forms;
 using ch.cyberduck.core;
 using Ch.Cyberduck.Core;
 using ch.cyberduck.core.cloud;
+using ch.cyberduck.core.cdn;
 using ch.cyberduck.core.s3;
 using ch.cyberduck.ui;
 using ch.cyberduck.ui.action;
@@ -151,9 +152,6 @@ namespace Ch.Cyberduck.Ui.Controller
             Session session = _controller.getSession();
             bool anonymous = session.getHost().getCredentials().isAnonymousLogin();
 
-            View.ToolbarDistributionImage = IconCache.Instance.GetProtocolImages(32).Images[
-                session.getHost().getProtocol().getIdentifier()];
-
             if (session is S3Session)
             {
                 // Set icon of cloud service provider
@@ -187,14 +185,16 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             else
             {
+                View.ToolbarDistributionEnabled = session.isCDNSupported();
                 if (session is CloudSession)
                 {
-                    View.ToolbarDistributionEnabled =
-                        ((CloudSession) session).getSupportedDistributionMethods().size() > 0;
+                    View.ToolbarDistributionImage = IconCache.Instance.GetProtocolImages(32).Images[
+                        session.getHost().getProtocol().getIdentifier()];
                 }
                 else
                 {
-                    View.ToolbarDistributionEnabled = false;
+                    View.ToolbarDistributionImage = IconCache.Instance.GetProtocolImages(32).Images[
+                        Protocol.S3_SSL.getIdentifier()];
                 }
             }
 
@@ -621,8 +621,7 @@ namespace Ch.Cyberduck.Ui.Controller
             View.DistributionLoggingEnabled = stop && enable;
             View.DistributionCnameEnabled = stop && enable;
             View.DistributionDeliveryMethodEnabled = stop && enable;
-            View.DistributionDefaultRootEnabled = stop && enable && session is S3Session &&
-                                                  View.DistributionDeliveryMethod == Distribution.DOWNLOAD;
+            View.DistributionDefaultRootEnabled = stop && enable && session.cdn().isDefaultRootSupported();
             if (stop)
             {
                 View.DistributionAnimationActive = false;
@@ -1103,7 +1102,7 @@ namespace Ch.Cyberduck.Ui.Controller
             DetachDistributionHandlers();
 
             View.DistributionStatus = Locale.localizedString("Unknown");
-            View.DistributionUrl = Locale.localizedString("None");
+            View.DistributionUrl = Locale.localizedString("Unknown");
             View.DistributionUrlEnabled = false;
             View.DistributionCname = Locale.localizedString("None");
             View.DistributionCnameUrlEnabled = false;
@@ -1120,9 +1119,9 @@ namespace Ch.Cyberduck.Ui.Controller
 
             if (ToggleDistributionSettings(false))
             {
-                CloudSession session = (CloudSession) _controller.getSession();
+                Session session = _controller.getSession();
                 View.DistributionTitle = String.Format(Locale.localizedString("Enable {0} Distribution", "Status"),
-                                                       session.getDistributionServiceName());
+                                                       session.cdn().toString());
                 methods = new List<KeyValuePair<string, Distribution.Method>>();
                 List list = session.getSupportedDistributionMethods();
                 for (int i = 0; i < list.size(); i++)
@@ -1646,15 +1645,11 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 foreach (Path file in _infoController._files)
                 {
-                    CloudPath cloud = (CloudPath) file;
-                    CloudSession session = (CloudSession) BrowserController.getSession();
-                    // We only support one distribution per bucket for the sake of simplicity
-                    if (_deliveryMethod == Distribution.STREAMING || _deliveryMethod == Distribution.DOWNLOAD)
-                    {
-                        _distribution = session.readDistribution(cloud.getContainerName(), _deliveryMethod);
-                    }
+                    Session session = BrowserController.getSession();
+                    _distribution = session.cdn().read(session.cdn().getOrigin(_deliveryMethod, file.getContainerName()), _deliveryMethod);
                     // Make sure container items are cached for default root object.
                     _infoController.Files[0].getContainer().children();
+                    // We only support one distribution per bucket for the sake of simplicity
                     break;
                 }
             }
@@ -1680,7 +1675,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     }
                     else
                     {
-                        String url = _distribution.getUrl(file.getKey());
+                        String url = _distribution.getURL(file));
                         if (Utils.IsNotBlank(url))
                         {
                             _view.DistributionUrl = url;
@@ -1706,7 +1701,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         ICollection<AbstractPath.DescriptiveUrl> urls
                             =
                             Utils.ConvertFromJavaList<AbstractPath.DescriptiveUrl>(
-                                _distribution.getCnameURL(file.getKey()));
+                                _distribution.getCnameURL(file));
                         foreach (AbstractPath.DescriptiveUrl url in urls)
                         {
                             _view.DistributionCnameUrl = url.getUrl();
@@ -1716,7 +1711,8 @@ namespace Ch.Cyberduck.Ui.Controller
                             break;
                         }
                     }
-                    if (_distribution.getMethod() == Distribution.DOWNLOAD)
+                    Session session = BrowserController.getSession();
+                    if (session.cdn().isDefaultRootSupported())
                     {
                         List<String> defaultRoots = new List<string> {Locale.localizedString("None")};
                         foreach (AbstractPath next in _infoController._files[0].getContainer().children())
@@ -2058,16 +2054,12 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 foreach (Path next in _files)
                 {
-                    CloudPath cloud = (CloudPath) next;
-                    CloudSession session = (CloudSession) BrowserController.getSession();
-                    Distribution.Method method = Distribution.DOWNLOAD;
-                    if (_deliveryMethod == Distribution.STREAMING)
-                    {
-                        method = Distribution.STREAMING;
-                    }
+                    Session session = BrowserController.getSession();
                     if (Utils.IsNotBlank(_cname))
                     {
-                        session.writeDistribution(_distribution, cloud.getContainerName(), method,
+                        session.cdn().write(_distribution, next.getContainerName(),
+                                                  session.cdn().getOrigin(method, next.getContainerName())
+                                                  _deliveryMethod,
                                                   _cname.Split(new[] {' '},
                                                                StringSplitOptions.RemoveEmptyEntries),
                                                   _logging,
@@ -2075,7 +2067,9 @@ namespace Ch.Cyberduck.Ui.Controller
                     }
                     else
                     {
-                        session.writeDistribution(_distribution, cloud.getContainerName(), method,
+                        session.cdn().write(_distribution, next.getContainerName(),
+                                                  session.cdn().getOrigin(method, next.getContainerName()),
+                                                  _deliveryMethod,
                                                   new string[] {}, _logging, _defaultRoot);
                     }
                     break;
@@ -2091,7 +2085,7 @@ namespace Ch.Cyberduck.Ui.Controller
             public override string getActivity()
             {
                 return String.Format(Locale.localizedString("Writing CDN configuration of {0}", "Status"),
-                                     toString(Utils.ConvertToJavaList(_infoController.Files)));
+                                     toString(Utils.ConvertToJavaList(_files)));
             }
         }
 
