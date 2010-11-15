@@ -47,6 +47,8 @@ import org.apache.log4j.Logger;
 import org.jets3t.service.Constants;
 import org.soyatec.windows.azure.authenticate.Base64;
 
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
 import java.util.List;
 
 /**
@@ -842,6 +844,20 @@ public abstract class Protocol {
         @Override
         public String favicon() {
             return this.icon();
+        }
+
+        @Override
+        public boolean validate(Credentials credentials) {
+            if(super.validate(credentials)) {
+                try {
+                    new InternetAddress(credentials.getUsername()).validate();
+                    return true;
+                }
+                catch(AddressException e) {
+                    log.warn(e.getMessage());
+                }
+            }
+            return false;
         }
     };
 
