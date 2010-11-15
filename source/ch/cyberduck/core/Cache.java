@@ -34,7 +34,7 @@ public class Cache<E extends AbstractPath> {
     /**
      *
      */
-    private Map<PathReference, AttributedList<E>> _impl = Collections.<PathReference, AttributedList<E>>synchronizedMap(new LRUMap(
+    private final Map<PathReference, AttributedList<E>> _impl = Collections.<PathReference, AttributedList<E>>synchronizedMap(new LRUMap(
             Preferences.instance().getInteger("browser.cache.size")
     ) {
         @Override
@@ -53,15 +53,17 @@ public class Cache<E extends AbstractPath> {
      * @see ch.cyberduck.core.AttributedList#get(PathReference)
      */
     public E lookup(PathReference reference) {
-        for(AttributedList list : _impl.values()) {
-            final AbstractPath path = list.get(reference);
-            if(null == path) {
-                continue;
+        synchronized (_impl) {
+            for(AttributedList list : _impl.values()) {
+                final AbstractPath path = list.get(reference);
+                if(null == path) {
+                    continue;
+                }
+                return (E) path;
             }
-            return (E) path;
+            log.warn("Lookup failed for " + reference + " in cache");
+            return null;
         }
-        log.warn("Lookup failed for " + reference + " in cache");
-        return null;
     }
     
     public boolean isEmpty() {
