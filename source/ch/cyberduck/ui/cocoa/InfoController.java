@@ -1211,14 +1211,13 @@ public class InfoController extends ToolbarWindowController {
         if(-1 == tab) {
             tab = 0;
         }
-        final String identifier = tabView.tabViewItemAtIndex(tab).identifier();
-        if(this.validateTabWithIdentifier(identifier)) {
-            super.setSelectedTab(tab);
-            this.initTab(identifier);
+        String identifier = tabView.tabViewItemAtIndex(tab).identifier();
+        if(!this.validateTabWithIdentifier(identifier)) {
+            tab = 0;
+            identifier = tabView.tabViewItemAtIndex(tab).identifier();
         }
-        else {
-            super.setSelectedTab(-1);
-        }
+        super.setSelectedTab(tab);
+        this.initTab(identifier);
     }
 
     private void initTab(String identifier) {
