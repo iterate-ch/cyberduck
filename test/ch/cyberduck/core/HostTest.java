@@ -239,4 +239,16 @@ public class HostTest extends AbstractTestCase {
             assertEquals("http://127.0.0.1/~dkocher/file", path.toHttpURL());
         }
     }
+
+    public void testDefaultPathRoot() {
+        {
+            Host host = new Host("localhost");
+            host.setDefaultPath("/");
+            Path path = PathFactory.createPath(SessionFactory.createSession(host),
+                    "/file", Path.DIRECTORY_TYPE);
+            assertEquals("http://localhost/file", path.toHttpURL());
+            host.setWebURL("http://127.0.0.1/~dkocher");
+            assertEquals("http://127.0.0.1/~dkocher/file", path.toHttpURL());
+        }
+    }
 }
