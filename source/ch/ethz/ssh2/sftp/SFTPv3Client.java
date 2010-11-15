@@ -1280,6 +1280,20 @@ public class SFTPv3Client {
     }
 
     /**
+     * A read  is divided into multiple requests sent sequentially before
+     * reading any status from the server
+     */
+    private static class OutstandingStatusRequest {
+        int req_id;
+    }
+
+    /**
+     * Mapping request ID to request.
+     */
+    Map<Integer, OutstandingStatusRequest> pendingStatusQueue
+            = new HashMap<Integer, OutstandingStatusRequest>();
+
+    /**
      * Write bytes to a file. If <code>len</code> &gt; 32768, then the write operation will
      * be split into multiple writes.
      *
@@ -1293,53 +1307,53 @@ public class SFTPv3Client {
     public void upload(SFTPv3FileHandle handle, long fileOffset, byte[] src, int srcoff, int len) throws IOException {
         checkHandleValidAndOpen(handle);
 
-        while(len > 0) {
-            int writeRequestLen = len;
+        // Send the next write request
+        OutstandingStatusRequest req = new OutstandingStatusRequest();
+        req.req_id = generateNextRequestID();
 
-            if(writeRequestLen > 32768) {
-                writeRequestLen = 32768;
-            }
+        TypesWriter tw = new TypesWriter();
+        tw.writeString(handle.fileHandle, 0, handle.fileHandle.length);
+        tw.writeUINT64(fileOffset);
+        tw.writeString(src, srcoff, len);
 
-            int req_id = generateNextRequestID();
+        log.log("Sending SSH_FXP_WRITE...");
+        sendMessage(Packet.SSH_FXP_WRITE, req.req_id, tw.getBytes());
 
-            TypesWriter tw = new TypesWriter();
-            tw.writeString(handle.fileHandle, 0, handle.fileHandle.length);
-            tw.writeUINT64(fileOffset);
-            tw.writeString(src, srcoff, writeRequestLen);
+        pendingStatusQueue.put(req.req_id, req);
 
-            log.log("Sending SSH_FXP_WRITE...");
-            sendMessage(Packet.SSH_FXP_WRITE, req_id, tw.getBytes());
-
-            fileOffset += writeRequestLen;
-
-            srcoff += writeRequestLen;
-            len -= writeRequestLen;
-
-            byte[] resp = receiveMessage(34000);
-
-            TypesReader tr = new TypesReader(resp);
-
-            int t = tr.readByte();
-
-            int rep_id = tr.readUINT32();
-            if(rep_id != req_id) {
-                throw new IOException("The server sent an invalid id field.");
-            }
-
-            if(t != Packet.SSH_FXP_STATUS) {
-                throw new IOException("The SFTP server sent an unexpected packet type (" + t + ")");
-            }
-
-            int errorCode = tr.readUINT32();
-
-            if(errorCode == ErrorCodes.SSH_FX_OK) {
-                continue;
-            }
-
-            String errorMessage = tr.readString();
-
-            throw new SFTPException(errorMessage, errorCode);
+        // Only read next status if parallelism reached
+        while(pendingStatusQueue.size() >= parallelism) {
+            this.readStatus();
         }
+    }
+
+    private void readStatus() throws IOException {
+        byte[] resp = receiveMessage(34000);
+
+        TypesReader tr = new TypesReader(resp);
+        int type = tr.readByte();
+
+        // Search the pending queue
+        OutstandingStatusRequest status = pendingStatusQueue.remove(tr.readUINT32());
+        if(null == status) {
+            throw new IOException("The server sent an invalid id field.");
+        }
+
+        // Evaluate the answer
+        if(type == Packet.SSH_FXP_STATUS) {
+            // In any case, stop sending more packets
+            int code = tr.readUINT32();
+            if(log.isEnabled()) {
+                String[] desc = ErrorCodes.getDescription(code);
+                log.log("Got SSH_FXP_STATUS (" + status.req_id + ") (" + ((desc != null) ? desc[0] : "UNKNOWN") + ")");
+            }
+            if(code == ErrorCodes.SSH_FX_OK) {
+                return;
+            }
+            String msg = tr.readString();
+            throw new SFTPException(msg, code);
+        }
+        throw new IOException("The SFTP server sent an unexpected packet type (" + type + ")");
     }
 
     /**
@@ -1350,6 +1364,9 @@ public class SFTPv3Client {
      */
     public void closeFile(SFTPv3FileHandle handle) throws IOException {
         try {
+            while(!pendingStatusQueue.isEmpty()) {
+                this.readStatus();
+            }
             if(!handle.isClosed) {
                 closeHandle(handle.fileHandle);
             }
