@@ -352,11 +352,11 @@ public abstract class Path extends AbstractPath implements Serializable {
      * @return
      */
     public String getContainerName() {
-        return this.getContainer().getAbsolute();
+        return String.valueOf(DELIMITER);
     }
 
     public Path getContainer() {
-        return PathFactory.createPath(this.getSession(), String.valueOf(DELIMITER),
+        return PathFactory.createPath(this.getSession(), this.getContainerName(),
                 Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
     }
 
