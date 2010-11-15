@@ -103,7 +103,7 @@ public class AbstractTestCase extends TestCase {
 
                     @Override
                     public String getProperty(String property) {
-                        return null;
+                        return this.getDefault(property);
                     }
 
                     @Override
