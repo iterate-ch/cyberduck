@@ -207,4 +207,36 @@ public class HostTest extends AbstractTestCase {
             assertTrue(h.getDefaultPath().equals("/path/to/file"));
         }
     }
+
+    public void testWebURL() {
+        {
+            Host host = new Host("test");
+            host.setWebURL("http://localhost/~dkocher");
+            assertEquals("http://localhost/~dkocher", host.getWebURL());
+        }
+    }
+
+    public void testAbsoluteDocumentRoot() {
+        {
+            Host host = new Host("localhost");
+            host.setDefaultPath("/usr/home/dkocher/public_html");
+            Path path = PathFactory.createPath(SessionFactory.createSession(host),
+                    "/usr/home/dkocher/public_html/file", Path.DIRECTORY_TYPE);
+            assertEquals("http://localhost/file", path.toHttpURL());
+            host.setWebURL("http://127.0.0.1/~dkocher");
+            assertEquals("http://127.0.0.1/~dkocher/file", path.toHttpURL());
+        }
+    }
+
+    public void testRelativeDocumentRoot() {
+        {
+            Host host = new Host("localhost");
+            host.setDefaultPath("public_html");
+            Path path = PathFactory.createPath(SessionFactory.createSession(host),
+                    "/usr/home/dkocher/public_html/file", Path.DIRECTORY_TYPE);
+            assertEquals("http://localhost/file", path.toHttpURL());
+            host.setWebURL("http://127.0.0.1/~dkocher");
+            assertEquals("http://127.0.0.1/~dkocher/file", path.toHttpURL());
+        }
+    }
 }
