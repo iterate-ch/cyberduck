@@ -246,7 +246,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             Session session = _controller.getSession();
             Credentials credentials = session.getHost().getCredentials();
-            boolean enable = !credentials.isAnonymousLogin() && session.isMetadataSupported();
+            bool enable = !credentials.isAnonymousLogin() && session.isMetadataSupported();
             if (enable)
             {
                 foreach (Path file in _files)
@@ -602,7 +602,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             Session session = _controller.getSession();
             Credentials credentials = session.getHost().getCredentials();
-            boolean enable = !credentials.isAnonymousLogin() && session.isCDNSupported();
+            bool enable = !credentials.isAnonymousLogin() && session.isCDNSupported();
             if (enable)
             {
                 String container = _files[0].getContainerName();
@@ -1131,7 +1131,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     methods.Add(new KeyValuePair<string, Distribution.Method>(method.ToString(), method));
                 }
                 View.PopulateDistributionDeliveryMethod(methods);
-                View.DistributionDeliveryMethod = session.getSupportedDistributionMethods().iterator().next().getMethod();
+                View.DistributionDeliveryMethod = (Distribution.Method)session.getSupportedDistributionMethods().iterator().next();
                 DistributionDeliveryMethodChanged();
             }
             AttachDistributionHandlers();
@@ -1204,13 +1204,13 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             else
             {
-                foreach (Path file in _infoController.Files)
+                foreach (Path file in Files)
                 {
-                    _url = file.toHttpURL();
-                    if (Utils.IsNotBlank(_url))
+                    String url = file.toHttpURL();
+                    if (Utils.IsNotBlank(url))
                     {
-                        View.WebUrl = _url;
-                        View.WebUrlTooltip = _url;
+                        View.WebUrl = url;
+                        View.WebUrlTooltip = url;
                     }
                     else
                     {
@@ -1654,7 +1654,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         _distribution = session.readDistribution(cloud.getContainerName(), _deliveryMethod);
                     }
                     // Make sure container items are cached for default root object.
-                    _files[0].getContainer().children();
+                    _infoController.Files[0].getContainer().children();
                     break;
                 }
             }
