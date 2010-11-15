@@ -18,6 +18,7 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.IOResumeException;
@@ -980,8 +981,10 @@ public abstract class Path extends AbstractPath implements Serializable {
     }
 
     /**
+     * Remove the document root from the path
+     *
      * @param path
-     * @return
+     * @return Without any document root path component
      */
     private String getWebPath(String path) {
         String documentRoot = this.getHost().getDefaultPath();
@@ -1020,14 +1023,35 @@ public abstract class Path extends AbstractPath implements Serializable {
 
     /**
      * URLs to open in web browser.
+     * Including URLs to CDN.
      *
      * @return All possible URLs to the same resource that can be opened in a web browser.
      */
     public List<DescriptiveUrl> getHttpURLs() {
-        return new ArrayList<DescriptiveUrl>(Arrays.asList(
-                new DescriptiveUrl(this.toHttpURL(), MessageFormat.format(Locale.localizedString("{0} URL"), "HTTP")))
+        List<DescriptiveUrl> urls = new ArrayList<DescriptiveUrl>(Arrays.asList(
+                new DescriptiveUrl(this.toURL(), MessageFormat.format(Locale.localizedString("{0} URL"),
+                        this.getHost().getProtocol().getScheme().toUpperCase())))
         );
+        String http = this.toHttpURL();
+        if(StringUtils.isNotBlank(http)) {
+            urls.add(new DescriptiveUrl(http, MessageFormat.format(Locale.localizedString("{0} URL"), "HTTP")));
+        }
+        Session session = this.getSession();
+        if(session.cdn().isConfigured()) {
+            for(Distribution.Method method : session.cdn().getMethods()) {
+                String container = this.getContainerName();
+                if(null == container) {
+                    continue;
+                }
+                Distribution distribution = session.cdn().read(container, method);
+                if(distribution.isDeployed()) {
+                    urls.addAll(distribution.getURLs(this));
+                }
+            }
+        }
+        return urls;
     }
+
 
     /**
      * Append an error message without any stacktrace information

@@ -2034,13 +2034,15 @@ source/ch/cyberduck/core/Utils.cs -text
 source/ch/cyberduck/core/VirtualFileDataObject.cs -text
 source/ch/cyberduck/core/aquaticprime/LicenseImpl.cs -text
 source/ch/cyberduck/core/aquaticprime/LicenseVerifier.cs -text
+source/ch/cyberduck/core/cdn/Distribution.java -text
+source/ch/cyberduck/core/cdn/DistributionConfiguration.java -text
 source/ch/cyberduck/core/cf/CFPath.java -text
 source/ch/cyberduck/core/cf/CFSession.java -text
 source/ch/cyberduck/core/cloud/CloudHTTP3Session.java -text
 source/ch/cyberduck/core/cloud/CloudHTTP4Session.java -text
 source/ch/cyberduck/core/cloud/CloudPath.java -text
 source/ch/cyberduck/core/cloud/CloudSession.java -text
-source/ch/cyberduck/core/cloud/Distribution.java -text
+source/ch/cyberduck/core/cloudfront/CloudFrontDistributionConfiguration.java -text
 source/ch/cyberduck/core/collections/IndexedLinkedList.cs -text
 source/ch/cyberduck/core/collections/LRUCache.cs -text
 source/ch/cyberduck/core/dav/DAVPath.java -text

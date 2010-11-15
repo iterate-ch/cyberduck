@@ -19,8 +19,8 @@ package ch.cyberduck.core.cf;
  */
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cloud.CloudPath;
-import ch.cyberduck.core.cloud.Distribution;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
 
@@ -191,8 +191,7 @@ public class CFPath extends CloudPath {
             }
             else {
                 for(FilesObject object : this.getSession().getClient().listObjects(this.getContainerName(),
-                        this.isContainer() ? StringUtils.EMPTY : this.getKey(), -1, null))
-                {
+                        this.isContainer() ? StringUtils.EMPTY : this.getKey(), -1, null)) {
                     final Path file = PathFactory.createPath(this.getSession(), this.getContainerName(), object.getName(),
                             "application/directory".equals(object.getMimeType()) ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
                     file.setParent(this);
@@ -418,8 +417,13 @@ public class CFPath extends CloudPath {
      */
     @Override
     public String toHttpURL() {
-        final Distribution distribution
-                = this.getSession().readDistribution(this.getContainerName(), Distribution.DOWNLOAD);
-        return distribution.getUrl(this.getKey());
+        CFSession session = this.getSession();
+        if(session.cdn().isConfigured()) {
+            for(Distribution.Method method : session.cdn().getMethods()) {
+                final Distribution distribution = session.cdn().read(this.getContainerName(), method);
+                return distribution.getURL(this);
+            }
+        }
+        return null;
     }
 }

@@ -63,6 +63,7 @@ public class Host implements Serializable {
      */
     private String hostname
             = Preferences.instance().getProperty("connection.hostname.default");
+
     /**
      * The credentials to authenticate with
      */
@@ -77,35 +78,63 @@ public class Host implements Serializable {
             return Host.this.getProtocol().getPasswordPlaceholder();
         }
     };
+
+    /**
+     * The credentials to authenticate with for the CDN
+     */
+    private Credentials cdnCredentials = new Credentials(null, null) {
+        @Override
+        public String getUsernamePlaceholder() {
+            return Protocol.S3_SSL.getUsernamePlaceholder();
+        }
+
+        @Override
+        public String getPasswordPlaceholder() {
+            return Protocol.S3_SSL.getPasswordPlaceholder();
+        }
+    };
+
+    /**
+     * Unique identifier
+     */
     private String uuid;
+
     /**
      * IDN normalized hostname
      */
     private String punycode;
+
     /**
      * The given name by the user for the bookmark
      */
     private String nickname;
+
     /**
-     * The initial working directory if any
+     * The initial working directory if any and absolute
+     * path to document root of webserver for Web URL configuration
      */
     private String defaultpath;
+
     /**
      * Current working directory when session was interrupted
      */
     private String workdir;
+
     /**
      * The character encoding to use for file listings
      */
     private String encoding;
+
     /**
      * The connect mode to use if FTP
      */
     private FTPConnectMode connectMode;
+
     /**
      * The maximum number of concurrent sessions to this host
      */
     private Integer maxConnections;
+
     /**
      * The custom download folder
      */
@@ -121,6 +150,9 @@ public class Host implements Serializable {
      */
     private String comment;
 
+    /**
+     *
+     */
     private String webURL;
 
     /**
@@ -154,6 +186,16 @@ public class Host implements Serializable {
      */
     public Host(Protocol protocol, String hostname) {
         this(protocol, hostname, protocol.getDefaultPort());
+    }
+
+    /**
+     * @param protocol
+     * @param hostname
+     * @param credentials
+     */
+    public Host(Protocol protocol, String hostname, Credentials credentials) {
+        this(protocol, hostname, protocol.getDefaultPort());
+        this.credentials = credentials;
     }
 
     /**
@@ -209,6 +251,10 @@ public class Host implements Serializable {
         Object passwordObj = dict.stringForKey("Password");
         if(passwordObj != null) {
             credentials.setPassword(passwordObj.toString());
+        }
+        Object cdnCredentialsObj = dict.stringForKey("CDN Credentials");
+        if(cdnCredentialsObj != null) {
+            cdnCredentials.setUsername(cdnCredentialsObj.toString());
         }
         Object keyObj = dict.stringForKey("Private Key File");
         if(keyObj != null) {
@@ -278,6 +324,9 @@ public class Host implements Serializable {
         dict.setStringForKey(String.valueOf(this.getPort()), "Port");
         if(StringUtils.isNotBlank(this.getCredentials().getUsername())) {
             dict.setStringForKey(this.getCredentials().getUsername(), "Username");
+        }
+        if(StringUtils.isNotBlank(this.getCdnCredentials().getUsername())) {
+            dict.setStringForKey(this.getCdnCredentials().getUsername(), "CDN Credentials");
         }
         if(StringUtils.isNotBlank(this.getDefaultPath())) {
             dict.setStringForKey(this.getDefaultPath(), "Path");
@@ -449,11 +498,26 @@ public class Host implements Serializable {
         credentials.setPassword(password);
     }
 
+    public void setCredentials(Credentials credentials) {
+        this.credentials = credentials;
+    }
+
     /**
      * @return
      */
     public Credentials getCredentials() {
         return credentials;
+    }
+
+    /**
+     * @return
+     */
+    public Credentials getCdnCredentials() {
+        return cdnCredentials;
+    }
+
+    public void setCdnCredentials(Credentials cdnCredentials) {
+        this.cdnCredentials = cdnCredentials;
     }
 
     /**

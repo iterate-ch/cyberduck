@@ -18,6 +18,9 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.cdn.Distribution;
+import ch.cyberduck.core.cdn.DistributionConfiguration;
+import ch.cyberduck.core.cloudfront.CloudFrontDistributionConfiguration;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.threading.BackgroundException;
 
@@ -632,6 +635,7 @@ public abstract class Session implements TranscriptListener {
         log.debug("connectionDidClose");
 
         this.workdir = null;
+        this.cdn().clear();
 
         for(ConnectionListener listener : connectionListeners.toArray(new ConnectionListener[connectionListeners.size()])) {
             listener.connectionDidClose();
@@ -711,11 +715,65 @@ public abstract class Session implements TranscriptListener {
     }
 
     /**
-     *
      * @return
      */
     public boolean isCDNSupported() {
-        return false;
+        return true;
+    }
+
+    protected Credentials getCdnCredentials() {
+        return host.getCdnCredentials();
+    }
+
+    /**
+     * Delegating CloudFront requests.
+     */
+    private DistributionConfiguration cf;
+
+    public DistributionConfiguration cdn() {
+        if(null == cf) {
+            cf = new CloudFrontDistributionConfiguration(LoginControllerFactory.instance(this),
+                    host.getCdnCredentials(),
+                    new ErrorListener() {
+                        public void error(BackgroundException exception) {
+                            Session.this.error(exception);
+                        }
+                    }) {
+
+                @Override
+                protected void fireConnectionDidOpenEvent() {
+                    BookmarkCollection.defaultCollection().collectionItemChanged(Session.this.getHost());
+                    super.fireConnectionDidOpenEvent();
+                }
+
+                /**
+                 * @return Service name of the CDN
+                 */
+                public String toString() {
+                    if(this.isCDNSupported()) {
+                        return super.toString();
+                    }
+                    return Locale.localizedString("None");
+                }
+
+                @Override
+                public List<Distribution.Method> getMethods() {
+                    if(this.isCDNSupported()) {
+                        return Arrays.asList(Distribution.CUSTOM);
+                    }
+                    return Collections.emptyList();
+                }
+
+                @Override
+                public String getOrigin(Distribution.Method method, String container) {
+                    if(Distribution.CUSTOM.equals(method)) {
+                        return java.net.URI.create(Session.this.getHost().getWebURL()).getHost();
+                    }
+                    return super.getOrigin(method, container);
+                }
+            };
+        }
+        return cf;
     }
 
     /**

@@ -20,37 +20,29 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.cdn.Distribution;
+import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.cloud.CloudHTTP3Session;
-import ch.cyberduck.core.cloud.Distribution;
-import ch.cyberduck.core.http.StickyHostConfiguration;
+import ch.cyberduck.core.cloudfront.CloudFrontDistributionConfiguration;
 import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.core.threading.BackgroundException;
 
-import org.apache.commons.httpclient.HostConfiguration;
-import org.apache.commons.httpclient.HttpHost;
-import org.apache.commons.httpclient.URI;
-import org.apache.commons.httpclient.URIException;
 import org.apache.commons.httpclient.auth.AuthScheme;
 import org.apache.commons.httpclient.auth.CredentialsNotAvailableException;
 import org.apache.commons.httpclient.auth.CredentialsProvider;
 import org.apache.commons.httpclient.methods.RequestEntity;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.jets3t.service.CloudFrontService;
-import org.jets3t.service.CloudFrontServiceException;
 import org.jets3t.service.Jets3tProperties;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.acl.GroupGrantee;
 import org.jets3t.service.impl.rest.httpclient.RestS3Service;
 import org.jets3t.service.model.*;
-import org.jets3t.service.model.cloudfront.DistributionConfig;
-import org.jets3t.service.model.cloudfront.InvalidationSummary;
-import org.jets3t.service.model.cloudfront.LoggingStatus;
 import org.jets3t.service.security.AWSCredentials;
 import org.jets3t.service.security.ProviderCredentials;
 import org.jets3t.service.utils.ServiceUtils;
 
 import java.io.IOException;
-import java.text.MessageFormat;
 import java.util.*;
 
 /**
@@ -114,9 +106,9 @@ public class S3Session extends CloudHTTP3Session {
          * @throws ServiceException
          */
         @Override
-        public void pubObjectWithRequestEntityImpl(String bucketName, StorageObject object,
-                                                   RequestEntity requestEntity) throws ServiceException {
-            super.pubObjectWithRequestEntityImpl(bucketName, object, requestEntity);
+        public void putObjectWithRequestEntityImpl(String bucketName, StorageObject object,
+                                                   RequestEntity requestEntity, Map<String, String> requestParams) throws ServiceException {
+            super.putObjectWithRequestEntityImpl(bucketName, object, requestEntity, requestParams);
         }
     }
 
@@ -281,9 +273,7 @@ public class S3Session extends CloudHTTP3Session {
             if(reload) {
                 loggingStatus.clear();
                 versioningStatus.clear();
-                for(Distribution.Method method : this.getSupportedDistributionMethods()) {
-                    distributionStatus.get(method).clear();
-                }
+                this.cdn().clear();
             }
         }
         return new ArrayList<S3Bucket>(buckets.values());
@@ -385,7 +375,9 @@ public class S3Session extends CloudHTTP3Session {
         try {
             this.S3 = new RequestEntityRestStorageService(credentials.isAnonymousLogin() ? null : new AWSCredentials(credentials.getUsername(),
                     credentials.getPassword()));
-            this.getBuckets(true);
+            for(S3Bucket bucket : this.getBuckets(true)) {
+                log.debug("Bucket:" + bucket);
+            }
         }
         catch(ServiceException e) {
             if(this.isLoginFailure(e)) {
@@ -499,433 +491,9 @@ public class S3Session extends CloudHTTP3Session {
         return !file.attributes().isVolume();
     }
 
-    /**
-     * Amazon CloudFront Extension to create a new distribution configuration
-     * *
-     *
-     * @param enabled Distribution status
-     * @param bucket  Name of the container
-     * @param cnames  DNS CNAME aliases for distribution
-     * @param logging Access log configuration
-     * @return Distribution configuration
-     * @throws CloudFrontServiceException CloudFront failure details
-     */
-    protected org.jets3t.service.model.cloudfront.Distribution createDistribution(boolean enabled,
-                                                                                  Distribution.Method method,
-                                                                                  final String bucket,
-                                                                                  String[] cnames,
-                                                                                  LoggingStatus logging,
-                                                                                  String defaultRootObject) throws CloudFrontServiceException {
-        final long reference = System.currentTimeMillis();
-        CloudFrontService cf = this.createCloudFrontService();
-        if(method.equals(Distribution.STREAMING)) {
-            return cf.createStreamingDistribution(
-                    this.getHostnameForContainer(bucket),
-                    String.valueOf(reference), // Caller reference - a unique string value
-                    cnames, // CNAME aliases for distribution
-                    new Date(reference).toString(), // Comment
-                    enabled,  // Enabled?
-                    logging
-            );
-        }
-        return cf.createDistribution(
-                this.getHostnameForContainer(bucket),
-                String.valueOf(reference), // Caller reference - a unique string value
-                cnames, // CNAME aliases for distribution
-                new Date(reference).toString(), // Comment
-                enabled,  // Enabled?
-                logging, // Logging Status. Disabled if null
-                null,
-                false,
-                null,
-                null,
-                defaultRootObject
-        );
-    }
-
-    /**
-     * Amazon CloudFront Extension used to enable or disable a distribution configuration and its CNAMESs
-     *
-     * @param enabled Distribution status
-     * @param id      Distribution reference
-     * @param cnames  DNS CNAME aliases for distribution
-     * @param logging Access log configuration
-     * @throws CloudFrontServiceException CloudFront failure details
-     */
-    protected void updateDistribution(boolean enabled, Distribution.Method method,
-                                      String id,
-                                      String[] cnames, LoggingStatus logging, String defaultRootObject) throws CloudFrontServiceException {
-        final long reference = System.currentTimeMillis();
-        CloudFrontService cf = this.createCloudFrontService();
-        if(method.equals(Distribution.STREAMING)) {
-            cf.updateStreamingDistributionConfig(
-                    id,
-                    cnames, // CNAME aliases for distribution
-                    new Date(reference).toString(), // Comment
-                    enabled, // Enabled?
-                    logging
-            );
-        }
-        else {
-            cf.updateDistributionConfig(
-                    id,
-                    cnames, // CNAME aliases for distribution
-                    new Date(reference).toString(), // Comment
-                    enabled, // Enabled?
-                    logging, // Logging Status. Disabled if null
-                    null,
-                    false,
-                    null,
-                    null,
-                    defaultRootObject
-            );
-        }
-    }
-
-    /**
-     * You can make any number of invalidation requests, but you can have only three invalidation requests
-     * in progress at one time. Each request can contain up to 1,000 objects to invalidate. If you
-     * exceed these limits, you get an error message.
-     * <p/>
-     * It usually takes 10 to 15 minutes to complete your invalidation request, depending on
-     * the size of your request.
-     *
-     * @param bucket
-     * @param method
-     * @param files
-     * @throws CloudFrontServiceException
-     */
-    public void invalidateDistributionObjects(String bucket, Distribution.Method method, List<Path> files) {
-        try {
-            final long reference = System.currentTimeMillis();
-            Distribution d = this.getDistribution(bucket, method);
-            if(null == d) {
-                log.warn("No cached distribution");
-                return;
-            }
-            List<String> keys = this.getInvalidationKeys(files);
-            if(keys.isEmpty()) {
-                log.warn("No keys selected for invalidation");
-                return;
-            }
-            CloudFrontService cf = this.createCloudFrontService();
-            cf.invalidateObjects(d.getId(),
-                    keys.toArray(new String[keys.size()]), // objects
-                    new Date(reference).toString() // Comment
-            );
-        }
-        catch(CloudFrontServiceException e) {
-            this.error("Cannot write CDN configuration", e);
-        }
-        finally {
-            distributionStatus.get(method).clear();
-        }
-    }
-
-    private List<String> getInvalidationKeys(List<Path> files) {
-        List<String> keys = new ArrayList<String>();
-        for(Path file : files) {
-            if(file.attributes().isDirectory()) {
-                keys.addAll(this.getInvalidationKeys(file.<Path>children()));
-            }
-            else {
-                keys.add(((S3Path) file).getKey());
-            }
-        }
-        return keys;
-    }
-
-    /**
-     * @param distribution
-     * @return
-     */
-    protected String readInvalidationStatus(Distribution distribution) {
-        if(this.getHost().getCredentials().isAnonymousLogin()) {
-            log.info("Anonymous cannot write distribution");
-            return Locale.localizedString("None");
-        }
-        try {
-            final long reference = System.currentTimeMillis();
-            CloudFrontService cf = this.createCloudFrontService();
-            boolean complete = false;
-            int inprogress = 0;
-            List<InvalidationSummary> summaries = cf.listInvalidations(distribution.getId());
-            for(InvalidationSummary s : summaries) {
-                if("Completed".equals(s.getStatus())) {
-                    // No schema for status enumeration. Fail.
-                    complete = true;
-                }
-                else {
-                    // InProgress
-                    inprogress++;
-                }
-            }
-            if(inprogress > 0) {
-                return MessageFormat.format(Locale.localizedString("{0} invalidations in progress", "S3"), inprogress);
-            }
-            if(complete) {
-                return MessageFormat.format(Locale.localizedString("{0} invalidations completed", "S3"), summaries.size());
-            }
-        }
-        catch(CloudFrontServiceException e) {
-            this.error("Cannot read CDN configuration", e);
-        }
-        return Locale.localizedString("None");
-    }
-
-    /**
-     * Amazon CloudFront Extension used to list all configured distributions
-     *
-     * @param bucket Name of the container
-     * @param method
-     * @return All distributions for the given AWS Credentials
-     * @throws CloudFrontServiceException CloudFront failure details
-     */
-    protected org.jets3t.service.model.cloudfront.Distribution[] listDistributions(String bucket,
-                                                                                   Distribution.Method method) throws CloudFrontServiceException {
-        CloudFrontService cf = this.createCloudFrontService();
-        if(method.equals(Distribution.STREAMING)) {
-            return cf.listStreamingDistributions(bucket);
-        }
-        return cf.listDistributions(bucket);
-    }
-
-    /**
-     * @param distribution Distribution configuration
-     * @throws CloudFrontServiceException CloudFront failure details
-     * @returann
-     */
-    protected DistributionConfig getDistributionConfig(final org.jets3t.service.model.cloudfront.Distribution distribution) throws CloudFrontServiceException {
-        CloudFrontService cf = this.createCloudFrontService();
-        if(distribution.isStreamingDistribution()) {
-            return cf.getStreamingDistributionConfig(distribution.getId());
-        }
-        return cf.getDistributionConfig(distribution.getId());
-    }
-
-    /**
-     * @param distribution A distribution (the distribution must be disabled and deployed first)
-     * @throws CloudFrontServiceException CloudFront failure details
-     */
-    protected void deleteDistribution(final org.jets3t.service.model.cloudfront.Distribution distribution) throws CloudFrontServiceException {
-        CloudFrontService cf = this.createCloudFrontService();
-        if(distribution.isStreamingDistribution()) {
-            cf.deleteStreamingDistribution(distribution.getId());
-        }
-        else {
-            cf.deleteDistribution(distribution.getId());
-        }
-    }
-
-    /**
-     * Cached instance for session
-     */
-    private CloudFrontService cloudfront;
-
-    /**
-     * Amazon CloudFront Extension
-     *
-     * @return A cached cloud front service interface
-     * @throws CloudFrontServiceException CloudFront failure
-     */
-    private CloudFrontService createCloudFrontService() throws CloudFrontServiceException {
-        if(null == cloudfront) {
-            final Credentials credentials = host.getCredentials();
-
-            // Construct a CloudFrontService object to interact with the service.
-            HostConfiguration hostconfig = null;
-            try {
-                hostconfig = new StickyHostConfiguration();
-                final HttpHost endpoint = new HttpHost(new URI(CloudFrontService.ENDPOINT, false));
-                hostconfig.setHost(endpoint.getHostName(), endpoint.getPort(),
-                        new org.apache.commons.httpclient.protocol.Protocol(endpoint.getProtocol().getScheme(),
-                                new SSLSocketFactory(this.getTrustManager(endpoint.getHostName())), endpoint.getPort())
-                );
-            }
-            catch(URIException e) {
-                log.error(e.getMessage(), e);
-            }
-            cloudfront = new CloudFrontService(
-                    new AWSCredentials(credentials.getUsername(), credentials.getPassword()),
-                    this.getUserAgent(), // Invoking application description
-                    null, // Credentials Provider
-                    new Jets3tProperties(),
-                    hostconfig);
-        }
-        return cloudfront;
-    }
-
-    /**
-     * Cache distribution status result.
-     */
-    private Map<Distribution.Method, Map<String, Distribution>> distributionStatus
-            = new HashMap<Distribution.Method, Map<String, Distribution>>();
-
-    /**
-     * @param container
-     * @param method
-     * @return
-     */
-    @Override
-    public Distribution getDistribution(String container, Distribution.Method method) {
-        return distributionStatus.get(method).get(container);
-    }
-
-    /**
-     * @return
-     */
-    @Override
-    public Distribution readDistribution(String container, Distribution.Method method) {
-        if(this.getHost().getCredentials().isAnonymousLogin()) {
-            log.info("Anonymous cannot read distribution");
-            return new Distribution();
-        }
-        if(this.getSupportedDistributionMethods().size() == 0) {
-            return new Distribution();
-        }
-        if(!distributionStatus.get(method).containsKey(container)) {
-            try {
-                this.check();
-                for(org.jets3t.service.model.cloudfront.Distribution d : this.listDistributions(container, method)) {
-                    // Retrieve distribution's configuration to access current logging status settings.
-                    final DistributionConfig distributionConfig = this.getDistributionConfig(d);
-                    // We currently only support one distribution per bucket
-                    final Distribution distribution = new Distribution(d.getId(), d.isEnabled(), d.isDeployed(),
-                            method.getProtocol() + d.getDomainName() + method.getContext(),
-                            Locale.localizedString(d.getStatus(), "S3"),
-                            distributionConfig.getCNAMEs(),
-                            distributionConfig.isLoggingEnabled(),
-                            method, distributionConfig.getDefaultRootObject());
-                    distribution.setInvalidationStatus(this.readInvalidationStatus(distribution));
-                    if(distribution.isDeployed()) {
-                        distributionStatus.get(method).put(container, distribution);
-                    }
-                    // We currently only support one distribution per bucket
-                    return distribution;
-                }
-            }
-            catch(CloudFrontServiceException e) {
-                log.warn("Invalid CloudFront account:" + e.getMessage());
-                this.setSupportedDistributionMethods(Collections.<Distribution.Method>emptyList());
-            }
-            catch(IOException e) {
-                this.error("Cannot read CDN configuration", e);
-            }
-        }
-        if(distributionStatus.get(method).containsKey(container)) {
-            return distributionStatus.get(method).get(container);
-        }
-        return new Distribution();
-    }
-
-    /**
-     * Amazon CloudFront Extension
-     *
-     * @param enabled
-     * @param method
-     * @param cnames
-     * @param logging
-     */
-    @Override
-    public void writeDistribution(boolean enabled, String container, Distribution.Method method,
-                                  String[] cnames, boolean logging, String defaultRootObject) {
-        if(this.getHost().getCredentials().isAnonymousLogin()) {
-            log.info("Anonymous cannot write distribution");
-            return;
-        }
-        if(this.getSupportedDistributionMethods().size() == 0) {
-            return;
-        }
-        try {
-            LoggingStatus l = null;
-            if(logging) {
-                l = new LoggingStatus(this.getHostnameForContainer(container),
-                        Preferences.instance().getProperty("cloudfront.logging.prefix"));
-            }
-            this.check();
-            StringBuilder name = new StringBuilder(Locale.localizedString("Amazon CloudFront", "S3")).append(" ").append(method.toString());
-            if(enabled) {
-                this.message(MessageFormat.format(Locale.localizedString("Enable {0} Distribution", "Status"), name));
-            }
-            else {
-                this.message(MessageFormat.format(Locale.localizedString("Disable {0} Distribution", "Status"), name));
-            }
-            Distribution d = this.getDistribution(container, method);
-            if(null == d) {
-                // No existing distribution found for method. Create new configuration.
-                this.createDistribution(enabled, method, container, cnames, l, defaultRootObject);
-            }
-            else {
-                boolean modified = false;
-                if(d.isEnabled() != enabled) {
-                    modified = true;
-                }
-                if(!Arrays.equals(d.getCNAMEs(), cnames)) {
-                    modified = true;
-                }
-                if(d.isLogging() != logging) {
-                    modified = true;
-                }
-
-                if(null == d.getDefaultRootObject() && null == defaultRootObject) {
-                    // No change to default root object
-                }
-                else if(null != d.getDefaultRootObject() && null == defaultRootObject) {
-                    modified = true;
-                }
-                else if(null == d.getDefaultRootObject() && null != defaultRootObject) {
-                    modified = true;
-                }
-                else if(!d.getDefaultRootObject().equals(defaultRootObject)) {
-                    modified = true;
-                }
-
-                if(modified) {
-                    this.updateDistribution(enabled, method, d.getId(), cnames, l, defaultRootObject);
-                }
-                else {
-                    log.info("Skip updating distribution not modified.");
-                }
-            }
-        }
-        catch(CloudFrontServiceException e) {
-            this.error("Cannot write CDN configuration", e);
-        }
-        catch(IOException e) {
-            this.error("Cannot write CDN configuration", e);
-        }
-        finally {
-            distributionStatus.get(method).clear();
-        }
-    }
-
-    @Override
-    public String getDistributionServiceName() {
-        return Locale.localizedString("Amazon CloudFront", "S3");
-    }
-
-    private List<Distribution.Method> distributionMethods
-            = Arrays.asList(Distribution.DOWNLOAD, Distribution.STREAMING);
-
-    {
-        for(Distribution.Method method : this.getSupportedDistributionMethods()) {
-            distributionStatus.put(method, new HashMap<String, Distribution>(0));
-        }
-    }
-
-    @Override
-    public List<Distribution.Method> getSupportedDistributionMethods() {
-        return distributionMethods;
-    }
-
-    private void setSupportedDistributionMethods(List<Distribution.Method> distributionMethods) {
-        this.distributionMethods = distributionMethods;
-    }
-
     private List<String> storageClasses
             = Arrays.asList(S3Object.STORAGE_CLASS_STANDARD, S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY);
 
-    @Override
     public List<String> getSupportedStorageClasses() {
         return storageClasses;
     }
@@ -1285,8 +853,37 @@ public class S3Session extends CloudHTTP3Session {
         return acl;
     }
 
+    /**
+     * Distribution methods supported by this S3 provider.
+     *
+     * @return Download and Streaming for AWS.
+     */
+    public List<Distribution.Method> getDistributionMethods() {
+        return Arrays.asList(Distribution.DOWNLOAD, Distribution.STREAMING);
+    }
+
+    /**
+     * Delegating CloudFront requests.
+     */
+    private DistributionConfiguration cf;
+
     @Override
-    public boolean isCDNSupported() {
-        return true;
+    public DistributionConfiguration cdn() {
+        if(null == cf) {
+            cf = new CloudFrontDistributionConfiguration(LoginControllerFactory.instance(this),
+                    host.getCredentials(),
+                    new ErrorListener() {
+                        public void error(BackgroundException exception) {
+                            S3Session.this.error(exception);
+                        }
+                    }) {
+
+                @Override
+                public List<Distribution.Method> getMethods() {
+                    return S3Session.this.getDistributionMethods();
+                }
+            };
+        }
+        return cf;
     }
 }

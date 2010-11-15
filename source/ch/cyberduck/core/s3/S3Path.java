@@ -575,7 +575,7 @@ public class S3Path extends CloudPath {
 
                 final InputStream in = this.getLocal().getInputStream();
                 try {
-                    this.getSession().getClient().pubObjectWithRequestEntityImpl(
+                    this.getSession().getClient().putObjectWithRequestEntityImpl(
                             this.getContainerName(), object, new InputStreamRequestEntity(in,
                                     this.getLocal().attributes().getSize() - status.getCurrent(),
                                     this.getLocal().getMimeType()) {
@@ -584,7 +584,7 @@ public class S3Path extends CloudPath {
                                 public void writeRequest(OutputStream out) throws IOException {
                                     S3Path.this.upload(out, in, throttle, listener);
                                 }
-                            });
+                            }, Collections.<String, String>emptyMap());
                 }
                 catch(ServiceException e) {
                     this.status().setComplete(false);

@@ -21,7 +21,6 @@ package ch.cyberduck.core.azure;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.cloud.CloudHTTP4Session;
-import ch.cyberduck.core.cloud.Distribution;
 import ch.cyberduck.core.i18n.Locale;
 
 import org.apache.commons.lang.StringUtils;
@@ -82,33 +81,6 @@ public class AzureSession extends CloudHTTP4Session {
         super(h);
     }
 
-    @Override
-    public Distribution getDistribution(String container, Distribution.Method method) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void writeDistribution(boolean enabled, String container, Distribution.Method method,
-                                  String[] cnames, boolean logging, String defaultRootObject) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Distribution readDistribution(String container, Distribution.Method method) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public List<Distribution.Method> getSupportedDistributionMethods() {
-        return Collections.emptyList();
-    }
-
-    @Override
-    public String getDistributionServiceName() {
-        return Locale.localizedString("Windows Azure CDN", "Azure");
-    }
-
-    @Override
     public List<String> getSupportedStorageClasses() {
         return Collections.emptyList();
     }

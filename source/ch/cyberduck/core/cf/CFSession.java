@@ -20,8 +20,9 @@ package ch.cyberduck.core.cf;
  */
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.cdn.Distribution;
+import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.cloud.CloudHTTP3Session;
-import ch.cyberduck.core.cloud.Distribution;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.ssl.AbstractX509TrustManager;
 
@@ -182,130 +183,154 @@ public class CFSession extends CloudHTTP3Session {
     public boolean isCreateFileSupported(Path workdir) {
         return !workdir.isRoot();
     }
-    
-    /**
-     * Cache distribution status result.
-     */
-    private Map<String, Distribution> distributionStatus
-            = new HashMap<String, Distribution>();
 
     @Override
-    public Distribution getDistribution(String container, Distribution.Method method) {
-        return distributionStatus.get(container);
-    }
+    public DistributionConfiguration cdn() {
+        return new DistributionConfiguration() {
+            public boolean isConfigured() {
+                return !distributionStatus.isEmpty();
+            }
 
-    /**
-     * @param enabled Enable content distribution for the container
-     * @param method
-     * @param cnames  Currently ignored
-     * @param logging
-     */
-    @Override
-    public void writeDistribution(boolean enabled, String container, Distribution.Method method,
-                                  String[] cnames, boolean logging, String defaultRootObject) {
-        final AbstractX509TrustManager trust = this.getTrustManager();
-        try {
-            this.check();
-            URI url = URI.create(this.getClient().getCdnManagementURL());
-            this.getClient().setHostConfiguration(
-                    this.getHostConfiguration(url.getScheme(), url.getHost(), url.getPort()));
-            if(enabled) {
-                this.message(MessageFormat.format(Locale.localizedString("Enable {0} Distribution", "Status"),
-                        Locale.localizedString("Rackspace Cloud Files", "Mosso")));
+            public String getOrigin(Distribution.Method method, String container) {
+                return container;
             }
-            else {
-                this.message(MessageFormat.format(Locale.localizedString("Disable {0} Distribution", "Status"),
-                        Locale.localizedString("Rackspace Cloud Files", "Mosso")));
+
+            public void setOrigin(Distribution.Method method) {
+                ;
             }
-            if(enabled) {
+
+            /**
+             * Cache distribution status result.
+             */
+            private Map<String, Distribution> distributionStatus
+                    = new HashMap<String, Distribution>();
+
+            /**
+             * @param enabled Enable content distribution for the container
+             * @param method
+             * @param cnames  Currently ignored
+             * @param logging
+             */
+            public void write(boolean enabled, String origin, Distribution.Method method,
+                              String[] cnames, boolean logging, String defaultRootObject) {
+                final AbstractX509TrustManager trust = CFSession.this.getTrustManager();
                 try {
-                    final FilesCDNContainer info = this.getClient().getCDNContainerInfo(container);
-                }
-                catch(FilesException e) {
-                    log.warn(e.getMessage());
-                    // Not found.
-                    this.getClient().cdnEnableContainer(container);
-                }
-            }
-            // Toggle content distribution for the container without changing the TTL expiration
-            this.getClient().cdnUpdateContainer(container, -1, enabled, logging);
-        }
-        catch(IOException e) {
-            this.error("Cannot write CDN configuration", e);
-        }
-        finally {
-            try {
-                // Configure for storage URL
-                this.configure();
-            }
-            catch(ConnectionCanceledException e) {
-                log.error(e.getMessage());
-            }
-            distributionStatus.clear();
-        }
-    }
+                    CFSession.this.check();
+                    CFSession.this.message(MessageFormat.format(Locale.localizedString("Writing CDN configuration of {0}", "Status"),
+                            origin));
 
-    @Override
-    public Distribution readDistribution(String container, Distribution.Method method) {
-        if(!distributionStatus.containsKey(container)) {
-            final AbstractX509TrustManager trust = this.getTrustManager();
-            try {
-                this.check();
-                URI url = URI.create(this.getClient().getCdnManagementURL());
-                this.getClient().setHostConfiguration(
-                        this.getHostConfiguration(url.getScheme(), url.getHost(), url.getPort()));
-                try {
-                    final FilesCDNContainer info = this.getClient().getCDNContainerInfo(container);
-                    final Distribution distribution = new Distribution(info.getName(), info.isEnabled(), info.getCdnURL(),
-                            info.isEnabled() ? Locale.localizedString("CDN Enabled", "Mosso") : Locale.localizedString("CDN Disabled", "Mosso"),
-                            info.getRetainLogs());
-                    if(distribution.isDeployed()) {
-                        distributionStatus.put(container, distribution);
+                    URI url = URI.create(CFSession.this.getClient().getCdnManagementURL());
+                    CFSession.this.getClient().setHostConfiguration(
+                            CFSession.this.getHostConfiguration(url.getScheme(), url.getHost(), url.getPort()));
+                    if(enabled) {
+                        CFSession.this.message(MessageFormat.format(Locale.localizedString("Enable {0} Distribution", "Status"),
+                                Locale.localizedString("Rackspace Cloud Files", "Mosso")));
                     }
-                    return distribution;
+                    else {
+                        CFSession.this.message(MessageFormat.format(Locale.localizedString("Disable {0} Distribution", "Status"),
+                                Locale.localizedString("Rackspace Cloud Files", "Mosso")));
+                    }
+                    if(enabled) {
+                        try {
+                            final FilesCDNContainer info = CFSession.this.getClient().getCDNContainerInfo(origin);
+                        }
+                        catch(FilesException e) {
+                            log.warn(e.getMessage());
+                            // Not found.
+                            CFSession.this.getClient().cdnEnableContainer(origin);
+                        }
+                    }
+                    // Toggle content distribution for the container without changing the TTL expiration
+                    CFSession.this.getClient().cdnUpdateContainer(origin, -1, enabled, logging);
                 }
-                catch(FilesException e) {
-                    log.warn(e.getMessage());
-                    // Not found.
-                    distributionStatus.put(container, new Distribution(null, false, null, Locale.localizedString("CDN Disabled", "Mosso")));
+                catch(IOException e) {
+                    CFSession.this.error("Cannot write CDN configuration", e);
+                }
+                finally {
+                    try {
+                        // Configure for storage URL
+                        CFSession.this.configure();
+                    }
+                    catch(ConnectionCanceledException e) {
+                        log.error(e.getMessage());
+                    }
+                    distributionStatus.clear();
                 }
             }
-            catch(IOException e) {
-                this.error("Cannot read CDN configuration", e);
-            }
-            finally {
-                try {
-                    // Configure for storage URL
-                    this.configure();
+
+            public Distribution read(String origin, Distribution.Method method) {
+                if(!distributionStatus.containsKey(origin)) {
+                    final AbstractX509TrustManager trust = CFSession.this.getTrustManager();
+                    try {
+                        CFSession.this.check();
+                        CFSession.this.message(MessageFormat.format(Locale.localizedString("Reading CDN configuration of {0}", "Status"),
+                                origin));
+
+                        URI url = URI.create(CFSession.this.getClient().getCdnManagementURL());
+                        CFSession.this.getClient().setHostConfiguration(
+                                CFSession.this.getHostConfiguration(url.getScheme(), url.getHost(), url.getPort()));
+                        try {
+                            final FilesCDNContainer info = CFSession.this.getClient().getCDNContainerInfo(origin);
+                            final Distribution distribution = new Distribution(info.getName(), origin, method, info.isEnabled(), info.getCdnURL(),
+                                    info.isEnabled() ? Locale.localizedString("CDN Enabled", "Mosso") : Locale.localizedString("CDN Disabled", "Mosso"),
+                                    info.getRetainLogs());
+                            if(distribution.isDeployed()) {
+                                distributionStatus.put(origin, distribution);
+                            }
+                            return distribution;
+                        }
+                        catch(FilesException e) {
+                            log.warn(e.getMessage());
+                            // Not found.
+                            distributionStatus.put(origin, new Distribution(null, origin, method, false, null, Locale.localizedString("CDN Disabled", "Mosso")));
+                        }
+                    }
+                    catch(IOException e) {
+                        CFSession.this.error("Cannot read CDN configuration", e);
+                    }
+                    finally {
+                        try {
+                            // Configure for storage URL
+                            CFSession.this.configure();
+                        }
+                        catch(ConnectionCanceledException e) {
+                            log.error(e.getMessage());
+                        }
+                    }
                 }
-                catch(ConnectionCanceledException e) {
-                    log.error(e.getMessage());
+                if(distributionStatus.containsKey(origin)) {
+                    return distributionStatus.get(origin);
                 }
+                return new Distribution(origin, method);
             }
-        }
-        if(distributionStatus.containsKey(container)) {
-            return distributionStatus.get(container);
-        }
-        return new Distribution();
+
+            public void invalidate(String origin, Distribution.Method method, List<Path> files) {
+                throw new UnsupportedOperationException();
+            }
+
+            public boolean isInvalidationSupported() {
+                return false;
+            }
+
+            public boolean isDefaultRootSupported() {
+                return false;
+            }
+
+            public List<Distribution.Method> getMethods() {
+                return Arrays.asList(Distribution.DOWNLOAD);
+            }
+
+            public String toString() {
+                return Locale.localizedString("Limelight Content", "Mosso");
+            }
+
+            public void clear() {
+                distributionStatus.clear();
+            }
+        };
     }
 
-    @Override
-    public String getDistributionServiceName() {
-        return Locale.localizedString("Limelight Content", "Mosso");
-    }
-
-    @Override
-    public List<Distribution.Method> getSupportedDistributionMethods() {
-        return Arrays.asList(Distribution.DOWNLOAD);
-    }
-
-    @Override
     public List<String> getSupportedStorageClasses() {
         return Collections.emptyList();
-    }
-
-    @Override
-    public boolean isCDNSupported() {
-        return true;
     }
 }

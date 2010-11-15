@@ -20,7 +20,7 @@ package ch.cyberduck.ui.action;
  */
 
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.cloud.Distribution;
+import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.i18n.Locale;
 
 import java.text.MessageFormat;

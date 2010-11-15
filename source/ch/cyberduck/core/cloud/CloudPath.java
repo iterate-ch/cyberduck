@@ -22,14 +22,9 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
-import ch.cyberduck.core.i18n.Locale;
 
 import org.apache.log4j.Logger;
 
-import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -146,28 +141,5 @@ public abstract class CloudPath extends Path {
 
     public DescriptiveUrl toSignedUrl() {
         return new DescriptiveUrl(null, null);
-    }
-
-    /**
-     * Including URLs to CDN.
-     *
-     * @return
-     */
-    @Override
-    public List<DescriptiveUrl> getHttpURLs() {
-        List<DescriptiveUrl> urls = new ArrayList<DescriptiveUrl>(Arrays.asList(
-                new DescriptiveUrl(this.toURL(), MessageFormat.format(Locale.localizedString("{0} URL"),
-                        this.getHost().getProtocol().getScheme().toUpperCase())))
-        );
-        CloudSession session = (CloudSession) this.getSession();
-        for(Distribution.Method method : session.getSupportedDistributionMethods()) {
-            Distribution distribution = session.getDistribution(this.getContainerName(), method);
-            if(null != distribution) {
-                // Cached
-                urls.addAll(distribution.getCnameURL(this.getKey()));
-            }
-            // Not cached yet.
-        }
-        return urls;
     }
 }

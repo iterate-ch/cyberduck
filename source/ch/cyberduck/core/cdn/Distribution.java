@@ -1,4 +1,4 @@
-package ch.cyberduck.core.cloud;
+package ch.cyberduck.core.cdn;
 
 /*
  *  Copyright (c) 2008 David Kocher. All rights reserved.
@@ -24,6 +24,7 @@ import ch.cyberduck.core.i18n.Locale;
 
 import org.apache.commons.lang.StringUtils;
 
+import java.net.URI;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +40,10 @@ public class Distribution {
      */
     private boolean deployed;
     /**
+     * S3 bucket name or DNS
+     */
+    private String origin;
+    /**
      * Deployment enabled
      */
     private boolean enabled;
@@ -46,10 +51,21 @@ public class Distribution {
      * Logging enabled
      */
     private boolean logging;
+    /**
+     * CDN URL
+     */
     private String url;
+    /**
+     * Deployment status description
+     */
     private String status;
+    /**
+     * CNAME DNS entires to the CDN hostname
+     */
     private String cnames[];
-
+    /**
+     * Kind of distribution
+     */
     private Method method;
 
     /**
@@ -59,6 +75,9 @@ public class Distribution {
 
     private String invalidationStatus;
 
+    /**
+     * Protocol and context of distribution.
+     */
     public static interface Method {
         public abstract String toString();
 
@@ -70,6 +89,20 @@ public class Distribution {
     public static final Method DOWNLOAD = new Method() {
         public String toString() {
             return Locale.localizedString("Download (HTTP)", "S3");
+        }
+
+        public String getProtocol() {
+            return "http://";
+        }
+
+        public String getContext() {
+            return "";
+        }
+    };
+
+    public static final Method CUSTOM = new Method() {
+        public String toString() {
+            return Locale.localizedString("Custom Origin Server (HTTP/HTTPS)", "S3");
         }
 
         public String getProtocol() {
@@ -96,95 +129,95 @@ public class Distribution {
     };
 
     /**
-     *
+     * @param origin Server to fetch original content
+     * @param method Protocol
      */
-    public Distribution() {
-        this(null, false, false, null, null, new String[]{}, false);
+    public Distribution(String origin, Method method) {
+        this(null, origin, method, false, false, null, null, new String[]{}, false);
     }
 
     /**
      * @param id      Identifier of this distribution
-     * @param enabled
-     * @param url
-     * @param status
+     * @param origin
+     * @param method  Kind of distribution
+     * @param enabled Deployment Enabled
+     * @param url     Where to find this distribution
+     * @param status  Status Message about Deployment Status
      */
-    public Distribution(String id, boolean enabled, String url, String status) {
-        this(id, enabled, url, status, new String[]{});
+    public Distribution(String id, String origin, Method method, boolean enabled, String url, String status) {
+        this(id, origin, method, enabled, url, status, new String[]{});
     }
 
     /**
      * @param id      Identifier of this distribution
-     * @param enabled
-     * @param url
-     * @param status
+     * @param origin  Server to fetch original content
+     * @param method  Kind of distribution
+     * @param enabled Deployment Enabled
+     * @param url     Where to find this distribution
+     * @param status  Status Message about Deployment Status
      * @param logging
      */
-    public Distribution(String id, boolean enabled, String url, String status, boolean logging) {
-        this(id, enabled, enabled, url, status, new String[]{}, logging);
+    public Distribution(String id, String origin, Method method, boolean enabled, String url, String status, boolean logging) {
+        this(id, origin, method, enabled, enabled, url, status, new String[]{}, logging);
     }
 
     /**
+     * @param id      Identifier of this distribution
+     * @param origin  Server to fetch original content
+     * @param method  Kind of distribution
      * @param enabled Deployment Enabled
      * @param url     Where to find this distribution
      * @param status  Status Message about Deployment Status
      * @param cnames  Multiple CNAME aliases of this distribution
      */
-    public Distribution(String id, boolean enabled, String url, String status, String[] cnames) {
-        this(id, enabled, enabled, url, status, cnames);
+    public Distribution(String id, String origin, Method method, boolean enabled, String url, String status, String[] cnames) {
+        this(id, origin, method, enabled, enabled, url, status, cnames);
     }
 
     /**
      * @param id       Identifier of this distribution
+     * @param origin   Server to fetch original content
+     * @param method   Kind of distribution
      * @param enabled  Deployment Enabled
      * @param deployed Deployment Status is about to be changed
      * @param url      Where to find this distribution
      * @param status   Status Message about Deployment Status
      * @param cnames   Multiple CNAME aliases of this distribution
      */
-    public Distribution(String id, boolean enabled, boolean deployed, String url, String status, String[] cnames) {
-        this(id, enabled, deployed, url, status, cnames, false);
+    public Distribution(String id, String origin, Method method, boolean enabled, boolean deployed, String url, String status, String[] cnames) {
+        this(id, origin, method, enabled, deployed, url, status, cnames, false);
     }
 
     /**
      * @param id       Identifier of this distribution
+     * @param origin   Server to fetch original content
+     * @param method   Kind of distribution
      * @param enabled  Deployment Enabled
      * @param deployed Deployment Status is about to be changed
      * @param url      Where to find this distribution
      * @param status   Status Message about Deployment Status
      * @param cnames   Multiple CNAME aliases of this distribution
-     * @param logging
+     * @param logging  Logging status
      */
-    public Distribution(String id, boolean enabled, boolean deployed, String url, String status, String[] cnames, boolean logging) {
-        this(id, enabled, deployed, url, status, cnames, logging, DOWNLOAD);
-    }
-
-    /**
-     * @param id       Identifier of this distribution
-     * @param enabled  Deployment Enabled
-     * @param deployed Deployment Status is about to be changed
-     * @param url      Where to find this distribution
-     * @param status   Status Message about Deployment Status
-     * @param cnames   Multiple CNAME aliases of this distribution
-     * @param logging
-     * @param method
-     */
-    public Distribution(String id, boolean enabled, boolean deployed, String url, String status, String[] cnames, boolean logging, Method method) {
-        this(id, enabled, deployed, url, status, cnames, logging, DOWNLOAD, null);
+    public Distribution(String id, String origin, Method method, boolean enabled, boolean deployed, String url, String status, String[] cnames, boolean logging) {
+        this(id, origin, DOWNLOAD, enabled, deployed, url, status, cnames, logging, null);
     }
 
     /**
      * @param id                Identifier of this distribution
+     * @param origin            Server to fetch original content
+     * @param method            Kind of distribution
      * @param enabled           Deployment Enabled
      * @param deployed          Deployment Status is about to be changed
      * @param url               Where to find this distribution
      * @param status            Status Message about Deployment Status
      * @param cnames            Multiple CNAME aliases of this distribution
-     * @param logging
-     * @param method
-     * @param defaultRootObject
+     * @param logging           Logging status
+     * @param defaultRootObject Index file
      */
-    public Distribution(String id, boolean enabled, boolean deployed, String url, String status, String[] cnames, boolean logging, Method method, String defaultRootObject) {
+    public Distribution(String id, String origin, Method method, boolean enabled, boolean deployed, String url, String status, String[] cnames, boolean logging, String defaultRootObject) {
         this.id = id;
+        this.origin = origin;
         this.enabled = enabled;
         this.deployed = deployed;
         this.url = url;
@@ -200,16 +233,37 @@ public class Distribution {
     }
 
     /**
+     * Origin server to fetch original content. S3 bucket or custom host.
+     *
+     * @return DNS hostname of origin server
+     */
+    public String getOrigin() {
+        return origin;
+    }
+
+    public String getOrigin(Path file) {
+        return "http://" + this.getOrigin() + file.getKey();
+    }
+
+    /**
      * @return True if distribution is enabled
      */
     public boolean isEnabled() {
         return enabled;
     }
 
+    /**
+     * Deployment status
+     *
+     * @return True if available
+     */
     public boolean isDeployed() {
         return deployed;
     }
 
+    /**
+     * @return
+     */
     public boolean isLogging() {
         return logging;
     }
@@ -219,44 +273,62 @@ public class Distribution {
     }
 
     /**
+     * Distribution URL from CDN provider.
+     *
      * @return Null if not available
      */
-    public String getUrl() {
+    public String getURL() {
         return url;
     }
 
-    public String getUrl(String key) {
-        if(StringUtils.isEmpty(this.getUrl())) {
+    /**
+     * @param file
+     * @return
+     */
+    public String getURL(Path file) {
+        if(StringUtils.isEmpty(this.getURL())) {
             return null;
         }
-        StringBuilder b = new StringBuilder(this.getUrl());
-        if(StringUtils.isNotEmpty(key)) {
-            b.append(Path.encode(key));
+        StringBuilder b = new StringBuilder(this.getURL());
+        if(StringUtils.isNotEmpty(file.getKey())) {
+            b.append(Path.encode(file.getKey()));
         }
-        return b.toString();
+        return URI.create(b.toString()).normalize().toString();
     }
 
-    public List<AbstractPath.DescriptiveUrl> getCnameURL(String key) {
+    /**
+     * Both CNAME and original URL
+     *
+     * @param file
+     * @return
+     */
+    public List<AbstractPath.DescriptiveUrl> getURLs(Path file) {
+        List<AbstractPath.DescriptiveUrl> urls = this.getCnameURL(file);
+        urls.add(new AbstractPath.DescriptiveUrl(this.getURL(file),
+                MessageFormat.format(Locale.localizedString("{0} CDN URL"), Locale.localizedString(method.toString(), "S3"))));
+        return urls;
+    }
+
+    /**
+     * @param file
+     * @return
+     */
+    public List<AbstractPath.DescriptiveUrl> getCnameURL(Path file) {
         List<AbstractPath.DescriptiveUrl> urls = new ArrayList<AbstractPath.DescriptiveUrl>();
         for(String cname : cnames) {
-            urls.add(new AbstractPath.DescriptiveUrl(this.getCnameURL(cname, key),
-                    MessageFormat.format(Locale.localizedString("{0} CDN URL"), Locale.localizedString(method.toString(), "S3"))));
-        }
-        if(urls.isEmpty()) {
-            // No CNAME configured.
-            urls.add(new AbstractPath.DescriptiveUrl(this.getUrl(key),
+            urls.add(new AbstractPath.DescriptiveUrl(this.getCnameURL(cname, file),
                     MessageFormat.format(Locale.localizedString("{0} CDN URL"), Locale.localizedString(method.toString(), "S3"))));
         }
         return urls;
     }
 
-    private String getCnameURL(String cname, String key) {
+    private String getCnameURL(String cname, Path file) {
         StringBuilder b = new StringBuilder();
         b.append(this.getMethod().getProtocol()).append(cname).append(this.getMethod().getContext());
-        if(StringUtils.isNotEmpty(key)) {
-            b.append(Path.encode(key));
+        if(StringUtils.isNotEmpty(file.getKey())) {
+            b.append(Path.encode(file.getKey()));
         }
-        return b.toString();
+        return URI.create(b.toString()).normalize().toString();
     }
 
     /**
@@ -290,6 +362,11 @@ public class Distribution {
         return cnames;
     }
 
+    /**
+     * Index file
+     *
+     * @return Null if not supported or not set
+     */
     public String getDefaultRootObject() {
         return defaultRootObject;
     }
@@ -298,6 +375,14 @@ public class Distribution {
         this.defaultRootObject = defaultRootObject;
     }
 
+    /**
+     * Distribution method.
+     *
+     * @return
+     * @see ch.cyberduck.core.cdn.Distribution#CUSTOM
+     * @see ch.cyberduck.core.cdn.Distribution#DOWNLOAD
+     * @see ch.cyberduck.core.cdn.Distribution#STREAMING
+     */
     public Method getMethod() {
         return method;
     }

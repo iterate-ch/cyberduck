@@ -25,38 +25,8 @@ import java.util.List;
  * @version $Id:$
  */
 public interface CloudSession {
-    /**
-     * @param container
-     * @param method
-     * @return Cached distribution if available.
-     */
-    Distribution getDistribution(String container, Distribution.Method method);
 
-    /**
-     * @param enabled
-     * @param method
-     * @param cnames
-     * @param logging
-     */
-    void writeDistribution(boolean enabled, String container, Distribution.Method method,
-                           String[] cnames, boolean logging, String defaultRootObject);
-
-    /**
-     * @return
-     */
-    Distribution readDistribution(String container, Distribution.Method method);
-
-    /**
-     * @return The supported protocols
-     */
-    List<Distribution.Method> getSupportedDistributionMethods();
-
-    /**
-     * Marketing name for the distribution service
-     *
-     * @return Localized description
-     */
-    String getDistributionServiceName();
+    String getHostnameForContainer(String container);
 
     /**
      * @return List of redundancy level options. Empty list
