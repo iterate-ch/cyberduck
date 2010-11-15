@@ -21,7 +21,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 using Ch.Cyberduck.Core;
-using ch.cyberduck.core.cloud;
+using ch.cyberduck.core.cdn;
 using ch.cyberduck.core.i18n;
 using ch.cyberduck.ui.controller;
 using Ch.Cyberduck.Ui.Controller;
