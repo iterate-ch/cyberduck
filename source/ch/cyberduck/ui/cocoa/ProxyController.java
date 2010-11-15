@@ -50,7 +50,7 @@ public class ProxyController extends AbstractController {
         return this.proxy(NSObject.class);
     }
 
-    public NSObject proxy(Class<? extends NSObject> type) {
+    protected NSObject proxy(Class<? extends NSObject> type) {
         if(null == proxy) {
             proxy = Rococoa.proxy(this, type);
         }
@@ -61,7 +61,7 @@ public class ProxyController extends AbstractController {
         return this.id(NSObject.class);
     }
 
-    public org.rococoa.ID id(Class<? extends NSObject> type) {
+    protected org.rococoa.ID id(Class<? extends NSObject> type) {
         if(null == id) {
             id = this.proxy(type).id();
         }
