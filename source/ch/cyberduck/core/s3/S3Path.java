@@ -307,7 +307,7 @@ public class S3Path extends CloudPath {
 
     @Override
     public void readMetadata() {
-        if(attributes().isFile()) {
+        if(attributes().isFile() || attributes().isPlaceholder()) {
             try {
                 this.getSession().check();
                 this.getSession().message(MessageFormat.format(Locale.localizedString("Reading metadata of {0}", "Status"),
@@ -332,7 +332,7 @@ public class S3Path extends CloudPath {
 
     @Override
     public void writeMetadata(Map<String, String> meta) {
-        if(attributes().isFile()) {
+        if(attributes().isFile() || attributes().isPlaceholder()) {
             try {
                 this.getSession().check();
                 this.getSession().message(MessageFormat.format(Locale.localizedString("Writing metadata of {0}", "Status"),
@@ -747,7 +747,7 @@ public class S3Path extends CloudPath {
                     continue;
                 }
                 p.attributes().setOwner(this.getContainer().attributes().getOwner());
-                p.attributes().setPlaceholder(true);
+                p.attributes().setPlaceholder(false);
                 children.add(p);
             }
             priorLastKey = chunk.getPriorLastKey();
