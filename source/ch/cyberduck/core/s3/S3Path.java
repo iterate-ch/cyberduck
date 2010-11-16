@@ -1195,7 +1195,7 @@ public class S3Path extends CloudPath {
         Calendar expiry = Calendar.getInstance();
         expiry.add(Calendar.SECOND, seconds);
         return new DescriptiveUrl(this.createSignedUrl(seconds),
-                MessageFormat.format(Locale.localizedString("{0} URL"), Locale.localizedString("Signed"))
+                MessageFormat.format(Locale.localizedString("{0} URL"), Locale.localizedString("Signed", "S3"))
                         + " (" + MessageFormat.format(Locale.localizedString("Expires on {0}", "S3") + ")",
                         DateFormatterFactory.instance().getShortFormat(expiry.getTimeInMillis()))
         );
