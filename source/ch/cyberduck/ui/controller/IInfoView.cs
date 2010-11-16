@@ -25,8 +25,20 @@ using ch.cyberduck.ui.controller;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
+    public enum InfoTab
+    {
+        General,
+        Permissions,
+        Acl,
+        Distribution,
+        S3,
+        Metadata
+    }
+
     public interface IInfoView : IView
     {
+        InfoTab ActiveTab { set; get; }
+
         Image ToolbarDistributionImage { set; }
         bool ToolbarDistributionEnabled { set; }
         bool ToolbarS3Enabled { set; }
@@ -169,5 +181,7 @@ namespace Ch.Cyberduck.Ui.Controller
         event VoidHandler StorageClassChanged;
         event VoidHandler BucketVersioningChanged;
         event VoidHandler BucketMfaChanged;
+
+        event VoidHandler ActiveTabChanged;
     }
 }

@@ -26,6 +26,8 @@ using ch.cyberduck.core.i18n;
 using ch.cyberduck.ui.controller;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Winforms.Controls;
+using java.lang;
+using String = System.String;
 
 namespace Ch.Cyberduck.Ui.Winforms
 {
@@ -54,7 +56,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             InitAclGrid();
             InitMetadataGrid();
 
-            //ResizeForm(generalLayoutPanel, false);
+            panelManager.SelectedIndexChanged += (sender, args) => ActiveTabChanged();
+
             generalButton_Click(this, EventArgs.Empty);
 
             LocalizationCompleted += ResizeForm;
@@ -67,7 +70,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             whereLinkLabel.Text = String.Empty;
             cnameUrlLinkLabel.Text = String.Empty;
 
-            MaximumSize = new Size(1000, Height + 30);
+            MaximumSize = new Size(1000, Height + 30);            
         }
 
         /// <summary>
@@ -126,6 +129,62 @@ namespace Ch.Cyberduck.Ui.Winforms
         public bool ToolbarMetadataEnabled
         {
             set { metadataButton.Enabled = value; }
+        }
+
+        public InfoTab ActiveTab
+        {
+            get
+            {
+                if (panelManager.SelectedPanel == managedGeneralPanel)
+                {
+                    return InfoTab.General;
+                }
+                if (panelManager.SelectedPanel == managedPermissionsPanel)
+                {
+                    if (panelManagerPermissions.SelectedPanel == cloudManagedPanel)
+                    {
+                        return InfoTab.Acl;
+                    }
+                        return InfoTab.Permissions;
+                }
+                if (panelManager.SelectedPanel == managedDistributionPanel)
+                {
+                    return InfoTab.Distribution;
+                }
+                if (panelManager.SelectedPanel == managedS3Panel)
+                {
+                    return InfoTab.S3;
+                }
+                if (panelManager.SelectedPanel == managedMetadataPanel)
+                {
+                    return InfoTab.Metadata;
+                }
+                throw new IllegalArgumentException("Invalid state");
+            }
+            set
+            {
+                if (value == InfoTab.General)
+                {
+                    generalButton_Click(this, EventArgs.Empty);
+                }
+                if (value == InfoTab.Permissions || value == InfoTab.Acl)
+                {
+                    //inner panel is already set
+                    permissionsButton_Click(this, EventArgs.Empty);
+                }
+                if (value == InfoTab.Distribution)
+                {
+                    distributionButton_Click(this, EventArgs.Empty);                    
+                }
+                if (value == InfoTab.S3)
+                {
+                    s3Button_Click(this, EventArgs.Empty);
+                }
+                if (value == InfoTab.Metadata)
+                {
+                    metadataButton_Click(this, EventArgs.Empty);
+                }
+            }
         }
 
         public Image ToolbarDistributionImage
@@ -710,6 +769,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         public event VoidHandler StorageClassChanged = delegate { };
         public event VoidHandler BucketVersioningChanged = delegate { };
         public event VoidHandler BucketMfaChanged = delegate { };
+        public event VoidHandler ActiveTabChanged = delegate { };
 
         public bool MetadataTableEnabled
         {
@@ -961,7 +1021,6 @@ namespace Ch.Cyberduck.Ui.Winforms
                 DisableAll();
                 generalButton.Checked = true;
                 panelManager.SelectedPanel = managedGeneralPanel;
-                //ResizeForm(generalLayoutPanel, true);
             }
         }
 
@@ -972,7 +1031,6 @@ namespace Ch.Cyberduck.Ui.Winforms
                 DisableAll();
                 permissionsButton.Checked = true;
                 panelManager.SelectedPanel = managedPermissionsPanel;
-                //ResizeForm(permissionsLayoutPanel, true);
             }
         }
 
@@ -1090,7 +1148,6 @@ namespace Ch.Cyberduck.Ui.Winforms
                 DisableAll();
                 metadataButton.Checked = true;
                 panelManager.SelectedPanel = managedMetadataPanel;
-                //ResizeForm(permissionsLayoutPanel, true);
             }
         }
 
@@ -1124,17 +1181,6 @@ namespace Ch.Cyberduck.Ui.Winforms
         {
             addMetadataContextMenuStrip.Items[addMetadataContextMenuStrip.Items.Count - 1].Enabled =
                 metadataDataGridView.SelectedRows.Count > 0;
-        }
-
-        private void generalButton_Click_1(object sender, EventArgs e)
-        {
-            if (!generalButton.Checked)
-            {
-                DisableAll();
-                generalButton.Checked = true;
-                panelManager.SelectedPanel = managedGeneralPanel;
-                //ResizeForm(permissionsLayoutPanel, true);
-            }
         }
 
         private void distributionCnameTextBox_Validated(object sender, EventArgs e)

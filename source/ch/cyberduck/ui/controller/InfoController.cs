@@ -65,6 +65,8 @@ namespace Ch.Cyberduck.Ui.Controller
                                                             View.Close();
                                                         }
                                                     };
+
+            View.ActiveTabChanged += View_ActiveTabChanged;
         }
 
         public override bool Singleton
@@ -97,21 +99,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     PopulateMetadata();
                 }
-
-                InitGeneral();
-                // Sum of files
-                InitSize();
-                InitChecksum();
-                // Read HTTP URL
-                InitWebUrl();
-                // Read Permissions
-                InitPermissions();
-                InitAcl();
-                // S3 Bucket attributes
-                InitS3();
-                // HTTP custom headers
-                InitMetadata();
-                InitDistribution();
+                InitTab(View.ActiveTab);
             }
         }
 
@@ -142,6 +130,36 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 if (_files.Count == 0) return null;
                 return _files[0];
+            }
+        }
+
+        private void View_ActiveTabChanged()
+        {
+            InitTab(View.ActiveTab);
+        }
+
+        private void InitTab(InfoTab activeTab)
+        {
+            switch (activeTab)
+            {
+                case InfoTab.General:
+                    InitGeneral();
+                    break;
+                case InfoTab.Permissions:
+                    InitPermissions();
+                    break;
+                case InfoTab.Acl:
+                    InitAcl();
+                    break;
+                case InfoTab.Distribution:
+                    InitDistribution();
+                    break;
+                case InfoTab.S3:
+                    InitS3();
+                    break;
+                case InfoTab.Metadata:
+                    InitMetadata();
+                    break;
             }
         }
 
@@ -985,6 +1003,13 @@ namespace Ch.Cyberduck.Ui.Controller
                     View.FileIcon = IconCache.Instance.IconForPath(_files[0], IconCache.IconSize.Large);
                 }
             }
+
+            // Sum of files
+            InitSize();
+            InitChecksum();
+            InitPermissions();
+            // Read HTTP URL
+            InitWebUrl();
         }
 
         private void InitS3()
