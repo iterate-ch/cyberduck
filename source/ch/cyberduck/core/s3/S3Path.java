@@ -1043,7 +1043,11 @@ public class S3Path extends CloudPath {
     @Override
     public void rename(AbstractPath renamed) {
         try {
-            if(attributes().isFile()) {
+            if(attributes().isVolume()) {
+                log.warn("Renaming buckets is not currently supported by S3");
+                return;
+            }
+            if(attributes().isFile() | attributes().isPlaceholder()) {
                 this.getSession().check();
                 this.getSession().message(MessageFormat.format(Locale.localizedString("Renaming {0} to {1}", "Status"),
                         this.getName(), renamed));
@@ -1063,10 +1067,7 @@ public class S3Path extends CloudPath {
                 renamed.getParent().invalidate();
                 this.getParent().invalidate();
             }
-            else if(attributes().isVolume()) {
-                // Renaming buckets is not currently supported by S3
-            }
-            else if(attributes().isDirectory()) {
+            if(attributes().isDirectory()) {
                 for(AbstractPath i : this.children()) {
                     if(!this.getSession().isConnected()) {
                         break;
