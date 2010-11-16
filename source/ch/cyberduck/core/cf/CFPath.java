@@ -188,6 +188,7 @@ public class CFPath extends CloudPath {
 
                     children.add(p);
                 }
+                this.getSession().cdn().clear();
             }
             else {
                 for(FilesObject object : this.getSession().getClient().listObjects(this.getContainerName(),
