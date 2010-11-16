@@ -2163,7 +2163,6 @@ public class InfoController extends ToolbarWindowController {
         distributionInvalidateObjectsButton.setEnabled(stop && enable && session.cdn().isInvalidationSupported());
         String distribution = distributionDeliveryPopup.selectedItem().representedObject();
         distributionDefaultRootPopup.setEnabled(stop && enable && session.cdn().isDefaultRootSupported());
-        distributionOriginField.setEnabled(stop && enable && Distribution.CUSTOM.toString().equals(distribution));
         if(stop) {
             distributionProgress.stopAnimation(null);
         }
