@@ -131,13 +131,7 @@ public class CloudFrontDistributionConfiguration extends HTTP3Session implements
         catch(CloudFrontServiceException e) {
             log.warn("Invalid CloudFront account:" + e.getMessage());
             this.message(Locale.localizedString("Login failed", "Credentials"));
-            try {
-                controller.fail(host.getProtocol(), credentials);
-            }
-            catch(LoginCanceledException canceled) {
-                // User canceled Cloudfront login. Possibly not enabled in Amazon configuration.
-                throw canceled;
-            }
+            controller.fail(host.getProtocol(), credentials);
             this.login();
         }
     }
@@ -211,6 +205,11 @@ public class CloudFrontDistributionConfiguration extends HTTP3Session implements
             }
             catch(CloudFrontServiceException e) {
                 this.error("Cannot read CDN configuration", e);
+            }
+            catch(LoginCanceledException canceled) {
+                // User canceled Cloudfront login. Possibly not enabled in Amazon configuration.
+                distributionStatus.get(method).put(origin, new ch.cyberduck.core.cdn.Distribution(null,
+                        origin, method, false, null, canceled.getMessage()));
             }
             catch(IOException e) {
                 this.error("Cannot read CDN configuration", e);
