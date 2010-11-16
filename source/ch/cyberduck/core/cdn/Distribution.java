@@ -241,8 +241,14 @@ public class Distribution {
         return origin;
     }
 
+    /**
+     * Origin server to fetch original content. S3 bucket or custom host.
+     *
+     * @param file
+     * @return Origin URL of specific file.
+     */
     public String getOrigin(Path file) {
-        return "http://" + this.getOrigin() + file.getKey();
+        return URI.create("http://" + this.getOrigin() + Path.DELIMITER + file.getKey()).normalize().toString();
     }
 
     /**
