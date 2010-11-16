@@ -26,6 +26,7 @@ using Ch.Cyberduck.Core;
 using ch.cyberduck.core.aquaticprime;
 using ch.cyberduck.core.i18n;
 using ch.cyberduck.core.importer;
+using ch.cyberduck.core.serializer;
 using ch.cyberduck.core.sftp;
 using ch.cyberduck.ui;
 using Ch.Cyberduck.Ui.Controller.Growl;
@@ -249,6 +250,11 @@ namespace Ch.Cyberduck.Ui.Controller
                                 eTaskDialogButtons.OK, eSysIcons.Warning);
                         }
                     }
+                    if ("duck".Equals(f.getExtension()))
+                    {
+                        Host host = (Host)HostReaderFactory.instance().read(f);
+                        MainController.NewBrowser().Mount(host);
+                    }
                 }
             }
 
@@ -454,7 +460,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 if (bookmark.getNickname().Equals(defaultBookmark))
                 {
-                    foreach (BrowserController browser in _browsers)
+                    foreach (BrowserController browser in MainController.Browsers)
                     {
                         if (browser.HasSession())
                         {
@@ -534,7 +540,7 @@ namespace Ch.Cyberduck.Ui.Controller
             }
 
             // Determine if there are any open connections
-            foreach (BrowserController controller in new List<BrowserController>(_browsers))
+            foreach (BrowserController controller in new List<BrowserController>(MainController.Browsers))
             {
                 if (Preferences.instance().getBoolean("browser.serialize"))
                 {
@@ -552,7 +558,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public static void Exit()
         {
-            foreach (BrowserController controller in new List<BrowserController>(_browsers))
+            foreach (BrowserController controller in new List<BrowserController>(MainController.Browsers))
             {
                 if (controller.IsConnected())
                 {
@@ -584,7 +590,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                 }
                                 return;
                             case 1: // Quit
-                                foreach (BrowserController c in new List<BrowserController>(Browsers))
+                                foreach (BrowserController c in new List<BrowserController>(MainController.Browsers))
                                 {
                                     c.View.Dispose();
                                 }
@@ -606,7 +612,7 @@ namespace Ch.Cyberduck.Ui.Controller
             Logger.debug("NewBrowser");
             if (!force)
             {
-                foreach (BrowserController c in _browsers)
+                foreach (BrowserController c in MainController.Browsers)
                 {
                     if (!c.HasSession())
                     {
@@ -619,7 +625,7 @@ namespace Ch.Cyberduck.Ui.Controller
             BrowserController controller = new BrowserController();
             controller.View.ViewClosingEvent += delegate(object sender, FormClosingEventArgs args)
                                                     {
-                                                        if (1 == _browsers.Count)
+                                                        if (1 == MainController.Browsers.Count)
                                                         {
                                                             // last browser is about to close, check if we can terminate
                                                             args.Cancel = !ApplicationShouldTerminate();
@@ -627,8 +633,8 @@ namespace Ch.Cyberduck.Ui.Controller
                                                     };
             controller.View.ViewDisposedEvent += delegate
                                                      {
-                                                         _browsers.Remove(controller);
-                                                         if (0 == _browsers.Count)
+                                                         MainController.Browsers.Remove(controller);
+                                                         if (0 == MainController.Browsers.Count)
                                                          {
                                                              // Close/Dispose all non-browser forms (e.g. Transfers) to allow shutdown
                                                              FormCollection forms = application.OpenForms;
@@ -640,7 +646,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                                          }
                                                          else
                                                          {
-                                                             application.MainForm = _browsers[0].View as Form;
+                                                             application.MainForm = MainController.Browsers[0].View as Form;
                                                          }
                                                      };
             if (show)
@@ -648,7 +654,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 controller.View.Show();
             }
             application.MainForm = controller.View as Form;
-            _browsers.Add(controller);
+            MainController.Browsers.Add(controller);
             return controller;
         }
 
