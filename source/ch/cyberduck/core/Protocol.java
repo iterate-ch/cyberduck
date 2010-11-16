@@ -138,6 +138,10 @@ public abstract class Protocol {
         return false;
     }
 
+    public boolean isAnonymousConfigurable() {
+        return true;
+    }
+
     public boolean isUTCTimezone() {
         return true;
     }
@@ -636,6 +640,11 @@ public abstract class Protocol {
         }
 
         @Override
+        public boolean isAnonymousConfigurable() {
+            return false;
+        }
+
+        @Override
         public String disk() {
             return WEBDAV_SSL.disk();
         }
@@ -703,6 +712,11 @@ public abstract class Protocol {
         }
 
         @Override
+        public boolean isAnonymousConfigurable() {
+            return false;
+        }
+
+        @Override
         public String getPasswordPlaceholder() {
             return Locale.localizedString("API Access Key", "Mosso");
         }
@@ -756,6 +770,11 @@ public abstract class Protocol {
 
         @Override
         public boolean isWebUrlConfigurable() {
+            return false;
+        }
+
+        @Override
+        public boolean isAnonymousConfigurable() {
             return false;
         }
 
@@ -828,6 +847,11 @@ public abstract class Protocol {
 
         @Override
         public boolean isWebUrlConfigurable() {
+            return false;
+        }
+
+        @Override
+        public boolean isAnonymousConfigurable() {
             return false;
         }
 
@@ -918,6 +942,11 @@ public abstract class Protocol {
         }
 
         @Override
+        public boolean isAnonymousConfigurable() {
+            return false;
+        }
+
+        @Override
         public String getUsernamePlaceholder() {
             return Locale.localizedString("Access Key", "S3");
         }
@@ -976,6 +1005,11 @@ public abstract class Protocol {
 
         @Override
         public boolean isWebUrlConfigurable() {
+            return false;
+        }
+
+        @Override
+        public boolean isAnonymousConfigurable() {
             return false;
         }
 
@@ -1046,6 +1080,11 @@ public abstract class Protocol {
 
         @Override
         public boolean isWebUrlConfigurable() {
+            return false;
+        }
+
+        @Override
+        public boolean isAnonymousConfigurable() {
             return false;
         }
 
