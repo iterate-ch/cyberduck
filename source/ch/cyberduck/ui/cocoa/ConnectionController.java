@@ -174,15 +174,12 @@ public class ConnectionController extends SheetController {
                 pathField.setEnabled(false);
             }
         }
-        connectmodePopup.setEnabled(protocol.equals(Protocol.FTP)
-                || protocol.equals(Protocol.FTP_TLS));
-
-        final boolean supportsCustomEncoding = protocol.equals(Protocol.FTP)
-                || protocol.equals(Protocol.FTP_TLS) || protocol.equals(Protocol.SFTP);
-        if(!supportsCustomEncoding) {
+        connectmodePopup.setEnabled(protocol.isConnectModeConfigurable());
+        if(!protocol.isEncodingConfigurable()) {
             encodingPopup.selectItemWithTitle(DEFAULT);
         }
-        encodingPopup.setEnabled(supportsCustomEncoding);
+        encodingPopup.setEnabled(protocol.isEncodingConfigurable());
+        anonymousCheckbox.setEnabled(protocol.isAnonymousConfigurable());
 
         this.updateIdentity();
         this.updateURLLabel();
