@@ -238,31 +238,12 @@ public class CloudFrontDistributionConfiguration extends HTTP3Session implements
             }
             ch.cyberduck.core.cdn.Distribution d = distributionStatus.get(method).get(origin);
             if(null == d) {
-                if(ch.cyberduck.core.cdn.Distribution.CUSTOM.equals(method)) {
-                    log.info("Changed custom distributino origin:" + origin);
-                    boolean found = false;
-                    for(ch.cyberduck.core.cdn.Distribution other : this.listDistributions(origin, method)) {
-                        if(other.getOrigin().equals(origin)) {
-                            this.updateDistribution(enabled, method, origin, other.getId(), cnames, l, defaultRootObject);
-                            found = true;
-                        }
-                    }
-                    if(!found) {
-                        log.debug("No existing distribution found for method:" + method);
-                        this.createDistribution(enabled, method, origin, cnames, l, defaultRootObject);
-                    }
-                }
-                else {
-                    log.debug("No existing distribution found for method:" + method);
-                    this.createDistribution(enabled, method, origin, cnames, l, defaultRootObject);
-                }
+                log.debug("No existing distribution found for method:" + method);
+                this.createDistribution(enabled, method, origin, cnames, l, defaultRootObject);
             }
             else {
                 boolean modified = false;
                 if(d.isEnabled() != enabled) {
-                    modified = true;
-                }
-                if(!d.getOrigin().equals(origin)) {
                     modified = true;
                 }
                 if(!Arrays.equals(d.getCNAMEs(), cnames)) {
