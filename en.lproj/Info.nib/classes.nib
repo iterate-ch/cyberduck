@@ -60,6 +60,8 @@
 				<string>NSTextField</string>
 				<key>distributionLoggingButton</key>
 				<string>NSButton</string>
+				<key>distributionOriginField</key>
+				<string>NSTextField</string>
 				<key>distributionProgress</key>
 				<string>NSProgressIndicator</string>
 				<key>distributionStatusField</key>
