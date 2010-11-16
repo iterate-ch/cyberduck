@@ -248,7 +248,11 @@ public class Distribution {
      * @return Origin URL of specific file.
      */
     public String getOrigin(Path file) {
-        return URI.create("http://" + this.getOrigin() + Path.DELIMITER + file.getKey()).normalize().toString();
+        StringBuilder url = new StringBuilder().append("http://").append(this.getOrigin());
+        if(!file.isContainer()) {
+            url.append(Path.DELIMITER).append(file.getKey());
+        }
+        return URI.create(url.toString()).normalize().toString();
     }
 
     /**
