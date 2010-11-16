@@ -723,7 +723,7 @@ public class InfoController extends ToolbarWindowController {
     private void aclInputDidEndEditing() {
         if(this.toggleAclSettings(false)) {
             controller.background(new WorkerBackgroundAction<Acl>(controller,
-                    new WriteAclWorker(files, new Acl(acl.toArray(new Acl.UserAndRole[acl.size()])), false) {
+                    new WriteAclWorker(files, new Acl(acl.toArray(new Acl.UserAndRole[acl.size()])), true) {
                         @Override
                         public void cleanup(Acl permission) {
                             toggleAclSettings(true);
@@ -1786,16 +1786,16 @@ public class InfoController extends ToolbarWindowController {
             else {
                 Path file = this.getSelected();
                 final String redundancy = file.attributes().getStorageClass();
-                if (StringUtils.isNotEmpty(redundancy)) {
+                if(StringUtils.isNotEmpty(redundancy)) {
                     storageClassPopup.removeItemWithTitle(Locale.localizedString("Unknown"));
                     storageClassPopup.selectItemWithTitle(Locale.localizedString(redundancy, "S3"));
                 }
-                if (file.attributes().isFile()) {
+                if(file.attributes().isFile()) {
                     final S3Path s3 = (S3Path) file;
                     bucketLoggingButton.setToolTip(
                             s3.getContainerName() + "/" + Preferences.instance().getProperty("s3.logging.prefix"));
                     final AbstractPath.DescriptiveUrl url = s3.toSignedUrl();
-                    if (StringUtils.isNotBlank(url.getUrl())) {
+                    if(StringUtils.isNotBlank(url.getUrl())) {
                         s3PublicUrlField.setAttributedStringValue(
                                 HyperlinkAttributedStringFactory.create(
                                         NSMutableAttributedString.create(url.getUrl(), TRUNCATE_MIDDLE_ATTRIBUTES),
@@ -1803,11 +1803,11 @@ public class InfoController extends ToolbarWindowController {
                         );
                         s3PublicUrlField.setToolTip(url.getHelp());
                     }
-                    if (StringUtils.isNotBlank(url.getHelp())) {
+                    if(StringUtils.isNotBlank(url.getHelp())) {
                         s3PublicUrlValidityField.setStringValue(url.getHelp());
                     }
                     final AbstractPath.DescriptiveUrl torrent = s3.toTorrentUrl();
-                    if (StringUtils.isNotBlank(torrent.getUrl())) {
+                    if(StringUtils.isNotBlank(torrent.getUrl())) {
                         s3torrentUrlField.setAttributedStringValue(
                                 HyperlinkAttributedStringFactory.create(
                                         NSMutableAttributedString.create(torrent.getUrl(), TRUNCATE_MIDDLE_ATTRIBUTES),

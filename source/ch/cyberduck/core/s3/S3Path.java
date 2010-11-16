@@ -191,7 +191,7 @@ public class S3Path extends CloudPath {
                 // for that bucket (in S3) allows you to do so.
                 this.attributes().setAcl(this.convert(this.getSession().getClient().getBucketAcl(container)));
             }
-            else if(attributes().isFile()) {
+            else if(attributes().isFile() || attributes().isPlaceholder()) {
                 AccessControlList list;
                 if(this.getSession().isVersioning(container)) {
                     list = this.getSession().getClient().getVersionedObjectAcl(this.attributes().getVersionId(),
@@ -905,7 +905,7 @@ public class S3Path extends CloudPath {
             if(this.isContainer()) {
                 this.getSession().getClient().putBucketAcl(this.getContainerName(), acl);
             }
-            else if(attributes().isFile()) {
+            else if(attributes().isFile() || attributes().isPlaceholder()) {
                 this.getSession().getClient().putObjectAcl(this.getContainerName(), this.getKey(), acl);
             }
         }
