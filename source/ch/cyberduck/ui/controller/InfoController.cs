@@ -1,5 +1,4 @@
-﻿
-//
+﻿// 
 // Copyright (c) 2010 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
@@ -134,6 +133,15 @@ namespace Ch.Cyberduck.Ui.Controller
                     return file.getName();
                 }
                 return null;
+            }
+        }
+
+        private Path SelectedPath
+        {
+            get
+            {
+                if (_files.Count == 0) return null;
+                return _files[0];
             }
         }
 
@@ -986,15 +994,12 @@ namespace Ch.Cyberduck.Ui.Controller
             View.BucketLocation = Locale.localizedString("Unknown");
             View.BucketLoggingTooltip = Locale.localizedString("Unknown");
             View.S3PublicUrl = Locale.localizedString("None");
-            View.S3PublicUrlEnabled = false;
             View.S3PublicUrlValidity = Locale.localizedString("Unknown");
             View.S3TorrentUrl = Locale.localizedString("None");
-            View.S3TorrentUrlEnabled = false;
 
             IList<KeyValuePair<string, string>> classes = new List<KeyValuePair<string, string>>();
             classes.Add(new KeyValuePair<string, string>(Locale.localizedString("Unknown"), "Unknown"));
             View.PopulateStorageClass(classes);
-            View.StorageClassEnabled = false;
 
             if (ToggleS3Settings(false))
             {
@@ -1015,35 +1020,30 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
                 else
                 {
-                    foreach (Path file in _files)
+                    Path file = SelectedPath;
+                    String redundancy = file.attributes().getStorageClass();
+                    if (Utils.IsNotBlank(redundancy))
                     {
-                        if (file.attributes().isFile())
+                        View.PopulateStorageClass(classes);
+                        View.StorageClass = redundancy;
+                    }
+                    if (file.attributes().isFile())
+                    {
+                        View.BucketLoggingTooltip = file.getContainerName() + "/" +
+                                                    Preferences.instance().getProperty("s3.logging.prefix");
+                        S3Path s3 = (S3Path) file;
+                        AbstractPath.DescriptiveUrl url = s3.toSignedUrl();
+                        if (null != url)
                         {
-                            S3Path s3 = (S3Path) file;
-                            View.BucketLoggingTooltip = s3.getContainerName() + "/" +
-                                                        Preferences.instance().getProperty("s3.logging.prefix");
-                            String redundancy = s3.attributes().getStorageClass();
-                            if (Utils.IsNotBlank(redundancy))
-                            {
-                                View.PopulateStorageClass(classes);
-                                View.StorageClass = redundancy;
-                                View.StorageClassEnabled = true;
-                            }
-                            AbstractPath.DescriptiveUrl url = s3.toSignedUrl();
-                            if (null != url)
-                            {
-                                View.S3PublicUrl = url.getUrl();
-                                View.S3PublicUrlEnabled = true;
-                                View.S3PublicUrlTooltip = url.getUrl();
-                                View.S3PublicUrlValidity = url.getHelp();
-                            }
-                            AbstractPath.DescriptiveUrl torrent = s3.toTorrentUrl();
-                            if (null != torrent)
-                            {
-                                View.S3TorrentUrl = torrent.getUrl();
-                                View.S3TorrentUrlEnabled = true;
-                                View.S3TorrentUrlTooltip = torrent.getUrl();
-                            }
+                            View.S3PublicUrl = url.getUrl();
+                            View.S3PublicUrlTooltip = url.getUrl();
+                            View.S3PublicUrlValidity = url.getHelp();
+                        }
+                        AbstractPath.DescriptiveUrl torrent = s3.toTorrentUrl();
+                        if (null != torrent)
+                        {
+                            View.S3TorrentUrl = torrent.getUrl();
+                            View.S3TorrentUrlTooltip = torrent.getUrl();
                         }
                     }
                 }
@@ -1130,7 +1130,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     methods.Add(new KeyValuePair<string, Distribution.Method>(method.ToString(), method));
                 }
                 View.PopulateDistributionDeliveryMethod(methods);
-                View.DistributionDeliveryMethod = (Distribution.Method)session.cdn().getMethods().iterator().next();
+                View.DistributionDeliveryMethod = (Distribution.Method) session.cdn().getMethods().iterator().next();
                 DistributionDeliveryMethodChanged();
             }
             AttachDistributionHandlers();
@@ -1646,7 +1646,8 @@ namespace Ch.Cyberduck.Ui.Controller
                 foreach (Path file in _infoController._files)
                 {
                     Session session = BrowserController.getSession();
-                    _distribution = session.cdn().read(session.cdn().getOrigin(_deliveryMethod, file.getContainerName()), _deliveryMethod);
+                    _distribution = session.cdn().read(
+                        session.cdn().getOrigin(_deliveryMethod, file.getContainerName()), _deliveryMethod);
                     // Make sure container items are cached for default root object.
                     _infoController.Files[0].getContainer().children();
                     // We only support one distribution per bucket for the sake of simplicity
@@ -1934,7 +1935,7 @@ namespace Ch.Cyberduck.Ui.Controller
             public override void cleanup()
             {
                 _infoController.ToggleS3Settings(true);
-                _infoController.InitS3(); //really necessary?
+                _infoController.InitS3();
             }
 
             public override string getActivity()
@@ -2058,19 +2059,19 @@ namespace Ch.Cyberduck.Ui.Controller
                     if (Utils.IsNotBlank(_cname))
                     {
                         session.cdn().write(_distribution,
-                                                  session.cdn().getOrigin(_deliveryMethod, next.getContainerName()),
-                                                  _deliveryMethod,
-                                                  _cname.Split(new[] {' '},
-                                                               StringSplitOptions.RemoveEmptyEntries),
-                                                  _logging,
-                                                  _defaultRoot);
+                                            session.cdn().getOrigin(_deliveryMethod, next.getContainerName()),
+                                            _deliveryMethod,
+                                            _cname.Split(new[] {' '},
+                                                         StringSplitOptions.RemoveEmptyEntries),
+                                            _logging,
+                                            _defaultRoot);
                     }
                     else
                     {
                         session.cdn().write(_distribution,
-                                                  session.cdn().getOrigin(_deliveryMethod, next.getContainerName()),
-                                                  _deliveryMethod,
-                                                  new string[] {}, _logging, _defaultRoot);
+                                            session.cdn().getOrigin(_deliveryMethod, next.getContainerName()),
+                                            _deliveryMethod,
+                                            new string[] {}, _logging, _defaultRoot);
                     }
                     break;
                 }
@@ -2147,7 +2148,8 @@ namespace Ch.Cyberduck.Ui.Controller
 
                 public override void cleanup(object obj)
                 {
-                    _infoController.background(new FetchPermissionsBackgroundAction(_infoController._controller, _infoController));
+                    _infoController.background(new FetchPermissionsBackgroundAction(_infoController._controller,
+                                                                                    _infoController));
                 }
             }
         }

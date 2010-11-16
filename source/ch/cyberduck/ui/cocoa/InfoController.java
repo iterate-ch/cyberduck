@@ -1784,37 +1784,36 @@ public class InfoController extends ToolbarWindowController {
                 s3torrentUrlField.setToolTip("");
             }
             else {
-                for(Path file : files) {
-                    if(file.attributes().isFile()) {
-                        final S3Path s3 = (S3Path) file;
-                        bucketLoggingButton.setToolTip(
-                                s3.getContainerName() + "/" + Preferences.instance().getProperty("s3.logging.prefix"));
-                        final String redundancy = s3.attributes().getStorageClass();
-                        if(StringUtils.isNotEmpty(redundancy)) {
-                            storageClassPopup.removeItemWithTitle(Locale.localizedString("Unknown"));
-                            storageClassPopup.selectItemWithTitle(Locale.localizedString(redundancy, "S3"));
-                        }
-                        final AbstractPath.DescriptiveUrl url = s3.toSignedUrl();
-                        if(StringUtils.isNotBlank(url.getUrl())) {
-                            s3PublicUrlField.setAttributedStringValue(
-                                    HyperlinkAttributedStringFactory.create(
-                                            NSMutableAttributedString.create(url.getUrl(), TRUNCATE_MIDDLE_ATTRIBUTES),
-                                            url.getUrl())
-                            );
-                            s3PublicUrlField.setToolTip(url.getHelp());
-                        }
-                        if(StringUtils.isNotBlank(url.getHelp())) {
-                            s3PublicUrlValidityField.setStringValue(url.getHelp());
-                        }
-                        final AbstractPath.DescriptiveUrl torrent = s3.toTorrentUrl();
-                        if(StringUtils.isNotBlank(torrent.getUrl())) {
-                            s3torrentUrlField.setAttributedStringValue(
-                                    HyperlinkAttributedStringFactory.create(
-                                            NSMutableAttributedString.create(torrent.getUrl(), TRUNCATE_MIDDLE_ATTRIBUTES),
-                                            torrent.getUrl())
-                            );
-                            s3torrentUrlField.setToolTip(Locale.localizedString("Open in Web Browser"));
-                        }
+                Path file = this.getSelected();
+                final String redundancy = file.attributes().getStorageClass();
+                if (StringUtils.isNotEmpty(redundancy)) {
+                    storageClassPopup.removeItemWithTitle(Locale.localizedString("Unknown"));
+                    storageClassPopup.selectItemWithTitle(Locale.localizedString(redundancy, "S3"));
+                }
+                if (file.attributes().isFile()) {
+                    final S3Path s3 = (S3Path) file;
+                    bucketLoggingButton.setToolTip(
+                            s3.getContainerName() + "/" + Preferences.instance().getProperty("s3.logging.prefix"));
+                    final AbstractPath.DescriptiveUrl url = s3.toSignedUrl();
+                    if (StringUtils.isNotBlank(url.getUrl())) {
+                        s3PublicUrlField.setAttributedStringValue(
+                                HyperlinkAttributedStringFactory.create(
+                                        NSMutableAttributedString.create(url.getUrl(), TRUNCATE_MIDDLE_ATTRIBUTES),
+                                        url.getUrl())
+                        );
+                        s3PublicUrlField.setToolTip(url.getHelp());
+                    }
+                    if (StringUtils.isNotBlank(url.getHelp())) {
+                        s3PublicUrlValidityField.setStringValue(url.getHelp());
+                    }
+                    final AbstractPath.DescriptiveUrl torrent = s3.toTorrentUrl();
+                    if (StringUtils.isNotBlank(torrent.getUrl())) {
+                        s3torrentUrlField.setAttributedStringValue(
+                                HyperlinkAttributedStringFactory.create(
+                                        NSMutableAttributedString.create(torrent.getUrl(), TRUNCATE_MIDDLE_ATTRIBUTES),
+                                        torrent.getUrl())
+                        );
+                        s3torrentUrlField.setToolTip(Locale.localizedString("Open in Web Browser"));
                     }
                 }
             }
