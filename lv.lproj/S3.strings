@@ -50,6 +50,7 @@
 "http://acs.amazonaws.com/groups/s3/LogDelivery" = "http://acs.amazonaws.com/groups/s3/LogDelivery";
 
 /* Signed URL Expiry */
+"Signed" = "Signed";
 "Expires on {0}" = "Expires on {0}";
 
 /* HTTP Metadata */
