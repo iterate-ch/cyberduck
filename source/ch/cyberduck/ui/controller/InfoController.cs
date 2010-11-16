@@ -208,6 +208,8 @@ namespace Ch.Cyberduck.Ui.Controller
             if (anonymous)
             {
                 View.ToolbarDistributionEnabled = false;
+                View.ToolbarDistributionImage = IconCache.Instance.GetProtocolImages(32).Images[
+                    Protocol.S3_SSL.getIdentifier()];
             }
             else
             {
