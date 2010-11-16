@@ -103,4 +103,8 @@ public abstract class EditMenuDelegate extends AbstractMenuDelegate {
         item.setAction(Foundation.selector("editMenuClicked:"));
         return super.menuUpdateItemAtIndex(menu, item, index, cancel);
     }
+
+    public boolean menuHasKeyEquivalent_forEvent(NSMenu menu, NSEvent event) {
+        return false;
+    }
 }

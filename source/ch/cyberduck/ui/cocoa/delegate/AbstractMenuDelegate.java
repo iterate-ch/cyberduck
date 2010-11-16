@@ -19,9 +19,12 @@ package ch.cyberduck.ui.cocoa.delegate;
  */
 
 import ch.cyberduck.ui.cocoa.ProxyController;
+import ch.cyberduck.ui.cocoa.application.NSEvent;
 import ch.cyberduck.ui.cocoa.application.NSMenu;
 import ch.cyberduck.ui.cocoa.application.NSMenuItem;
+import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
+import org.rococoa.ID;
 import org.rococoa.cocoa.foundation.NSInteger;
 
 import org.apache.commons.lang.StringUtils;
@@ -32,6 +35,16 @@ import org.apache.log4j.Logger;
  */
 public abstract class AbstractMenuDelegate extends ProxyController implements NSMenu.Delegate {
     private static Logger log = Logger.getLogger(AbstractMenuDelegate.class);
+
+    @Override
+    public NSObject proxy() {
+        return this.proxy(CDKeyboardMenuDelegate.class);
+    }
+
+    @Override
+    public ID id() {
+        return this.id(CDKeyboardMenuDelegate.class);
+    }
 
     /**
      * Menu needs revalidation
@@ -72,6 +85,19 @@ public abstract class AbstractMenuDelegate extends ProxyController implements NS
             this.setNeedsUpdate(false);
         }
         return !cancel;
+    }
+
+    public boolean hasKeyEquivalent(NSEvent event) {
+        return false;
+    }
+
+    public String getActionForKeyEquivalent(NSEvent event) {
+        return null;
+    }
+
+    public boolean menuHasKeyEquivalent_forEvent(NSMenu menu, NSEvent event) {
+        log.debug("menuHasKeyEquivalent_forEvent:" + event);
+        return false;
     }
 
     /**

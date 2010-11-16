@@ -230,6 +230,16 @@ public class BookmarkController extends WindowController {
     }
 
     @Outlet
+    private NSButton anonymousCheckbox;
+
+    public void setAnonymousCheckbox(NSButton anonymousCheckbox) {
+        this.anonymousCheckbox = anonymousCheckbox;
+        this.anonymousCheckbox.setTarget(this.id());
+        this.anonymousCheckbox.setAction(Foundation.selector("anonymousCheckboxClicked:"));
+        this.anonymousCheckbox.setState(NSCell.NSOffState);
+    }
+
+    @Outlet
     private NSTextField webURLField;
 
     public void setWebURLField(NSTextField webURLField) {
@@ -652,6 +662,7 @@ public class BookmarkController extends WindowController {
         this.itemChanged();
     }
 
+    @Action
     public void hostFieldDidChange(final NSNotification sender) {
         String input = hostField.stringValue();
         if(Protocol.isURL(input)) {
@@ -688,6 +699,7 @@ public class BookmarkController extends WindowController {
         }
     }
 
+    @Action
     public void portInputDidEndEditing(final NSNotification sender) {
         try {
             host.setPort(Integer.parseInt(portField.stringValue()));
@@ -700,30 +712,47 @@ public class BookmarkController extends WindowController {
         this.reachable();
     }
 
+    @Action
     public void pathInputDidChange(final NSNotification sender) {
         host.setDefaultPath(pathField.stringValue());
         this.itemChanged();
         this.init();
     }
 
+    @Action
     public void nicknameInputDidChange(final NSNotification sender) {
         host.setNickname(nicknameField.stringValue());
         this.itemChanged();
         this.init();
     }
 
+    @Action
     public void usernameInputDidChange(final NSNotification sender) {
         host.getCredentials().setUsername(usernameField.stringValue());
         this.itemChanged();
         this.init();
     }
 
+    @Action
+    public void anonymousCheckboxClicked(final NSButton sender) {
+        if(sender.state() == NSCell.NSOnState) {
+            host.getCredentials().setUsername(Preferences.instance().getProperty("connection.login.anon.name"));
+        }
+        if(sender.state() == NSCell.NSOffState) {
+            host.getCredentials().setUsername(Preferences.instance().getProperty("connection.login.name"));
+        }
+        this.itemChanged();
+        this.init();
+    }
+
+    @Action
     public void webURLInputDidChange(final NSNotification sender) {
         host.setWebURL(webURLField.stringValue());
         this.updateFavicon();
         this.itemChanged();
     }
 
+    @Action
     public void commentInputDidChange(final NSNotification sender) {
         host.setComment(commentField.textStorage().string());
         this.itemChanged();
@@ -758,6 +787,9 @@ public class BookmarkController extends WindowController {
         this.updateField(pathField, host.getDefaultPath());
         this.updateField(usernameField, host.getCredentials().getUsername());
         usernameField.cell().setPlaceholderString(host.getProtocol().getUsernamePlaceholder());
+        usernameField.setEnabled(!host.getCredentials().isAnonymousLogin());
+        anonymousCheckbox.setEnabled(host.getProtocol().isAnonymousConfigurable());
+        anonymousCheckbox.setState(host.getCredentials().isAnonymousLogin() ? NSCell.NSOnState : NSCell.NSOffState);
         protocolPopup.selectItemWithTitle(host.getProtocol().getDescription());
         if(null == host.getMaxConnections()) {
             transferPopup.selectItemWithTitle(DEFAULT);

@@ -21,6 +21,8 @@
 			<dict>
 				<key>alertIcon</key>
 				<string>NSButton</string>
+				<key>anonymousCheckbox</key>
+				<string>NSButton</string>
 				<key>commentField</key>
 				<string>NSTextView</string>
 				<key>connectmodePopup</key>

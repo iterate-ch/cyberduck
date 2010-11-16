@@ -5,6 +5,7 @@
     LANGUAGE = ObjC;
     OUTLETS =     {
         alertIcon = NSButton;
+        anonymousCheckbox = NSButton;
         commentField = NSTextView;
         connectmodePopup = NSPopUpButton;
         downloadPathPopup = NSPopUpButton;

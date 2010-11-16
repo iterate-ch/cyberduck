@@ -1,37 +1,72 @@
-{
-    IBClasses =     (
-        {
-    CLASS = CDBookmarkController;
-    LANGUAGE = ObjC;
-    OUTLETS =     {
-        alertIcon = NSButton;
-        commentField = NSTextView;
-        connectmodePopup = NSPopUpButton;
-        downloadPathPopup = NSPopUpButton;
-        encodingPopup = NSPopUpButton;
-        hostField = NSTextField;
-        nicknameField = NSTextField;
-        pathField = NSTextField;
-        pkCheckbox = NSButton;
-        pkLabel = NSTextField;
-        portField = NSTextField;
-        protocolPopup = NSPopUpButton;
-        timezonePopup = NSPopUpButton;
-        toggleOptionsButton = NSButton;
-        transferPopup = NSPopUpButton;
-        urlField = NSTextField;
-        usernameField = NSTextField;
-        webURLField = NSTextField;
-        webUrlImage = NSButton;
-        window = NSWindow;
-    };
-    SUPERCLASS = NSObject;
-},
-        {
-    CLASS = FirstResponder;
-    LANGUAGE = ObjC;
-    SUPERCLASS = NSObject;
-}
-    );
-    IBVersion = 1;
-}
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IBClasses</key>
+	<array>
+		<dict>
+			<key>CLASS</key>
+			<string>FirstResponder</string>
+			<key>LANGUAGE</key>
+			<string>ObjC</string>
+			<key>SUPERCLASS</key>
+			<string>NSObject</string>
+		</dict>
+		<dict>
+			<key>CLASS</key>
+			<string>CDBookmarkController</string>
+			<key>LANGUAGE</key>
+			<string>ObjC</string>
+			<key>OUTLETS</key>
+			<dict>
+				<key>alertIcon</key>
+				<string>NSButton</string>
+				<key>anonymousCheckbox</key>
+				<string>NSButton</string>
+				<key>commentField</key>
+				<string>NSTextView</string>
+				<key>connectmodePopup</key>
+				<string>NSPopUpButton</string>
+				<key>downloadPathPopup</key>
+				<string>NSPopUpButton</string>
+				<key>encodingPopup</key>
+				<string>NSPopUpButton</string>
+				<key>hostField</key>
+				<string>NSTextField</string>
+				<key>nicknameField</key>
+				<string>NSTextField</string>
+				<key>pathField</key>
+				<string>NSTextField</string>
+				<key>pkCheckbox</key>
+				<string>NSButton</string>
+				<key>pkLabel</key>
+				<string>NSTextField</string>
+				<key>portField</key>
+				<string>NSTextField</string>
+				<key>protocolPopup</key>
+				<string>NSPopUpButton</string>
+				<key>timezonePopup</key>
+				<string>NSPopUpButton</string>
+				<key>toggleOptionsButton</key>
+				<string>NSButton</string>
+				<key>transferPopup</key>
+				<string>NSPopUpButton</string>
+				<key>urlField</key>
+				<string>NSTextField</string>
+				<key>usernameField</key>
+				<string>NSTextField</string>
+				<key>webURLField</key>
+				<string>NSTextField</string>
+				<key>webUrlImage</key>
+				<string>NSButton</string>
+				<key>window</key>
+				<string>NSWindow</string>
+			</dict>
+			<key>SUPERCLASS</key>
+			<string>NSObject</string>
+		</dict>
+	</array>
+	<key>IBVersion</key>
+	<string>1</string>
+</dict>
+</plist>

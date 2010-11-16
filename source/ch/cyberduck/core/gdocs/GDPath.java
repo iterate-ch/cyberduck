@@ -34,6 +34,7 @@ import com.google.gdata.client.CoreErrorDomain;
 import com.google.gdata.client.DocumentQuery;
 import com.google.gdata.client.GoogleAuthTokenFactory;
 import com.google.gdata.client.Service;
+import com.google.gdata.client.http.HttpGDataRequest;
 import com.google.gdata.client.spreadsheet.SpreadsheetService;
 import com.google.gdata.data.*;
 import com.google.gdata.data.acl.AclEntry;
@@ -490,7 +491,7 @@ public class GDPath extends Path {
                     final String mime = this.getLocal().getMimeType();
                     final MediaStreamSource source = new MediaStreamSource(this.getLocal().getInputStream(), mime,
                             new DateTime(this.attributes().getModificationDate()),
-                            this.attributes().getSize());
+                            this.getLocal().attributes().getSize());
                     if(this.exists()) {
                         // First, fetch entry using the resourceId
                         URL url = new URL(this.getResourceFeed());
@@ -502,6 +503,7 @@ public class GDPath extends Path {
                         final MediaContent content = new MediaContent();
                         content.setMediaSource(source);
                         content.setMimeType(new ContentType(mime));
+                        content.setLength(this.getLocal().attributes().getSize());
                         final DocumentListEntry document = new DocumentListEntry();
                         document.setContent(content);
                         document.setTitle(new PlainTextConstruct(this.getName()));
@@ -529,6 +531,15 @@ public class GDPath extends Path {
                             request = this.getSession().getClient().createRequest(
                                     Service.GDataRequest.RequestType.INSERT, new URL(url.toString()),
                                     new ContentType(multipart.getContentType()));
+                            if(request instanceof HttpGDataRequest) {
+                                // No internal buffering of request with a known content length
+//                                ((HttpGDataRequest)request).getConnection().setFixedLengthStreamingMode(
+//                                        (int) this.getLocal().attributes().getSize()
+//                                );
+                                ((HttpGDataRequest)request).getConnection().setChunkedStreamingMode(
+                                        Preferences.instance().getInteger("connection.chunksize")
+                                );
+                            }
                             out = request.getRequestStream();
 
                             final PipedOutputStream pipe = new PipedOutputStream();
