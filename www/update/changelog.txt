@@ -1,3 +1,8 @@
+4.0b7 [http://trac.cyberduck.ch/milestone/4.0b7]
+- [Feature] CloudFront CDN configuration with custom origin server (Amazon CloudFront & FTP, SFTP, WebDAV)
+- [Bugfix] Apply ACLs recursively (S3)
+- [Bugfix] Apply custom HTTP headers recursively (S3)
+
 4.0b6 [http://trac.cyberduck.ch/milestone/4.0b6]
 - [Feature] FireFTP Bookmarks Importer
 - [Feature] CrossFTP Bookmarks Importer

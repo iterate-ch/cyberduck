@@ -7,6 +7,7 @@ Changelog. Last modified: $Date$
 4.0 [http://trac.cyberduck.ch/milestone/4.0]
 - [Feature] Version for Microsoft Windows XP, Windows Vista & Windows 7.
 - [Feature] Connecting to Windows Azure Blob Storage (Azure) (#3938)
+- [Feature] CloudFront CDN configuration with custom origin server (Amazon CloudFront & FTP, SFTP, WebDAV)
 - [Feature] CloudFront CDN invalidation requests (S3) (#5197)
 - [Feature] FireFTP Bookmarks Importer
 - [Feature] CrossFTP Bookmarks Importer
@@ -20,6 +21,8 @@ Changelog. Last modified: $Date$
 - [Bugfix] Support for s3sync.rb directory placeholders (#5374) (S3)
 - [Bugfix] Connect through HTTP/HTTPS proxy (#5379) (Google Docs)
 - [Bugfix] Changing storage class fails (S3)
+- [Bugfix] Apply ACLs recursively (S3)
+- [Bugfix] Apply custom HTTP headers recursively (S3)
 
 3.7 (Oct-21-2010) [http://trac.cyberduck.ch/milestone/3.7]
 - [Feature] Option to upload with temporary name and rename file after transfer is complete (#4165)
