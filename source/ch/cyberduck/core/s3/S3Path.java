@@ -979,7 +979,18 @@ public class S3Path extends CloudPath {
                     this.getSession().getClient().deleteBucket(container);
                 }
                 else {
-                    this.delete(container, this.getKey(), this.attributes().getVersionId());
+                    try {
+                        // Because we normalize paths and remove a trailing delimiter we add it here again as the
+                        // default directory placeholder formats has the format `/placeholder/' as a key.
+                        this.delete(container, this.getKey() + Path.DELIMITER, this.attributes().getVersionId());
+                        // Always returning 204 even if the key does not exist.
+                        // Fallback to legacy directory placeholders with metadata instead of key with trailing delimiter
+                        this.delete(container, this.getKey(), this.attributes().getVersionId());
+                    }
+                    catch(ServiceException e) {
+                        // AWS might change their mind and return 404 at some point for non-existing keys
+                        log.warn("Delete failed:" + e.getMessage());
+                    }
                 }
             }
             // The directory listing is no more current
