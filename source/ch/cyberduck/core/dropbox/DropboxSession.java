@@ -88,9 +88,11 @@ public class DropboxSession extends HTTP4Session {
         }
         catch(HttpException e) {
             controller.fail(this.getHost().getProtocol(), credentials, e.getMessage());
+            this.login();
         }
         catch(OAuthException e) {
             controller.fail(this.getHost().getProtocol(), credentials, e.getMessage());
+            this.login();
         }
     }
 
