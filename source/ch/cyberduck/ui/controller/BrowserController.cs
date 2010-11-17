@@ -429,17 +429,17 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             else
             {
-                for (int i = 0; i < selected[0].Unique.getURLs().size(); i++)
+                for (int i = 0; i < SelectedPath.getURLs().size(); i++)
                 {
                     AbstractPath.DescriptiveUrl descUrl =
-                        (AbstractPath.DescriptiveUrl) selected[0].Unique.getURLs().get(i);
+                        (AbstractPath.DescriptiveUrl) SelectedPath.getURLs().toArray()[i];
                     KeyValuePair<String, List<String>> entry =
                         new KeyValuePair<string, List<string>>(descUrl.getHelp(), new List<string>());
                     items.Add(entry);
 
                     foreach (TreePathReference reference in selected)
                     {
-                        entry.Value.Add(((AbstractPath.DescriptiveUrl) reference.Unique.getURLs().get(i)).getUrl());
+                        entry.Value.Add(((AbstractPath.DescriptiveUrl) reference.Unique.getURLs().toArray()[i]).getUrl());
                     }
                 }
             }
