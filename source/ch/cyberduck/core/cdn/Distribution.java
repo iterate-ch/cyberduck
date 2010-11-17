@@ -250,7 +250,7 @@ public class Distribution {
     public String getOrigin(Path file) {
         StringBuilder url = new StringBuilder().append("http://").append(this.getOrigin());
         if(!file.isContainer()) {
-            url.append(Path.DELIMITER).append(file.getKey());
+            url.append(Path.DELIMITER).append(Path.encode(file.getKey()));
         }
         return URI.create(url.toString()).normalize().toString();
     }
