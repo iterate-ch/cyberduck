@@ -33,6 +33,8 @@ namespace Ch.Cyberduck.Ui.Winforms
 {
     public partial class InfoForm : ToolbarBaseForm, IInfoView
     {
+        private String lastCname;
+
         public InfoForm()
         {
             InitializeComponent();
@@ -70,7 +72,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             whereLinkLabel.Text = String.Empty;
             cnameUrlLinkLabel.Text = String.Empty;
 
-            MaximumSize = new Size(1000, Height + 30);            
+            MaximumSize = new Size(1000, Height + 30);
         }
 
         /// <summary>
@@ -145,7 +147,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                     {
                         return InfoTab.Acl;
                     }
-                        return InfoTab.Permissions;
+                    return InfoTab.Permissions;
                 }
                 if (panelManager.SelectedPanel == managedDistributionPanel)
                 {
@@ -174,7 +176,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                 }
                 if (value == InfoTab.Distribution)
                 {
-                    distributionButton_Click(this, EventArgs.Empty);                    
+                    distributionButton_Click(this, EventArgs.Empty);
                 }
                 if (value == InfoTab.S3)
                 {
@@ -581,6 +583,21 @@ namespace Ch.Cyberduck.Ui.Winforms
             set { defaultRootComboBox.Enabled = value; }
         }
 
+        public string DistributionInvalidationStatus
+        {
+            set { invalidationStatus.Text = value; }
+        }
+
+        public string DistributionInvalidateObjectsTooltip
+        {
+            set { toolTip.SetToolTip(invalidateButton, value); }
+        }
+
+        public bool DistributionInvalidateObjectsEnabled
+        {
+            set { invalidateButton.Enabled = value; }
+        }
+
         public void PopulateDistributionDeliveryMethod(IList<KeyValuePair<string, Distribution.Method>> methods)
         {
             deliveryMethodComboBox.DataSource = null;
@@ -646,10 +663,19 @@ namespace Ch.Cyberduck.Ui.Winforms
             set { whereLinkLabel.Enabled = value; }
         }
 
+        public string DistributionOrigin
+        {
+            set { originLinkLabel.Text = value; }
+        }
+
         public string DistributionCname
         {
             get { return distributionCnameTextBox.Text; }
-            set { distributionCnameTextBox.Text = value; }
+            set
+            {
+                distributionCnameTextBox.Text = value;
+                lastCname = value;
+            }
         }
 
         public string DistributionCnameUrl
@@ -661,6 +687,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         public event VoidHandler DistributionEnabledChanged = delegate { };
         public event VoidHandler DistributionLoggingChanged = delegate { };
         public event VoidHandler DistributionCnameChanged = delegate { };
+        public event VoidHandler DistributionInvalidateObjects = delegate { };
 
         public void PopulateStorageClass(IList<KeyValuePair<string, string>> classes)
         {
@@ -668,7 +695,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             storageClassComboBox.DataSource = classes;
             storageClassComboBox.DisplayMember = "Key";
             storageClassComboBox.ValueMember = "Value";
-            //storageClassComboBox.Enabled = classes.Count > 0;
         }
 
         public string BucketLocation
@@ -1185,7 +1211,10 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         private void distributionCnameTextBox_Validated(object sender, EventArgs e)
         {
-            DistributionCnameChanged();
+            if (!distributionCnameTextBox.Text.Equals(lastCname))
+            {
+                DistributionCnameChanged();
+            }
         }
 
         private void weburlLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
@@ -1216,6 +1245,16 @@ namespace Ch.Cyberduck.Ui.Winforms
         private void s3TorrentUrlLinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             Utils.StartProcess(s3TorrentUrlLinkLabel.Text);
+        }
+
+        private void invalidateButton_Click(object sender, EventArgs e)
+        {
+            DistributionInvalidateObjects();
+        }
+
+        private void originLinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            Utils.StartProcess(originLinkLabel.Text);
         }
 
         private enum AclColumnName

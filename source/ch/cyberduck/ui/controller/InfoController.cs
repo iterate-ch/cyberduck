@@ -692,6 +692,15 @@ namespace Ch.Cyberduck.Ui.Controller
             View.DistributionEnabledChanged += DistributionApply;
             View.DistributionLoggingChanged += DistributionApply;
             View.DistributionDefaultRootChanged += DistributionApply;
+            View.DistributionInvalidateObjects += DistributionInvalidateObjects;
+        }
+
+        private void DistributionInvalidateObjects()
+        {
+            if (ToggleDistributionSettings(false))
+            {
+                _controller.Background(new InvalidateObjectsBackgroundAction(_controller, this));
+            }
         }
 
         private void AttachGeneralHandlers()
@@ -750,6 +759,7 @@ namespace Ch.Cyberduck.Ui.Controller
             View.DistributionEnabledChanged -= DistributionApply;
             View.DistributionLoggingChanged -= DistributionApply;
             View.DistributionDefaultRootChanged -= DistributionApply;
+            View.DistributionInvalidateObjects -= DistributionInvalidateObjects;
         }
 
         private void OtherExecuteChanged()
@@ -1021,8 +1031,10 @@ namespace Ch.Cyberduck.Ui.Controller
             View.BucketLocation = Locale.localizedString("Unknown");
             View.BucketLoggingTooltip = Locale.localizedString("Unknown");
             View.S3PublicUrl = Locale.localizedString("None");
+            View.S3PublicUrlEnabled = false;
             View.S3PublicUrlValidity = Locale.localizedString("Unknown");
             View.S3TorrentUrl = Locale.localizedString("None");
+            View.S3TorrentUrlEnabled = false;
 
             IList<KeyValuePair<string, string>> classes = new List<KeyValuePair<string, string>>();
             classes.Add(new KeyValuePair<string, string>(Locale.localizedString("Unknown"), "Unknown"));
@@ -1063,6 +1075,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         if (null != url)
                         {
                             View.S3PublicUrl = url.getUrl();
+                            View.S3PublicUrlEnabled = true;
                             View.S3PublicUrlTooltip = url.getUrl();
                             View.S3PublicUrlValidity = url.getHelp();
                         }
@@ -1070,6 +1083,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         if (null != torrent)
                         {
                             View.S3TorrentUrl = torrent.getUrl();
+                            View.S3TorrentUrlEnabled = true;
                             View.S3TorrentUrlTooltip = torrent.getUrl();
                         }
                     }
@@ -1607,6 +1621,41 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
+        private class InvalidateObjectsBackgroundAction : BrowserBackgroundAction
+        {
+            private readonly InfoController _infoController;
+            private readonly Distribution.Method _method;
+
+            public InvalidateObjectsBackgroundAction(BrowserController browserController,
+                                                     InfoController infoController)
+                : base(browserController)
+            {
+                _infoController = infoController;
+                _method = _infoController.View.DistributionDeliveryMethod;
+            }
+
+            public override void run()
+            {
+                Session session = BrowserController.getSession();
+                session.cdn().invalidate(session.cdn().getOrigin(_method,
+                                                                 _infoController.SelectedPath.getContainerName()),
+                                         _method,
+                                         Utils.ConvertToJavaList(_infoController._files));
+            }
+
+            public override void cleanup()
+            {
+                // Refresh the current distribution status
+                _infoController.DistributionDeliveryMethodChanged();
+            }
+
+            public override string getActivity()
+            {
+                return String.Format(Locale.localizedString("Writing CDN configuration of {0}", "Status"),
+                                     _infoController.SelectedPath.getContainerName());
+            }
+        }
+
         private class ReadAclBackgroundAction : InfoBackgroundAction
         {
             public ReadAclBackgroundAction(BrowserController browserController,
@@ -1670,30 +1719,31 @@ namespace Ch.Cyberduck.Ui.Controller
 
             public override void run()
             {
-                foreach (Path file in _infoController._files)
-                {
-                    Session session = BrowserController.getSession();
-                    _distribution = session.cdn().read(
-                        session.cdn().getOrigin(_deliveryMethod, file.getContainerName()), _deliveryMethod);
-                    // Make sure container items are cached for default root object.
-                    _infoController.Files[0].getContainer().children();
-                    // We only support one distribution per bucket for the sake of simplicity
-                    break;
-                }
+                Path file = _infoController.SelectedPath;
+                Session session = BrowserController.getSession();
+                _distribution = session.cdn().read(
+                    session.cdn().getOrigin(_deliveryMethod, file.getContainerName()), _deliveryMethod);
+                // Make sure container items are cached for default root object.
+                _infoController.Files[0].getContainer().children();
             }
 
             public override void cleanup()
             {
                 try
                 {
+                    if (null == _distribution)
+                    {
+                        return;
+                    }
                     _infoController.DetachDistributionHandlers();
 
                     _view.Distribution = _distribution.isEnabled();
                     _view.DistributionStatus = _distribution.getStatus();
                     _view.DistributionLoggingEnabled = _distribution.isEnabled();
                     _view.DistributionLogging = _distribution.isLogging();
+                    _view.DistributionOrigin = _distribution.getOrigin(_infoController.SelectedPath);
 
-                    Path file = _infoController._files[0];
+                    Path file = _infoController.SelectedPath;
                     // Concatenate URLs
                     if (_infoController.NumberOfFiles > 1)
                     {
@@ -1761,6 +1811,17 @@ namespace Ch.Cyberduck.Ui.Controller
                     {
                         _view.DistributionDefaultRoot = Locale.localizedString("None");
                     }
+                    StringBuilder tooltip = new StringBuilder();
+                    int i = 0;
+                    foreach (Path f in _infoController._files)
+                    {
+                        if (i > 0) tooltip.Append(Environment.NewLine);
+                        tooltip.Append(f.getAbsolute());
+                        i++;
+                    }
+
+                    _infoController.View.DistributionInvalidateObjectsTooltip = tooltip.ToString();
+                    _infoController.View.DistributionInvalidationStatus = _distribution.getInvalidationStatus();
                     _infoController.ToggleDistributionSettings(true);
                 }
                 finally
@@ -1929,7 +1990,7 @@ namespace Ch.Cyberduck.Ui.Controller
             public override void cleanup()
             {
                 _infoController.ToggleS3Settings(true);
-                _infoController.InitS3(); //really necessary?
+                _infoController.InitS3();
             }
         }
 

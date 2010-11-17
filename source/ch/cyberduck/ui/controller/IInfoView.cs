@@ -119,6 +119,7 @@ namespace Ch.Cyberduck.Ui.Controller
         string DistributionUrl { set; }
         string DistributionUrlTooltip { set; }
         bool DistributionUrlEnabled { set; }
+        string DistributionOrigin { set; }
         string DistributionCname { set; get; }
         string DistributionCnameUrl { set; }
         bool DistributionCnameUrlEnabled { set; }
@@ -127,6 +128,9 @@ namespace Ch.Cyberduck.Ui.Controller
         bool DistributionAnimationActive { set; }
         string DistributionDefaultRoot { set; get; }
         bool DistributionDefaultRootEnabled { set; }
+        string DistributionInvalidationStatus { set; }
+        string DistributionInvalidateObjectsTooltip { set; }
+        bool DistributionInvalidateObjectsEnabled { set; }
 
         string BucketLocation { set; }
         string StorageClass { set; get; }
@@ -174,6 +178,7 @@ namespace Ch.Cyberduck.Ui.Controller
         event VoidHandler DistributionLoggingChanged;
         event VoidHandler DistributionCnameChanged;
         event VoidHandler DistributionDefaultRootChanged;
+        event VoidHandler DistributionInvalidateObjects;
 
         void PopulateStorageClass(IList<KeyValuePair<string, string>> classes);
 
