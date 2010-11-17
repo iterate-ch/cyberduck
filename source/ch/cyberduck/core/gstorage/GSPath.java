@@ -35,7 +35,7 @@ import org.jets3t.service.acl.GroupGrantee;
 
 import java.io.IOException;
 import java.text.MessageFormat;
-import java.util.List;
+import java.util.Set;
 
 /**
  * @version $Id$
@@ -120,8 +120,8 @@ public class GSPath extends S3Path {
     }
 
     @Override
-    public List<DescriptiveUrl> getHttpURLs() {
-        List<DescriptiveUrl> urls = super.getHttpURLs();
+    public Set<DescriptiveUrl> getHttpURLs() {
+        Set<DescriptiveUrl> urls = super.getHttpURLs();
         DescriptiveUrl url = this.toAuthenticatedUrl();
         if(StringUtils.isNotBlank(url.getUrl())) {
             urls.add(new DescriptiveUrl(url.getUrl(),

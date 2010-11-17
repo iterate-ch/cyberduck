@@ -22,10 +22,13 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.i18n.Locale;
 
 import org.apache.log4j.Logger;
 
+import java.text.MessageFormat;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @version $Id$
@@ -64,6 +67,7 @@ public abstract class CloudPath extends Path {
     /**
      * @return
      */
+    @Override
     public boolean isContainer() {
         return super.getParent().isRoot();
     }
@@ -141,5 +145,13 @@ public abstract class CloudPath extends Path {
 
     public DescriptiveUrl toSignedUrl() {
         return new DescriptiveUrl(null, null);
+    }
+
+    @Override
+    public Set<DescriptiveUrl> getHttpURLs() {
+        Set<DescriptiveUrl> list = super.getHttpURLs();
+        list.add(new DescriptiveUrl(this.toURL(), MessageFormat.format(Locale.localizedString("{0} URL"),
+                this.getHost().getProtocol().getScheme().toUpperCase())));
+        return list;
     }
 }

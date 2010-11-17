@@ -42,9 +42,8 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -1009,13 +1008,11 @@ public abstract class Path extends AbstractPath implements Serializable {
      * @return A list of URLs pointing to the resource.
      * @see #getHttpURLs()
      */
-    public List<DescriptiveUrl> getURLs() {
-        List<DescriptiveUrl> list = this.getHttpURLs();
-        DescriptiveUrl url = new DescriptiveUrl(this.toURL(), MessageFormat.format(Locale.localizedString("{0} URL"),
-                this.getHost().getProtocol().getScheme().toUpperCase()));
-        if(!list.contains(url)) {
-            list.add(0, url);
-        }
+    public Set<DescriptiveUrl> getURLs() {
+        Set<DescriptiveUrl> list = new LinkedHashSet<DescriptiveUrl>();
+        list.add(new DescriptiveUrl(this.toURL(), MessageFormat.format(Locale.localizedString("{0} URL"),
+                this.getHost().getProtocol().getScheme().toUpperCase())));
+        list.addAll(this.getHttpURLs());
         return list;
     }
 
@@ -1025,11 +1022,8 @@ public abstract class Path extends AbstractPath implements Serializable {
      *
      * @return All possible URLs to the same resource that can be opened in a web browser.
      */
-    public List<DescriptiveUrl> getHttpURLs() {
-        List<DescriptiveUrl> urls = new ArrayList<DescriptiveUrl>(Arrays.asList(
-                new DescriptiveUrl(this.toURL(), MessageFormat.format(Locale.localizedString("{0} URL"),
-                        this.getHost().getProtocol().getScheme().toUpperCase())))
-        );
+    public Set<DescriptiveUrl> getHttpURLs() {
+        Set<DescriptiveUrl> urls = new LinkedHashSet<DescriptiveUrl>();
         String http = this.toHttpURL();
         if(StringUtils.isNotBlank(http)) {
             urls.add(new DescriptiveUrl(http, MessageFormat.format(Locale.localizedString("{0} URL"), "HTTP")));

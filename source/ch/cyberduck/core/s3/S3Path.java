@@ -1256,8 +1256,8 @@ public class S3Path extends CloudPath {
     }
 
     @Override
-    public List<DescriptiveUrl> getHttpURLs() {
-        List<DescriptiveUrl> urls = super.getHttpURLs();
+    public Set<DescriptiveUrl> getHttpURLs() {
+        Set<DescriptiveUrl> urls = super.getHttpURLs();
         // Always include HTTP URL
         urls.add(new DescriptiveUrl(this.toURL(Protocol.S3.getScheme()),
                 MessageFormat.format(Locale.localizedString("{0} URL"), Protocol.S3.getScheme().toUpperCase())));
