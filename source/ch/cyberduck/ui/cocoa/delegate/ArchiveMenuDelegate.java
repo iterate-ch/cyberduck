@@ -23,6 +23,7 @@ import ch.cyberduck.ui.cocoa.application.NSMenu;
 import ch.cyberduck.ui.cocoa.application.NSMenuItem;
 
 import org.rococoa.Foundation;
+import org.rococoa.Selector;
 import org.rococoa.cocoa.foundation.NSInteger;
 
 /**
@@ -44,7 +45,12 @@ public class ArchiveMenuDelegate extends AbstractMenuDelegate {
         final Archive archive = Archive.getKnownArchives()[index.intValue()];
         item.setRepresentedObject(archive.getIdentifier());
         item.setTitle(archive.getIdentifier());
-        item.setAction(Foundation.selector("archiveMenuClicked:"));
+        item.setAction(this.getDefaultAction());
         return super.menuUpdateItemAtIndex(menu, item, index, cancel);
+    }
+
+    @Override
+    protected Selector getDefaultAction() {
+        return Foundation.selector("archiveMenuClicked:");
     }
 }

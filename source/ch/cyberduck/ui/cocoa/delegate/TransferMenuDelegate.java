@@ -26,6 +26,7 @@ import ch.cyberduck.ui.cocoa.application.NSMenu;
 import ch.cyberduck.ui.cocoa.application.NSMenuItem;
 
 import org.rococoa.Foundation;
+import org.rococoa.Selector;
 import org.rococoa.cocoa.foundation.NSInteger;
 
 import org.apache.log4j.Logger;
@@ -63,7 +64,7 @@ public class TransferMenuDelegate extends AbstractMenuDelegate {
         if(path.getLocal().exists()) {
             item.setEnabled(true);
             item.setTarget(this.id());
-            item.setAction(Foundation.selector("reveal:"));
+            item.setAction(this.getDefaultAction());
         }
         else {
             item.setEnabled(false);
@@ -78,5 +79,10 @@ public class TransferMenuDelegate extends AbstractMenuDelegate {
     public void reveal(final NSMenuItem sender) {
         Local l = LocalFactory.createLocal(sender.representedObject());
         l.reveal();
+    }
+
+    @Override
+    protected Selector getDefaultAction() {
+        return Foundation.selector("reveal:");
     }
 }

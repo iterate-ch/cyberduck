@@ -30,6 +30,7 @@ import ch.cyberduck.ui.cocoa.application.NSMenuItem;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -68,10 +69,7 @@ public abstract class OpenURLMenuDelegate extends URLMenuDelegate {
      */
     @Override
     protected List<AbstractPath.DescriptiveUrl> getURLs(Path selected) {
-        if(!cache.containsKey(selected)) {
-            cache.put(selected, selected.getHttpURLs());
-        }
-        return cache.get(selected);
+        return new ArrayList<AbstractPath.DescriptiveUrl>(selected.getHttpURLs());
     }
 
     @Action

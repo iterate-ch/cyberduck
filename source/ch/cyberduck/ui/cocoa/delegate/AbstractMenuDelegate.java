@@ -22,9 +22,9 @@ import ch.cyberduck.ui.cocoa.ProxyController;
 import ch.cyberduck.ui.cocoa.application.NSEvent;
 import ch.cyberduck.ui.cocoa.application.NSMenu;
 import ch.cyberduck.ui.cocoa.application.NSMenuItem;
-import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
 import org.rococoa.ID;
+import org.rococoa.Selector;
 import org.rococoa.cocoa.foundation.NSInteger;
 
 import org.apache.commons.lang.StringUtils;
@@ -36,21 +36,14 @@ import org.apache.log4j.Logger;
 public abstract class AbstractMenuDelegate extends ProxyController implements NSMenu.Delegate {
     private static Logger log = Logger.getLogger(AbstractMenuDelegate.class);
 
-    @Override
-    public NSObject proxy() {
-        return this.proxy(CDKeyboardMenuDelegate.class);
-    }
-
-    @Override
-    public ID id() {
-        return this.id(CDKeyboardMenuDelegate.class);
-    }
-
     /**
      * Menu needs revalidation
      */
     private boolean update;
 
+    /**
+     *
+     */
     public AbstractMenuDelegate() {
         this.setNeedsUpdate(true);
     }
@@ -87,17 +80,57 @@ public abstract class AbstractMenuDelegate extends ProxyController implements NS
         return !cancel;
     }
 
-    public boolean hasKeyEquivalent(NSEvent event) {
-        return false;
+    /**
+     * @return
+     */
+    protected abstract Selector getDefaultAction();
+
+    /**
+     * Keyboard shortcut target
+     *
+     * @return Target for item actions with a keyboard shortcut.
+     */
+    protected ID getTarget() {
+        return this.id();
     }
 
-    public String getActionForKeyEquivalent(NSEvent event) {
+    /**
+     * Lowercase shortcut key
+     *
+     * @return Null if no key equivalent for any menu item
+     */
+    protected String getKeyEquivalent() {
         return null;
     }
 
+    /**
+     * Modifier mask for item with shortcut
+     *
+     * @return Command Mask
+     */
+    protected int getModifierMask() {
+        return NSEvent.NSCommandKeyMask;
+    }
+
     public boolean menuHasKeyEquivalent_forEvent(NSMenu menu, NSEvent event) {
-        log.debug("menuHasKeyEquivalent_forEvent:" + event);
+        log.debug("menuHasKeyEquivalent_forEvent:" + menu);
+        if(StringUtils.isBlank(this.getKeyEquivalent())) {
+            return false;
+        }
+        if((event.modifierFlags() & this.getModifierMask()) == this.getModifierMask()) {
+            return event.charactersIgnoringModifiers().equals(this.getKeyEquivalent());
+        }
         return false;
+    }
+
+    public ID menuKeyEquivalentTarget_forEvent(NSMenu menu, NSEvent event) {
+        log.debug("menuKeyEquivalentTarget_forEvent:" + menu);
+        return this.getTarget();
+    }
+
+    public Selector menuKeyEquivalentAction_forEvent(NSMenu menu, NSEvent event) {
+        log.debug("menuKeyEquivalentAction_forEvent:" + menu);
+        return this.getDefaultAction();
     }
 
     /**
@@ -109,20 +142,28 @@ public abstract class AbstractMenuDelegate extends ProxyController implements NS
     }
 
     /**
-     * @return
+     * @return True if the menu is populated and needs no update.
      */
     protected boolean isPopulated() {
         return !update;
     }
 
+    /**
+     * @return Separator menu item
+     */
     protected NSMenuItem seperator() {
         return NSMenuItem.separatorItem();
     }
 
+    /**
+     * Validate menu item
+     *
+     * @param item
+     * @return False if menu item should be disabled.
+     */
     public boolean validateMenuItem(NSMenuItem item) {
         return true;
     }
-
 
     protected void clearShortcut(NSMenuItem item) {
         this.setShortcut(item, StringUtils.EMPTY, 0);

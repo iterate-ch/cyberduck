@@ -554,6 +554,11 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             protected Local getSelectedFile() {
                 return BrowserController.this.getSelectedFile();
             }
+
+            @Override
+            protected ID getTarget() {
+                return BrowserController.this.id();
+            }
         };
         this.editMenu.setDelegate(editMenuDelegate.id());
     }
@@ -4217,7 +4222,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             item.setAction(Foundation.selector("editButtonClicked:"));
             // Add a menu representation for text mode of toolbar
             NSMenuItem toolbarMenu = NSMenuItem.itemWithTitle(Locale.localizedString(TOOLBAR_EDIT),
-                    Foundation.selector("editMenuClicked:"), "");
+                    Foundation.selector("editButtonClicked:"), "");
             NSMenu editMenu = NSMenu.menu();
             editMenu.setAutoenablesItems(true);
             editMenu.setDelegate(editMenuDelegate.id());

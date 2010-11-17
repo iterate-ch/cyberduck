@@ -27,6 +27,7 @@ import ch.cyberduck.ui.cocoa.application.NSMenuItem;
 import ch.cyberduck.ui.cocoa.odb.EditorFactory;
 
 import org.rococoa.Foundation;
+import org.rococoa.Selector;
 import org.rococoa.cocoa.foundation.NSInteger;
 
 import org.apache.commons.lang.ObjectUtils;
@@ -94,7 +95,7 @@ public abstract class EditMenuDelegate extends AbstractMenuDelegate {
         String editor = editors.keySet().toArray(new String[editors.size()])[index.intValue()];
         item.setTitle(editor);
         if(identifier.equalsIgnoreCase(defaultEditor)) {
-            setShortcut(item, "k", NSEvent.NSCommandKeyMask);
+            setShortcut(item, this.getKeyEquivalent(), this.getModifierMask());
         }
         else {
             clearShortcut(item);
@@ -104,7 +105,18 @@ public abstract class EditMenuDelegate extends AbstractMenuDelegate {
         return super.menuUpdateItemAtIndex(menu, item, index, cancel);
     }
 
-    public boolean menuHasKeyEquivalent_forEvent(NSMenu menu, NSEvent event) {
-        return false;
+    @Override
+    protected String getKeyEquivalent() {
+        return "k";
+    }
+
+    @Override
+    protected int getModifierMask() {
+        return NSEvent.NSCommandKeyMask;
+    }
+
+    @Override
+    protected Selector getDefaultAction() {
+        return Foundation.selector("editButtonClicked:");
     }
 }

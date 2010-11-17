@@ -28,6 +28,7 @@ import ch.cyberduck.ui.cocoa.application.NSMenu;
 import ch.cyberduck.ui.cocoa.application.NSMenuItem;
 
 import org.rococoa.Foundation;
+import org.rococoa.Selector;
 import org.rococoa.cocoa.foundation.NSInteger;
 
 import org.apache.log4j.Logger;
@@ -35,7 +36,7 @@ import org.apache.log4j.Logger;
 /**
  * @version $Id$
  */
-public class RendezvousMenuDelegate extends CollectionMenuDelegate<Host> {
+public abstract class RendezvousMenuDelegate extends CollectionMenuDelegate<Host> {
     private static Logger log = Logger.getLogger(RendezvousMenuDelegate.class);
 
     public RendezvousMenuDelegate() {
@@ -70,7 +71,7 @@ public class RendezvousMenuDelegate extends CollectionMenuDelegate<Host> {
             item.setTarget(this.id());
             item.setEnabled(true);
             item.setImage(IconCache.iconNamed(h.getProtocol().icon(), 16));
-            item.setAction(Foundation.selector("rendezvousMenuClicked:"));
+            item.setAction(this.getDefaultAction());
             item.setRepresentedObject(h.getUuid());
         }
         return super.menuUpdateItemAtIndex(menu, item, index, cancel);
@@ -80,5 +81,10 @@ public class RendezvousMenuDelegate extends CollectionMenuDelegate<Host> {
         log.debug("rendezvousMenuClicked:" + sender);
         BrowserController controller = MainController.newDocument();
         controller.mount(RendezvousCollection.defaultCollection().lookup(sender.representedObject()));
+    }
+
+    @Override
+    protected Selector getDefaultAction() {
+        return Foundation.selector("rendezvousMenuClicked:");
     }
 }

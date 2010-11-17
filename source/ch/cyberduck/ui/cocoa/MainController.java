@@ -209,6 +209,11 @@ public class MainController extends BundleController implements NSApplication.De
                 }
                 return null;
             }
+
+            @Override
+            protected ID getTarget() {
+                return MainController.getBrowser().id();
+            }
         };
         this.editMenu.setDelegate(editMenuDelegate.id());
     }
@@ -273,7 +278,12 @@ public class MainController extends BundleController implements NSApplication.De
 
     public void setArchiveMenu(NSMenu archiveMenu) {
         this.archiveMenu = archiveMenu;
-        this.archiveMenuDelegate = new ArchiveMenuDelegate();
+        this.archiveMenuDelegate = new ArchiveMenuDelegate() {
+            @Override
+            protected ID getTarget() {
+                return MainController.getBrowser().id();
+            }
+        };
         this.archiveMenu.setDelegate(archiveMenuDelegate.id());
     }
 
@@ -283,7 +293,12 @@ public class MainController extends BundleController implements NSApplication.De
 
     public void setBookmarkMenu(NSMenu bookmarkMenu) {
         this.bookmarkMenu = bookmarkMenu;
-        this.bookmarkMenuDelegate = new BookmarkMenuDelegate();
+        this.bookmarkMenuDelegate = new BookmarkMenuDelegate() {
+            @Override
+            protected ID getTarget() {
+                return MainController.getBrowser().id();
+            }
+        };
         this.bookmarkMenu.setDelegate(bookmarkMenuDelegate.id());
     }
 
@@ -293,7 +308,12 @@ public class MainController extends BundleController implements NSApplication.De
 
     public void setHistoryMenu(NSMenu historyMenu) {
         this.historyMenu = historyMenu;
-        this.historyMenuDelegate = new HistoryMenuDelegate();
+        this.historyMenuDelegate = new HistoryMenuDelegate() {
+            @Override
+            protected ID getTarget() {
+                return MainController.getBrowser().id();
+            }
+        };
         this.historyMenu.setDelegate(historyMenuDelegate.id());
     }
 
@@ -303,7 +323,12 @@ public class MainController extends BundleController implements NSApplication.De
 
     public void setRendezvousMenu(NSMenu rendezvousMenu) {
         this.rendezvousMenu = rendezvousMenu;
-        this.rendezvousMenuDelegate = new RendezvousMenuDelegate();
+        this.rendezvousMenuDelegate = new RendezvousMenuDelegate() {
+            @Override
+            protected ID getTarget() {
+                return MainController.getBrowser().id();
+            }
+        };
         this.rendezvousMenu.setDelegate(rendezvousMenuDelegate.id());
     }
 
@@ -989,6 +1014,20 @@ public class MainController extends BundleController implements NSApplication.De
      */
     public static List<BrowserController> getBrowsers() {
         return browsers;
+    }
+
+    /**
+     * Browser with key focus
+     *
+     * @return Null if no browser window is open
+     */
+    public static BrowserController getBrowser() {
+        for(BrowserController browser : MainController.getBrowsers()) {
+            if(browser.window().isKeyWindow()) {
+                return browser;
+            }
+        }
+        return null;
     }
 
 

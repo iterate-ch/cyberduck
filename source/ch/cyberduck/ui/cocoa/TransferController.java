@@ -280,6 +280,11 @@ public class TransferController extends WindowController implements NSToolbar.De
             }
             return super.menuUpdateItemAtIndex(menu, item, i, cancel);
         }
+
+        @Override
+        protected Selector getDefaultAction() {
+            return Foundation.selector("bandwidthPopupChanged:");
+        }
     }
 
     @Action

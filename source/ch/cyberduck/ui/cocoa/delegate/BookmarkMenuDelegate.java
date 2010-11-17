@@ -27,6 +27,7 @@ import ch.cyberduck.ui.cocoa.application.NSMenu;
 import ch.cyberduck.ui.cocoa.application.NSMenuItem;
 
 import org.rococoa.Foundation;
+import org.rococoa.Selector;
 import org.rococoa.cocoa.foundation.NSInteger;
 
 import org.apache.log4j.Logger;
@@ -80,7 +81,7 @@ public class BookmarkMenuDelegate extends CollectionMenuDelegate<Host> {
             item.setTitle(h.getNickname());
             item.setTarget(this.id());
             item.setImage(IconCache.iconNamed(h.getProtocol().icon(), 16));
-            item.setAction(Foundation.selector("bookmarkMenuItemClicked:"));
+            item.setAction(this.getDefaultAction());
             item.setRepresentedObject(h.getUuid());
         }
         return super.menuUpdateItemAtIndex(menu, item, index, cancel);
@@ -90,5 +91,10 @@ public class BookmarkMenuDelegate extends CollectionMenuDelegate<Host> {
         log.debug("bookmarkMenuItemClicked:" + sender);
         BrowserController controller = MainController.newDocument();
         controller.mount(BookmarkCollection.defaultCollection().lookup(sender.representedObject()));
+    }
+
+    @Override
+    protected Selector getDefaultAction() {
+        return Foundation.selector("bookmarkMenuItemClicked:");
     }
 }

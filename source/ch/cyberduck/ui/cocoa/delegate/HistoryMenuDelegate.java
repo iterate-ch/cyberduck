@@ -28,6 +28,7 @@ import ch.cyberduck.ui.cocoa.application.NSMenu;
 import ch.cyberduck.ui.cocoa.application.NSMenuItem;
 
 import org.rococoa.Foundation;
+import org.rococoa.Selector;
 import org.rococoa.cocoa.foundation.NSInteger;
 
 import org.apache.commons.lang.StringUtils;
@@ -36,7 +37,7 @@ import org.apache.log4j.Logger;
 /**
  * @version $Id$
  */
-public class HistoryMenuDelegate extends CollectionMenuDelegate<Host> {
+public abstract class HistoryMenuDelegate extends CollectionMenuDelegate<Host> {
     private static Logger log = Logger.getLogger(HistoryMenuDelegate.class);
 
     public HistoryMenuDelegate() {
@@ -77,7 +78,7 @@ public class HistoryMenuDelegate extends CollectionMenuDelegate<Host> {
         else if(index.intValue() < size) {
             Host h = HistoryCollection.defaultCollection().get(index.intValue());
             item.setTitle(h.getNickname());
-            item.setAction(Foundation.selector("historyMenuItemClicked:"));
+            item.setAction(this.getDefaultAction());
             item.setRepresentedObject(h.getUuid());
             item.setTarget(this.id());
             item.setEnabled(true);
@@ -109,5 +110,10 @@ public class HistoryMenuDelegate extends CollectionMenuDelegate<Host> {
     public void clearMenuItemClicked(NSMenuItem sender) {
         // Delete all bookmark files
         HistoryCollection.defaultCollection().clear();
+    }
+
+    @Override
+    protected Selector getDefaultAction() {
+        return Foundation.selector("historyMenuItemClicked:");
     }
 }
