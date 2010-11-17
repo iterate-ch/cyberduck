@@ -168,7 +168,13 @@ public abstract class Session implements TranscriptListener {
      * @throws LoginCanceledException
      */
     protected void prompt(LoginController login) throws LoginCanceledException {
+        String username = host.getCredentials().getUsername();
         login.check(host, Locale.localizedString("Login with username and password", "Credentials"), null);
+        if(!StringUtils.equals(username, host.getCredentials().getUsername())) {
+            if(BookmarkCollection.defaultCollection().contains(host)) {
+                BookmarkCollection.defaultCollection().collectionItemChanged(host);
+            }
+        }
     }
 
     private boolean unsecurewarning =
@@ -742,7 +748,10 @@ public abstract class Session implements TranscriptListener {
 
                 @Override
                 protected void fireConnectionDidOpenEvent() {
-                    BookmarkCollection.defaultCollection().collectionItemChanged(Session.this.getHost());
+                    // Save CloudFront access credentials to bookmark
+                    if(BookmarkCollection.defaultCollection().contains(Session.this.getHost())) {
+                        BookmarkCollection.defaultCollection().collectionItemChanged(Session.this.getHost());
+                    }
                     super.fireConnectionDidOpenEvent();
                 }
 
