@@ -2479,9 +2479,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
     @Action
     public void openBrowserButtonClicked(final ID sender) {
-        Path selected;
         if(this.getSelectionCount() == 1) {
-            selected = this.getSelectedPath();
             openUrl(this.getSelectedPath().toHttpURL());
         }
         else {
