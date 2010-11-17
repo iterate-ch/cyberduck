@@ -55,20 +55,26 @@ public class FireFtpBookmarkCollection extends ThirdpartyBookmarkCollection {
         return LocalFactory.createLocal(Preferences.instance().getProperty("bookmark.import.fireftp.location"));
     }
 
+    /**
+     * FireFTP settings are in Firefox/Profiles/.*\.default/fireFTPsites.dat
+     *
+     * @param folder
+     */
     @Override
     protected void parse(Local folder) {
-        for(Local child : folder.children(new PathFilter<Local>() {
+        for(Local settings : folder.children(new PathFilter<Local>() {
             public boolean accept(Local file) {
-                if(file.attributes().isDirectory()) {
-                    return true;
-                }
-                return "fireFTPsites.dat".equals(file.getName());
+                return file.attributes().isDirectory();
             }
         })) {
-            if(child.attributes().isDirectory()) {
-                this.parse(child);
-            }
-            else {
+            for(Local child : settings.children(new PathFilter<Local>() {
+                public boolean accept(Local file) {
+                    if(file.attributes().isFile()) {
+                        return "fireFTPsites.dat".equals(file.getName());
+                    }
+                    return false;
+                }
+            })) {
                 this.read(child);
             }
         }
