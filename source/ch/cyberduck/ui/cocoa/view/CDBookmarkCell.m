@@ -118,12 +118,6 @@
     CGFloat detailsFontHeight = [l defaultLineHeightForFont:[detailsFont objectForKey:NSFontAttributeName]] + 2;
 	[l release];
 	
-	NSString *group = [bookmark objectForKey:@"Group"];
-	if(group) {
-		[group drawInRect:NSMakeRect(cellFrame.origin.x, cellFrame.origin.y + 1, cellFrame.size.width - 5,
-		                             cellFrame.size.height) withAttributes:nicknameFont];
-	    return;
-	}
 	NSString *nickname = [bookmark objectForKey:@"Nickname"];
 	if(nickname) {
 		[nickname drawInRect:NSMakeRect(cellFrame.origin.x, cellFrame.origin.y + 1, cellFrame.size.width - 5,
