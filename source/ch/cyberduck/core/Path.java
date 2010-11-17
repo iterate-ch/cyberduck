@@ -970,14 +970,12 @@ public abstract class Path extends AbstractPath implements Serializable {
     }
 
     /**
-     * @param uri The hostname to prepend to the path
+     * @param host The hostname to prepend to the path
      * @return The HTTP accessible URL of this path including the default path
      *         prepended from the bookmark
      */
-    protected String toHttpURL(String uri) {
-        String absolute = encode(this.getAbsolute());
-        absolute = this.getWebPath(absolute);
-        return URI.create(uri + absolute).normalize().toString();
+    protected String toHttpURL(String host) {
+        return URI.create(host + this.getWebPath(this.getAbsolute())).normalize().toString();
     }
 
     /**
@@ -990,10 +988,10 @@ public abstract class Path extends AbstractPath implements Serializable {
         String documentRoot = this.getHost().getDefaultPath();
         if(StringUtils.isNotBlank(documentRoot)) {
             if(path.contains(documentRoot)) {
-                return normalize(path.substring(path.indexOf(documentRoot) + documentRoot.length()), true);
+                return encode(normalize(path.substring(path.indexOf(documentRoot) + documentRoot.length()), true));
             }
         }
-        return normalize(path, true);
+        return encode(normalize(path, true));
     }
 
     /**
