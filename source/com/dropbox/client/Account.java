@@ -38,8 +38,8 @@ public class Account extends AbstractResponse {
     private long uid;
 
     public Account(JSONObject map) {
-        country = map.get("country").toString();
-        displayName = map.get("display_name").toString();
+        country = this.getString(map, "country");
+        displayName = this.getString(map,"display_name");
         uid = this.getLong(map, "uid");
         Object quotaInfo = map.get("quota_info");
         if(quotaInfo != null && quotaInfo instanceof Map) {

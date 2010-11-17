@@ -26,13 +26,13 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Map;
 
 /**
  * @version $Id$
  */
 public class ListEntryResponse extends AbstractResponse {
-    private long length;
+
+    private long length = -1;
     private String hash;
     private String icon;
     private boolean directory;
@@ -41,31 +41,29 @@ public class ListEntryResponse extends AbstractResponse {
     private String root;
     private String size;
     private String mime;
-    private long revision;
+    private long revision = -1;
     private boolean thumbnail;
 
-    private ArrayList<ListEntryResponse> contents;
+    private ArrayList<ListEntryResponse> contents
+            = new ArrayList<ListEntryResponse>();
 
     public ListEntryResponse(JSONObject map) {
         length = this.getLong(map, "bytes");
-        hash = map.get("hash").toString();
-        icon = map.get("icon").toString();
+        hash = this.getString(map, "hash");
+        icon = this.getString(map, "icon");
         directory = getBoolean(map, "is_dir");
-        modified = map.get("modified").toString();
-        path = map.get("path").toString();
-        root = map.get("root").toString();
-        size = map.get("size").toString();
-        mime = map.get("mime_type").toString();
+        modified = this.getString(map, "modified");
+        path = this.getString(map, "path");
+        root = this.getString(map, "root");
+        size = this.getString(map, "size");
+        mime = this.getString(map, "mime_type");
         revision = this.getLong(map, "revision");
         thumbnail = this.getBoolean(map, "thumb_exists");
 
         Object json_contents = map.get("contents");
-        if(json_contents != null && json_contents instanceof JSONArray) {
-            contents = new ArrayList<ListEntryResponse>();
-            Object entry;
-            for(Object o : ((JSONArray) json_contents)) {
-                entry = o;
-                if(entry instanceof Map) {
+        if(json_contents instanceof JSONArray) {
+            for(Object entry : ((JSONArray) json_contents)) {
+                if(entry instanceof JSONObject) {
                     contents.add(new ListEntryResponse((JSONObject) entry));
                 }
             }

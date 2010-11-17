@@ -29,6 +29,14 @@ import java.util.Map;
  */
 public abstract class AbstractResponse {
 
+    protected String getString(Map map, String name) {
+        Object val = map.get(name);
+        if(val instanceof String) {
+            return ((String) val);
+        }
+        return null;
+    }
+
     protected long getLong(Map map, String name) {
         Object val = map.get(name);
         if(val instanceof Number) {
