@@ -389,5 +389,10 @@ public abstract class AbstractPath {
             }
             return false;
         }
+
+        @Override
+        public int hashCode() {
+            return this.getUrl().hashCode();
+        }
     }
 }
