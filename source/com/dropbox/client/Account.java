@@ -17,6 +17,9 @@ package com.dropbox.client;
  *
  * Bug fixes, suggestions and comments should be sent to:
  * dkocher@cyberduck.ch
+ *
+ * Derived from Official Dropbox API client for Java.
+ * http://bitbucket.org/dropboxapi/dropbox-client-java
  */
 
 import org.json.simple.JSONObject;
@@ -24,7 +27,7 @@ import org.json.simple.JSONObject;
 import java.util.Map;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class Account extends AbstractResponse {
     private String country;
@@ -35,15 +38,15 @@ public class Account extends AbstractResponse {
     private long uid;
 
     public Account(JSONObject map) {
-        country = (String) map.get("country");
-        displayName = (String) map.get("display_name");
-        uid = this.getFromMapAsLong(map, "uid");
+        country = map.get("country").toString();
+        displayName = map.get("display_name").toString();
+        uid = this.getLong(map, "uid");
         Object quotaInfo = map.get("quota_info");
         if(quotaInfo != null && quotaInfo instanceof Map) {
             Map quotamap = (Map) quotaInfo;
-            quotaQuota = this.getFromMapAsLong(quotamap, "quota");
-            quotaNormal = this.getFromMapAsLong(quotamap, "normal");
-            quotaShared = this.getFromMapAsLong(quotamap, "shared");
+            quotaQuota = this.getLong(quotamap, "quota");
+            quotaNormal = this.getLong(quotamap, "normal");
+            quotaShared = this.getLong(quotamap, "shared");
         }
     }
 

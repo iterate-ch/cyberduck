@@ -17,6 +17,9 @@ package com.dropbox.client;
  *
  * Bug fixes, suggestions and comments should be sent to:
  * dkocher@cyberduck.ch
+ *
+ * Derived from Official Dropbox API client for Java.
+ * http://bitbucket.org/dropboxapi/dropbox-client-java
  */
 
 import org.json.simple.JSONArray;
@@ -26,7 +29,7 @@ import java.util.ArrayList;
 import java.util.Map;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class ListEntryResponse extends AbstractResponse {
     private long length;
@@ -44,22 +47,17 @@ public class ListEntryResponse extends AbstractResponse {
     private ArrayList<ListEntryResponse> contents;
 
     public ListEntryResponse(JSONObject map) {
-        length = this.getFromMapAsLong(map, "bytes");
-
-        hash = (String) map.get("hash");
-        icon = (String) map.get("icon");
-
-        directory = getFromMapAsBoolean(map, "is_dir");
-
-        modified = (String) map.get("modified");
-        path = (String) map.get("path");
-        root = (String) map.get("root");
-        size = (String) map.get("size");
-        mime = (String) map.get("mime_type");
-
-        revision = this.getFromMapAsLong(map, "revision");
-
-        thumbnail = getFromMapAsBoolean(map, "thumb_exists");
+        length = this.getLong(map, "bytes");
+        hash = map.get("hash").toString();
+        icon = map.get("icon").toString();
+        directory = getBoolean(map, "is_dir");
+        modified = map.get("modified").toString();
+        path = map.get("path").toString();
+        root = map.get("root").toString();
+        size = map.get("size").toString();
+        mime = map.get("mime_type").toString();
+        revision = this.getLong(map, "revision");
+        thumbnail = this.getBoolean(map, "thumb_exists");
 
         Object json_contents = map.get("contents");
         if(json_contents != null && json_contents instanceof JSONArray) {
@@ -120,15 +118,5 @@ public class ListEntryResponse extends AbstractResponse {
 
     public boolean isThumbnail() {
         return thumbnail;
-    }
-
-    private boolean getFromMapAsBoolean(Map map, String name) {
-        Object val = map.get(name);
-        if(val != null && val instanceof Boolean) {
-            return (Boolean) val;
-        }
-        else {
-            return false;
-        }
     }
 }

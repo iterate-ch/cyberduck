@@ -17,6 +17,9 @@ package com.dropbox.client;
  *
  * Bug fixes, suggestions and comments should be sent to:
  * dkocher@cyberduck.ch
+ *
+ * Derived from Official Dropbox API client for Java.
+ * http://bitbucket.org/dropboxapi/dropbox-client-java
  */
 
 import oauth.signpost.OAuthConsumer;
@@ -120,24 +123,18 @@ public abstract class AbstractHttpDropboxClient {
         }
         HttpResponse response = client.execute(req);
         int status = response.getStatusLine().getStatusCode();
-        if(401 == status || 404 == status) {
-            // Invalid user or password
+        if(200 != status) {
             throw new HttpException(response.getStatusLine().getReasonPhrase());
         }
-        if(200 == status) {
-            JSONObject creds = parse(response);
-            String token_key = (String) creds.get("token");
-            String token_secret = (String) creds.get("secret");
-            log.info("Obtained Token Key:" + token_key);
-            log.info("Obtained Token Secret:" + token_secret);
+        JSONObject creds = this.parse(response);
+        String token_key = (String) creds.get("token");
+        String token_secret = (String) creds.get("secret");
+        log.info("Obtained Token Key:" + token_key);
+        log.info("Obtained Token Secret:" + token_secret);
 
-            this.auth = new Authenticator(key, secret,
-                    this.getRequestPath("/oauth/request_token"), this.getRequestPath("/oauth/access_token"), this.getRequestPath("/oauth/authorize"),
-                    token_key, token_secret);
-        }
-        else {
-            throw new HttpException(response.getStatusLine().toString());
-        }
+        this.auth = new Authenticator(key, secret,
+                this.getRequestPath("/oauth/request_token"), this.getRequestPath("/oauth/access_token"), this.getRequestPath("/oauth/authorize"),
+                token_key, token_secret);
     }
 
     /**

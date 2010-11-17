@@ -17,6 +17,9 @@ package com.dropbox.client;
  *
  * Bug fixes, suggestions and comments should be sent to:
  * dkocher@cyberduck.ch
+ *
+ * Derived from Official Dropbox API client for Java.
+ * http://bitbucket.org/dropboxapi/dropbox-client-java
  */
 
 import oauth.signpost.exception.OAuthException;

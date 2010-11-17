@@ -1,6 +1,5 @@
 package com.dropbox.client;
 
-
 /*
  * Copyright (c) 2002-2010 David Kocher. All rights reserved.
  *
@@ -18,22 +17,31 @@ package com.dropbox.client;
  *
  * Bug fixes, suggestions and comments should be sent to:
  * dkocher@cyberduck.ch
+ *
+ * Derived from Official Dropbox API client for Java.
+ * http://bitbucket.org/dropboxapi/dropbox-client-java
  */
 
 import java.util.Map;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public abstract class AbstractResponse {
 
-    protected long getFromMapAsLong(Map map, String name) {
+    protected long getLong(Map map, String name) {
         Object val = map.get(name);
-        long ret = 0;
-        if(val != null && val instanceof Number) {
-            ret = ((Number) val).longValue();
+        if(val instanceof Number) {
+            return ((Number) val).longValue();
         }
-        return ret;
+        return -1;
     }
 
+    protected boolean getBoolean(Map map, String name) {
+        Object val = map.get(name);
+        if(val instanceof Boolean) {
+            return (Boolean) val;
+        }
+        return false;
+    }
 }
