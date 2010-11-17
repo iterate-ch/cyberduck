@@ -19,11 +19,9 @@ package ch.cyberduck.core.dropbox;
  * dkocher@cyberduck.ch
  */
 
-import oauth.signpost.exception.OAuthException;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.http.HTTP4Session;
 
-import org.apache.http.HttpException;
 import org.apache.log4j.Logger;
 
 import com.dropbox.client.Account;
@@ -73,24 +71,21 @@ public class DropboxSession extends HTTP4Session {
 
         // Prompt the login credentials first
         this.login();
+
+        Account account = this.getClient().account();
+        log.info("Logged in as " + account.getDisplayName() + "(" + account.getUid() + ")");
+
         this.fireConnectionDidOpenEvent();
     }
 
     @Override
     protected void login(LoginController controller, Credentials credentials) throws IOException {
+        String key = Preferences.instance().getProperty("dropbox.key");
+        String secret = Preferences.instance().getProperty("dropbox.secret");
         try {
-            String key = Preferences.instance().getProperty("dropbox.key");
-            String secret = Preferences.instance().getProperty("dropbox.secret");
             client.authenticate(key, secret, credentials.getUsername(), credentials.getPassword());
-
-            Account account = this.getClient().account();
-            log.info("Logged in as " + account.getDisplayName() + "(" + account.getUid() + ")");
         }
-        catch(HttpException e) {
-            controller.fail(this.getHost().getProtocol(), credentials, e.getMessage());
-            this.login();
-        }
-        catch(OAuthException e) {
+        catch(IOException e) {
             controller.fail(this.getHost().getProtocol(), credentials, e.getMessage());
             this.login();
         }

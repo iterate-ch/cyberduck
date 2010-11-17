@@ -29,7 +29,6 @@ import ch.cyberduck.core.ConnectionCanceledException;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpEntity;
-import org.apache.http.HttpException;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -110,29 +109,26 @@ public abstract class AbstractHttpDropboxClient {
      * @throws IOException
      * @throws OAuthException
      */
-    public void authenticate(String key, String secret, String username, String password) throws OAuthException, IOException, HttpException {
+    public void authenticate(String key, String secret, String username, String password) throws IOException {
         String[] params = {"email", username, "password", password};
 
         OAuthConsumer consumer = new CommonsHttpOAuthConsumer(key, secret);
-        HttpGet req = new HttpGet(this.getUrl("/token", params, false));
+        HttpGet request = new HttpGet(this.getUrl("/token", params, false));
         try {
-            consumer.sign(req);
+            consumer.sign(request);
         }
         catch(OAuthException e) {
             throw new IOException(e.getMessage());
         }
-        HttpResponse response = client.execute(req);
-        int status = response.getStatusLine().getStatusCode();
-        if(200 != status) {
-            throw new HttpException(response.getStatusLine().getReasonPhrase());
-        }
-        JSONObject creds = this.parse(response);
-        String token_key = (String) creds.get("token");
-        String token_secret = (String) creds.get("secret");
+
+        JSONObject credentials = this.parse(this.execute(request));
+
+        String token_key = credentials.get("token").toString();
+        String token_secret = credentials.get("secret").toString();
         log.info("Obtained Token Key:" + token_key);
         log.info("Obtained Token Secret:" + token_secret);
 
-        this.auth = new Authenticator(key, secret,
+        auth = new Authenticator(key, secret,
                 this.getRequestPath("/oauth/request_token"), this.getRequestPath("/oauth/access_token"), this.getRequestPath("/oauth/authorize"),
                 token_key, token_secret);
     }
@@ -151,7 +147,7 @@ public abstract class AbstractHttpDropboxClient {
         catch(OAuthException e) {
             throw new IOException(e.getMessage());
         }
-        return this.executeRequest(req);
+        return this.execute(req);
     }
 
 
@@ -207,11 +203,10 @@ public abstract class AbstractHttpDropboxClient {
      */
     protected void finish(HttpResponse response) throws IOException {
         HttpEntity entity = response.getEntity();
-        if(null == entity) {
-            return;
+        if(null != entity) {
+            // Release all allocated resources
+            entity.consumeContent();
         }
-        // Release all allocated resources
-        entity.consumeContent();
         this.verify(response);
     }
 
@@ -235,18 +230,20 @@ public abstract class AbstractHttpDropboxClient {
      * @throws IOException
      */
     protected JSONObject parse(HttpResponse response) throws IOException {
-        this.verify(response);
         try {
-            JSONParser parser = new JSONParser();
+            this.verify(response);
             String body = this.readResponse(response);
-            return (JSONObject) parser.parse(body);
+            return (JSONObject) new JSONParser().parse(body);
         }
         catch(ParseException e) {
             throw new IOException("Invalid JSON response from server");
         }
+        finally {
+            this.finish(response);
+        }
     }
 
-    protected HttpResponse executeRequest(HttpUriRequest req) throws IOException {
+    protected HttpResponse execute(HttpUriRequest req) throws IOException {
         return client.execute(req);
     }
 
