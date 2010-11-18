@@ -1,4 +1,4 @@
-﻿// 
+﻿﻿//
 // Copyright (c) 2010 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
@@ -646,10 +646,11 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
             }
             View.DistributionEnabled = stop && enable;
-            View.DistributionLoggingEnabled = stop && enable;
-            View.DistributionCnameEnabled = stop && enable;
             View.DistributionDeliveryMethodEnabled = stop && enable;
-            View.DistributionDefaultRootEnabled = stop && enable && session.cdn().isDefaultRootSupported();
+            View.DistributionLoggingEnabled = stop && enable && session.cdn().isLoggingSupported(View.DistributionDeliveryMethod);
+            View.DistributionCnameEnabled = stop && enable && session.cdn().isCnameSupported(View.DistributionDeliveryMethod);
+            View.DistributionInvalidateObjectsEnabled = stop && enable && session.cdn().isInvalidationSupported();
+            View.DistributionDefaultRootEnabled = stop && enable && session.cdn().isDefaultRootSupported(View.DistributionDeliveryMethod);
             if (stop)
             {
                 View.DistributionAnimationActive = false;

@@ -78,12 +78,25 @@ public class Distribution {
     /**
      * Protocol and context of distribution.
      */
-    public static interface Method {
+    public static abstract class Method {
         public abstract String toString();
 
         public abstract String getProtocol();
 
         public abstract String getContext();
+
+        public static Method forName(String name) {
+            if(DOWNLOAD.toString().equals(name)) {
+                return DOWNLOAD;
+            }
+            if(STREAMING.toString().equals(name)) {
+                return STREAMING;
+            }
+            if(CUSTOM.toString().equals(name)) {
+                return CUSTOM;
+            }
+            return null;
+        }
     }
 
     public static final Method DOWNLOAD = new Method() {
@@ -91,10 +104,12 @@ public class Distribution {
             return Locale.localizedString("Download (HTTP)", "S3");
         }
 
+        @Override
         public String getProtocol() {
             return "http://";
         }
 
+        @Override
         public String getContext() {
             return "";
         }
@@ -105,10 +120,12 @@ public class Distribution {
             return Locale.localizedString("Custom Origin Server (HTTP/HTTPS)", "S3");
         }
 
+        @Override
         public String getProtocol() {
             return "http://";
         }
 
+        @Override
         public String getContext() {
             return "";
         }
@@ -119,10 +136,12 @@ public class Distribution {
             return Locale.localizedString("Streaming (RTMP)", "S3");
         }
 
+        @Override
         public String getProtocol() {
             return "rtmp://";
         }
 
+        @Override
         public String getContext() {
             return "/cfx/st";
         }

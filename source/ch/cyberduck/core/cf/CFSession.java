@@ -316,11 +316,19 @@ public class CFSession extends CloudHTTP3Session {
                     throw new UnsupportedOperationException();
                 }
 
-                public boolean isInvalidationSupported() {
+                public boolean isInvalidationSupported(Distribution.Method method) {
                     return false;
                 }
 
-                public boolean isDefaultRootSupported() {
+                public boolean isDefaultRootSupported(Distribution.Method method) {
+                    return false;
+                }
+
+                public boolean isLoggingSupported(Distribution.Method method) {
+                    return method.equals(Distribution.DOWNLOAD);
+                }
+
+                public boolean isCnameSupported(Distribution.Method method) {
                     return false;
                 }
 

@@ -2156,13 +2156,13 @@ public class InfoController extends ToolbarWindowController {
                 break;
             }
         }
+        Distribution.Method method = Distribution.Method.forName(distributionDeliveryPopup.selectedItem().representedObject());
         distributionEnableButton.setEnabled(stop && enable);
-        distributionLoggingButton.setEnabled(stop && enable);
-        distributionCnameField.setEnabled(stop && enable);
         distributionDeliveryPopup.setEnabled(stop && enable);
-        distributionInvalidateObjectsButton.setEnabled(stop && enable && session.cdn().isInvalidationSupported());
-        String distribution = distributionDeliveryPopup.selectedItem().representedObject();
-        distributionDefaultRootPopup.setEnabled(stop && enable && session.cdn().isDefaultRootSupported());
+        distributionLoggingButton.setEnabled(stop && enable && session.cdn().isLoggingSupported(method));
+        distributionCnameField.setEnabled(stop && enable && session.cdn().isCnameSupported(method));
+        distributionInvalidateObjectsButton.setEnabled(stop && enable && session.cdn().isInvalidationSupported(method));
+        distributionDefaultRootPopup.setEnabled(stop && enable && session.cdn().isDefaultRootSupported(method));
         if(stop) {
             distributionProgress.stopAnimation(null);
         }
@@ -2179,10 +2179,10 @@ public class InfoController extends ToolbarWindowController {
                 public void run() {
                     final Session session = controller.getSession();
                     Distribution.Method method = Distribution.CUSTOM;
-                    if(distributionDeliveryPopup.selectedItem().representedObject().equals(Distribution.STREAMING.toString())) {
+                    if(Distribution.Method.forName(distributionDeliveryPopup.selectedItem().representedObject()).equals(Distribution.STREAMING)) {
                         method = Distribution.STREAMING;
                     }
-                    else if(distributionDeliveryPopup.selectedItem().representedObject().equals(Distribution.DOWNLOAD.toString())) {
+                    else if(Distribution.Method.forName(distributionDeliveryPopup.selectedItem().representedObject()).equals(Distribution.DOWNLOAD)) {
                         method = Distribution.DOWNLOAD;
                     }
                     session.cdn().invalidate(session.cdn().getOrigin(method, getSelected().getContainerName()), method, files);
@@ -2210,10 +2210,10 @@ public class InfoController extends ToolbarWindowController {
                 public void run() {
                     final Session session = controller.getSession();
                     Distribution.Method method = Distribution.CUSTOM;
-                    if(distributionDeliveryPopup.selectedItem().representedObject().equals(Distribution.STREAMING.toString())) {
+                    if(Distribution.Method.forName(distributionDeliveryPopup.selectedItem().representedObject()).equals(Distribution.STREAMING)) {
                         method = Distribution.STREAMING;
                     }
-                    else if(distributionDeliveryPopup.selectedItem().representedObject().equals(Distribution.DOWNLOAD.toString())) {
+                    else if(Distribution.Method.forName(distributionDeliveryPopup.selectedItem().representedObject()).equals(Distribution.DOWNLOAD)) {
                         method = Distribution.DOWNLOAD;
                     }
                     if(StringUtils.isNotBlank(distributionCnameField.stringValue())) {
@@ -2321,7 +2321,7 @@ public class InfoController extends ToolbarWindowController {
                             break;
                         }
                     }
-                    if(session.cdn().isDefaultRootSupported()) {
+                    if(session.cdn().isDefaultRootSupported(distribution.getMethod())) {
                         for(AbstractPath next : getSelected().getContainer().children()) {
                             if(next.attributes().isFile()) {
                                 distributionDefaultRootPopup.addItemWithTitle(next.getName());

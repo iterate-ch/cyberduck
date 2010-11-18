@@ -231,7 +231,9 @@ public class CloudFrontDistributionConfiguration extends HTTP3Session implements
             // Configure CDN
             LoggingStatus l = null;
             if(logging) {
-                l = new LoggingStatus(origin, Preferences.instance().getProperty("cloudfront.logging.prefix"));
+                if(this.isLoggingSupported(method)) {
+                    l = new LoggingStatus(origin, Preferences.instance().getProperty("cloudfront.logging.prefix"));
+                }
             }
             StringBuilder name = new StringBuilder(Locale.localizedString("Amazon CloudFront", "S3")).append(" ").append(method.toString());
             if(enabled) {
@@ -288,11 +290,21 @@ public class CloudFrontDistributionConfiguration extends HTTP3Session implements
         }
     }
 
-    public boolean isDefaultRootSupported() {
+    public boolean isDefaultRootSupported(ch.cyberduck.core.cdn.Distribution.Method method) {
+        return method.equals(ch.cyberduck.core.cdn.Distribution.DOWNLOAD)
+                || method.equals(ch.cyberduck.core.cdn.Distribution.CUSTOM);
+    }
+
+    public boolean isInvalidationSupported(ch.cyberduck.core.cdn.Distribution.Method method) {
         return true;
     }
 
-    public boolean isInvalidationSupported() {
+    public boolean isLoggingSupported(ch.cyberduck.core.cdn.Distribution.Method method) {
+        return method.equals(ch.cyberduck.core.cdn.Distribution.DOWNLOAD)
+                || method.equals(ch.cyberduck.core.cdn.Distribution.STREAMING);
+    }
+
+    public boolean isCnameSupported(ch.cyberduck.core.cdn.Distribution.Method method) {
         return true;
     }
 
@@ -361,36 +373,35 @@ public class CloudFrontDistributionConfiguration extends HTTP3Session implements
      * @return
      */
     private String readInvalidationStatus(ch.cyberduck.core.cdn.Distribution distribution) throws IOException {
-        if(this.isInvalidationSupported()) {
-            try {
-                CloudFrontService cf = this.getClient();
+        try {
+            CloudFrontService cf = this.getClient();
 
-                final long reference = System.currentTimeMillis();
-                boolean complete = false;
-                int inprogress = 0;
-                List<InvalidationSummary> summaries = cf.listInvalidations(distribution.getId());
-                for(InvalidationSummary s : summaries) {
-                    if("Completed".equals(s.getStatus())) {
-                        // No schema for status enumeration. Fail.
-                        complete = true;
-                    }
-                    else {
-                        // InProgress
-                        inprogress++;
-                    }
+            final long reference = System.currentTimeMillis();
+            boolean complete = false;
+            int inprogress = 0;
+            List<InvalidationSummary> summaries = cf.listInvalidations(distribution.getId());
+            for(InvalidationSummary s : summaries) {
+                if("Completed".equals(s.getStatus())) {
+                    // No schema for status enumeration. Fail.
+                    complete = true;
                 }
-                if(inprogress > 0) {
-                    return MessageFormat.format(Locale.localizedString("{0} invalidations in progress", "S3"), inprogress);
-                }
-                if(complete) {
-                    return MessageFormat.format(Locale.localizedString("{0} invalidations completed", "S3"), summaries.size());
+                else {
+                    // InProgress
+                    inprogress++;
                 }
             }
-            catch(CloudFrontServiceException e) {
-                this.error("Cannot read CDN configuration", e);
+            if(inprogress > 0) {
+                return MessageFormat.format(Locale.localizedString("{0} invalidations in progress", "S3"), inprogress);
             }
+            if(complete) {
+                return MessageFormat.format(Locale.localizedString("{0} invalidations completed", "S3"), summaries.size());
+            }
+            return Locale.localizedString("None");
         }
-        return Locale.localizedString("None");
+        catch(CloudFrontServiceException e) {
+            this.error("Cannot read CDN configuration", e);
+        }
+        return Locale.localizedString("Unknown");
     }
 
     public void clear() {
@@ -572,7 +583,9 @@ public class CloudFrontDistributionConfiguration extends HTTP3Session implements
                 d.getCNAMEs(),
                 distributionConfig.isLoggingEnabled(),
                 distributionConfig.getDefaultRootObject());
-        distribution.setInvalidationStatus(this.readInvalidationStatus(distribution));
+        if(this.isInvalidationSupported(method)) {
+            distribution.setInvalidationStatus(this.readInvalidationStatus(distribution));
+        }
         return distribution;
     }
 

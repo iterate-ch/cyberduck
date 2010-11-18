@@ -67,16 +67,29 @@ public interface DistributionConfiguration {
     void invalidate(String origin, Distribution.Method method, List<Path> files);
 
     /**
+     * @param method
      * @return True if objects in the edge location can be deleted from the CDN
      */
-    boolean isInvalidationSupported();
+    boolean isInvalidationSupported(Distribution.Method method);
 
     /**
      * Index file for root of container
      *
+     * @param method
      * @return
      */
-    boolean isDefaultRootSupported();
+    boolean isDefaultRootSupported(Distribution.Method method);
+
+    /**
+     * @return
+     */
+    boolean isLoggingSupported(Distribution.Method method);
+
+    /**
+     * @param method
+     * @return
+     */
+    boolean isCnameSupported(Distribution.Method method);
 
     /**
      * List available distribution methods for this CDN.
