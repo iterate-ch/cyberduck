@@ -532,13 +532,13 @@ public class GDPath extends Path {
                                     Service.GDataRequest.RequestType.INSERT, new URL(url.toString()),
                                     new ContentType(multipart.getContentType()));
                             if(request instanceof HttpGDataRequest) {
-                                // No internal buffering of request with a known content length
+                            // No internal buffering of request with a known content length
+                            // Size is incorect because of additional MIME header
 //                                ((HttpGDataRequest)request).getConnection().setFixedLengthStreamingMode(
 //                                        (int) this.getLocal().attributes().getSize()
 //                                );
-                                ((HttpGDataRequest)request).getConnection().setChunkedStreamingMode(
-                                        Preferences.instance().getInteger("connection.chunksize")
-                                );
+                                // Use chunked upload with default chunk size.
+                                ((HttpGDataRequest) request).getConnection().setChunkedStreamingMode(0);
                             }
                             out = request.getRequestStream();
 
