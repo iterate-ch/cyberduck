@@ -26,8 +26,8 @@ import ch.cyberduck.ui.cocoa.application.NSTableColumn;
 import ch.cyberduck.ui.cocoa.application.NSTableView;
 import ch.cyberduck.ui.cocoa.foundation.*;
 
-import org.rococoa.cocoa.foundation.NSUInteger;
 import org.rococoa.cocoa.foundation.NSInteger;
+import org.rococoa.cocoa.foundation.NSUInteger;
 
 import java.util.List;
 
@@ -73,16 +73,20 @@ public class BrowserListViewModel extends BrowserTableDataSource implements NSTa
                                                                                NSInteger row, NSUInteger operation) {
         if(controller.isMounted()) {
             Path destination = controller.workdir();
-            final int draggingColumn = view.columnAtPoint(draggingInfo.draggingLocation()).intValue();
-            if(0 == draggingColumn || 1 == draggingColumn) {
-                // Allow drags to icon and filename column
-                if(row.intValue() != -1) {
-                    Path p = this.children(this.controller.workdir()).get(row.intValue());
-                    if(p.attributes().isDirectory()) {
-                        destination = p;
+            if(row.intValue() < this.numberOfRowsInTableView(view).intValue()) {
+                int draggingColumn = view.columnAtPoint(draggingInfo.draggingLocation()).intValue();
+                if(0 == draggingColumn || 1 == draggingColumn) {
+                    // Allow drags to icon and filename column
+                    if(row.intValue() != -1) {
+                        Path p = this.children(this.controller.workdir()).get(row.intValue());
+                        if(p.attributes().isDirectory()) {
+                            destination = p;
+                        }
                     }
                 }
+                return super.validateDrop(view, destination, row, draggingInfo);
             }
+            // Draging to empty area in browser
             return super.validateDrop(view, destination, row, draggingInfo);
         }
         // Passing to super to look for URLs to mount
