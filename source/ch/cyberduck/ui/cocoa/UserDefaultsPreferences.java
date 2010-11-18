@@ -176,6 +176,17 @@ public class UserDefaultsPreferences extends Preferences {
         defaults.put("bookmark.import.transmit.location", "~/Library/Preferences/com.panic.Transmit.plist");
         defaults.put("bookmark.import.crossftp.location", "~/.crossftp/sites.xml");
         defaults.put("bookmark.import.fireftp.location", "~/Library/Application Support/Firefox/Profiles");
+        if(LocalFactory.createLocal("~/Downloads").exists()) {
+            // For 10.5 this usually exists and should be preferrred
+            defaults.put("queue.download.folder", "~/Downloads");
+        }
+        else {
+            defaults.put("queue.download.folder", "~/Desktop");
+        }
+        /**
+         * Location of the openssh known_hosts file
+         */
+        defaults.put("ssh.knownhosts", "~/.ssh/known_hosts");
     }
 
     /**

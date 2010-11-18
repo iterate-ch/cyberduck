@@ -1,4 +1,4 @@
-﻿﻿﻿//
+﻿﻿﻿﻿//
 // Copyright (c) 2010 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
@@ -282,7 +282,6 @@ namespace Ch.Cyberduck.Ui.Controller
 
             //disable reminder for procotol handler registration
             defaults.put("defaulthandler.reminder", false.ToString());
-            defaults.put("protocol.azure.tls.enable", true.ToString());
             defaults.put("application.support.path", RoamingApplicationDataPath);
             defaults.put("update.check.last", "0");
 
@@ -292,9 +291,6 @@ namespace Ch.Cyberduck.Ui.Controller
 
             defaults.put("queue.dock.badge", true.ToString());
 
-            defaults.put("editor.file.trash", false.ToString());
-
-            defaults.put("connection.host.max", "-1");
             defaults.put("ssh.knownhosts", Path.Combine(RoamingApplicationDataPath, "known_hosts"));
 
             //default browser toolbar set

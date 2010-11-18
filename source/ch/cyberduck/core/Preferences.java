@@ -360,13 +360,6 @@ public abstract class Preferences {
         defaults.put("queue.orderFrontOnStart", String.valueOf(true));
         defaults.put("queue.orderBackOnStop", String.valueOf(false));
 
-        if(LocalFactory.createLocal("~/Downloads").exists()) {
-            // For 10.5 this usually exists and should be preferrred
-            defaults.put("queue.download.folder", "~/Downloads");
-        }
-        else {
-            defaults.put("queue.download.folder", "~/Desktop");
-        }
         /**
          * Action when duplicate file exists
          */
@@ -666,10 +659,6 @@ public abstract class Preferences {
          * Use the SFTP subsystem or a SCP channel for file transfers over SSH
          */
         defaults.put("ssh.transfer", Protocol.SFTP.getIdentifier()); // Session.SCP
-        /**
-         * Location of the openssh known_hosts file
-         */
-        defaults.put("ssh.knownhosts", "~/.ssh/known_hosts");
 
         defaults.put("ssh.CSEncryption", "blowfish-cbc"); //client -> server encryption cipher
         defaults.put("ssh.SCEncryption", "blowfish-cbc"); //server -> client encryption cipher
