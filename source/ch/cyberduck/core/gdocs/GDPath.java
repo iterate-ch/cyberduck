@@ -550,6 +550,12 @@ public class GDPath extends Path {
                                 new URL(url.toString()),
                                 new ContentType(multipart.getContentType()));
                         if(request instanceof HttpGDataRequest) {
+                            // No internal buffering of request with a known content length
+                            // Size is incorect because of additional MIME header
+//                                ((HttpGDataRequest)request).getConnection().setFixedLengthStreamingMode(
+//                                        (int) this.getLocal().attributes().getSize()
+//                                );
+                            // Use chunked upload with default chunk size.
                             ((HttpGDataRequest) request).getConnection().setChunkedStreamingMode(0);
                         }
                         if(this.exists()) {
