@@ -1,4 +1,4 @@
-﻿// 
+﻿﻿//
 // Copyright (c) 2010 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
@@ -271,18 +271,10 @@ namespace Ch.Cyberduck.Ui.Controller
             IList<KeyValuePair<float, string>> list = new List<KeyValuePair<float, string>>();
             list.Add(new KeyValuePair<float, string>(BandwidthThrottle.UNLIMITED,
                                                      Locale.localizedString("Unlimited Bandwidth", "Preferences")));
-            list.Add(new KeyValuePair<float, string>(5*1024, Locale.localizedString("5 KB/s", "Preferences")));
-            list.Add(new KeyValuePair<float, string>(10*1024, Locale.localizedString("10 KB/s", "Preferences")));
-            list.Add(new KeyValuePair<float, string>(20*1024, Locale.localizedString("20 KB/s", "Preferences")));
-            list.Add(new KeyValuePair<float, string>(30*1024, Locale.localizedString("30 KB/s", "Preferences")));
-            list.Add(new KeyValuePair<float, string>(40*1024, Locale.localizedString("40 KB/s", "Preferences")));
-            list.Add(new KeyValuePair<float, string>(50*1024, Locale.localizedString("50 KB/s", "Preferences")));
-            list.Add(new KeyValuePair<float, string>(75*1024, Locale.localizedString("75 KB/s", "Preferences")));
-            list.Add(new KeyValuePair<float, string>(100*1024, Locale.localizedString("100 KB/s", "Preferences")));
-            list.Add(new KeyValuePair<float, string>(150*1024, Locale.localizedString("150 KB/s", "Preferences")));
-            list.Add(new KeyValuePair<float, string>(200*1024, Locale.localizedString("200 KB/s", "Preferences")));
-            list.Add(new KeyValuePair<float, string>(500*1024, Locale.localizedString("500 KB/s", "Preferences")));
-            list.Add(new KeyValuePair<float, string>(1000*1024, Locale.localizedString("1 MB/s", "Preferences")));
+            foreach (String option in Preferences.instance().getProperty("queue.bandwidth.options").Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+            {
+                list.Add(new KeyValuePair<float, string>(Convert.ToInt32(option.Trim()), (Status.getSizeAsString(Convert.ToInt32(option.Trim())) + "/s")));
+            }
             View.PopulateBandwidthList(list);
         }
 
