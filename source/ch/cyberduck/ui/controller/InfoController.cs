@@ -649,7 +649,7 @@ namespace Ch.Cyberduck.Ui.Controller
             View.DistributionDeliveryMethodEnabled = stop && enable;
             View.DistributionLoggingEnabled = stop && enable && session.cdn().isLoggingSupported(View.DistributionDeliveryMethod);
             View.DistributionCnameEnabled = stop && enable && session.cdn().isCnameSupported(View.DistributionDeliveryMethod);
-            View.DistributionInvalidateObjectsEnabled = stop && enable && session.cdn().isInvalidationSupported();
+            View.DistributionInvalidateObjectsEnabled = stop && enable && session.cdn().isInvalidationSupported(View.DistributionDeliveryMethod);
             View.DistributionDefaultRootEnabled = stop && enable && session.cdn().isDefaultRootSupported(View.DistributionDeliveryMethod);
             if (stop)
             {
@@ -1791,7 +1791,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         }
                     }
                     Session session = BrowserController.getSession();
-                    if (session.cdn().isDefaultRootSupported())
+                    if (session.cdn().isDefaultRootSupported(_view.DistributionDeliveryMethod))
                     {
                         List<String> defaultRoots = new List<string> {Locale.localizedString("None")};
                         foreach (AbstractPath next in _infoController._files[0].getContainer().children())
