@@ -391,15 +391,12 @@ namespace Ch.Cyberduck.Ui.Controller
                     View.PathEnabled = false;
                 }
             }
-            View.ConnectModeFieldEnabled = protocol.equals(Protocol.FTP)
-                                           || protocol.equals(Protocol.FTP_TLS);
-            bool supportsCustomEncoding = protocol.equals(Protocol.FTP)
-                                          || protocol.equals(Protocol.FTP_TLS) || protocol.equals(Protocol.SFTP);
-            if (!supportsCustomEncoding)
+            View.ConnectModeFieldEnabled = protocol.isConnectModeConfigurable();
+            if (!protocol.isEncodingConfigurable())
             {
                 View.SelectedEncoding = Default;
             }
-            View.EncodingFieldEnabled = supportsCustomEncoding;
+            View.EncodingFieldEnabled = protocol.isEncodingConfigurable();
 
             UpdateIdentity();
             UpdateUrlLabel();
