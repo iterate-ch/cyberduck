@@ -540,6 +540,7 @@ public class GDPath extends Path {
                                 // Use chunked upload with default chunk size.
                                 ((HttpGDataRequest) request).getConnection().setChunkedStreamingMode(0);
                             }
+                            request.setHeader("Expect", "100-Continue");
                             out = request.getRequestStream();
 
                             final PipedOutputStream pipe = new PipedOutputStream();
