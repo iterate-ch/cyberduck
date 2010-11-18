@@ -72,7 +72,6 @@ public class Status {
     }
 
     /**
-     *
      * @param size
      * @param number
      * @return
@@ -83,7 +82,7 @@ public class Status {
 
     /**
      * @param size
-     * @param bytes Report file size as bytes or bits.
+     * @param bytes  Report file size as bytes or bits.
      * @param number Include plain format of bytes
      * @return
      */
@@ -146,7 +145,7 @@ public class Status {
 
     public void setComplete(boolean complete) {
         this.complete = complete;
-        log.info("Complete:" + this.getCurrent());
+        log.info("Complete:" + complete + "," + this.getCurrent());
     }
 
     public boolean isComplete() {
