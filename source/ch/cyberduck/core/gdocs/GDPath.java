@@ -236,19 +236,28 @@ public class GDPath extends Path {
     /**
      * @return Includes the protocol and hostname only
      */
-    protected StringBuilder getFeed() {
-        final StringBuilder feed = new StringBuilder(this.getSession().getHost().getProtocol().getScheme()).append("://");
-        feed.append(this.getSession().getHost().getHostname());
+    protected StringBuilder getPrivateFeed() {
+        final StringBuilder feed = this.getHostUrl();
         feed.append("/feeds/default/private/full/");
         return feed;
     }
 
+    private StringBuilder getHostUrl() {
+        final StringBuilder feed = new StringBuilder(this.getSession().getHost().getProtocol().getScheme()).append("://");
+        feed.append(this.getSession().getHost().getHostname());
+        return feed;
+    }
+
     protected String getResourceFeed() throws MalformedURLException {
-        return this.getFeed().append(this.getResourceId()).toString();
+        return this.getPrivateFeed().append(this.getResourceId()).toString();
+    }
+
+    protected String getMediaFeed() throws MalformedURLException {
+        return this.getHostUrl().append("/feeds/default/media/document%3A").append(this.getDocumentId()).toString();
     }
 
     protected String getFolderFeed() throws MalformedURLException {
-        final StringBuilder feed = this.getFeed();
+        final StringBuilder feed = this.getPrivateFeed();
         if(this.isRoot()) {
             return feed.append("folder%3Aroot/contents").toString();
         }
@@ -492,92 +501,106 @@ public class GDPath extends Path {
                     final MediaStreamSource source = new MediaStreamSource(this.getLocal().getInputStream(), mime,
                             new DateTime(this.attributes().getModificationDate()),
                             this.getLocal().attributes().getSize());
+                    final MediaContent content = new MediaContent();
+                    content.setMediaSource(source);
+                    content.setMimeType(new ContentType(mime));
+                    content.setLength(this.getLocal().attributes().getSize());
+
+                    DocumentListEntry document;
                     if(this.exists()) {
                         // First, fetch entry using the resourceId
                         URL url = new URL(this.getResourceFeed());
-                        final DocumentListEntry updated = this.getSession().getClient().getEntry(url, DocumentListEntry.class);
-                        updated.setMediaSource(source);
-                        updated.updateMedia(true);
+                        document = this.getSession().getClient().getEntry(url, DocumentListEntry.class);
+                        this.setDocumentType(document.getType());
                     }
                     else {
-                        final MediaContent content = new MediaContent();
-                        content.setMediaSource(source);
-                        content.setMimeType(new ContentType(mime));
-                        content.setLength(this.getLocal().attributes().getSize());
-                        final DocumentListEntry document = new DocumentListEntry();
-                        document.setContent(content);
+                        document = new DocumentListEntry();
                         document.setTitle(new PlainTextConstruct(this.getName()));
+                    }
+                    document.setContent(content);
 
-                        this.getSession().message(MessageFormat.format(Locale.localizedString("Uploading {0}", "Status"),
-                                this.getName()));
-                        status().setResume(false);
+                    this.getSession().message(MessageFormat.format(Locale.localizedString("Uploading {0}", "Status"),
+                            this.getName()));
+                    status().setResume(false);
 
-                        String feed = ((GDPath) this.getParent()).getFolderFeed();
-                        StringBuilder url = new StringBuilder(feed);
-                        if(this.isOcrSupported()) {
-                            // Image file type
-                            url.append("?ocr=").append(Preferences.instance().getProperty("google.docs.upload.ocr"));
+                    String feed;
+                    if(this.exists()) {
+                        feed = this.getMediaFeed();
+                    }
+                    else {
+                        feed = ((GDPath) this.getParent()).getFolderFeed();
+                    }
+                    StringBuilder url = new StringBuilder(feed);
+                    if(this.isOcrSupported()) {
+                        // Image file type
+                        url.append("?ocr=").append(Preferences.instance().getProperty("google.docs.upload.ocr"));
+                    }
+                    else if(this.isConversionSupported()) {
+                        // Convertible to Google Docs file type
+                        url.append("?convert=").append(Preferences.instance().getProperty("google.docs.upload.convert"));
+                    }
+                    Service.GDataRequest request = null;
+                    try {
+                        // Write as MIME multipart containing the entry and media.  Use the
+                        // content type from the multipart since this contains auto-generated
+                        // boundary attributes.
+                        final MediaMultipart multipart = new MediaMultipart(document, document.getMediaSource());
+                        request = this.getSession().getClient().createRequest(
+                                this.exists() ? Service.GDataRequest.RequestType.UPDATE : Service.GDataRequest.RequestType.INSERT,
+                                new URL(url.toString()),
+                                new ContentType(multipart.getContentType()));
+                        if(request instanceof HttpGDataRequest) {
+                            ((HttpGDataRequest) request).getConnection().setChunkedStreamingMode(0);
                         }
-                        else if(this.isConversionSupported()) {
-                            // Convertible to Google Docs file type
-                            url.append("?convert=").append(Preferences.instance().getProperty("google.docs.upload.convert"));
+                        if(this.exists()) {
+                            request.setEtag(document.getEtag());
                         }
-                        Service.GDataRequest request = null;
-                        try {
-                            // Write as MIME multipart containing the entry and media.  Use the
-                            // content type from the multipart since this contains auto-generated
-                            // boundary attributes.
-                            final MediaMultipart multipart = new MediaMultipart(document, document.getMediaSource());
-                            request = this.getSession().getClient().createRequest(
-                                    Service.GDataRequest.RequestType.INSERT, new URL(url.toString()),
-                                    new ContentType(multipart.getContentType()));
-                            if(request instanceof HttpGDataRequest) {
-                            // No internal buffering of request with a known content length
-                            // Size is incorect because of additional MIME header
-//                                ((HttpGDataRequest)request).getConnection().setFixedLengthStreamingMode(
-//                                        (int) this.getLocal().attributes().getSize()
-//                                );
-                                // Use chunked upload with default chunk size.
-                                ((HttpGDataRequest) request).getConnection().setChunkedStreamingMode(0);
-                            }
-                            request.setHeader("Expect", "100-Continue");
-                            out = request.getRequestStream();
+                        // Expect: Continue not supported
+//                        request.setHeader("Expect", "100-Continue");
+//                        // Parse response for HTTP error message.
+//                        try {
+//                            request.execute();
+//                        }
+//                        catch(ServiceException e) {
+//                            this.status().setComplete(false);
+//                            throw e;
+//                        }
+                        out = request.getRequestStream();
 
-                            final PipedOutputStream pipe = new PipedOutputStream();
-                            in = new PipedInputStream(pipe);
-                            ThreadPool.instance().execute(new Runnable() {
-                                public void run() {
-                                    try {
-                                        multipart.writeTo(pipe);
-                                        pipe.flush();
-                                        pipe.close();
-                                    }
-                                    catch(IOException e) {
-                                        log.error(e.getMessage());
-                                    }
-                                    catch(MessagingException e) {
-                                        log.error(e.getMessage());
-                                    }
+                        final PipedOutputStream pipe = new PipedOutputStream();
+                        in = new PipedInputStream(pipe);
+                        ThreadPool.instance().execute(new Runnable() {
+                            public void run() {
+                                try {
+                                    multipart.writeTo(pipe);
+                                    pipe.flush();
+                                    pipe.close();
                                 }
-                            });
-                            this.upload(out, in, throttle, listener);
-                            // Parse response for HTTP error message.
-                            try {
-                                request.execute();
+                                catch(IOException e) {
+                                    log.error(e.getMessage());
+                                }
+                                catch(MessagingException e) {
+                                    log.error(e.getMessage());
+                                }
                             }
-                            catch(ServiceException e) {
-                                this.status().setComplete(false);
-                                throw e;
-                            }
+                        });
+                        this.upload(out, in, throttle, listener);
+                        // Parse response for HTTP error message.
+                        try {
+                            request.execute();
                         }
-                        catch(MessagingException e) {
-                            throw new ServiceException(
-                                    CoreErrorDomain.ERR.cantWriteMimeMultipart, e);
+                        catch(ServiceException e) {
+                            this.status().setComplete(false);
+                            throw e;
                         }
-                        finally {
-                            if(request != null) {
-                                request.end();
-                            }
+                    }
+                    catch(MessagingException e) {
+                        throw new ServiceException(
+                                CoreErrorDomain.ERR.cantWriteMimeMultipart, e);
+                    }
+                    finally {
+                        if(request != null) {
+                            request.end();
                         }
                     }
                 }
