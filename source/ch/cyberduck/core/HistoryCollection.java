@@ -18,10 +18,13 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.ui.DateFormatterFactory;
+
 import org.apache.log4j.Logger;
 
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 
 /**
  * @version $Id$
@@ -60,6 +63,12 @@ public class HistoryCollection extends AbstractFolderHostCollection {
         if(this.contains(bookmark)) {
             this.remove(bookmark);
         }
+        // Set comment to timestamp when server was last accessed
+        Date timestamp = bookmark.getTimestamp();
+        if(null != timestamp) {
+            // There might be files from previous versions that have no timestamp yet.
+            bookmark.setComment(DateFormatterFactory.instance().getLongFormat(timestamp.getTime()));
+        }
         super.add(row, bookmark);
     }
 
@@ -74,6 +83,12 @@ public class HistoryCollection extends AbstractFolderHostCollection {
         if(this.contains(bookmark)) {
             this.remove(bookmark);
         }
+        // Set comment to timestamp when server was last accessed
+        Date timestamp = bookmark.getTimestamp();
+        if(null != timestamp) {
+            // There might be files from previous versions that have no timestamp yet.
+            bookmark.setComment(DateFormatterFactory.instance().getLongFormat(timestamp.getTime()));
+        }
         return super.add(bookmark);
     }
 
@@ -84,15 +99,13 @@ public class HistoryCollection extends AbstractFolderHostCollection {
     protected void sort() {
         Collections.sort(this, new Comparator<Host>() {
             public int compare(Host o1, Host o2) {
-                Local f1 = getFile(o1);
-                Local f2 = getFile(o2);
-                if(f1.attributes().getModificationDate() < f2.attributes().getModificationDate()) {
+                if(null == o1.getTimestamp()) {
                     return 1;
                 }
-                if(f1.attributes().getModificationDate() > f2.attributes().getModificationDate()) {
+                if(null == o2.getTimestamp()) {
                     return -1;
                 }
-                return 0;
+                return -o1.getTimestamp().compareTo(o2.getTimestamp());
             }
         });
     }

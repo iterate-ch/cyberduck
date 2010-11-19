@@ -603,18 +603,19 @@ public abstract class Session implements TranscriptListener {
      */
     protected void fireConnectionDidOpenEvent() {
         log.debug("connectionDidOpen");
+        // Update last accessed timestamp
+        host.setTimestamp(new Date());
+        // Update status flag
+        opening = false;
+
+        HistoryCollection history = HistoryCollection.defaultCollection();
+        history.add(new Host(host.getAsDictionary()));
 
         for(ConnectionListener listener : connectionListeners.toArray(new ConnectionListener[connectionListeners.size()])) {
             listener.connectionDidOpen();
         }
         this.message(MessageFormat.format(Locale.localizedString("{0} connection opened", "Status"),
                 host.getProtocol().getName()));
-
-        // Update last accessed timestamp
-        host.setTimestamp(new Date());
-
-        // Update status flag
-        opening = false;
     }
 
     /**

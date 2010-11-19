@@ -3370,11 +3370,9 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
                         Growl.instance().notify("Connection opened", host.getHostname());
 
-                        final HistoryCollection history = HistoryCollection.defaultCollection();
-                        history.add(host);
-
                         // Set the window title
-                        window.setRepresentedFilename(history.getFile(host).getAbsolute());
+                        window.setRepresentedFilename(
+                                HistoryCollection.defaultCollection().getFile(host).getAbsolute());
 
                         if(Preferences.instance().getBoolean("browser.confirmDisconnect")) {
                             window.setDocumentEdited(true);

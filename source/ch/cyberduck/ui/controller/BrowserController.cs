@@ -3015,8 +3015,6 @@ namespace Ch.Cyberduck.Ui.Controller
                                                    _controller.View.RefreshBookmark(_controller.getSession().getHost());
                                                    ch.cyberduck.ui.growl.Growl.instance().notify("Connection opened",
                                                                                                  _host.getHostname());
-                                                   HistoryCollection history = HistoryCollection.defaultCollection();
-                                                   history.add(_host);
 
                                                    _controller.View.SecureConnection = _controller._session.isSecure();
                                                    _controller.View.CertBasedConnection =
