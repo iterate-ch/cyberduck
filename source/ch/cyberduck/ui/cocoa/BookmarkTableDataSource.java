@@ -119,6 +119,7 @@ public class BookmarkTableDataSource extends ListDataSource {
             }
         });
         this.setFilter(null);
+        cache.clear();
     }
 
     @Override
