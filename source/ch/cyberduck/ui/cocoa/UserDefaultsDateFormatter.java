@@ -26,6 +26,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSDateFormatter;
 import ch.cyberduck.ui.cocoa.foundation.NSLocale;
 
 import org.apache.log4j.Logger;
+import org.rococoa.Foundation;
 
 /**
  * @version $Id$
@@ -53,6 +54,9 @@ public class UserDefaultsDateFormatter implements DateFormatter {
         longDateFormatter.setDateStyle(NSDateFormatter.kCFDateFormatterLongStyle);
         longDateFormatter.setTimeStyle(NSDateFormatter.kCFDateFormatterLongStyle);
         longDateFormatter.setLocale(NSLocale.currentLocale());
+        if(longDateFormatter.respondsToSelector(Foundation.selector("setDoesRelativeDateFormatting:"))) {
+            longDateFormatter.setDoesRelativeDateFormatting(true);
+        }
     }
 
     /**
@@ -64,6 +68,9 @@ public class UserDefaultsDateFormatter implements DateFormatter {
         shortDateFormatter.setDateStyle(NSDateFormatter.kCFDateFormatterShortStyle);
         shortDateFormatter.setTimeStyle(NSDateFormatter.kCFDateFormatterShortStyle);
         shortDateFormatter.setLocale(NSLocale.currentLocale());
+        if(shortDateFormatter.respondsToSelector(Foundation.selector("setDoesRelativeDateFormatting:"))) {
+            shortDateFormatter.setDoesRelativeDateFormatting(true);
+        }
     }
 
     private static final NSDateFormatter mediumDateFormatter = NSDateFormatter.dateFormatter();
@@ -72,6 +79,9 @@ public class UserDefaultsDateFormatter implements DateFormatter {
         mediumDateFormatter.setDateStyle(NSDateFormatter.kCFDateFormatterMediumStyle);
         mediumDateFormatter.setTimeStyle(NSDateFormatter.kCFDateFormatterMediumStyle);
         mediumDateFormatter.setLocale(NSLocale.currentLocale());
+        if(mediumDateFormatter.respondsToSelector(Foundation.selector("setDoesRelativeDateFormatting:"))) {
+            mediumDateFormatter.setDoesRelativeDateFormatting(true);
+        }
     }
 
     /**

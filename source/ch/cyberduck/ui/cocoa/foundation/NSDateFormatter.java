@@ -53,6 +53,9 @@ public abstract class NSDateFormatter extends NSFormatter {
      */
     public abstract NSDateFormatter init();
 
+    public abstract void setDoesRelativeDateFormatting(boolean relative);
+
+
     /**
      * Original signature : <code>NSString* stringFromDate(NSDate*)</code><br>
      * <i>native declaration : :29</i>
