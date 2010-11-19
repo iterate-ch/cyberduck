@@ -25,6 +25,7 @@ import ch.cyberduck.core.aquaticprime.LicenseFactory;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.importer.*;
 import ch.cyberduck.core.serializer.HostReaderFactory;
+import ch.cyberduck.core.sparkle.Updater;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.core.threading.DefaultMainAction;
 import ch.cyberduck.ui.cocoa.application.*;
@@ -107,28 +108,34 @@ public class MainController extends BundleController implements NSApplication.De
             log.error("URL parameter is empty");
             return;
         }
-        final Host h = Host.parse(url);
-        if(StringUtils.isNotEmpty(h.getDefaultPath())) {
-            if(!h.getDefaultPath().endsWith(String.valueOf(Path.DELIMITER))) {
-                final Session s = SessionFactory.createSession(h);
-                final Path p = PathFactory.createPath(s, h.getDefaultPath(), Path.FILE_TYPE);
-                if(StringUtils.isNotBlank(p.getExtension())) {
-                    TransferController.instance().startTransfer(new DownloadTransfer(p));
-                    return;
+        if("x-cyberduck-action:update".equals(url)) {
+            Updater sparkle = Updater.create();
+            sparkle.checkForUpdates(null);
+        }
+        else {
+            final Host h = Host.parse(url);
+            if(StringUtils.isNotEmpty(h.getDefaultPath())) {
+                if(!h.getDefaultPath().endsWith(String.valueOf(Path.DELIMITER))) {
+                    final Session s = SessionFactory.createSession(h);
+                    final Path p = PathFactory.createPath(s, h.getDefaultPath(), Path.FILE_TYPE);
+                    if(StringUtils.isNotBlank(p.getExtension())) {
+                        TransferController.instance().startTransfer(new DownloadTransfer(p));
+                        return;
+                    }
                 }
             }
-        }
-        for(BrowserController controller : MainController.getBrowsers()) {
-            if(controller.isMounted()) {
-                if(controller.getSession().getHost().toURL().equals(h.toURL())) {
-                    // Handle browser window already connected to the same host. #4215
-                    controller.window().makeKeyAndOrderFront(null);
-                    return;
+            for(BrowserController controller : MainController.getBrowsers()) {
+                if(controller.isMounted()) {
+                    if(controller.getSession().getHost().toURL().equals(h.toURL())) {
+                        // Handle browser window already connected to the same host. #4215
+                        controller.window().makeKeyAndOrderFront(null);
+                        return;
+                    }
                 }
             }
+            BrowserController doc = newDocument();
+            doc.mount(h);
         }
-        BrowserController doc = newDocument();
-        doc.mount(h);
     }
 
     @Outlet
