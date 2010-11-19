@@ -95,7 +95,6 @@ public class Collection<E> extends ArrayList<E> implements CollectionListener<E>
         for(Iterator<E> iter = this.iterator(); iter.hasNext();) {
             E next = iter.next();
             iter.remove();
-            this.collectionItemRemoved(next);
         }
     }
 
