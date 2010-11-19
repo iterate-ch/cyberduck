@@ -521,6 +521,7 @@ public abstract class Preferences {
          * If set calculate MD5 sum of uploaded file and set metadata header Content-MD5
          */
         defaults.put("s3.upload.metadata.md5", String.valueOf(false));
+        defaults.put("cf.upload.metadata.md5", String.valueOf(false));
         /**
          * A prefix to apply to log file names
          */

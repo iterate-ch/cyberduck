@@ -273,18 +273,27 @@ public class CFPath extends CloudPath {
                 // No Content-Range support
                 final Status status = this.status();
                 status.setResume(false);
+                String md5sum = null;
+                if(Preferences.instance().getBoolean("cf.upload.metadata.md5")) {
+                    this.getSession().message(MessageFormat.format(Locale.localizedString("Compute MD5 hash of {0}", "Status"),
+                            this.getName()));
+                    md5sum = this.getLocal().attributes().getChecksum();
+                }
                 this.getSession().message(MessageFormat.format(Locale.localizedString("Uploading {0}", "Status"),
                         this.getName()));
 
                 final InputStream in;
                 MessageDigest digest = null;
-                try {
-                    digest = MessageDigest.getInstance("MD5");
-                }
-                catch(NoSuchAlgorithmException e) {
-                    log.error("MD5 calculation disabled:" + e.getMessage());
+                if(!Preferences.instance().getBoolean("cf.upload.metadata.md5")) {
+                    try {
+                        digest = MessageDigest.getInstance("MD5");
+                    }
+                    catch(NoSuchAlgorithmException e) {
+                        log.error("MD5 calculation disabled:" + e.getMessage());
+                    }
                 }
                 if(null == digest) {
+                    log.warn("MD5 calculation disabled");
                     in = this.getLocal().getInputStream();
                 }
                 else {
@@ -303,7 +312,7 @@ public class CFPath extends CloudPath {
                                     CFPath.this.upload(out, in, throttle, listener);
                                 }
                             },
-                            metadata, null
+                            metadata, md5sum
                     );
                 }
                 finally {
