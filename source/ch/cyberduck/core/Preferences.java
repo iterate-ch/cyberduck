@@ -517,7 +517,10 @@ public abstract class Preferences {
          * Show revisions as hidden files in browser
          */
         defaults.put("s3.revisions.enable", String.valueOf(true));
-
+        /**
+         * If set calculate MD5 sum of uploaded file and set metadata header Content-MD5
+         */
+        defaults.put("s3.upload.metadata.md5", String.valueOf(false));
         /**
          * A prefix to apply to log file names
          */

@@ -110,6 +110,11 @@ public class S3Session extends CloudHTTP3Session {
                                                    RequestEntity requestEntity, Map<String, String> requestParams) throws ServiceException {
             super.putObjectWithRequestEntityImpl(bucketName, object, requestEntity, requestParams);
         }
+
+        @Override
+        public void verifyExpectedAndActualETagValues(String expectedETag, StorageObject uploadedObject) throws ServiceException {
+            super.verifyExpectedAndActualETagValues(expectedETag, uploadedObject);
+        }
     }
 
     /**

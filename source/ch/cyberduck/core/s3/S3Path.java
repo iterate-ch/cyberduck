@@ -41,6 +41,8 @@ import org.jets3t.service.utils.ServiceUtils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.security.DigestInputStream;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
@@ -476,13 +478,15 @@ public class S3Path extends CloudPath {
                 S3Object object = new S3Object(this.getKey());
                 object.setContentType(this.getLocal().getMimeType());
                 object.setContentLength(this.getLocal().attributes().getSize());
-                try {
-                    this.getSession().message(MessageFormat.format(
-                            Locale.localizedString("Compute MD5 hash of {0}", "Status"), this.getName()));
-                    object.setMd5Hash(ServiceUtils.computeMD5Hash(this.getLocal().getInputStream()));
-                }
-                catch(NoSuchAlgorithmException e) {
-                    log.error(e.getMessage());
+                if(Preferences.instance().getBoolean("s3.upload.metadata.md5")) {
+                    try {
+                        this.getSession().message(MessageFormat.format(
+                                Locale.localizedString("Compute MD5 hash of {0}", "Status"), this.getName()));
+                        object.setMd5Hash(ServiceUtils.computeMD5Hash(this.getLocal().getInputStream()));
+                    }
+                    catch(NoSuchAlgorithmException e) {
+                        log.error(e.getMessage());
+                    }
                 }
                 Acl acl = Acl.EMPTY;
                 if(this.exists()) {
@@ -573,7 +577,24 @@ public class S3Path extends CloudPath {
                 // No Content-Range support
                 status.setResume(false);
 
-                final InputStream in = this.getLocal().getInputStream();
+                final InputStream in;
+                MessageDigest digest = null;
+                if(!Preferences.instance().getBoolean("s3.upload.metadata.md5")) {
+                    // Content-MD5 not set. Need to verify ourselves instad of S3
+                    try {
+                        digest = MessageDigest.getInstance("MD5");
+                    }
+                    catch(NoSuchAlgorithmException e) {
+                        log.error(e.getMessage());
+                    }
+                }
+                if(null == digest) {
+                    log.warn("MD5 calculation disabled");
+                    in = this.getLocal().getInputStream();
+                }
+                else {
+                    in = new DigestInputStream(this.getLocal().getInputStream(), digest);
+                }
                 try {
                     this.getSession().getClient().putObjectWithRequestEntityImpl(
                             this.getContainerName(), object, new InputStreamRequestEntity(in,
@@ -592,6 +613,13 @@ public class S3Path extends CloudPath {
                 }
                 finally {
                     IOUtils.closeQuietly(in);
+                }
+                if(null != digest) {
+                    this.getSession().message(MessageFormat.format(
+                            Locale.localizedString("Compute MD5 hash of {0}", "Status"), this.getName()));
+                    // Obtain locally-calculated MD5 hash.
+                    String hexMD5 = ServiceUtils.toHex(digest.digest());
+                    this.getSession().getClient().verifyExpectedAndActualETagValues(hexMD5, object);
                 }
             }
         }
