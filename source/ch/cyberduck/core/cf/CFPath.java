@@ -39,6 +39,9 @@ import com.rackspacecloud.client.cloudfiles.FilesObjectMetaData;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.security.DigestInputStream;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.text.MessageFormat;
 import java.text.ParseException;
 import java.util.Date;
@@ -270,16 +273,27 @@ public class CFPath extends CloudPath {
                 // No Content-Range support
                 final Status status = this.status();
                 status.setResume(false);
-                this.getSession().message(MessageFormat.format(Locale.localizedString("Compute MD5 hash of {0}", "Status"),
-                        this.getName()));
-                String md5sum = this.getLocal().attributes().getChecksum();
                 this.getSession().message(MessageFormat.format(Locale.localizedString("Uploading {0}", "Status"),
                         this.getName()));
 
-                final InputStream in = this.getLocal().getInputStream();
+                final InputStream in;
+                MessageDigest digest = null;
+                try {
+                    digest = MessageDigest.getInstance("MD5");
+                }
+                catch(NoSuchAlgorithmException e) {
+                    log.error("MD5 calculation disabled:" + e.getMessage());
+                }
+                if(null == digest) {
+                    in = this.getLocal().getInputStream();
+                }
+                else {
+                    in = new DigestInputStream(this.getLocal().getInputStream(), digest);
+                }
+                String etag = null;
                 try {
                     final HashMap<String, String> metadata = new HashMap<String, String>();
-                    this.getSession().getClient().storeObjectAs(this.getContainerName(), this.getKey(),
+                    etag = this.getSession().getClient().storeObjectAs(this.getContainerName(), this.getKey(),
                             new InputStreamRequestEntity(in,
                                     this.getLocal().attributes().getSize() - status.getCurrent(),
                                     this.getLocal().getMimeType()) {
@@ -289,11 +303,30 @@ public class CFPath extends CloudPath {
                                     CFPath.this.upload(out, in, throttle, listener);
                                 }
                             },
-                            metadata, md5sum
+                            metadata, null
                     );
                 }
                 finally {
                     IOUtils.closeQuietly(in);
+                }
+                if(null != digest) {
+                    this.getSession().message(MessageFormat.format(
+                            Locale.localizedString("Compute MD5 hash of {0}", "Status"), this.getName()));
+                    // Obtain locally-calculated MD5 hash.
+                    String expectedETag = ServiceUtils.toHex(digest.digest());
+                    // Compare our locally-calculated hash with the ETag returned.
+                    if(!expectedETag.equals(etag)) {
+                        throw new IOException("Mismatch between MD5 hash of uploaded data ("
+                                + expectedETag + ") and ETag returned ("
+                                + etag + ") for object key: "
+                                + this.getKey());
+                    }
+                    else {
+                        if(log.isDebugEnabled()) {
+                            log.debug("Object upload was automatically verified, the calculated MD5 hash " +
+                                    "value matched the ETag returned: " + this.getKey());
+                        }
+                    }
                 }
             }
         }
