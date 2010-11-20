@@ -56,9 +56,23 @@ public class Status {
      */
     private boolean complete = false;
 
-    public static final long KILO = 1024; //2^10
-    public static final long MEGA = 1048576; // 2^20
-    public static final long GIGA = 1073741824; // 2^30
+    public static long KILO = 1024; //2^10
+    public static long MEGA = 1048576; // 2^20
+    public static long GIGA = 1073741824; // 2^30
+
+    static {
+        if(Preferences.instance().getBoolean("browser.filesize.decimal")) {
+            KILO = 1000; //10^3
+            MEGA = 1000000; // 10^6
+            GIGA = 1000000000; // 10^9
+        }
+        else {
+            // Default is binary sizes
+            KILO = 1024; //2^10
+            MEGA = 1048576; // 2^20
+            GIGA = 1073741824; // 2^30
+        }
+    }
 
     /**
      * Rounding mode to round towards "nearest neighbor" unless both
