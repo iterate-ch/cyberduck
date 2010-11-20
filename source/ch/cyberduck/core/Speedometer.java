@@ -86,7 +86,7 @@ public class Speedometer {
         final double size = transfer.getSize();
         final double transferred = transfer.getTransferred();
         b.append(MessageFormat.format(Locale.localizedString("{0} of {1}"),
-                Status.getSizeAsString(transferred), Status.getSizeAsString(size)));
+                Status.getSizeAsString(transferred, size != transferred), Status.getSizeAsString(size)));
         final float speed = this.getSpeed();
         if(transfer.isRunning()) {
             if(size > -1 || speed > 0) {
