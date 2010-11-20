@@ -143,6 +143,7 @@ public abstract class HTTP3Session extends SSLSession {
         parameters.setParameter(HttpMethodParams.USER_AGENT, this.getUserAgent());
         parameters.setParameter(HttpMethodParams.PROTOCOL_VERSION, HttpVersion.HTTP_1_1);
         parameters.setParameter(HttpMethodParams.SO_TIMEOUT, this.timeout());
+        parameters.setParameter(HttpMethodParams.CREDENTIAL_CHARSET, "ISO-8859-1");
         return configuration;
     }
 
