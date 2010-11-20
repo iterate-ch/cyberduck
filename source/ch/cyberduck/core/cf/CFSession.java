@@ -312,7 +312,7 @@ public class CFSession extends CloudHTTP3Session {
                     return new Distribution(origin, method);
                 }
 
-                public void invalidate(String origin, Distribution.Method method, List<Path> files) {
+                public void invalidate(String origin, Distribution.Method method, List<Path> files, boolean recursive) {
                     throw new UnsupportedOperationException();
                 }
 

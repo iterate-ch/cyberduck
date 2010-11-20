@@ -2185,7 +2185,7 @@ public class InfoController extends ToolbarWindowController {
                     else if(Distribution.Method.forName(distributionDeliveryPopup.selectedItem().representedObject()).equals(Distribution.DOWNLOAD)) {
                         method = Distribution.DOWNLOAD;
                     }
-                    session.cdn().invalidate(session.cdn().getOrigin(method, getSelected().getContainerName()), method, files);
+                    session.cdn().invalidate(session.cdn().getOrigin(method, getSelected().getContainerName()), method, files, false);
                 }
 
                 @Override

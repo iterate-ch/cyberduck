@@ -1,4 +1,4 @@
-﻿﻿//
+﻿﻿﻿//
 // Copyright (c) 2010 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
@@ -1641,7 +1641,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 session.cdn().invalidate(session.cdn().getOrigin(_method,
                                                                  _infoController.SelectedPath.getContainerName()),
                                          _method,
-                                         Utils.ConvertToJavaList(_infoController._files));
+                                         Utils.ConvertToJavaList(_infoController._files), false);
             }
 
             public override void cleanup()

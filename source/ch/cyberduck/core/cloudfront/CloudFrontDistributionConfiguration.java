@@ -319,9 +319,10 @@ public class CloudFrontDistributionConfiguration extends HTTP3Session implements
      * @param origin
      * @param method
      * @param files
+     * @param recursive
      * @throws CloudFrontServiceException
      */
-    public void invalidate(String origin, ch.cyberduck.core.cdn.Distribution.Method method, List<Path> files) {
+    public void invalidate(String origin, ch.cyberduck.core.cdn.Distribution.Method method, List<Path> files, boolean recursive) {
         try {
             this.check();
             this.message(MessageFormat.format(Locale.localizedString("Writing CDN configuration of {0}", "Status"),
@@ -329,7 +330,7 @@ public class CloudFrontDistributionConfiguration extends HTTP3Session implements
 
             final long reference = System.currentTimeMillis();
             ch.cyberduck.core.cdn.Distribution d = distributionStatus.get(method).get(origin);
-            List<String> keys = this.getInvalidationKeys(files);
+            List<String> keys = this.getInvalidationKeys(files, recursive);
             if(keys.isEmpty()) {
                 log.warn("No keys selected for invalidation");
                 return;
@@ -355,14 +356,19 @@ public class CloudFrontDistributionConfiguration extends HTTP3Session implements
      * @param files
      * @return
      */
-    private List<String> getInvalidationKeys(List<Path> files) {
+    protected List<String> getInvalidationKeys(List<Path> files, boolean recursive) {
         List<String> keys = new ArrayList<String>();
         for(Path file : files) {
-            if(file.attributes().isDirectory()) {
-                keys.addAll(this.getInvalidationKeys(file.<Path>children()));
+            if(file.isContainer()) {
+                keys.add(String.valueOf(Path.DELIMITER));
             }
             else {
                 keys.add(file.getKey());
+            }
+            if(file.attributes().isDirectory()) {
+                if(recursive) {
+                    keys.addAll(this.getInvalidationKeys(file.<Path>children(), recursive));
+                }
             }
         }
         return keys;

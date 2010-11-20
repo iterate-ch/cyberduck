@@ -63,8 +63,9 @@ public interface DistributionConfiguration {
      * @param origin Source server
      * @param method Protocol
      * @param files
+     * @param recursive
      */
-    void invalidate(String origin, Distribution.Method method, List<Path> files);
+    void invalidate(String origin, Distribution.Method method, List<Path> files, boolean recursive);
 
     /**
      * @param method
