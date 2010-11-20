@@ -97,17 +97,17 @@ public class Status {
         if(size < MEGA) {
             formatted.append(new BigDecimal(size).divide(new BigDecimal(KILO),
                     1,
-                    BigDecimal.ROUND_DOWN).toString()).append(bytes ? " KB" : " kbit");
+                    BigDecimal.ROUND_HALF_UP).toString()).append(bytes ? " KB" : " kbit");
         }
         else if(size < GIGA) {
             formatted.append(new BigDecimal(size).divide(new BigDecimal(MEGA),
                     1,
-                    BigDecimal.ROUND_DOWN).toString()).append(bytes ? " MB" : " Mbit");
+                    BigDecimal.ROUND_HALF_UP).toString()).append(bytes ? " MB" : " Mbit");
         }
         else {
             formatted.append(new BigDecimal(size).divide(new BigDecimal(GIGA),
                     1,
-                    BigDecimal.ROUND_DOWN).toString()).append(bytes ? " GB" : " Gbit");
+                    BigDecimal.ROUND_HALF_UP).toString()).append(bytes ? " GB" : " Gbit");
         }
         if(number) {
             formatted.append(" (").append(NumberFormat.getInstance().format(size)).append(" bytes)");
