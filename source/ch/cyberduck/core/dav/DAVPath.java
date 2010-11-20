@@ -32,6 +32,7 @@ import org.apache.webdav.lib.methods.DepthSupport;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URI;
 import java.text.MessageFormat;
 
 /**
@@ -170,23 +171,30 @@ public class DAVPath extends Path {
                     log.warn("Skipping unknown resource type:" + resource);
                     continue;
                 }
-                Path p = PathFactory.createPath(this.getSession(), resource.getPath(),
-                        resource.getResourceType().isCollection() ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
-                p.setParent(this);
-                if(!p.isChild(this)) {
-                    log.warn("Skipping invalid resource:" + resource);
-                    continue;
-                }
-                p.attributes().setOwner(resource.getOwner());
-                if(resource.getGetLastModified() > 0) {
-                    p.attributes().setModificationDate(resource.getGetLastModified());
-                }
-                if(resource.getCreationDate() > 0) {
-                    p.attributes().setCreationDate(resource.getCreationDate());
-                }
-                p.attributes().setSize(resource.getGetContentLength());
+                try {
+                    // Try to parse as RFC 2396
+                    URI uri = URI.create(new String(resource.getHttpURL().getRawURI()));
+                    Path p = PathFactory.createPath(this.getSession(), uri.getPath(),
+                            resource.getResourceType().isCollection() ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
+                    p.setParent(this);
+                    if(!p.isChild(this)) {
+                        log.warn("Skipping invalid resource:" + resource);
+                        continue;
+                    }
+                    p.attributes().setOwner(resource.getOwner());
+                    if(resource.getGetLastModified() > 0) {
+                        p.attributes().setModificationDate(resource.getGetLastModified());
+                    }
+                    if(resource.getCreationDate() > 0) {
+                        p.attributes().setCreationDate(resource.getCreationDate());
+                    }
+                    p.attributes().setSize(resource.getGetContentLength());
 
-                children.add(p);
+                    children.add(p);
+                }
+                catch(IllegalArgumentException e) {
+                    log.error(e.getMessage());
+                }
             }
         }
         catch(IOException e) {
