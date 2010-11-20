@@ -270,7 +270,6 @@ public class CloudFrontDistributionConfiguration extends HTTP3Session implements
                 else if(!d.getDefaultRootObject().equals(defaultRootObject)) {
                     modified = true;
                 }
-
                 if(modified) {
                     this.updateDistribution(enabled, method, origin, d.getId(), cnames, l, defaultRootObject);
                 }
@@ -330,6 +329,10 @@ public class CloudFrontDistributionConfiguration extends HTTP3Session implements
 
             final long reference = System.currentTimeMillis();
             ch.cyberduck.core.cdn.Distribution d = distributionStatus.get(method).get(origin);
+            if(null == d) {
+                log.error("No cached distribution for origin:" + origin);
+                return;
+            }
             List<String> keys = this.getInvalidationKeys(files, recursive);
             if(keys.isEmpty()) {
                 log.warn("No keys selected for invalidation");
