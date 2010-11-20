@@ -225,8 +225,6 @@ public class CloudFrontDistributionConfiguration extends HTTP3Session implements
                       String[] cnames, boolean logging, String defaultRootObject) {
         try {
             this.check();
-            this.message(MessageFormat.format(Locale.localizedString("Writing CDN configuration of {0}", "Status"),
-                    origin));
 
             // Configure CDN
             LoggingStatus l = null;

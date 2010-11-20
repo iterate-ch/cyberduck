@@ -230,10 +230,7 @@ public class CFSession extends CloudHTTP3Session {
                     final AbstractX509TrustManager trust = CFSession.this.getTrustManager();
                     try {
                         CFSession.this.check();
-                        CFSession.this.message(MessageFormat.format(Locale.localizedString("Writing CDN configuration of {0}", "Status"),
-                                origin));
 
-                        URI url = new URI(CFSession.this.getClient().getCdnManagementURL());
                         if(enabled) {
                             CFSession.this.message(MessageFormat.format(Locale.localizedString("Enable {0} Distribution", "Status"),
                                     Locale.localizedString("Rackspace Cloud Files", "Mosso")));
@@ -242,6 +239,7 @@ public class CFSession extends CloudHTTP3Session {
                             CFSession.this.message(MessageFormat.format(Locale.localizedString("Disable {0} Distribution", "Status"),
                                     Locale.localizedString("Rackspace Cloud Files", "Mosso")));
                         }
+                        URI url = new URI(CFSession.this.getClient().getCdnManagementURL());
                         CFSession.this.getClient().setHostConfiguration(
                                 CFSession.this.getHostConfiguration(url.getScheme(), url.getHost(), url.getPort()));
                         if(enabled) {
