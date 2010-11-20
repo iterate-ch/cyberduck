@@ -443,7 +443,7 @@ public class UploadTransfer extends Transfer {
                     }
                 }
             }
-            if(file.getSession().isTimestampSupported()) {
+            if(file.attributes().isFile() && file.getSession().isTimestampSupported()) {
                 if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
                     // Read timestamps from local file
                     file.writeTimestamp(file.getLocal().attributes().getCreationDate(),
@@ -452,6 +452,19 @@ public class UploadTransfer extends Transfer {
                 }
             }
         }
+    }
+
+    @Override
+    protected void fireDidTransferPath(Path file) {
+        if(file.attributes().isDirectory() && file.getSession().isTimestampSupported()) {
+            if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
+                // Read timestamps from local file
+                file.writeTimestamp(file.getLocal().attributes().getCreationDate(),
+                        file.getLocal().attributes().getModificationDate(),
+                        file.getLocal().attributes().getAccessedDate());
+            }
+        }
+        super.fireDidTransferPath(file);
     }
 
     @Override

@@ -371,7 +371,7 @@ public abstract class Transfer implements Serializable {
      * @see ch.cyberduck.core.Cache#lookup(PathReference)
      */
     public Path lookup(PathReference r) {
-        for(Path root: roots) {
+        for(Path root : roots) {
             if(r.equals(root.<Object>getReference())) {
                 return root;
             }
@@ -453,8 +453,6 @@ public abstract class Transfer implements Serializable {
             // Post process of file
             filter.complete(p);
             _current = null;
-            // Notification
-            this.fireDidTransferPath(p);
         }
 
         if(!this.check()) {
@@ -479,6 +477,9 @@ public abstract class Transfer implements Serializable {
             }
             this.cache().remove(p.getReference());
         }
+
+        // Notification
+        this.fireDidTransferPath(p);
     }
 
     /**
