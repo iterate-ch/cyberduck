@@ -30,6 +30,8 @@ import org.apache.log4j.Logger;
 import javax.net.ssl.SSLHandshakeException;
 import java.io.IOException;
 import java.net.SocketException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.text.MessageFormat;
 import java.util.*;
@@ -777,7 +779,12 @@ public abstract class Session implements TranscriptListener {
                 @Override
                 public String getOrigin(Distribution.Method method, String container) {
                     if(Distribution.CUSTOM.equals(method)) {
-                        return java.net.URI.create(Session.this.getHost().getWebURL()).getHost();
+                        try {
+                            return new URI(Session.this.getHost().getWebURL()).getHost();
+                        }
+                        catch(URISyntaxException e) {
+                            log.error("Failure parsing URI:" + e.getMessage());
+                        }
                     }
                     return super.getOrigin(method, container);
                 }
