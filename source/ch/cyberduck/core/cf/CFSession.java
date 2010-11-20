@@ -34,6 +34,7 @@ import com.rackspacecloud.client.cloudfiles.FilesException;
 
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.text.MessageFormat;
 import java.util.*;
 
@@ -101,32 +102,39 @@ public class CFSession extends CloudHTTP3Session {
     /**
      * Set connection properties
      */
-    protected void configure() throws ConnectionCanceledException {
+    protected void configure() throws IOException {
         FilesClient client = this.getClient();
         client.setConnectionTimeOut(this.timeout());
         client.setUserAgent(this.getUserAgent());
-        if(!client.isLoggedin()) {
-            Host host = this.getHost();
-            StringBuilder authentication = new StringBuilder(host.getProtocol().getScheme()).append("://");
-            if(host.getHostname().equals(host.getProtocol().getDefaultHostname())) {
-                // Use default authentication server. Rackspace.
-                authentication.append(Preferences.instance().getProperty("cf.authentication.host"));
+        try {
+            if(!client.isLoggedin()) {
+                Host host = this.getHost();
+                StringBuilder authentication = new StringBuilder(host.getProtocol().getScheme()).append("://");
+                if(host.getHostname().equals(host.getProtocol().getDefaultHostname())) {
+                    // Use default authentication server. Rackspace.
+                    authentication.append(Preferences.instance().getProperty("cf.authentication.host"));
+                }
+                else {
+                    // Use custom authentication server. Swift (OpenStack Object Storage) installation.
+                    authentication.append(host.getHostname());
+                    authentication.append(":").append(host.getPort());
+                }
+                authentication.append(Preferences.instance().getProperty("cf.authentication.context"));
+                log.info("Using authentication URL " + authentication.toString());
+                client.setAuthenticationURL(authentication.toString());
+                URI url = new URI(authentication.toString());
+                client.setHostConfiguration(this.getHostConfiguration(url.getScheme(), url.getHost(), url.getPort()));
             }
             else {
-                // Use custom authentication server. Swift (OpenStack Object Storage) installation.
-                authentication.append(host.getHostname());
-                authentication.append(":").append(host.getPort());
+                URI url = new URI(client.getStorageURL());
+                client.setHostConfiguration(this.getHostConfiguration(url.getScheme(), url.getHost(), url.getPort()));
             }
-            authentication.append(Preferences.instance().getProperty("cf.authentication.context"));
-            log.info("Using authentication URL " + authentication.toString());
-            client.setAuthenticationURL(authentication.toString());
-            URI url = URI.create(authentication.toString());
-            client.setHostConfiguration(this.getHostConfiguration(url.getScheme(), url.getHost(), url.getPort()));
         }
-        else {
-            URI url = URI.create(client.getStorageURL());
-            client.setHostConfiguration(this.getHostConfiguration(url.getScheme(), url.getHost(), url.getPort()));
+        catch(URISyntaxException e) {
+            log.error("Failure parsing URI:" + e.getMessage());
+            throw new IOException(e.getMessage());
         }
+
     }
 
     @Override
@@ -225,9 +233,7 @@ public class CFSession extends CloudHTTP3Session {
                         CFSession.this.message(MessageFormat.format(Locale.localizedString("Writing CDN configuration of {0}", "Status"),
                                 origin));
 
-                        URI url = URI.create(CFSession.this.getClient().getCdnManagementURL());
-                        CFSession.this.getClient().setHostConfiguration(
-                                CFSession.this.getHostConfiguration(url.getScheme(), url.getHost(), url.getPort()));
+                        URI url = new URI(CFSession.this.getClient().getCdnManagementURL());
                         if(enabled) {
                             CFSession.this.message(MessageFormat.format(Locale.localizedString("Enable {0} Distribution", "Status"),
                                     Locale.localizedString("Rackspace Cloud Files", "Mosso")));
@@ -236,6 +242,8 @@ public class CFSession extends CloudHTTP3Session {
                             CFSession.this.message(MessageFormat.format(Locale.localizedString("Disable {0} Distribution", "Status"),
                                     Locale.localizedString("Rackspace Cloud Files", "Mosso")));
                         }
+                        CFSession.this.getClient().setHostConfiguration(
+                                CFSession.this.getHostConfiguration(url.getScheme(), url.getHost(), url.getPort()));
                         if(enabled) {
                             try {
                                 final FilesCDNContainer info = CFSession.this.getClient().getCDNContainerInfo(origin);
@@ -252,12 +260,15 @@ public class CFSession extends CloudHTTP3Session {
                     catch(IOException e) {
                         CFSession.this.error("Cannot write CDN configuration", e);
                     }
+                    catch(URISyntaxException e) {
+                        CFSession.this.error("Cannot write CDN configuration", e);
+                    }
                     finally {
                         try {
                             // Configure for storage URL
                             CFSession.this.configure();
                         }
-                        catch(ConnectionCanceledException e) {
+                        catch(IOException e) {
                             log.error(e.getMessage());
                         }
                         distributionStatus.clear();
@@ -272,28 +283,29 @@ public class CFSession extends CloudHTTP3Session {
                             CFSession.this.message(MessageFormat.format(Locale.localizedString("Reading CDN configuration of {0}", "Status"),
                                     origin));
 
-                            URI url = URI.create(CFSession.this.getClient().getCdnManagementURL());
+                            URI url = new URI(CFSession.this.getClient().getCdnManagementURL());
                             CFSession.this.getClient().setHostConfiguration(
                                     CFSession.this.getHostConfiguration(url.getScheme(), url.getHost(), url.getPort()));
-                            try {
-                                final FilesCDNContainer info = CFSession.this.getClient().getCDNContainerInfo(origin);
-                                final Distribution distribution = new Distribution(info.getName(),
-                                        URI.create(CFSession.this.getClient().getStorageURL()).getHost(),
-                                        method, info.isEnabled(), info.getCdnURL(),
-                                        info.isEnabled() ? Locale.localizedString("CDN Enabled", "Mosso") : Locale.localizedString("CDN Disabled", "Mosso"),
-                                        info.getRetainLogs());
-                                if(distribution.isDeployed()) {
-                                    distributionStatus.put(origin, distribution);
-                                }
-                                return distribution;
+                            final FilesCDNContainer info = CFSession.this.getClient().getCDNContainerInfo(origin);
+                            final Distribution distribution = new Distribution(info.getName(),
+                                    new URI(CFSession.this.getClient().getStorageURL()).getHost(),
+                                    method, info.isEnabled(), info.getCdnURL(),
+                                    info.isEnabled() ? Locale.localizedString("CDN Enabled", "Mosso") : Locale.localizedString("CDN Disabled", "Mosso"),
+                                    info.getRetainLogs());
+                            if(distribution.isDeployed()) {
+                                distributionStatus.put(origin, distribution);
                             }
-                            catch(FilesException e) {
-                                log.warn(e.getMessage());
-                                // Not found.
-                                distributionStatus.put(origin, new Distribution(null, origin, method, false, null, Locale.localizedString("CDN Disabled", "Mosso")));
-                            }
+                            return distribution;
+                        }
+                        catch(FilesException e) {
+                            log.warn(e.getMessage());
+                            // Not found.
+                            distributionStatus.put(origin, new Distribution(null, origin, method, false, null, Locale.localizedString("CDN Disabled", "Mosso")));
                         }
                         catch(IOException e) {
+                            CFSession.this.error("Cannot read CDN configuration", e);
+                        }
+                        catch(URISyntaxException e) {
                             CFSession.this.error("Cannot read CDN configuration", e);
                         }
                         finally {
@@ -301,7 +313,7 @@ public class CFSession extends CloudHTTP3Session {
                                 // Configure for storage URL
                                 CFSession.this.configure();
                             }
-                            catch(ConnectionCanceledException e) {
+                            catch(IOException e) {
                                 log.error(e.getMessage());
                             }
                         }
