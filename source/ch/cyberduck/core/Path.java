@@ -40,6 +40,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.text.MessageFormat;
 import java.util.LinkedHashSet;
@@ -944,6 +945,8 @@ public abstract class Path extends AbstractPath implements Serializable {
             while(t.hasMoreTokens()) {
                 b.append(DELIMITER).append(URLEncoder.encode(t.nextToken(), "UTF-8"));
             }
+            // Becuase URLEncoder uses <code>application/x-www-form-urlencoded</code> we have to replace these
+            // for proper URI percented encoding.
             return b.toString().replaceAll("\\+", "%20");
         }
         catch(UnsupportedEncodingException e) {
@@ -977,7 +980,13 @@ public abstract class Path extends AbstractPath implements Serializable {
      *         prepended from the bookmark
      */
     protected String toHttpURL(String host) {
-        return URI.create(host + this.getWebPath(this.getAbsolute())).normalize().toString();
+        try {
+            return new URI(host + this.getWebPath(this.getAbsolute())).normalize().toString();
+        }
+        catch(URISyntaxException e) {
+            log.error("Failure parsing URI:" + e.getMessage());
+        }
+        return null;
     }
 
     /**
@@ -1060,7 +1069,7 @@ public abstract class Path extends AbstractPath implements Serializable {
     /**
      * @param message   Failure description
      * @param throwable The cause of the message
-     * @see Session#error(Path,String,Throwable)
+     * @see Session#error(Path, String, Throwable)
      */
     protected void error(String message, Throwable throwable) {
         this.getSession().error(this, message, throwable);
