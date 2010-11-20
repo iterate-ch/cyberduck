@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.text.MessageFormat;
 
 /**
@@ -173,7 +174,7 @@ public class DAVPath extends Path {
                 }
                 try {
                     // Try to parse as RFC 2396
-                    URI uri = URI.create(new String(resource.getHttpURL().getRawURI()));
+                    URI uri = new URI(new String(resource.getHttpURL().getRawURI()));
                     Path p = PathFactory.createPath(this.getSession(), uri.getPath(),
                             resource.getResourceType().isCollection() ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
                     p.setParent(this);
@@ -192,8 +193,8 @@ public class DAVPath extends Path {
 
                     children.add(p);
                 }
-                catch(IllegalArgumentException e) {
-                    log.error(e.getMessage());
+                catch(URISyntaxException e) {
+                    log.error("Failure parsing URI:" + e.getMessage());
                 }
             }
         }
