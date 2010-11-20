@@ -23,8 +23,10 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.i18n.Locale;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +35,7 @@ import java.util.List;
  * @version $Id$
  */
 public class Distribution {
+    private static Logger log = Logger.getLogger(Distribution.class);
 
     private String id;
     /**
@@ -271,7 +274,13 @@ public class Distribution {
         if(!file.isContainer()) {
             url.append(Path.DELIMITER).append(Path.encode(file.getKey()));
         }
-        return URI.create(url.toString()).normalize().toString();
+        try {
+            return new URI(url.toString()).normalize().toString();
+        }
+        catch(URISyntaxException e) {
+            log.error("Failure parsing URI:" + e.getMessage());
+        }
+        return url.toString();
     }
 
     /**
@@ -322,7 +331,13 @@ public class Distribution {
         if(StringUtils.isNotEmpty(file.getKey())) {
             b.append(Path.encode(file.getKey()));
         }
-        return URI.create(b.toString()).normalize().toString();
+        try {
+            return new URI(b.toString()).normalize().toString();
+        }
+        catch(URISyntaxException e) {
+            log.error("Failure parsing URI:" + e.getMessage());
+        }
+        return b.toString();
     }
 
     /**
@@ -357,7 +372,13 @@ public class Distribution {
         if(StringUtils.isNotEmpty(file.getKey())) {
             b.append(Path.encode(file.getKey()));
         }
-        return URI.create(b.toString()).normalize().toString();
+        try {
+            return new URI(b.toString()).normalize().toString();
+        }
+        catch(URISyntaxException e) {
+            log.error("Failure parsing URI:" + e.getMessage());
+        }
+        return b.toString();
     }
 
     /**
