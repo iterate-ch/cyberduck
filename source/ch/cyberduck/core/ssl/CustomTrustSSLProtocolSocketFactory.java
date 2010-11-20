@@ -54,7 +54,7 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
      */
     public CustomTrustSSLProtocolSocketFactory(X509TrustManager trust, X509KeyManager key) {
         try {
-            context = SSLContext.getInstance("SSL");
+            context = SSLContext.getInstance("TLS");
             context.init(new KeyManager[]{key}, new TrustManager[]{trust}, null);
             if(log.isDebugEnabled()) {
                 log.debug("Using SSL context:" + context);
