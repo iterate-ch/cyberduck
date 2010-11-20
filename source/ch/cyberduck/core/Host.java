@@ -23,6 +23,7 @@ import ch.cyberduck.core.serializer.DeserializerFactory;
 import ch.cyberduck.core.serializer.Serializer;
 import ch.cyberduck.core.serializer.SerializerFactory;
 
+import org.apache.commons.lang.CharUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -471,7 +472,8 @@ public class Host implements Serializable {
      * @param defaultpath The path to change the working directory to upon connecting
      */
     public void setDefaultPath(String defaultpath) {
-        this.defaultpath = StringUtils.isNotBlank(defaultpath) ? defaultpath.trim() : null;
+        this.defaultpath = StringUtils.isBlank(defaultpath) ? null :
+                StringUtils.remove(StringUtils.remove(defaultpath, CharUtils.LF), CharUtils.CR).trim();
     }
 
     /**
