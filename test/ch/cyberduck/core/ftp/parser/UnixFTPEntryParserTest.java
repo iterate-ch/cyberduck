@@ -51,7 +51,7 @@ public class UnixFTPEntryParserTest extends AbstractTestCase {
     public void testParseTimestamp() throws Exception {
         FTPFileEntryParser parser = new FTPParserFactory().createFileEntryParser("UNIX");
 
-        FTPFile parsed = null;
+        FTPFile parsed;
 
         parsed = parser.parseFTPEntry(
                 "drw-rw-rw-   1 user      ftp             0  DEC 11 20:56 ADMIN_Documentation");
@@ -79,7 +79,7 @@ public class UnixFTPEntryParserTest extends AbstractTestCase {
     public void testParseFTPEntryExpected() throws Exception {
         FTPFileEntryParser parser = new FTPParserFactory().createFileEntryParser("UNIX");
 
-        FTPFile parsed = null;
+        FTPFile parsed;
 
         parsed = parser.parseFTPEntry(
                 "drw-rw-rw-   1 user      ftp             0  Mar 11 20:56 ADMIN_Documentation");
@@ -101,7 +101,7 @@ public class UnixFTPEntryParserTest extends AbstractTestCase {
     public void testParseNameWithBeginningWhitespace() {
         FTPFileEntryParser parser = new FTPParserFactory().createFileEntryParser("UNIX");
 
-        FTPFile parsed = null;
+        FTPFile parsed;
 
         parsed = parser.parseFTPEntry(
                 "drw-rw-rw-   1 user      ftp             0  Mar 11 20:56  ADMIN_Documentation");
@@ -115,7 +115,7 @@ public class UnixFTPEntryParserTest extends AbstractTestCase {
     public void testParseNameWithEndingWhitespace() {
         FTPFileEntryParser parser = new FTPParserFactory().createFileEntryParser("UNIX");
 
-        FTPFile parsed = null;
+        FTPFile parsed;
 
         parsed = parser.parseFTPEntry(
                 "drw-rw-rw-   1 user      ftp             0  Mar 11 20:56 ADMIN_Documentation ");
@@ -131,7 +131,7 @@ public class UnixFTPEntryParserTest extends AbstractTestCase {
     public void testSizeWithIndicator() throws Exception {
         FTPFileEntryParser parser = new FTPParserFactory().createFileEntryParser("UNIX");
 
-        FTPFile parsed = null;
+        FTPFile parsed;
 
         parsed = parser.parseFTPEntry(
                 "-rw-rw-rw- 1 ftp operator 9.0M Mar 22 17:44 Cyberduck-2.7.3.dmg"
@@ -173,7 +173,7 @@ public class UnixFTPEntryParserTest extends AbstractTestCase {
     public void testLeadingWhitespace() throws Exception {
         FTPFileEntryParser parser = new FTPParserFactory().createFileEntryParser("UNIX");
 
-        FTPFile parsed = null;
+        FTPFile parsed;
 
         parsed = parser.parseFTPEntry(
                 "-rw-r--r--   1 20708    205             194 Oct 17 14:40 D3I0_805.fixlist");
@@ -201,7 +201,7 @@ public class UnixFTPEntryParserTest extends AbstractTestCase {
     public void testLowerCaseMonths() throws Exception {
         FTPFileEntryParser parser = new FTPParserFactory().createFileEntryParser("UNIX");
 
-        FTPFile parsed = null;
+        FTPFile parsed;
 
         parsed = parser.parseFTPEntry(
                 "drwxrwxrwx    41 spinkb  spinkb      1394 jan 21 20:57 Desktop");
@@ -217,7 +217,7 @@ public class UnixFTPEntryParserTest extends AbstractTestCase {
     public void testUpperCaseMonths() throws Exception {
         FTPFileEntryParser parser = new FTPParserFactory().createFileEntryParser("UNIX");
 
-        FTPFile parsed = null;
+        FTPFile parsed;
 
         parsed = parser.parseFTPEntry(
                 "drwxrwxrwx    41 spinkb  spinkb      1394 Feb 21 20:57 Desktop");
@@ -233,7 +233,7 @@ public class UnixFTPEntryParserTest extends AbstractTestCase {
     public void testSolarisAcl() throws Exception {
         FTPFileEntryParser parser = new FTPParserFactory().createFileEntryParser("UNIX");
 
-        FTPFile parsed = null;
+        FTPFile parsed;
 
         //#215
         parsed = parser.parseFTPEntry(
@@ -250,7 +250,7 @@ public class UnixFTPEntryParserTest extends AbstractTestCase {
     public void testUnknownTimestampFormat() throws Exception {
         FTPFileEntryParser parser = new FTPParserFactory().createFileEntryParser("UNIX");
 
-        FTPFile parsed = null;
+        FTPFile parsed;
 
         parsed = parser.parseFTPEntry(
                 "-rw-rw-rw- 1 hoerspiel hoerspiel  3722053 19. Sep 13:24 Offenbarung 23 - Menschenopfer - 02.mp3"
@@ -291,7 +291,7 @@ public class UnixFTPEntryParserTest extends AbstractTestCase {
     public void testLeapYear() throws Exception {
         FTPFileEntryParser parser = new FTPParserFactory().createFileEntryParser("UNIX");
 
-        FTPFile parsed = null;
+        FTPFile parsed;
 
         parsed = parser.parseFTPEntry(
                 "drwxr--r--   1 user     group          0 Feb 29 18:14 Downloads"
@@ -300,6 +300,19 @@ public class UnixFTPEntryParserTest extends AbstractTestCase {
         assertNotNull(parsed.getTimestamp());
         assertEquals(parsed.getTimestamp().get(Calendar.MONTH), Calendar.FEBRUARY);
         assertEquals(parsed.getTimestamp().get(Calendar.YEAR), Calendar.getInstance().get(Calendar.YEAR));
+    }
+
+    public void testCarriageReturn() throws Exception {
+        FTPFileEntryParser parser = new FTPParserFactory().createFileEntryParser("UNIX");
+
+        FTPFile parsed;
+
+        // #1521
+        parsed = parser.parseFTPEntry(
+                "drwxr--r--   1 user     group          0 Feb 29 18:14 Icon\r"
+        );
+        assertNotNull(parsed);
+        assertEquals("Icon\r", parsed.getName());
     }
 
     public static Test suite() {
