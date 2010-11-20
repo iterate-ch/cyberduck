@@ -55,6 +55,7 @@ import org.soyatec.windows.azure.util.xml.XmlUtil;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.sql.Timestamp;
 import java.text.MessageFormat;
 import java.util.*;
@@ -109,10 +110,16 @@ public class AzureSession extends CloudHTTP4Session {
     @Override
     protected void login(LoginController controller, Credentials credentials) throws IOException {
         // http://*.blob.core.windows.net
-        client = new BlobStorageRest(URI.create(host.getProtocol().getScheme() + "://" + host.getHostname()),
-                false,
-                credentials.getUsername(),
-                credentials.getPassword());
+        try {
+            client = new BlobStorageRest(new URI(host.getProtocol().getScheme() + "://" + host.getHostname()),
+                    false,
+                    credentials.getUsername(),
+                    credentials.getPassword());
+        }
+        catch(URISyntaxException e) {
+            log.error("Failure parsing URI:" + e.getMessage());
+            throw new IOException(e.getMessage());
+        }
         client.setTimeout(TimeSpan.fromMilliseconds(this.timeout()));
         try {
             this.getContainers(true);
@@ -439,9 +446,9 @@ public class AzureSession extends CloudHTTP4Session {
                         identifier
                                 .setId(XPathQueryHelper
                                         .loadSingleChildStringValue(
-                                        element,
-                                        XmlElementNames.ContainerSignedIdentifierId,
-                                        true));
+                                                element,
+                                                XmlElementNames.ContainerSignedIdentifierId,
+                                                true));
                         IAccessPolicy policy = new AccessPolicy();
                         Element accesPlocy = (Element) element
                                 .selectSingleNode(XmlElementNames.ContainerAccessPolicyName);
@@ -464,10 +471,10 @@ public class AzureSession extends CloudHTTP4Session {
                             }
                             policy.setPermission(SharedAccessPermissions
                                     .valueOf(XPathQueryHelper
-                                    .loadSingleChildStringValue(
-                                    accesPlocy,
-                                    XmlElementNames.ContainerAccessPolicyPermission,
-                                    true)));
+                                            .loadSingleChildStringValue(
+                                                    accesPlocy,
+                                                    XmlElementNames.ContainerAccessPolicyPermission,
+                                                    true)));
                             identifier.setPolicy(policy);
                         }
                         result.add(identifier);
