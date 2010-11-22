@@ -7,6 +7,7 @@ Changelog. Last modified: $Date$
 4.0 [http://trac.cyberduck.ch/milestone/4.0]
 - [Feature] Version for Microsoft Windows XP, Windows Vista & Windows 7.
 - [Feature] Connecting to Windows Azure Blob Storage (Azure) (#3938)
+- [Feature] Connecting to Swift Storage (Openstack)
 - [Feature] CloudFront CDN configuration with custom origin server (Amazon CloudFront & FTP, SFTP, WebDAV)
 - [Feature] CloudFront CDN invalidation requests (S3) (#5197)
 - [Feature] FireFTP Bookmarks Importer
@@ -15,6 +16,7 @@ Changelog. Last modified: $Date$
 - [Feature] CloudBerry Explorer for Amazon S3 Bookmarks Importer (Windows)
 - [Feature] CloudBerry Explorer for Google Storage Bookmarks Importer (Windows)
 - [Feature] CloudBerry Explorer for Azure Blob Storage Bookmarks Importer (Windows)
+- [Feature] Perform MD5 hash calculation during upload (#5186) (S3, Cloudfiles)
 - [Bugfix] Slow SFTP transfers (#185)
 - [Bugfix] Support for S3Fox directory placeholders (S3)
 - [Bugfix] Support for Google Storage Console directory placeholders (S3)
@@ -23,6 +25,11 @@ Changelog. Last modified: $Date$
 - [Bugfix] Changing storage class fails (S3)
 - [Bugfix] Apply ACLs recursively (S3)
 - [Bugfix] Apply custom HTTP headers recursively (S3)
+- [Bugfix] Show last access timestamp in history (#3805)
+- [Bugfix] Interoperability (#2609, #4231) (WebDAV)
+- [Bugfix] SSL version number incompatibility (#5061)
+- [Bugfix] Display decimal file size (10.6) #3771)
+- [Bugfix] Preserve upload modification date does not work for folders (#3017)
 
 3.7 (Oct-21-2010) [http://trac.cyberduck.ch/milestone/3.7]
 - [Feature] Option to upload with temporary name and rename file after transfer is complete (#4165)
