@@ -104,20 +104,19 @@ public class CFSession extends CloudHTTP3Session {
      */
     protected void configure() throws IOException {
         FilesClient client = this.getClient();
-        client.setConnectionTimeOut(this.timeout());
-        client.setUserAgent(this.getUserAgent());
         try {
             if(!client.isLoggedin()) {
+                client.setConnectionTimeOut(this.timeout());
+                client.setUserAgent(this.getUserAgent());
                 Host host = this.getHost();
                 StringBuilder authentication = new StringBuilder(host.getProtocol().getScheme()).append("://");
-                if(host.getHostname().equals(host.getProtocol().getDefaultHostname())) {
+                if(host.getHostname().equals(Protocol.CLOUDFILES.getDefaultHostname())) {
                     // Use default authentication server. Rackspace.
                     authentication.append(Preferences.instance().getProperty("cf.authentication.host"));
                 }
                 else {
                     // Use custom authentication server. Swift (OpenStack Object Storage) installation.
-                    authentication.append(host.getHostname());
-                    authentication.append(":").append(host.getPort());
+                    authentication.append(host.getHostname()).append(":").append(host.getPort());
                 }
                 authentication.append(Preferences.instance().getProperty("cf.authentication.context"));
                 log.info("Using authentication URL " + authentication.toString());
