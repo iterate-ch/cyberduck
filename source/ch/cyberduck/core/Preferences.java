@@ -306,9 +306,9 @@ public abstract class Preferences {
         defaults.put("browser.duplicate.format", "{0} ({1}){2}");
 
         /**
-         * Use decimal file sizes
+         * Use octal or decimal file sizes
          */
-        defaults.put("browser.filesize.decimal", String.valueOf(true));
+        defaults.put("browser.filesize.decimal", String.valueOf(false));
 
         defaults.put("info.toggle.permission", String.valueOf(1));
         defaults.put("info.toggle.distribution", String.valueOf(0));
