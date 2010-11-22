@@ -179,22 +179,49 @@ public class FinderLocal extends Local {
      * Uses <code>NSFileManager</code> for reading file attributes.
      */
     private class FinderLocalAttributes extends LocalAttributes {
+        /**
+         * @return Null if no such file.
+         */
+        private NSDictionary getNativeAttributes() {
+            if(!exists()) {
+                return null;
+            }
+            // If flag is true and path is a symbolic link, the attributes of the linked-to file are returned;
+            // if the link points to a nonexistent file, this method returns null. If flag is false,
+            // the attributes of the symbolic link are returned.
+            return NSFileManager.defaultManager().fileAttributesAtPath_traverseLink(
+                    _impl.getAbsolutePath(), false);
+        }
+
+        /**
+         * @param name
+         * @return Null if no such file or attribute.
+         */
+        private NSObject getNativeAttribute(String name) {
+            NSDictionary dict = this.getNativeAttributes();
+            if(null == dict) {
+                log.error("No such file:" + getAbsolute());
+                return null;
+            }
+            // Returns an entry’s value given its key, or null if no value is associated with key.
+            return dict.objectForKey(name);
+        }
+
+        @Override
+        public long getSize() {
+            NSObject size = this.getNativeAttribute(NSFileManager.NSFileSize);
+            if(null == size) {
+                return -1;
+            }
+            return Rococoa.cast(size, NSNumber.class).longValue();
+        }
+
         @Override
         public Permission getPermission() {
-            if(!exists()) {
-                return Permission.EMPTY;
-            }
             try {
-                NSDictionary fileAttributes = NSFileManager.defaultManager().fileAttributesAtPath_traverseLink(
-                        _impl.getAbsolutePath(), false);
-                if(null == fileAttributes) {
-                    log.error("No such file:" + getAbsolute());
-                    return null;
-                }
-                NSObject object = fileAttributes.objectForKey(NSFileManager.NSFilePosixPermissions);
+                NSObject object = this.getNativeAttribute(NSFileManager.NSFilePosixPermissions);
                 if(null == object) {
-                    log.error("No such file:" + getAbsolute());
-                    return null;
+                    return Permission.EMPTY;
                 }
                 NSNumber posix = Rococoa.cast(object, NSNumber.class);
                 String posixString = Integer.toString(posix.intValue() & 0177777, 8);
@@ -213,25 +240,11 @@ public class FinderLocal extends Local {
          */
         @Override
         public long getCreationDate() {
-            if(!exists()) {
+            NSObject object = this.getNativeAttribute(NSFileManager.NSFileCreationDate);
+            if(null == object) {
                 return -1;
             }
-            final NSDictionary fileAttributes = NSFileManager.defaultManager().fileAttributesAtPath_traverseLink(
-                    _impl.getAbsolutePath(), false);
-            // If flag is true and path is a symbolic link, the attributes of the linked-to file are returned;
-            // if the link points to a nonexistent file, this method returns null. If flag is false,
-            // the attributes of the symbolic link are returned.
-            if(null == fileAttributes) {
-                log.error("No such file:" + getAbsolute());
-                return -1;
-            }
-            NSObject date = fileAttributes.objectForKey(NSFileManager.NSFileCreationDate);
-            if(null == date) {
-                // Returns an entry’s value given its key, or null if no value is associated with key.
-                log.error("No such file:" + getAbsolute());
-                return -1;
-            }
-            return (long) (Rococoa.cast(date, NSDate.class).timeIntervalSince1970() * 1000);
+            return (long) (Rococoa.cast(object, NSDate.class).timeIntervalSince1970() * 1000);
         }
 
         @Override
@@ -241,67 +254,31 @@ public class FinderLocal extends Local {
 
         @Override
         public String getOwner() {
-            if(!exists()) {
+            NSObject object = this.getNativeAttribute(NSFileManager.NSFileOwnerAccountName);
+            if(null == object) {
                 return super.getOwner();
             }
-            final NSDictionary fileAttributes = NSFileManager.defaultManager().fileAttributesAtPath_traverseLink(
-                    _impl.getAbsolutePath(), false);
-            // If flag is true and path is a symbolic link, the attributes of the linked-to file are returned;
-            // if the link points to a nonexistent file, this method returns null. If flag is false,
-            // the attributes of the symbolic link are returned.
-            if(null == fileAttributes) {
-                log.error("No such file:" + getAbsolute());
-                return super.getOwner();
-            }
-            NSObject owner = fileAttributes.objectForKey(NSFileManager.NSFileOwnerAccountName);
-            if(null == owner) {
-                // Returns an entry’s value given its key, or null if no value is associated with key.
-                log.error("No such file:" + getAbsolute());
-                return super.getOwner();
-            }
-            return owner.toString();
+            return object.toString();
         }
 
         @Override
         public String getGroup() {
-            if(!exists()) {
+            NSObject object = this.getNativeAttribute(NSFileManager.NSFileGroupOwnerAccountName);
+            if(null == object) {
                 return super.getGroup();
             }
-            final NSDictionary fileAttributes = NSFileManager.defaultManager().fileAttributesAtPath_traverseLink(
-                    _impl.getAbsolutePath(), false);
-            // If flag is true and path is a symbolic link, the attributes of the linked-to file are returned;
-            // if the link points to a nonexistent file, this method returns null. If flag is false,
-            // the attributes of the symbolic link are returned.
-            if(null == fileAttributes) {
-                log.error("No such file:" + getAbsolute());
-                return super.getGroup();
-            }
-            NSObject group = fileAttributes.objectForKey(NSFileManager.NSFileGroupOwnerAccountName);
-            if(null == group) {
-                // Returns an entry’s value given its key, or null if no value is associated with key.
-                log.error("No such file:" + getAbsolute());
-                return super.getGroup();
-            }
-            return group.toString();
+            return object.toString();
         }
 
         /**
          * @return The value for the key NSFileSystemFileNumber, or 0 if the receiver doesn’t have an entry for the key
          */
         public long getInode() {
-            if(!exists()) {
+            NSObject object = this.getNativeAttribute(NSFileManager.NSFileSystemFileNumber);
+            if(null == object) {
                 return 0;
             }
-            final NSDictionary fileAttributes = NSFileManager.defaultManager().fileAttributesAtPath_traverseLink(
-                    _impl.getAbsolutePath(), false);
-            // If flag is true and path is a symbolic link, the attributes of the linked-to file are returned;
-            // if the link points to a nonexistent file, this method returns null. If flag is false,
-            // the attributes of the symbolic link are returned.
-            if(null == fileAttributes) {
-                log.error("No such file:" + getAbsolute());
-                return 0;
-            }
-            NSNumber number = Rococoa.cast(fileAttributes.objectForKey(NSFileManager.NSFileSystemFileNumber), NSNumber.class);
+            NSNumber number = Rococoa.cast(object, NSNumber.class);
             return number.longValue();
         }
 
