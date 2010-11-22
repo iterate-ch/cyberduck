@@ -71,7 +71,7 @@ public class UploadTransfer extends Transfer {
         log.debug("normalize");
         final List<Path> normalized = new Collection<Path>();
         for(Path upload : this.getRoots()) {
-            if(this.isCanceled()) {
+            if(!this.check()) {
                 return;
             }
             this.getSession().message(MessageFormat.format(Locale.localizedString("Prepare {0}", "Transfer"), upload.getName()));
@@ -236,6 +236,9 @@ public class UploadTransfer extends Transfer {
 
     };
 
+    /**
+     * Append to existing file.
+     */
     private final TransferFilter ACTION_RESUME = new UploadTransferFilter() {
         @Override
         public boolean accept(final Path p) {
@@ -330,10 +333,13 @@ public class UploadTransfer extends Transfer {
             return ACTION_SKIP;
         }
         if(action.equals(TransferAction.ACTION_CALLBACK)) {
-            for(Path root : this.getRoots()) {
-                if(root.exists()) {
-                    if(root.getLocal().attributes().isDirectory()) {
-                        if(0 == this.children(root).size()) {
+            for(Path upload : this.getRoots()) {
+                if(!this.check()) {
+                    return null;
+                }
+                if(upload.exists()) {
+                    if(upload.getLocal().attributes().isDirectory()) {
+                        if(0 == this.children(upload).size()) {
                             // Do not prompt for existing empty directories
                             continue;
                         }

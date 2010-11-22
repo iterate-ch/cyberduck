@@ -30,6 +30,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.*;
 
 /**
@@ -515,7 +516,7 @@ public abstract class Transfer implements Serializable {
             // Determine the filter to match files against
             final TransferAction action = this.action(options.resumeRequested, options.reloadRequested);
             if(action.equals(TransferAction.ACTION_CANCEL)) {
-                log.info("Transfer canceled by user:" + this.toString());
+                log.info("Transfer canceled by user:" + this);
                 this.cancel();
                 return;
             }
@@ -523,6 +524,10 @@ public abstract class Transfer implements Serializable {
             this.clear(options);
 
             this.normalize();
+
+            if(!this.check()) {
+                return;
+            }
 
             // Get the transfer filter from the concret transfer class
             final TransferFilter filter = this.filter(action);
@@ -535,7 +540,7 @@ public abstract class Transfer implements Serializable {
             // Reset the cached size of the transfer and progress value
             this.reset();
 
-            // Calculate some information about the root files in advance to give some progress information
+            // Calculate information about the files in advance to give progress information
             for(Path next : roots) {
                 this.prepare(next, filter);
             }
@@ -573,6 +578,7 @@ public abstract class Transfer implements Serializable {
         // Only prepare the path it will be actually transferred
         if(filter.accept(p)) {
             log.info("Accepted in transfer:" + p);
+            this.getSession().message(MessageFormat.format(Locale.localizedString("Prepare {0}", "Transfer"), p.getName()));
             filter.prepare(p);
         }
 
@@ -588,8 +594,8 @@ public abstract class Transfer implements Serializable {
      * @return False if the transfer has been canceled or the socket is
      *         no longer connected
      */
-    private boolean check() {
-        log.debug("check:" + this.toString());
+    protected boolean check() {
+        log.debug("check");
         boolean connected = this.getSession().isConnected();
         if(!connected) {
             // Bail out if no more connected
@@ -686,7 +692,7 @@ public abstract class Transfer implements Serializable {
      * @see Session#interrupt()
      */
     public void interrupt() {
-        log.debug("interrupt:" + this.toString());
+        log.debug("interrupt");
         this.getSession().interrupt();
     }
 
@@ -696,7 +702,7 @@ public abstract class Transfer implements Serializable {
      * state, the underlying session's socket is interrupted to force exit.
      */
     public void cancel() {
-        log.debug("cancel:" + this.toString());
+        log.debug("cancel");
         if(_current != null) {
             _current.status().setCanceled();
         }
@@ -714,7 +720,7 @@ public abstract class Transfer implements Serializable {
      * Recalculate the size of the <code>queue</code>
      */
     protected void reset() {
-        log.debug("reset:" + this.toString());
+        log.debug("reset");
         this.transferred = 0;
         this.size = 0;
         this.reset = true;
@@ -770,10 +776,5 @@ public abstract class Transfer implements Serializable {
 
     public void setTransferred(double transferred) {
         this.transferred = transferred;
-    }
-
-    @Override
-    public String toString() {
-        return this.getName();
     }
 }

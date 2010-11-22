@@ -56,7 +56,7 @@ public class DownloadTransfer extends Transfer {
         log.debug("normalize");
         final List<Path> normalized = new Collection<Path>();
         for(Path download : this.getRoots()) {
-            if(this.isCanceled()) {
+            if(!this.check()) {
                 return;
             }
             this.getSession().message(MessageFormat.format(Locale.localizedString("Prepare {0}", "Transfer"), download.getName()));
@@ -294,16 +294,19 @@ public class DownloadTransfer extends Transfer {
             return ACTION_SKIP;
         }
         if(action.equals(TransferAction.ACTION_CALLBACK)) {
-            for(Path root : this.getRoots()) {
-                if(root.getLocal().exists()) {
-                    if(root.getLocal().attributes().isDirectory()) {
-                        if(0 == root.getLocal().children().size()) {
+            for(Path download : this.getRoots()) {
+                if(!this.check()) {
+                    return null;
+                }
+                if(download.getLocal().exists()) {
+                    if(download.getLocal().attributes().isDirectory()) {
+                        if(0 == download.getLocal().children().size()) {
                             // Do not prompt for existing empty directories
                             continue;
                         }
                     }
-                    if(root.getLocal().attributes().isFile()) {
-                        if(root.getLocal().attributes().getSize() == 0) {
+                    if(download.getLocal().attributes().isFile()) {
+                        if(download.getLocal().attributes().getSize() == 0) {
                             // Do not prompt for zero sized files
                             continue;
                         }
