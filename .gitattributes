@@ -760,9 +760,6 @@ img/column.tiff -text svneol=unset#image/tiff
 img/connect.tiff -text svneol=unset#image/tiff
 img/connection-secure.tiff -text
 img/connection.tiff -text svneol=unset#image/tiff
-img/dav-icon.png -text svneol=unset#image/png
-img/dav.icns -text
-img/dav.ico -text
 img/delete.tiff -text svneol=unset#image/tiff
 img/download.tiff -text svneol=unset#image/tiff
 img/download0.icns -text
