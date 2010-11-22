@@ -25,9 +25,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
-public abstract class DateFormatterFactory extends Factory<DateFormatter> {
+public abstract class DateFormatterFactory extends Factory<AbstractDateFormatter> {
 
     /**
      * Registered factories
@@ -43,12 +43,12 @@ public abstract class DateFormatterFactory extends Factory<DateFormatter> {
         factories.put(platform, f);
     }
 
-    private static DateFormatter formatter;
+    private static AbstractDateFormatter formatter;
 
     /**
      * @return
      */
-    public static DateFormatter instance() {
+    public static AbstractDateFormatter instance() {
         if(null == formatter) {
             if(!factories.containsKey(NATIVE_PLATFORM)) {
                 throw new RuntimeException("No implementation for " + NATIVE_PLATFORM);

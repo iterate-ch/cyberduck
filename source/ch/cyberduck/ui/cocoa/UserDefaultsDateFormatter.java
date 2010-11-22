@@ -19,19 +19,21 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.ui.AbstractDateFormatter;
 import ch.cyberduck.ui.DateFormatter;
 import ch.cyberduck.ui.DateFormatterFactory;
 import ch.cyberduck.ui.cocoa.foundation.NSDate;
 import ch.cyberduck.ui.cocoa.foundation.NSDateFormatter;
 import ch.cyberduck.ui.cocoa.foundation.NSLocale;
 
-import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
+
+import org.apache.log4j.Logger;
 
 /**
  * @version $Id$
  */
-public class UserDefaultsDateFormatter implements DateFormatter {
+public class UserDefaultsDateFormatter extends AbstractDateFormatter implements DateFormatter {
     private static Logger log = Logger.getLogger(UserDefaultsDateFormatter.class);
 
     public static void register() {
@@ -40,7 +42,7 @@ public class UserDefaultsDateFormatter implements DateFormatter {
 
     private static class Factory extends DateFormatterFactory {
         @Override
-        protected DateFormatter create() {
+        protected AbstractDateFormatter create() {
             return new UserDefaultsDateFormatter();
         }
     }
@@ -54,9 +56,6 @@ public class UserDefaultsDateFormatter implements DateFormatter {
         longDateFormatter.setDateStyle(NSDateFormatter.kCFDateFormatterLongStyle);
         longDateFormatter.setTimeStyle(NSDateFormatter.kCFDateFormatterLongStyle);
         longDateFormatter.setLocale(NSLocale.currentLocale());
-        if(longDateFormatter.respondsToSelector(Foundation.selector("setDoesRelativeDateFormatting:"))) {
-            longDateFormatter.setDoesRelativeDateFormatting(true);
-        }
     }
 
     /**
@@ -68,9 +67,6 @@ public class UserDefaultsDateFormatter implements DateFormatter {
         shortDateFormatter.setDateStyle(NSDateFormatter.kCFDateFormatterShortStyle);
         shortDateFormatter.setTimeStyle(NSDateFormatter.kCFDateFormatterShortStyle);
         shortDateFormatter.setLocale(NSLocale.currentLocale());
-        if(shortDateFormatter.respondsToSelector(Foundation.selector("setDoesRelativeDateFormatting:"))) {
-            shortDateFormatter.setDoesRelativeDateFormatting(true);
-        }
     }
 
     private static final NSDateFormatter mediumDateFormatter = NSDateFormatter.dateFormatter();
@@ -79,9 +75,6 @@ public class UserDefaultsDateFormatter implements DateFormatter {
         mediumDateFormatter.setDateStyle(NSDateFormatter.kCFDateFormatterMediumStyle);
         mediumDateFormatter.setTimeStyle(NSDateFormatter.kCFDateFormatterMediumStyle);
         mediumDateFormatter.setLocale(NSLocale.currentLocale());
-        if(mediumDateFormatter.respondsToSelector(Foundation.selector("setDoesRelativeDateFormatting:"))) {
-            mediumDateFormatter.setDoesRelativeDateFormatting(true);
-        }
     }
 
     /**
@@ -94,31 +87,49 @@ public class UserDefaultsDateFormatter implements DateFormatter {
     }
 
     /**
-     * Modification date represented as NSUserDefaults.ShortTimeDateFormatString
+     * Date represented as NSDateFormatter.kCFDateFormatterShortStyle
      *
      * @param milliseconds Milliseconds since January 1, 1970, 00:00:00 GMT
+     * @param natural
      * @return A short format string or "Unknown" if there is a problem converting the time to a string
      */
-    public String getShortFormat(final long milliseconds) {
+    public String getShortFormat(final long milliseconds, boolean natural) {
         if(-1 == milliseconds) {
             return Locale.localizedString("Unknown");
+        }
+        if(shortDateFormatter.respondsToSelector(Foundation.selector("setDoesRelativeDateFormatting:"))) {
+            shortDateFormatter.setDoesRelativeDateFormatting(natural);
         }
         return shortDateFormatter.stringFromDate(toDate(milliseconds));
     }
 
-    public String getMediumFormat(final long milliseconds) {
+    /**
+     * Date represented as NSDateFormatter.kCFDateFormatterMediumStyle
+     *
+     * @param milliseconds
+     * @param natural
+     * @return
+     */
+    public String getMediumFormat(final long milliseconds, boolean natural) {
+        if(mediumDateFormatter.respondsToSelector(Foundation.selector("setDoesRelativeDateFormatting:"))) {
+            mediumDateFormatter.setDoesRelativeDateFormatting(natural);
+        }
         return mediumDateFormatter.stringFromDate(toDate(milliseconds));
     }
 
     /**
-     * Date represented as NSUserDefaults.TimeDateFormatString
+     * Date represented as NSDateFormatter.kCFDateFormatterLongStyle
      *
      * @param milliseconds Milliseconds since January 1, 1970, 00:00:00 GMT
+     * @param natural
      * @return A long format string or "Unknown" if there is a problem converting the time to a string
      */
-    public String getLongFormat(final long milliseconds) {
+    public String getLongFormat(final long milliseconds, boolean natural) {
         if(-1 == milliseconds) {
             return Locale.localizedString("Unknown");
+        }
+        if(longDateFormatter.respondsToSelector(Foundation.selector("setDoesRelativeDateFormatting:"))) {
+            longDateFormatter.setDoesRelativeDateFormatting(natural);
         }
         return longDateFormatter.stringFromDate(toDate(milliseconds));
     }

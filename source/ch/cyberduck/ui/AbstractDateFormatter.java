@@ -20,12 +20,19 @@ package ch.cyberduck.ui;
  */
 
 /**
- * @version $Id$
+ * @version $Id:$
  */
-public interface DateFormatter {
-    String getShortFormat(long milliseconds, boolean natural);
+public abstract class AbstractDateFormatter implements DateFormatter {
 
-    String getMediumFormat(long milliseconds, boolean natural);
+    public String getShortFormat(long milliseconds) {
+        return this.getShortFormat(milliseconds, true);
+    }
 
-    String getLongFormat(long milliseconds, boolean natural);
+    public String getMediumFormat(long milliseconds) {
+        return this.getMediumFormat(milliseconds, true);
+    }
+
+    public String getLongFormat(long milliseconds) {
+        return this.getLongFormat(milliseconds, true);
+    }
 }
