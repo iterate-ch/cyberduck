@@ -539,6 +539,16 @@ public abstract class Protocol {
         public String[] getSchemes() {
             return new String[]{this.getScheme(), "dav"};
         }
+
+        @Override
+        public String disk() {
+            return FTP.disk();
+        }
+
+        @Override
+        public String icon() {
+            return FTP.icon();
+        }
     };
 
     public static final Protocol WEBDAV_SSL = new Protocol() {
@@ -579,12 +589,12 @@ public abstract class Protocol {
 
         @Override
         public String disk() {
-            return WEBDAV.disk();
+            return FTP_TLS.disk();
         }
 
         @Override
         public String icon() {
-            return WEBDAV.icon();
+            return FTP_TLS.icon();
         }
     };
 
@@ -781,16 +791,6 @@ public abstract class Protocol {
         @Override
         public String getPasswordPlaceholder() {
             return Locale.localizedString("API Access Key", "Mosso");
-        }
-
-        @Override
-        public String icon() {
-            return CLOUDFILES.icon();
-        }
-
-        @Override
-        public String disk() {
-            return CLOUDFILES.disk();
         }
     };
 
