@@ -1000,8 +1000,8 @@ public class TransferController extends WindowController implements NSToolbar.De
         for(NSUInteger index = iterator.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = iterator.indexGreaterThanIndex(index)) {
             final Transfer transfer = transfers.get(index.intValue());
             if(!transfer.isRunning()) {
-                for(Path path : transfer.getRoots()) {
-                    path.getLocal().delete();
+                for(Path i : transfer.getRoots()) {
+                    i.getLocal().delete();
                 }
             }
         }
