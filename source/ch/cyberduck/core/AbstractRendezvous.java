@@ -21,6 +21,7 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.i18n.Locale;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.util.*;
@@ -175,7 +176,9 @@ public abstract class AbstractRendezvous {
         final Host host = new Host(protocol, hostname, port);
         host.getCredentials().setUsername(user);
         host.getCredentials().setPassword(password);
-        host.setDefaultPath(Path.normalize(path));
+        if(StringUtils.isNotBlank(path)) {
+            host.setDefaultPath(Path.normalize(path));
+        }
         this.add(fullname, host);
     }
 
