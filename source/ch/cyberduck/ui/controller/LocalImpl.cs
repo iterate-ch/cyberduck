@@ -216,7 +216,7 @@ namespace Ch.Cyberduck.Ui.Controller
         }
 
         public override bool exists()
-        {            
+        {
             if (System.IO.File.Exists(getAbsolute()))
             {
                 return true;
@@ -264,6 +264,37 @@ namespace Ch.Cyberduck.Ui.Controller
                 return base.kind();
             }
             return kind;
+        }
+
+        private Attributes info = null;
+
+        public override Attributes attributes()
+        {
+            if (null == info)
+            {
+                info = new FileInfoAttributes(this);
+            }
+            return info;
+        }
+
+        private class FileInfoAttributes : LocalAttributes
+        {
+            private Local file;
+
+            public FileInfoAttributes(Local l) : base(l)
+            {
+                file = l;
+            }
+
+            public override long getSize()
+            {
+                if (!file.exists())
+                {
+                    return -1;
+                }
+                FileInfo fileAttributes = new FileInfo(file.getAbsolute());
+                return fileAttributes.Length;
+            }
         }
 
         /// <summary>
