@@ -494,9 +494,9 @@ public class TransferController extends WindowController implements NSToolbar.De
      *
      */
     private void updateHighlight() {
-        boolean isKeyWindow = window().isKeyWindow();
+        boolean main = window().isMainWindow();
         for(int i = 0; i < transferTableModel.getSource().size(); i++) {
-            transferTableModel.setHighlighted(i, transferTable.isRowSelected(new NSInteger(i)) && isKeyWindow);
+            transferTableModel.setHighlighted(i, transferTable.isRowSelected(new NSInteger(i)) && main);
         }
     }
 
