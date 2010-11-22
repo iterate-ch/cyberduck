@@ -21,9 +21,9 @@ using ch.cyberduck.ui;
 
 namespace Ch.Cyberduck.Ui.Winforms
 {
-    internal class UserDefaultsDateFormatter : DateFormatter
+    internal class UserDefaultsDateFormatter : AbstractDateFormatter
     {
-        public string getLongFormat(long milliseconds)
+        public override string getLongFormat(long milliseconds, bool natural)
         {
             if (-1 == milliseconds)
             {
@@ -37,7 +37,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         /// </summary>
         /// <param name="milliseconds">milliseconds Milliseconds since January 1, 1970, 00:00:00 GMT</param>
         /// <returns>A short format string or "Unknown" if there is a problem converting the time to a string</returns>
-        public string getShortFormat(long milliseconds)
+        public override string getShortFormat(long milliseconds, bool natural)
         {
             if (-1 == milliseconds)
             {
@@ -46,9 +46,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             return GetShortFormat(ConvertJavaMiliSecondToDateTime(milliseconds));
         }
 
-        public string getMediumFormat(long milliseconds)
+        public override string getMediumFormat(long milliseconds, bool natural)
         {
-            return getLongFormat(milliseconds);
+            return getLongFormat(milliseconds, natural);
         }
 
         public static string GetShortFormat(DateTime d)
