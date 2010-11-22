@@ -52,6 +52,17 @@ public class HistoryCollection extends AbstractFolderHostCollection {
         return LocalFactory.createLocal(folder, bookmark.getNickname() + ".duck");
     }
 
+    @Override
+    public String getComment(Host host) {
+        Date timestamp = host.getTimestamp();
+        if(null != timestamp) {
+            // Set comment to timestamp when server was last accessed
+            return DateFormatterFactory.instance().getLongFormat(timestamp.getTime());
+        }
+        // There might be files from previous versions that have no timestamp yet.
+        return null;
+    }
+
     /**
      * Does not allow duplicate entries.
      *
@@ -62,12 +73,6 @@ public class HistoryCollection extends AbstractFolderHostCollection {
     public void add(int row, Host bookmark) {
         if(this.contains(bookmark)) {
             this.remove(bookmark);
-        }
-        // Set comment to timestamp when server was last accessed
-        Date timestamp = bookmark.getTimestamp();
-        if(null != timestamp) {
-            // There might be files from previous versions that have no timestamp yet.
-            bookmark.setComment(DateFormatterFactory.instance().getLongFormat(timestamp.getTime()));
         }
         super.add(row, bookmark);
     }
@@ -82,12 +87,6 @@ public class HistoryCollection extends AbstractFolderHostCollection {
     public boolean add(Host bookmark) {
         if(this.contains(bookmark)) {
             this.remove(bookmark);
-        }
-        // Set comment to timestamp when server was last accessed
-        Date timestamp = bookmark.getTimestamp();
-        if(null != timestamp) {
-            // There might be files from previous versions that have no timestamp yet.
-            bookmark.setComment(DateFormatterFactory.instance().getLongFormat(timestamp.getTime()));
         }
         return super.add(bookmark);
     }

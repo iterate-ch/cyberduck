@@ -20,6 +20,7 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.ui.DateFormatterFactory;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -179,6 +180,7 @@ public abstract class AbstractRendezvous {
         if(StringUtils.isNotBlank(path)) {
             host.setDefaultPath(Path.normalize(path));
         }
+        host.setComment(DateFormatterFactory.instance().getLongFormat(new Date().getTime()));
         this.add(fullname, host);
     }
 

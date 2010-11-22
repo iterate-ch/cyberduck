@@ -36,7 +36,6 @@ import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 import org.rococoa.Rococoa;
 import org.rococoa.cocoa.foundation.*;
 
-import org.apache.commons.lang.CharUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -239,8 +238,9 @@ public class BookmarkTableDataSource extends ListDataSource {
             if(identifier.equals(BOOKMARK_COLUMN)) {
                 NSMutableDictionary dict = NSMutableDictionary.dictionaryWithDictionary(host.<NSDictionary>getAsDictionary());
                 dict.setObjectForKey(host.toURL() + Path.normalize(host.getDefaultPath()), "URL");
-                if(StringUtils.isNotBlank(host.getComment())) {
-                    dict.setObjectForKey(StringUtils.remove(StringUtils.remove(host.getComment(), CharUtils.LF), CharUtils.CR), "Comment");
+                String comment = this.getSource().getComment(host);
+                if(StringUtils.isNotBlank(comment)) {
+                    dict.setObjectForKey(comment, "Comment");
                 }
                 return cache.put(host, identifier, dict);
             }

@@ -103,11 +103,7 @@ namespace Ch.Cyberduck.Ui.Controller
         public object GetNotes(object host)
         {
             Host h = (Host) host;
-            if (Utils.IsNotBlank(h.getComment()))
-            {
-                return Utils.ReplaceNewlines(h.getComment(), " ");
-            }
-            return string.Empty;
+            return Source.getComment(h);
         }
 
         public object GetBookmarkStatusImage(object rowobject)

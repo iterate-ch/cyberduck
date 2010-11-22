@@ -20,6 +20,8 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.i18n.Locale;
 
+import org.apache.commons.lang.CharUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
@@ -59,6 +61,18 @@ public abstract class AbstractHostCollection extends Collection<Host> implements
      * @return Group label
      */
     public abstract String getName();
+
+    /**
+     *
+     * @param h
+     * @return
+     */
+    public String getComment(Host h) {
+        if(StringUtils.isNotBlank(h.getComment())) {
+            return StringUtils.remove(StringUtils.remove(h.getComment(), CharUtils.LF), CharUtils.CR);
+        }
+        return null;
+    }
 
     @Override
     public boolean addAll(java.util.Collection<? extends Host> c) {
