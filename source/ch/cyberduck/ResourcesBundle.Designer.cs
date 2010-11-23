@@ -261,20 +261,6 @@ namespace Ch.Cyberduck {
             }
         }
         
-        internal static System.Drawing.Icon dav {
-            get {
-                object obj = ResourceManager.GetObject("dav", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
-            }
-        }
-        
-        internal static System.Drawing.Bitmap dav_icon {
-            get {
-                object obj = ResourceManager.GetObject("dav-icon", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
         internal static System.Drawing.Bitmap delete {
             get {
                 object obj = ResourceManager.GetObject("delete", resourceCulture);
@@ -285,6 +271,20 @@ namespace Ch.Cyberduck {
         internal static System.Drawing.Bitmap download {
             get {
                 object obj = ResourceManager.GetObject("download", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Icon dropbox {
+            get {
+                object obj = ResourceManager.GetObject("dropbox", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap dropbox_icon {
+            get {
+                object obj = ResourceManager.GetObject("dropbox-icon", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -621,6 +621,20 @@ namespace Ch.Cyberduck {
         internal static System.Drawing.Bitmap stop {
             get {
                 object obj = ResourceManager.GetObject("stop", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Icon swift {
+            get {
+                object obj = ResourceManager.GetObject("swift", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap swift_icon {
+            get {
+                object obj = ResourceManager.GetObject("swift-icon", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

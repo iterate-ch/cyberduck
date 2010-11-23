@@ -133,14 +133,17 @@
   <data name="azure-icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\..\..\img\azure-icon.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="dav-icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\..\..\img\dav-icon.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="eucalyptus-icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\..\..\img\eucalyptus-icon.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="ftp-icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\..\..\img\ftp-icon.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="dropbox-icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\img\dropbox-icon.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="swift-icon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\img\swift-icon.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="NSDotMac" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\..\..\img\NSDotMac.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -307,9 +310,6 @@
   <data name="azure" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\..\..\img\azure.ico;System.Drawing.Icon, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="dav" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\..\..\img\dav.ico;System.Drawing.Icon, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="edit" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\..\..\img\edit.tiff;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -318,6 +318,12 @@
   </data>
   <data name="ftp" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\..\..\img\ftp.ico;System.Drawing.Icon, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="dropbox" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\img\dropbox.ico;System.Drawing.Icon, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="swift" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\..\..\img\swift.ico;System.Drawing.Icon, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="google" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\..\..\img\google.ico;System.Drawing.Icon, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
