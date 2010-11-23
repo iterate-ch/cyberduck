@@ -200,7 +200,7 @@ Section "MainSection" SEC01
   File "${BASEDIR}\Cyberduck.exe"
   File "${BASEDIR}\Cyberduck.exe.config"
   File "${BASEDIR}\Acknowledgments.rtf"
-  File "${BASEDIR}\..\..\..\en.lproj\License.txt"  
+  File "${BASEDIR}\License.txt"
   File "${BASEDIR}\cyberduck-document.ico"
   File "${BASEDIR}\*.dll"
   File "${BASEDIR}\..\..\update\wyUpdate.exe"
