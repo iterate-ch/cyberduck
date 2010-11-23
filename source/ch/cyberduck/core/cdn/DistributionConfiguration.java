@@ -40,7 +40,7 @@ public interface DistributionConfiguration {
      *
      * @param enabled           True if distribution should be activated if not yet.
      * @param origin            Source server
-     * @param method            Protocol
+     * @param method            Distribution method
      * @param cnames            CNAME entires in the DNS pointing to the same origin.
      * @param logging           True if logging should be enabled for access to CDN.
      * @param defaultRootObject Index file for root of container
@@ -49,26 +49,26 @@ public interface DistributionConfiguration {
                String[] cnames, boolean logging, String defaultRootObject);
 
     /**
-     * Read distribution status of origin
+     * Read distribution configuration of origin
      *
      * @param origin Source server
      * @param method Protocol
-     * @return
+     * @return Distribution Configuration
      */
     Distribution read(String origin, Distribution.Method method);
 
     /**
      * Invalidate distribution objects.
      *
-     * @param origin Source server
-     * @param method Protocol
-     * @param files
-     * @param recursive
+     * @param origin    Source server
+     * @param method    Distribution method
+     * @param files     Selected files or containers
+     * @param recursive Apply recursively to selected container or placeholder
      */
     void invalidate(String origin, Distribution.Method method, List<Path> files, boolean recursive);
 
     /**
-     * @param method
+     * @param method Distribution method
      * @return True if objects in the edge location can be deleted from the CDN
      */
     boolean isInvalidationSupported(Distribution.Method method);
@@ -76,19 +76,19 @@ public interface DistributionConfiguration {
     /**
      * Index file for root of container
      *
-     * @param method
+     * @param method Distribution method
      * @return
      */
     boolean isDefaultRootSupported(Distribution.Method method);
 
     /**
-     * @return
+     * @return True if CDN is is configured logging requests to storage
      */
     boolean isLoggingSupported(Distribution.Method method);
 
     /**
-     * @param method
-     * @return
+     * @param method Distribution method
+     * @return True if CNAME for for the CDN URI can be configured
      */
     boolean isCnameSupported(Distribution.Method method);
 
@@ -100,8 +100,8 @@ public interface DistributionConfiguration {
     List<Distribution.Method> getMethods();
 
     /**
-     * @param method Protocol
-     * @return DNS name for container
+     * @param method Distribution method
+     * @return Bucket name not fully qualified.
      */
     String getOrigin(Distribution.Method method, String container);
 
