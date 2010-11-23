@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010 David Kocher. All rights reserved.
+// Copyright (c) 2010 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -13,13 +13,14 @@
 // GNU General Public License for more details.
 // 
 // Bug fixes, suggestions and comments should be sent to:
-// dkocher@cyberduck.ch
+// yves@cyberduck.ch
 // 
 using System;
 using System.Collections.Generic;
 using Bonjour;
+using ch.cyberduck.core;
 
-namespace ch.cyberduck.core
+namespace Ch.Cyberduck.Core
 {
     internal class Rendezvous : AbstractRendezvous
     {
@@ -45,6 +46,11 @@ namespace ch.cyberduck.core
 
         public override void quit()
         {
+            if (null == eventManager)
+            {
+                return;
+            }
+
             eventManager.ServiceFound -= ServiceFound;
             eventManager.ServiceLost -= ServiceLost;
             eventManager.ServiceResolved -= ServiceResolved;
@@ -54,7 +60,10 @@ namespace ch.cyberduck.core
                 DNSSDService browser;
                 if (browsers.TryGetValue(getServiceTypes()[i], out browser))
                 {
-                    browser.Stop();
+                    if (null != browser)
+                    {
+                        browser.Stop();
+                    }
                 }
             }
             if (service != null)
@@ -87,7 +96,7 @@ namespace ch.cyberduck.core
                                 String regType,
                                 String domain)
         {
-            string fullname = serviceName + "." + regType;
+            string fullname = serviceName + "." + regType + domain;
             base.remove(fullname);
         }
 
@@ -125,10 +134,8 @@ namespace ch.cyberduck.core
 
         public static void Register()
         {
-            RendezvousFactory.addFactory(core.Factory.NATIVE_PLATFORM, new Factory());
+            RendezvousFactory.addFactory(ch.cyberduck.core.Factory.NATIVE_PLATFORM, new Factory());
         }
-
-        #region Nested type: Factory
 
         private class Factory : RendezvousFactory
         {
@@ -137,7 +144,5 @@ namespace ch.cyberduck.core
                 return new Rendezvous();
             }
         }
-
-        #endregion
     }
 }

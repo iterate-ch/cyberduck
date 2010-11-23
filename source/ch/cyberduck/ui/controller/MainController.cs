@@ -19,6 +19,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows.Forms;
 using ch.cyberduck.core;
@@ -36,6 +37,7 @@ using Ch.Cyberduck.Ui.Winforms.Taskdialog;
 using Microsoft.VisualBasic.ApplicationServices;
 using org.apache.log4j;
 using Path = System.IO.Path;
+using Rendezvous = Ch.Cyberduck.Core.Rendezvous;
 using ThreadPool = ch.cyberduck.core.threading.ThreadPool;
 using UnhandledExceptionEventArgs = System.UnhandledExceptionEventArgs;
 
@@ -107,7 +109,14 @@ namespace Ch.Cyberduck.Ui.Controller
                             {
                                 if (Preferences.instance().getBoolean("rendezvous.enable"))
                                 {
-                                    RendezvousFactory.instance().quit();
+                                    try
+                                    {
+                                        RendezvousFactory.instance().quit();
+                                    }
+                                    catch (COMException)
+                                    {
+                                        Logger.warn("No Bonjour support available");
+                                    }
                                 }
                                 Preferences.instance().setProperty("uses", Preferences.instance().getInteger("uses") + 1);
                                 // Shutdown thread pools
@@ -252,8 +261,8 @@ namespace Ch.Cyberduck.Ui.Controller
                     }
                     if ("duck".Equals(f.getExtension()))
                     {
-                        Host host = (Host)HostReaderFactory.instance().read(f);
-                        MainController.NewBrowser().Mount(host);
+                        Host host = (Host) HostReaderFactory.instance().read(f);
+                        NewBrowser().Mount(host);
                     }
                 }
             }
@@ -312,7 +321,14 @@ namespace Ch.Cyberduck.Ui.Controller
             // Bonjour initialization
             if (Preferences.instance().getBoolean("rendezvous.enable"))
             {
-                RendezvousFactory.instance().init();
+                try
+                {
+                    RendezvousFactory.instance().init();
+                }
+                catch (COMException)
+                {
+                    Logger.warn("No Bonjour support available");
+                }
             }
             if (Preferences.instance().getBoolean("defaulthandler.reminder")
                 && Preferences.instance().getInteger("uses") > 0)
@@ -460,7 +476,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 if (bookmark.getNickname().Equals(defaultBookmark))
                 {
-                    foreach (BrowserController browser in MainController.Browsers)
+                    foreach (BrowserController browser in Browsers)
                     {
                         if (browser.HasSession())
                         {
@@ -540,7 +556,7 @@ namespace Ch.Cyberduck.Ui.Controller
             }
 
             // Determine if there are any open connections
-            foreach (BrowserController controller in new List<BrowserController>(MainController.Browsers))
+            foreach (BrowserController controller in new List<BrowserController>(Browsers))
             {
                 if (Preferences.instance().getBoolean("browser.serialize"))
                 {
@@ -558,7 +574,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public static void Exit()
         {
-            foreach (BrowserController controller in new List<BrowserController>(MainController.Browsers))
+            foreach (BrowserController controller in new List<BrowserController>(Browsers))
             {
                 if (controller.IsConnected())
                 {
@@ -590,7 +606,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                 }
                                 return;
                             case 1: // Quit
-                                foreach (BrowserController c in new List<BrowserController>(MainController.Browsers))
+                                foreach (BrowserController c in new List<BrowserController>(Browsers))
                                 {
                                     c.View.Dispose();
                                 }
@@ -612,7 +628,7 @@ namespace Ch.Cyberduck.Ui.Controller
             Logger.debug("NewBrowser");
             if (!force)
             {
-                foreach (BrowserController c in MainController.Browsers)
+                foreach (BrowserController c in Browsers)
                 {
                     if (!c.HasSession())
                     {
@@ -625,7 +641,7 @@ namespace Ch.Cyberduck.Ui.Controller
             BrowserController controller = new BrowserController();
             controller.View.ViewClosingEvent += delegate(object sender, FormClosingEventArgs args)
                                                     {
-                                                        if (1 == MainController.Browsers.Count)
+                                                        if (1 == Browsers.Count)
                                                         {
                                                             // last browser is about to close, check if we can terminate
                                                             args.Cancel = !ApplicationShouldTerminate();
@@ -633,8 +649,8 @@ namespace Ch.Cyberduck.Ui.Controller
                                                     };
             controller.View.ViewDisposedEvent += delegate
                                                      {
-                                                         MainController.Browsers.Remove(controller);
-                                                         if (0 == MainController.Browsers.Count)
+                                                         Browsers.Remove(controller);
+                                                         if (0 == Browsers.Count)
                                                          {
                                                              // Close/Dispose all non-browser forms (e.g. Transfers) to allow shutdown
                                                              FormCollection forms = application.OpenForms;
@@ -646,7 +662,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                                          }
                                                          else
                                                          {
-                                                             application.MainForm = MainController.Browsers[0].View as Form;
+                                                             application.MainForm = Browsers[0].View as Form;
                                                          }
                                                      };
             if (show)
@@ -654,7 +670,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 controller.View.Show();
             }
             application.MainForm = controller.View as Form;
-            MainController.Browsers.Add(controller);
+            Browsers.Add(controller);
             return controller;
         }
 

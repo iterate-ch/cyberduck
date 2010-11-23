@@ -1,4 +1,4 @@
-﻿//
+﻿// 
 // Copyright (c) 2010 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
@@ -15,10 +15,7 @@
 // Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
 // 
-using System;
-using System.Threading;
 using ch.cyberduck.core;
-using Ch.Cyberduck.Core;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -59,7 +56,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         }
                     }
                     //todo hmm, wo wird dieser entfernt?
-                    _filtered.addListener(new BookmarkListener(_controller, _source));
+                    _filtered.addListener(new BookmarkListener(_controller));
                 }
                 return _filtered;
             }
@@ -69,7 +66,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 _source.removeListener(_listener); //remove previous listener
                 _source = value;
                 //todo listener muss beim schliessen von browserform auch entfernt werden
-                _source.addListener(_listener = new BookmarkListener(_controller, _source));
+                _source.addListener(_listener = new BookmarkListener(_controller));
                 Filter = null;
             }
         }
@@ -134,12 +131,10 @@ namespace Ch.Cyberduck.Ui.Controller
         private class BookmarkListener : CollectionListener
         {
             private readonly BrowserController _controller;
-            private readonly AbstractHostCollection _source;
 
-            public BookmarkListener(BrowserController controller, AbstractHostCollection source)
+            public BookmarkListener(BrowserController controller)
             {
                 _controller = controller;
-                _source = source;
             }
 
             public void collectionLoaded()

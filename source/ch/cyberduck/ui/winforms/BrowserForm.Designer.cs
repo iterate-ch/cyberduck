@@ -63,6 +63,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.toolStripSeparator11 = new System.Windows.Forms.ToolStripSeparator();
             this.createArchiveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.archiveMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.createArchiveContextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.expandArchiveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator12 = new System.Windows.Forms.ToolStripSeparator();
             this.printToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -147,7 +148,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.checkToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator28 = new System.Windows.Forms.ToolStripSeparator();
             this.aboutCyberduckToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.createArchiveContextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editorMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.editor1ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editor2ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -645,8 +645,15 @@ namespace Ch.Cyberduck.Ui.Winforms
             // archiveMenuStrip
             // 
             this.archiveMenuStrip.Name = "archiveMenuStrip";
-            this.archiveMenuStrip.OwnerItem = this.createArchiveContextToolStripMenuItem;
+            this.archiveMenuStrip.OwnerItem = this.createArchiveToolStripMenuItem;
             this.archiveMenuStrip.Size = new System.Drawing.Size(61, 4);
+            // 
+            // createArchiveContextToolStripMenuItem
+            // 
+            this.createArchiveContextToolStripMenuItem.DropDown = this.archiveMenuStrip;
+            this.createArchiveContextToolStripMenuItem.Name = "createArchiveContextToolStripMenuItem";
+            this.createArchiveContextToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+            this.createArchiveContextToolStripMenuItem.Text = "Create Archive";
             // 
             // expandArchiveToolStripMenuItem
             // 
@@ -1231,13 +1238,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.aboutCyberduckToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
             this.aboutCyberduckToolStripMenuItem.Text = "&About Cyberduck";
             // 
-            // createArchiveContextToolStripMenuItem
-            // 
-            this.createArchiveContextToolStripMenuItem.DropDown = this.archiveMenuStrip;
-            this.createArchiveContextToolStripMenuItem.Name = "createArchiveContextToolStripMenuItem";
-            this.createArchiveContextToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
-            this.createArchiveContextToolStripMenuItem.Text = "Create Archive";
-            // 
             // editorMenuStrip
             // 
             this.editorMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -1371,7 +1371,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.newBrowserContextToolStripMenuItem,
             this.newBookmarkContextToolStripMenuItem});
             this.contextMenuStrip.Name = "contextMenuStrip1";
-            this.contextMenuStrip.Size = new System.Drawing.Size(156, 486);
+            this.contextMenuStrip.OwnerItem = this.actionToolStripDropDownButton;
+            this.contextMenuStrip.Size = new System.Drawing.Size(156, 464);
             // 
             // refreshContextToolStripMenuItem
             // 
@@ -1954,7 +1955,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.viewToolStrip.Margin = new System.Windows.Forms.Padding(0, 2, 0, 0);
             this.viewToolStrip.Name = "viewToolStrip";
             this.viewToolStrip.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
-            this.viewToolStrip.Size = new System.Drawing.Size(128, 28);
+            this.viewToolStrip.Size = new System.Drawing.Size(159, 28);
             this.viewToolStrip.TabIndex = 17;
             this.viewToolStrip.Text = "toolStrip3";
             // 
@@ -2002,7 +2003,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.bonjourToolStripButton.AutoSize = false;
             this.bonjourToolStripButton.AutoToolTip = false;
             this.bonjourToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.bonjourToolStripButton.Enabled = false;
             this.bonjourToolStripButton.Image = global::Ch.Cyberduck.ResourcesBundle.rendezvous;
             this.bonjourToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.bonjourToolStripButton.Margin = new System.Windows.Forms.Padding(2, 1, 5, 2);
@@ -2043,10 +2043,10 @@ namespace Ch.Cyberduck.Ui.Winforms
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.pathComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.pathComboBox.FormattingEnabled = true;
-            this.pathComboBox.Location = new System.Drawing.Point(215, 4);
+            this.pathComboBox.Location = new System.Drawing.Point(246, 4);
             this.pathComboBox.Margin = new System.Windows.Forms.Padding(3, 4, 3, 3);
             this.pathComboBox.Name = "pathComboBox";
-            this.pathComboBox.Size = new System.Drawing.Size(646, 23);
+            this.pathComboBox.Size = new System.Drawing.Size(615, 23);
             this.pathComboBox.TabIndex = 6;
             this.pathComboBox.SelectionChangeCommitted += new System.EventHandler(this.pathComboBox_SelectionChangeCommitted);
             // 
@@ -2054,7 +2054,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.historyForwardButton.FlatAppearance.BorderSize = 0;
             this.historyForwardButton.Image = global::Ch.Cyberduck.ResourcesBundle.arrowRightBlack16;
-            this.historyForwardButton.Location = new System.Drawing.Point(173, 3);
+            this.historyForwardButton.Location = new System.Drawing.Point(204, 3);
             this.historyForwardButton.Name = "historyForwardButton";
             this.historyForwardButton.Size = new System.Drawing.Size(36, 25);
             this.historyForwardButton.TabIndex = 5;
@@ -2065,7 +2065,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.historyBackButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.historyBackButton.FlatAppearance.BorderSize = 0;
             this.historyBackButton.Image = global::Ch.Cyberduck.ResourcesBundle.arrowLeftBlack16;
-            this.historyBackButton.Location = new System.Drawing.Point(131, 3);
+            this.historyBackButton.Location = new System.Drawing.Point(162, 3);
             this.historyBackButton.Name = "historyBackButton";
             this.historyBackButton.Size = new System.Drawing.Size(36, 25);
             this.historyBackButton.TabIndex = 4;
