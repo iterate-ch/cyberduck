@@ -419,6 +419,14 @@ public abstract class Path extends AbstractPath implements Serializable {
     }
 
     @Override
+    public void invalidate() {
+        if(this.attributes().isDirectory()) {
+            this.getSession().cdn().clear();
+        }
+        super.invalidate();
+    }
+
+    @Override
     public abstract AttributedList<Path> list();
 
     /**
