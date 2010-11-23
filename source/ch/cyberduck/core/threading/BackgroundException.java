@@ -115,7 +115,7 @@ public class BackgroundException extends Exception {
         StringBuilder buffer = new StringBuilder();
         if(null != cause) {
             if(StringUtils.isNotBlank(cause.getMessage())) {
-                buffer.append(cause.getMessage());
+                buffer.append(cause.getMessage()).append(".");
             }
             if(cause instanceof SFTPException) {
                 ;
@@ -141,7 +141,7 @@ public class BackgroundException extends Exception {
             if(cause instanceof CloudFrontServiceException) {
                 final CloudFrontServiceException cf = (CloudFrontServiceException) cause;
                 if(StringUtils.isNotBlank(cf.getErrorMessage())) {
-                    buffer.append(" ").append(cf.getErrorMessage()).append(".");
+                    buffer.append(" ").append(cf.getErrorMessage());
                 }
                 if(StringUtils.isNotBlank(cf.getErrorDetail())) {
                     buffer.append(" ").append(cf.getErrorDetail());
