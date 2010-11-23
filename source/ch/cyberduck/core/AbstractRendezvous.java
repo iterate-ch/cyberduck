@@ -212,12 +212,14 @@ public abstract class AbstractRendezvous {
      * @param host
      */
     protected void add(String fullname, Host host) {
+        log.debug("add:" + fullname);
         if(null == this.services.put(fullname, host)) {
             this.notifier.serviceResolved(fullname, host.getHostname());
         }
     }
 
     protected void remove(String identifier) {
+        log.debug("remove:" + identifier);
         if(null == services.remove(identifier)) {
             return;
         }

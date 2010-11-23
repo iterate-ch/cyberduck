@@ -146,7 +146,7 @@ public class Rendezvous extends AbstractRendezvous
      */
     public void serviceResolved(DNSSDService resolver, int flags, int ifIndex,
                                 final String fullname, final String hostname, int port, TXTRecord txtRecord) {
-        log.debug("serviceResolved:" + hostname);
+        log.debug("serviceResolved:" + fullname);
         final NSAutoreleasePool pool = NSAutoreleasePool.push();
         try {
             String user = null;
