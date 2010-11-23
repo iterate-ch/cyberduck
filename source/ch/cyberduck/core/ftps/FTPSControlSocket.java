@@ -23,7 +23,6 @@ import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
 
 import com.enterprisedt.net.ftp.*;
 
-import javax.net.ssl.SSLSocket;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.InetAddress;
@@ -65,7 +64,6 @@ public class FTPSControlSocket extends FTPControlSocket {
         this.controlSocket = factory.createSocket(plainSocket,
                 plainSocket.getInetAddress().getHostAddress(), plainSocket.getPort(),
                 true); //close the underlying socket when this socket is closed
-        ((SSLSocket) this.controlSocket).startHandshake();
         this.initStreams();
     }
 
@@ -99,6 +97,7 @@ public class FTPSControlSocket extends FTPControlSocket {
 
     /**
      * Tells the server to listen for a connection attempt rather than initiating it
+     *
      * @return
      * @throws IOException
      * @throws FTPException
