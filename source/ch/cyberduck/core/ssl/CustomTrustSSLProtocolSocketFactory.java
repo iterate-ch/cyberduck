@@ -90,10 +90,10 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
      */
     private void configure(Socket socket, String[] protocols) throws IOException {
         if(socket instanceof SSLSocket) {
-            SSLParameters parameters = ((SSLSocket) socket).getSSLParameters();
-            log.debug("Configure SSL parameters with protocol:" + Arrays.toString(protocols));
-            parameters.setProtocols(protocols);
-            ((SSLSocket) socket).setSSLParameters(parameters);
+//            SSLParameters parameters = ((SSLSocket) socket).getSSLParameters();
+//            log.debug("Configure SSL parameters with protocol:" + Arrays.toString(protocols));
+//            parameters.setProtocols(protocols);
+//            ((SSLSocket) socket).setSSLParameters(parameters);
         }
     }
 
