@@ -1,4 +1,5 @@
 4.0b7 [http://trac.cyberduck.ch/milestone/4.0b7]
+- [Feature] Bonjour s
 - [Feature] Connecting to Swift Storage (Openstack)
 - [Feature] CloudFront CDN configuration with custom origin server (Amazon CloudFront & FTP, SFTP, WebDAV)
 - [Feature] CloudFront CDN invalidation requests (S3) (#5197)
