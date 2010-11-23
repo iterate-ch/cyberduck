@@ -18,6 +18,7 @@ package ch.cyberduck.ui.cocoa.delegate;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.AbstractHostCollection;
 import ch.cyberduck.core.BookmarkCollection;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.ui.cocoa.BrowserController;
@@ -44,6 +45,7 @@ public class BookmarkMenuDelegate extends CollectionMenuDelegate<Host> {
 
     private static final int BOOKMARKS_INDEX = 7;
 
+    @Override
     public NSInteger numberOfItemsInMenu(NSMenu menu) {
         if(this.isPopulated()) {
             // If you return a negative value, the number of items is left unchanged
@@ -63,7 +65,7 @@ public class BookmarkMenuDelegate extends CollectionMenuDelegate<Host> {
          * ----------------
          * ...
          */
-        return new NSInteger(BookmarkCollection.defaultCollection().size() + BOOKMARKS_INDEX + 3);
+        return new NSInteger(this.collection().size() + BOOKMARKS_INDEX + 3);
     }
 
     @Override
@@ -77,7 +79,7 @@ public class BookmarkMenuDelegate extends CollectionMenuDelegate<Host> {
             item.setImage(IconCache.iconNamed("rendezvous.tiff", 16));
         }
         if(index.intValue() > BOOKMARKS_INDEX + 2) {
-            Host h = BookmarkCollection.defaultCollection().get(index.intValue() - (BOOKMARKS_INDEX + 3));
+            Host h = this.collection().get(index.intValue() - (BOOKMARKS_INDEX + 3));
             item.setTitle(h.getNickname());
             item.setTarget(this.id());
             item.setImage(IconCache.iconNamed(h.getProtocol().icon(), 16));
@@ -90,7 +92,7 @@ public class BookmarkMenuDelegate extends CollectionMenuDelegate<Host> {
     public void bookmarkMenuItemClicked(final NSMenuItem sender) {
         log.debug("bookmarkMenuItemClicked:" + sender);
         BrowserController controller = MainController.newDocument();
-        controller.mount(BookmarkCollection.defaultCollection().lookup(sender.representedObject()));
+        controller.mount(((AbstractHostCollection)this.collection()).lookup(sender.representedObject()));
     }
 
     @Override

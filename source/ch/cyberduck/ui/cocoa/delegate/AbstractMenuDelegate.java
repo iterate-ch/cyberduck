@@ -75,6 +75,7 @@ public abstract class AbstractMenuDelegate extends ProxyController implements NS
             log.trace("menuUpdateItemAtIndex:" + index.intValue());
         }
         if(index.intValue() == this.numberOfItemsInMenu(menu).intValue() - 1) {
+            // Collection fully populated
             this.setNeedsUpdate(false);
         }
         return !cancel;

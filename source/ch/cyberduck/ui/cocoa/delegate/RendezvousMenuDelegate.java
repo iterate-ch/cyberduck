@@ -18,6 +18,7 @@ package ch.cyberduck.ui.cocoa.delegate;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.AbstractHostCollection;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.RendezvousCollection;
 import ch.cyberduck.core.i18n.Locale;
@@ -43,22 +44,9 @@ public abstract class RendezvousMenuDelegate extends CollectionMenuDelegate<Host
         super(RendezvousCollection.defaultCollection());
     }
 
-    public NSInteger numberOfItemsInMenu(NSMenu menu) {
-        if(this.isPopulated()) {
-            // If you return a negative value, the number of items is left unchanged
-            // and menu:updateItem:atIndex:shouldCancel: is not called.
-            return new NSInteger(-1);
-        }
-        if(RendezvousCollection.defaultCollection().size() > 0) {
-            // The number of history plus a delimiter and the 'Clear' menu
-            return new NSInteger(RendezvousCollection.defaultCollection().size());
-        }
-        return new NSInteger(1);
-    }
-
     @Override
     public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, NSInteger index, boolean cancel) {
-        if(RendezvousCollection.defaultCollection().size() == 0) {
+        if(this.collection().size() == 0) {
             item.setTitle(Locale.localizedString("No Bonjour services available"));
             item.setTarget(null);
             item.setAction(null);
@@ -66,7 +54,7 @@ public abstract class RendezvousMenuDelegate extends CollectionMenuDelegate<Host
             item.setEnabled(false);
         }
         else {
-            final Host h = RendezvousCollection.defaultCollection().get(index.intValue());
+            final Host h = this.collection().get(index.intValue());
             item.setTitle(h.getNickname());
             item.setTarget(this.id());
             item.setEnabled(true);
@@ -80,7 +68,7 @@ public abstract class RendezvousMenuDelegate extends CollectionMenuDelegate<Host
     public void rendezvousMenuClicked(NSMenuItem sender) {
         log.debug("rendezvousMenuClicked:" + sender);
         BrowserController controller = MainController.newDocument();
-        controller.mount(RendezvousCollection.defaultCollection().lookup(sender.representedObject()));
+        controller.mount(((AbstractHostCollection) this.collection()).lookup(sender.representedObject()));
     }
 
     @Override
