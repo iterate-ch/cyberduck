@@ -99,14 +99,4 @@ public class RendezvousCollection extends AbstractHostCollection {
     public boolean allowsEdit() {
         return false;
     }
-
-    @Override
-    public void save() {
-        ;
-    }
-
-    @Override
-    public void load() {
-        ;
-    }
 }
