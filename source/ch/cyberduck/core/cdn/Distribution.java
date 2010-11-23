@@ -86,6 +86,8 @@ public class Distribution {
 
         public abstract String getProtocol();
 
+        public abstract int getDefaultPort();
+
         public abstract String getContext();
 
         public static Method forName(String name) {
@@ -113,6 +115,11 @@ public class Distribution {
         }
 
         @Override
+        public int getDefaultPort() {
+            return 80;
+        }
+
+        @Override
         public String getContext() {
             return "";
         }
@@ -129,6 +136,11 @@ public class Distribution {
         }
 
         @Override
+        public int getDefaultPort() {
+            return 80;
+        }
+
+        @Override
         public String getContext() {
             return "";
         }
@@ -142,6 +154,10 @@ public class Distribution {
         @Override
         public String getProtocol() {
             return "rtmp://";
+        }
+
+        public int getDefaultPort() {
+            return 1935;
         }
 
         @Override
@@ -270,7 +286,7 @@ public class Distribution {
      * @return Origin URL of specific file.
      */
     public String getOrigin(Path file) {
-        StringBuilder url = new StringBuilder().append("http://").append(this.getOrigin());
+        StringBuilder url = new StringBuilder().append(this.getMethod().getProtocol()).append(this.getOrigin());
         if(!file.isContainer()) {
             url.append(Path.DELIMITER).append(Path.encode(file.getKey()));
         }
