@@ -1865,6 +1865,7 @@ setup/Bonjour64.msi -text
 setup/FileAssociation.nsh -text
 setup/cyberduck.nsi -text
 setup/header.bmp -text
+setup/verpatch.exe -text
 setup/welcome.bmp -text
 sk.lproj/Alert.nib/classes.nib -text
 sk.lproj/Alert.nib/info.nib -text
