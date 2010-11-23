@@ -5,6 +5,7 @@
 !include WinVer.nsh
 !include x64.nsh
 !include FileAssociation.nsh
+!include "FileFunc.nsh"
 
 !define PRODUCT_NAME "Cyberduck"
 !define PRODUCT_WEB_SITE "http://cyberduck.ch"
@@ -103,6 +104,7 @@ BrandingText " "
 
 Var InstallDotNET
 Var DownloadLink
+Var BonjourFilename
 Var DotNetDesc
 Var TargetFilename
 
@@ -198,18 +200,31 @@ Section "MainSection" SEC01
   File "${BASEDIR}\Cyberduck.exe"
   File "${BASEDIR}\Cyberduck.exe.config"
   File "${BASEDIR}\Acknowledgments.rtf"
-  File "${BASEDIR}\..\..\en.lproj\License.txt"  
+  File "${BASEDIR}\..\..\..\en.lproj\License.txt"  
   File "${BASEDIR}\cyberduck-document.ico"
   File "${BASEDIR}\*.dll"
-  File "${BASEDIR}\..\update\wyUpdate.exe"
-  File "${BASEDIR}\..\update\*.wyc"
+  File "${BASEDIR}\..\..\update\wyUpdate.exe"
+  File "${BASEDIR}\..\..\update\*.wyc"
   
+  ;Bonjour  
+  ${If} ${RunningX64}
+      StrCpy $BonjourFilename "Bonjour64.msi"
+	  File "Bonjour64.msi"
+  ${Else}
+      StrCpy $BonjourFilename "Bonjour.msi"	  
+	  File "Bonjour.msi"
+  ${EndIf}
+  
+  ExecWait "MsiExec.exe /quiet /i $BonjourFilename" $0
+  ;DetailPrint "Bonjour exit code = $0"
+  Delete "$INSTDIR\$BonjourFilename"
+     
   Push "v4.0"
   Call GetDotNetDir
   Pop $R0 ; .net framework v4.0 installation directory
   StrCmp "" $R0 +3 +1
 
-  DetailPrint "Creating native images"
+  DetailPrint "Creating native images (this might take some time)"
   nsExec::Exec '"$R0\ngen.exe" install "$INSTDIR\Cyberduck.exe"'
 
   ; creating file associations
@@ -245,14 +260,14 @@ Function un.onUninstSuccess
 FunctionEnd
 
 Function un.onInit
-  !insertmacro MUI_UNGETLANGUAGE
-  MessageBox MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2 "Are you sure you want to completely remove $(^Name) and all of its components?" /SD IDYES IDYES +2
-  Abort
+  ;!insertmacro MUI_UNGETLANGUAGE
+	MessageBox MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2 "Are you sure you want to completely remove $(^Name) and all of its components?" /SD IDYES IDYES +2
+	Abort
 FunctionEnd
 
 Section Uninstall
   SetShellVarContext all
-
+    
   ;Delete "$SMPROGRAMS\Cyberduck\Uninstall.lnk"
   Delete "$SMPROGRAMS\Cyberduck\Website.lnk"
   Delete "$DESKTOP\Cyberduck.lnk"
@@ -432,3 +447,19 @@ getdotnetdir_err:
 	Goto getdotnetdir_end
 
 FunctionEnd
+
+; 32/64bit setup
+;		;see http://www.downloadatoz.com/software-development_directory/nsis/manual/Section4.9.html#4.9.7.6
+;		${If} ${RunningX64}
+;			SetRegView 64
+;			ReadRegStr $INSTDIR HKLM "${PRODUCT_DIR_REGKEY}" ""
+;            StrCmp $INSTDIR "" +1 0
+;			${GetParent} $INSTDIR $INSTDIR
+;            StrCpy $INSTDIR "$PROGRAMFILES64\Cyberduck"
+;		${Else}
+;			SetRegView 32
+;			ReadRegStr $INSTDIR HKLM "${PRODUCT_DIR_REGKEY}" ""
+;            StrCmp $INSTDIR "" +1 0
+;			${GetParent} $INSTDIR $INSTDIR
+;            StrCpy $INSTDIR "$PROGRAMFILES\Cyberduck"
+;		${EndIf}

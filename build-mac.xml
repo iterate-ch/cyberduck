@@ -25,7 +25,8 @@
 
     <property name="jdk.home" value="${user.home}/bin/1.5.0"/>
     <!--<property name="jdk.home" value="/System/Library/Frameworks/JavaVM.framework/Versions/1.5"/>-->
-        
+
+    <property name="build.deploy" value="${build}/${configuration}"/>        
     <property name="app.bundle" value="${build.deploy}/${app.name}.app"/>
     <property name="app.contents" value="${app.bundle}/Contents"/>
     <property name="app.macos" location="${app.contents}/MacOS"/>
