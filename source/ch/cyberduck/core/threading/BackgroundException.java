@@ -141,7 +141,7 @@ public class BackgroundException extends Exception {
             if(cause instanceof CloudFrontServiceException) {
                 final CloudFrontServiceException cf = (CloudFrontServiceException) cause;
                 if(StringUtils.isNotBlank(cf.getErrorMessage())) {
-                    buffer.append(" ").append(cf.getErrorMessage());
+                    buffer.append(" ").append(cf.getErrorMessage()).append(".");
                 }
                 if(StringUtils.isNotBlank(cf.getErrorDetail())) {
                     buffer.append(" ").append(cf.getErrorDetail());
