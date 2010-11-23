@@ -1055,7 +1055,7 @@ public abstract class Path extends AbstractPath implements Serializable {
                 if(null == container) {
                     continue;
                 }
-                Distribution distribution = session.cdn().read(container, method);
+                Distribution distribution = session.cdn().read(session.cdn().getOrigin(method, container), method);
                 if(distribution.isDeployed()) {
                     urls.addAll(distribution.getURLs(this));
                 }

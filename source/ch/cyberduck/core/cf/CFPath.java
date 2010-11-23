@@ -463,7 +463,7 @@ public class CFPath extends CloudPath {
         CFSession session = this.getSession();
         if(session.cdn().isConfigured()) {
             for(Distribution.Method method : session.cdn().getMethods()) {
-                final Distribution distribution = session.cdn().read(this.getContainerName(), method);
+                final Distribution distribution = session.cdn().read(session.cdn().getOrigin(method, this.getContainerName()), method);
                 return distribution.getURL(this);
             }
         }
