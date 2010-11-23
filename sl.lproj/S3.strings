@@ -20,6 +20,7 @@
 /* Delivery methods including streaming protocols. */ 
 "Download (HTTP)" = "Prenos (HTTP)";
 "Streaming (RTMP)" = "Pretočne vsebine (RTMP)";
+"Custom Origin Server (HTTP/HTTPS)" = "Custom Origin Server (HTTP/HTTPS)";
 
 /* Storage class */
 "STANDARD" = "Navadno Amazon S3 shranjevanje podatkov";

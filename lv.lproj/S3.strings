@@ -20,6 +20,7 @@
 /* Delivery methods including streaming protocols. */ 
 "Download (HTTP)" = "Lejuplāde (HTTP)";
 "Streaming (RTMP)" = "Straumēšana (RTMP)";
+"Custom Origin Server (HTTP/HTTPS)" = "Custom Origin Server (HTTP/HTTPS)";
 
 /* Storage class */
 "STANDARD" = "Pastāvīgā Amazon S3 glabātuve";
