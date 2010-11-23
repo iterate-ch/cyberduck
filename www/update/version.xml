@@ -6,6 +6,7 @@
         <InheritPrevRegistry/>
         <Files dir="basedir">
             <File source="_BUILDPATH_\Acknowledgments.rtf"/>
+            <File source="_BUILDPATH_\License.txt"/>
             <File source="_BUILDPATH_\AutomaticUpdater.dll"/>
             <File source="_BUILDPATH_\CustomOpenFileFolderDialog.dll"/>
             <File source="_BUILDPATH_\Cyberduck.exe"/>
@@ -22,9 +23,13 @@
             <File source="_BUILDPATH_\IKVM.OpenJDK.XML.Parse.dll"/>
             <File source="_BUILDPATH_\IKVM.OpenJDK.XML.Transform.dll"/>
             <File source="_BUILDPATH_\IKVM.OpenJDK.XML.XPath.dll"/>
+            <File source="_BUILDPATH_\IKVM.OpenJDK.SwingAWT.dll"/>
             <File source="_BUILDPATH_\IKVM.Runtime.dll"/>
+            <File source="_BUILDPATH_\Interop.Bonjour.dll"/>
             <File source="_BUILDPATH_\ObjectListView.dll"/>
             <File source="_BUILDPATH_\StructureMap.dll"/>
+            <File source="_BUILDPATH_\VistaBridgeLibrary.dll"/>
+            <File source="_BUILDPATH_\Windows7.DesktopIntegration.dll"/>
             <File source="_BUILDPATH_\core.dll"/>
             <File source="_BUILDPATH_\cyberduck-document.ico"/>
         </Files>
