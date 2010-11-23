@@ -18,6 +18,8 @@ package ch.cyberduck.core.ssl;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Preferences;
+
 import org.apache.log4j.Logger;
 
 import javax.net.ssl.*;
@@ -27,6 +29,9 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * @version $Id$
@@ -40,6 +45,14 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
      * Shared context
      */
     private SSLContext context;
+
+    private static final List<String> ENABLED_SSL_PROTOCOLS = new ArrayList<String>();
+
+    static {
+        for(String protocol : Preferences.instance().getProperty("connection.ssl.protocols").split(",")) {
+            ENABLED_SSL_PROTOCOLS.add(protocol.trim());
+        }
+    }
 
     /**
      * @param trust Verifiying trusts in system settings
@@ -69,6 +82,46 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
         }
     }
 
+    /**
+     * @param socket
+     * @param protocols
+     * @return
+     * @throws IOException
+     */
+    private void configure(Socket socket, String[] protocols) throws IOException {
+        if(socket instanceof SSLSocket) {
+            SSLParameters parameters = ((SSLSocket) socket).getSSLParameters();
+            log.debug("Configure SSL parameters with protocol:" + Arrays.toString(protocols));
+            parameters.setProtocols(protocols);
+            ((SSLSocket) socket).setSSLParameters(parameters);
+        }
+    }
+
+    /**
+     *
+     * @param f
+     * @return
+     * @throws IOException
+     */
+    private Socket handshake(SocketGetter f) throws IOException {
+        Socket socket = f.create();
+        try {
+            this.configure(socket, ENABLED_SSL_PROTOCOLS.<String>toArray(new String[ENABLED_SSL_PROTOCOLS.size()]));
+            log.debug("handhsake:" + socket);
+            //((SSLSocket) socket).startHandshake();
+        }
+        catch(IOException e) {
+            log.warn("Handshake failed for:" + e.getMessage());
+            throw e;
+        }
+        // Handshake succeeded.
+        return socket;
+    }
+
+    private interface SocketGetter {
+        Socket create() throws IOException;
+    }
+
     public SSLContext getSSLContext() {
         return context;
     }
@@ -84,30 +137,50 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
     }
 
     @Override
-    public Socket createSocket(String host, int port, InetAddress clientHost, int clientPort)
+    public Socket createSocket(final String host, final int port, final InetAddress clientHost, final int clientPort)
             throws IOException {
-        return factory.createSocket(host, port, clientHost, clientPort);
+        return this.handshake(new SocketGetter() {
+            public Socket create() throws IOException {
+                return factory.createSocket(host, port, clientHost, clientPort);
+            }
+        });
     }
 
     @Override
-    public Socket createSocket(InetAddress host, int port) throws IOException {
-        return factory.createSocket(host, port);
+    public Socket createSocket(final InetAddress host, final int port) throws IOException {
+        return this.handshake(new SocketGetter() {
+            public Socket create() throws IOException {
+                return factory.createSocket(host, port);
+            }
+        });
     }
 
     @Override
-    public Socket createSocket(InetAddress host, int port, InetAddress localHost, int localPort) throws IOException {
-        return factory.createSocket(host, port, localHost, localPort);
+    public Socket createSocket(final InetAddress host, final int port, final InetAddress localHost, final int localPort) throws IOException {
+        return this.handshake(new SocketGetter() {
+            public Socket create() throws IOException {
+                return factory.createSocket(host, port, localHost, localPort);
+            }
+        });
     }
 
     @Override
-    public Socket createSocket(String host, int port) throws IOException {
-        return factory.createSocket(host, port);
+    public Socket createSocket(final String host, final int port) throws IOException {
+        return this.handshake(new SocketGetter() {
+            public Socket create() throws IOException {
+                return factory.createSocket(host, port);
+            }
+        });
     }
 
     @Override
-    public Socket createSocket(Socket socket, String host, int port, boolean autoClose)
+    public Socket createSocket(final Socket socket, final String host, final int port, final boolean autoClose)
             throws IOException {
-        return factory.createSocket(socket, host, port, autoClose);
+        return this.handshake(new SocketGetter() {
+            public Socket create() throws IOException {
+                return factory.createSocket(socket, host, port, autoClose);
+            }
+        });
     }
 
     public ServerSocket createServerSocket(int port) throws IOException {
