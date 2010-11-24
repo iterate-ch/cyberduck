@@ -10,7 +10,7 @@
 - [Bugfix] Apply ACLs recursively (S3)
 - [Bugfix] Apply custom HTTP headers recursively (S3)
 - [Bugfix] Show last access timestamp in history (#3805)
-- [Bugfix] Interoperability (#2609, #4231) (WebDAV)
+- [Bugfix] Interoperability (#2609, #4231, #2915) (WebDAV)
 - [Bugfix] SSL version number incompatibility (#5061)
 - [Bugfix] Display decimal file size (10.6) #3771)
 - [Bugfix] Preserve upload modification date does not work for folders (#3017)
