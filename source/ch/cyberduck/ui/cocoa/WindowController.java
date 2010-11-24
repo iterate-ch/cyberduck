@@ -140,6 +140,14 @@ public abstract class WindowController extends BundleController implements NSWin
         ;
     }
 
+    public void windowDidBecomeMain(NSNotification notification) {
+        ;
+    }
+
+    public void windowDidResignMain(NSNotification notification) {
+        ;
+    }
+
     /**
      * @see ch.cyberduck.ui.cocoa.application.NSWindow.Delegate
      */

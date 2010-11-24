@@ -235,6 +235,7 @@ public abstract class NSWindow extends NSResponder {
          * @param notification
          */
         public void windowDidBecomeKey(NSNotification notification);
+        public void windowDidBecomeMain(NSNotification notification);
 
         /**
          * Informs the delegate that the window has resigned key window status. This method is optional.
@@ -244,6 +245,7 @@ public abstract class NSWindow extends NSResponder {
          * @param notification
          */
         public void windowDidResignKey(NSNotification notification);
+        public void windowDidResignMain(NSNotification notification);
     }
 
     /**

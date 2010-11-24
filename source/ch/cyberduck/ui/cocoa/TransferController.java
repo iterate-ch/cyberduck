@@ -93,6 +93,16 @@ public class TransferController extends WindowController implements NSToolbar.De
         this.updateHighlight();
     }
 
+    @Override
+    public void windowDidBecomeMain(NSNotification notification) {
+        this.updateHighlight();
+    }
+
+    @Override
+    public void windowDidResignMain(NSNotification notification) {
+        this.updateHighlight();
+    }
+
     @Outlet
     private NSTextField urlField;
 
