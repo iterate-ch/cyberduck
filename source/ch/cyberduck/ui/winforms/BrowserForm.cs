@@ -145,6 +145,11 @@ namespace Ch.Cyberduck.Ui.Winforms
             deleteBookmarkToolStripButton.Tag = ResourcesBundle.removePressed;
 
             actionToolStrip.Renderer = new NoGapRenderer();
+            
+            browserToolStripButton.ToolTipText = Locale.localizedString("Browser", "Preferences");
+            bookmarksToolStripButton.ToolTipText = Locale.localizedString("Bookmarks", "Preferences");
+            historyToolStripButton.ToolTipText = Locale.localizedString("History");
+            bonjourToolStripButton.ToolTipText = Locale.localizedString("Bonjour", "Browser");
 
             ConfigureToolbar();
             ConfigureFileCommands();
