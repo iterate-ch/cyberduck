@@ -30,7 +30,6 @@ import java.net.Socket;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -98,7 +97,6 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
     }
 
     /**
-     *
      * @param f
      * @return
      * @throws IOException
