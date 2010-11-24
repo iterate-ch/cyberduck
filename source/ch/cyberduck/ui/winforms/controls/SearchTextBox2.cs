@@ -1,10 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
+﻿// 
+// Copyright (c) 2010 Yves Langisch. All rights reserved.
+// http://cyberduck.ch/
+// 
+// This program is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+// 
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+// 
+// Bug fixes, suggestions and comments should be sent to:
+// yves@cyberduck.ch
+// 
+using System;
 using System.ComponentModel;
 using System.Drawing;
-using System.Data;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 
 namespace Ch.Cyberduck.ui.winforms.controls
@@ -12,7 +25,11 @@ namespace Ch.Cyberduck.ui.winforms.controls
     [DefaultEvent("TextChanged")]
     public partial class SearchTextBox2 : UserControl
     {
+        #region Delegates
+
         public delegate void TextChange(object sender, EventArgs e);
+
+        #endregion
 
         private readonly Font _defaultFont;
         private readonly Font _placeHolderFont;
@@ -32,9 +49,6 @@ namespace Ch.Cyberduck.ui.winforms.controls
 
             SuspendLayout();
 
-            Paint += UserControl1_Paint;
-            Resize += UserControl1_Resize;
-
             textBox.Multiline = false;
             textBox.BorderStyle = BorderStyle.None;
             textBox.Enter += textBox_Enter;
@@ -46,6 +60,7 @@ namespace Ch.Cyberduck.ui.winforms.controls
             EnabledChanged += SearchTextBox_EnabledChanged;
 
             xPictureBox.Image = ResourcesBundle.search_inactive;
+            xPictureBox.SizeMode = PictureBoxSizeMode.CenterImage;
             xPictureBox.Click += xPictureBox_Click;
             xPictureBox.Visible = true;
 
@@ -54,6 +69,9 @@ namespace Ch.Cyberduck.ui.winforms.controls
 
             Controls.Add(textBox);
             Controls.Add(xPictureBox);
+
+            Paint += UserControl1_Paint;
+            Resize += UserControl1_Resize;
 
             ResumeLayout(false);
 
@@ -103,7 +121,6 @@ namespace Ch.Cyberduck.ui.winforms.controls
                     textBox.Text = _placeHolderText;
                     textBox.ForeColor = Color.Gray;
                     textBox.Font = _placeHolderFont;
-
                 }
                 else
                 {
@@ -240,16 +257,15 @@ namespace Ch.Cyberduck.ui.winforms.controls
         private void UserControl1_Resize(object sender, EventArgs e)
         {
             textBox.Size = new Size(Width - 22, Height - 2);
-            textBox.Location = new Point(3, (Height / 2) - (textBox.Size.Height / 2) + 1);
+            textBox.Location = new Point(3, (Height/2) - (textBox.Size.Height/2) + 1);
 
             xPictureBox.Size = new Size(18, Height - 2);
-            xPictureBox.SizeMode = PictureBoxSizeMode.CenterImage;
-            xPictureBox.Location = new Point(Width - 19, 1);
             xPictureBox.BackColor = textBox.BackColor;
         }
 
         private void UserControl1_Paint(object sender, PaintEventArgs e)
         {
+            xPictureBox.Location = new Point(Width - 19, 1);
             e.Graphics.FillRectangle(new SolidBrush(textBox.BackColor), 1, 1, ClientRectangle.Width - 2,
                                      ClientRectangle.Height - 2);
             ControlPaint.DrawBorder(e.Graphics, ClientRectangle, Color.Gray, ButtonBorderStyle.Solid);
