@@ -96,6 +96,21 @@ public abstract class TransferAction {
     };
 
     /**
+     * Create a new file with a similar name
+     */
+    public static final TransferAction ACTION_RENAME_EXISTING = new TransferAction() {
+        @Override
+        public String toString() {
+            return "rename";
+        }
+
+        @Override
+        public String getLocalizableString() {
+            return Locale.localizedString("Rename existing");
+        }
+    };
+
+    /**
      * Do not transfer file
      */
     public static final TransferAction ACTION_SKIP = new TransferAction() {

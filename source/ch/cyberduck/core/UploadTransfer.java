@@ -1,26 +1,28 @@
 package ch.cyberduck.core;
 
 /*
- *  Copyright (c) 2005 David Kocher. All rights reserved.
- *  http://cyberduck.ch/
+ * Copyright (c) 2002-2010 David Kocher. All rights reserved.
  *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
+ * http://cyberduck.ch/
  *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
- *  Bug fixes, suggestions and comments should be sent to:
- *  dkocher@cyberduck.ch
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * Bug fixes, suggestions and comments should be sent to:
+ * dkocher@cyberduck.ch
  */
 
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.serializer.Serializer;
+import ch.cyberduck.ui.DateFormatterFactory;
 import ch.cyberduck.ui.growl.Growl;
 
 import org.apache.commons.io.FilenameUtils;
@@ -305,6 +307,42 @@ public class UploadTransfer extends Transfer {
         }
     };
 
+    /**
+     * Rename existing file on server if there is a conflict.
+     */
+    private final TransferFilter ACTION_RENAME_EXISTING = new UploadTransferFilter() {
+        @Override
+        public boolean accept(final Path p) {
+            if(p.getSession().isRenameSupported(p)) {
+                return super.accept(p);
+            }
+            return false;
+        }
+
+        @Override
+        public void prepare(final Path file) {
+            Path renamed = file;
+            while(renamed.exists()) {
+                String proposal = MessageFormat.format(Preferences.instance().getProperty("queue.upload.file.rename.format"),
+                        FilenameUtils.getBaseName(file.getName()),
+                        DateFormatterFactory.instance().getLongFormat(System.currentTimeMillis(), false).replace(Path.DELIMITER, ':'),
+                        StringUtils.isNotEmpty(file.getExtension()) ? "." + file.getExtension() : "");
+                renamed = PathFactory.createPath(file.getSession(), renamed.getParent().getAbsolute(),
+                        proposal, file.attributes().getType());
+            }
+            if(!renamed.equals(file)) {
+                file.rename(renamed);
+            }
+            if(file.attributes().isFile()) {
+                file.status().setResume(false);
+            }
+            super.prepare(file);
+        }
+    };
+
+    /**
+     * Skip files that already exist on the server.
+     */
     private final TransferFilter ACTION_SKIP = new UploadTransferFilter() {
         @Override
         public boolean accept(final Path p) {
@@ -328,6 +366,9 @@ public class UploadTransfer extends Transfer {
         }
         if(action.equals(TransferAction.ACTION_RENAME)) {
             return ACTION_RENAME;
+        }
+        if(action.equals(TransferAction.ACTION_RENAME_EXISTING)) {
+            return ACTION_RENAME_EXISTING;
         }
         if(action.equals(TransferAction.ACTION_SKIP)) {
             return ACTION_SKIP;

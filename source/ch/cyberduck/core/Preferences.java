@@ -399,6 +399,7 @@ public abstract class Preferences {
         defaults.put("queue.upload.file.temporary.format", "{0}-{1}");
 
         defaults.put("queue.upload.file.rename.format", "{0} ({1}){2}");
+        defaults.put("queue.download.file.rename.format", "{0} ({1}){2}");
 
         defaults.put("queue.download.changePermissions", String.valueOf(true));
         defaults.put("queue.download.permissions.useDefault", String.valueOf(false));

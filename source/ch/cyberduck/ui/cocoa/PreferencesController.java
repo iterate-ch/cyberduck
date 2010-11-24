@@ -1484,6 +1484,9 @@ public class PreferencesController extends ToolbarWindowController {
         else if(selected.equals(TransferAction.ACTION_RENAME.getLocalizableString())) {
             Preferences.instance().setProperty(property, TransferAction.ACTION_RENAME.toString());
         }
+        else if(selected.equals(TransferAction.ACTION_RENAME_EXISTING.getLocalizableString())) {
+            Preferences.instance().setProperty(property, TransferAction.ACTION_RENAME_EXISTING.toString());
+        }
         else if(selected.equals(TransferAction.ACTION_SKIP.getLocalizableString())) {
             Preferences.instance().setProperty(property, TransferAction.ACTION_SKIP.toString());
         }
@@ -1500,7 +1503,7 @@ public class PreferencesController extends ToolbarWindowController {
         this.duplicateDownloadCombobox.addItemsWithTitles(NSArray.arrayWithObjects(
                 TransferAction.ACTION_CALLBACK.getLocalizableString(), TransferAction.ACTION_OVERWRITE.getLocalizableString(),
                 TransferAction.ACTION_RESUME.getLocalizableString(), TransferAction.ACTION_RENAME.getLocalizableString(),
-                TransferAction.ACTION_SKIP.getLocalizableString())
+                TransferAction.ACTION_RENAME_EXISTING.getLocalizableString(), TransferAction.ACTION_SKIP.getLocalizableString())
         );
         if(Preferences.instance().getProperty("queue.download.fileExists").equals(TransferAction.ACTION_CALLBACK.toString())) {
             this.duplicateDownloadCombobox.selectItemWithTitle(TransferAction.ACTION_CALLBACK.getLocalizableString());
@@ -1513,6 +1516,9 @@ public class PreferencesController extends ToolbarWindowController {
         }
         else if(Preferences.instance().getProperty("queue.download.fileExists").equals(TransferAction.ACTION_RENAME.toString())) {
             this.duplicateDownloadCombobox.selectItemWithTitle(TransferAction.ACTION_RENAME.getLocalizableString());
+        }
+        else if(Preferences.instance().getProperty("queue.download.fileExists").equals(TransferAction.ACTION_RENAME_EXISTING.toString())) {
+            this.duplicateDownloadCombobox.selectItemWithTitle(TransferAction.ACTION_RENAME_EXISTING.getLocalizableString());
         }
         else if(Preferences.instance().getProperty("queue.download.fileExists").equals(TransferAction.ACTION_SKIP.toString())) {
             this.duplicateDownloadCombobox.selectItemWithTitle(TransferAction.ACTION_SKIP.getLocalizableString());
@@ -1560,7 +1566,7 @@ public class PreferencesController extends ToolbarWindowController {
         this.duplicateUploadCombobox.addItemsWithTitles(NSArray.arrayWithObjects(
                 TransferAction.ACTION_CALLBACK.getLocalizableString(), TransferAction.ACTION_OVERWRITE.getLocalizableString(),
                 TransferAction.ACTION_RESUME.getLocalizableString(), TransferAction.ACTION_RENAME.getLocalizableString(),
-                TransferAction.ACTION_SKIP.getLocalizableString())
+                TransferAction.ACTION_RENAME_EXISTING.getLocalizableString(), TransferAction.ACTION_SKIP.getLocalizableString())
         );
         if(Preferences.instance().getProperty("queue.upload.fileExists").equals(TransferAction.ACTION_CALLBACK.toString())) {
             this.duplicateUploadCombobox.selectItemWithTitle(TransferAction.ACTION_CALLBACK.getLocalizableString());
@@ -1573,6 +1579,9 @@ public class PreferencesController extends ToolbarWindowController {
         }
         else if(Preferences.instance().getProperty("queue.upload.fileExists").equals(TransferAction.ACTION_RENAME.toString())) {
             this.duplicateUploadCombobox.selectItemWithTitle(TransferAction.ACTION_RENAME.getLocalizableString());
+        }
+        else if(Preferences.instance().getProperty("queue.upload.fileExists").equals(TransferAction.ACTION_RENAME_EXISTING.toString())) {
+            this.duplicateUploadCombobox.selectItemWithTitle(TransferAction.ACTION_RENAME_EXISTING.getLocalizableString());
         }
         else if(Preferences.instance().getProperty("queue.upload.fileExists").equals(TransferAction.ACTION_SKIP.toString())) {
             this.duplicateUploadCombobox.selectItemWithTitle(TransferAction.ACTION_SKIP.getLocalizableString());

@@ -1,4 +1,4 @@
-﻿// 
+﻿﻿//
 // Copyright (c) 2010 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
@@ -700,6 +700,10 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 Preferences.instance().setProperty(property, TransferAction.ACTION_RENAME.toString());
             }
+            else if (selected.Equals(TransferAction.ACTION_RENAME_EXISTING.getLocalizableString()))
+            {
+                Preferences.instance().setProperty(property, TransferAction.ACTION_RENAME_EXISTING.toString());
+            }
             else if (selected.Equals(TransferAction.ACTION_SKIP.getLocalizableString()))
             {
                 Preferences.instance().setProperty(property, TransferAction.ACTION_SKIP.toString());
@@ -1290,6 +1294,14 @@ namespace Ch.Cyberduck.Ui.Controller
             else if (
                 Preferences.instance().getProperty(property).Equals(
                     TransferAction.
+                        ACTION_RENAME_EXISTING.
+                        toString()))
+            {
+                action = TransferAction.ACTION_RENAME_EXISTING.getLocalizableString();
+            }
+            else if (
+                Preferences.instance().getProperty(property).Equals(
+                    TransferAction.
                         ACTION_SKIP
                         .toString()))
             {
@@ -1305,6 +1317,7 @@ namespace Ch.Cyberduck.Ui.Controller
             downloadActions.Add(TransferAction.ACTION_OVERWRITE.getLocalizableString());
             downloadActions.Add(TransferAction.ACTION_RESUME.getLocalizableString());
             downloadActions.Add(TransferAction.ACTION_RENAME.getLocalizableString());
+            downloadActions.Add(TransferAction.ACTION_RENAME_EXISTING.getLocalizableString());
             downloadActions.Add(TransferAction.ACTION_SKIP.getLocalizableString());
             View.PopulateDuplicateDownloadActions(downloadActions);
 
@@ -1313,6 +1326,7 @@ namespace Ch.Cyberduck.Ui.Controller
             uploadActions.Add(TransferAction.ACTION_OVERWRITE.getLocalizableString());
             uploadActions.Add(TransferAction.ACTION_RESUME.getLocalizableString());
             uploadActions.Add(TransferAction.ACTION_RENAME.getLocalizableString());
+            uploadActions.Add(TransferAction.ACTION_RENAME_EXISTING.getLocalizableString());
             uploadActions.Add(TransferAction.ACTION_SKIP.getLocalizableString());
             View.PopulateDuplicateUploadActions(uploadActions);
         }

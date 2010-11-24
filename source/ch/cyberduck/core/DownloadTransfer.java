@@ -21,6 +21,7 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.serializer.Serializer;
+import ch.cyberduck.ui.DateFormatterFactory;
 import ch.cyberduck.ui.growl.Growl;
 
 import org.apache.commons.io.FilenameUtils;
@@ -269,6 +270,34 @@ public class DownloadTransfer extends Transfer {
         }
     };
 
+    /**
+     * Rename existing file on disk if there is a conflict.
+     */
+    private final TransferFilter ACTION_RENAME_EXISTING = new DownloadTransferFilter() {
+        public boolean accept(final Path p) {
+            return true;
+        }
+
+        @Override
+        public void prepare(final Path file) {
+            Local renamed = file.getLocal();
+            while(renamed.exists()) {
+                String proposal = MessageFormat.format(Preferences.instance().getProperty("queue.upload.file.rename.format"),
+                        FilenameUtils.getBaseName(file.getName()),
+                        DateFormatterFactory.instance().getLongFormat(System.currentTimeMillis(), false).replace(Path.DELIMITER, ':'),
+                        StringUtils.isNotEmpty(file.getExtension()) ? "." + file.getExtension() : "");
+                renamed = LocalFactory.createLocal(renamed.getParent().getAbsolute(), proposal);
+            }
+            if(!renamed.equals(file.getLocal())) {
+                file.getLocal().rename(renamed);
+            }
+            if(file.attributes().isFile()) {
+                file.status().setResume(false);
+            }
+            super.prepare(file);
+        }
+    };
+
     private final DownloadTransferFilter ACTION_SKIP = new DownloadTransferFilter() {
         public boolean accept(final Path p) {
             if(p.getLocal().exists()) {
@@ -289,6 +318,9 @@ public class DownloadTransfer extends Transfer {
         }
         if(action.equals(TransferAction.ACTION_RENAME)) {
             return ACTION_RENAME;
+        }
+        if(action.equals(TransferAction.ACTION_RENAME_EXISTING)) {
+            return ACTION_RENAME_EXISTING;
         }
         if(action.equals(TransferAction.ACTION_SKIP)) {
             return ACTION_SKIP;
