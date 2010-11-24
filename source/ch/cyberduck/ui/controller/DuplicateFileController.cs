@@ -32,7 +32,7 @@ namespace Ch.Cyberduck.Ui.Controller
             Path selected = browserController.SelectedPath;
             StringBuilder proposal = new StringBuilder();
             proposal.Append(System.IO.Path.GetFileNameWithoutExtension(selected.getName()));
-            string shortDate = UserDefaultsDateFormatter.GetShortFormat(DateTime.Now, false).Replace('/', '.').Replace(':', '.');
+            string shortDate = UserDefaultsDateFormatter.GetShortFormat(DateTime.Now).Replace('/', '.').Replace(':', '.');
             proposal.Append(" (").Append(shortDate).Append(")");
             if (!string.IsNullOrEmpty(selected.getExtension()))
             {
