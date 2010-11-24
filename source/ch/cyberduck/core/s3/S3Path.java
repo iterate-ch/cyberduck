@@ -741,7 +741,7 @@ public class S3Path extends CloudPath {
                     p.attributes().setPlaceholder(true);
                 }
                 else if(0 == object.getContentLength()) {
-                    if(Mimetypes.MIMETYPE_JETS3T_DIRECTORY.equals(p.getDetails().getContentType())) {
+                    if("application/x-directory".equals(p.getDetails().getContentType())) {
                         p.attributes().setType(Path.DIRECTORY_TYPE);
                         p.attributes().setPlaceholder(true);
                     }
@@ -850,7 +850,7 @@ public class S3Path extends CloudPath {
                     AccessControlList acl = AccessControlList.REST_CANNED_PRIVATE;
                     object.setAcl(acl);
                     object.setContentLength(0);
-                    object.setContentType(Mimetypes.MIMETYPE_JETS3T_DIRECTORY);
+                    object.setContentType("application/x-directory");
                     this.getSession().getClient().putObject(this.getContainerName(), object);
                 }
                 this.cache().put(this.getReference(), AttributedList.<Path>emptyList());
