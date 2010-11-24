@@ -89,7 +89,7 @@
   <PropertyGroup>
     <ProgramFiles32>$(MSBuildExtensionsPath32)\..</ProgramFiles32>
     <VCIncludePath Condition="'$(VCIncludePath)' == ''">$(ProgramFiles32)\Microsoft Visual Studio 10.0\VC\atlmfc\include;$(ProgramFiles32)\\Microsoft Visual Studio 10.0\VC\include</VCIncludePath>
-    <Win32Resource>obj\Debug\res1.res</Win32Resource>
+    <Win32Resource>obj\x86\Debug\res1.res</Win32Resource>
   </PropertyGroup>
   <Target Name="BeforeBuild" DependsOnTargets="GetFrameworkPaths;PrepareForBuild">
     <Exec Command="&quot;$(FrameworkSDKDir)\bin\rc.exe&quot; /i &quot;$(VCIncludePath)&quot; /i &quot;$(FrameworkSDKDir)\include&quot; /r /fo &quot;$(IntermediateOutputPath)\res1.res&quot; res1.rc" />
