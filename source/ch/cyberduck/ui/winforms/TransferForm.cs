@@ -85,7 +85,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public override string[] BundleNames
         {
-            get { return new[] {"Transfer"}; }
+            get { return new[] {"Transfer", "Localizable"}; }
         }
 
         public string Url
