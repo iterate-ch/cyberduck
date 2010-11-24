@@ -17,6 +17,7 @@ Changelog. Last modified: $Date$
 - [Feature] CloudBerry Explorer for Google Storage Bookmarks Importer (Windows)
 - [Feature] CloudBerry Explorer for Azure Blob Storage Bookmarks Importer (Windows)
 - [Feature] Perform MD5 hash calculation during upload (#5186) (S3, Cloudfiles)
+- [Feature] Rename existing files on upload or download (#5117)
 - [Bugfix] Slow SFTP transfers (#185)
 - [Bugfix] Support for S3Fox directory placeholders (S3)
 - [Bugfix] Support for Google Storage Console directory placeholders (S3)
