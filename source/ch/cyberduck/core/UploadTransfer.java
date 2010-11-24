@@ -266,10 +266,16 @@ public class UploadTransfer extends Transfer {
                 }
             }
             if(file.attributes().isFile()) {
-                // Append to file if size is not zero
-                final boolean resume = file.exists() && file.attributes().getSize() > 0;
+                boolean resume = false;
+                if(file.exists()) {
+                    // Do not trust cached value which is from last directory listing
+                    // and possibly outdated. Fix #3284.
+                    file.readSize();
+                    // Append to file if size is not zero
+                    resume = file.attributes().getSize() > 0;
+                }
                 file.status().setResume(resume);
-                if(file.status().isResume()) {
+                if(resume) {
                     file.status().setCurrent(file.attributes().getSize());
                 }
             }
@@ -290,7 +296,7 @@ public class UploadTransfer extends Transfer {
                 final String parent = file.getParent().getAbsolute();
                 final String filename = file.getName();
                 int no = 0;
-                while(file.exists()) { // Do not use cached value of exists!
+                while(file.exists()) {
                     no++;
                     String proposal = FilenameUtils.getBaseName(filename) + "-" + no;
                     if(StringUtils.isNotBlank(FilenameUtils.getExtension(filename))) {
