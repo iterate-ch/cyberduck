@@ -144,8 +144,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             editBookmarkToolStripButton.Tag = ResourcesBundle.editPressed;
             deleteBookmarkToolStripButton.Tag = ResourcesBundle.removePressed;
 
-
-            
             browserToolStripButton.ToolTipText = Locale.localizedString("Browser", "Preferences");
             bookmarksToolStripButton.ToolTipText = Locale.localizedString("Bookmarks", "Preferences");
             historyToolStripButton.ToolTipText = Locale.localizedString("History");
@@ -996,7 +994,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             actionToolStripMenuItem.CheckOnClick = true;
             h = delegate
                     {
-                        actionToolStripMenuItem.Checked = !actionToolStripMenuItem.Checked;
+                        actionContextToolbarMenuItem.Checked = !actionContextToolbarMenuItem.Checked;
                         actionToolStripDropDownButton.Visible =
                             !actionToolStripDropDownButton.Visible;
                         UpdateSeparators();
