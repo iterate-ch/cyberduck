@@ -20,8 +20,24 @@ using System.Windows.Forms;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
-    internal class FirefoxStyleRenderer : ToolStripProfessionalRenderer
+    internal class FirefoxStyleRenderer : ToolStripSystemRenderer
     {
+        protected override void OnRenderToolStripBackground(ToolStripRenderEventArgs e)
+        {
+            Rectangle rect = e.AffectedBounds;
+            e.Graphics.FillRectangle(new SolidBrush(Color.White), rect);
+        }
+
+        protected override void OnRenderToolStripBorder(ToolStripRenderEventArgs e)
+        {
+            base.OnRenderToolStripBorder(e);
+            Rectangle rect = e.AffectedBounds;            
+            e.Graphics.DrawLine(new Pen(Color.FromKnownColor(KnownColor.ControlDark)), 
+                rect.Left, rect.Bottom,
+                rect.Right, rect.Bottom);
+            return;
+        }
+
         protected override void OnRenderButtonBackground(ToolStripItemRenderEventArgs e)
         {
             if (e.Item is ToolStripButton)
@@ -30,11 +46,11 @@ namespace Ch.Cyberduck.Ui.Controller
                 SolidBrush solidBrush;
                 if (button.Pressed || button.Checked)
                 {
-                    solidBrush = new SolidBrush(ProfessionalColors.ButtonPressedHighlight);
+                    solidBrush = new SolidBrush(Color.FromArgb(193, 210, 238));
                 }
                 else if (button.Selected)
                 {
-                    solidBrush = new SolidBrush(ProfessionalColors.ButtonSelectedHighlight);
+                    solidBrush = new SolidBrush(Color.FromArgb(224, 232, 246));
                 }
                 else
                 {
