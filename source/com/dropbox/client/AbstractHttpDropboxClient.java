@@ -39,6 +39,7 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.protocol.HTTP;
+import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -191,7 +192,7 @@ public abstract class AbstractHttpDropboxClient {
         while((inputLine = in.readLine()) != null) {
             result += inputLine;
         }
-        response.getEntity().consumeContent();
+        EntityUtils.consume(response.getEntity());
         return result;
     }
 
@@ -205,7 +206,7 @@ public abstract class AbstractHttpDropboxClient {
         HttpEntity entity = response.getEntity();
         if(null != entity) {
             // Release all allocated resources
-            entity.consumeContent();
+            EntityUtils.consume(entity);
         }
         this.verify(response);
     }
