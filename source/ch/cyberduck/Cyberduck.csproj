@@ -564,7 +564,6 @@
       <DependentUpon>TransferPromptForm.cs</DependentUpon>
     </Compile>
     <None Include="Properties\app.manifest" />
-    <None Include="Resources\Credits.rtf" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Properties\Settings.settings">
@@ -606,6 +605,9 @@
       <EmbedInteropTypes>False</EmbedInteropTypes>
     </COMReference>
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Resources\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.-->
@@ -617,11 +619,11 @@
     <AssemblyInfo CodeLanguage="CS" OutputFile="Properties\AssemblyInfo.cs" AssemblyTitle="Cyberduck" AssemblyDescription="FTP and Cloud Files Browser" AssemblyCompany="Cyberduck" AssemblyProduct="Cyberduck" AssemblyCopyright="© 2010 Yves Langisch. All rights reserved." ComVisible="false" Guid="5fc1c120-24c7-469d-b52b-9bce20db208d" AssemblyVersion="$(Version)" AssemblyFileVersion="$(Version)" AssemblyInformationalVersion="$(ShortVersion)" Condition="$(Version) != '0' " />
   </Target>
   <!-- We launch these two targets -->
-  <Target Name="BeforeBuild">  
+  <Target Name="BeforeBuild">
     <CallTarget Targets="AssemblyInfo" />
     <ItemGroup>
       <AdditionalResources Include="..\..\..\Acknowledgments.rtf" />
-      <AdditionalResources Include="..\..\..\en.lproj\License.txt" />	  
+      <AdditionalResources Include="..\..\..\en.lproj\License.txt" />
     </ItemGroup>
     <Copy SourceFiles="@(AdditionalResources)" DestinationFolder="$(OutputPath)" />
   </Target>
