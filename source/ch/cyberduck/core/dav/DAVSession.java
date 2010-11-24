@@ -25,7 +25,9 @@ import ch.cyberduck.core.i18n.Locale;
 
 import org.apache.commons.httpclient.*;
 import org.apache.commons.httpclient.auth.*;
+import org.apache.commons.httpclient.params.HostParams;
 import org.apache.commons.httpclient.params.HttpClientParams;
+import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.webdav.lib.WebdavResource;
@@ -76,7 +78,18 @@ public class DAVSession extends HTTP3Session {
 
     protected void configure() throws IOException {
         final HttpClient client = this.getClient().getSessionInstance(this.getClient().getHttpURL(), false);
-        client.setHostConfiguration(this.getHostConfiguration());
+        HostConfiguration configuration = this.getHostConfiguration();
+        final HostParams parameters = configuration.getParams();
+        // Activates 'Expect: 100-Continue' handshake. The purpose of
+        // the 'Expect: 100-Continue' handshake to allow a client that is
+        // sending a request message with a request body to determine if
+        // the origin server is willing to accept the request (based on
+        // the request headers) before the client sends the request body.
+        //
+        // Otherwise, upload will fail when using digest authentication.
+        // Fix #2268
+        parameters.setParameter(HttpMethodParams.USE_EXPECT_CONTINUE, Boolean.TRUE);
+        client.setHostConfiguration(configuration);
         if(Preferences.instance().getBoolean("connection.proxy.enable")) {
             final Proxy proxy = ProxyFactory.instance();
             if(host.getProtocol().isSecure()) {
