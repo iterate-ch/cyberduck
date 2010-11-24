@@ -82,7 +82,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 
             viewToolStrip.Renderer = new ToolStripRenderer();
             toolBar.Renderer = new ToolStripRenderer();
-            actionToolStrip.Renderer = new ToolStripRenderer();
+            actionToolStrip.Renderer = new NoGapRenderer();
 
             // configure browser properties
             browser.UseExplorerTheme = true;
@@ -144,7 +144,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             editBookmarkToolStripButton.Tag = ResourcesBundle.editPressed;
             deleteBookmarkToolStripButton.Tag = ResourcesBundle.removePressed;
 
-            actionToolStrip.Renderer = new NoGapRenderer();
+
             
             browserToolStripButton.ToolTipText = Locale.localizedString("Browser", "Preferences");
             bookmarksToolStripButton.ToolTipText = Locale.localizedString("Bookmarks", "Preferences");
@@ -2646,6 +2646,12 @@ namespace Ch.Cyberduck.Ui.Winforms
             public NoGapRenderer()
             {
                 RoundedEdges = false;
+            }
+
+            protected override void OnRenderToolStripBackground(ToolStripRenderEventArgs e)
+            {
+                Rectangle rect = e.AffectedBounds;
+                e.Graphics.FillRectangle(new SolidBrush(Color.FromKnownColor(KnownColor.Control)), rect);
             }
 
             protected override void OnRenderButtonBackground(ToolStripItemRenderEventArgs e)

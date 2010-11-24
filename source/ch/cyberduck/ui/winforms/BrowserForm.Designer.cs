@@ -63,7 +63,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.toolStripSeparator11 = new System.Windows.Forms.ToolStripSeparator();
             this.createArchiveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.archiveMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.createArchiveContextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.expandArchiveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator12 = new System.Windows.Forms.ToolStripSeparator();
             this.printToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -148,6 +147,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.checkToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator28 = new System.Windows.Forms.ToolStripSeparator();
             this.aboutCyberduckToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.createArchiveContextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editorMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.editor1ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editor2ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -421,7 +421,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.statusStrip.Location = new System.Drawing.Point(0, 0);
             this.statusStrip.Name = "statusStrip";
             this.statusStrip.Padding = new System.Windows.Forms.Padding(1, 0, 16, 0);
-            this.statusStrip.Size = new System.Drawing.Size(1028, 22);
+            this.statusStrip.Size = new System.Drawing.Size(881, 22);
             this.statusStrip.TabIndex = 9;
             // 
             // toolStripProgress
@@ -435,7 +435,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // statusLabel
             // 
             this.statusLabel.Name = "statusLabel";
-            this.statusLabel.Size = new System.Drawing.Size(970, 17);
+            this.statusLabel.Size = new System.Drawing.Size(823, 17);
             this.statusLabel.Spring = true;
             this.statusLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
@@ -461,7 +461,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.menuStrip1.Location = new System.Drawing.Point(0, 56);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Padding = new System.Windows.Forms.Padding(7, 2, 0, 2);
-            this.menuStrip1.Size = new System.Drawing.Size(343, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(316, 24);
             this.menuStrip1.TabIndex = 12;
             this.menuStrip1.Text = "menuStrip1";
             this.menuStrip1.Visible = false;
@@ -499,7 +499,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.toolStripSeparator35,
             this.exitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(35, 20);
             this.fileToolStripMenuItem.Text = "&File";
             // 
             // newBrowserToolStripMenuItem
@@ -645,15 +645,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             // archiveMenuStrip
             // 
             this.archiveMenuStrip.Name = "archiveMenuStrip";
-            this.archiveMenuStrip.OwnerItem = this.createArchiveToolStripMenuItem;
+            this.archiveMenuStrip.OwnerItem = this.createArchiveContextToolStripMenuItem;
             this.archiveMenuStrip.Size = new System.Drawing.Size(61, 4);
-            // 
-            // createArchiveContextToolStripMenuItem
-            // 
-            this.createArchiveContextToolStripMenuItem.DropDown = this.archiveMenuStrip;
-            this.createArchiveContextToolStripMenuItem.Name = "createArchiveContextToolStripMenuItem";
-            this.createArchiveContextToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
-            this.createArchiveContextToolStripMenuItem.Text = "Create Archive";
             // 
             // expandArchiveToolStripMenuItem
             // 
@@ -695,52 +688,52 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.toolStripSeparator14,
             this.preferencesToolStripMenuItem});
             this.editToolStripMenuItem.Name = "editToolStripMenuItem";
-            this.editToolStripMenuItem.Size = new System.Drawing.Size(39, 20);
+            this.editToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
             this.editToolStripMenuItem.Text = "&Edit";
             // 
             // cutToolStripMenuItem
             // 
             this.cutToolStripMenuItem.Enabled = false;
             this.cutToolStripMenuItem.Name = "cutToolStripMenuItem";
-            this.cutToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
+            this.cutToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.cutToolStripMenuItem.Text = "Cut";
             // 
             // copyToolStripMenuItem
             // 
             this.copyToolStripMenuItem.Enabled = false;
             this.copyToolStripMenuItem.Name = "copyToolStripMenuItem";
-            this.copyToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
+            this.copyToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.copyToolStripMenuItem.Text = "Copy";
             // 
             // copyURLToolStripMenuItem
             // 
             this.copyURLToolStripMenuItem.Enabled = false;
             this.copyURLToolStripMenuItem.Name = "copyURLToolStripMenuItem";
-            this.copyURLToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
+            this.copyURLToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.copyURLToolStripMenuItem.Text = "Copy URL";
             // 
             // pasteToolStripMenuItem
             // 
             this.pasteToolStripMenuItem.Enabled = false;
             this.pasteToolStripMenuItem.Name = "pasteToolStripMenuItem";
-            this.pasteToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
+            this.pasteToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.pasteToolStripMenuItem.Text = "Paste";
             // 
             // selectAllToolStripMenuItem
             // 
             this.selectAllToolStripMenuItem.Name = "selectAllToolStripMenuItem";
-            this.selectAllToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
+            this.selectAllToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.selectAllToolStripMenuItem.Text = "Select All";
             // 
             // toolStripSeparator14
             // 
             this.toolStripSeparator14.Name = "toolStripSeparator14";
-            this.toolStripSeparator14.Size = new System.Drawing.Size(141, 6);
+            this.toolStripSeparator14.Size = new System.Drawing.Size(149, 6);
             // 
             // preferencesToolStripMenuItem
             // 
             this.preferencesToolStripMenuItem.Name = "preferencesToolStripMenuItem";
-            this.preferencesToolStripMenuItem.Size = new System.Drawing.Size(144, 22);
+            this.preferencesToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.preferencesToolStripMenuItem.Text = "Preferences…";
             // 
             // viewToolStripMenuItem
@@ -756,20 +749,20 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.toolStripSeparator15,
             this.toggleLogDrawerToolStripMenuItem});
             this.viewToolStripMenuItem.Name = "viewToolStripMenuItem";
-            this.viewToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
+            this.viewToolStripMenuItem.Size = new System.Drawing.Size(41, 20);
             this.viewToolStripMenuItem.Text = "&View";
             // 
             // toggleToolbarToolStripMenuItem
             // 
             this.toggleToolbarToolStripMenuItem.Name = "toggleToolbarToolStripMenuItem";
-            this.toggleToolbarToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
+            this.toggleToolbarToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
             this.toggleToolbarToolStripMenuItem.Text = "Hide Toolbar";
             // 
             // toolbarToolStripMenuItem
             // 
             this.toolbarToolStripMenuItem.DropDown = this.toolbarContextMenu;
             this.toolbarToolStripMenuItem.Name = "toolbarToolStripMenuItem";
-            this.toolbarToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
+            this.toolbarToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
             this.toolbarToolStripMenuItem.Text = "Customize Toolbar…";
             // 
             // toolbarContextMenu
@@ -894,13 +887,13 @@ namespace Ch.Cyberduck.Ui.Winforms
             // toolStripSeparator13
             // 
             this.toolStripSeparator13.Name = "toolStripSeparator13";
-            this.toolStripSeparator13.Size = new System.Drawing.Size(180, 6);
+            this.toolStripSeparator13.Size = new System.Drawing.Size(179, 6);
             // 
             // columnToolStripMenuItem
             // 
             this.columnToolStripMenuItem.DropDown = this.columnContextMenu;
             this.columnToolStripMenuItem.Name = "columnToolStripMenuItem";
-            this.columnToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
+            this.columnToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
             this.columnToolStripMenuItem.Text = "Column";
             // 
             // columnContextMenu
@@ -913,19 +906,19 @@ namespace Ch.Cyberduck.Ui.Winforms
             // toolStripSeparator34
             // 
             this.toolStripSeparator34.Name = "toolStripSeparator34";
-            this.toolStripSeparator34.Size = new System.Drawing.Size(180, 6);
+            this.toolStripSeparator34.Size = new System.Drawing.Size(179, 6);
             // 
             // showHiddenFilesToolStripMenuItem
             // 
             this.showHiddenFilesToolStripMenuItem.Name = "showHiddenFilesToolStripMenuItem";
-            this.showHiddenFilesToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
+            this.showHiddenFilesToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
             this.showHiddenFilesToolStripMenuItem.Text = "Show Hidden Files";
             // 
             // textEncodingToolStripMenuItem
             // 
             this.textEncodingToolStripMenuItem.DropDown = this.textEncodingMenuStrip;
             this.textEncodingToolStripMenuItem.Name = "textEncodingToolStripMenuItem";
-            this.textEncodingToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
+            this.textEncodingToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
             this.textEncodingToolStripMenuItem.Text = "Text Encoding";
             // 
             // textEncodingMenuStrip
@@ -938,12 +931,12 @@ namespace Ch.Cyberduck.Ui.Winforms
             // toolStripSeparator15
             // 
             this.toolStripSeparator15.Name = "toolStripSeparator15";
-            this.toolStripSeparator15.Size = new System.Drawing.Size(180, 6);
+            this.toolStripSeparator15.Size = new System.Drawing.Size(179, 6);
             // 
             // toggleLogDrawerToolStripMenuItem
             // 
             this.toggleLogDrawerToolStripMenuItem.Name = "toggleLogDrawerToolStripMenuItem";
-            this.toggleLogDrawerToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
+            this.toggleLogDrawerToolStripMenuItem.Size = new System.Drawing.Size(182, 22);
             this.toggleLogDrawerToolStripMenuItem.Text = "Toggle Log Drawer";
             // 
             // goToolStripMenuItem
@@ -963,83 +956,83 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.stopToolStripMenuItem,
             this.disconnectToolStripMenuItem});
             this.goToolStripMenuItem.Name = "goToolStripMenuItem";
-            this.goToolStripMenuItem.Size = new System.Drawing.Size(34, 20);
+            this.goToolStripMenuItem.Size = new System.Drawing.Size(32, 20);
             this.goToolStripMenuItem.Text = "&Go";
             // 
             // refreshToolStripMenuItem
             // 
             this.refreshToolStripMenuItem.Name = "refreshToolStripMenuItem";
-            this.refreshToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
+            this.refreshToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
             this.refreshToolStripMenuItem.Text = "Refresh";
             // 
             // toolStripSeparator16
             // 
             this.toolStripSeparator16.Name = "toolStripSeparator16";
-            this.toolStripSeparator16.Size = new System.Drawing.Size(166, 6);
+            this.toolStripSeparator16.Size = new System.Drawing.Size(165, 6);
             // 
             // gotoFolderToolStripMenuItem
             // 
             this.gotoFolderToolStripMenuItem.Name = "gotoFolderToolStripMenuItem";
-            this.gotoFolderToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
+            this.gotoFolderToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
             this.gotoFolderToolStripMenuItem.Text = "Go to Folder…";
             // 
             // backToolStripMenuItem
             // 
             this.backToolStripMenuItem.Name = "backToolStripMenuItem";
-            this.backToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
+            this.backToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
             this.backToolStripMenuItem.Text = "Back";
             // 
             // forwardToolStripMenuItem
             // 
             this.forwardToolStripMenuItem.Name = "forwardToolStripMenuItem";
-            this.forwardToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
+            this.forwardToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
             this.forwardToolStripMenuItem.Text = "Forward";
             // 
             // enclosingFolderToolStripMenuItem
             // 
             this.enclosingFolderToolStripMenuItem.Name = "enclosingFolderToolStripMenuItem";
-            this.enclosingFolderToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
+            this.enclosingFolderToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
             this.enclosingFolderToolStripMenuItem.Text = "Enclosing Folder";
             // 
             // insideToolStripMenuItem
             // 
             this.insideToolStripMenuItem.Name = "insideToolStripMenuItem";
-            this.insideToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
+            this.insideToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
             this.insideToolStripMenuItem.Text = "Inside";
             // 
             // searchToolStripMenuItem
             // 
             this.searchToolStripMenuItem.Name = "searchToolStripMenuItem";
-            this.searchToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
+            this.searchToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
             this.searchToolStripMenuItem.Text = "Search…";
             // 
             // toolStripSeparator17
             // 
             this.toolStripSeparator17.Name = "toolStripSeparator17";
-            this.toolStripSeparator17.Size = new System.Drawing.Size(166, 6);
+            this.toolStripSeparator17.Size = new System.Drawing.Size(165, 6);
             // 
             // sendCommandToolStripMenuItem
             // 
             this.sendCommandToolStripMenuItem.Enabled = false;
             this.sendCommandToolStripMenuItem.Name = "sendCommandToolStripMenuItem";
-            this.sendCommandToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
+            this.sendCommandToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
             this.sendCommandToolStripMenuItem.Text = "Send Command…";
             // 
             // toolStripSeparator18
             // 
             this.toolStripSeparator18.Name = "toolStripSeparator18";
-            this.toolStripSeparator18.Size = new System.Drawing.Size(166, 6);
+            this.toolStripSeparator18.Size = new System.Drawing.Size(165, 6);
             // 
             // stopToolStripMenuItem
             // 
             this.stopToolStripMenuItem.Name = "stopToolStripMenuItem";
-            this.stopToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
+            this.stopToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
             this.stopToolStripMenuItem.Text = "Stop";
             // 
             // disconnectToolStripMenuItem
             // 
             this.disconnectToolStripMenuItem.Name = "disconnectToolStripMenuItem";
-            this.disconnectToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
+            this.disconnectToolStripMenuItem.Size = new System.Drawing.Size(168, 22);
             this.disconnectToolStripMenuItem.Text = "Disconnect";
             // 
             // bookmarkToolStripMenuItem
@@ -1056,56 +1049,56 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.bonjourToolStripMenuItem,
             this.toolStripSeparator36});
             this.bookmarkToolStripMenuItem.Name = "bookmarkToolStripMenuItem";
-            this.bookmarkToolStripMenuItem.Size = new System.Drawing.Size(73, 20);
+            this.bookmarkToolStripMenuItem.Size = new System.Drawing.Size(65, 20);
             this.bookmarkToolStripMenuItem.Text = "&Bookmark";
             this.bookmarkToolStripMenuItem.DropDownOpening += new System.EventHandler(this.bookmarkToolStripMenuItem_DropDownOpening);
             // 
             // viewBookmarksToolStripMenuItem
             // 
             this.viewBookmarksToolStripMenuItem.Name = "viewBookmarksToolStripMenuItem";
-            this.viewBookmarksToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
+            this.viewBookmarksToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
             this.viewBookmarksToolStripMenuItem.Text = "Toggle Bookmarks";
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(178, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(175, 6);
             // 
             // newBookmarkToolStripMenuItem
             // 
             this.newBookmarkToolStripMenuItem.Name = "newBookmarkToolStripMenuItem";
-            this.newBookmarkToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
+            this.newBookmarkToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
             this.newBookmarkToolStripMenuItem.Text = "New Bookmark";
             // 
             // deleteBookmarkToolStripMenuItem
             // 
             this.deleteBookmarkToolStripMenuItem.Name = "deleteBookmarkToolStripMenuItem";
-            this.deleteBookmarkToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
+            this.deleteBookmarkToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
             this.deleteBookmarkToolStripMenuItem.Text = "Delete Bookmark";
             // 
             // editBookmarkToolStripMenuItem
             // 
             this.editBookmarkToolStripMenuItem.Name = "editBookmarkToolStripMenuItem";
-            this.editBookmarkToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
+            this.editBookmarkToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
             this.editBookmarkToolStripMenuItem.Text = "Edit Bookmark";
             // 
             // duplicateBookmarkToolStripMenuItem1
             // 
             this.duplicateBookmarkToolStripMenuItem1.Name = "duplicateBookmarkToolStripMenuItem1";
-            this.duplicateBookmarkToolStripMenuItem1.Size = new System.Drawing.Size(181, 22);
+            this.duplicateBookmarkToolStripMenuItem1.Size = new System.Drawing.Size(178, 22);
             this.duplicateBookmarkToolStripMenuItem1.Text = "Duplicate Bookmark";
             // 
             // toolStripSeparator19
             // 
             this.toolStripSeparator19.Name = "toolStripSeparator19";
-            this.toolStripSeparator19.Size = new System.Drawing.Size(178, 6);
+            this.toolStripSeparator19.Size = new System.Drawing.Size(175, 6);
             // 
             // historyToolStripMenuItem
             // 
             this.historyToolStripMenuItem.DropDown = this.historyMenuStrip;
             this.historyToolStripMenuItem.Image = global::Ch.Cyberduck.ResourcesBundle.history;
             this.historyToolStripMenuItem.Name = "historyToolStripMenuItem";
-            this.historyToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
+            this.historyToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
             this.historyToolStripMenuItem.Text = "History";
             // 
             // historyMenuStrip
@@ -1121,7 +1114,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.bonjourToolStripMenuItem.Enabled = false;
             this.bonjourToolStripMenuItem.Image = global::Ch.Cyberduck.ResourcesBundle.rendezvous;
             this.bonjourToolStripMenuItem.Name = "bonjourToolStripMenuItem";
-            this.bonjourToolStripMenuItem.Size = new System.Drawing.Size(181, 22);
+            this.bonjourToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
             this.bonjourToolStripMenuItem.Text = "Bonjour";
             // 
             // bonjourMenuStrip
@@ -1133,7 +1126,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // toolStripSeparator36
             // 
             this.toolStripSeparator36.Name = "toolStripSeparator36";
-            this.toolStripSeparator36.Size = new System.Drawing.Size(178, 6);
+            this.toolStripSeparator36.Size = new System.Drawing.Size(175, 6);
             // 
             // windowToolStripMenuItem
             // 
@@ -1143,31 +1136,31 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.transfersToolStripMenuItem,
             this.activitiyToolStripMenuItem});
             this.windowToolStripMenuItem.Name = "windowToolStripMenuItem";
-            this.windowToolStripMenuItem.Size = new System.Drawing.Size(63, 20);
+            this.windowToolStripMenuItem.Size = new System.Drawing.Size(57, 20);
             this.windowToolStripMenuItem.Text = "&Window";
             // 
             // minimizeToolStripMenuItem
             // 
             this.minimizeToolStripMenuItem.Name = "minimizeToolStripMenuItem";
-            this.minimizeToolStripMenuItem.Size = new System.Drawing.Size(123, 22);
+            this.minimizeToolStripMenuItem.Size = new System.Drawing.Size(131, 22);
             this.minimizeToolStripMenuItem.Text = "Minimize";
             // 
             // toolStripSeparator20
             // 
             this.toolStripSeparator20.Name = "toolStripSeparator20";
-            this.toolStripSeparator20.Size = new System.Drawing.Size(120, 6);
+            this.toolStripSeparator20.Size = new System.Drawing.Size(128, 6);
             // 
             // transfersToolStripMenuItem
             // 
             this.transfersToolStripMenuItem.Name = "transfersToolStripMenuItem";
-            this.transfersToolStripMenuItem.Size = new System.Drawing.Size(123, 22);
+            this.transfersToolStripMenuItem.Size = new System.Drawing.Size(131, 22);
             this.transfersToolStripMenuItem.Text = "Transfers";
             // 
             // activitiyToolStripMenuItem
             // 
             this.activitiyToolStripMenuItem.Enabled = false;
             this.activitiyToolStripMenuItem.Name = "activitiyToolStripMenuItem";
-            this.activitiyToolStripMenuItem.Size = new System.Drawing.Size(123, 22);
+            this.activitiyToolStripMenuItem.Size = new System.Drawing.Size(131, 22);
             this.activitiyToolStripMenuItem.Text = "Activity";
             // 
             // helpToolStripMenuItem
@@ -1184,59 +1177,66 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.toolStripSeparator28,
             this.aboutCyberduckToolStripMenuItem});
             this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
-            this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
+            this.helpToolStripMenuItem.Size = new System.Drawing.Size(40, 20);
             this.helpToolStripMenuItem.Text = "&Help";
             // 
             // cyberduckHelpToolStripMenuItem
             // 
             this.cyberduckHelpToolStripMenuItem.Name = "cyberduckHelpToolStripMenuItem";
-            this.cyberduckHelpToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
+            this.cyberduckHelpToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
             this.cyberduckHelpToolStripMenuItem.Text = "Cyberduck Help";
             // 
             // licenseToolStripMenuItem
             // 
             this.licenseToolStripMenuItem.Name = "licenseToolStripMenuItem";
-            this.licenseToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
+            this.licenseToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
             this.licenseToolStripMenuItem.Text = "License";
             // 
             // acknowledgmentsToolStripMenuItem
             // 
             this.acknowledgmentsToolStripMenuItem.Name = "acknowledgmentsToolStripMenuItem";
-            this.acknowledgmentsToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
+            this.acknowledgmentsToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
             this.acknowledgmentsToolStripMenuItem.Text = "Acknowledgments";
             // 
             // toolStripSeparator21
             // 
             this.toolStripSeparator21.Name = "toolStripSeparator21";
-            this.toolStripSeparator21.Size = new System.Drawing.Size(172, 6);
+            this.toolStripSeparator21.Size = new System.Drawing.Size(175, 6);
             // 
             // reportABugToolStripMenuItem
             // 
             this.reportABugToolStripMenuItem.Name = "reportABugToolStripMenuItem";
-            this.reportABugToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
+            this.reportABugToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
             this.reportABugToolStripMenuItem.Text = "Report a Bug";
             // 
             // toolStripSeparator22
             // 
             this.toolStripSeparator22.Name = "toolStripSeparator22";
-            this.toolStripSeparator22.Size = new System.Drawing.Size(172, 6);
+            this.toolStripSeparator22.Size = new System.Drawing.Size(175, 6);
             // 
             // checkToolStripMenuItem
             // 
             this.checkToolStripMenuItem.Name = "checkToolStripMenuItem";
-            this.checkToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
+            this.checkToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
             this.checkToolStripMenuItem.Text = "Check for Update…";
             // 
             // toolStripSeparator28
             // 
             this.toolStripSeparator28.Name = "toolStripSeparator28";
-            this.toolStripSeparator28.Size = new System.Drawing.Size(172, 6);
+            this.toolStripSeparator28.Size = new System.Drawing.Size(175, 6);
             // 
             // aboutCyberduckToolStripMenuItem
             // 
             this.aboutCyberduckToolStripMenuItem.Name = "aboutCyberduckToolStripMenuItem";
-            this.aboutCyberduckToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
+            this.aboutCyberduckToolStripMenuItem.Size = new System.Drawing.Size(178, 22);
             this.aboutCyberduckToolStripMenuItem.Text = "&About Cyberduck";
+            // 
+            // createArchiveContextToolStripMenuItem
+            // 
+            this.createArchiveContextToolStripMenuItem.DropDown = this.archiveMenuStrip;
+            this.createArchiveContextToolStripMenuItem.Name = "createArchiveContextToolStripMenuItem";
+            this.createArchiveContextToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+            this.createArchiveContextToolStripMenuItem.Text = "Create Archive";
             // 
             // editorMenuStrip
             // 
@@ -1292,7 +1292,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.toolBar.Location = new System.Drawing.Point(0, 0);
             this.toolBar.Name = "toolBar";
             this.toolBar.ShowItemToolTips = false;
-            this.toolBar.Size = new System.Drawing.Size(1028, 56);
+            this.toolBar.Size = new System.Drawing.Size(881, 54);
             this.toolBar.Stretch = true;
             this.toolBar.TabIndex = 13;
             this.toolBar.Text = "toolStrip1";
@@ -1305,14 +1305,14 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.openConnectionToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.openConnectionToolStripButton.Name = "openConnectionToolStripButton";
             this.openConnectionToolStripButton.Padding = new System.Windows.Forms.Padding(0, 1, 0, 1);
-            this.openConnectionToolStripButton.Size = new System.Drawing.Size(100, 53);
+            this.openConnectionToolStripButton.Size = new System.Drawing.Size(89, 51);
             this.openConnectionToolStripButton.Text = "New Connection";
             this.openConnectionToolStripButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
             // 
             // toolStripSeparatorAfterOpenConnection
             // 
             this.toolStripSeparatorAfterOpenConnection.Name = "toolStripSeparatorAfterOpenConnection";
-            this.toolStripSeparatorAfterOpenConnection.Size = new System.Drawing.Size(6, 56);
+            this.toolStripSeparatorAfterOpenConnection.Size = new System.Drawing.Size(6, 54);
             // 
             // quickConnectToolStripComboBox
             // 
@@ -1324,7 +1324,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             "Test2",
             "Zest3"});
             this.quickConnectToolStripComboBox.Name = "quickConnectToolStripComboBox";
-            this.quickConnectToolStripComboBox.Size = new System.Drawing.Size(180, 56);
+            this.quickConnectToolStripComboBox.Size = new System.Drawing.Size(180, 54);
             this.quickConnectToolStripComboBox.Text = "Quick Connect";
             this.quickConnectToolStripComboBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.toolStripQuickConnect_KeyDown);
             // 
@@ -1337,7 +1337,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.actionToolStripDropDownButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.actionToolStripDropDownButton.Name = "actionToolStripDropDownButton";
             this.actionToolStripDropDownButton.Padding = new System.Windows.Forms.Padding(0, 1, 0, 1);
-            this.actionToolStripDropDownButton.Size = new System.Drawing.Size(55, 53);
+            this.actionToolStripDropDownButton.Size = new System.Drawing.Size(50, 51);
             this.actionToolStripDropDownButton.Text = "Action";
             this.actionToolStripDropDownButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
             // 
@@ -1514,7 +1514,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // toolStripSeparatorAfterAction
             // 
             this.toolStripSeparatorAfterAction.Name = "toolStripSeparatorAfterAction";
-            this.toolStripSeparatorAfterAction.Size = new System.Drawing.Size(6, 56);
+            this.toolStripSeparatorAfterAction.Size = new System.Drawing.Size(6, 54);
             // 
             // infoToolStripButton
             // 
@@ -1523,7 +1523,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.infoToolStripButton.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.infoToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.infoToolStripButton.Name = "infoToolStripButton";
-            this.infoToolStripButton.Size = new System.Drawing.Size(36, 53);
+            this.infoToolStripButton.Size = new System.Drawing.Size(36, 51);
             this.infoToolStripButton.Text = "Info";
             this.infoToolStripButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
             // 
@@ -1534,14 +1534,14 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.refreshToolStripButton.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.refreshToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.refreshToolStripButton.Name = "refreshToolStripButton";
-            this.refreshToolStripButton.Size = new System.Drawing.Size(50, 53);
+            this.refreshToolStripButton.Size = new System.Drawing.Size(49, 51);
             this.refreshToolStripButton.Text = "Refresh";
             this.refreshToolStripButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
             // 
             // toolStripSeparatorAfterRefresh
             // 
             this.toolStripSeparatorAfterRefresh.Name = "toolStripSeparatorAfterRefresh";
-            this.toolStripSeparatorAfterRefresh.Size = new System.Drawing.Size(6, 56);
+            this.toolStripSeparatorAfterRefresh.Size = new System.Drawing.Size(6, 54);
             // 
             // editToolStripButton
             // 
@@ -1550,7 +1550,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.editToolStripButton.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.editToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.editToolStripButton.Name = "editToolStripButton";
-            this.editToolStripButton.Size = new System.Drawing.Size(36, 53);
+            this.editToolStripButton.Size = new System.Drawing.Size(36, 51);
             this.editToolStripButton.Text = "Edit";
             this.editToolStripButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
             // 
@@ -1561,7 +1561,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.openInBrowserToolStripButton.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.openInBrowserToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.openInBrowserToolStripButton.Name = "openInBrowserToolStripButton";
-            this.openInBrowserToolStripButton.Size = new System.Drawing.Size(40, 53);
+            this.openInBrowserToolStripButton.Size = new System.Drawing.Size(37, 51);
             this.openInBrowserToolStripButton.Text = "Open";
             this.openInBrowserToolStripButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
             // 
@@ -1571,7 +1571,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.newFolderToolStripButton.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.newFolderToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.newFolderToolStripButton.Name = "newFolderToolStripButton";
-            this.newFolderToolStripButton.Size = new System.Drawing.Size(71, 53);
+            this.newFolderToolStripButton.Size = new System.Drawing.Size(65, 51);
             this.newFolderToolStripButton.Text = "New Folder";
             this.newFolderToolStripButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
             // 
@@ -1582,14 +1582,14 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.deleteToolStripButton.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.deleteToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.deleteToolStripButton.Name = "deleteToolStripButton";
-            this.deleteToolStripButton.Size = new System.Drawing.Size(44, 53);
+            this.deleteToolStripButton.Size = new System.Drawing.Size(42, 51);
             this.deleteToolStripButton.Text = "Delete";
             this.deleteToolStripButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
             // 
             // toolStripSeparatorAfterDelete
             // 
             this.toolStripSeparatorAfterDelete.Name = "toolStripSeparatorAfterDelete";
-            this.toolStripSeparatorAfterDelete.Size = new System.Drawing.Size(6, 56);
+            this.toolStripSeparatorAfterDelete.Size = new System.Drawing.Size(6, 54);
             // 
             // downloadToolStripButton
             // 
@@ -1598,7 +1598,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.downloadToolStripButton.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.downloadToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.downloadToolStripButton.Name = "downloadToolStripButton";
-            this.downloadToolStripButton.Size = new System.Drawing.Size(65, 53);
+            this.downloadToolStripButton.Size = new System.Drawing.Size(58, 51);
             this.downloadToolStripButton.Text = "Download";
             this.downloadToolStripButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
             // 
@@ -1609,7 +1609,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.uploadToolStripButton.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.uploadToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.uploadToolStripButton.Name = "uploadToolStripButton";
-            this.uploadToolStripButton.Size = new System.Drawing.Size(49, 53);
+            this.uploadToolStripButton.Size = new System.Drawing.Size(44, 51);
             this.uploadToolStripButton.Text = "Upload";
             this.uploadToolStripButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
             // 
@@ -1620,7 +1620,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.transfersToolStripButton.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.transfersToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.transfersToolStripButton.Name = "transfersToolStripButton";
-            this.transfersToolStripButton.Size = new System.Drawing.Size(59, 53);
+            this.transfersToolStripButton.Size = new System.Drawing.Size(57, 51);
             this.transfersToolStripButton.Text = "Transfers";
             this.transfersToolStripButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
             // 
@@ -1632,7 +1632,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.disconnectStripButton.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.disconnectStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.disconnectStripButton.Name = "disconnectStripButton";
-            this.disconnectStripButton.Size = new System.Drawing.Size(70, 53);
+            this.disconnectStripButton.Size = new System.Drawing.Size(63, 51);
             this.disconnectStripButton.Text = "Disconnect";
             this.disconnectStripButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
             // 
@@ -1653,13 +1653,13 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.toolStripContainer1.ContentPanel.Controls.Add(this.panelManager1);
             this.toolStripContainer1.ContentPanel.Controls.Add(this.viewPanel);
-            this.toolStripContainer1.ContentPanel.Size = new System.Drawing.Size(1028, 528);
+            this.toolStripContainer1.ContentPanel.Size = new System.Drawing.Size(881, 449);
             this.toolStripContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.toolStripContainer1.LeftToolStripPanelVisible = false;
             this.toolStripContainer1.Location = new System.Drawing.Point(0, 0);
             this.toolStripContainer1.Name = "toolStripContainer1";
             this.toolStripContainer1.RightToolStripPanelVisible = false;
-            this.toolStripContainer1.Size = new System.Drawing.Size(1028, 606);
+            this.toolStripContainer1.Size = new System.Drawing.Size(881, 525);
             this.toolStripContainer1.TabIndex = 16;
             this.toolStripContainer1.Text = "toolStripContainer1";
             // 
@@ -1673,11 +1673,11 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.panelManager1.Controls.Add(this.managedBrowserPanel1);
             this.panelManager1.Controls.Add(this.managedBookmarkPanel2);
             this.panelManager1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panelManager1.Location = new System.Drawing.Point(0, 31);
+            this.panelManager1.Location = new System.Drawing.Point(0, 30);
             this.panelManager1.Name = "panelManager1";
             this.panelManager1.SelectedIndex = 1;
             this.panelManager1.SelectedPanel = this.managedBookmarkPanel2;
-            this.panelManager1.Size = new System.Drawing.Size(1028, 497);
+            this.panelManager1.Size = new System.Drawing.Size(881, 419);
             this.panelManager1.TabIndex = 3;
             // 
             // managedBrowserPanel1
@@ -1707,6 +1707,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.splitContainer.Panel2MinSize = 50;
             this.splitContainer.Size = new System.Drawing.Size(0, 54);
             this.splitContainer.SplitterDistance = 0;
+            this.splitContainer.SplitterWidth = 3;
             this.splitContainer.TabIndex = 2;
             // 
             // browser
@@ -1794,7 +1795,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.transcriptBox.Name = "transcriptBox";
             this.transcriptBox.ReadOnly = true;
             this.transcriptBox.ShortcutsEnabled = false;
-            this.transcriptBox.Size = new System.Drawing.Size(0, 50);
+            this.transcriptBox.Size = new System.Drawing.Size(0, 38);
             this.transcriptBox.TabIndex = 0;
             this.transcriptBox.Text = "";
             this.transcriptBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.transcriptBox_KeyDown);
@@ -1805,7 +1806,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.managedBookmarkPanel2.Controls.Add(this.actionToolStrip);
             this.managedBookmarkPanel2.Location = new System.Drawing.Point(0, 0);
             this.managedBookmarkPanel2.Name = "managedBookmarkPanel2";
-            this.managedBookmarkPanel2.Size = new System.Drawing.Size(0, 0);
+            this.managedBookmarkPanel2.Size = new System.Drawing.Size(881, 419);
             this.managedBookmarkPanel2.Text = "managedBookmarkPanel2";
             // 
             // bookmarkListView
@@ -1826,7 +1827,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.bookmarkListView.OwnerDraw = true;
             this.bookmarkListView.RowHeight = 37;
             this.bookmarkListView.ShowGroups = false;
-            this.bookmarkListView.Size = new System.Drawing.Size(0, 0);
+            this.bookmarkListView.Size = new System.Drawing.Size(881, 390);
             this.bookmarkListView.TabIndex = 10;
             this.bookmarkListView.UseCompatibleStateImageBehavior = false;
             this.bookmarkListView.View = System.Windows.Forms.View.Details;
@@ -1862,10 +1863,10 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.editBookmarkToolStripButton,
             this.deleteBookmarkToolStripButton});
             this.actionToolStrip.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.HorizontalStackWithOverflow;
-            this.actionToolStrip.Location = new System.Drawing.Point(0, -33);
+            this.actionToolStrip.Location = new System.Drawing.Point(0, 390);
             this.actionToolStrip.Name = "actionToolStrip";
             this.actionToolStrip.ShowItemToolTips = false;
-            this.actionToolStrip.Size = new System.Drawing.Size(0, 33);
+            this.actionToolStrip.Size = new System.Drawing.Size(881, 29);
             this.actionToolStrip.Stretch = true;
             this.actionToolStrip.TabIndex = 5;
             this.actionToolStrip.Text = "toolStrip1";
@@ -1907,25 +1908,27 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             // viewPanel
             // 
+            this.viewPanel.AutoSize = true;
             this.viewPanel.BackColor = System.Drawing.Color.WhiteSmoke;
             this.viewPanel.Controls.Add(this.tableLayoutPanel1);
             this.viewPanel.Dock = System.Windows.Forms.DockStyle.Top;
             this.viewPanel.Location = new System.Drawing.Point(0, 0);
             this.viewPanel.Name = "viewPanel";
-            this.viewPanel.Size = new System.Drawing.Size(1028, 31);
+            this.viewPanel.Size = new System.Drawing.Size(881, 30);
             this.viewPanel.TabIndex = 29;
             // 
             // tableLayoutPanel1
             // 
+            this.tableLayoutPanel1.AutoSize = true;
             this.tableLayoutPanel1.BackColor = System.Drawing.SystemColors.Control;
             this.tableLayoutPanel1.ColumnCount = 6;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 42F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 42F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 36F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 36F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 42F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 120F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 36F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 103F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 17F));
             this.tableLayoutPanel1.Controls.Add(this.viewToolStrip, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.searchTextBox, 5, 0);
             this.tableLayoutPanel1.Controls.Add(this.parentPathButton, 4, 0);
@@ -1938,7 +1941,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.tableLayoutPanel1.Padding = new System.Windows.Forms.Padding(0, 0, 2, 0);
             this.tableLayoutPanel1.RowCount = 1;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(1028, 31);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(881, 30);
             this.tableLayoutPanel1.TabIndex = 16;
             // 
             // viewToolStrip
@@ -1955,7 +1958,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.viewToolStrip.Margin = new System.Windows.Forms.Padding(0, 2, 0, 0);
             this.viewToolStrip.Name = "viewToolStrip";
             this.viewToolStrip.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
-            this.viewToolStrip.Size = new System.Drawing.Size(159, 28);
+            this.viewToolStrip.Size = new System.Drawing.Size(128, 28);
             this.viewToolStrip.TabIndex = 17;
             this.viewToolStrip.Text = "toolStrip3";
             // 
@@ -2020,10 +2023,10 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.searchTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.searchTextBox.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.searchTextBox.Location = new System.Drawing.Point(909, 3);
+            this.searchTextBox.Location = new System.Drawing.Point(779, 3);
             this.searchTextBox.Name = "searchTextBox";
             this.searchTextBox.OptionsMenu = null;
-            this.searchTextBox.Size = new System.Drawing.Size(114, 24);
+            this.searchTextBox.Size = new System.Drawing.Size(97, 21);
             this.searchTextBox.TabIndex = 14;
             this.searchTextBox.TextChanged += new Ch.Cyberduck.ui.winforms.controls.SearchTextBox2.TextChange(this.searchTextBox_TextChanged);
             // 
@@ -2031,9 +2034,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.parentPathButton.FlatAppearance.BorderSize = 0;
             this.parentPathButton.Image = global::Ch.Cyberduck.ResourcesBundle.arrowUpBlack16;
-            this.parentPathButton.Location = new System.Drawing.Point(867, 3);
+            this.parentPathButton.Location = new System.Drawing.Point(743, 3);
             this.parentPathButton.Name = "parentPathButton";
-            this.parentPathButton.Size = new System.Drawing.Size(36, 25);
+            this.parentPathButton.Size = new System.Drawing.Size(30, 22);
             this.parentPathButton.TabIndex = 7;
             this.parentPathButton.UseVisualStyleBackColor = true;
             // 
@@ -2043,10 +2046,9 @@ namespace Ch.Cyberduck.Ui.Winforms
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.pathComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.pathComboBox.FormattingEnabled = true;
-            this.pathComboBox.Location = new System.Drawing.Point(246, 4);
-            this.pathComboBox.Margin = new System.Windows.Forms.Padding(3, 4, 3, 3);
+            this.pathComboBox.Location = new System.Drawing.Point(203, 3);
             this.pathComboBox.Name = "pathComboBox";
-            this.pathComboBox.Size = new System.Drawing.Size(615, 23);
+            this.pathComboBox.Size = new System.Drawing.Size(534, 21);
             this.pathComboBox.TabIndex = 6;
             this.pathComboBox.SelectionChangeCommitted += new System.EventHandler(this.pathComboBox_SelectionChangeCommitted);
             // 
@@ -2054,9 +2056,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.historyForwardButton.FlatAppearance.BorderSize = 0;
             this.historyForwardButton.Image = global::Ch.Cyberduck.ResourcesBundle.arrowRightBlack16;
-            this.historyForwardButton.Location = new System.Drawing.Point(204, 3);
+            this.historyForwardButton.Location = new System.Drawing.Point(167, 3);
             this.historyForwardButton.Name = "historyForwardButton";
-            this.historyForwardButton.Size = new System.Drawing.Size(36, 25);
+            this.historyForwardButton.Size = new System.Drawing.Size(30, 22);
             this.historyForwardButton.TabIndex = 5;
             this.historyForwardButton.UseVisualStyleBackColor = true;
             // 
@@ -2065,9 +2067,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.historyBackButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.historyBackButton.FlatAppearance.BorderSize = 0;
             this.historyBackButton.Image = global::Ch.Cyberduck.ResourcesBundle.arrowLeftBlack16;
-            this.historyBackButton.Location = new System.Drawing.Point(162, 3);
+            this.historyBackButton.Location = new System.Drawing.Point(131, 3);
             this.historyBackButton.Name = "historyBackButton";
-            this.historyBackButton.Size = new System.Drawing.Size(36, 25);
+            this.historyBackButton.Size = new System.Drawing.Size(30, 22);
             this.historyBackButton.TabIndex = 4;
             this.historyBackButton.UseVisualStyleBackColor = true;
             // 
@@ -2990,11 +2992,11 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             // BrowserForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1028, 606);
+            this.ClientSize = new System.Drawing.Size(881, 525);
             this.Controls.Add(this.toolStripContainer1);
-            this.MinimumSize = new System.Drawing.Size(460, 38);
+            this.MinimumSize = new System.Drawing.Size(395, 37);
             this.Name = "BrowserForm";
             this.Text = "Cyberduck";
             this.statusStrip.ResumeLayout(false);
@@ -3009,6 +3011,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.toolStripContainer1.BottomToolStripPanel.ResumeLayout(false);
             this.toolStripContainer1.BottomToolStripPanel.PerformLayout();
             this.toolStripContainer1.ContentPanel.ResumeLayout(false);
+            this.toolStripContainer1.ContentPanel.PerformLayout();
             this.toolStripContainer1.TopToolStripPanel.ResumeLayout(false);
             this.toolStripContainer1.TopToolStripPanel.PerformLayout();
             this.toolStripContainer1.ResumeLayout(false);
@@ -3025,6 +3028,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.actionToolStrip.ResumeLayout(false);
             this.actionToolStrip.PerformLayout();
             this.viewPanel.ResumeLayout(false);
+            this.viewPanel.PerformLayout();
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
             this.viewToolStrip.ResumeLayout(false);
