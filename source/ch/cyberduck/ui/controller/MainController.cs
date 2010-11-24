@@ -214,8 +214,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             IsSingleInstance = true;
             // Needed for multiple SDI because no form is the main form
-            ShutdownStyle = ShutdownMode.AfterAllFormsClose;
-            EnableVisualStyles = true;
+            ShutdownStyle = ShutdownMode.AfterAllFormsClose;            
         }
 
         /// <summary>
