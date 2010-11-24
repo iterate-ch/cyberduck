@@ -227,10 +227,10 @@ public class CloudFrontDistributionConfiguration extends HTTP3Session implements
             this.check();
 
             // Configure CDN
-            LoggingStatus l = null;
+            LoggingStatus loggingStatus = null;
             if(logging) {
                 if(this.isLoggingSupported(method)) {
-                    l = new LoggingStatus(origin, Preferences.instance().getProperty("cloudfront.logging.prefix"));
+                    loggingStatus = new LoggingStatus(origin, Preferences.instance().getProperty("cloudfront.logging.prefix"));
                 }
             }
             StringBuilder name = new StringBuilder(Locale.localizedString("Amazon CloudFront", "S3")).append(" ").append(method.toString());
@@ -243,7 +243,7 @@ public class CloudFrontDistributionConfiguration extends HTTP3Session implements
             ch.cyberduck.core.cdn.Distribution d = distributionStatus.get(method).get(origin);
             if(null == d) {
                 log.debug("No existing distribution found for method:" + method);
-                this.createDistribution(enabled, method, origin, cnames, l, defaultRootObject);
+                this.createDistribution(enabled, method, origin, cnames, loggingStatus, defaultRootObject);
             }
             else {
                 boolean modified = false;
@@ -269,7 +269,7 @@ public class CloudFrontDistributionConfiguration extends HTTP3Session implements
                     modified = true;
                 }
                 if(modified) {
-                    this.updateDistribution(enabled, method, origin, d.getId(), cnames, l, defaultRootObject);
+                    this.updateDistribution(enabled, method, origin, d.getId(), cnames, loggingStatus, defaultRootObject);
                 }
                 else {
                     log.info("Skip updating distribution not modified.");
@@ -293,7 +293,8 @@ public class CloudFrontDistributionConfiguration extends HTTP3Session implements
     }
 
     public boolean isInvalidationSupported(ch.cyberduck.core.cdn.Distribution.Method method) {
-        return true;
+        return method.equals(ch.cyberduck.core.cdn.Distribution.DOWNLOAD)
+                || method.equals(ch.cyberduck.core.cdn.Distribution.CUSTOM);
     }
 
     public boolean isLoggingSupported(ch.cyberduck.core.cdn.Distribution.Method method) {
@@ -465,7 +466,7 @@ public class CloudFrontDistributionConfiguration extends HTTP3Session implements
         }
         if(method.equals(ch.cyberduck.core.cdn.Distribution.CUSTOM)) {
             return cf.createDistribution(
-                    new CustomOrigin(origin, CustomOrigin.OriginProtocolPolicy.MATCH_VIEWER),
+                    this.getCustomOriginConfiguration(method, origin),
                     String.valueOf(reference), // Caller reference - a unique string value
                     cnames, // CNAME aliases for distribution
                     new Date(reference).toString(), // Comment
@@ -522,7 +523,7 @@ public class CloudFrontDistributionConfiguration extends HTTP3Session implements
         else if(method.equals(ch.cyberduck.core.cdn.Distribution.CUSTOM)) {
             cf.updateDistributionConfig(
                     id,
-                    new CustomOrigin(origin, CustomOrigin.OriginProtocolPolicy.MATCH_VIEWER),
+                    this.getCustomOriginConfiguration(method, origin),
                     cnames, // CNAME aliases for distribution
                     new Date(reference).toString(), // Comment
                     enabled, // Enabled?
@@ -532,6 +533,24 @@ public class CloudFrontDistributionConfiguration extends HTTP3Session implements
                     null,
                     defaultRootObject);
         }
+    }
+
+    /**
+     * @param origin
+     * @return
+     */
+    protected CustomOrigin getCustomOriginConfiguration(ch.cyberduck.core.cdn.Distribution.Method method, String origin) {
+//        int httpPort = 80;
+//        if(method.getProtocol().equals("http")) {
+//            httpPort = method.getDefaultPort();
+//        }
+//        int httpsPort = 443;
+//        if(method.getProtocol().equals("https")) {
+//            httpsPort = method.getDefaultPort();
+//        }
+//        return new CustomOrigin(origin, CustomOrigin.OriginProtocolPolicy.MATCH_VIEWER,
+//                httpPort, httpsPort);
+        return new CustomOrigin(origin, CustomOrigin.OriginProtocolPolicy.MATCH_VIEWER);
     }
 
     /**
@@ -585,6 +604,7 @@ public class CloudFrontDistributionConfiguration extends HTTP3Session implements
                 method,
                 d.isEnabled(),
                 d.isDeployed(),
+                // CloudFront URL
                 method.getProtocol() + d.getDomainName() + method.getContext(),
                 Locale.localizedString(d.getStatus(), "S3"),
                 d.getCNAMEs(),
