@@ -258,17 +258,27 @@ namespace Ch.Cyberduck.Ui.Controller
                                 eTaskDialogButtons.OK, eSysIcons.Warning);
                         }
                     }
-                    if ("duck".Equals(f.getExtension()))
-                    {
-                        Host host = (Host) HostReaderFactory.instance().read(f);
-                        NewBrowser().Mount(host);
-                    }
                 }
             }
 
             // set up the main form.
             _bc = NewBrowser(true, true);
             MainForm = _bc.View as Form;
+
+            if (CommandLineArgs.Count > 0)
+            {
+                string filename = CommandLineArgs[0];
+                Logger.debug("applicationOpenFile:" + filename);
+                Local f = LocalFactory.createLocal(filename);
+                if (f.exists())
+                {
+                    if ("duck".Equals(f.getExtension()))
+                    {
+                        Host host = (Host)HostReaderFactory.instance().read(f);
+                        NewBrowser().Mount(host);
+                    }
+                }
+            }
 
             // then, run the the main form.
             Run(CommandLineArgs);
