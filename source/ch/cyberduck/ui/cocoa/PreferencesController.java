@@ -27,6 +27,7 @@ import ch.cyberduck.ui.cocoa.foundation.*;
 import ch.cyberduck.ui.cocoa.model.FinderLocal;
 import ch.cyberduck.ui.cocoa.odb.EditorFactory;
 import ch.cyberduck.ui.cocoa.odb.WatchEditor;
+import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 import ch.cyberduck.ui.cocoa.urlhandler.URLSchemeHandlerConfiguration;
 import ch.cyberduck.ui.cocoa.view.BookmarkCell;
 
@@ -443,21 +444,29 @@ public class PreferencesController extends ToolbarWindowController {
 
     private final CollectionListener<Host> bookmarkCollectionListener = new AbstractCollectionListener<Host>() {
         @Override
-        public void collectionItemAdded(Host bookmark) {
-            defaultBookmarkCombobox.addItemWithTitle(bookmark.getNickname());
-            defaultBookmarkCombobox.lastItem().setImage(IconCache.iconNamed("cyberduck-document", 16));
-            defaultBookmarkCombobox.lastItem().setRepresentedObject(bookmark.getUuid());
+        public void collectionItemAdded(final Host bookmark) {
+            invoke(new WindowMainAction(PreferencesController.this) {
+                public void run() {
+                    defaultBookmarkCombobox.addItemWithTitle(bookmark.getNickname());
+                    defaultBookmarkCombobox.lastItem().setImage(IconCache.iconNamed("cyberduck-document", 16));
+                    defaultBookmarkCombobox.lastItem().setRepresentedObject(bookmark.getUuid());
+                }
+            });
         }
 
         @Override
-        public void collectionItemRemoved(Host bookmark) {
-            if(defaultBookmarkCombobox.selectedItem().representedObject().equals(bookmark.getUuid())) {
-                Preferences.instance().deleteProperty("browser.defaultBookmark");
-            }
-            NSInteger i = defaultBookmarkCombobox.menu().indexOfItemWithRepresentedObject(bookmark.getUuid());
-            if(i.intValue() > -1) {
-                defaultBookmarkCombobox.removeItemAtIndex(i);
-            }
+        public void collectionItemRemoved(final Host bookmark) {
+            invoke(new WindowMainAction(PreferencesController.this) {
+                public void run() {
+                    if(defaultBookmarkCombobox.selectedItem().representedObject().equals(bookmark.getUuid())) {
+                        Preferences.instance().deleteProperty("browser.defaultBookmark");
+                    }
+                    NSInteger i = defaultBookmarkCombobox.menu().indexOfItemWithRepresentedObject(bookmark.getUuid());
+                    if(i.intValue() > -1) {
+                        defaultBookmarkCombobox.removeItemAtIndex(i);
+                    }
+                }
+            });
         }
     };
 
