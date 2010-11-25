@@ -391,20 +391,22 @@ namespace Ch.Cyberduck.Ui.Controller
             ;
         }
 
-        //todo prüfen, ob das nicht anders gelöst werden kann bzw. wie es in java gelöst ist
         public void collectionItemAdded(object obj)
         {
-            PopulateQuickConnect();
+            AsyncDelegate mainAction = delegate { PopulateQuickConnect(); };
+            Invoke(mainAction);
         }
 
         public void collectionItemRemoved(object obj)
         {
-            PopulateQuickConnect();
+            AsyncDelegate mainAction = delegate { PopulateQuickConnect(); };
+            Invoke(mainAction);
         }
 
         public void collectionItemChanged(object obj)
         {
-            PopulateQuickConnect();
+            AsyncDelegate mainAction = delegate { PopulateQuickConnect(); };
+            Invoke(mainAction);
         }
 
         public void log(bool request, string transcript)
