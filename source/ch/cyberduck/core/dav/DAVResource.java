@@ -31,6 +31,7 @@ import org.apache.webdav.lib.util.WebdavStatus;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URISyntaxException;
 import java.util.Enumeration;
 import java.util.zip.GZIPInputStream;
 
@@ -140,7 +141,7 @@ public class DAVResource extends WebdavResource {
     /**
      * Execute the PUT method for the given path.
      *
-     * @param path        the server relative path to put the data
+     * @param path          the server relative path to put the data
      * @param requestEntity The input stream.
      * @return true if the method is succeeded.
      * @throws IOException
@@ -172,28 +173,6 @@ public class DAVResource extends WebdavResource {
     private boolean isHttpSuccess(int statusCode) {
         return (statusCode >= HttpStatus.SC_OK
                 && statusCode < HttpStatus.SC_MULTIPLE_CHOICES);
-    }
-
-    /**
-     * Verify whether a given string is escaped or not
-     *
-     * @param original given characters
-     * @return true if the given character array is 7 bit ASCII-compatible.
-     */
-    public static boolean verifyEscaped(char[] original) {
-        for(int i = 0; i < original.length; i++) {
-            int c = original[i];
-            if(c > 128) {
-                return false;
-            }
-            else if(c == '%') {
-                if(Character.digit(original[++i], 16) == -1
-                        || Character.digit(original[++i], 16) == -1) {
-                    return false;
-                }
-            }
-        }
-        return true;
     }
 
     @Override
@@ -230,12 +209,16 @@ public class DAVResource extends WebdavResource {
                         if(StringUtils.isNotBlank(response.getHref())) {
                             // http://trac.cyberduck.ch/ticket/2223
                             final String escaped = StringUtils.replace(response.getHref(), " ", "%20");
-                            if(!verifyEscaped(escaped.toCharArray())) {
+                            try {
+                                new java.net.URI(escaped);
+                            }
+                            catch(URISyntaxException e) {
+                                log.warn("Href not escaped in respose:" + response.getHref());
                                 try {
                                     return URIUtil.encodePath(response.getHref());
                                 }
-                                catch(URIException e) {
-                                    log.error(e.getMessage(), e);
+                                catch(URIException failure) {
+                                    log.error("Encoding path failed:" + failure.getMessage());
                                 }
                             }
                             return escaped;
