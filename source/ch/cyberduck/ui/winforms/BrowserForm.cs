@@ -874,13 +874,14 @@ namespace Ch.Cyberduck.Ui.Winforms
                 MenuItem item = mainItem.MenuItems.Add(pair.Key);
                 if (pair.Value.Count > 0)
                 {
+                    KeyValuePair<string, List<string>> pair1 = pair;
                     item.Click += delegate
                                       {
                                           StringBuilder sb = new StringBuilder();
-                                          for (int i = 0; i < pair.Value.Count; i++)
+                                          for (int i = 0; i < pair1.Value.Count; i++)
                                           {
                                               if (i > 0) sb.Append(Environment.NewLine);
-                                              sb.Append(pair.Value[i]);
+                                              sb.Append(pair1.Value[i]);
                                           }
                                           Clipboard.SetText(sb.ToString());
                                       };
