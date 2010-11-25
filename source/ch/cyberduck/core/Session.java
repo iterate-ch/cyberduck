@@ -673,7 +673,7 @@ public abstract class Session implements TranscriptListener {
      */
     public void log(boolean request, final String message) {
         log.info(message);
-        for(TranscriptListener listener : transcriptListeners) {
+        for(TranscriptListener listener : transcriptListeners.toArray(new TranscriptListener[transcriptListeners.size()])) {
             listener.log(request, message);
         }
     }
