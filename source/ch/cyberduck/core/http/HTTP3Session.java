@@ -119,8 +119,10 @@ public abstract class HTTP3Session extends SSLSession {
             );
             if(Preferences.instance().getBoolean("connection.proxy.enable")) {
                 final Proxy proxy = ProxyFactory.instance();
-                if(proxy.isHTTPSProxyEnabled()) {
-                    configuration.setProxy(proxy.getHTTPSProxyHost(), proxy.getHTTPSProxyPort());
+                if(!proxy.isHostExcluded(hostname)) {
+                    if(proxy.isHTTPSProxyEnabled()) {
+                        configuration.setProxy(proxy.getHTTPSProxyHost(), proxy.getHTTPSProxyPort());
+                    }
                 }
             }
         }
@@ -134,8 +136,10 @@ public abstract class HTTP3Session extends SSLSession {
             );
             if(Preferences.instance().getBoolean("connection.proxy.enable")) {
                 final Proxy proxy = ProxyFactory.instance();
-                if(proxy.isHTTPProxyEnabled()) {
-                    configuration.setProxy(proxy.getHTTPProxyHost(), proxy.getHTTPProxyPort());
+                if(!proxy.isHostExcluded(hostname)) {
+                    if(proxy.isHTTPProxyEnabled()) {
+                        configuration.setProxy(proxy.getHTTPProxyHost(), proxy.getHTTPProxyPort());
+                    }
                 }
             }
         }

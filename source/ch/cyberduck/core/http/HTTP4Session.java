@@ -112,18 +112,22 @@ public abstract class HTTP4Session extends SSLSession {
             if("https".equals(this.getHost().getProtocol().getScheme())) {
                 if(Preferences.instance().getBoolean("connection.proxy.enable")) {
                     final Proxy proxy = ProxyFactory.instance();
-                    if(proxy.isHTTPSProxyEnabled()) {
-                        params.setParameter(ConnRoutePNames.DEFAULT_PROXY,
-                                new HttpHost(proxy.getHTTPSProxyHost(), proxy.getHTTPSProxyPort()));
+                    if(!proxy.isHostExcluded(host.getHostname())) {
+                        if(proxy.isHTTPSProxyEnabled()) {
+                            params.setParameter(ConnRoutePNames.DEFAULT_PROXY,
+                                    new HttpHost(proxy.getHTTPSProxyHost(), proxy.getHTTPSProxyPort()));
+                        }
                     }
                 }
             }
             else if("http".equals(this.getHost().getProtocol().getScheme())) {
                 if(Preferences.instance().getBoolean("connection.proxy.enable")) {
                     final Proxy proxy = ProxyFactory.instance();
-                    if(proxy.isHTTPProxyEnabled()) {
-                        params.setParameter(ConnRoutePNames.DEFAULT_PROXY,
-                                new HttpHost(proxy.getHTTPProxyHost(), proxy.getHTTPProxyPort()));
+                    if(!proxy.isHostExcluded(host.getHostname())) {
+                        if(proxy.isHTTPProxyEnabled()) {
+                            params.setParameter(ConnRoutePNames.DEFAULT_PROXY,
+                                    new HttpHost(proxy.getHTTPProxyHost(), proxy.getHTTPProxyPort()));
+                        }
                     }
                 }
             }
