@@ -26,9 +26,7 @@ import ch.cyberduck.ui.DateFormatterFactory;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.delegate.AbstractMenuDelegate;
 import ch.cyberduck.ui.cocoa.delegate.TransferMenuDelegate;
-import ch.cyberduck.ui.cocoa.foundation.NSArray;
-import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
-import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
+import ch.cyberduck.ui.cocoa.foundation.*;
 
 import org.rococoa.Foundation;
 import org.rococoa.cocoa.foundation.NSInteger;
@@ -258,18 +256,14 @@ public class ProgressController extends BundleController {
         statusField.setTextColor(highlighted ? NSColor.whiteColor() : NSColor.textColor());
         progressField.setTextColor(highlighted ? NSColor.whiteColor() : NSColor.darkGrayColor());
         messageField.setTextColor(highlighted ? NSColor.whiteColor() : NSColor.darkGrayColor());
-        if(transfer.getRoot().getLocal().exists()) {
-            filesPopup.itemAtIndex(new NSInteger(0)).setAttributedTitle(
-                    NSAttributedString.attributedStringWithAttributes(filesPopup.itemAtIndex(new NSInteger(0)).title(),
-                            highlighted ? HIGHLIGHTED_FONT_ATTRIBUTES : NORMAL_FONT_ATTRIBUTES)
-            );
-        }
-        else {
-            filesPopup.itemAtIndex(new NSInteger(0)).setAttributedTitle(
-                    NSAttributedString.attributedStringWithAttributes(filesPopup.itemAtIndex(new NSInteger(0)).title(),
-                            highlighted ? HIGHLIGHTED_FONT_ATTRIBUTES : DARK_FONT_ATTRIBUTES)
-            );
-        }
+        this.setMenuHighlighted(highlighted);
+    }
+
+    private void setMenuHighlighted(boolean highlighted) {
+        filesPopup.itemAtIndex(new NSInteger(0)).setAttributedTitle(
+                NSAttributedString.attributedStringWithAttributes(filesPopup.itemAtIndex(new NSInteger(0)).title(),
+                        highlighted ? HIGHLIGHTED_FONT_ATTRIBUTES : transfer.getRoot().getLocal().exists() ? NORMAL_FONT_ATTRIBUTES : DARK_FONT_ATTRIBUTES)
+        );
     }
 
     // ----------------------------------------------------------
@@ -294,6 +288,24 @@ public class ProgressController extends BundleController {
         }
         this.filesPopupMenuDelegate = new TransferMenuDelegate(transfer.getRoots());
         this.filesPopup.menu().setDelegate(this.filesPopupMenuDelegate.id());
+        NSNotificationCenter.defaultCenter().addObserver(this.id(),
+                Foundation.selector("filesPopupWillShow:"),
+                NSPopUpButton.PopUpButtonWillPopUpNotification,
+                this.filesPopup);
+        NSNotificationCenter.defaultCenter().addObserver(this.id(),
+                Foundation.selector("filesPopupWillHide:"),
+                "NSMenuDidEndTrackingNotification",
+                this.filesPopup.menu());
+    }
+
+    @Action
+    public void filesPopupWillShow(final NSNotification sender) {
+        this.setMenuHighlighted(false);
+    }
+
+    @Action
+    public void filesPopupWillHide(final NSNotification sender) {
+        this.setMenuHighlighted(true);
     }
 
     @Outlet
