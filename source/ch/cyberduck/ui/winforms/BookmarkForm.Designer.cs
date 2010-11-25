@@ -236,8 +236,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.linkLabelURL.Name = "linkLabelURL";
             this.linkLabelURL.Size = new System.Drawing.Size(260, 15);
             this.linkLabelURL.TabIndex = 4;
-            this.linkLabelURL.TabStop = true;
-            this.linkLabelURL.Text = "default";
             this.linkLabelURL.Click += new System.EventHandler(this.linkLabelURL_Click);
             // 
             // labelServer
@@ -356,7 +354,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.optionsPanel.SetColumnSpan(this.comboBoxTimezone, 3);
             this.comboBoxTimezone.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBoxTimezone.FormattingEnabled = true;
-            this.comboBoxTimezone.Location = new System.Drawing.Point(133, 300);
+            this.comboBoxTimezone.Location = new System.Drawing.Point(133, 302);
             this.comboBoxTimezone.Name = "comboBoxTimezone";
             this.comboBoxTimezone.Size = new System.Drawing.Size(336, 23);
             this.comboBoxTimezone.TabIndex = 31;
@@ -366,7 +364,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.label8.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(65, 304);
+            this.label8.Location = new System.Drawing.Point(65, 305);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(62, 15);
             this.label8.TabIndex = 27;
@@ -388,7 +386,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.optionsPanel.SetColumnSpan(this.richTextBoxNotes, 3);
             this.richTextBoxNotes.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.richTextBoxNotes.Location = new System.Drawing.Point(133, 230);
+            this.richTextBoxNotes.Location = new System.Drawing.Point(133, 232);
             this.richTextBoxNotes.Name = "richTextBoxNotes";
             this.richTextBoxNotes.Size = new System.Drawing.Size(336, 64);
             this.richTextBoxNotes.TabIndex = 25;
@@ -399,7 +397,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.labelNotes.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.labelNotes.AutoSize = true;
-            this.labelNotes.Location = new System.Drawing.Point(86, 254);
+            this.labelNotes.Location = new System.Drawing.Point(86, 256);
             this.labelNotes.Name = "labelNotes";
             this.labelNotes.Size = new System.Drawing.Size(41, 15);
             this.labelNotes.TabIndex = 26;
@@ -437,7 +435,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.buttonWebURL.FlatAppearance.BorderSize = 0;
             this.buttonWebURL.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.buttonWebURL.Image = global::Ch.Cyberduck.ResourcesBundle.site;
-            this.buttonWebURL.Location = new System.Drawing.Point(446, 201);
+            this.buttonWebURL.Location = new System.Drawing.Point(446, 203);
             this.buttonWebURL.MaximumSize = new System.Drawing.Size(23, 23);
             this.buttonWebURL.Name = "buttonWebURL";
             this.buttonWebURL.Size = new System.Drawing.Size(23, 23);
@@ -487,7 +485,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.textBoxWebUrl.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.optionsPanel.SetColumnSpan(this.textBoxWebUrl, 2);
-            this.textBoxWebUrl.Location = new System.Drawing.Point(133, 201);
+            this.textBoxWebUrl.Location = new System.Drawing.Point(133, 203);
             this.textBoxWebUrl.Name = "textBoxWebUrl";
             this.textBoxWebUrl.Size = new System.Drawing.Size(298, 23);
             this.textBoxWebUrl.TabIndex = 23;
@@ -502,15 +500,13 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.linkLabelDownloadFolder.Name = "linkLabelDownloadFolder";
             this.linkLabelDownloadFolder.Size = new System.Drawing.Size(264, 15);
             this.linkLabelDownloadFolder.TabIndex = 19;
-            this.linkLabelDownloadFolder.TabStop = true;
-            this.linkLabelDownloadFolder.Text = "Desktop";
             this.linkLabelDownloadFolder.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabelDownloadFolder_LinkClicked);
             // 
             // labelWebURL
             // 
             this.labelWebURL.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.labelWebURL.AutoSize = true;
-            this.labelWebURL.Location = new System.Drawing.Point(69, 205);
+            this.labelWebURL.Location = new System.Drawing.Point(69, 207);
             this.labelWebURL.Name = "labelWebURL";
             this.labelWebURL.Size = new System.Drawing.Size(58, 15);
             this.labelWebURL.TabIndex = 22;
@@ -521,7 +517,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.labelTransferFiles.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.labelTransferFiles.AutoSize = true;
-            this.labelTransferFiles.Location = new System.Drawing.Point(48, 177);
+            this.labelTransferFiles.Location = new System.Drawing.Point(48, 178);
             this.labelTransferFiles.Name = "labelTransferFiles";
             this.labelTransferFiles.Size = new System.Drawing.Size(79, 15);
             this.labelTransferFiles.TabIndex = 20;
@@ -554,7 +550,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.pkLabel.Name = "pkLabel";
             this.pkLabel.Size = new System.Drawing.Size(319, 28);
             this.pkLabel.TabIndex = 33;
-            this.pkLabel.Text = "Dies ist ein Test cyberduck";
             // 
             // downloadFolderButton
             // 
