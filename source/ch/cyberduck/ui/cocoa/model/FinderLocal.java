@@ -553,7 +553,7 @@ public class FinderLocal extends Local {
             else {
                 NSBundle bundle = NSBundle.bundleWithPath(path);
                 if(null == bundle) {
-                    log.warn("No application bundle for:" + path);
+                    log.error("Loading bundle failed:" + path);
                     defaultApplicationCache.put(extension, null);
                 }
                 else {

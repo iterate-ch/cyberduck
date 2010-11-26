@@ -341,13 +341,19 @@ public class PreferencesController extends ToolbarWindowController {
             NSArray selected = sheet.filenames();
             String filename;
             if((filename = selected.lastObject().toString()) != null) {
-                NSBundle app = NSBundle.bundleWithPath(LocalFactory.createLocal(filename).getAbsolute());
-                final String bundleIdentifier = app.bundleIdentifier();
-                if(!EditorFactory.getInstalledEditors().values().contains(bundleIdentifier)) {
-                    WatchEditor.addInstalledEditor(EditorFactory.getApplicationName(bundleIdentifier), app.bundleIdentifier());
+                String path = LocalFactory.createLocal(filename).getAbsolute();
+                NSBundle app = NSBundle.bundleWithPath(path);
+                if(null == app) {
+                    log.error("Loading bundle failed:" + path);
                 }
-                Preferences.instance().setProperty("editor.bundleIdentifier", bundleIdentifier);
-                BrowserController.validateToolbarItems();
+                else {
+                    final String bundleIdentifier = app.bundleIdentifier();
+                    if(!EditorFactory.getInstalledEditors().values().contains(bundleIdentifier)) {
+                        WatchEditor.addInstalledEditor(EditorFactory.getApplicationName(bundleIdentifier), app.bundleIdentifier());
+                    }
+                    Preferences.instance().setProperty("editor.bundleIdentifier", bundleIdentifier);
+                    BrowserController.validateToolbarItems();
+                }
             }
         }
         this.updateEditorCombobox();
