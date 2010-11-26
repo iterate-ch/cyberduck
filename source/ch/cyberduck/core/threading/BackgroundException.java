@@ -115,7 +115,10 @@ public class BackgroundException extends Exception {
         StringBuilder buffer = new StringBuilder();
         if(null != cause) {
             if(StringUtils.isNotBlank(cause.getMessage())) {
-                buffer.append(cause.getMessage()).append(".");
+                buffer.append(cause.getMessage());
+                if(!cause.getMessage().endsWith(".")) {
+                    buffer.append(".");
+                }
             }
             if(cause instanceof SFTPException) {
                 ;
