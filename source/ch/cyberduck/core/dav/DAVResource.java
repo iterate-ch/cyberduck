@@ -154,8 +154,8 @@ public class DAVResource extends WebdavResource {
         PutMethod method = new PutMethod(URIUtil.encodePathQuery(path)) {
             @Override
             public boolean getFollowRedirects() {
-                // See #3206. Redirects for uploads is curently not allowed without user interaction
-                return false;
+                // See #3206. Redirects for uploads are not allowed without user interaction by default.
+                return true;
             }
         };
 
