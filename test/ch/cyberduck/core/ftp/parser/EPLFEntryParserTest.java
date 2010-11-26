@@ -11,10 +11,6 @@ import org.apache.commons.net.ftp.FTPFileEntryParser;
 
 public class EPLFEntryParserTest extends AbstractTestCase {
 
-    static {
-        org.apache.log4j.BasicConfigurator.configure();
-    }
-
     public EPLFEntryParserTest(String name) {
         super(name);
     }

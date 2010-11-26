@@ -23,10 +23,6 @@ package ch.cyberduck.core;
  */
 public class LoginTest extends AbstractTestCase {
 
-    static {
-        org.apache.log4j.BasicConfigurator.configure();
-    }
-
     public LoginTest(String name) {
         super(name);
     }

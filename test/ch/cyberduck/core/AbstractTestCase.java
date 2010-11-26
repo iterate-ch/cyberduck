@@ -34,6 +34,10 @@ import java.util.*;
  */
 public class AbstractTestCase extends TestCase {
 
+    static {
+        org.apache.log4j.BasicConfigurator.configure();
+    }
+
     public AbstractTestCase(String name) {
         super(name);
     }
