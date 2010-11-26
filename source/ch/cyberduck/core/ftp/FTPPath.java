@@ -20,12 +20,16 @@ package ch.cyberduck.core.ftp;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.i18n.Locale;
-import ch.cyberduck.core.io.*;
+import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.io.FromNetASCIIInputStream;
+import ch.cyberduck.core.io.FromNetASCIIOutputStream;
 import ch.cyberduck.ui.DateFormatterFactory;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPFileEntryParser;
+import org.apache.commons.net.io.ToNetASCIIInputStream;
+import org.apache.commons.net.io.ToNetASCIIOutputStream;
 import org.apache.log4j.Logger;
 
 import com.enterprisedt.net.ftp.FTPException;
