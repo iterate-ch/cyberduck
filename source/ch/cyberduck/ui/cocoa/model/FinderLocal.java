@@ -551,7 +551,14 @@ public class FinderLocal extends Local {
                 defaultApplicationCache.put(extension, null);
             }
             else {
-                defaultApplicationCache.put(extension, NSBundle.bundleWithPath(path).bundleIdentifier());
+                NSBundle bundle = NSBundle.bundleWithPath(path);
+                if(null == bundle) {
+                    log.warn("No application bundle for:" + path);
+                    defaultApplicationCache.put(extension, null);
+                }
+                else {
+                    defaultApplicationCache.put(extension, bundle.bundleIdentifier());
+                }
             }
         }
         return defaultApplicationCache.get(extension);
