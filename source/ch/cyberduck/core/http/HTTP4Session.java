@@ -26,6 +26,7 @@ import ch.cyberduck.core.ssl.SSLSession;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpHost;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.params.ClientPNames;
 import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.conn.scheme.PlainSocketFactory;
@@ -95,6 +96,7 @@ public abstract class HTTP4Session extends SSLSession {
             org.apache.http.params.HttpConnectionParams.setTcpNoDelay(params, true);
             org.apache.http.params.HttpConnectionParams.setSoTimeout(params, timeout());
             org.apache.http.params.HttpConnectionParams.setSocketBufferSize(params, 8192);
+            params.setParameter(ClientPNames.MAX_REDIRECTS, 10);
             HttpProtocolParams.setUserAgent(params, getUserAgent());
             SchemeRegistry registry = new SchemeRegistry();
             if(host.getProtocol().isSecure()) {

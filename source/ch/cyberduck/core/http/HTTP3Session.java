@@ -26,6 +26,7 @@ import ch.cyberduck.core.ssl.SSLSession;
 import org.apache.commons.httpclient.HostConfiguration;
 import org.apache.commons.httpclient.HttpVersion;
 import org.apache.commons.httpclient.params.HostParams;
+import org.apache.commons.httpclient.params.HttpClientParams;
 import org.apache.commons.httpclient.params.HttpConnectionParams;
 import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.apache.commons.httpclient.protocol.DefaultProtocolSocketFactory;
@@ -148,6 +149,7 @@ public abstract class HTTP3Session extends SSLSession {
         parameters.setParameter(HttpMethodParams.PROTOCOL_VERSION, HttpVersion.HTTP_1_1);
         parameters.setParameter(HttpMethodParams.SO_TIMEOUT, this.timeout());
         parameters.setParameter(HttpMethodParams.CREDENTIAL_CHARSET, "ISO-8859-1");
+        parameters.setParameter(HttpClientParams.MAX_REDIRECTS, 10);
         return configuration;
     }
 
