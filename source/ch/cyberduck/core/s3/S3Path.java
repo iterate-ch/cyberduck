@@ -35,7 +35,6 @@ import org.jets3t.service.StorageObjectsChunk;
 import org.jets3t.service.VersionOrDeleteMarkersChunk;
 import org.jets3t.service.acl.*;
 import org.jets3t.service.model.*;
-import org.jets3t.service.utils.Mimetypes;
 import org.jets3t.service.utils.ServiceUtils;
 
 import java.io.IOException;
