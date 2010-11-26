@@ -151,7 +151,23 @@ public class DAVResource extends WebdavResource {
 
         setClient();
 
-        PutMethod method = new PutMethod(URIUtil.encodePathQuery(path));
+        PutMethod method = new PutMethod(URIUtil.encodePathQuery(path)) {
+            @Override
+            public boolean getFollowRedirects() {
+                // See #3206. Redirects for uploads is curently not allowed without user interaction
+                return false;
+            }
+        };
+
+        // Activates 'Expect: 100-Continue' handshake. The purpose of
+        // the 'Expect: 100-Continue' handshake to allow a client that is
+        // sending a request message with a request body to determine if
+        // the origin server is willing to accept the request (based on
+        // the request headers) before the client sends the request body.
+        //
+        // Otherwise, upload will fail when using digest authentication.
+        // Fix #2268
+        method.setUseExpectHeader(true);
 
         generateIfHeader(method);
         method.setRequestEntity(requestEntity);
