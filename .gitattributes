@@ -1309,7 +1309,7 @@ lib/commons-httpclient-3.1.jar -text
 lib/commons-io-1.4.jar -text
 lib/commons-lang-2.4.jar -text
 lib/commons-logging-1.1.1.jar -text
-lib/commons-net-ftp-2.0.jar -text
+lib/commons-net-ftp-2.2.jar -text
 lib/dns_sd.jar -text
 lib/dom4j-1.6.1.jar -text
 lib/ext/ant-contrib-1.0b3.jar -text
