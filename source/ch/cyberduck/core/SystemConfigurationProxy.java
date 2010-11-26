@@ -18,7 +18,12 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.net.util.SubnetUtils;
 import org.apache.log4j.Logger;
+
+import java.net.Inet4Address;
+import java.net.UnknownHostException;
 
 /**
  * @version $Id$
@@ -73,16 +78,50 @@ public class SystemConfigurationProxy extends AbstractProxy implements Proxy {
         if(!loadNative()) {
             return false;
         }
-        return this.isHostExcludedNative(hostname);
+        if(!hostname.contains(".")) {
+            // Non fully qualified hostname
+            if(this.isSimpleHostnameExcludedNative()) {
+                return true;
+            }
+        }
+        for(String exception : this.getProxyExceptionsNative()) {
+            if(StringUtils.isBlank(exception)) {
+                continue;
+            }
+            if(this.matches(exception, hostname)) {
+                return true;
+            }
+            try {
+                SubnetUtils subnet = new SubnetUtils(exception);
+                try {
+                    String ip = Inet4Address.getByName(hostname).getHostAddress();
+                    if(subnet.getInfo().isInRange(ip)) {
+                        return true;
+                    }
+                }
+                catch(UnknownHostException e) {
+                    // Should not happen as we resolve addresses before attempting to connect
+                    // in ch.cyberduck.core.Resolver
+                    log.warn(e.getMessage());
+                }
+            }
+            catch(IllegalArgumentException e) {
+                // A hostname pattern but not CIDR. Does not
+                // match n.n.n.n/m where n=1-3 decimal digits, m = 1-3 decimal digits in range 1-32
+                log.debug("Invalid CIDR notation:" + e.getMessage());
+            }
+        }
+        return false;
     }
-       
+
     /**
      * Check to see if the hostname is excluded from proxy settings
      *
-     * @param hostname
-     * @return True if excluded
+     * @return Exception patterns
      */
-    public native boolean isHostExcludedNative(String hostname);
+    public native String[] getProxyExceptionsNative();
+
+    public native boolean isSimpleHostnameExcludedNative();
 
     public boolean isSOCKSProxyEnabled() {
         if(!loadNative()) {

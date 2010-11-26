@@ -50,9 +50,27 @@ JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_usePa
 	return [Proxy usePassiveFTP];
 }
 
-JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_isHostExcludedNative(JNIEnv *env, jobject this, jstring hostname)
+JNIEXPORT jobjectArray JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_getProxyExceptionsNative(JNIEnv *env, jobject this)
 {
-	return [Proxy isHostExcluded:convertToNSString(env, hostname)];
+    jint i = 0;
+    NSArray* exceptions;
+    NSEnumerator* list = [Proxy getProxiesExceptionList];
+    if(nil == list) {
+        exceptions = [NSArray array];
+    }
+    else {
+        exceptions = [list allObjects];
+    }
+    jobjectArray result = (jobjectArray)(*env)->NewObjectArray(env, [exceptions count], (*env)->FindClass(env, "java/lang/String"), (*env)->NewStringUTF(env, ""));
+    for(i = 0; i < [exceptions count]; i++) {
+        (*env)->SetObjectArrayElement(env, result, i, convertToJString(env, [exceptions objectAtIndex:i]));
+    }
+    return result;
+}
+
+JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_isSimpleHostnameExcludedNative(JNIEnv *env, jobject this)
+{
+	return [Proxy isSimpleHostnameExcluded];
 }
 
 JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_isSOCKSProxyEnabledNative(JNIEnv *env, jobject this)
@@ -113,22 +131,24 @@ JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_SystemConfigurationProxy_getHTT
     return enabled;
 }
 
-+ (BOOL)isHostExcluded:(NSString *)hostname {
++ (NSEnumerator*)getProxiesExceptionList {
 	NSDictionary *proxies = (NSDictionary *)SCDynamicStoreCopyProxies(NULL);
-    if(!proxies) return NO;
+    if(!proxies) return nil;
     NSEnumerator *exceptions = [[proxies objectForKey:(NSString *)kSCPropNetProxiesExceptionsList] objectEnumerator];
-    NSString *domain;
-    BOOL excluded = NO;
-    while((domain = [exceptions nextObject])) {
-        if([domain rangeOfString: hostname].location != NSNotFound) {
-            excluded = YES;
-            break;
-        }
-    }
 	if (proxies != NULL) {
         CFRelease(proxies);
     }
-    return excluded;
+    return exceptions;
+}
+
++ (BOOL)isSimpleHostnameExcluded {
+	NSDictionary *proxies = (NSDictionary *)SCDynamicStoreCopyProxies(NULL);
+    if(!proxies) return NO;
+	BOOL enabled = [[proxies objectForKey:(NSString *)kSCPropNetProxiesExcludeSimpleHostnames] boolValue];
+	if (proxies != NULL) {
+        CFRelease(proxies);
+    }
+	return enabled;
 }
 
 + (BOOL)isSOCKSProxyEnabled

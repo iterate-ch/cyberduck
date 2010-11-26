@@ -22,6 +22,7 @@ package ch.cyberduck.core;
 import org.apache.log4j.Logger;
 
 import java.util.Properties;
+import java.util.regex.PatternSyntaxException;
 
 /**
  * @version $Id$
@@ -47,7 +48,7 @@ public abstract class AbstractProxy implements Proxy {
      */
     public void configure(final Host host) {
         Properties properties = System.getProperties();
-        if(Preferences.instance().getBoolean("connection.proxy.enable") 
+        if(Preferences.instance().getBoolean("connection.proxy.enable")
                 && this.isSOCKSProxyEnabled() && !this.isHostExcluded(host.getHostname())) {
             // Indicates the name of the SOCKS proxy server and the port number
             // that will be used by the SOCKS protocol layer. If socksProxyHost
@@ -66,5 +67,22 @@ public abstract class AbstractProxy implements Proxy {
             properties.remove(SOCKS_PORT);
         }
         System.setProperties(properties);
+    }
+
+    /**
+     * @param wildcard
+     * @param hostname
+     * @return
+     */
+    protected boolean matches(String wildcard, String hostname) {
+        String host = wildcard.replace("*", ".*").replace("?", ".");
+        String regex = new StringBuffer("^").append(host).append("$").toString();
+        try {
+            return hostname.matches(regex);
+        }
+        catch(PatternSyntaxException e) {
+            log.warn("Failed converting wildcard to regular expression:" + e.getMessage());
+        }
+        return false;
     }
 }
