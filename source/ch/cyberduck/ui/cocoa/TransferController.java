@@ -147,9 +147,7 @@ public class TransferController extends WindowController implements NSToolbar.De
 
     @Action
     public void queueSizeStepperChanged(final ID sender) {
-        synchronized(Queue.instance()) {
-            Queue.instance().notify();
-        }
+        Queue.instance().resize();
     }
 
     @Outlet

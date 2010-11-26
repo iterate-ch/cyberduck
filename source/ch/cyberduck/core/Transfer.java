@@ -240,9 +240,7 @@ public abstract class Transfer implements Serializable {
         for(TransferListener listener : listeners.toArray(new TransferListener[listeners.size()])) {
             listener.transferDidEnd();
         }
-        synchronized(Queue.instance()) {
-            Queue.instance().notify();
-        }
+        Queue.instance().remove(this);
     }
 
     protected void fireWillTransferPath(Path path) {
@@ -665,27 +663,9 @@ public abstract class Transfer implements Serializable {
         }
     }
 
-    private void queue() {
+    private synchronized void queue() {
         log.debug("queue");
-        final TransferCollection q = TransferCollection.defaultCollection();
-        // This transfer should respect the settings for maximum number of transfers
-        if(q.numberOfRunningTransfers() - q.numberOfQueuedTransfers() - 1
-                >= (int) Preferences.instance().getDouble("queue.maxtransfers")) {
-            this.fireTransferQueued();
-            log.info("Queuing " + this.toString());
-            // The maximum number of transfers is already reached
-            try {
-                synchronized(Queue.instance()) {
-                    // Wait for transfer slot
-                    Queue.instance().wait();
-                }
-            }
-            catch(InterruptedException e) {
-                log.error(e.getMessage());
-            }
-            log.info(this.toString() + " released from queue");
-            this.fireTransferResumed();
-        }
+        Queue.instance().add(this);
     }
 
     /**
@@ -711,9 +691,7 @@ public abstract class Transfer implements Serializable {
             this.interrupt();
         }
         canceled = true;
-        synchronized(Queue.instance()) {
-            Queue.instance().notify();
-        }
+        Queue.instance().remove(this);
     }
 
     /**

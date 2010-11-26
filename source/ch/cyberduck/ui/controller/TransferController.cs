@@ -281,10 +281,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private void View_QueueSizeChangedEvent()
         {
             Preferences.instance().setProperty("queue.maxtransfers", View.QueueSize);
-            lock (Queue.instance())
-            {
-                Queue.instance().notify();
-            }
+            Queue.instance().resize();
         }
 
         private void View_BandwidthChangedEvent()
