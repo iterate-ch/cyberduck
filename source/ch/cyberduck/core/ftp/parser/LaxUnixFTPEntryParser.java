@@ -18,49 +18,15 @@ package ch.cyberduck.core.ftp.parser;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Status;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.net.ftp.FTPFile;
 
 /**
  * @version $Id:$
  */
 public class LaxUnixFTPEntryParser extends CommonUnixFTPEntryParser {
-
-    private static final String REGEX_DEFAULT =
-            "([bcdlfmpSs-])"
-                    + "(((r|-)(w|-)([xsStTL-]))((r|-)(w|-)([xsStTL-]))((r|-)(w|-)([xsStTL-])))\\+?\\s+"
-                    /**
-                     * hard link count
-                     */
-                    + "(\\d+)\\s+"
-                    /**
-                     * user
-                     */
-                    + "(\\S+)\\s+"
-                    /**
-                     * group, maybe missing
-                     */
-                    + "(?:(\\S+)\\s+)?"
-                    /**
-                     * file size
-                     */
-                    + "(\\d+)"
-                    /**
-                     * file size maybe given in human readable format eg 15.6k
-                     */
-                    + "(\\.?\\d?)(\\w?)\\s+"
-                    /**
-                      numeric or standard format date
-                    */
-                    + "((?:\\d+[-/]\\d+[-/]\\d+)|(?:\\S+\\s+\\S+))\\s+"
-                    /**
-                       year (for non-recent standard format)
-                       or time (for numeric or recent standard format
-                    */
-                    + "(\\d+(?::\\d+)?)\\s+"
-                    + "(\\S*)(\\s*.*)";
 
     private static final String REGEX_WHITESPACE_AWARE =
             "([bcdlfmpSs-])"
@@ -86,18 +52,20 @@ public class LaxUnixFTPEntryParser extends CommonUnixFTPEntryParser {
                      */
                     + "(\\.?\\d?)(\\w?)\\s+"
                     /**
-                      numeric or standard format date
-                    */
+                     numeric or standard format date
+                     */
                     + "((?:\\d+[-/]\\d+[-/]\\d+)|(?:\\S+\\s+\\S+))\\s+"
                     /**
-                       year (for non-recent standard format)
-                       or time (for numeric or recent standard format
-                    */
-                    + "(\\d+(?::\\d+)?)\\s"
+                     year (for non-recent standard format) or time (for numeric or recent standard format
+                     */
+                    + "((?:\\d{4}\\s?)|(?:\\d{2}:\\d{2}))\\s"
+                    /**
+                     * Filename and special token like symbolic link target
+                     */
                     + "(\\s*\\S+)(\\s*.*)";
 
     public LaxUnixFTPEntryParser() {
-        super(Preferences.instance().getBoolean("ftp.parser.whitespaceAware") ? REGEX_WHITESPACE_AWARE : REGEX_DEFAULT);
+        super(REGEX_WHITESPACE_AWARE);
     }
 
     public FTPFile parseFTPEntry(String entry) {
@@ -107,17 +75,20 @@ public class LaxUnixFTPEntryParser extends CommonUnixFTPEntryParser {
             String grp = group(17);
             String filesize = group(18) + group(19);
             String filesizeIndicator = group(20);
-            String datestr = group(21) + " " + group(22);
+            String datestr = group(21) + " " + group(22).trim();
             String name = group(23);
             String endtoken = group(24);
-            if(!filesizeIndicator.equals("")) {
+            if(StringUtils.isNotBlank(filesizeIndicator)) {
+                // See #1076
                 try {
                     double size = Double.parseDouble(filesize);
                     if(filesizeIndicator.equalsIgnoreCase("K")) {
                         size = size * Status.KILO;
-                    } else if(filesizeIndicator.equalsIgnoreCase("M")) {
+                    }
+                    else if(filesizeIndicator.equalsIgnoreCase("M")) {
                         size = size * Status.MEGA;
-                    } else if(filesizeIndicator.equalsIgnoreCase("G")) {
+                    }
+                    else if(filesizeIndicator.equalsIgnoreCase("G")) {
                         size = size * Status.GIGA;
                     }
                     return this.parseFTPEntry(typeStr, usr, grp, (long) size, datestr, name, endtoken);
