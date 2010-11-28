@@ -56,6 +56,7 @@ public class UnixFTPEntryParserTest extends AbstractTestCase {
         parsed = parser.parseFTPEntry(
                 "drw-rw-rw-   1 user      ftp             0  DEC 11 20:56 ADMIN_Documentation");
         assertNotNull(parsed);
+        assertNotNull(parsed.getTimestamp());
         assertTrue(parsed.getTimestamp().get(Calendar.MONTH) == Calendar.DECEMBER);
         assertTrue(parsed.getTimestamp().get(Calendar.DAY_OF_MONTH) == 11);
         assertTrue(parsed.getTimestamp().get(Calendar.HOUR_OF_DAY) == 20);
@@ -64,6 +65,7 @@ public class UnixFTPEntryParserTest extends AbstractTestCase {
         parsed = parser.parseFTPEntry(
                 "drwxr-xr-x    3 ftp      ftp           512 Mar 15  2004 doc");
         assertNotNull(parsed);
+        assertNotNull(parsed.getTimestamp());
         assertTrue(parsed.getTimestamp().get(Calendar.YEAR) == 2004);
         assertTrue(parsed.getTimestamp().get(Calendar.MONTH) == Calendar.MARCH);
         assertTrue(parsed.getTimestamp().get(Calendar.DAY_OF_MONTH) == 15);
@@ -71,6 +73,7 @@ public class UnixFTPEntryParserTest extends AbstractTestCase {
         parsed = parser.parseFTPEntry(
                 "drwxrwxr-x    2 ftp      ftp           512 Oct 23  2007 aurox");
         assertNotNull(parsed);
+        assertNotNull(parsed.getTimestamp());
         assertTrue(parsed.getTimestamp().get(Calendar.YEAR) == 2007);
         assertTrue(parsed.getTimestamp().get(Calendar.MONTH) == Calendar.OCTOBER);
         assertTrue(parsed.getTimestamp().get(Calendar.DAY_OF_MONTH) == 23);
@@ -141,6 +144,7 @@ public class UnixFTPEntryParserTest extends AbstractTestCase {
         assertTrue(parsed.getSize() == (long) (9.0 * 1048576));
         assertEquals(parsed.getUser(), "ftp");
         assertEquals(parsed.getGroup(), "operator");
+        assertNotNull(parsed.getTimestamp());
         assertTrue(parsed.getTimestamp().get(Calendar.MONTH) == Calendar.MARCH);
         assertTrue(parsed.getTimestamp().get(Calendar.DAY_OF_MONTH) == 22);
 
@@ -151,6 +155,7 @@ public class UnixFTPEntryParserTest extends AbstractTestCase {
         assertTrue(parsed.getSize() == (long) (61.8 * 1048576));
         assertEquals(parsed.getUser(), "ftp");
         assertEquals(parsed.getGroup(), "operator");
+        assertNotNull(parsed.getTimestamp());
         assertTrue(parsed.getTimestamp().get(Calendar.MONTH) == Calendar.MARCH);
         assertTrue(parsed.getTimestamp().get(Calendar.DAY_OF_MONTH) == 7);
 
@@ -161,6 +166,7 @@ public class UnixFTPEntryParserTest extends AbstractTestCase {
         assertTrue(parsed.getSize() == (long) (172.4 * 1024));
         assertEquals(parsed.getUser(), "ftp");
         assertEquals(parsed.getGroup(), "operator");
+        assertNotNull(parsed.getTimestamp());
         assertTrue(parsed.getTimestamp().get(Calendar.MONTH) == Calendar.MARCH);
         assertTrue(parsed.getTimestamp().get(Calendar.DAY_OF_MONTH) == 7);
     }
@@ -181,6 +187,7 @@ public class UnixFTPEntryParserTest extends AbstractTestCase {
         assertEquals(parsed.getName(), "D3I0_805.fixlist");
         assertEquals(parsed.getUser(), "20708");
         assertEquals(parsed.getGroup(), "205");
+        assertNotNull(parsed.getTimestamp());
         assertTrue(parsed.getTimestamp().get(Calendar.MONTH) == Calendar.OCTOBER);
         assertTrue(parsed.getTimestamp().get(Calendar.DAY_OF_MONTH) == 17);
         assertTrue(parsed.getTimestamp().get(Calendar.YEAR) == Calendar.getInstance().get(Calendar.YEAR));
@@ -193,6 +200,7 @@ public class UnixFTPEntryParserTest extends AbstractTestCase {
         assertEquals(parsed.getName(), "D3I0_515.fmr");
         assertEquals(parsed.getUser(), "20708");
         assertEquals(parsed.getGroup(), "205");
+        assertNotNull(parsed.getTimestamp());
         assertTrue(parsed.getTimestamp().get(Calendar.MONTH) == Calendar.FEBRUARY);
         assertTrue(parsed.getTimestamp().get(Calendar.DAY_OF_MONTH) == 18);
         assertTrue(parsed.getTimestamp().get(Calendar.YEAR) == 2005);
@@ -210,6 +218,7 @@ public class UnixFTPEntryParserTest extends AbstractTestCase {
         assertTrue(parsed.getType() == FTPFile.DIRECTORY_TYPE);
         assertEquals(parsed.getUser(), "spinkb");
         assertEquals(parsed.getGroup(), "spinkb");
+        assertNotNull(parsed.getTimestamp());
         assertTrue(parsed.getTimestamp().get(Calendar.MONTH) == Calendar.JANUARY);
         assertTrue(parsed.getTimestamp().get(Calendar.DAY_OF_MONTH) == 21);
     }
@@ -243,6 +252,7 @@ public class UnixFTPEntryParserTest extends AbstractTestCase {
         assertTrue(parsed.getType() == FTPFile.DIRECTORY_TYPE);
         assertEquals(parsed.getUser(), "cristol");
         assertEquals(parsed.getGroup(), "molvis");
+        assertNotNull(parsed.getTimestamp());
         assertTrue(parsed.getTimestamp().get(Calendar.MONTH) == Calendar.JULY);
         assertTrue(parsed.getTimestamp().get(Calendar.DAY_OF_MONTH) == 12);
     }
