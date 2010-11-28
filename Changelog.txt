@@ -18,6 +18,7 @@ Changelog. Last modified: $Date$
 - [Feature] CloudBerry Explorer for Azure Blob Storage Bookmarks Importer (Windows)
 - [Feature] Perform MD5 hash calculation during upload (#5186) (S3, Cloudfiles)
 - [Feature] Rename existing files on upload or download (#5117)
+- [Feature] Show last access timestamp in history (#3805)
 - [Bugfix] Slow SFTP transfers (#185)
 - [Bugfix] Support for S3Fox directory placeholders (S3)
 - [Bugfix] Support for Google Storage Console directory placeholders (S3)
@@ -26,11 +27,13 @@ Changelog. Last modified: $Date$
 - [Bugfix] Changing storage class fails (S3)
 - [Bugfix] Apply ACLs recursively (S3)
 - [Bugfix] Apply custom HTTP headers recursively (S3)
-- [Bugfix] Show last access timestamp in history (#3805)
 - [Bugfix] Interoperability (#2609, #4231, #2915) (WebDAV)
 - [Bugfix] SSL version number incompatibility (#5061)
 - [Bugfix] Display decimal file size (10.6) #3771)
 - [Bugfix] Preserve upload modification date does not work for folders (#3017)
+- [Bugfix] Uploading large documents might fail (#5411) (Google Docs)
+- [Bugfix] Web URL configuration fails for relative default path (#4012)
+- [Bugfix] Support CIDR styled patterns for hosts excluded from proxy settings (#5142)
 
 3.7 (Oct-21-2010) [http://trac.cyberduck.ch/milestone/3.7]
 - [Feature] Option to upload with temporary name and rename file after transfer is complete (#4165)
