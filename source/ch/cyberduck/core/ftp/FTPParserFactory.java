@@ -49,9 +49,6 @@ public class FTPParserFactory implements FTPFileEntryParserFactory {
             else if(ukey.indexOf(FTPClientConfig.SYST_NT) >= 0) {
                 return this.createNTFTPEntryParser(timezone);
             }
-            else if(ukey.indexOf("MICROSOFT FTP SERVICE") >= 0) {
-                return this.createNTFTPEntryParser(timezone);
-            }
             else if(ukey.indexOf(FTPClientConfig.SYST_OS2) >= 0) {
                 return this.createOS2FTPEntryParser(timezone);
             }
