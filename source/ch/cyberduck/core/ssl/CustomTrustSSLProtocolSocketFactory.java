@@ -24,12 +24,14 @@ import org.apache.log4j.Logger;
 
 import javax.net.ssl.*;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -89,10 +91,18 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
      */
     private void configure(Socket socket, String[] protocols) throws IOException {
         if(socket instanceof SSLSocket) {
-//            SSLParameters parameters = ((SSLSocket) socket).getSSLParameters();
-//            log.debug("Configure SSL parameters with protocol:" + Arrays.toString(protocols));
-//            parameters.setProtocols(protocols);
-//            ((SSLSocket) socket).setSSLParameters(parameters);
+            try {
+                log.debug("Configure SSL parameters with protocol:" + Arrays.toString(protocols));
+                Method parametersGetter = socket.getClass().getMethod("getSSLParameters");
+                Object parameters = parametersGetter.invoke(socket);
+                Method protocolSetter = parameters.getClass().getMethod("setProtocols", String[].class);
+                protocolSetter.invoke(parameters, (Object) protocols);
+                Method parametersSetter = socket.getClass().getMethod("setSSLParameters", parameters.getClass());
+                parametersSetter.invoke(socket, parameters);
+            }
+            catch(Exception e) {
+                log.warn("Failed to configure SSL parameters:" + e.getMessage());
+            }
         }
     }
 
