@@ -176,6 +176,8 @@ public class DAVResource extends WebdavResource {
         generateAdditionalHeaders(method);
         int statusCode = client.executeMethod(method);
 
+        method.releaseConnection();
+
         setStatusCode(statusCode, method.getStatusText());
         return isHttpSuccess(statusCode);
     }
