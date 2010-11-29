@@ -291,23 +291,6 @@ namespace Ch.Cyberduck.Ui.Controller
         {
         }
 
-        protected string SelectedPathWebUrl
-        {
-            get
-            {
-                Path selected;
-                if (SelectedPaths.Count == 1)
-                {
-                    selected = SelectedPath;
-                }
-                else
-                {
-                    selected = Workdir;
-                }
-                return selected.toHttpURL();
-            }
-        }
-
         /// <summary>
         /// The first selected path found or null if there is no selection
         /// </summary>
@@ -1124,7 +1107,10 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_OpenWebUrl()
         {
-            Utils.StartProcess(SelectedPathWebUrl);
+            foreach (Path selected in SelectedPaths)
+            {
+                Utils.StartProcess(selected.toHttpURL());
+            }
         }
 
         private void View_SearchFieldChanged()
