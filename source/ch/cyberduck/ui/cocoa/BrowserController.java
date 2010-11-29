@@ -2816,8 +2816,12 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
                 @Override
                 public void didTransferPath(Path path) {
-                    progressTimer.cancel(false);
-                    meter.reset();
+                    if(null != progressTimer) {
+                        progressTimer.cancel(false);
+                    }
+                    if(null != meter) {
+                        meter.reset();
+                    }
                 }
 
                 @Override
