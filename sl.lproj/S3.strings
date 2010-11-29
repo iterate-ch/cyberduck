@@ -51,14 +51,14 @@
 "http://acs.amazonaws.com/groups/s3/LogDelivery" = "http://acs.amazonaws.com/groups/s3/LogDelivery";
 
 /* Signed URL Expiry */
-"Signed" = "Signed";
+"Signed" = "Vpisan";
 "Expires on {0}" = "Poteče {0}";
 
 /* HTTP Metadata */
 "Custom Header" = "Glava po meri";
 
 /* CloudFront object invalidation */
-"{0} invalidations in progress" = "{0} invalidations in progress";
-"{0} invalidations completed" = "{0} invalidations completed";
+"{0} invalidations in progress" = "Število razveljavitev v teku: {0}";
+"{0} invalidations completed" = "Število končanih razveljavitev: {0}";
 
-"Bucket name is not DNS compatible" = "Bucket name is not DNS compatible";
+"Bucket name is not DNS compatible" = "Ime vedra ni združljivo z DNS";
