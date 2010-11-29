@@ -139,6 +139,10 @@ public class Status {
      */
     public static String getRemainingAsString(double remaining) {
         StringBuilder b = new StringBuilder();
+        if(remaining < 0) {
+            // File sizes larger than advertised
+            return Locale.localizedString("Unknown");
+        }
         if(remaining > 7200) { // More than two hours
             b.append(MessageFormat.format(Locale.localizedString("{0} hours remaining", "Status"),
                     new BigDecimal(remaining).divide(new BigDecimal(3600), 1, BigDecimal.ROUND_DOWN).toString())

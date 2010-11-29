@@ -106,10 +106,11 @@ public class Speedometer {
                     }
                     b.append(Status.getSpeedAsString(speed));
                     b.append("/sec");
-                    if(size > 0) {
+                    double t = this.getBytesTransfered();
+                    if(size > 0 && t < size) {
                         b.append(", ");
                         // remaining time in seconds
-                        double remaining = ((size - this.getBytesTransfered()) / speed);
+                        double remaining = ((size - t) / speed);
                         b.append(Status.getRemainingAsString(remaining));
                     }
                 }
