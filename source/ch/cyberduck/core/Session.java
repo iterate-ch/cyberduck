@@ -173,6 +173,7 @@ public abstract class Session implements TranscriptListener {
         String username = host.getCredentials().getUsername();
         login.check(host, Locale.localizedString("Login with username and password", "Credentials"), null);
         if(!StringUtils.equals(username, host.getCredentials().getUsername())) {
+            // Changed login credentials
             if(BookmarkCollection.defaultCollection().contains(host)) {
                 BookmarkCollection.defaultCollection().collectionItemChanged(host);
             }
@@ -425,7 +426,7 @@ public abstract class Session implements TranscriptListener {
 
     /**
      * @return True if timestamp of file can be read and written.
-     * @see AbstractPath#writeTimestamp(long,long,long)
+     * @see AbstractPath#writeTimestamp(long, long, long)
      * @see ch.cyberduck.core.Path#readTimestamp()
      */
     public boolean isTimestampSupported() {
