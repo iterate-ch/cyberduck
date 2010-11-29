@@ -416,9 +416,6 @@ public class SyncTransfer extends Transfer {
     public Comparison compare(Path p) {
         log.debug("compare:" + p);
         if(p.getLocal().exists() && p.exists()) {
-            if(p.attributes().isDirectory()) {
-                return COMPARISON_EQUAL;
-            }
             return this.compareTimestamp(p);
         }
         else if(p.exists()) {
