@@ -181,7 +181,6 @@ public class PreferencesController extends ToolbarWindowController {
     public void awakeFromNib() {
         this.window.center();
 
-        this.transfermodeComboboxClicked(this.transfermodeCombobox);
         this.chmodDownloadTypePopupChanged(this.chmodDownloadTypePopup);
         this.chmodUploadTypePopupChanged(this.chmodUploadTypePopup);
 
@@ -1651,79 +1650,6 @@ public class PreferencesController extends ToolbarWindowController {
     }
 
     @Outlet
-    private NSPopUpButton lineEndingCombobox;
-
-    public void setLineEndingCombobox(NSPopUpButton b) {
-        this.lineEndingCombobox = b;
-        this.lineEndingCombobox.setTarget(this.id());
-        this.lineEndingCombobox.setAction(Foundation.selector("lineEndingComboboxClicked:"));
-        this.lineEndingCombobox.removeAllItems();
-        this.lineEndingCombobox.addItemsWithTitles(NSArray.arrayWithObjects(UNIX_LINE_ENDINGS, MAC_LINE_ENDINGS, WINDOWS_LINE_ENDINGS));
-        if(Preferences.instance().getProperty("ftp.line.separator").equals("unix")) {
-            this.lineEndingCombobox.selectItemWithTitle(UNIX_LINE_ENDINGS);
-        }
-        else if(Preferences.instance().getProperty("ftp.line.separator").equals("mac")) {
-            this.lineEndingCombobox.selectItemWithTitle(MAC_LINE_ENDINGS);
-        }
-        else if(Preferences.instance().getProperty("ftp.line.separator").equals("win")) {
-            this.lineEndingCombobox.selectItemWithTitle(WINDOWS_LINE_ENDINGS);
-        }
-    }
-
-    @Action
-    public void lineEndingComboboxClicked(NSPopUpButton sender) {
-        if(sender.selectedItem().title().equals(UNIX_LINE_ENDINGS)) {
-            Preferences.instance().setProperty("ftp.line.separator", "unix");
-        }
-        else if(sender.selectedItem().title().equals(MAC_LINE_ENDINGS)) {
-            Preferences.instance().setProperty("ftp.line.separator", "mac");
-        }
-        else if(sender.selectedItem().title().equals(WINDOWS_LINE_ENDINGS)) {
-            Preferences.instance().setProperty("ftp.line.separator", "win");
-        }
-    }
-
-
-    @Outlet
-    private NSPopUpButton transfermodeCombobox;
-
-    public void setTransfermodeCombobox(NSPopUpButton b) {
-        this.transfermodeCombobox = b;
-        this.transfermodeCombobox.setTarget(this.id());
-        this.transfermodeCombobox.setAction(Foundation.selector("transfermodeComboboxClicked:"));
-        this.transfermodeCombobox.removeAllItems();
-        this.transfermodeCombobox.addItemsWithTitles(NSArray.arrayWithObjects(TRANSFERMODE_AUTO, TRANSFERMODE_BINARY, TRANSFERMODE_ASCII));
-        if(Preferences.instance().getProperty("ftp.transfermode").equals(FTPTransferType.BINARY.toString())) {
-            this.transfermodeCombobox.selectItemWithTitle(TRANSFERMODE_BINARY);
-        }
-        else if(Preferences.instance().getProperty("ftp.transfermode").equals(FTPTransferType.ASCII.toString())) {
-            this.transfermodeCombobox.selectItemWithTitle(TRANSFERMODE_ASCII);
-        }
-        else if(Preferences.instance().getProperty("ftp.transfermode").equals(FTPTransferType.AUTO.toString())) {
-            this.transfermodeCombobox.selectItemWithTitle(TRANSFERMODE_AUTO);
-        }
-    }
-
-    @Action
-    public void transfermodeComboboxClicked(NSPopUpButton sender) {
-        if(sender.selectedItem().title().equals(TRANSFERMODE_BINARY)) {
-            Preferences.instance().setProperty("ftp.transfermode", FTPTransferType.BINARY.toString());
-            this.lineEndingCombobox.setEnabled(false);
-            this.textFileTypeRegexField.setEnabled(false);
-        }
-        else if(sender.selectedItem().title().equals(TRANSFERMODE_ASCII)) {
-            Preferences.instance().setProperty("ftp.transfermode", FTPTransferType.ASCII.toString());
-            this.lineEndingCombobox.setEnabled(true);
-            this.textFileTypeRegexField.setEnabled(false);
-        }
-        else if(sender.selectedItem().title().equals(TRANSFERMODE_AUTO)) {
-            Preferences.instance().setProperty("ftp.transfermode", FTPTransferType.AUTO.toString());
-            this.lineEndingCombobox.setEnabled(true);
-            this.textFileTypeRegexField.setEnabled(true);
-        }
-    }
-
-    @Outlet
     private NSPopUpButton protocolCombobox;
 
     public void setProtocolCombobox(NSPopUpButton b) {
@@ -1766,54 +1692,6 @@ public class PreferencesController extends ToolbarWindowController {
     public void confirmDisconnectCheckboxClicked(final NSButton sender) {
         boolean enabled = sender.state() == NSCell.NSOnState;
         Preferences.instance().setProperty("browser.confirmDisconnect", enabled);
-    }
-
-    @Outlet
-    private NSButton secureDataChannelCheckbox;
-
-    /**
-     * FTPS Data Channel Security
-     *
-     * @param b
-     */
-    public void setSecureDataChannelCheckbox(NSButton b) {
-        this.secureDataChannelCheckbox = b;
-        this.secureDataChannelCheckbox.setTarget(this.id());
-        this.secureDataChannelCheckbox.setAction(Foundation.selector("secureDataChannelCheckboxClicked:"));
-        this.secureDataChannelCheckbox.setState(
-                Preferences.instance().getProperty("ftp.tls.datachannel").equals("P") ? NSCell.NSOnState : NSCell.NSOffState);
-    }
-
-    @Action
-    public void secureDataChannelCheckboxClicked(final NSButton sender) {
-        if(sender.state() == NSCell.NSOnState) {
-            Preferences.instance().setProperty("ftp.tls.datachannel", "P");
-        }
-        if(sender.state() == NSCell.NSOffState) {
-            Preferences.instance().setProperty("ftp.tls.datachannel", "C");
-        }
-    }
-
-    @Outlet
-    private NSButton failInsecureDataChannelCheckbox;
-
-    /**
-     * FTPS Data Channel Security
-     *
-     * @param b
-     */
-    public void setFailInsecureDataChannelCheckbox(NSButton b) {
-        this.failInsecureDataChannelCheckbox = b;
-        this.failInsecureDataChannelCheckbox.setTarget(this.id());
-        this.failInsecureDataChannelCheckbox.setAction(Foundation.selector("failInsecureDataChannelCheckboxClicked:"));
-        this.failInsecureDataChannelCheckbox.setState(
-                Preferences.instance().getBoolean("ftp.tls.datachannel.failOnError") ? NSCell.NSOffState : NSCell.NSOnState);
-    }
-
-    @Action
-    public void failInsecureDataChannelCheckboxClicked(final NSButton sender) {
-        boolean enabled = sender.state() == NSCell.NSOnState;
-        Preferences.instance().setProperty("ftp.tls.datachannel.failOnError", !enabled);
     }
 
     @Outlet
