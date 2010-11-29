@@ -224,8 +224,12 @@ namespace Ch.Cyberduck.Ui.Controller
 
             public override void didTransferPath(Path path)
             {
-                _progressTimer.cancel(false);
-                _controller._meter.reset();
+                if(null != _progressTimer) {
+                    _progressTimer.cancel(false);
+                }
+                if(null != _controller._meter) {
+                    _controller._meter.reset();
+                }
             }
 
             public override void bandwidthChanged(BandwidthThrottle bandwidth)
