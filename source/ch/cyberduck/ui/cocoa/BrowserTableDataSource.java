@@ -518,9 +518,8 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                     pasteboard.get(0).getLocal().mkdir();
                 }
             }
-            // Drag to application icon in dock.
             final boolean dock = destination.equals(LocalFactory.createLocal("~/Library/Caches/TemporaryItems"));
-            controller.transfer(new DownloadTransfer(pasteboard.copy(controller.getTransferSession())) {
+            DownloadTransfer transfer = new DownloadTransfer(pasteboard.copy(controller.getTransferSession())) {
                 @Override
                 protected void fireDidTransferPath(Path path) {
                     if(dock) {
@@ -529,11 +528,18 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                     }
                     super.fireDidTransferPath(path);
                 }
-            }, dock ? new TransferPrompt() {
-                public TransferAction prompt() {
-                    return TransferAction.ACTION_OVERWRITE;
-                }
-            } : null);
+            };
+            if(dock) {
+                // Drag to application icon in dock.
+                controller.transfer(transfer, new TransferPrompt() {
+                    public TransferAction prompt() {
+                        return TransferAction.ACTION_OVERWRITE;
+                    }
+                });
+            }
+            else {
+                controller.transfer(transfer);
+            }
             pasteboard.clear();
         }
         // Filenames

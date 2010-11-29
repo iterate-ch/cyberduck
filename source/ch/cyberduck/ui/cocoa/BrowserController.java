@@ -2785,10 +2785,21 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         this.transfer(transfer, useBrowserConnection, TransferPromptController.create(this, transfer));
     }
 
+    /**
+     *
+     * @param transfer
+     * @param prompt
+     */
     protected void transfer(final Transfer transfer, final ch.cyberduck.core.TransferPrompt prompt) {
         this.transfer(transfer, transfer.getSession().getMaxConnections() == 1, prompt);
     }
 
+    /**
+     *
+     * @param transfer
+     * @param useBrowserConnection
+     * @param prompt
+     */
     protected void transfer(final Transfer transfer, boolean useBrowserConnection, final ch.cyberduck.core.TransferPrompt prompt) {
         if(useBrowserConnection) {
             final TransferListener l;
