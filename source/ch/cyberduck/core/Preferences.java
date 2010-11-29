@@ -466,11 +466,6 @@ public abstract class Preferences {
         defaults.put("queue.logDrawer.isOpen", String.valueOf(false));
         defaults.put("queue.logDrawer.size.height", String.valueOf(200));
 
-        defaults.put("ftp.transfermode", com.enterprisedt.net.ftp.FTPTransferType.BINARY.toString());
-        /**
-         * Line seperator to use for ASCII transfers
-         */
-        defaults.put("ftp.line.separator", "unix");
         /**
          * Send LIST -a
          */
@@ -489,10 +484,6 @@ public abstract class Preferences {
          2) Private (requested by 'PROT P')
          */
         defaults.put("ftp.tls.datachannel", "P"); //C
-        /**
-         * Still open connection if securing data channel fails
-         */
-        defaults.put("ftp.tls.datachannel.failOnError", String.valueOf(false));
 
         /**
          * Try to determine the timezone automatically using timestamp comparison from MLST and LIST
