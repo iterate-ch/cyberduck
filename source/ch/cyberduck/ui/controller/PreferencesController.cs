@@ -997,44 +997,6 @@ namespace Ch.Cyberduck.Ui.Controller
             PopulateDefaultTransferModes();
             PopulateLineEndings();
 
-            if (Preferences.instance().getProperty("ftp.line.separator").Equals("unix"))
-            {
-                View.LineEnding = UnixLineEndings;
-            }
-            else if (Preferences.instance().getProperty("ftp.line.separator").Equals("mac"))
-            {
-                View.LineEnding = MacLineEndings;
-            }
-            else if (Preferences.instance().getProperty("ftp.line.separator").Equals("win"))
-            {
-                View.LineEnding = WindowsLineEndings;
-            }
-
-            if (
-                Preferences.instance().getProperty("ftp.transfermode").Equals(
-                    FTPTransferType.
-                        BINARY.toString()))
-            {
-                View.DefaultTransferMode = TransfermodeBinary;
-            }
-            else if (
-                Preferences.instance().getProperty("ftp.transfermode").Equals(
-                    FTPTransferType.
-                        ASCII.
-                        toString()))
-            {
-                View.DefaultTransferMode = TransfermodeAscii;
-            }
-            else if (
-                Preferences.instance().getProperty("ftp.transfermode").Equals(
-                    FTPTransferType
-                        .AUTO.
-                        toString()))
-            {
-                View.DefaultTransferMode = TransfermodeAuto;
-            }
-            View.FailInsecureDataChannel =
-                !Preferences.instance().getBoolean("ftp.tls.datachannel.failOnError");
             PopulateSshTransfers();
             if (
                 Preferences.instance().getProperty("ssh.transfer").Equals(
