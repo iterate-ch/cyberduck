@@ -121,7 +121,7 @@ namespace Ch.Cyberduck.Ui.Controller
         event ValidateCommand ValidateRenameFile;
         event VoidHandler DuplicateFile;
         event ValidateCommand ValidateDuplicateFile;
-        event VoidHandler OpenWebUrl;
+        event VoidHandler OpenUrl;
         event ValidateCommand ValidateOpenWebUrl;
         // todo irgendwie EditWith...
         event ValidateCommand ValidateEditWith;
@@ -144,6 +144,7 @@ namespace Ch.Cyberduck.Ui.Controller
         event ValidateCommand ValidateRevertFile;
         event ArchivesHandler GetArchives;
         event CopyUrlHandler GetCopyUrls;
+        event OpenUrlHandler GetOpenUrls;
         event BookmarksHandler GetBookmarks;
         event BookmarksHandler GetHistory;
         event VoidHandler ClearHistory;

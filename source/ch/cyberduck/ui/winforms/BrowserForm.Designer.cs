@@ -63,7 +63,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.toolStripSeparator11 = new System.Windows.Forms.ToolStripSeparator();
             this.createArchiveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.archiveMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.createArchiveContextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.expandArchiveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator12 = new System.Windows.Forms.ToolStripSeparator();
             this.printToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -148,6 +147,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.checkToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator28 = new System.Windows.Forms.ToolStripSeparator();
             this.aboutCyberduckToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.createArchiveContextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editorMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.editor1ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editor2ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -178,7 +178,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.expandArchiveContextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
-            this.openWebURLContextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.copyURLContextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.openURLContextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
             this.newBrowserContextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.newBookmarkContextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -241,7 +242,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
             this.folderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
-            this.mainMenu1 = new System.Windows.Forms.MainMenu(this.components);
+            this.mainMenu = new System.Windows.Forms.MainMenu(this.components);
             this.menuItem1 = new System.Windows.Forms.MenuItem();
             this.newBrowserMainMenuItem = new System.Windows.Forms.MenuItem();
             this.openConnectionMainMenuItem = new System.Windows.Forms.MenuItem();
@@ -253,7 +254,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.renameMainMenuItem = new System.Windows.Forms.MenuItem();
             this.duplicateMainMenuItem = new System.Windows.Forms.MenuItem();
             this.menuItem11 = new System.Windows.Forms.MenuItem();
-            this.openWebUrlMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.openUrlMainMenuItem = new System.Windows.Forms.MenuItem();
             this.editMainMenuItem = new System.Windows.Forms.MenuItem();
             this.infoMainMenuItem = new System.Windows.Forms.MenuItem();
             this.menuItem2 = new System.Windows.Forms.MenuItem();
@@ -373,7 +374,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.expandArchiveBrowserContextMnuItem = new System.Windows.Forms.MenuItem();
             this.menuItem113 = new System.Windows.Forms.MenuItem();
             this.copyUrlBrowserContextMenuItem = new System.Windows.Forms.MenuItem();
-            this.openWebUrlBrowserContextMenuItem = new System.Windows.Forms.MenuItem();
+            this.openUrlBrowserContextMenuItem = new System.Windows.Forms.MenuItem();
             this.menuItem116 = new System.Windows.Forms.MenuItem();
             this.newBrowserBrowserContextMenuItem = new System.Windows.Forms.MenuItem();
             this.newBookmarkBrowserContextMenuItem = new System.Windows.Forms.MenuItem();
@@ -645,15 +646,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             // archiveMenuStrip
             // 
             this.archiveMenuStrip.Name = "archiveMenuStrip";
-            this.archiveMenuStrip.OwnerItem = this.createArchiveToolStripMenuItem;
+            this.archiveMenuStrip.OwnerItem = this.createArchiveContextToolStripMenuItem;
             this.archiveMenuStrip.Size = new System.Drawing.Size(61, 4);
-            // 
-            // createArchiveContextToolStripMenuItem
-            // 
-            this.createArchiveContextToolStripMenuItem.DropDown = this.archiveMenuStrip;
-            this.createArchiveContextToolStripMenuItem.Name = "createArchiveContextToolStripMenuItem";
-            this.createArchiveContextToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
-            this.createArchiveContextToolStripMenuItem.Text = "Create Archive";
             // 
             // expandArchiveToolStripMenuItem
             // 
@@ -1238,6 +1232,13 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.aboutCyberduckToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
             this.aboutCyberduckToolStripMenuItem.Text = "&About Cyberduck";
             // 
+            // createArchiveContextToolStripMenuItem
+            // 
+            this.createArchiveContextToolStripMenuItem.DropDown = this.archiveMenuStrip;
+            this.createArchiveContextToolStripMenuItem.Name = "createArchiveContextToolStripMenuItem";
+            this.createArchiveContextToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+            this.createArchiveContextToolStripMenuItem.Text = "Create Archive";
+            // 
             // editorMenuStrip
             // 
             this.editorMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -1366,13 +1367,14 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.createArchiveContextToolStripMenuItem,
             this.expandArchiveContextToolStripMenuItem,
             this.toolStripSeparator5,
-            this.openWebURLContextToolStripMenuItem,
+            this.copyURLContextToolStripMenuItem,
+            this.openURLContextToolStripMenuItem,
             this.toolStripSeparator6,
             this.newBrowserContextToolStripMenuItem,
             this.newBookmarkContextToolStripMenuItem});
             this.contextMenuStrip.Name = "contextMenuStrip1";
             this.contextMenuStrip.OwnerItem = this.actionToolStripDropDownButton;
-            this.contextMenuStrip.Size = new System.Drawing.Size(156, 464);
+            this.contextMenuStrip.Size = new System.Drawing.Size(156, 486);
             // 
             // refreshContextToolStripMenuItem
             // 
@@ -1488,11 +1490,17 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.toolStripSeparator5.Name = "toolStripSeparator5";
             this.toolStripSeparator5.Size = new System.Drawing.Size(152, 6);
             // 
-            // openWebURLContextToolStripMenuItem
+            // copyURLContextToolStripMenuItem
             // 
-            this.openWebURLContextToolStripMenuItem.Name = "openWebURLContextToolStripMenuItem";
-            this.openWebURLContextToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
-            this.openWebURLContextToolStripMenuItem.Text = "Open Web URL";
+            this.copyURLContextToolStripMenuItem.Name = "copyURLContextToolStripMenuItem";
+            this.copyURLContextToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+            this.copyURLContextToolStripMenuItem.Text = "Copy URL";
+            // 
+            // openURLContextToolStripMenuItem
+            // 
+            this.openURLContextToolStripMenuItem.Name = "openURLContextToolStripMenuItem";
+            this.openURLContextToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+            this.openURLContextToolStripMenuItem.Text = "Open URL";
             // 
             // toolStripSeparator6
             // 
@@ -1706,7 +1714,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.splitContainer.Panel2.Controls.Add(this.transcriptBox);
             this.splitContainer.Panel2MinSize = 50;
             this.splitContainer.Size = new System.Drawing.Size(0, 62);
-            this.splitContainer.SplitterDistance = 0;
+            this.splitContainer.SplitterDistance = 4;
             this.splitContainer.SplitterWidth = 3;
             this.splitContainer.TabIndex = 2;
             // 
@@ -1735,7 +1743,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.browser.Name = "browser";
             this.browser.OwnerDraw = true;
             this.browser.ShowGroups = false;
-            this.browser.Size = new System.Drawing.Size(0, 0);
+            this.browser.Size = new System.Drawing.Size(0, 4);
             this.browser.TabIndex = 15;
             this.browser.UseCompatibleStateImageBehavior = false;
             this.browser.View = System.Windows.Forms.View.Details;
@@ -1795,7 +1803,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.transcriptBox.Name = "transcriptBox";
             this.transcriptBox.ReadOnly = true;
             this.transcriptBox.ShortcutsEnabled = false;
-            this.transcriptBox.Size = new System.Drawing.Size(0, 67);
+            this.transcriptBox.Size = new System.Drawing.Size(0, 55);
             this.transcriptBox.TabIndex = 0;
             this.transcriptBox.Text = "";
             this.transcriptBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.transcriptBox_KeyDown);
@@ -1806,7 +1814,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.managedBookmarkPanel2.Controls.Add(this.actionToolStrip);
             this.managedBookmarkPanel2.Location = new System.Drawing.Point(0, 0);
             this.managedBookmarkPanel2.Name = "managedBookmarkPanel2";
-            this.managedBookmarkPanel2.Size = new System.Drawing.Size(1028, 497);
+            this.managedBookmarkPanel2.Size = new System.Drawing.Size(0, 0);
             this.managedBookmarkPanel2.Text = "managedBookmarkPanel2";
             // 
             // bookmarkListView
@@ -1827,7 +1835,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.bookmarkListView.OwnerDraw = true;
             this.bookmarkListView.RowHeight = 37;
             this.bookmarkListView.ShowGroups = false;
-            this.bookmarkListView.Size = new System.Drawing.Size(1028, 464);
+            this.bookmarkListView.Size = new System.Drawing.Size(0, 0);
             this.bookmarkListView.TabIndex = 10;
             this.bookmarkListView.UseCompatibleStateImageBehavior = false;
             this.bookmarkListView.View = System.Windows.Forms.View.Details;
@@ -1863,10 +1871,10 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.editBookmarkToolStripButton,
             this.deleteBookmarkToolStripButton});
             this.actionToolStrip.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.HorizontalStackWithOverflow;
-            this.actionToolStrip.Location = new System.Drawing.Point(0, 464);
+            this.actionToolStrip.Location = new System.Drawing.Point(0, -33);
             this.actionToolStrip.Name = "actionToolStrip";
             this.actionToolStrip.ShowItemToolTips = false;
-            this.actionToolStrip.Size = new System.Drawing.Size(1028, 33);
+            this.actionToolStrip.Size = new System.Drawing.Size(0, 33);
             this.actionToolStrip.Stretch = true;
             this.actionToolStrip.TabIndex = 5;
             this.actionToolStrip.Text = "toolStrip1";
@@ -2133,9 +2141,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.openFileDialog.Multiselect = true;
             this.openFileDialog.Title = "Upload";
             // 
-            // mainMenu1
+            // mainMenu
             // 
-            this.mainMenu1.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.mainMenu.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
             this.menuItem1,
             this.mainMenuItem2,
             this.menuItem39,
@@ -2158,7 +2166,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.renameMainMenuItem,
             this.duplicateMainMenuItem,
             this.menuItem11,
-            this.openWebUrlMainMenuItem,
+            this.openUrlMainMenuItem,
             this.editMainMenuItem,
             this.infoMainMenuItem,
             this.menuItem2,
@@ -2229,10 +2237,10 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.menuItem11.Index = 9;
             this.menuItem11.Text = "-";
             // 
-            // openWebUrlMainMenuItem
+            // openUrlMainMenuItem
             // 
-            this.openWebUrlMainMenuItem.Index = 10;
-            this.openWebUrlMainMenuItem.Text = "Open Web URL";
+            this.openUrlMainMenuItem.Index = 10;
+            this.openUrlMainMenuItem.Text = "Open URL";
             // 
             // editMainMenuItem
             // 
@@ -2811,7 +2819,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.expandArchiveBrowserContextMnuItem,
             this.menuItem113,
             this.copyUrlBrowserContextMenuItem,
-            this.openWebUrlBrowserContextMenuItem,
+            this.openUrlBrowserContextMenuItem,
             this.menuItem116,
             this.newBrowserBrowserContextMenuItem,
             this.newBookmarkBrowserContextMenuItem});
@@ -2931,10 +2939,10 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.copyUrlBrowserContextMenuItem.Index = 22;
             this.copyUrlBrowserContextMenuItem.Text = "Copy URL";
             // 
-            // openWebUrlBrowserContextMenuItem
+            // openUrlBrowserContextMenuItem
             // 
-            this.openWebUrlBrowserContextMenuItem.Index = 23;
-            this.openWebUrlBrowserContextMenuItem.Text = "Open Web URL";
+            this.openUrlBrowserContextMenuItem.Index = 23;
+            this.openUrlBrowserContextMenuItem.Text = "Open URL";
             // 
             // menuItem116
             // 
@@ -3079,7 +3087,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         private System.Windows.Forms.ToolStripMenuItem createArchiveContextToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem expandArchiveContextToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator5;
-        private System.Windows.Forms.ToolStripMenuItem openWebURLContextToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem openURLContextToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator6;
         private System.Windows.Forms.ToolStripMenuItem newBrowserContextToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem newBookmarkContextToolStripMenuItem;
@@ -3242,7 +3250,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         private ClickThroughToolStrip toolBar;
         private ui.winforms.controls.SearchTextBox2 searchTextBox;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
-        private System.Windows.Forms.MainMenu mainMenu1;
+        private System.Windows.Forms.MainMenu mainMenu;
         private System.Windows.Forms.MenuItem menuItem1;
         private System.Windows.Forms.MenuItem newBrowserMainMenuItem;
         private System.Windows.Forms.MenuItem openConnectionMainMenuItem;
@@ -3254,7 +3262,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         private System.Windows.Forms.MenuItem renameMainMenuItem;
         private System.Windows.Forms.MenuItem duplicateMainMenuItem;
         private System.Windows.Forms.MenuItem menuItem11;
-        private System.Windows.Forms.MenuItem openWebUrlMainMenuItem;
+        private System.Windows.Forms.MenuItem openUrlMainMenuItem;
         private System.Windows.Forms.MenuItem editMainMenuItem;
         private System.Windows.Forms.MenuItem infoMainMenuItem;
         private System.Windows.Forms.MenuItem downloadMainMenuItem;
@@ -3373,7 +3381,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         private System.Windows.Forms.MenuItem expandArchiveBrowserContextMnuItem;
         private System.Windows.Forms.MenuItem menuItem113;
         private System.Windows.Forms.MenuItem copyUrlBrowserContextMenuItem;
-        private System.Windows.Forms.MenuItem openWebUrlBrowserContextMenuItem;
+        private System.Windows.Forms.MenuItem openUrlBrowserContextMenuItem;
         private System.Windows.Forms.MenuItem menuItem116;
         private System.Windows.Forms.MenuItem newBrowserBrowserContextMenuItem;
         private System.Windows.Forms.MenuItem newBookmarkBrowserContextMenuItem;
@@ -3394,6 +3402,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         private System.Windows.Forms.ToolStripButton historyToolStripButton;
         private System.Windows.Forms.ToolStripButton bonjourToolStripButton;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator23;
+        private System.Windows.Forms.ToolStripMenuItem copyURLContextToolStripMenuItem;
     }
 }
 

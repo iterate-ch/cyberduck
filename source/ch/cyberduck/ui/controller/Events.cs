@@ -37,6 +37,7 @@ namespace ch.cyberduck.ui.controller
 
     public delegate List<string> ArchivesHandler();
     public delegate List<KeyValuePair<String, List<String>>> CopyUrlHandler();
+    public delegate List<KeyValuePair<String, List<String>>> OpenUrlHandler();
     public delegate List<Host> BookmarksHandler();
 
     /// <summary>
