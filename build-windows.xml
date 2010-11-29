@@ -133,12 +133,7 @@
         </ikvmc>
     </target>
 
-    <target name="release" depends="clean, version">
-        <property name="setup.file"
-                  location="${build}/${app.name}-Installer-${cyberduck.version.major}.${cyberduck.version.minor}.exe"/>
-        <antcall target="package">
-            <param name="changelog.wyp" value="${www.update}/changelog.wyp"/>
-        </antcall>
+    <target name="release" depends="package-release">
         <scp file="${setup.file}"
              todir="dkocher@update.cyberduck.ch:./update.cyberduck.ch/windows"
              keyfile="${user.home}/.ssh/update.cyberduck.ch-rsa"
@@ -157,12 +152,7 @@
         </scp>
     </target>
 
-    <target name="nightly" depends="clean, version">
-        <property name="setup.file"
-                  location="${build}/${app.name}-Installer-${cyberduck.version.major}.${cyberduck.version.minor}.${svn.revision.stripped}.exe"/>
-        <antcall target="package">
-            <param name="changelog.wyp" value="${www.update}/changelog-nightly.wyp"/>
-        </antcall>
+    <target name="nightly" depends="package-nightly">
         <scp file="${setup.file}"
              todir="dkocher@update.cyberduck.ch:./update.cyberduck.ch/windows/nightly"
              keyfile="${user.home}/.ssh/update.cyberduck.ch-rsa"
@@ -179,6 +169,22 @@
              keyfile="${user.home}/.ssh/version.cyberduck.ch-rsa"
              passphrase="">
         </scp>
+    </target>
+
+    <target name="package-release" depends="clean, version">
+        <property name="setup.file"
+                  location="${build}/${app.name}-Installer-${cyberduck.version.major}.${cyberduck.version.minor}.exe"/>
+        <antcall target="package">
+            <param name="changelog.wyp" value="${www.update}/changelog.wyp"/>
+        </antcall>
+    </target>
+
+    <target name="package-nightly" depends="clean, version">
+        <property name="setup.file"
+                  location="${build}/${app.name}-Installer-${cyberduck.version.major}.${cyberduck.version.minor}.${svn.revision.stripped}.exe"/>
+        <antcall target="package">
+            <param name="changelog.wyp" value="${www.update}/changelog-nightly.wyp"/>
+        </antcall>
     </target>
 
     <target name="package" depends="dll, build">
