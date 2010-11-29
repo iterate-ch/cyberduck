@@ -36,6 +36,8 @@ import java.io.OutputStream;
 import java.text.MessageFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Collections;
+import java.util.Set;
 
 /**
  * @version $Id: AzurePath.java 7308 2010-10-13 12:24:21Z dkocher $
@@ -360,5 +362,15 @@ public class DropboxPath extends Path {
     @Override
     public void readUnixPermission() {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Set<DescriptiveUrl> getHttpURLs() {
+        return Collections.emptySet();
+    }
+
+    @Override
+    protected String toHttpURL(String host) {
+        return null;
     }
 }
