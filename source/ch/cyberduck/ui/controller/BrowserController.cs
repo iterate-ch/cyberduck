@@ -409,8 +409,7 @@ namespace Ch.Cyberduck.Ui.Controller
             if (selected.Count == 0)
             {
                 items.Add(
-                    new KeyValuePair<string, List<String>>(
-                        String.Format(Locale.localizedString("{0} URL"), Locale.localizedString("Unknown")),
+                    new KeyValuePair<string, List<String>>(Locale.localizedString("None"),
                         new List<string>()));
             }
             else
@@ -440,7 +439,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 items.Add(
                     new KeyValuePair<string, List<String>>(
-                        String.Format(Locale.localizedString("{0} URL"), Locale.localizedString("Unknown")),
+                        Locale.localizedString("None"),
                         new List<string>()));
             }
             else

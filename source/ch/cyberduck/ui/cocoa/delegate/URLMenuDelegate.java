@@ -91,7 +91,7 @@ public abstract class URLMenuDelegate extends AbstractMenuDelegate {
             this.clearShortcut(item);
         }
         if(selected.isEmpty()) {
-            item.setTitle(MessageFormat.format(Locale.localizedString("{0} URL"), Locale.localizedString("Unknown")));
+            item.setTitle(Locale.localizedString("None"));
             item.setAction(null);
             item.setImage(null);
         }
