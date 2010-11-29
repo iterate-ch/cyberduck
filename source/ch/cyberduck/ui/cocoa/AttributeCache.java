@@ -61,7 +61,9 @@ public class AttributeCache<K> {
 
     public NSObject get(K key, String attribute) {
         if(!impl.containsKey(key)) {
-            log.warn("No cached attributes for " + key);
+            if(log.isDebugEnabled()) {
+                log.debug("No cached attributes for " + key);
+            }
             return null;
         }
         final Map<String, NSObject> attributes = impl.get(key);
@@ -69,10 +71,16 @@ public class AttributeCache<K> {
     }
 
     public void remove(K key) {
+        if(log.isDebugEnabled()) {
+            log.debug("Remove from cache:" + key);
+        }
         impl.remove(key);
     }
 
     public void clear() {
+        if(log.isDebugEnabled()) {
+            log.debug("Clear cache");
+        }
         impl.clear();
     }
 }
