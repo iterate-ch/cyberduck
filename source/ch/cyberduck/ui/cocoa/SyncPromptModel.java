@@ -31,6 +31,13 @@ public class SyncPromptModel extends TransferPromptModel {
         super(c, transfer);
     }
 
+    @Override
+    public void add(Path p) {
+        for(Path child : transfer.children(p)) {
+            super.add(child);
+        }
+    }
+
     /**
      * Filtering what files are displayed. Used to
      * decide which files to include in the prompt dialog
@@ -72,6 +79,11 @@ public class SyncPromptModel extends TransferPromptModel {
             }
             if(identifier.equals(SYNC_COLUMN)) {
                 SyncTransfer.Comparison compare = ((SyncTransfer) transfer).compare(item);
+                if(item.attributes().isDirectory()) {
+                    if(item.exists() && item.getLocal().exists()) {
+                        return null;
+                    }
+                }
                 if(compare.equals(SyncTransfer.COMPARISON_REMOTE_NEWER)) {
                     return tableViewCache.put(item, identifier, IconCache.iconNamed("arrowDown.tiff", 16));
                 }

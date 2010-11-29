@@ -50,7 +50,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public abstract PathFilter Filter();
 
-        public void Add(Path p)
+        public virtual void Add(Path p)
         {
             _roots.Add(p);
         }

@@ -39,6 +39,14 @@ namespace Ch.Cyberduck.Ui.Controller
             return _filter;
         }
 
+        public override void Add(Path path)
+        {
+            foreach (Path child in Transfer.children(path))
+            {
+                base.Add(child);
+            }
+        }
+
         public override object GetSize(TreePathReference reference)
         {
             Path p = GetPath(reference);
@@ -84,6 +92,11 @@ namespace Ch.Cyberduck.Ui.Controller
         public override object GetSyncGetter(TreePathReference reference)
         {
             Path p = (reference).Unique;
+            if(p.attributes().isDirectory()) {
+                if(p.exists() && p.getLocal().exists()) {
+                    return null;
+                }
+            }
             SyncTransfer.Comparison compare = ((SyncTransfer) Transfer).compare(p);
             if (compare.equals(SyncTransfer.COMPARISON_REMOTE_NEWER))
             {
