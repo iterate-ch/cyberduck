@@ -67,22 +67,24 @@ public class Queue {
      */
     public void add(final Transfer t) {
         log.debug("add:" + t);
-        if(running.size() >= Preferences.instance().getInteger("queue.maxtransfers") - overflow.remainingCapacity()) {
-            t.fireTransferQueued();
-            log.info("Queuing:" + t);
-            // The maximum number of transfers is already reached
-            try {
-                boolean offer = false;
-                while(!offer && !t.isCanceled()) {
-                    // Wait for transfer slot.
-                    offer = overflow.offer(t, 1, TimeUnit.SECONDS);
+        if(running.size() > 0) {
+            if(running.size() >= Preferences.instance().getInteger("queue.maxtransfers") - overflow.remainingCapacity()) {
+                t.fireTransferQueued();
+                log.info("Queuing:" + t);
+                // The maximum number of transfers is already reached
+                try {
+                    boolean offer = false;
+                    while(!offer && !t.isCanceled()) {
+                        // Wait for transfer slot.
+                        offer = overflow.offer(t, 1, TimeUnit.SECONDS);
+                    }
                 }
+                catch(InterruptedException e) {
+                    log.error(e.getMessage());
+                }
+                log.info("released from queue:" + t);
+                t.fireTransferResumed();
             }
-            catch(InterruptedException e) {
-                log.error(e.getMessage());
-            }
-            log.info("released from queue:" + t);
-            t.fireTransferResumed();
         }
         running.add(t);
     }
