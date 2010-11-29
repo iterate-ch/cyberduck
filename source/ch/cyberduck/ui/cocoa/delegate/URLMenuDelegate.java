@@ -41,7 +41,6 @@ import org.rococoa.cocoa.foundation.NSInteger;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -73,6 +72,9 @@ public abstract class URLMenuDelegate extends AbstractMenuDelegate {
         }
         // Number of URLs for a single path
         int urls = this.getURLs(selected.iterator().next()).size();
+        if(0 == urls) {
+            return new NSInteger(1);
+        }
         return new NSInteger(urls * 2);
     }
 
@@ -82,7 +84,6 @@ public abstract class URLMenuDelegate extends AbstractMenuDelegate {
 
     @Override
     public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, NSInteger index, boolean cancel) {
-        item.setTarget(this.id());
         List<Path> selected = this.getSelected();
         if(0 == index.intValue()) {
             this.setShortcut(item, this.getKeyEquivalent(), this.getModifierMask());
@@ -90,9 +91,11 @@ public abstract class URLMenuDelegate extends AbstractMenuDelegate {
         else {
             this.clearShortcut(item);
         }
-        if(selected.isEmpty()) {
+        if(selected.isEmpty() || this.getURLs(selected.iterator().next()).isEmpty()) {
             item.setTitle(Locale.localizedString("None"));
+            item.setEnabled(false);
             item.setAction(null);
+            item.setTarget(null);
             item.setImage(null);
         }
         else {
@@ -109,8 +112,9 @@ public abstract class URLMenuDelegate extends AbstractMenuDelegate {
             boolean label = index.intValue() % 2 == 0;
             if(label) {
                 item.setEnabled(true);
-                item.setImage(IconCache.iconNamed("site.tiff", 16));
+                item.setTarget(this.id());
                 item.setAction(this.getDefaultAction());
+                item.setImage(IconCache.iconNamed("site.tiff", 16));
                 Iterator<Path> iter = selected.iterator();
                 AbstractPath.DescriptiveUrl url = this.getURLs(iter.next()).get(index.intValue() / 2);
                 item.setRepresentedObject(s);
