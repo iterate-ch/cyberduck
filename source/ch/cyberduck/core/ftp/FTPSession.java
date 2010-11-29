@@ -498,21 +498,11 @@ public class FTPSession extends SSLSession {
 
     @Override
     public boolean isDownloadResumable() {
-        return this.isTransferResumable();
+        return true;
     }
 
     @Override
     public boolean isUploadResumable() {
-        return this.isTransferResumable();
-    }
-
-    /**
-     * No resume supported for ASCII mode transfers.
-     *
-     * @return
-     */
-    private boolean isTransferResumable() {
-        return Preferences.instance().getProperty("ftp.transfermode").equals(
-                FTPTransferType.BINARY.toString());
+        return true;
     }
 }
