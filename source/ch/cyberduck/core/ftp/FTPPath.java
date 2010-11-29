@@ -21,15 +21,11 @@ package ch.cyberduck.core.ftp;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
-import ch.cyberduck.core.io.FromNetASCIIInputStream;
-import ch.cyberduck.core.io.FromNetASCIIOutputStream;
 import ch.cyberduck.ui.DateFormatterFactory;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPFileEntryParser;
-import org.apache.commons.net.io.ToNetASCIIInputStream;
-import org.apache.commons.net.io.ToNetASCIIOutputStream;
 import org.apache.log4j.Logger;
 
 import com.enterprisedt.net.ftp.FTPException;
@@ -463,25 +459,7 @@ public class FTPPath extends Path {
                     this.getName()));
 
             if(attributes().isFile()) {
-                if(Preferences.instance().getProperty("ftp.transfermode").equals(FTPTransferType.AUTO.toString())) {
-                    if(this.getTextFiletypePattern().matcher(this.getName()).matches()) {
-                        this.getSession().getClient().setTransferType(FTPTransferType.ASCII);
-                    }
-                    else {
-                        this.getSession().getClient().setTransferType(FTPTransferType.BINARY);
-                    }
-                }
-                else if(Preferences.instance().getProperty("ftp.transfermode").equals(
-                        FTPTransferType.BINARY.toString())) {
-                    this.getSession().getClient().setTransferType(FTPTransferType.BINARY);
-                }
-                else if(Preferences.instance().getProperty("ftp.transfermode").equals(
-                        FTPTransferType.ASCII.toString())) {
-                    this.getSession().getClient().setTransferType(FTPTransferType.ASCII);
-                }
-                else {
-                    throw new FTPException("Transfer type not set");
-                }
+                this.getSession().getClient().setTransferType(FTPTransferType.BINARY);
                 attributes().setSize(this.getSession().getClient().size(this.getAbsolute()));
             }
             if(-1 == attributes().getSize()) {
@@ -722,122 +700,53 @@ public class FTPPath extends Path {
     @Override
     protected void download(final BandwidthThrottle throttle, final StreamListener listener, final boolean check) {
         try {
-            if(check) {
-                this.getSession().check();
-            }
             if(attributes().isFile()) {
-                if(Preferences.instance().getProperty("ftp.transfermode").equals(FTPTransferType.AUTO.toString())) {
-                    if(this.getTextFiletypePattern().matcher(this.getName()).matches()) {
-                        this.downloadASCII(throttle, listener);
+                if(check) {
+                    this.getSession().check();
+                }
+                InputStream in = null;
+                OutputStream out = null;
+                try {
+                    this.getSession().getClient().setTransferType(FTPTransferType.BINARY);
+                    if(this.status().isResume()) {
+                        if(!this.getSession().getClient().isFeatureSupported("REST STREAM")) {
+                            this.status().setResume(false);
+                        }
                     }
-                    else {
-                        this.downloadBinary(throttle, listener);
+                    in = this.getSession().getClient().get(this.getAbsolute(), this.status().isResume() ? this.getLocal().attributes().getSize() : 0);
+                    out = this.getLocal().getOutputStream(this.status().isResume());
+                    try {
+                        this.download(in, out, throttle, listener);
+                    }
+                    catch(ConnectionCanceledException e) {
+                        // Interrupted by user
+                        IOUtils.closeQuietly(in);
+                        IOUtils.closeQuietly(out);
+                        // Tell the server to abort the previous FTP service command and any associated transfer of data
+                        this.getSession().getClient().abor();
+                        this.status().setComplete(false);
+                        throw e;
+                    }
+                    if(this.status().isComplete()) {
+                        IOUtils.closeQuietly(in);
+                        IOUtils.closeQuietly(out);
+                        try {
+                            this.getSession().getClient().validateTransfer();
+                        }
+                        catch(FTPException e) {
+                            this.status().setComplete(false);
+                            throw e;
+                        }
                     }
                 }
-                else if(Preferences.instance().getProperty("ftp.transfermode").equals(FTPTransferType.BINARY.toString())) {
-                    this.downloadBinary(throttle, listener);
-                }
-                else if(Preferences.instance().getProperty("ftp.transfermode").equals(FTPTransferType.ASCII.toString())) {
-                    this.downloadASCII(throttle, listener);
-                }
-                else {
-                    throw new FTPException("Transfer mode not set");
+                finally {
+                    IOUtils.closeQuietly(in);
+                    IOUtils.closeQuietly(out);
                 }
             }
         }
         catch(IOException e) {
             this.error("Download failed", e);
-        }
-    }
-
-    private void downloadBinary(final BandwidthThrottle throttle, final StreamListener listener) throws IOException {
-        InputStream in = null;
-        OutputStream out = null;
-        try {
-            this.getSession().getClient().setTransferType(FTPTransferType.BINARY);
-            if(this.status().isResume()) {
-                if(!this.getSession().getClient().isFeatureSupported("REST STREAM")) {
-                    this.status().setResume(false);
-                }
-            }
-            in = this.getSession().getClient().get(this.getAbsolute(), this.status().isResume() ? this.getLocal().attributes().getSize() : 0);
-            out = this.getLocal().getOutputStream(this.status().isResume());
-            try {
-                this.download(in, out, throttle, listener);
-            }
-            catch(ConnectionCanceledException e) {
-                // Interrupted by user
-                IOUtils.closeQuietly(in);
-                IOUtils.closeQuietly(out);
-                // Tell the server to abort the previous FTP service command and any associated transfer of data
-                this.getSession().getClient().abor();
-                this.status().setComplete(false);
-                throw e;
-            }
-            if(this.status().isComplete()) {
-                IOUtils.closeQuietly(in);
-                IOUtils.closeQuietly(out);
-                try {
-                    this.getSession().getClient().validateTransfer();
-                }
-                catch(FTPException e) {
-                    this.status().setComplete(false);
-                    throw e;
-                }
-            }
-        }
-        finally {
-            IOUtils.closeQuietly(in);
-            IOUtils.closeQuietly(out);
-        }
-    }
-
-    private void downloadASCII(final BandwidthThrottle throttle, final StreamListener listener) throws IOException {
-        InputStream in = null;
-        OutputStream out = null;
-        try {
-            String lineSeparator = System.getProperty("line.separator"); //default value
-            if(Preferences.instance().getProperty("ftp.line.separator").equals("unix")) {
-                lineSeparator = UNIX_LINE_SEPARATOR;
-            }
-            else if(Preferences.instance().getProperty("ftp.line.separator").equals("mac")) {
-                lineSeparator = MAC_LINE_SEPARATOR;
-            }
-            else if(Preferences.instance().getProperty("ftp.line.separator").equals("win")) {
-                lineSeparator = DOS_LINE_SEPARATOR;
-            }
-            this.getSession().getClient().setTransferType(FTPTransferType.ASCII);
-            in = new FromNetASCIIInputStream(this.getSession().getClient().get(this.getAbsolute(), 0),
-                    lineSeparator);
-            out = new FromNetASCIIOutputStream(this.getLocal().getOutputStream(false),
-                    lineSeparator);
-            try {
-                this.download(in, out, throttle, listener);
-            }
-            catch(ConnectionCanceledException e) {
-                // Interrupted by user
-                IOUtils.closeQuietly(in);
-                IOUtils.closeQuietly(out);
-                // Tell the server to abort the previous FTP service command and any associated transfer of data
-                this.getSession().getClient().abor();
-                this.status().setComplete(false);
-                throw e;
-            }
-            if(this.status().isComplete()) {
-                IOUtils.closeQuietly(in);
-                IOUtils.closeQuietly(out);
-                try {
-                    this.getSession().getClient().validateTransfer();
-                }
-                catch(FTPException e) {
-                    this.status().setComplete(false);
-                    throw e;
-                }
-            }
-        }
-        finally {
-            IOUtils.closeQuietly(in);
-            IOUtils.closeQuietly(out);
         }
     }
 
@@ -848,104 +757,44 @@ public class FTPPath extends Path {
                 if(check) {
                     this.getSession().check();
                 }
-                if(Preferences.instance().getProperty("ftp.transfermode").equals(FTPTransferType.AUTO.toString())) {
-                    if(this.getTextFiletypePattern().matcher(this.getName()).matches()) {
-                        this.uploadASCII(throttle, listener);
+                InputStream in = null;
+                OutputStream out = null;
+                try {
+                    this.getSession().getClient().setTransferType(FTPTransferType.BINARY);
+                    in = this.getLocal().getInputStream();
+                    out = this.getSession().getClient().put(this.getAbsolute(), this.status().isResume());
+                    try {
+                        this.upload(out, in, throttle, listener);
                     }
-                    else {
-                        this.uploadBinary(throttle, listener);
+                    catch(ConnectionCanceledException e) {
+                        // Interrupted by user
+                        IOUtils.closeQuietly(in);
+                        IOUtils.closeQuietly(out);
+                        // Tell the server to abort the previous FTP service command and any associated transfer of data
+                        this.getSession().getClient().abor();
+                        this.status().setComplete(false);
+                        throw e;
+                    }
+                    if(status().isComplete()) {
+                        IOUtils.closeQuietly(in);
+                        IOUtils.closeQuietly(out);
+                        try {
+                            this.getSession().getClient().validateTransfer();
+                        }
+                        catch(FTPException e) {
+                            this.status().setComplete(false);
+                            throw e;
+                        }
                     }
                 }
-                else if(Preferences.instance().getProperty("ftp.transfermode").equals(
-                        FTPTransferType.BINARY.toString())) {
-                    this.uploadBinary(throttle, listener);
-                }
-                else if(Preferences.instance().getProperty("ftp.transfermode").equals(
-                        FTPTransferType.ASCII.toString())) {
-                    this.uploadASCII(throttle, listener);
-                }
-                else {
-                    throw new FTPException("Transfer mode not set");
+                finally {
+                    IOUtils.closeQuietly(in);
+                    IOUtils.closeQuietly(out);
                 }
             }
         }
         catch(IOException e) {
             this.error("Upload failed", e);
-        }
-    }
-
-    private void uploadBinary(BandwidthThrottle throttle, StreamListener listener) throws IOException {
-        InputStream in = null;
-        OutputStream out = null;
-        try {
-            this.getSession().getClient().setTransferType(FTPTransferType.BINARY);
-            in = this.getLocal().getInputStream();
-            out = this.getSession().getClient().put(this.getAbsolute(), this.status().isResume());
-            try {
-                this.upload(out, in, throttle, listener);
-            }
-            catch(ConnectionCanceledException e) {
-                // Interrupted by user
-                IOUtils.closeQuietly(in);
-                IOUtils.closeQuietly(out);
-                // Tell the server to abort the previous FTP service command and any associated transfer of data
-                this.getSession().getClient().abor();
-                this.status().setComplete(false);
-                throw e;
-            }
-            if(status().isComplete()) {
-                IOUtils.closeQuietly(in);
-                IOUtils.closeQuietly(out);
-                try {
-                    this.getSession().getClient().validateTransfer();
-                }
-                catch(FTPException e) {
-                    this.status().setComplete(false);
-                    throw e;
-                }
-            }
-        }
-        finally {
-            IOUtils.closeQuietly(in);
-            IOUtils.closeQuietly(out);
-        }
-    }
-
-    private void uploadASCII(final BandwidthThrottle throttle, final StreamListener listener) throws IOException {
-        InputStream in = null;
-        OutputStream out = null;
-        try {
-            this.getSession().getClient().setTransferType(FTPTransferType.ASCII);
-            in = new ToNetASCIIInputStream(this.getLocal().getInputStream());
-            out = new ToNetASCIIOutputStream(this.getSession().getClient().put(this.getAbsolute(),
-                    this.status().isResume()));
-            try {
-                this.upload(out, in, throttle, listener);
-            }
-            catch(ConnectionCanceledException e) {
-                // Interrupted by user
-                IOUtils.closeQuietly(in);
-                IOUtils.closeQuietly(out);
-                // Tell the server to abort the previous FTP service command and any associated transfer of data
-                this.getSession().getClient().abor();
-                this.status().setComplete(false);
-                throw e;
-            }
-            if(this.status().isComplete()) {
-                IOUtils.closeQuietly(in);
-                IOUtils.closeQuietly(out);
-                try {
-                    this.getSession().getClient().validateTransfer();
-                }
-                catch(FTPException e) {
-                    this.status().setComplete(false);
-                    throw e;
-                }
-            }
-        }
-        finally {
-            IOUtils.closeQuietly(in);
-            IOUtils.closeQuietly(out);
         }
     }
 }
