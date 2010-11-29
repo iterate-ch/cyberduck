@@ -493,10 +493,6 @@ public abstract class Preferences {
          * Still open connection if securing data channel fails
          */
         defaults.put("ftp.tls.datachannel.failOnError", String.valueOf(false));
-        /**
-         * If the parser should not trim whitespace from filenames
-         */
-        defaults.put("ftp.parser.whitespaceAware", String.valueOf(true));
 
         /**
          * Try to determine the timezone automatically using timestamp comparison from MLST and LIST
