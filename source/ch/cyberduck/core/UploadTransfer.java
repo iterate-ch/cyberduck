@@ -76,7 +76,7 @@ public class UploadTransfer extends Transfer {
             if(!this.check()) {
                 return;
             }
-            this.getSession().message(MessageFormat.format(Locale.localizedString("Prepare {0}", "Transfer"), upload.getName()));
+            this.getSession().message(MessageFormat.format(Locale.localizedString("Prepare {0}", "Status"), upload.getName()));
             boolean duplicate = false;
             for(Iterator<Path> iter = normalized.iterator(); iter.hasNext();) {
                 Path n = iter.next();

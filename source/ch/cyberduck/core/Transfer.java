@@ -576,7 +576,7 @@ public abstract class Transfer implements Serializable {
         // Only prepare the path it will be actually transferred
         if(filter.accept(p)) {
             log.info("Accepted in transfer:" + p);
-            this.getSession().message(MessageFormat.format(Locale.localizedString("Prepare {0}", "Transfer"), p.getName()));
+            this.getSession().message(MessageFormat.format(Locale.localizedString("Prepare {0}", "Status"), p.getName()));
             filter.prepare(p);
         }
 
