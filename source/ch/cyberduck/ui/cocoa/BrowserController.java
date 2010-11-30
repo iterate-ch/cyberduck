@@ -690,14 +690,29 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     }
 
     private void updateBookmarkSource() {
+        AbstractHostCollection source = BookmarkCollection.defaultCollection();
         if(bonjourButton.state() == NSCell.NSOnState) {
-            bookmarkModel.setSource(RendezvousCollection.defaultCollection());
+            source = RendezvousCollection.defaultCollection();
         }
         else if(historyButton.state() == NSCell.NSOnState) {
-            bookmarkModel.setSource(HistoryCollection.defaultCollection());
+            source = HistoryCollection.defaultCollection();
         }
-        else if(bookmarkButton.state() == NSCell.NSOnState) {
-            bookmarkModel.setSource(BookmarkCollection.defaultCollection());
+        bookmarkModel.setSource(source);
+        if(source.isLocked()) {
+            browserSpinner.startAnimation(null);
+        }
+        source.addListener(new AbstractCollectionListener<Host>() {
+            @Override
+            public void collectionLoaded() {
+                invoke(new WindowMainAction(BrowserController.this) {
+                    public void run() {
+                        browserSpinner.stopAnimation(null);
+                    }
+                });
+            }
+        });
+        if(!source.isLocked()) {
+            browserSpinner.stopAnimation(null);
         }
         this.setBookmarkFilter(null);
         this.reloadBookmarks();
@@ -1941,16 +1956,27 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     // ----------------------------------------------------------
 
     @Outlet
-    protected NSProgressIndicator spinner;
+    protected NSProgressIndicator statusSpinner;
 
-    public void setSpinner(NSProgressIndicator spinner) {
-        this.spinner = spinner;
-        this.spinner.setDisplayedWhenStopped(false);
-        this.spinner.setIndeterminate(true);
+    public void setStatusSpinner(NSProgressIndicator statusSpinner) {
+        this.statusSpinner = statusSpinner;
+        this.statusSpinner.setDisplayedWhenStopped(false);
+        this.statusSpinner.setIndeterminate(true);
     }
 
-    public NSProgressIndicator getSpinner() {
-        return spinner;
+    public NSProgressIndicator getStatusSpinner() {
+        return statusSpinner;
+    }
+
+    @Outlet
+    protected NSProgressIndicator browserSpinner;
+
+    public void setBrowserSpinner(NSProgressIndicator browserSpinner) {
+        this.browserSpinner = browserSpinner;
+    }
+
+    public NSProgressIndicator getBrowserSpinner() {
+        return browserSpinner;
     }
 
     @Outlet

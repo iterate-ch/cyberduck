@@ -13,6 +13,7 @@
         bookmarkTable = NSTableView;
         browserListView = NSTableView;
         browserOutlineView = NSOutlineView;
+        browserSpinner = NSProgressIndicator;
         browserSwitchView = NSSegmentedControl;
         browserTabView = NSTabView;
         deleteBookmarkButton = NSButton;
@@ -28,8 +29,8 @@
         quickConnectPopup = NSComboBox;
         searchField = NSView;
         securityLabel = NSButton;
-        spinner = NSProgressIndicator;
         statusLabel = NSTextField;
+        statusSpinner = NSProgressIndicator;
         upButton = NSSegmentedControl;
         urlMenu = NSMenu;
         window = NSWindow;

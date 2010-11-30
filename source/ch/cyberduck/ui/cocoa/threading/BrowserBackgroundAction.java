@@ -53,7 +53,7 @@ public abstract class BrowserBackgroundAction extends AlertRepeatableBackgroundA
     public boolean prepare() {
         controller.invoke(new WindowMainAction(controller) {
             public void run() {
-                controller.getSpinner().startAnimation(null);
+                controller.getStatusSpinner().startAnimation(null);
                 controller.updateStatusLabel(BrowserBackgroundAction.this.getActivity());
             }
         });
@@ -72,7 +72,7 @@ public abstract class BrowserBackgroundAction extends AlertRepeatableBackgroundA
     public void finish() {
         controller.invoke(new WindowMainAction(controller) {
             public void run() {
-                controller.getSpinner().stopAnimation(null);
+                controller.getStatusSpinner().stopAnimation(null);
                 controller.updateStatusLabel();
             }
         });

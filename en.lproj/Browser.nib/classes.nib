@@ -88,6 +88,8 @@
 				<string>NSTableView</string>
 				<key>browserOutlineView</key>
 				<string>NSOutlineView</string>
+				<key>browserSpinner</key>
+				<string>NSProgressIndicator</string>
 				<key>browserSwitchView</key>
 				<string>NSSegmentedControl</string>
 				<key>browserTabView</key>
@@ -118,10 +120,10 @@
 				<string>NSView</string>
 				<key>securityLabel</key>
 				<string>NSButton</string>
-				<key>spinner</key>
-				<string>NSProgressIndicator</string>
 				<key>statusLabel</key>
 				<string>NSTextField</string>
+				<key>statusSpinner</key>
+				<string>NSProgressIndicator</string>
 				<key>upButton</key>
 				<string>NSSegmentedControl</string>
 				<key>urlMenu</key>
