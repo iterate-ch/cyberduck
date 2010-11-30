@@ -354,7 +354,6 @@ public abstract class Path extends AbstractPath implements Serializable {
     }
 
     /**
-     *
      * @return
      */
     public Path getContainer() {
@@ -1050,8 +1049,8 @@ public abstract class Path extends AbstractPath implements Serializable {
             urls.add(new DescriptiveUrl(http, MessageFormat.format(Locale.localizedString("{0} URL"), "HTTP")));
         }
         Session session = this.getSession();
-        if(session.cdn().isConfigured()) {
-            for(Distribution.Method method : session.cdn().getMethods()) {
+        for(Distribution.Method method : session.cdn().getMethods()) {
+            if(session.cdn().isConfigured(method)) {
                 String container = this.getContainerName();
                 if(null == container) {
                     continue;

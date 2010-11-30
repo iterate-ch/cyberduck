@@ -33,7 +33,7 @@ public interface DistributionConfiguration {
     /**
      * @return True if configuration is known.
      */
-    boolean isConfigured();
+    boolean isConfigured(Distribution.Method method);
 
     /**
      * Write distribution configuration for origin.

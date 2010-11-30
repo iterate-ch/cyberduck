@@ -222,7 +222,7 @@ public class CFSession extends CloudHTTP3Session {
                             = new HashMap<String, Distribution>();
 
 
-                    public boolean isConfigured() {
+                    public boolean isConfigured(Distribution.Method method) {
                         return !distributionStatus.isEmpty();
                     }
 

@@ -166,13 +166,8 @@ public class CloudFrontDistributionConfiguration extends HTTP3Session implements
         return Locale.localizedString("Amazon CloudFront", "S3");
     }
 
-    public boolean isConfigured() {
-        for(ch.cyberduck.core.cdn.Distribution.Method method : this.getMethods()) {
-            if(!distributionStatus.get(method).isEmpty()) {
-                return true;
-            }
-        }
-        return false;
+    public boolean isConfigured(ch.cyberduck.core.cdn.Distribution.Method method) {
+        return !distributionStatus.get(method).isEmpty();
     }
 
     public String getOrigin(ch.cyberduck.core.cdn.Distribution.Method method, String container) {
