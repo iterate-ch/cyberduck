@@ -75,16 +75,6 @@ public abstract class TransferPromptModel extends OutlineDataSource {
 
     protected abstract static class PromptFilter implements PathFilter<Path> {
         public boolean accept(Path file) {
-            if(file.exists()) {
-                if(file.attributes().getSize() == -1) {
-                    file.readSize();
-                }
-                if(file.getSession().isTimestampSupported()) {
-                    if(file.attributes().getModificationDate() == -1) {
-                        file.readTimestamp();
-                    }
-                }
-            }
             return true;
         }
     }
