@@ -231,7 +231,6 @@ public class SyncTransfer extends Transfer {
             children.addAll(_delegateUpload.children(parent));
         }
         for(Path child : children) {
-            this.setStatus(child);
             if(child.getSession().isTimestampSupported()) {
                 if(child instanceof FTPPath) {
                     // Make sure we have a UTC timestamp
@@ -242,22 +241,34 @@ public class SyncTransfer extends Transfer {
         return new AttributedList<Path>(children);
     }
 
-    private void setStatus(Path path) {
+    /**
+     * Set the skipped flag on the file attributes if no synchronisation is needed
+     * depending on the current action selection to mirror or only download or upload missing files.
+     *
+     * @param path
+     */
+    @Override
+    public boolean isSkipped(Path path) {
         boolean skipped = false;
         final Comparison comparison = this.compare(path);
         // Updating default skip settings for actual transfer
         if(COMPARISON_EQUAL.equals(comparison)) {
-            skipped = true;
+            skipped = path.attributes().isFile();
         }
         else {
-            if(comparison.equals(COMPARISON_REMOTE_NEWER)) {
-                skipped = this.getAction().equals(ACTION_UPLOAD);
-            }
-            else if(comparison.equals(COMPARISON_LOCAL_NEWER)) {
-                skipped = this.getAction().equals(ACTION_DOWNLOAD);
+            if(path.attributes().isFile()) {
+                if(comparison.equals(COMPARISON_REMOTE_NEWER)) {
+                    skipped = this.getAction().equals(ACTION_UPLOAD);
+                }
+                else if(comparison.equals(COMPARISON_LOCAL_NEWER)) {
+                    skipped = this.getAction().equals(ACTION_DOWNLOAD);
+                }
             }
         }
-        path.status().setSkipped(skipped);
+        if(log.isDebugEnabled()) {
+            log.debug("isSkipped:" + skipped + "," + path);
+        }
+        return skipped;
     }
 
     /**
@@ -304,9 +315,6 @@ public class SyncTransfer extends Transfer {
             }
             if(null == path) {
                 log.warn("Lookup failed for " + reference + " in cache");
-            }
-            else {
-                setStatus(path);
             }
             return path;
         }
@@ -415,9 +423,31 @@ public class SyncTransfer extends Transfer {
      * @return COMPARISON_REMOTE_NEWER, COMPARISON_LOCAL_NEWER or COMPARISON_EQUAL
      */
     public Comparison compare(Path p) {
-        log.debug("compare:" + p);
+        if(log.isDebugEnabled()) {
+            log.debug("compare:" + p);
+        }
         if(p.getLocal().exists() && p.exists()) {
-            return this.compareTimestamp(p);
+            if(Preferences.instance().getBoolean("queue.sync.compare.hash")) {
+                // MD5/ETag Checksum is supported
+                Comparison comparison = this.compareHash(p);
+                if(!COMPARISON_UNEQUAL.equals(comparison)) {
+                    // Decision is available
+                    return comparison;
+                }
+            }
+            if(Preferences.instance().getBoolean("queue.sync.compare.size")) {
+                Comparison comparison = this.compareSize(p);
+                if(!COMPARISON_UNEQUAL.equals(comparison)) {
+                    // Decision is available
+                    return comparison;
+                }
+            }
+            // Default comparison is using timestamp of file.
+            Comparison comparison = this.compareTimestamp(p);
+            if(!COMPARISON_UNEQUAL.equals(comparison)) {
+                // Decision is available
+                return comparison;
+            }
         }
         else if(p.exists()) {
             // Only the remote file exists
@@ -435,24 +465,57 @@ public class SyncTransfer extends Transfer {
      * @return
      */
     private Comparison compareSize(Path p) {
-        log.debug("compareSize:" + p);
-        if(p.attributes().getSize() == -1) {
-            p.readSize();
+        if(log.isDebugEnabled()) {
+            log.debug("compareSize:" + p);
         }
-        //fist make sure both files are larger than 0 bytes
-        if(p.attributes().getSize() == 0 && p.getLocal().attributes().getSize() == 0) {
-            return COMPARISON_EQUAL;
-        }
-        if(p.attributes().getSize() == 0) {
-            return COMPARISON_LOCAL_NEWER;
-        }
-        if(p.getLocal().attributes().getSize() == 0) {
-            return COMPARISON_REMOTE_NEWER;
-        }
-        if(p.attributes().getSize() == p.getLocal().attributes().getSize()) {
-            return COMPARISON_EQUAL;
+        if(p.attributes().isFile()) {
+            if(p.attributes().getSize() == -1) {
+                p.readSize();
+            }
+            //fist make sure both files are larger than 0 bytes
+            if(p.attributes().getSize() == 0 && p.getLocal().attributes().getSize() == 0) {
+                return COMPARISON_EQUAL;
+            }
+            if(p.attributes().getSize() == 0) {
+                return COMPARISON_LOCAL_NEWER;
+            }
+            if(p.getLocal().attributes().getSize() == 0) {
+                return COMPARISON_REMOTE_NEWER;
+            }
+            if(p.attributes().getSize() == p.getLocal().attributes().getSize()) {
+                return COMPARISON_EQUAL;
+            }
         }
         //different file size - further comparison check
+        return COMPARISON_UNEQUAL;
+    }
+
+    /**
+     * Compare MD5 hash of files
+     *
+     * @param p
+     * @return
+     */
+    private Comparison compareHash(Path p) {
+        if(log.isDebugEnabled()) {
+            log.debug("compareHash:" + p);
+        }
+        if(p.attributes().isFile()) {
+            if(null == p.attributes().getChecksum()) {
+                if(p.getSession().isChecksumSupported()) {
+                    p.readChecksum();
+                }
+            }
+            if(null == p.attributes().getChecksum()) {
+                log.warn("No checksum available for comparison:" + p);
+                return COMPARISON_UNEQUAL;
+            }
+            //fist make sure both files are larger than 0 bytes
+            if(p.attributes().getChecksum().equals(p.getLocal().attributes().getChecksum())) {
+                return COMPARISON_EQUAL;
+            }
+        }
+        //different sum - further comparison check
         return COMPARISON_UNEQUAL;
     }
 
@@ -461,12 +524,18 @@ public class SyncTransfer extends Transfer {
      * @return
      */
     private Comparison compareTimestamp(Path p) {
-        log.debug("compareTimestamp:" + p);
-        if(p.getSession().isTimestampSupported()) {
-            if(p.attributes().getModificationDate() == -1) {
+        if(log.isDebugEnabled()) {
+            log.debug("compareTimestamp:" + p);
+        }
+        if(-1 == p.attributes().getModificationDate()) {
+            if(p.getSession().isTimestampSupported()) {
                 // Make sure we have a UTC timestamp
                 p.readTimestamp();
             }
+        }
+        if(-1 == p.attributes().getModificationDate()) {
+            log.warn("No modification date available for comparison:" + p);
+            return COMPARISON_UNEQUAL;
         }
         final Calendar remote = this.asCalendar(p.attributes().getModificationDate(), Calendar.SECOND);
         final Calendar local = this.asCalendar(p.getLocal().attributes().getModificationDate(), Calendar.SECOND);
@@ -486,7 +555,9 @@ public class SyncTransfer extends Transfer {
      * @return
      */
     private Calendar asCalendar(final long timestamp, final int precision) {
-        log.debug("asCalendar:" + timestamp);
+        if(log.isDebugEnabled()) {
+            log.debug("asCalendar:" + timestamp);
+        }
         Calendar c = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         c.setTimeInMillis(timestamp);
         if(precision == Calendar.MILLISECOND) {

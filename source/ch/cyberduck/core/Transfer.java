@@ -391,7 +391,16 @@ public abstract class Transfer implements Serializable {
      * @return True if the path is not skipped when transferring
      */
     public boolean isIncluded(Path item) {
-        return item.status().isSelected() && !item.status().isSkipped();
+        return item.status().isSelected() && !this.isSkipped(item);
+    }
+
+    /**
+     *
+     * @param item
+     * @return
+     */
+    public boolean isSkipped(Path item) {
+        return false;
     }
 
     /**
@@ -401,7 +410,7 @@ public abstract class Transfer implements Serializable {
      * @return True if selectable
      */
     public boolean isSelectable(Path item) {
-        return !item.status().isSkipped();
+        return !this.isSkipped(item);
     }
 
     /**
@@ -724,7 +733,7 @@ public abstract class Transfer implements Serializable {
      */
     public boolean isComplete() {
         for(Path root : this.roots) {
-            if(root.status().isSkipped()) {
+            if(this.isSkipped(root)) {
                 continue;
             }
             if(!root.status().isComplete()) {
