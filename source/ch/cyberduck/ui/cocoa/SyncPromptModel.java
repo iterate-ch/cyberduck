@@ -51,7 +51,14 @@ public class SyncPromptModel extends TransferPromptModel {
                 @Override
                 public boolean accept(Path child) {
                     log.debug("accept:" + child);
-                    return super.accept(child) && transfer.isIncluded(child);
+                    return super.accept(child) && !transfer.isSkipped(child);
+                }
+
+                @Override
+                public boolean equals(Object obj) {
+                    // Make sure the list is alwaays filtered again using the current skip decision from the transfer
+                    // depending on the transfer action selected in the prompt
+                    return false;
                 }
             };
         }
