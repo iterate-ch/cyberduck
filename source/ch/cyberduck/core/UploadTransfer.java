@@ -154,7 +154,7 @@ public class UploadTransfer extends Transfer {
 
     }
 
-    private final PathFilter<Local> childFilter = new PathFilter<Local>() {
+    private final PathFilter<Local> exclusionRegexFilter = new PathFilter<Local>() {
         public boolean accept(Local child) {
             try {
                 if(Preferences.instance().getBoolean("queue.upload.skip.enable")) {
@@ -196,7 +196,7 @@ public class UploadTransfer extends Transfer {
                 return AttributedList.emptyList();
             }
             final AttributedList<Path> children = new AttributedList<Path>();
-            for(AbstractPath child : parent.getLocal().children(childFilter)) {
+            for(AbstractPath child : parent.getLocal().children(exclusionRegexFilter)) {
                 final Local local = LocalFactory.createLocal(child.getAbsolute());
                 Path upload = PathFactory.createPath(getSession(), parent.getAbsolute(), local);
                 if(upload.exists()) {

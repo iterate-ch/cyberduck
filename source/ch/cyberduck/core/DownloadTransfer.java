@@ -172,7 +172,7 @@ public class DownloadTransfer extends Transfer {
         }
     }
 
-    private final PathFilter<Path> childFilter = new PathFilter<Path>() {
+    private final PathFilter<Path> exclusionRegexFilter = new PathFilter<Path>() {
         public boolean accept(Path child) {
             if(Preferences.instance().getBoolean("queue.download.skip.enable")) {
                 try {
@@ -191,7 +191,7 @@ public class DownloadTransfer extends Transfer {
     @Override
     public AttributedList<Path> children(final Path parent) {
         log.debug("children:" + parent);
-        final AttributedList<Path> list = parent.children(childFilter);
+        final AttributedList<Path> list = parent.children(exclusionRegexFilter);
         for(Path download : list) {
             // Change download path relative to parent local folder
             download.setLocal(LocalFactory.createLocal(parent.getLocal(), download.getLocal().getName()));
