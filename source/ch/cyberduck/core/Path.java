@@ -142,9 +142,6 @@ public abstract class Path extends AbstractPath implements Serializable {
         if(dict.stringForKey("Complete") != null) {
             this.status().setComplete(true);
         }
-        if(dict.stringForKey("Skipped") != null) {
-            this.status().setSkipped(true);
-        }
     }
 
     public <S> S getAsDictionary() {
@@ -163,9 +160,6 @@ public abstract class Path extends AbstractPath implements Serializable {
         dict.setObjectForKey(attributes, "Attributes");
         if(this.status().isComplete()) {
             dict.setStringForKey(String.valueOf(true), "Complete");
-        }
-        if(this.status().isSkipped()) {
-            dict.setStringForKey(String.valueOf(true), "Skipped");
         }
         return dict.<S>getSerialized();
     }

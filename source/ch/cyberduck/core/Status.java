@@ -199,31 +199,6 @@ public class Status {
     }
 
     /**
-     * A state variable to mark this path if it should not be
-     * considered for file transfers
-     */
-    private boolean skip;
-
-    /**
-     * File transfer inclusion
-     *
-     * @param ignore Ignore for file transfers
-     */
-    public void setSkipped(Boolean ignore) {
-        log.debug("setSkipped:" + ignore);
-        this.skip = ignore;
-    }
-
-    /**
-     * File transfer inclusion
-     *
-     * @return true if this path should not be included for file transfers
-     */
-    public boolean isSkipped() {
-        return this.skip;
-    }
-
-    /**
      * A state variable to mark this path if the path is explicitly selected
      * for inclusion in the transfer prompt
      */
