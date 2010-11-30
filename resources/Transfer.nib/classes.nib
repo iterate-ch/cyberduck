@@ -50,6 +50,8 @@
 				<string>NSStepper</string>
 				<key>queueTable</key>
 				<string>NSTableView</string>
+				<key>transferSpinner</key>
+				<string>NSProgressIndicator</string>
 				<key>urlField</key>
 				<string>NSTextField</string>
 				<key>window</key>

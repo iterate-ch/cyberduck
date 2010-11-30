@@ -67,6 +67,24 @@ public class TransferController extends WindowController implements NSToolbar.De
         this.toolbar.setAutosavesConfiguration(true);
         this.window.setToolbar(toolbar);
 
+        TransferCollection source = TransferCollection.defaultCollection();
+        if(source.isLocked()) {
+            transferSpinner.startAnimation(null);
+        }
+        source.addListener(new AbstractCollectionListener<Transfer>() {
+            @Override
+            public void collectionLoaded() {
+                invoke(new WindowMainAction(TransferController.this) {
+                    public void run() {
+                        transferSpinner.stopAnimation(null);
+                    }
+                });
+            }
+        });
+        if(!source.isLocked()) {
+            transferSpinner.stopAnimation(null);
+        }
+
         super.awakeFromNib();
     }
 
@@ -164,6 +182,13 @@ public class TransferController extends WindowController implements NSToolbar.De
     public void filterFieldTextDidChange(NSNotification notification) {
         transferTableModel.setFilter(filterField.stringValue());
         this.reload();
+    }
+
+    @Outlet
+    NSProgressIndicator transferSpinner;
+
+    public void setTransferSpinner(NSProgressIndicator transferSpinner) {
+        this.transferSpinner = transferSpinner;
     }
 
     /**
