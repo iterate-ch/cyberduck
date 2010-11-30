@@ -2632,6 +2632,9 @@ www/help/images/synchronize.png -text svneol=unset#image/png
 www/help/images/toolbar.png -text svneol=unset#image/png
 www/help/images/transfer.png -text svneol=unset#image/png
 www/help/images/upload.png -text svneol=unset#image/png
+www/update/Updater.exe -text
+www/update/changelog-beta.wyp -text
+www/update/changelog-dev.wyp -text
 www/update/changelog-nightly.wyp -text
 www/update/changelog.html -text
 www/update/changelog.rss -text
@@ -2639,6 +2642,8 @@ www/update/changelog.txt -text
 www/update/changelog.wyp -text
 www/update/sign.rb -text
 www/update/update.pem -text
+www/update/updater.wyp -text
+www/update/updater.xml -text
 www/update/version.xml -text
 zh_CN.lproj/Alert.nib/classes.nib -text
 zh_CN.lproj/Alert.nib/info.nib -text

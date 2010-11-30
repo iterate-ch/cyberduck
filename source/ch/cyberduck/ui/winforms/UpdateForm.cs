@@ -22,12 +22,15 @@ using ch.cyberduck.core;
 using Ch.Cyberduck.Core;
 using ch.cyberduck.core.i18n;
 using Ch.Cyberduck.Ui.Controller;
+using org.apache.log4j;
 using wyDay.Controls;
 
 namespace Ch.Cyberduck.Ui.Winforms
 {
     public partial class UpdateForm : BaseForm, IUpdateView
     {
+        private static readonly Logger Log = Logger.getLogger(typeof (UpdateForm).Name);
+
         private static bool _expanded;
 
         public UpdateForm()
@@ -37,7 +40,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             Closing += delegate { updater.Cancel(); };
 
             ConfigureUpdater();
-
+            
             pictureBox.Image = IconCache.Instance.IconForName("cyberduck", 64);
             newVersionAvailableLabel.Text =
                 Locale.localizedString("A new version of %@ is available!", "Sparkle").Replace("%@",
@@ -97,6 +100,11 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         private void ConfigureUpdater()
         {
+            String currentFeed = Preferences.instance().getProperty("update.feed");
+            String feedUrl = Preferences.instance().getProperty("update.feed." + currentFeed);
+            Log.debug("Setting feed URL to " + feedUrl);
+
+            updater.wyUpdateCommandline = "-server=\"" + feedUrl + "\"";
             updater.ContainerForm = this;
             updater.KeepHidden = true;
             updater.Visible = false;

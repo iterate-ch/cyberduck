@@ -252,6 +252,13 @@ namespace Ch.Cyberduck.Ui.Controller
             defaults.put("application.language", GetDefaultLanguage());
             defaults.put("application.language.custom", false.ToString());
 
+            defaults.put("update.feed.release", "http://version.cyberduck.ch/changelog.wys");
+            defaults.put("update.feed.beta", "http://version.cyberduck.ch/beta/changelog.wys");
+            defaults.put("update.feed.nightly", "http://version.cyberduck.ch/nightly/changelog.wys");
+
+            //todo set to release before going public!
+            defaults.put("update.feed", "nightly");
+
             // Importers
             defaults.put("bookmark.import.filezilla.location", Path.Combine(Environment.GetFolderPath(
                 Environment.SpecialFolder.ApplicationData), "FileZilla", "sitemanager.xml"));

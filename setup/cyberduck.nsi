@@ -203,7 +203,7 @@ Section "MainSection" SEC01
   File "${BASEDIR}\License.txt"
   File "${BASEDIR}\cyberduck-document.ico"
   File "${BASEDIR}\*.dll"
-  File "${BASEDIR}\..\..\update\wyUpdate.exe"
+  File "${BASEDIR}\..\..\update\Updater.exe"
   File "${BASEDIR}\..\..\update\*.wyc"
   
   ;Bonjour  

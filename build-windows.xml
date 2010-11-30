@@ -41,6 +41,7 @@
     <property name="nsis.home" value="${programFiles}/NSIS"/>
     <property name="winsdk.home" value="${programFiles}/Microsoft SDKs/Windows/v7.0A/Bin"/>
     <property name="wybuild.home" value="${programFiles}/wyBuild"/>
+    <property name="wyupdate.home" value="c:/workspace/wyupdate-read-only"/>
 
     <taskdef resource="net/sf/antcontrib/antcontrib.properties"/>
     <taskdef name="ikvmc" classname="net.ikvm.ant.IkvmcTask"/>
@@ -171,6 +172,25 @@
         </scp>
     </target>
 
+    <target name="beta" depends="package-beta">
+        <scp file="${setup.file}"
+             todir="dkocher@update.cyberduck.ch:./update.cyberduck.ch/windows/beta"
+             keyfile="${user.home}/.ssh/update.cyberduck.ch-rsa"
+             passphrase="">
+        </scp>
+        <scp file="${build}/update/${app.name}-all-${shortversion}.wyu"
+             todir="dkocher@update.cyberduck.ch:./update.cyberduck.ch/windows/beta/update"
+             keyfile="${user.home}/.ssh/update.cyberduck.ch-rsa"
+             passphrase="">
+        </scp>
+        <!-- Changelog Release - version.cyberduck.ch -->
+        <scp file="${build}/update/changelog.wys"
+             todir="dkocher@version.cyberduck.ch:./version.cyberduck.ch/beta"
+             keyfile="${user.home}/.ssh/version.cyberduck.ch-rsa"
+             passphrase="">
+        </scp>
+    </target>
+
     <target name="package-release" depends="clean, version">
         <property name="setup.file"
                   location="${build}/${app.name}-Installer-${cyberduck.version.major}.${cyberduck.version.minor}.exe"/>
@@ -179,11 +199,27 @@
         </antcall>
     </target>
 
+    <target name="package-beta" depends="clean, version">
+        <property name="setup.file"
+                  location="${build}/${app.name}-Installer-${cyberduck.version.major}.${cyberduck.version.minor}.${svn.revision.stripped}.exe"/>
+        <antcall target="package">
+            <param name="changelog.wyp" value="${www.update}/changelog-beta.wyp"/>
+        </antcall>
+    </target>
+
     <target name="package-nightly" depends="clean, version">
         <property name="setup.file"
                   location="${build}/${app.name}-Installer-${cyberduck.version.major}.${cyberduck.version.minor}.${svn.revision.stripped}.exe"/>
         <antcall target="package">
             <param name="changelog.wyp" value="${www.update}/changelog-nightly.wyp"/>
+        </antcall>
+    </target>
+
+    <target name="package-dev" depends="clean, version">
+        <property name="setup.file"
+                  location="${build}/${app.name}-Installer-${cyberduck.version.major}.${cyberduck.version.minor}.${svn.revision.stripped}.exe"/>
+        <antcall target="package">
+            <param name="changelog.wyp" value="${www.update}/changelog-dev.wyp"/>
         </antcall>
     </target>
 
@@ -210,19 +246,59 @@
             <arg value="-add=${absbuild}/version.xml"/>
         </exec>
 
-        <property name="wyupdate.file" location="${build}/update/wyUpdate.exe"/>
-
-        <!-- patch resource information in order to display 'Cyberduck Updater' -->
-        <exec executable="${setup}/verpatch.exe" failonerror="true">
-            <arg line='${wyupdate.file} /s FileDescription "Cyberduck Updater"'/>
-        </exec>
-
-        <!-- resign wyUpdate.exe with our code signing certificate -->
-        <exec executable="${winsdk.home}/signtool.exe" failonerror="true">
-            <arg line='sign /r "StartCom" /t http://timestamp.globalsign.com/scripts/timestamp.dll "${wyupdate.file}"'/>
-        </exec>
+        <!-- overwrite generated wyUpdate.exe -->
+        <copy file="${www.update}/Updater.exe" todir="${build}/update" overwrite="true"/>
 
         <antcall target="setup"/>
+    </target>
+
+    <target name="updater-release">
+
+        <property name="absbuild" location="${build}"/>
+
+        <!-- Updater .NET4 build -->
+        <dn:msbuild buildfile="${wyupdate.home}/wyUpdate.NET4.csproj">
+            <target name="Clean"/>
+            <target name="Build"/>
+            <property name="Configuration" value="Release"/>
+            <property name="Platform" value="x86"/>
+        </dn:msbuild>
+
+        <copy file="${wyupdate.home}/bin4/Release/wyUpdate.exe" tofile="${www.update}/Updater.exe"/>
+        <!-- sign wyUpdate.exe with our code signing certificate -->
+        <exec executable="${winsdk.home}/signtool.exe" failonerror="true">
+            <arg line='sign /r "StartCom" /t http://timestamp.globalsign.com/scripts/timestamp.dll "${www.update}/Updater.exe"'/>
+        </exec>
+
+        <copy file="${www.update}/updater.xml" todir="${build}" overwrite="true"/>
+        <replace file="${build}/updater.xml" summary="true" encoding="UTF-8">
+            <replacefilter token="_VERSION_" value="${updater.version}"/>
+            <replacefilter token="_BUILDPATH_" value="${build}"/>
+        </replace>
+
+        <!-- copy wyUpdate project over to the build directory -->
+        <copy file="${www.update}/updater.wyp" todir="${build}" overwrite="true"/>
+
+        <copy file="${www.update}/Updater.exe" todir="${build}/update" overwrite="true"/>
+
+        <exec executable="${wybuild.home}/wybuild.exe" failonerror="true">
+            <arg value="${build}/updater.wyp"/>
+            <arg value="/bu"/>
+            <arg value="-add=${absbuild}/updater.xml"/>
+        </exec>
+
+        <scp file="${build}/update/${app.name}Updater-all-${updater.version}.wyu"
+             todir="dkocher@update.cyberduck.ch:./update.cyberduck.ch/windows/update"
+             keyfile="${user.home}/.ssh/update.cyberduck.ch-rsa"
+             passphrase="">
+        </scp>
+        <!-- Changelog Release - version.cyberduck.ch -->
+        <scp file="${build}/update/updater.wys"
+             todir="dkocher@version.cyberduck.ch:./version.cyberduck.ch/"
+             keyfile="${user.home}/.ssh/version.cyberduck.ch-rsa"
+             passphrase="">
+        </scp>
+
     </target>
 
     <target name="setup">
