@@ -98,7 +98,8 @@ public abstract class AbstractFolderHostCollection extends AbstractHostCollectio
      *
      * @return
      */
-    protected boolean isLocked() {
+    @Override
+    public boolean isLocked() {
         return locked;
     }
 

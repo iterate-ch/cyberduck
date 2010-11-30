@@ -106,6 +106,10 @@ public class TransferCollection extends Collection<Transfer> {
 
     private boolean locked = true;
 
+    public boolean isLocked() {
+        return locked;
+    }
+
     @Override
     public void load() {
         this.load(file);

@@ -219,6 +219,11 @@ public class BookmarkCollection extends AbstractHostCollection {
 
     private boolean locked = true;
 
+    @Override
+    public boolean isLocked() {
+        return locked;
+    }
+
     /**
      * Saves this collection of bookmarks in to a file to the users's application support directory
      * in a plist xml format

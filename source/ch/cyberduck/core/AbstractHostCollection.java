@@ -171,4 +171,12 @@ public abstract class AbstractHostCollection extends Collection<Host> implements
         this.addAll(c);
         this.collectionLoaded();
     }
+
+    /**
+     *
+     * @return True while loading
+     */
+    public boolean isLocked() {
+        return false;
+    }
 }
