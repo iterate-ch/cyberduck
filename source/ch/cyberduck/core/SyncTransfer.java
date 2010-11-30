@@ -75,7 +75,8 @@ public class SyncTransfer extends Transfer {
 
     @Override
     public void setBandwidth(float bytesPerSecond) {
-        ;
+        _delegateUpload.setBandwidth(bytesPerSecond);
+        _delegateDownload.setBandwidth(bytesPerSecond);
     }
 
     @Override
