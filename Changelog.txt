@@ -21,6 +21,7 @@ Changelog. Last modified: $Date$
 - [Feature] Perform MD5 hash calculation during upload (#5186) (S3, Cloudfiles)
 - [Feature] Rename existing files on upload or download (#5117)
 - [Feature] Show last access timestamp in history (#3805)
+- [Feature] Synchronize comparing MD5 checksum of file (S3, Cloudfiles, Dropbox, Azure)
 - [Bugfix] Slow SFTP transfers (#185)
 - [Bugfix] Reduced upload preparation time for thousands of files
 - [Bugfix] Support for S3Fox directory placeholders (S3)

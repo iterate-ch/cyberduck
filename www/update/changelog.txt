@@ -1,5 +1,6 @@
 4.0b8 [http://trac.cyberduck.ch/milestone/4.0b8]
 - [Feature] Rename existing files on upload or download (#5117)
+- [Feature] Synchronize comparing MD5 checksum of file (S3, Cloudfiles, Dropbox, Azure)
 
 4.0b7 [http://trac.cyberduck.ch/milestone/4.0b7]
 - [Feature] Bonjour support
