@@ -47,12 +47,19 @@ public class UserDefaultsDateFormatter extends AbstractDateFormatter implements 
         }
     }
 
+    private static final NSLocale locale = NSLocale.currentLocale();
+    //NSLocale.createWithLocaleIdentifier(NSLocale.canonicalLocaleIdentifierFromString(Preferences.instance().locale()));
+
+    private static NSLocale locale() {
+        return locale;
+    }
+
     private static final NSDateFormatter longDateFormatter = NSDateFormatter.dateFormatter();
 
     static {
         longDateFormatter.setDateStyle(NSDateFormatter.kCFDateFormatterLongStyle);
         longDateFormatter.setTimeStyle(NSDateFormatter.kCFDateFormatterLongStyle);
-        longDateFormatter.setLocale(NSLocale.currentLocale());
+        longDateFormatter.setLocale(locale());
     }
 
     private static final NSDateFormatter shortDateFormatter = NSDateFormatter.dateFormatter();
@@ -60,7 +67,7 @@ public class UserDefaultsDateFormatter extends AbstractDateFormatter implements 
     static {
         shortDateFormatter.setDateStyle(NSDateFormatter.kCFDateFormatterShortStyle);
         shortDateFormatter.setTimeStyle(NSDateFormatter.kCFDateFormatterShortStyle);
-        shortDateFormatter.setLocale(NSLocale.currentLocale());
+        shortDateFormatter.setLocale(locale());
     }
 
     private static final NSDateFormatter mediumDateFormatter = NSDateFormatter.dateFormatter();
@@ -68,7 +75,7 @@ public class UserDefaultsDateFormatter extends AbstractDateFormatter implements 
     static {
         mediumDateFormatter.setDateStyle(NSDateFormatter.kCFDateFormatterMediumStyle);
         mediumDateFormatter.setTimeStyle(NSDateFormatter.kCFDateFormatterMediumStyle);
-        mediumDateFormatter.setLocale(NSLocale.currentLocale());
+        mediumDateFormatter.setLocale(locale());
     }
 
     private static final NSDateFormatter longDateNaturalFormatter = NSDateFormatter.dateFormatter();
@@ -76,7 +83,7 @@ public class UserDefaultsDateFormatter extends AbstractDateFormatter implements 
     static {
         longDateNaturalFormatter.setDateStyle(NSDateFormatter.kCFDateFormatterLongStyle);
         longDateNaturalFormatter.setTimeStyle(NSDateFormatter.kCFDateFormatterLongStyle);
-        longDateNaturalFormatter.setLocale(NSLocale.currentLocale());
+        longDateNaturalFormatter.setLocale(locale());
         if(longDateNaturalFormatter.respondsToSelector(Foundation.selector("setDoesRelativeDateFormatting:"))) {
             longDateNaturalFormatter.setDoesRelativeDateFormatting(true);
         }
@@ -87,8 +94,7 @@ public class UserDefaultsDateFormatter extends AbstractDateFormatter implements 
     static {
         shortDateNaturalFormatter.setDateStyle(NSDateFormatter.kCFDateFormatterShortStyle);
         shortDateNaturalFormatter.setTimeStyle(NSDateFormatter.kCFDateFormatterShortStyle);
-        shortDateNaturalFormatter.setLocale(NSLocale.currentLocale());
-        longDateNaturalFormatter.setLocale(NSLocale.currentLocale());
+        shortDateNaturalFormatter.setLocale(locale());
         if(shortDateNaturalFormatter.respondsToSelector(Foundation.selector("setDoesRelativeDateFormatting:"))) {
             shortDateNaturalFormatter.setDoesRelativeDateFormatting(true);
         }
@@ -99,7 +105,7 @@ public class UserDefaultsDateFormatter extends AbstractDateFormatter implements 
     static {
         mediumDateNaturalFormatter.setDateStyle(NSDateFormatter.kCFDateFormatterMediumStyle);
         mediumDateNaturalFormatter.setTimeStyle(NSDateFormatter.kCFDateFormatterMediumStyle);
-        mediumDateNaturalFormatter.setLocale(NSLocale.currentLocale());
+        mediumDateNaturalFormatter.setLocale(locale());
         if(mediumDateNaturalFormatter.respondsToSelector(Foundation.selector("setDoesRelativeDateFormatting:"))) {
             mediumDateNaturalFormatter.setDoesRelativeDateFormatting(true);
         }
