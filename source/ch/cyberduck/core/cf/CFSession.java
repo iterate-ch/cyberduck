@@ -206,6 +206,11 @@ public class CFSession extends CloudHTTP3Session {
     }
 
     @Override
+    public boolean isChecksumSupported() {
+        return true;
+    }
+
+    @Override
     public DistributionConfiguration cdn() {
         if(null == cdn) {
             if(host.getHostname().equals(Protocol.CLOUDFILES.getDefaultHostname())) {

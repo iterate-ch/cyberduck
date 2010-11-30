@@ -526,6 +526,11 @@ public class S3Session extends CloudHTTP3Session {
         this.loggingSupported = loggingSupported;
     }
 
+    @Override
+    public boolean isChecksumSupported() {
+        return true;
+    }
+
     /**
      * Cache versioning status result.
      */

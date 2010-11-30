@@ -434,6 +434,13 @@ public abstract class Session implements TranscriptListener {
     }
 
     /**
+     * @return MD5/ETag available for files.
+     */
+    public boolean isChecksumSupported() {
+        return false;
+    }
+
+    /**
      * @return
      */
     public boolean isRevertSupported() {

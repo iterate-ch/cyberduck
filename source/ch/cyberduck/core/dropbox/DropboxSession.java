@@ -130,4 +130,9 @@ public class DropboxSession extends HTTP4Session {
     public boolean isCDNSupported() {
         return false;
     }
+
+    @Override
+    public boolean isChecksumSupported() {
+        return true;
+    }
 }

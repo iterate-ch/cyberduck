@@ -594,4 +594,9 @@ public class AzureSession extends CloudHTTP4Session {
     public boolean isCDNSupported() {
         return false;
     }
+
+    @Override
+    public boolean isChecksumSupported() {
+        return true;
+    }
 }
