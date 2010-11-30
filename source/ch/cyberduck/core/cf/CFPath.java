@@ -149,13 +149,30 @@ public class CFPath extends CloudPath {
     }
 
     @Override
+    public void readChecksum() {
+        try {
+            this.getSession().check();
+            this.getSession().message(MessageFormat.format(Locale.localizedString("Compute MD5 hash of {0}", "Status"),
+                    this.getName()));
+
+            if(this.attributes().isFile()) {
+                attributes().setChecksum(
+                        this.getSession().getClient().getObjectMetaData(this.getContainerName(), this.getKey()).getETag());
+            }
+        }
+        catch(IOException e) {
+            this.error("Cannot read file attributes", e);
+        }
+    }
+
+    @Override
     public void readTimestamp() {
         try {
             this.getSession().check();
             this.getSession().message(MessageFormat.format(Locale.localizedString("Getting timestamp of {0}", "Status"),
                     this.getName()));
 
-            if(!this.isContainer()) {
+            if(this.attributes().isFile()) {
                 try {
                     attributes().setModificationDate(
                             ServiceUtils.parseRfc822Date(this.getSession().getClient().getObjectMetaData(this.getContainerName(),

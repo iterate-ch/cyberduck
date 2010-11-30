@@ -401,6 +401,26 @@ public class AzurePath extends CloudPath {
     }
 
     @Override
+    public void readChecksum() {
+        try {
+            this.getSession().check();
+            this.getSession().message(MessageFormat.format(Locale.localizedString("Compute MD5 hash of {0}", "Status"),
+                    this.getName()));
+
+            IBlobContainer container = this.getSession().getContainer(this.getContainerName());
+            if(this.attributes().isFile()) {
+                attributes().setChecksum(container.getBlobProperties(this.getKey()).getETag());
+            }
+        }
+        catch(StorageException e) {
+            this.error("Cannot read file attributes", e);
+        }
+        catch(IOException e) {
+            this.error("Cannot read file attributes", e);
+        }
+    }
+
+    @Override
     protected void download(BandwidthThrottle throttle, StreamListener listener, boolean check) {
         if(attributes().isFile()) {
             OutputStream out = null;
