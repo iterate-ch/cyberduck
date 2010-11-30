@@ -123,7 +123,13 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 Path child = (Path) ap;
                 Log.debug("accept:" + child);
-                return base.accept(child) && _transfer.isIncluded(child);
+                return base.accept(child) && !_transfer.isSkipped(child);
+            }
+            
+            public override bool equals(object other) {
+                // Make sure the list is alwaays filtered again using the current skip decision from the transfer
+                // depending on the transfer action selected in the prompt
+                return false;
             }
         }
     }
