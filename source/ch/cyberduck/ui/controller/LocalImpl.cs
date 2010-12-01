@@ -1,4 +1,4 @@
-﻿// 
+﻿﻿//
 // Copyright (c) 2010 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
@@ -284,16 +284,6 @@ namespace Ch.Cyberduck.Ui.Controller
             public FileInfoAttributes(Local l) : base(l)
             {
                 file = l;
-            }
-
-            public override long getSize()
-            {
-                if (!file.exists())
-                {
-                    return -1;
-                }
-                FileInfo fileAttributes = new FileInfo(file.getAbsolute());
-                return fileAttributes.Length;
             }
         }
 
