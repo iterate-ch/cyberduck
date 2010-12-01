@@ -886,6 +886,10 @@ public abstract class Path extends AbstractPath implements Serializable {
                         return TransferAction.ACTION_OVERWRITE;
                     }
                 }, options);
+                copy.getParent().invalidate();
+            }
+            else {
+                this.error("Cannot copy {0}");
             }
         }
         finally {

@@ -646,8 +646,11 @@ public class AzurePath extends CloudPath {
     @Override
     public void rename(AbstractPath renamed) {
         this.copy(renamed);
+        // The directory listing of the target is no more current
         renamed.getParent().invalidate();
         this.delete();
+        // The directory listing of the source is no more current
+        this.getParent().invalidate();
     }
 
     @Override
@@ -665,10 +668,10 @@ public class AzurePath extends CloudPath {
                             ((AzurePath) copy).getKey(), this.getKey(), metadata, null);
                 }
                 catch(IOException e) {
-                    this.error(this.attributes().isFile() ? "Cannot copy file" : "Cannot copy folder", e);
+                    this.error("Cannot copy {0}");
                 }
             }
-            else {
+            else if(this.attributes().isDirectory()) {
                 for(AbstractPath i : this.children()) {
                     if(!this.getSession().isConnected()) {
                         break;
@@ -677,6 +680,8 @@ public class AzurePath extends CloudPath {
                             i.getName(), i.attributes().getType()));
                 }
             }
+            // The directory listing is no more current
+            copy.getParent().invalidate();
         }
         else {
             // Copy to different host

@@ -255,9 +255,10 @@ public class DAVPath extends Path {
             if(!this.getSession().getClient().moveMethod(this.getAbsolute(), renamed.getAbsolute())) {
                 throw new IOException(this.getSession().getClient().getStatusMessage());
             }
-            // The directory listing is no more current
-            this.getParent().invalidate();
+            // The directory listing of the target is no more current
             renamed.getParent().invalidate();
+            // The directory listing of the source is no more current
+            this.getParent().invalidate();
         }
         catch(IOException e) {
             if(attributes().isFile()) {
@@ -278,17 +279,25 @@ public class DAVPath extends Path {
                 this.getSession().message(MessageFormat.format(Locale.localizedString("Copying {0} to {1}", "Status"),
                         this.getName(), copy));
 
-                if(!this.getSession().getClient().copyMethod(this.getAbsolute(), copy.getAbsolute())) {
-                    throw new IOException(this.getSession().getClient().getStatusMessage());
+                if(attributes().isFile()) {
+                    if(!this.getSession().getClient().copyMethod(this.getAbsolute(), copy.getAbsolute())) {
+                        throw new IOException(this.getSession().getClient().getStatusMessage());
+                    }
                 }
+                else if(this.attributes().isDirectory()) {
+                    for(AbstractPath i : this.children()) {
+                        if(!this.getSession().isConnected()) {
+                            break;
+                        }
+                        i.copy(PathFactory.createPath(this.getSession(), copy.getAbsolute(),
+                                i.getName(), i.attributes().getType()));
+                    }
+                }
+                // The directory listing is no more current
+                copy.getParent().invalidate();
             }
             catch(IOException e) {
-                if(this.attributes().isFile()) {
-                    this.error("Cannot copy file", e);
-                }
-                if(this.attributes().isDirectory()) {
-                    this.error("Cannot copy folder", e);
-                }
+                this.error("Cannot copy {0}");
             }
         }
         else {

@@ -294,8 +294,9 @@ public class DropboxPath extends Path {
 
             this.getSession().setWorkdir(this.getParent());
             this.getSession().getClient().move(this.getAbsolute(), renamed.getAbsolute());
-            // The directory listing is no more current
+            // The directory listing of the target is no more current
             renamed.getParent().invalidate();
+            // The directory listing of the source is no more current
             this.getParent().invalidate();
         }
         catch(IOException e) {
@@ -317,10 +318,23 @@ public class DropboxPath extends Path {
                 this.getSession().message(MessageFormat.format(Locale.localizedString("Copying {0} to {1}", "Status"),
                         this.getName(), copy));
 
-                this.getSession().getClient().copy(this.getAbsolute(), copy.getAbsolute());
+                if(attributes().isFile()) {
+                    this.getSession().getClient().copy(this.getAbsolute(), copy.getAbsolute());
+                }
+                else if(this.attributes().isDirectory()) {
+                    for(AbstractPath i : this.children()) {
+                        if(!this.getSession().isConnected()) {
+                            break;
+                        }
+                        i.copy(PathFactory.createPath(this.getSession(), copy.getAbsolute(),
+                                i.getName(), i.attributes().getType()));
+                    }
+                }
+                // The directory listing is no more current
+                copy.getParent().invalidate();
             }
             catch(IOException e) {
-                this.error(this.attributes().isFile() ? "Cannot copy file" : "Cannot copy folder", e);
+                this.error("Cannot copy {0}");
             }
         }
         else {

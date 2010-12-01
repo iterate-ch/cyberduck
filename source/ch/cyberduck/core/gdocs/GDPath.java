@@ -953,9 +953,10 @@ public class GDPath extends Path {
                     throw new IOException(e.getMessage());
                 }
             }
-            // The directory listing is no more current
-            this.getParent().invalidate();
+            // The directory listing of the target is no more current
             renamed.getParent().invalidate();
+            // The directory listing of the source is no more current
+            this.getParent().invalidate();
         }
         catch(IOException e) {
             if(this.attributes().isFile()) {

@@ -1090,9 +1090,10 @@ public class S3Path extends CloudPath {
                 // Moving the object retaining the metadata of the original.
                 this.getSession().getClient().moveObject(this.getContainerName(), this.getKey(), ((S3Path) renamed).getContainerName(),
                         destination, false);
-                // The directory listing is no more current
-                renamed.getParent().invalidate();
-                this.getParent().invalidate();
+            // The directory listing of the target is no more current
+            renamed.getParent().invalidate();
+            // The directory listing of the source is no more current
+            this.getParent().invalidate();
             }
             if(attributes().isDirectory()) {
                 for(AbstractPath i : this.children()) {
@@ -1146,12 +1147,14 @@ public class S3Path extends CloudPath {
                         i.copy(destination);
                     }
                 }
+                // The directory listing is no more current
+                copy.getParent().invalidate();
             }
             catch(ServiceException e) {
-                this.error(this.attributes().isFile() ? "Cannot copy file" : "Cannot copy folder", e);
+                this.error("Cannot copy {0}");
             }
             catch(IOException e) {
-                this.error(this.attributes().isFile() ? "Cannot copy file" : "Cannot copy folder", e);
+                this.error("Cannot copy {0}");
             }
         }
         else {
