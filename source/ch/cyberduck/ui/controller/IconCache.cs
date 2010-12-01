@@ -100,12 +100,13 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             if (path.attributes().isSymbolicLink())
             {
+                Bitmap overlay = IconForName("aliasbadge", size);
                 if (path.attributes().isDirectory())
                 {
-                    return IconForFolder(IconForName("aliasbadge"), size);
+                    return IconForFolder(overlay, size);
                 }
                 Bitmap symlink = IconForFilename(path.getName(), size);
-                return OverlayImages(symlink, IconForName("aliasbadge", size));
+                return OverlayImages(symlink, overlay);
             }
             if (path.attributes().isFile())
             {
