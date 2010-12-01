@@ -460,7 +460,7 @@ public class MainController extends BundleController implements NSApplication.De
                             null, //other
                             null);
                     alert.setAlertStyle(NSAlert.NSInformationalAlertStyle);
-                    if(alert.runModal() == SheetCallback.DEFAULT_OPTION) {
+                    if(this.alert(alert) == SheetCallback.DEFAULT_OPTION) {
                         f.copy(LocalFactory.createLocal(Preferences.instance().getProperty("application.support.path"), f.getName()));
                         for(BrowserController c : MainController.getBrowsers()) {
                             c.removeDonateWindowTitle();
@@ -476,7 +476,17 @@ public class MainController extends BundleController implements NSApplication.De
                             null, //other
                             null);
                     alert.setAlertStyle(NSAlert.NSWarningAlertStyle);
-                    alert.runModal(); //alternate
+                    alert.setShowsHelp(true);
+                    alert.setDelegate(new ProxyController() {
+                        public boolean alertShowHelp(NSAlert alert) {
+                            StringBuilder site = new StringBuilder(Preferences.instance().getProperty("website.help"));
+                            site.append("/").append("faq");
+                            openUrl(site.toString());
+                            return true;
+                        }
+
+                    }.id());
+                    this.alert(alert);
                 }
                 return true;
             }
