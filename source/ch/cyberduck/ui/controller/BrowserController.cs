@@ -789,6 +789,15 @@ namespace Ch.Cyberduck.Ui.Controller
                 foreach (TreePathReference sourceTreePath in args.SourceModels)
                 {
                     Path sourcePath = sourceTreePath.Unique;
+                    if (destination.getSession().equals(sourcePath.getSession()))
+                    {
+                        args.Effect = DragDropEffects.Move;
+                    }
+                    else
+                    {
+                        // If copying between sessions is supported
+                        args.Effect = DragDropEffects.Copy;
+                    }
                     if (sourcePath.attributes().isDirectory() && sourcePath.equals(destination))
                     {
                         // Do not allow dragging onto myself.
@@ -1848,13 +1857,10 @@ namespace Ch.Cyberduck.Ui.Controller
         /// <param name="args"></param>
         private void View_BrowserCanDrop(OlvDropEventArgs args)
         {
-            args.Effect = DragDropEffects.None;
             if (IsMounted() && !(args.DataObject is OLVDataObject))
             {
                 if (args.DataObject is DataObject && ((DataObject)args.DataObject).ContainsFileDropList())
                 {
-                    args.Effect = DragDropEffects.Copy;
-
                     Path destination;
                     switch (args.DropTargetLocation)
                     {
@@ -1870,9 +1876,17 @@ namespace Ch.Cyberduck.Ui.Controller
                             destination = Workdir;
                             break;
                         default:
-                            destination = null;
-                            break;
+                            args.Effect = DragDropEffects.None;
+                            args.DropTargetLocation = DropTargetLocation.None;
+                            return;
                     }
+                    if (!getSession().isCreateFileSupported(destination))
+                    {
+                        args.Effect = DragDropEffects.None;
+                        args.DropTargetLocation = DropTargetLocation.None;
+                        return;
+                    }
+                    args.Effect = DragDropEffects.Copy;
                     if (Workdir == destination)
                     {
                         args.DropTargetLocation = DropTargetLocation.Background;

@@ -2307,6 +2307,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                                    };
                 CanDropOnBackground = true;
                 FeedbackColor = Color.LightBlue;
+                AcceptExternal = true;
             }
 
             /// <summary>
@@ -2344,8 +2345,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                 base.Enter(e);
                 if (!(e.Data is OLVDataObject))
                 {
-                    DropTargetHelper.DragEnter(_form.browser, e.Data, new Point(e.X, e.Y), e.Effect, "Copy to %1",
-                                               "Here"); //todo needs to be localized
+                    DropTargetHelper.DragEnter(_form.browser, e.Data, new Point(e.X, e.Y), e.Effect);
                 }
             }
 
@@ -2367,11 +2367,10 @@ namespace Ch.Cyberduck.Ui.Winforms
                 args.Effect = CalculateStandardDropActionFromKeys();
 
                 // Don't allow drops from other list, if that's what's configured
-                if (!AcceptExternal && args.SourceListView != ListView)
+                if (!AcceptExternal)
                 {
                     args.Effect = DragDropEffects.None;
                     args.DropTargetLocation = DropTargetLocation.None;
-                    //args.InfoMessage = "This browser doesn't accept drops from other browser";
                 }
                 else
                 {
@@ -2719,11 +2718,10 @@ namespace Ch.Cyberduck.Ui.Winforms
                 args.Effect = CalculateStandardDropActionFromKeys();
 
                 // Don't allow drops from other list, if that's what's configured
-                if (!AcceptExternal && args.SourceListView != ListView)
+                if (!AcceptExternal)
                 {
                     args.Effect = DragDropEffects.None;
                     args.DropTargetLocation = DropTargetLocation.None;
-                    //args.InfoMessage = "This browser doesn't accept drops from other browser";
                 }
                 else
                 {
