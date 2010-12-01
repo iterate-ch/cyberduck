@@ -19,10 +19,7 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.AbstractPath;
-import ch.cyberduck.ui.cocoa.application.AppKitFunctions;
-import ch.cyberduck.ui.cocoa.application.NSFont;
-import ch.cyberduck.ui.cocoa.application.NSView;
-import ch.cyberduck.ui.cocoa.application.NSWorkspace;
+import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.foundation.*;
 
 import org.apache.commons.lang.StringUtils;
@@ -109,5 +106,9 @@ public abstract class BundleController extends ProxyController {
         else {
             AppKitFunctions.instance.NSBeep();
         }
+    }
+
+    protected int alert(final NSAlert alert) {
+        return alert.runModal();
     }
 }

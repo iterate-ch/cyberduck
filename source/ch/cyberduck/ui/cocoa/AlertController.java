@@ -83,6 +83,12 @@ public abstract class AlertController extends SheetController {
         ;
     }
 
+    /**
+     * When the help button is pressed, the alert delegate (delegate) is first sent a alertShowHelp: message.
+     *
+     * @param alert
+     * @return True if help request was handled.
+     */
     public boolean alertShowHelp(NSAlert alert) {
         this.help();
         return true;
