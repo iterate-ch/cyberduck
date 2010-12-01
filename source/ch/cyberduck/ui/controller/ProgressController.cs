@@ -1,4 +1,4 @@
-﻿//
+﻿// 
 // Copyright (c) 2010 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
@@ -22,6 +22,7 @@ using Ch.Cyberduck.Core;
 using ch.cyberduck.core.io;
 using ch.cyberduck.ui;
 using Ch.Cyberduck.Ui.Controller.Threading;
+using Ch.Cyberduck.Ui.Winforms.Controls;
 using java.lang;
 using java.util;
 using java.util.concurrent;
@@ -224,10 +225,12 @@ namespace Ch.Cyberduck.Ui.Controller
 
             public override void didTransferPath(Path path)
             {
-                if(null != _progressTimer) {
+                if (null != _progressTimer)
+                {
                     _progressTimer.cancel(false);
                 }
-                if(null != _controller._meter) {
+                if (null != _controller._meter)
+                {
                     _controller._meter.reset();
                 }
             }

@@ -2278,6 +2278,9 @@ source/ch/cyberduck/ui/winforms/controls/SearchTextBox.cs -text
 source/ch/cyberduck/ui/winforms/controls/SearchTextBox2.Designer.cs -text
 source/ch/cyberduck/ui/winforms/controls/SearchTextBox2.cs -text
 source/ch/cyberduck/ui/winforms/controls/SplitButton.cs -text
+source/ch/cyberduck/ui/winforms/controls/TransferControl.Designer.cs -text svneol=unset#application/octet-stream
+source/ch/cyberduck/ui/winforms/controls/TransferControl.cs -text svneol=unset#application/octet-stream
+source/ch/cyberduck/ui/winforms/controls/TransferControl.resx -text svneol=unset#application/octet-stream
 source/ch/cyberduck/ui/winforms/controls/VistaMenu.cs -text
 source/ch/cyberduck/ui/winforms/controls/VistaMenuOwnerDrawn.cs -text
 source/ch/cyberduck/ui/winforms/controls/design/SearchTextBoxDesigner.cs -text

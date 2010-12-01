@@ -16,6 +16,7 @@
 // yves@cyberduck.ch
 // 
 using System.Collections.Generic;
+using Ch.Cyberduck.Ui.Winforms.Controls;
 
 namespace Ch.Cyberduck.Ui.Controller
 {

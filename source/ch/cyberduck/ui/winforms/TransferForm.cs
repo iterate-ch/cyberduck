@@ -25,6 +25,7 @@ using Ch.Cyberduck.Core;
 using ch.cyberduck.core.io;
 using ch.cyberduck.ui.controller;
 using Ch.Cyberduck.Ui.Controller;
+using Ch.Cyberduck.Ui.Winforms.Controls;
 using Windows7.DesktopIntegration;
 using Windows7.DesktopIntegration.WindowsForms;
 

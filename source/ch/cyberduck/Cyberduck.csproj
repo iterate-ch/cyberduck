@@ -206,6 +206,12 @@
     <Compile Include="ui\winforms\controls\SearchTextBox2.Designer.cs">
       <DependentUpon>SearchTextBox2.cs</DependentUpon>
     </Compile>
+    <Compile Include="ui\winforms\controls\TransferControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ui\winforms\controls\TransferControl.Designer.cs">
+      <DependentUpon>TransferControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="ui\winforms\controls\VistaMenu.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -223,10 +229,6 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <SubType>Designer</SubType>
       <LastGenOutput>ResourcesBundle.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ui\controller\TransferControl.resx">
-      <DependentUpon>TransferControl.cs</DependentUpon>
-      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="ui\winforms\AboutBox.resx">
       <DependentUpon>AboutBox.cs</DependentUpon>
@@ -250,6 +252,10 @@
     </EmbeddedResource>
     <EmbeddedResource Include="ui\winforms\ConnectionForm.resx">
       <DependentUpon>ConnectionForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ui\winforms\controls\TransferControl.resx">
+      <DependentUpon>TransferControl.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="ui\winforms\CreateFilePromptForm.resx">
@@ -397,12 +403,6 @@
     <Compile Include="ui\controller\threading\SimpleDefaultMainAction.cs" />
     <Compile Include="ui\controller\threading\SimpleWindowMainAction.cs" />
     <Compile Include="ui\controller\threading\WindowMainAction.cs" />
-    <Compile Include="ui\controller\TransferControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="ui\controller\TransferControl.Designer.cs">
-      <DependentUpon>TransferControl.cs</DependentUpon>
-    </Compile>
     <Compile Include="ui\controller\TransferController.cs" />
     <Compile Include="ui\controller\TransferPromptController.cs" />
     <Compile Include="ui\controller\TransferPromptModel.cs" />
