@@ -476,8 +476,12 @@ public class BookmarkTableDataSource extends ListDataSource {
     }
 
     /**
-     * @param local
-     * @return
+     * @param local indicates that the candidate destination object (the window or view over which the dragged
+     *              image is currently poised) is in the same application as the source, while a NO value indicates that
+     *              the destination object is in a different application
+     * @return A mask, created by combining the dragging operations listed in the NSDragOperation section of
+     *         NSDraggingInfo protocol reference using the C bitwise OR operator.If the source does not permit
+     *         any dragging operations, it should return NSDragOperationNone.
      * @see NSDraggingSource
      */
     @Override

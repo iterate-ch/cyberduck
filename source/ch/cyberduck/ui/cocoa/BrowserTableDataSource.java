@@ -231,8 +231,12 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
     }
 
     /**
-     * @param local
-     * @return
+     * @param local indicates that the candidate destination object (the window or view over which the dragged
+     *              image is currently poised) is in the same application as the source, while a NO value indicates that
+     *              the destination object is in a different application
+     * @return A mask, created by combining the dragging operations listed in the NSDragOperation section of
+     *         NSDraggingInfo protocol reference using the C bitwise OR operator.If the source does not permit
+     *         any dragging operations, it should return NSDragOperationNone.
      * @see NSDraggingSource
      */
     public NSUInteger draggingSourceOperationMaskForLocal(boolean local) {
@@ -387,18 +391,19 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
             }
             log.debug("Operation Mask:" + info.draggingSourceOperationMask().intValue());
             this.setDropRowAndDropOperation(view, destination, row);
-            if(info.draggingSourceOperationMask().intValue() == NSDraggingInfo.NSDragOperationCopy.intValue()) {
-                // Explicit copy requested if drag operation is already NSDragOperationCopy. User is pressing the option key.
-                return NSDraggingInfo.NSDragOperationCopy;
-            }
-            // Defaulting to move
             List<PathPasteboard> pasteboards = PathPasteboard.allPasteboards();
             for(PathPasteboard pasteboard : pasteboards) {
                 if(pasteboard.isEmpty()) {
                     continue;
                 }
                 if(pasteboard.getSession().equals(controller.getSession())) {
-                    return NSDraggingInfo.NSDragOperationNone;
+
+                    if(info.draggingSourceOperationMask().intValue() == NSDraggingInfo.NSDragOperationCopy.intValue()) {
+                        // Explicit copy requested if drag operation is already NSDragOperationCopy. User is pressing the option key.
+                        return NSDraggingInfo.NSDragOperationCopy;
+                    }
+                    // Defaulting to move for same session
+                    return NSDraggingInfo.NSDragOperationMove;
                 }
                 else {
                     // If copying between sessions is supported
