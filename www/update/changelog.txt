@@ -13,7 +13,6 @@
 - [Bugfix] Apply custom HTTP headers recursively (S3)
 - [Bugfix] Interoperability (#2609, #4231, #2915) (WebDAV)
 - [Bugfix] SSL version number incompatibility (#5061)
-- [Bugfix] Display decimal file size (10.6) #3771)
 - [Bugfix] Preserve upload modification date does not work for folders (#3017)
 
 4.0b6 [http://trac.cyberduck.ch/milestone/4.0b6]
