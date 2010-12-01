@@ -46,7 +46,7 @@ namespace Ch.Cyberduck.Ui.Controller
             this.progressLabel.AutoSize = true;
             this.progressLabel.Location = new System.Drawing.Point(77, 53);
             this.progressLabel.Name = "progressLabel";
-            this.progressLabel.Size = new System.Drawing.Size(100, 15);
+            this.progressLabel.Size = new System.Drawing.Size(109, 15);
             this.progressLabel.TabIndex = 1;
             this.progressLabel.Text = "56.1 KB of 56.1 KB";
             // 
@@ -76,7 +76,7 @@ namespace Ch.Cyberduck.Ui.Controller
             this.messageLabel.AutoSize = true;
             this.messageLabel.Location = new System.Drawing.Point(77, 71);
             this.messageLabel.Name = "messageLabel";
-            this.messageLabel.Size = new System.Drawing.Size(204, 15);
+            this.messageLabel.Size = new System.Drawing.Size(223, 15);
             this.messageLabel.TabIndex = 5;
             this.messageLabel.Text = "19. Februar 2010 13:21:45 GMT +01:00";
             // 
@@ -94,7 +94,7 @@ namespace Ch.Cyberduck.Ui.Controller
             this.statusPictureBox.Image = global::Ch.Cyberduck.ResourcesBundle.statusGreen;
             this.statusPictureBox.Location = new System.Drawing.Point(51, 50);
             this.statusPictureBox.Name = "statusPictureBox";
-            this.statusPictureBox.Size = new System.Drawing.Size(19, 18);
+            this.statusPictureBox.Size = new System.Drawing.Size(20, 20);
             this.statusPictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.statusPictureBox.TabIndex = 4;
             this.statusPictureBox.TabStop = false;
@@ -121,9 +121,9 @@ namespace Ch.Cyberduck.Ui.Controller
             this.Controls.Add(this.progressLabel);
             this.Controls.Add(this.directionPictureBox);
             this.Controls.Add(this.progressBar);
-            this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Name = "TransferControl";
-            this.Size = new System.Drawing.Size(464, 93);
+            this.Size = new System.Drawing.Size(464, 90);
             ((System.ComponentModel.ISupportInitialize)(this.statusPictureBox)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.directionPictureBox)).EndInit();
             this.ResumeLayout(false);

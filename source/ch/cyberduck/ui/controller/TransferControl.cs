@@ -30,14 +30,12 @@ namespace Ch.Cyberduck.Ui.Controller
         private bool _selected;
 
         public TransferControl()
-        {
-            Font = SystemFonts.MessageBoxFont;
-
-            InitializeComponent();
-
+        {            
             SetStyle(
                 ControlStyles.DoubleBuffer | ControlStyles.AllPaintingInWmPaint |
                 ControlStyles.OptimizedDoubleBuffer, true);
+
+            InitializeComponent();
 
             // route events to parent control which is normally a ListView
             statusLabel.Click += delegate { OnClick(EventArgs.Empty); };
