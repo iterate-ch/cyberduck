@@ -124,7 +124,7 @@ namespace Ch.Cyberduck.Ui.Controller
             #region Commands - File
 
             View.NewBrowser += View_NewBrowser;
-            View.ValidateNewBrowser += () => true;
+            View.ValidateNewBrowser += View_ValidateNewBrowser;
             View.OpenConnection += View_OpenConnection;
             View.ValidateOpenConnection += () => true;
             View.NewDownload += View_NewDownload;
@@ -285,6 +285,11 @@ namespace Ch.Cyberduck.Ui.Controller
             //hostCollection.addListener(this);
             View.ViewClosedEvent += delegate { bookmarkCollection.removeListener(this); };
             View.SetBookmarkModel(bookmarkCollection);
+        }
+
+        private bool View_ValidateNewBrowser()
+        {
+            return IsMounted();
         }
 
         public BrowserController()
