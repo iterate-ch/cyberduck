@@ -360,13 +360,15 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                 log.warn("Dragging destination is null.");
                 return NSDraggingInfo.NSDragOperationNone;
             }
+            if(!controller.getSession().isCreateFileSupported(destination)) {
+                // Target file system does not support creating files. Creating files is not supported
+                // for example in root of cloud storage accounts.
+                return NSDraggingInfo.NSDragOperationNone;
+            }
             // Files dragged form other application
             if(info.draggingPasteboard().availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.FilenamesPboardType)) != null) {
-                if(controller.getSession().isCreateFileSupported(destination)) {
-                    // Creating files is not supported for example in root of cloud storage accounts.
-                    this.setDropRowAndDropOperation(view, destination, row);
-                    return NSDraggingInfo.NSDragOperationCopy;
-                }
+                this.setDropRowAndDropOperation(view, destination, row);
+                return NSDraggingInfo.NSDragOperationCopy;
             }
             // Files dragged from browser
             for(Path next : PathPasteboard.getPasteboard(controller.getSession())) {
@@ -387,11 +389,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
             this.setDropRowAndDropOperation(view, destination, row);
             if(info.draggingSourceOperationMask().intValue() == NSDraggingInfo.NSDragOperationCopy.intValue()) {
                 // Explicit copy requested if drag operation is already NSDragOperationCopy. User is pressing the option key.
-                if(controller.getSession().isCreateFileSupported(destination)) {
-                    return NSDraggingInfo.NSDragOperationCopy;
-                }
-                // Target file system does not support creating files.
-                return NSDraggingInfo.NSDragOperationNone;
+                return NSDraggingInfo.NSDragOperationCopy;
             }
             // Defaulting to move
             List<PathPasteboard> pasteboards = PathPasteboard.allPasteboards();
@@ -400,9 +398,6 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                     continue;
                 }
                 if(pasteboard.getSession().equals(controller.getSession())) {
-                    if(controller.getSession().isCreateFileSupported(destination)) {
-                        return NSDraggingInfo.NSDragOperationMove;
-                    }
                     return NSDraggingInfo.NSDragOperationNone;
                 }
                 else {
