@@ -155,7 +155,7 @@ namespace Ch.Cyberduck.Ui.Controller
         public CheckState SetCheckState(object reference, CheckState newValue)
         {
             Path path = GetPath((TreePathReference) reference);
-            if (!path.status().isSkipped())
+            if (!Transfer.isSkipped(path))
             {
                 Transfer.setSelected(path, newValue == CheckState.Checked ? true : false);
                 return newValue;
