@@ -846,7 +846,7 @@ public abstract class Session implements TranscriptListener {
     }
 
     protected void error(String message, Throwable e) {
-        this.error(null, message, e);
+        this.error(workdir, message, e);
     }
 
     /**

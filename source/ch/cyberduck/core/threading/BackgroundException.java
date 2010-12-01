@@ -36,6 +36,7 @@ import com.rackspacecloud.client.cloudfiles.FilesException;
 import java.io.IOException;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.text.MessageFormat;
 
 /**
  * @version $Id$
@@ -52,7 +53,12 @@ public class BackgroundException extends Exception {
         super(cause);
         this.session = session;
         this.path = path;
-        this.message = message;
+        if(null == path) {
+            this.message = message;
+        }
+        else {
+            this.message = MessageFormat.format(message, path.getName());
+        }
     }
 
     @Override
