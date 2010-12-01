@@ -53,10 +53,9 @@ namespace Ch.Cyberduck.Ui.Controller
             // statusLabel
             // 
             this.statusLabel.AutoSize = true;
-            this.statusLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.statusLabel.Location = new System.Drawing.Point(51, 33);
             this.statusLabel.Name = "statusLabel";
-            this.statusLabel.Size = new System.Drawing.Size(118, 13);
+            this.statusLabel.Size = new System.Drawing.Size(117, 15);
             this.statusLabel.TabIndex = 2;
             this.statusLabel.Text = "Download complete";
             // 
@@ -121,7 +120,6 @@ namespace Ch.Cyberduck.Ui.Controller
             this.Controls.Add(this.progressLabel);
             this.Controls.Add(this.directionPictureBox);
             this.Controls.Add(this.progressBar);
-            this.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Name = "TransferControl";
             this.Size = new System.Drawing.Size(464, 90);
             ((System.ComponentModel.ISupportInitialize)(this.statusPictureBox)).EndInit();

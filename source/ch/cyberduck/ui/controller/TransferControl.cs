@@ -30,12 +30,14 @@ namespace Ch.Cyberduck.Ui.Controller
         private bool _selected;
 
         public TransferControl()
-        {            
+        {
+            Font = SystemFonts.MessageBoxFont;
+
+            InitializeComponent();
+
             SetStyle(
                 ControlStyles.DoubleBuffer | ControlStyles.AllPaintingInWmPaint |
                 ControlStyles.OptimizedDoubleBuffer, true);
-
-            InitializeComponent();
 
             // route events to parent control which is normally a ListView
             statusLabel.Click += delegate { OnClick(EventArgs.Empty); };
@@ -52,6 +54,8 @@ namespace Ch.Cyberduck.Ui.Controller
                                        };
             filesComboBox.LostFocus += delegate { _focusRemoveAllowed = true; };
             progressBar.MarqueeAnimationSpeed = 50;
+
+            statusLabel.Font = new Font(statusLabel.Font, FontStyle.Bold);
 
             // initialize colors
             Selected = false;
