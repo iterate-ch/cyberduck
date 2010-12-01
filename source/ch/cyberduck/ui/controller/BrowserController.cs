@@ -265,6 +265,7 @@ namespace Ch.Cyberduck.Ui.Controller
             UpdateOpenIcon();
 
             View.ToolbarVisible = Preferences.instance().getBoolean("browser.toolbar");
+            View.LogDrawerVisible = Preferences.instance().getBoolean("browser.logDrawer.isOpen");
 
             //todo
             View.GetEditors += delegate { return new List<string> { "TODO" }; };
@@ -2975,25 +2976,21 @@ namespace Ch.Cyberduck.Ui.Controller
             switch (view)
             {
                 case BrowserView.File:
-                    View.LogDrawerVisible = Preferences.instance().getBoolean("browser.logDrawer.isOpen");
                     View.CurrentView = BrowserView.File;
                     UpdateStatusLabel();
                     //ReloadData(false); //not necessary?
                     break;
                 case BrowserView.Bookmark:
-                    View.LogDrawerVisible = false;
                     View.CurrentView = BrowserView.Bookmark;
                     _bookmarkModel.Source = BookmarkCollection.defaultCollection();
                     ReloadBookmarks();
                     break;
                 case BrowserView.History:
-                    View.LogDrawerVisible = false;
                     View.CurrentView = BrowserView.History;
                     _bookmarkModel.Source = HistoryCollection.defaultCollection();
                     ReloadBookmarks();
                     break;
                 case BrowserView.Bonjour:
-                    View.LogDrawerVisible = false;
                     View.CurrentView = BrowserView.Bonjour;
                     _bookmarkModel.Source = RendezvousCollection.defaultCollection();
                     ReloadBookmarks();
