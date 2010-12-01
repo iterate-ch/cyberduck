@@ -80,8 +80,7 @@ namespace Ch.Cyberduck.Ui.Controller
             // Add the event handler for handling non-UI thread exceptions to the event. 
             AppDomain.CurrentDomain.UnhandledException += UnhandledExceptionHandler;
 
-            ConfigureLogging();
-            LoadCollections();
+            ConfigureLogging();           
 
             //make sure that a language change takes effect after a restart only
             StartupLanguage = Preferences.instance().getProperty("application.language");
@@ -178,12 +177,6 @@ namespace Ch.Cyberduck.Ui.Controller
             HostKeyController.Register();
             UserDefaultsDateFormatter.Register();
             Rendezvous.Register();
-        }
-
-        private static void LoadCollections()
-        {
-            BookmarkCollection.defaultCollection().load();
-            HistoryCollection.defaultCollection().load();
         }
 
         private static void ConfigureLogging()
@@ -327,7 +320,11 @@ namespace Ch.Cyberduck.Ui.Controller
             //Registering for Growl is an expensive operation. Takes up to 500ms on my machine.
             _bc.Background(delegate { ch.cyberduck.ui.growl.Growl.instance().register(); }, delegate { });
 
-            // Bonjour initialization
+            _bc.Background(delegate { BookmarkCollection.defaultCollection().load(); }, delegate { });
+            _bc.Background(delegate { HistoryCollection.defaultCollection().load(); }, delegate { });
+            _bc.Background(delegate { TransferCollection.defaultCollection().load(); },  delegate {  });
+
+            // Bonjour initialization);
             if (Preferences.instance().getBoolean("rendezvous.enable"))
             {
                 try
