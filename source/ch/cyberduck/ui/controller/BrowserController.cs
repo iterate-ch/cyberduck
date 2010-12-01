@@ -372,7 +372,8 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public void collectionLoaded()
         {
-            ;
+            AsyncDelegate mainAction = delegate { ReloadBookmarks(); };
+            Invoke(mainAction);
         }
 
         public void collectionItemAdded(object obj)

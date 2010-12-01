@@ -80,7 +80,7 @@ namespace Ch.Cyberduck.Ui.Controller
             // Add the event handler for handling non-UI thread exceptions to the event. 
             AppDomain.CurrentDomain.UnhandledException += UnhandledExceptionHandler;
 
-            ConfigureLogging();           
+            ConfigureLogging();
 
             //make sure that a language change takes effect after a restart only
             StartupLanguage = Preferences.instance().getProperty("application.language");
@@ -207,7 +207,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             IsSingleInstance = true;
             // Needed for multiple SDI because no form is the main form
-            ShutdownStyle = ShutdownMode.AfterAllFormsClose;            
+            ShutdownStyle = ShutdownMode.AfterAllFormsClose;
         }
 
         /// <summary>
@@ -267,7 +267,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     if ("duck".Equals(f.getExtension()))
                     {
-                        Host host = (Host)HostReaderFactory.instance().read(f);
+                        Host host = (Host) HostReaderFactory.instance().read(f);
                         NewBrowser().Mount(host);
                     }
                 }
@@ -322,7 +322,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
             _bc.Background(delegate { BookmarkCollection.defaultCollection().load(); }, delegate { });
             _bc.Background(delegate { HistoryCollection.defaultCollection().load(); }, delegate { });
-            _bc.Background(delegate { TransferCollection.defaultCollection().load(); },  delegate {  });
+            _bc.Background(delegate { TransferCollection.defaultCollection().load(); }, delegate { });
 
             // Bonjour initialization);
             if (Preferences.instance().getBoolean("rendezvous.enable"))
