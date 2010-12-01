@@ -478,8 +478,8 @@ public class CFPath extends CloudPath {
     @Override
     public String toHttpURL() {
         CFSession session = this.getSession();
-        if(session.cdn().isConfigured()) {
-            for(Distribution.Method method : session.cdn().getMethods()) {
+        for(Distribution.Method method : session.cdn().getMethods()) {
+            if(session.cdn().isConfigured(method)) {
                 final Distribution distribution = session.cdn().read(session.cdn().getOrigin(method, this.getContainerName()), method);
                 return distribution.getURL(this);
             }
