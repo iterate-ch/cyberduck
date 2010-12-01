@@ -77,12 +77,14 @@ public class TransferController extends WindowController implements NSToolbar.De
                 invoke(new WindowMainAction(TransferController.this) {
                     public void run() {
                         transferSpinner.stopAnimation(null);
+                        transferTable.setGridStyleMask(NSTableView.NSTableViewSolidHorizontalGridLineMask);
                     }
                 });
             }
         });
         if(!source.isLocked()) {
             transferSpinner.stopAnimation(null);
+            transferTable.setGridStyleMask(NSTableView.NSTableViewSolidHorizontalGridLineMask);
         }
 
         super.awakeFromNib();
@@ -513,7 +515,7 @@ public class TransferController extends WindowController implements NSToolbar.De
             c.setDataCell(prototype);
             this.transferTable.addTableColumn(c);
         }
-        this.transferTable.setGridStyleMask(NSTableView.NSTableViewSolidHorizontalGridLineMask);
+        this.transferTable.setGridStyleMask(NSTableView.NSTableViewGridNone);
         //selection properties
         this.transferTable.setAllowsMultipleSelection(true);
         this.transferTable.setAllowsEmptySelection(true);
