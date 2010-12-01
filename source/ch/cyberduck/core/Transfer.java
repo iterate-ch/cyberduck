@@ -404,16 +404,6 @@ public abstract class Transfer implements Serializable {
     }
 
     /**
-     * If the path can be selected for inclusion
-     *
-     * @param item
-     * @return True if selectable
-     */
-    public boolean isSelectable(Path item) {
-        return !this.isSkipped(item);
-    }
-
-    /**
      * Select the path to be included in the transfer
      *
      * @param item
@@ -733,9 +723,6 @@ public abstract class Transfer implements Serializable {
      */
     public boolean isComplete() {
         for(Path root : this.roots) {
-            if(this.isSkipped(root)) {
-                continue;
-            }
             if(!root.status().isComplete()) {
                 return false;
             }
