@@ -90,6 +90,7 @@
     </target>
 
     <target name="package" depends="build, timestamp">
+        <echo message="_REVISION_=${svn.revision}"/>
         <echo message="_SPARKLEFEED_=${sparkle.feed}"/>
         <replace dir="${app.bundle}" summary="true" encoding="UTF-8">
             <include name="**/Info.plist"/>
@@ -170,13 +171,7 @@
                   algorithm="md5"/>
     </target>
 
-    <target name="nightly" depends="clean, revision">
-	    <echo message="_REVISION_=${svn.revision}"/>
-        <antcall target="package">
-            <param name="url.archive" value="http://update.cyberduck.ch/nightly/Cyberduck-_REVISION_.tar.gz"/>
-            <param name="url.changelog" value="http://version.cyberduck.ch/nightly/changelog.html"/>
-            <param name="sparkle.feed" value="https://version.cyberduck.ch/nightly/changelog.rss"/>
-        </antcall>
+    <target name="nightly" depends="package-nightly">
 	    <echo message="_REVISION_=${svn.revision}"/>
         <scp file="${build}/${app.name}-${svn.revision}.tar.gz"
              todir="dkocher@update.cyberduck.ch:./update.cyberduck.ch/nightly/"
@@ -201,13 +196,7 @@
         </scp>
     </target>
 
-    <target name="beta" depends="clean, revision">
-	    <echo message="_REVISION_=${svn.revision}"/>
-        <antcall target="package">
-            <param name="url.archive" value="http://update.cyberduck.ch/beta/Cyberduck-_REVISION_.tar.gz"/>
-            <param name="url.changelog" value="http://version.cyberduck.ch/beta/changelog.html"/>
-            <param name="sparkle.feed" value="https://version.cyberduck.ch/beta/changelog.rss"/>
-        </antcall>
+    <target name="beta" depends="package-beta">
 	    <echo message="_REVISION_=${svn.revision}"/>
         <scp file="${build}/${app.name}-${svn.revision}.tar.gz"
              todir="dkocher@update.cyberduck.ch:./update.cyberduck.ch/beta/"
@@ -232,13 +221,7 @@
         </scp>
     </target>
 
-    <target name="release" depends="clean, revision">
-        <antcall target="package">
-            <param name="url.archive" value="http://update.cyberduck.ch/Cyberduck-_REVISION_.tar.gz"/>
-            <param name="url.changelog" value="http://version.cyberduck.ch/changelog.html"/>
-            <param name="sparkle.feed" value="https://version.cyberduck.ch/changelog.rss"/>
-        </antcall>
-        <antcall target="zip"/>
+    <target name="release" depends="package-release">
         <scp file="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.zip"
              todir="dkocher@update.cyberduck.ch:./update.cyberduck.ch/"
              keyfile="${user.home}/.ssh/update.cyberduck.ch-rsa"
@@ -270,5 +253,31 @@
              keyfile="${user.home}/.ssh/version.cyberduck.ch-rsa"
              passphrase="">
         </scp>
+    </target>
+
+    <target name="package-release" depends="clean, revision">
+        <antcall target="package">
+            <param name="url.archive" value="http://update.cyberduck.ch/Cyberduck-_REVISION_.tar.gz"/>
+            <param name="url.changelog" value="http://version.cyberduck.ch/changelog.html"/>
+            <param name="sparkle.feed" value="https://version.cyberduck.ch/changelog.rss"/>
+        </antcall>
+        <!-- Releases include ZIP -->
+        <antcall target="zip"/>
+    </target>
+
+    <target name="package-beta" depends="clean, revision">
+        <antcall target="package">
+            <param name="url.archive" value="http://update.cyberduck.ch/beta/Cyberduck-_REVISION_.tar.gz"/>
+            <param name="url.changelog" value="http://version.cyberduck.ch/beta/changelog.html"/>
+            <param name="sparkle.feed" value="https://version.cyberduck.ch/beta/changelog.rss"/>
+        </antcall>
+    </target>
+
+    <target name="package-nightly" depends="clean, revision">
+        <antcall target="package">
+            <param name="url.archive" value="http://update.cyberduck.ch/nightly/Cyberduck-_REVISION_.tar.gz"/>
+            <param name="url.changelog" value="http://version.cyberduck.ch/nightly/changelog.html"/>
+            <param name="sparkle.feed" value="https://version.cyberduck.ch/nightly/changelog.rss"/>
+        </antcall>
     </target>
 </project>
