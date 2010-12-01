@@ -319,6 +319,29 @@ public class CFPath extends CloudPath {
                 String etag = null;
                 try {
                     final HashMap<String, String> metadata = new HashMap<String, String>();
+                    // Default metadata for new files
+                    for(String m : Preferences.instance().getList("cf.metadata.default")) {
+                        if(StringUtils.isBlank(m)) {
+                            log.warn("Invalid header " + m);
+                            continue;
+                        }
+                        if(!m.contains("=")) {
+                            log.warn("Invalid header " + m);
+                            continue;
+                        }
+                        int split = m.indexOf('=');
+                        String name = m.substring(0, split);
+                        if(StringUtils.isBlank(name)) {
+                            log.warn("Missing key in " + m);
+                            continue;
+                        }
+                        String value = m.substring(split + 1);
+                        if(StringUtils.isEmpty(value)) {
+                            log.warn("Missing value in " + m);
+                            continue;
+                        }
+                        metadata.put(name, value);
+                    }
                     etag = this.getSession().getClient().storeObjectAs(this.getContainerName(), this.getKey(),
                             new InputStreamRequestEntity(in,
                                     this.getLocal().attributes().getSize() - status.getCurrent(),

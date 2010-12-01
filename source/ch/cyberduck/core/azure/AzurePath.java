@@ -26,6 +26,7 @@ import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.ui.DateFormatterFactory;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.log4j.Logger;
@@ -470,6 +471,31 @@ public class AzurePath extends CloudPath {
                     AzureSession.AzureContainer container = this.getSession().getContainer(this.getContainerName());
                     final BlobProperties properties = new BlobProperties(this.getKey());
                     properties.setContentType(this.getLocal().getMimeType());
+                    NameValueCollection metadata = new NameValueCollection();
+                    // Default metadata for new files
+                    for(String m : Preferences.instance().getList("azure.metadata.default")) {
+                        if(StringUtils.isBlank(m)) {
+                            log.warn("Invalid header " + m);
+                            continue;
+                        }
+                        if(!m.contains("=")) {
+                            log.warn("Invalid header " + m);
+                            continue;
+                        }
+                        int split = m.indexOf('=');
+                        String name = m.substring(0, split);
+                        if(StringUtils.isBlank(name)) {
+                            log.warn("Missing key in " + m);
+                            continue;
+                        }
+                        String value = m.substring(split + 1);
+                        if(StringUtils.isEmpty(value)) {
+                            log.warn("Missing value in " + m);
+                            continue;
+                        }
+                        metadata.put(name, value);
+                    }
+                    properties.setMetadata(metadata);
                     boolean blob = container.createBlob(properties, new HttpEntity() {
                         public boolean isRepeatable() {
                             return false;

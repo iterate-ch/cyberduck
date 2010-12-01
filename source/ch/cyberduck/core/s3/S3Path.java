@@ -546,7 +546,7 @@ public class S3Path extends CloudPath {
                 // Storage class
                 object.setStorageClass(Preferences.instance().getProperty("s3.storage.class"));
                 // Default metadata for new files
-                for(String m : Preferences.instance().getProperty("s3.metadata.default").split("\\p{javaWhitespace}+")) {
+                for(String m : Preferences.instance().getList("s3.metadata.default")) {
                     if(StringUtils.isBlank(m)) {
                         log.warn("Invalid header " + m);
                         continue;

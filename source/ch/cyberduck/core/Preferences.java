@@ -533,6 +533,8 @@ public abstract class Preferences {
          * Default metadata for uploads. Format must be "key1=value1 key2=value2"
          */
         defaults.put("s3.metadata.default", "");
+        defaults.put("cf.metadata.default", "");
+        defaults.put("azure.metadata.default", "");
 
         defaults.put("webdav.followRedirects", String.valueOf(true));
 
@@ -671,6 +673,10 @@ public abstract class Preferences {
         defaults.put("ssh.publickey", "ssh-rsa");
         defaults.put("ssh.compression", "none"); //zlib
 
+        defaults.put("ssh.authentication.publikey.default.enable", String.valueOf(true));
+        defaults.put("ssh.authentication.publickey.default.rsa", "~/.ssh/id_rsa");
+        defaults.put("ssh.authentication.publickey.default.dsa", "~/.ssh/id_dsa");
+
         defaults.put("archive.default", "tar.gz");
 
         /**
@@ -723,7 +729,9 @@ public abstract class Preferences {
      * @param property
      * @return
      */
-    public abstract List<String> getList(String property);
+    public List<String> getList(String property) {
+        return Arrays.asList(this.getProperty(property).split("\\p{javaWhitespace}+"));
+    }
 
     /**
      * Give value in user settings or default value if not customized.
