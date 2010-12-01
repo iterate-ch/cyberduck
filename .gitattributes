@@ -2180,9 +2180,6 @@ source/ch/cyberduck/ui/controller/SettingsDictionary.cs -text
 source/ch/cyberduck/ui/controller/SyncPromptController.cs -text
 source/ch/cyberduck/ui/controller/SyncPromptModel.cs -text
 source/ch/cyberduck/ui/controller/TcpReachability.cs -text
-source/ch/cyberduck/ui/controller/TransferControl.Designer.cs -text
-source/ch/cyberduck/ui/controller/TransferControl.cs -text
-source/ch/cyberduck/ui/controller/TransferControl.resx -text
 source/ch/cyberduck/ui/controller/TransferController.cs -text
 source/ch/cyberduck/ui/controller/TransferPromptController.cs -text
 source/ch/cyberduck/ui/controller/TransferPromptModel.cs -text
