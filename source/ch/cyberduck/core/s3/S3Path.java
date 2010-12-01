@@ -857,10 +857,10 @@ public class S3Path extends CloudPath {
                 this.getParent().invalidate();
             }
             catch(ServiceException e) {
-                this.error("Cannot create folder", e);
+                this.error("Cannot create folder {0}", e);
             }
             catch(IOException e) {
-                this.error("Cannot create folder", e);
+                this.error("Cannot create folder {0}", e);
             }
         }
     }
@@ -1024,20 +1024,10 @@ public class S3Path extends CloudPath {
             this.getParent().invalidate();
         }
         catch(ServiceException e) {
-            if(this.attributes().isFile()) {
-                this.error("Cannot delete file", e);
-            }
-            if(this.attributes().isDirectory()) {
-                this.error("Cannot delete folder", e);
-            }
+            this.error("Cannot delete {0}", e);
         }
         catch(IOException e) {
-            if(this.attributes().isFile()) {
-                this.error("Cannot delete file", e);
-            }
-            if(this.attributes().isDirectory()) {
-                this.error("Cannot delete folder", e);
-            }
+            this.error("Cannot delete {0}", e);
         }
     }
 
@@ -1106,10 +1096,10 @@ public class S3Path extends CloudPath {
             }
         }
         catch(ServiceException e) {
-            this.error(this.attributes().isFile() ? "Cannot rename file" : "Cannot rename folder", e);
+            this.error("Cannot rename {0}", e);
         }
         catch(IOException e) {
-            this.error(this.attributes().isFile() ? "Cannot rename file" : "Cannot rename folder", e);
+            this.error("Cannot rename {0}", e);
         }
     }
 

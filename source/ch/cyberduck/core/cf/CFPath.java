@@ -382,7 +382,7 @@ public class CFPath extends CloudPath {
                 this.getParent().invalidate();
             }
             catch(IOException e) {
-                this.error("Cannot create folder", e);
+                this.error("Cannot create folder {0}", e);
             }
         }
     }
@@ -418,12 +418,7 @@ public class CFPath extends CloudPath {
             this.getParent().invalidate();
         }
         catch(IOException e) {
-            if(this.attributes().isFile()) {
-                this.error("Cannot delete file", e);
-            }
-            if(this.attributes().isDirectory()) {
-                this.error("Cannot delete folder", e);
-            }
+            this.error("Cannot delete {0}", e);
         }
     }
 

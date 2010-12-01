@@ -258,7 +258,7 @@ public class DropboxPath extends Path {
                 this.getParent().invalidate();
             }
             catch(IOException e) {
-                this.error("Cannot create folder", e);
+                this.error("Cannot create folder {0}", e);
             }
         }
     }
@@ -276,12 +276,7 @@ public class DropboxPath extends Path {
             this.getParent().invalidate();
         }
         catch(IOException e) {
-            if(this.attributes().isFile()) {
-                this.error("Cannot delete file", e);
-            }
-            if(this.attributes().isDirectory()) {
-                this.error("Cannot delete folder", e);
-            }
+            this.error("Cannot delete {0}", e);
         }
     }
 
@@ -300,12 +295,7 @@ public class DropboxPath extends Path {
             this.getParent().invalidate();
         }
         catch(IOException e) {
-            if(attributes().isFile()) {
-                this.error("Cannot rename file", e);
-            }
-            if(attributes().isDirectory()) {
-                this.error("Cannot rename folder", e);
-            }
+            this.error("Cannot rename {0}", e);
         }
     }
 
