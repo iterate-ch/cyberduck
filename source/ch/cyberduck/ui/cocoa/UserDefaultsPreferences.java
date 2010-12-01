@@ -92,15 +92,6 @@ public class UserDefaultsPreferences extends Preferences {
     }
 
     @Override
-    public List<String> getList(final String property) {
-        NSObject value = props.objectForKey(property);
-        if(null == value) {
-            return null;
-        }
-        return this.toList(Rococoa.cast(value, NSArray.class));
-    }
-
-    @Override
     public void setProperty(final String property, final String value) {
         log.info("setProperty:" + property + "," + value);
         if(StringUtils.isNotEmpty(value)) {
