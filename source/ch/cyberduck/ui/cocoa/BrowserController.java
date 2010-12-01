@@ -707,12 +707,14 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 invoke(new WindowMainAction(BrowserController.this) {
                     public void run() {
                         browserSpinner.stopAnimation(null);
+                        bookmarkTable.setGridStyleMask(NSTableView.NSTableViewSolidHorizontalGridLineMask);
                     }
                 });
             }
         });
         if(!source.isLocked()) {
             browserSpinner.stopAnimation(null);
+            bookmarkTable.setGridStyleMask(NSTableView.NSTableViewSolidHorizontalGridLineMask);
         }
         this.setBookmarkFilter(null);
         this.reloadBookmarks();
@@ -1501,7 +1503,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
         // setting appearance attributes()
         this.bookmarkTable.setUsesAlternatingRowBackgroundColors(Preferences.instance().getBoolean("browser.alternatingRows"));
-        this.bookmarkTable.setGridStyleMask(NSTableView.NSTableViewSolidHorizontalGridLineMask);
+        this.bookmarkTable.setGridStyleMask(NSTableView.NSTableViewGridNone);
 
         // selection properties
         this.bookmarkTable.setAllowsMultipleSelection(true);
@@ -2126,8 +2128,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                     final Path source = sourcesIter.next();
                     final Path destination = destinationsIter.next();
                     source.copy(destination);
-                    source.getParent().invalidate();
-                    destination.getParent().invalidate();
                     if(!isConnected()) {
                         break;
                     }
@@ -2179,7 +2179,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                         break;
                     }
                     final Path original = originalIterator.next();
-                    original.getParent().invalidate();
                     final Path renamed = renamedIterator.next();
                     original.rename(renamed);
                     if(!isConnected()) {
