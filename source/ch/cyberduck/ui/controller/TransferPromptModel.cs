@@ -155,7 +155,7 @@ namespace Ch.Cyberduck.Ui.Controller
         public CheckState SetCheckState(object reference, CheckState newValue)
         {
             Path path = GetPath((TreePathReference) reference);
-            if (!Transfer.isSkipped(path))
+            if (!path.status().isSkipped())
             {
                 Transfer.setSelected(path, newValue == CheckState.Checked ? true : false);
                 return newValue;
@@ -252,18 +252,6 @@ namespace Ch.Cyberduck.Ui.Controller
     {
         public virtual bool accept(AbstractPath ap)
         {
-            Path file = (Path) ap;
-            if (file.exists())
-            {
-                if (file.attributes().getSize() == -1)
-                {
-                    file.readSize();
-                }
-                if (file.attributes().getModificationDate() == -1)
-                {
-                    file.readTimestamp();
-                }
-            }
             return true;
         }
     }
