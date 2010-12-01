@@ -400,7 +400,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                     continue;
                 }
                 if(pasteboard.getSession().equals(controller.getSession())) {
-                    if(controller.getSession().isRenameSupported(destination)) {
+                    if(controller.getSession().isCreateFileSupported(destination)) {
                         return NSDraggingInfo.NSDragOperationMove;
                     }
                     return NSDraggingInfo.NSDragOperationNone;
