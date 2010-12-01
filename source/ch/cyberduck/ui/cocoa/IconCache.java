@@ -306,7 +306,7 @@ public class IconCache {
 
     public NSImage iconForPath(final Path item, Integer size, boolean overlay) {
         if(item.attributes().isSymbolicLink()) {
-            NSImage badge = this.iconForName("aliasbadge.png", size);
+            NSImage badge = this.convert(NSImage.imageNamed("aliasbadge.png"), size);
             if(item.attributes().isDirectory()) {
                 return this.iconForFolder(badge, size);
             }
@@ -327,15 +327,18 @@ public class IconCache {
             if(overlay) {
                 if(!item.attributes().getPermission().isExecutable()
                         || (item.isCached() && !item.cache().get(item.getReference()).attributes().isReadable())) {
-                    return this.iconForFolder(this.iconForName("privatefolderbadge.png", size), size);
+                    NSImage badge = this.convert(NSImage.imageNamed("privatefolderbadge.png"), size);
+                    return this.iconForFolder(badge, size);
                 }
                 if(!item.attributes().getPermission().isReadable()) {
                     if(item.attributes().getPermission().isWritable()) {
-                        return this.iconForFolder(this.iconForName("dropfolderbadge.png", size), size);
+                        NSImage badge = this.convert(NSImage.imageNamed("dropfolderbadge.png"), size);
+                        return this.iconForFolder(badge, size);
                     }
                 }
                 if(!item.attributes().getPermission().isWritable()) {
-                    return this.iconForFolder(this.iconForName("readonlyfolderbadge.png", size), size);
+                    NSImage badge = this.convert(NSImage.imageNamed("readonlyfolderbadge.png"), size);
+                    return this.iconForFolder(badge, size);
                 }
             }
             return this.iconForFolder(size);
