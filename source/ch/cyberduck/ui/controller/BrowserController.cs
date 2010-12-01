@@ -796,7 +796,8 @@ namespace Ch.Cyberduck.Ui.Controller
                     Path sourcePath = sourceTreePath.Unique;
                     if (destination.getSession().equals(sourcePath.getSession()))
                     {
-                        args.Effect = DragDropEffects.Move;
+                        // Use drag action from user
+                        // args.Effect = DragDropEffects.Move;
                     }
                     else
                     {
@@ -861,6 +862,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 IDictionary<Path, Path> files = new Dictionary<Path, Path>();
                 if (dropargs.Effect == DragDropEffects.Move)
                 {
+                    // The file should be renamed
                     foreach (TreePathReference reference in dropargs.SourceModels)
                     {
                         Path next = reference.Unique;
@@ -872,6 +874,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
                 if (dropargs.Effect == DragDropEffects.Copy)
                 {
+                    // The file should be duplicated
                     foreach (TreePathReference reference in dropargs.SourceModels)
                     {
                         Path next = reference.Unique;
@@ -3237,8 +3240,6 @@ namespace Ch.Cyberduck.Ui.Controller
                     Path destination = pair.Value;
 
                     source.copy(destination);
-                    source.getParent().invalidate();
-                    destination.getParent().invalidate();
                     if (!BrowserController.IsConnected())
                     {
                         break;
@@ -3493,10 +3494,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     Path original = pair.Key;
                     Path renamed = pair.Value;
 
-                    original.getParent().invalidate();
                     original.rename(renamed);
-                    renamed.invalidate();
-                    renamed.getParent().invalidate();
                     if (!BrowserController.IsConnected())
                     {
                         break;
