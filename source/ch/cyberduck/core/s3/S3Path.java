@@ -1088,7 +1088,7 @@ public class S3Path extends CloudPath {
                 }
                 destination.setAcl(this.convert(this.attributes().getAcl()));
                 // Moving the object retaining the metadata of the original.
-                this.getSession().getClient().moveObject(this.getContainerName(), this.getKey(), this.getContainerName(),
+                this.getSession().getClient().moveObject(this.getContainerName(), this.getKey(), ((S3Path) renamed).getContainerName(),
                         destination, false);
                 // The directory listing is no more current
                 renamed.getParent().invalidate();
