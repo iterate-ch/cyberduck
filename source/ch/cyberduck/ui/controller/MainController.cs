@@ -594,12 +594,17 @@ namespace Ch.Cyberduck.Ui.Controller
                                                                 null,
                                                                 null,
                                                                 null,
-                                                                null,
+                                                                Locale.localizedString("Don't Ask Again", "Configuration"),
                                                                 Locale.localizedString("Review…") + "|" +
                                                                 Locale.localizedString("Quit Anyway"),
                                                                 true,
                                                                 eSysIcons.Warning,
                                                                 eSysIcons.Information);
+                        if (cTaskDialog.VerificationChecked)
+                        {
+                            // Never show again.
+                            Preferences.instance().setProperty("browser.confirmDisconnect", false);
+                        }
                         switch (result)
                         {
                             case -1: // Cancel

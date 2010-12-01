@@ -852,7 +852,13 @@ public class MainController extends BundleController implements NSApplication.De
                             Locale.localizedString("Cancel"), //other
                             Locale.localizedString("Review..."));
                     alert.setAlertStyle(NSAlert.NSWarningAlertStyle);
+                    alert.setShowsSuppressionButton(true);
+                    alert.suppressionButton().setTitle(Locale.localizedString("Don't Ask Again", "Configuration"));
                     int choice = alert.runModal(); //alternate
+                    if(alert.suppressionButton().state() == NSCell.NSOnState) {
+                        // Never show again.
+                        Preferences.instance().setProperty("browser.confirmDisconnect", false);
+                    }
                     if(choice == SheetCallback.OTHER_OPTION) {
                         // Review if at least one window reqested to terminate later, we shall wait.
                         // This will iterate over all mounted browsers.

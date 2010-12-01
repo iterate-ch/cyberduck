@@ -2811,7 +2811,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     }
 
     /**
-     *
      * @param transfer
      * @param prompt
      */
@@ -2820,7 +2819,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     }
 
     /**
-     *
      * @param transfer
      * @param useBrowserConnection
      * @param prompt
@@ -3551,7 +3549,17 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                         Locale.localizedString("Cancel"), // alternate button
                         null //other button
                 );
-                this.alert(alert, callback);
+                alert.setShowsSuppressionButton(true);
+                alert.suppressionButton().setTitle(Locale.localizedString("Don't Ask Again", "Configuration"));
+                this.alert(alert, new SheetCallback() {
+                    public void callback(int returncode) {
+                        if(alert.suppressionButton().state() == NSCell.NSOnState) {
+                            // Never show again.
+                            Preferences.instance().setProperty("browser.confirmDisconnect", false);
+                        }
+                        callback.callback(returncode);
+                    }
+                });
                 // No unmount yet
                 return false;
             }
