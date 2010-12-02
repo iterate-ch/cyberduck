@@ -194,10 +194,6 @@ namespace Ch.Cyberduck.Ui.Controller
             root.addAppender(appender);
 
             root.setLevel(Level.toLevel(Preferences.instance().getProperty("logging")));
-            Logger.getLogger(typeof (Transfer)).setLevel(Level.DEBUG);
-            Logger.getLogger(typeof (SFTPPath)).setLevel(Level.DEBUG);
-            Logger.getLogger(typeof (ch.cyberduck.core.Path)).setLevel(Level.DEBUG);
-            Logger.getLogger(typeof (BrowserController)).setLevel(Level.DEBUG);
         }
 
         /// <summary>
