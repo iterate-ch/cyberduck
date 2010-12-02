@@ -200,12 +200,6 @@ public class CFSession extends CloudHTTP3Session {
     }
 
     @Override
-    public boolean isCDNSupported() {
-        // Only Rackspace supports Limelight CDN.
-        return host.getHostname().equals(Protocol.CLOUDFILES.getDefaultHostname());
-    }
-
-    @Override
     public boolean isChecksumSupported() {
         return true;
     }

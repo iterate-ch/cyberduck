@@ -77,11 +77,6 @@ public class ECSession extends S3Session {
     }
 
     @Override
-    public boolean isCDNSupported() {
-        return false;
-    }
-
-    @Override
     public boolean isLoggingSupported() {
         return false;
     }
