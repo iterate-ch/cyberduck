@@ -35,7 +35,6 @@ namespace Ch.Cyberduck.Ui.Controller
 {
     public sealed class ConnectionController : WindowController<IConnectionView>
     {
-        private static readonly String Auto = Locale.localizedString("Auto");
         private static readonly String ConnectmodeActive = Locale.localizedString("Active");
         private static readonly String ConnectmodePassive = Locale.localizedString("Passive");
 
@@ -45,8 +44,6 @@ namespace Ch.Cyberduck.Ui.Controller
         private static readonly string Default = Locale.localizedString("Default");
         private static readonly Logger Log = Logger.getLogger(typeof (ConnectionController).Name);
 
-        private static readonly string TransferBrowserconnection = Locale.localizedString("Use browser connection");
-        private static readonly string TransferNewconnection = Locale.localizedString("Open new connection");
         private readonly Object _syncRootReachability = new Object();
         private readonly Timer _ticklerRechability;
 
