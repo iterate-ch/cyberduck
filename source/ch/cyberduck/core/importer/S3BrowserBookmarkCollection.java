@@ -93,7 +93,7 @@ public class S3BrowserBookmarkCollection extends ThirdpartyBookmarkCollection {
                             current.getCredentials().setUsername(value);
                         }
                         else if("secret_key".equals(name)) {
-                            current.getCredentials().setUsername(value);
+                            current.getCredentials().setPassword(value);
                         }
                     }
                 }
