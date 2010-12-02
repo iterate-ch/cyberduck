@@ -2640,7 +2640,6 @@ www/update/changelog.html -text
 www/update/changelog.rss -text
 www/update/changelog.txt -text
 www/update/changelog.wyp -text
-www/update/sign.rb -text
 www/update/update.pem -text
 www/update/updater.wyp -text
 www/update/updater.xml -text

@@ -26,14 +26,14 @@
     <property name="jdk.home" value="${user.home}/bin/1.5.0"/>
     <!--<property name="jdk.home" value="/System/Library/Frameworks/JavaVM.framework/Versions/1.5"/>-->
 
-    <property name="build.deploy" value="${build}/${configuration}"/>        
+    <property name="build.deploy" value="${build}/${configuration}"/>
     <property name="app.bundle" value="${build.deploy}/${app.name}.app"/>
     <property name="app.contents" value="${app.bundle}/Contents"/>
     <property name="app.macos" location="${app.contents}/MacOS"/>
     <property name="app.library" value="${app.contents}/Library"/>
     <property name="app.resources" value="${app.contents}/Resources"/>
     <property name="app.java" value="${app.resources}/Java"/>
-    <property name="app.spotlight" value="${app.library}/Spotlight"/>    
+    <property name="app.spotlight" value="${app.library}/Spotlight"/>
     <property name="apple.appstub"
               location="/System/Library/Frameworks/JavaVM.framework/Resources/MacOS/JavaApplicationStub"/>
 
@@ -114,10 +114,9 @@
         <echo message="_MD5SUM_=${md5sum}"/>
 
         <echo message="Calculating DSA signature..."/>
-        <exec dir="${home}" executable="ruby" outputproperty="signature.dsa" failonerror="true">
-            <arg value="${www.update}/sign.rb"/>
-            <arg value="${build}/${app.name}-${svn.revision}.tar.gz"/>
-            <arg value="${www.update}/private.pem"/>
+        <exec dir="${home}" executable="sh" outputproperty="signature.dsa" failonerror="true">
+            <arg value="-c"/>
+            <arg value="openssl dgst -sha1 -binary '${build}/${app.name}-${svn.revision}.tar.gz' | openssl dgst -dss1 -sign ${www.update}/private.pem | openssl enc -base64"/>
         </exec>
         <property name="signature.dsa" value="${signature.dsa}"/>
         <echo message="_DSASIGNATURE_=${signature.dsa}"/>
@@ -172,7 +171,7 @@
     </target>
 
     <target name="nightly" depends="package-nightly">
-	    <echo message="_REVISION_=${svn.revision}"/>
+        <echo message="_REVISION_=${svn.revision}"/>
         <scp file="${build}/${app.name}-${svn.revision}.tar.gz"
              todir="dkocher@update.cyberduck.ch:./update.cyberduck.ch/nightly/"
              keyfile="${user.home}/.ssh/update.cyberduck.ch-rsa"
@@ -197,7 +196,7 @@
     </target>
 
     <target name="beta" depends="package-beta">
-	    <echo message="_REVISION_=${svn.revision}"/>
+        <echo message="_REVISION_=${svn.revision}"/>
         <scp file="${build}/${app.name}-${svn.revision}.tar.gz"
              todir="dkocher@update.cyberduck.ch:./update.cyberduck.ch/beta/"
              keyfile="${user.home}/.ssh/update.cyberduck.ch-rsa"
