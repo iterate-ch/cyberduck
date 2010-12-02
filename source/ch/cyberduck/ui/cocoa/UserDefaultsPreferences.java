@@ -160,6 +160,10 @@ public class UserDefaultsPreferences extends Preferences {
         defaults.put("application.version",
                 NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleShortVersionString").toString());
 
+        defaults.put("update.feed.release", "http://version.cyberduck.ch/changelog.rss");
+        defaults.put("update.feed.beta", "http://version.cyberduck.ch/beta/changelog.rss");
+        defaults.put("update.feed.nightly", "http://version.cyberduck.ch/nightly/changelog.rss");
+
         defaults.put("bookmark.import.filezilla.location", "~/.filezilla/sitemanager.xml");
         defaults.put("bookmark.import.fetch.location", "~/Library/Preferences/com.fetchsoftworks.Fetch.Shortcuts.plist");
         defaults.put("bookmark.import.flow.location", "~/Library/Application Support/Flow/Bookmarks.plist");
