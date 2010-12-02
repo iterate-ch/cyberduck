@@ -212,8 +212,8 @@ public class CFSession extends CloudHTTP3Session {
 
     @Override
     public DistributionConfiguration cdn() {
-        if(null == cdn) {
-            if(host.getHostname().equals(Protocol.CLOUDFILES.getDefaultHostname())) {
+        if(host.getHostname().equals(Protocol.CLOUDFILES.getDefaultHostname())) {
+            if(null == cdn) {
                 cdn = new DistributionConfiguration() {
                     /**
                      * Cache distribution status result.
@@ -366,9 +366,10 @@ public class CFSession extends CloudHTTP3Session {
                     }
                 };
             }
-            else {
-                cdn = super.cdn();
-            }
+        }
+        else {
+            // Amazon CloudFront custom origin
+            cdn = super.cdn();
         }
         return cdn;
     }

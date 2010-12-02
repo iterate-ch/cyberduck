@@ -881,20 +881,26 @@ public class S3Session extends CloudHTTP3Session {
 
     @Override
     public DistributionConfiguration cdn() {
-        if(null == cf) {
-            cf = new CloudFrontDistributionConfiguration(LoginControllerFactory.instance(this),
-                    host.getCredentials(),
-                    new ErrorListener() {
-                        public void error(BackgroundException exception) {
-                            S3Session.this.error(exception);
-                        }
-                    }) {
+        if(host.getHostname().equals(Protocol.S3_SSL.getDefaultHostname())) {
+            if(null == cf) {
+                cf = new CloudFrontDistributionConfiguration(LoginControllerFactory.instance(this),
+                        host.getCredentials(),
+                        new ErrorListener() {
+                            public void error(BackgroundException exception) {
+                                S3Session.this.error(exception);
+                            }
+                        }) {
 
-                @Override
-                public List<Distribution.Method> getMethods() {
-                    return S3Session.this.getDistributionMethods();
-                }
-            };
+                    @Override
+                    public List<Distribution.Method> getMethods() {
+                        return S3Session.this.getDistributionMethods();
+                    }
+                };
+            }
+        }
+        else {
+            // Amazon CloudFront custom origin
+            return super.cdn();
         }
         return cf;
     }
