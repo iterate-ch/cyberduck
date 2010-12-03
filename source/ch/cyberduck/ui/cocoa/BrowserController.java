@@ -2616,7 +2616,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 + " " + selection.getName() + " "
                 + Locale.localizedString("with"));
         syncPanel.setPrompt(Locale.localizedString("Choose"));
-        syncPanel.beginSheetForDirectory(null, null, this.window, this.id(),
+        syncPanel.beginSheetForDirectory(this.getSession().getHost().getDownloadFolder().getAbsolute(), null, this.window, this.id(),
                 Foundation.selector("syncPanelDidEnd:returnCode:contextInfo:"), null //context info
         );
     }
