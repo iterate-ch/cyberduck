@@ -24,11 +24,9 @@ import ch.cyberduck.core.cloud.CloudHTTP4Session;
 import ch.cyberduck.core.i18n.Locale;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpEntityEnclosingRequest;
-import org.apache.http.HttpRequest;
-import org.apache.http.HttpStatus;
+import org.apache.http.*;
 import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Document;
 import org.dom4j.Element;
@@ -212,7 +210,7 @@ public class AzureSession extends CloudHTTP4Session {
             return retval;
         }
 
-        private boolean uploadData(BlobProperties blobProperties, HttpEntity entity)
+        private boolean uploadData(BlobProperties blobProperties, HttpEntity data)
                 throws Exception {
             boolean retval;
             ResourceUriComponents uriComponents = new ResourceUriComponents(
@@ -227,8 +225,9 @@ public class AzureSession extends CloudHTTP4Session {
 
             SharedKeyCredentials credentials = getClient().getCredentials();
             credentials.signRequest(request, uriComponents);
-            ((HttpEntityEnclosingRequest) request).setEntity(entity);
-            HttpWebResponse response = new HttpWebResponse(http().execute((HttpUriRequest) request));
+            ((HttpEntityEnclosingRequest) request).setEntity(data);
+            HttpResponse execute = http().execute((HttpUriRequest) request);
+            HttpWebResponse response = new HttpWebResponse(execute);
             if(response.getStatusCode() == HttpStatus.SC_CREATED) {
                 retval = true;
             }
@@ -236,7 +235,11 @@ public class AzureSession extends CloudHTTP4Session {
                 retval = false;
                 HttpUtilities.processUnexpectedStatusCode(response);
             }
-
+            HttpEntity entity = execute.getEntity();
+            if(null != entity) {
+                // Release all allocated resources
+                EntityUtils.consume(entity);
+            }
             blobProperties.setLastModifiedTime(response.getLastModified());
             blobProperties.setETag(response.getHeader(HeaderNames.ETag));
             return retval;
