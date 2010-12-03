@@ -7,10 +7,6 @@ Changelog. Last modified: $Date$
 4.0 [http://trac.cyberduck.ch/milestone/4.0]
 - [Feature] Version for Microsoft Windows XP, Windows Vista & Windows 7.
 - [Feature] Connecting to Windows Azure Blob Storage (Azure) (#3938)
-- [Feature] S3Browser Bookmarks Importer (Windows)
-- [Feature] CloudBerry Explorer for Amazon S3 Bookmarks Importer (Windows)
-- [Feature] CloudBerry Explorer for Google Storage Bookmarks Importer (Windows)
-- [Feature] CloudBerry Explorer for Azure Blob Storage Bookmarks Importer (Windows)
 
 3.8 [http://trac.cyberduck.ch/milestone/3.8]
 - [Feature] CloudFront CDN configuration with custom origin server (Amazon CloudFront & FTP, SFTP, WebDAV)
