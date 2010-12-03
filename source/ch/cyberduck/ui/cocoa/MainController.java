@@ -668,21 +668,41 @@ public class MainController extends BundleController implements NSApplication.De
                     }
                 }
             }
+
+            @Override
+            public String getActivity() {
+                return "Loading Bookmarks";
+            }
         });
         this.background(new AbstractBackgroundAction() {
             public void run() {
                 HistoryCollection.defaultCollection().load();
+            }
+
+            @Override
+            public String getActivity() {
+                return "Loading History";
             }
         });
         this.background(new AbstractBackgroundAction() {
             public void run() {
                 TransferCollection.defaultCollection().load();
             }
+
+            @Override
+            public String getActivity() {
+                return "Loading Transfers";
+            }
         });
         this.background(new AbstractBackgroundAction() {
             public void run() {
                 // Make sure we register to Growl first
                 Growl.instance().register();
+            }
+
+            @Override
+            public String getActivity() {
+                return "Registering Growl";
             }
         });
         if(Preferences.instance().getBoolean("rendezvous.enable")) {
@@ -765,44 +785,70 @@ public class MainController extends BundleController implements NSApplication.De
             });
         }
         // Import thirdparty bookmarks.
-        for(ThirdpartyBookmarkCollection c : this.getThirdpartyBookmarks()) {
-            if(!Preferences.instance().getBoolean(c.getConfiguration())) {
-                if(!c.isInstalled()) {
-                    log.info("No application installed for " + c.getBundleIdentifier());
-                    continue;
-                }
-                c.load();
-                if(c.isEmpty()) {
-                    // Flag as imported
-                    Preferences.instance().setProperty(c.getConfiguration(), true);
-                    continue;
-                }
-                final NSAlert alert = NSAlert.alert(
-                        MessageFormat.format(Locale.localizedString("Import {0} Bookmarks", "Configuration"), c.getName()),
-                        MessageFormat.format(Locale.localizedString("{0} bookmarks found. Do you want to add these to your bookmarks?", "Configuration"), c.size()),
-                        Locale.localizedString("Import", "Configuration"), //default
-                        null, //other
-                        Locale.localizedString("Cancel", "Configuration"));
-                alert.setShowsSuppressionButton(true);
-                alert.suppressionButton().setTitle(Locale.localizedString("Don't Ask Again", "Configuration"));
-                alert.setAlertStyle(NSAlert.NSInformationalAlertStyle);
-                int choice = alert.runModal(); //alternate
-                if(alert.suppressionButton().state() == NSCell.NSOnState) {
-                    // Never show again.
-                    Preferences.instance().setProperty(c.getConfiguration(), true);
-                }
-                if(choice == SheetCallback.DEFAULT_OPTION) {
-                    BookmarkCollection.defaultCollection().addAll(c);
-                    // Flag as imported
-                    Preferences.instance().setProperty(c.getConfiguration(), true);
+        this.background(new AbstractBackgroundAction() {
+            private List<ThirdpartyBookmarkCollection> bookmarks = Collections.emptyList();
+
+            public void run() {
+                bookmarks = this.getThirdpartyBookmarks();
+                for(ThirdpartyBookmarkCollection c : bookmarks) {
+                    if(!Preferences.instance().getBoolean(c.getConfiguration())) {
+                        if(!c.isInstalled()) {
+                            log.info("No application installed for " + c.getBundleIdentifier());
+                            continue;
+                        }
+                        c.load();
+                        if(c.isEmpty()) {
+                            // Flag as imported
+                            Preferences.instance().setProperty(c.getConfiguration(), true);
+                        }
+                    }
                 }
             }
-        }
-    }
 
-    private List<ThirdpartyBookmarkCollection> getThirdpartyBookmarks() {
-        return Arrays.asList(new TransmitBookmarkCollection(), new FilezillaBookmarkCollection(), new FetchBookmarkCollection(),
-                new FlowBookmarkCollection(), new InterarchyBookmarkCollection(), new CrossFtpBookmarkCollection(), new FireFtpBookmarkCollection());
+            @Override
+            public void cleanup() {
+                for(ThirdpartyBookmarkCollection c : bookmarks) {
+                    if(!Preferences.instance().getBoolean(c.getConfiguration())) {
+                        if(!c.isInstalled()) {
+                            log.info("No application installed for " + c.getBundleIdentifier());
+                            continue;
+                        }
+                        if(c.isEmpty()) {
+                            continue;
+                        }
+                        final NSAlert alert = NSAlert.alert(
+                                MessageFormat.format(Locale.localizedString("Import {0} Bookmarks", "Configuration"), c.getName()),
+                                MessageFormat.format(Locale.localizedString("{0} bookmarks found. Do you want to add these to your bookmarks?", "Configuration"), c.size()),
+                                Locale.localizedString("Import", "Configuration"), //default
+                                null, //other
+                                Locale.localizedString("Cancel", "Configuration"));
+                        alert.setShowsSuppressionButton(true);
+                        alert.suppressionButton().setTitle(Locale.localizedString("Don't Ask Again", "Configuration"));
+                        alert.setAlertStyle(NSAlert.NSInformationalAlertStyle);
+                        int choice = alert.runModal(); //alternate
+                        if(alert.suppressionButton().state() == NSCell.NSOnState) {
+                            // Never show again.
+                            Preferences.instance().setProperty(c.getConfiguration(), true);
+                        }
+                        if(choice == SheetCallback.DEFAULT_OPTION) {
+                            BookmarkCollection.defaultCollection().addAll(c);
+                            // Flag as imported
+                            Preferences.instance().setProperty(c.getConfiguration(), true);
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public String getActivity() {
+                return "Loading thirdparty bookmarks";
+            }
+
+            private List<ThirdpartyBookmarkCollection> getThirdpartyBookmarks() {
+                return Arrays.asList(new TransmitBookmarkCollection(), new FilezillaBookmarkCollection(), new FetchBookmarkCollection(),
+                        new FlowBookmarkCollection(), new InterarchyBookmarkCollection(), new CrossFtpBookmarkCollection(), new FireFtpBookmarkCollection());
+            }
+        });
     }
 
     /**
