@@ -367,55 +367,78 @@ namespace Ch.Cyberduck.Ui.Controller
                     }
                 }
             }
-
             // Import thirdparty bookmarks.
-            foreach (ThirdpartyBookmarkCollection c in GetThirdpartyBookmarks())
-            {
-                if (!Preferences.instance().getBoolean(c.getConfiguration()))
-                {
-                    if (!c.isInstalled())
-                    {
-                        Logger.info("No application installed for " + c.getBundleIdentifier());
-                        continue;
-                    }
-                    c.load();
-                    if (!c.isEmpty())
-                    {
-                        int r =
-                            cTaskDialog.ShowCommandBox(MainForm,
-                                                       String.Format(
-                                                           Locale.localizedString("Import {0} Bookmarks",
-                                                                                  "Configuration"),
-                                                           c.getName()),
-                                                       null,
-                                                       String.Format(
-                                                           Locale.localizedString(
-                                                               "{0} bookmarks found. Do you want to add these to your bookmarks?",
-                                                               "Configuration"), c.size()),
-                                                       null,
-                                                       null,
-                                                       Locale.localizedString("Don't Ask Again", "Configuration"),
-                                                       String.Format("{0}|{1}",
-                                                                     Locale.localizedString("Import", "Configuration"),
-                                                                     Locale.localizedString("Cancel", "Configuration")),
-                                                       false,
-                                                       eSysIcons.Question, eSysIcons.Information);
-                        if (cTaskDialog.VerificationChecked)
-                        {
-                            // Flag as imported
-                            Preferences.instance().setProperty(c.getConfiguration(), true);
-                        }
-                        switch (r)
-                        {
-                            case 0:
-                                BookmarkCollection.defaultCollection().addAll(c);
-                                // Flag as imported
-                                Preferences.instance().setProperty(c.getConfiguration(), true);
-                                break;
-                        }
-                    }
-                }
-            }
+            IList<ThirdpartyBookmarkCollection> thirdpartyBookmarks = GetThirdpartyBookmarks();
+            _bc.Background(delegate
+                               {
+                                   foreach (ThirdpartyBookmarkCollection c in thirdpartyBookmarks)
+                                   {
+                                       if (!Preferences.instance().getBoolean(c.getConfiguration()))
+                                       {
+                                           if (!c.isInstalled())
+                                           {
+                                               Logger.info("No application installed for " + c.getBundleIdentifier());
+                                               continue;
+                                           }
+                                           c.load();
+                                           if (c.isEmpty())
+                                           {
+                                               // Flag as imported
+                                               Preferences.instance().setProperty(c.getConfiguration(), true);
+                                           }
+                                       }
+                                   }
+                               },
+                           delegate
+                               {
+                                   foreach (ThirdpartyBookmarkCollection c in thirdpartyBookmarks)
+                                   {
+                                       if (!Preferences.instance().getBoolean(c.getConfiguration()))
+                                       {
+                                           if (!c.isEmpty())
+                                           {
+                                               int r =
+                                                   cTaskDialog.ShowCommandBox(MainForm,
+                                                                              String.Format(
+                                                                                  Locale.localizedString(
+                                                                                      "Import {0} Bookmarks",
+                                                                                      "Configuration"),
+                                                                                  c.getName()),
+                                                                              null,
+                                                                              String.Format(
+                                                                                  Locale.localizedString(
+                                                                                      "{0} bookmarks found. Do you want to add these to your bookmarks?",
+                                                                                      "Configuration"), c.size()),
+                                                                              null,
+                                                                              null,
+                                                                              Locale.localizedString("Don't Ask Again",
+                                                                                                     "Configuration"),
+                                                                              String.Format("{0}|{1}",
+                                                                                            Locale.localizedString(
+                                                                                                "Import",
+                                                                                                "Configuration"),
+                                                                                            Locale.localizedString(
+                                                                                                "Cancel",
+                                                                                                "Configuration")),
+                                                                              false,
+                                                                              eSysIcons.Question, eSysIcons.Information);
+                                               if (cTaskDialog.VerificationChecked)
+                                               {
+                                                   // Flag as imported
+                                                   Preferences.instance().setProperty(c.getConfiguration(), true);
+                                               }
+                                               switch (r)
+                                               {
+                                                   case 0:
+                                                       BookmarkCollection.defaultCollection().addAll(c);
+                                                       // Flag as imported
+                                                       Preferences.instance().setProperty(c.getConfiguration(), true);
+                                                       break;
+                                               }
+                                           }
+                                       }
+                                   }
+                               });
         }
 
         private IList<ThirdpartyBookmarkCollection> GetThirdpartyBookmarks()
@@ -590,7 +613,8 @@ namespace Ch.Cyberduck.Ui.Controller
                                                                 null,
                                                                 null,
                                                                 null,
-                                                                Locale.localizedString("Don't Ask Again", "Configuration"),
+                                                                Locale.localizedString("Don't Ask Again",
+                                                                                       "Configuration"),
                                                                 Locale.localizedString("Review…") + "|" +
                                                                 Locale.localizedString("Quit Anyway"),
                                                                 true,
