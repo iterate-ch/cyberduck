@@ -1202,7 +1202,6 @@ public class S3Path extends CloudPath {
      *
      * @return A signed URL with a limited validity over time.
      */
-    @Override
     public DescriptiveUrl toSignedUrl() {
         return toSignedUrl(Preferences.instance().getInteger("s3.url.expire.seconds"));
     }
