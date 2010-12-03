@@ -41,8 +41,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.jets3t.service.model.S3Object;
 
-import com.enterprisedt.net.ftp.FTPTransferType;
-
 import java.util.*;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -1806,7 +1804,7 @@ public class PreferencesController extends ToolbarWindowController {
         this.defaultDownloadThrottleCombobox = b;
         this.defaultDownloadThrottleCombobox.setTarget(this.id());
         this.defaultDownloadThrottleCombobox.setAction(Foundation.selector("defaultDownloadThrottleComboboxClicked:"));
-        int bandwidth = Preferences.instance().getInteger("queue.download.bandwidth.bytes");
+        int bandwidth = (int) Preferences.instance().getDouble("queue.download.bandwidth.bytes");
         final StringTokenizer options = new StringTokenizer(Preferences.instance().getProperty("queue.bandwidth.options"), ",");
         while(options.hasMoreTokens()) {
             final String bytes = options.nextToken();
@@ -1845,7 +1843,7 @@ public class PreferencesController extends ToolbarWindowController {
         this.defaultUploadThrottleCombobox = b;
         this.defaultUploadThrottleCombobox.setTarget(this.id());
         this.defaultUploadThrottleCombobox.setAction(Foundation.selector("defaultUploadThrottleComboboxClicked:"));
-        int bandwidth = Preferences.instance().getInteger("queue.upload.bandwidth.bytes");
+        int bandwidth = (int) Preferences.instance().getDouble("queue.upload.bandwidth.bytes");
         final StringTokenizer options = new StringTokenizer(Preferences.instance().getProperty("queue.bandwidth.options"), ",");
         while(options.hasMoreTokens()) {
             final String bytes = options.nextToken();
