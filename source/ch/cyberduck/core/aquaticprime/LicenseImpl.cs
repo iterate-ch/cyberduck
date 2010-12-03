@@ -23,7 +23,7 @@ namespace ch.cyberduck.core.aquaticprime
 {
     internal class LicenseImpl : AbstractLicense
     {
-        private static readonly Logger Log = Logger.getLogger(typeof (LicenseImpl).Name);
+        private static readonly Logger Log = Logger.getLogger(typeof (LicenseImpl).FullName);
 
         public LicenseImpl(Local file) : base(file)
         {

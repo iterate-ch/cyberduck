@@ -27,7 +27,7 @@ namespace Ch.Cyberduck.Ui.Controller
 {
     internal sealed class ActivityController : WindowController<IActivityView>
     {
-        private static readonly Logger Log = Logger.getLogger(typeof (ActivityController).Name);
+        private static readonly Logger Log = Logger.getLogger(typeof (ActivityController).FullName);
 
         private static readonly object SyncRoot = new Object();
         private static volatile ActivityController _instance;
@@ -121,7 +121,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
             private class AddTaskAction : WindowMainAction
             {
-                private static readonly Logger Log = Logger.getLogger(typeof (AddTaskAction).Name);
+                private static readonly Logger Log = Logger.getLogger(typeof (AddTaskAction).FullName);
                 private readonly BackgroundAction _action;
                 private readonly ActivityController _controller;
 
@@ -141,7 +141,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
             private class RemoveTaskAction : WindowMainAction
             {
-                private static readonly Logger Log = Logger.getLogger(typeof (AddTaskAction).Name);
+                private static readonly Logger Log = Logger.getLogger(typeof (AddTaskAction).FullName);
                 private readonly BackgroundAction _action;
                 private readonly ActivityController _controller;
 

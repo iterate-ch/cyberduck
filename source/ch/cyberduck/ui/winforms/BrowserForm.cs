@@ -49,7 +49,7 @@ namespace Ch.Cyberduck.Ui.Winforms
     public partial class BrowserForm : BaseForm, IBrowserView
     {
         private static readonly Font FixedFont = new Font(FontFamily.GenericMonospace, 8);
-        private static readonly Logger Log = Logger.getLogger(typeof (BrowserForm).Name);
+        private static readonly Logger Log = Logger.getLogger(typeof (BrowserForm).FullName);
         private static readonly TypeConverter shortcutConverter = TypeDescriptor.GetConverter(typeof (Keys));
         private bool _browserStateRestored;
         private BrowserView _currentView;

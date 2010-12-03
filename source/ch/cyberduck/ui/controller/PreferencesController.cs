@@ -37,7 +37,7 @@ namespace Ch.Cyberduck.Ui.Controller
     {
         private static readonly string ForFiles = Locale.localizedString("for Files", "Preferences");
         private static readonly string ForFolders = Locale.localizedString("for Folders", "Preferences");
-        private static readonly Logger Log = Logger.getLogger(typeof (PreferencesController).Name);
+        private static readonly Logger Log = Logger.getLogger(typeof (PreferencesController).FullName);
         private static readonly string MacLineEndings = Locale.localizedString("Mac Line Endings (CR)");
 
         private static readonly KeyValueIconTriple<Host, string> NoneBookmark =

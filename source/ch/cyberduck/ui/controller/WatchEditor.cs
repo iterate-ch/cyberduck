@@ -27,7 +27,7 @@ namespace Ch.Cyberduck.Ui.Controller
 {
     public class WatchEditor : Editor
     {
-        private static readonly Logger Log = Logger.getLogger(typeof (WatchEditor).Name);
+        private static readonly Logger Log = Logger.getLogger(typeof (WatchEditor).FullName);
         private Timer _atomicSaveTimer;
         private DateTime _lastWriteTime;
         private FileSystemWatcher _watcher;

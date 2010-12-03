@@ -31,7 +31,7 @@ namespace Ch.Cyberduck.Ui.Controller
 {
     public class TransferController : WindowController<ITransferView>, TranscriptListener
     {
-        private static readonly Logger Log = Logger.getLogger(typeof (TransferController).Name);
+        private static readonly Logger Log = Logger.getLogger(typeof (TransferController).FullName);
 
         private static readonly object SyncRoot = new Object();
         private static volatile TransferController _instance;

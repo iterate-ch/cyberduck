@@ -22,7 +22,7 @@ namespace Ch.Cyberduck.Ui.Controller
 {
     public class EditorFactory
     {
-        private static readonly Logger Log = Logger.getLogger(typeof (EditorFactory).Name);
+        private static readonly Logger Log = Logger.getLogger(typeof (EditorFactory).FullName);
 
         /// <summary>
         /// 

@@ -35,7 +35,7 @@ namespace Ch.Cyberduck.Ui.Controller
     {
         protected const int ErrorAccessDenied = 5;
         protected const int ErrorFileNotFound = 2;
-        private static readonly Logger Log = Logger.getLogger(typeof (LocalImpl).Name);
+        private static readonly Logger Log = Logger.getLogger(typeof (LocalImpl).FullName);
 
         private static readonly LRUCache<string, string> defaultApplicationCache = new LRUCache<string, string>(100);
 

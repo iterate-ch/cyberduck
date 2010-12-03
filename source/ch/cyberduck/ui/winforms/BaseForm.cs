@@ -32,7 +32,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 {
     public partial class BaseForm : Form, IView
     {
-        //private static readonly Logger Log = Logger.getLogger(typeof (BaseForm).Name);
+        //private static readonly Logger Log = Logger.getLogger(typeof (BaseForm).FullName);
         protected Commands Commands = new Commands();
         private Font _defaultFontBold;
         private bool _releaseWhenClose = true;

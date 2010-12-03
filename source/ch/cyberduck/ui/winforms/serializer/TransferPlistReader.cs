@@ -25,7 +25,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Serializer
 {
     public class TransferPlistReader : PlistReader<Transfer>
     {
-        private static readonly Logger Log = Logger.getLogger(typeof (TransferPlistReader).Name);
+        private static readonly Logger Log = Logger.getLogger(typeof (TransferPlistReader).FullName);
 
         public static void Register()
         {

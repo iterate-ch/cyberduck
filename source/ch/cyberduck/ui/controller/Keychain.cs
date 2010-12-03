@@ -28,7 +28,7 @@ namespace Ch.Cyberduck.Ui.Controller
 {
     public class Keychain : AbstractKeychain
     {
-        private static readonly Logger Log = Logger.getLogger(typeof (Keychain).Name);
+        private static readonly Logger Log = Logger.getLogger(typeof (Keychain).FullName);
 
         public override string getPassword(String protocol, int port, String hostName, String user)
         {

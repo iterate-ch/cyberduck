@@ -42,7 +42,7 @@ namespace Ch.Cyberduck.Ui.Controller
             new Dictionary<WindowController, ConnectionController>();
 
         private static readonly string Default = Locale.localizedString("Default");
-        private static readonly Logger Log = Logger.getLogger(typeof (ConnectionController).Name);
+        private static readonly Logger Log = Logger.getLogger(typeof (ConnectionController).FullName);
 
         private readonly Object _syncRootReachability = new Object();
         private readonly Timer _ticklerRechability;

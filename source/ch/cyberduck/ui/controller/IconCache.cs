@@ -51,7 +51,7 @@ namespace Ch.Cyberduck.Ui.Controller
             Small = 1
         }
 
-        private static readonly Logger Log = Logger.getLogger(typeof (IconCache).Name);
+        private static readonly Logger Log = Logger.getLogger(typeof (IconCache).FullName);
 
         private static readonly bool OverlayFolderImage
             = Preferences.instance().getBoolean("browser.markInaccessibleFolders");

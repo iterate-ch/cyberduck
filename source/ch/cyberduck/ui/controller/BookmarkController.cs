@@ -49,7 +49,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private static readonly String ConnectmodeActive = Locale.localizedString("Active");
         private static readonly String ConnectmodePassive = Locale.localizedString("Passive");
         private static readonly string Default = Locale.localizedString("Default");
-        private static readonly Logger Log = Logger.getLogger(typeof (BookmarkController).Name);
+        private static readonly Logger Log = Logger.getLogger(typeof (BookmarkController).FullName);
 
         private static readonly string TransferBrowserconnection = Locale.localizedString("Use browser connection");
         private static readonly string TransferNewconnection = Locale.localizedString("Open new connection");

@@ -29,7 +29,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 {
     public partial class UpdateForm : BaseForm, IUpdateView
     {
-        private static readonly Logger Log = Logger.getLogger(typeof (UpdateForm).Name);
+        private static readonly Logger Log = Logger.getLogger(typeof (UpdateForm).FullName);
 
         private static bool _expanded;
 

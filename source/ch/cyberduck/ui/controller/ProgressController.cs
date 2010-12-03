@@ -170,7 +170,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             private const long Delay = 0;
             private const long Period = 200; //in milliseconds
-            private static readonly Logger Log = Logger.getLogger(typeof (TransferAdapter).Name);
+            private static readonly Logger Log = Logger.getLogger(typeof (TransferAdapter).FullName);
             private readonly ProgressController _controller;
             private readonly IProgressView _view;
 
@@ -283,7 +283,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private class TransferProgressListener : ProgressListener
         {
-            private static readonly Logger Log = Logger.getLogger(typeof (TransferProgressListener).Name);
+            private static readonly Logger Log = Logger.getLogger(typeof (TransferProgressListener).FullName);
 
             private readonly ProgressController _controller;
 

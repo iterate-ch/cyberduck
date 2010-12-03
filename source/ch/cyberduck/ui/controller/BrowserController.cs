@@ -56,7 +56,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         internal static readonly PathFilter HiddenFilter = new HiddenFilesPathFilter();
 
-        private static readonly Logger Log = Logger.getLogger(typeof(BrowserController).Name);
+        private static readonly Logger Log = Logger.getLogger(typeof(BrowserController).FullName);
         private static readonly PathFilter NullFilter = new NullPathFilter();
         protected static string DEFAULT = Locale.localizedString("Default");
         private readonly List<Path> _backHistory = new List<Path>();

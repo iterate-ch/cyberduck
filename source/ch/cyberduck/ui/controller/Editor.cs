@@ -26,7 +26,7 @@ namespace Ch.Cyberduck.Ui.Controller
 {
     public abstract class Editor
     {
-        private static readonly Logger Log = Logger.getLogger(typeof (Editor).Name);
+        private static readonly Logger Log = Logger.getLogger(typeof (Editor).FullName);
 
         private readonly BrowserController controller;
 

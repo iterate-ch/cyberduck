@@ -33,7 +33,7 @@ namespace Ch.Cyberduck.Ui.Controller
 {
     public class UserPreferences : Preferences
     {
-        private static readonly Logger Log = Logger.getLogger(typeof (UserPreferences).Name);
+        private static readonly Logger Log = Logger.getLogger(typeof (UserPreferences).FullName);
         private SettingsDictionary _settings;
 
         private UserPreferences()

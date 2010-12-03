@@ -30,7 +30,7 @@ namespace ch.cyberduck.core
 {
     internal class HostnameVerifier
     {
-        private static readonly Logger Log = Logger.getLogger(typeof (HostnameVerifier).Name);
+        private static readonly Logger Log = Logger.getLogger(typeof (HostnameVerifier).FullName);
 
         /// <summary>
         // RFC2818 - HTTP Over TLS, Section 3.1

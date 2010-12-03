@@ -48,7 +48,7 @@ namespace Ch.Cyberduck.Ui.Controller
     /// </summary>
     internal class MainController : WindowsFormsApplicationBase
     {
-        private static readonly Logger Logger = Logger.getLogger(typeof (MainController).Name);
+        private static readonly Logger Logger = Logger.getLogger(typeof (MainController).FullName);
         public static readonly string StartupLanguage;
         private static readonly IList<BrowserController> _browsers = new List<BrowserController>();
         private static MainController application;

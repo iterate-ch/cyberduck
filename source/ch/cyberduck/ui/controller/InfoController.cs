@@ -44,7 +44,7 @@ namespace Ch.Cyberduck.Ui.Controller
 {
     public sealed class InfoController : WindowController<IInfoView>
     {
-        private static readonly Logger Log = Logger.getLogger(typeof (InfoController).Name);
+        private static readonly Logger Log = Logger.getLogger(typeof (InfoController).FullName);
 
         private readonly BrowserController _controller;
         private readonly string _multipleFilesString = "(" + Locale.localizedString("Multiple files") + ")";

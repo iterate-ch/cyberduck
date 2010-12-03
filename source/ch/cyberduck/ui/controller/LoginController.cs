@@ -30,7 +30,7 @@ namespace Ch.Cyberduck.Ui.Controller
 {
     public class LoginController : AbstractLoginController
     {
-        private static readonly Logger Log = Logger.getLogger(typeof (LoginController).Name);
+        private static readonly Logger Log = Logger.getLogger(typeof (LoginController).FullName);
         private Credentials _credentials;
         private bool _enableAnonymous;
 

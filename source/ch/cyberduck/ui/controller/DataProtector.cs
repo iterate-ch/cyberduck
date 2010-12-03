@@ -24,7 +24,7 @@ namespace Ch.Cyberduck.Ui.Controller
 {
     public class DataProtector
     {
-        private static readonly Logger Log = Logger.getLogger(typeof (DataProtector).Name);
+        private static readonly Logger Log = Logger.getLogger(typeof (DataProtector).FullName);
 
         public static string Encrypt(string data)
         {

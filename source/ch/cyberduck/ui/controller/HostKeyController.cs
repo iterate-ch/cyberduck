@@ -28,7 +28,7 @@ namespace Ch.Cyberduck.Ui.Controller
 {
     public class HostKeyController : PreferencesHostKeyVerifier
     {
-        private static readonly Logger Log = Logger.getLogger(typeof (HostKeyController).Name);
+        private static readonly Logger Log = Logger.getLogger(typeof (HostKeyController).FullName);
 
         private HostKeyController()
         {
