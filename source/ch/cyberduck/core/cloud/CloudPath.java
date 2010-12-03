@@ -143,10 +143,6 @@ public abstract class CloudPath extends Path {
     @Override
     public abstract AttributedList<Path> list();
 
-    public DescriptiveUrl toSignedUrl() {
-        return new DescriptiveUrl(null, null);
-    }
-
     @Override
     public Set<DescriptiveUrl> getHttpURLs() {
         Set<DescriptiveUrl> list = super.getHttpURLs();

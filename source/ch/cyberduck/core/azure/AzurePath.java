@@ -724,12 +724,11 @@ public class AzurePath extends CloudPath {
             url.append(this.getAbsolute());
         }
         catch(IOException e) {
-            log.error(e.getMessage());
+            log.warn(e.getMessage());
         }
         return super.toURL();
     }
 
-    @Override
     public DescriptiveUrl toSignedUrl() {
         ResourceType type;
         if(this.isContainer()) {
@@ -759,8 +758,8 @@ public class AzurePath extends CloudPath {
             );
         }
         catch(ConnectionCanceledException e) {
-            log.error(e.getMessage());
+            log.warn(e.getMessage());
         }
-        return null;
+        return new DescriptiveUrl(null, null);
     }
 }
