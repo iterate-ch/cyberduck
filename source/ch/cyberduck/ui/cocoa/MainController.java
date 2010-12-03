@@ -809,10 +809,6 @@ public class MainController extends BundleController implements NSApplication.De
             public void cleanup() {
                 for(ThirdpartyBookmarkCollection c : bookmarks) {
                     if(!Preferences.instance().getBoolean(c.getConfiguration())) {
-                        if(!c.isInstalled()) {
-                            log.info("No application installed for " + c.getBundleIdentifier());
-                            continue;
-                        }
                         if(c.isEmpty()) {
                             continue;
                         }
