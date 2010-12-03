@@ -43,10 +43,10 @@
                    "http://trac.cyberduck.ch/milestone/3.8">Version 3.8</a></strong><br/>
 
 <ul>
-    <li>[Feature] CloudFront CDN invalidation requests (S3) (<a
+    <li>[Feature] CDN configuration with custom origin server (Amazon CloudFront)</li>
+    <li>[Feature] CDN invalidation requests (Amazon CloudFront) (<a
             href="http://trac.cyberduck.ch/ticket/5197">#5197</a>)
     </li>
-    <li>[Feature] CloudFront CDN configuration with custom origin server (Amazon CloudFront & FTP, SFTP, WebDAV)</li>
     <li>[Feature] Connecting to Swift Storage (Openstack)</li>
     <li>[Feature] FireFTP Bookmarks Importer</li>
     <li>[Feature] CrossFTP Bookmarks Importer</li>
@@ -60,11 +60,15 @@
             href="http://trac.cyberduck.ch/ticket/3805">#3805</a>)
     </li>
     <li>[Feature] Synchronize comparing MD5 checksum of file (S3, Cloudfiles, Dropbox, Azure)</li>
+    <li>[Feature] Display decimal file size (OS X 10.6) (<a
+            href="http://trac.cyberduck.ch/ticket/3771">#3771</a>)
+    </li>
+    <li>[Feature] Display relative date in browser (OS X 10.6)</li>
     <li>[Bugfix] Slow SFTP transfers (<a
             href="http://trac.cyberduck.ch/ticket/185">#185</a>)
     </li>
     <li>[Bugfix] Reduced upload preparation time for thousands of files</li>
-    <li>[Bugfix] Proxy support for Google Docs connections (<a
+    <li>[Bugfix] Connect through HTTP/HTTPS proxy (<a
             href="http://trac.cyberduck.ch/ticket/5379">#5379</a>)
     </li>
     <li>[Bugfix] Support for S3Fox directory placeholders (S3)</li>
@@ -86,12 +90,17 @@
     <li>[Bugfix] SSL version number incompatibility (<a
             href="http://trac.cyberduck.ch/ticket/5061">#5061</a>)
     </li>
-    <li>[Bugfix] Display decimal file size (OS X 10.6) (<a
-            href="http://trac.cyberduck.ch/ticket/3771">#3771</a>)
-    </li>
-    <li>Display relative date in browser (OS X 10.6)</li>
     <li>[Bugfix] Preserve upload modification date does not work for folders (<a
             href="http://trac.cyberduck.ch/ticket/3017">#3017</a>)
+    </li>
+    <li>[Bugfix] Uploading large documents might fail (<a
+            href="http://trac.cyberduck.ch/ticket/5411">#5411</a>) (Google Docs)
+    </li>
+    <li>[Bugfix] Web URL configuration fails for relative default path (<a
+            href="http://trac.cyberduck.ch/ticket/4012">#4012</a>)
+    </li>
+    <li>[Bugfix] Support CIDR styled patterns for hosts excluded from proxy settings (<a
+            href="http://trac.cyberduck.ch/ticket/5142">#5142</a>)
     </li>
 </ul>
 
