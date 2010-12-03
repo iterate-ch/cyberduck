@@ -64,7 +64,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
     internal class DownloadPathFilter : PromptFilter
     {
-        protected static Logger Log = Logger.getLogger(typeof (DownloadPathFilter));
+        protected static Logger Log = Logger.getLogger(typeof (DownloadPathFilter).FullName);
 
         public override bool accept(AbstractPath ap)
         {

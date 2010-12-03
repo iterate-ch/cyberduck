@@ -297,11 +297,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 _controller._messageText = msg;
                 SimpleDefaultMainAction action = new SimpleDefaultMainAction(_controller, delegate
                                                                                               {
-                                                                                                  Log.info(
-                                                                                                      "message() invoked: " +
-                                                                                                      this);
-                                                                                                  _controller.
-                                                                                                      SetMessageText();
+                                                                                                  _controller.SetMessageText();
                                                                                               });
                 _controller.invoke(action);
             }

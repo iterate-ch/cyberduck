@@ -29,7 +29,7 @@ namespace Ch.Cyberduck.Ui.Controller
 {
     internal abstract class TransferPromptModel
     {
-        protected static Logger log = Logger.getLogger(typeof (TransferPromptModel));
+        protected static Logger log = Logger.getLogger(typeof (TransferPromptModel).FullName);
         protected readonly Transfer Transfer;
 
         private readonly string UNKNOWN = Locale.localizedString("Unknown");

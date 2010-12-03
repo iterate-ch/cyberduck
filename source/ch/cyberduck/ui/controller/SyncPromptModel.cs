@@ -111,7 +111,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         internal class SyncPathFilter : PromptFilter
         {
-            protected static Logger Log = Logger.getLogger(typeof (SyncPathFilter));
+            protected static Logger Log = Logger.getLogger(typeof (SyncPathFilter).FullName);
             private readonly Transfer _transfer;
 
             public SyncPathFilter(Transfer transfer)
