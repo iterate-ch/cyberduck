@@ -209,11 +209,15 @@ public class FinderLocal extends Local {
 
         @Override
         public long getSize() {
+            if(this.isDirectory()) {
+                return -1;
+            }
             NSObject size = this.getNativeAttribute(NSFileManager.NSFileSize);
             if(null == size) {
                 return -1;
             }
-            return Rococoa.cast(size, NSNumber.class).longValue();
+            // Refer to #5503 and http://code.google.com/p/rococoa/issues/detail?id=3
+            return (long) Rococoa.cast(size, NSNumber.class).doubleValue();
         }
 
         @Override
