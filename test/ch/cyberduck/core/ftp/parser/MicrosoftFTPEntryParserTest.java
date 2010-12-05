@@ -44,7 +44,7 @@ public class MicrosoftFTPEntryParserTest extends AbstractTestCase {
     @Override
     public void setUp() {
         super.setUp();
-        this.parser = new FTPParserFactory().createFileEntryParser("Microsoft FTP Service");
+        this.parser = new FTPParserFactory().createFileEntryParser("Windows_NT version 5.0");
     }
 
     @Override
