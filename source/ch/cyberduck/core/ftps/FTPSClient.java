@@ -70,12 +70,14 @@ public class FTPSClient extends FTPClient {
     public void prot() throws IOException {
         lastValidReply = control.validateReply(control.sendCommand("PBSZ 0"), "200");
         try {
+            // Default to secured data socket using PROT P
             lastValidReply = control.validateReply(control.sendCommand("PROT "
                     + Preferences.instance().getProperty("ftp.tls.datachannel")), "200");
         }
         catch(FTPException e) {
+            // Compatibility mode if server does only accept clear data connections.
             log.warn("No data channel security: " + e.getMessage());
-            throw new IOException(e.getMessage());
+            this.setSecureDataSocket(false);
         }
     }
 }
