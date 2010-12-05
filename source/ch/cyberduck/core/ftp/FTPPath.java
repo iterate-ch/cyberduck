@@ -48,10 +48,6 @@ import java.util.regex.Pattern;
 public class FTPPath extends Path {
     private static Logger log = Logger.getLogger(FTPPath.class);
 
-    private static final String DOS_LINE_SEPARATOR = "\r\n";
-    private static final String MAC_LINE_SEPARATOR = "\r";
-    private static final String UNIX_LINE_SEPARATOR = "\n";
-
     private static class Factory extends PathFactory<FTPSession> {
         @Override
         protected Path create(FTPSession session, String path, int type) {
