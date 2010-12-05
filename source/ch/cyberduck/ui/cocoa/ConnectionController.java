@@ -619,7 +619,7 @@ public class ConnectionController extends SheetController {
             if(protocol.equals(Protocol.FTP) ||
                     protocol.equals(Protocol.FTP_TLS)) {
                 if(connectmodePopup.titleOfSelectedItem().equals(DEFAULT)) {
-                    host.setFTPConnectMode(null);
+                    host.setFTPConnectMode((FTPConnectMode) null);
                 }
                 else if(connectmodePopup.titleOfSelectedItem().equals(CONNECTMODE_ACTIVE)) {
                     host.setFTPConnectMode(FTPConnectMode.ACTIVE);

@@ -398,7 +398,7 @@ public class BookmarkController extends WindowController {
     @Action
     public void connectmodePopupClicked(final NSPopUpButton sender) {
         if(sender.selectedItem().title().equals(DEFAULT)) {
-            host.setFTPConnectMode(null);
+            host.setFTPConnectMode((FTPConnectMode) null);
         }
         else if(sender.selectedItem().title().equals(CONNECTMODE_ACTIVE)) {
             host.setFTPConnectMode(FTPConnectMode.ACTIVE);
