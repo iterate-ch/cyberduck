@@ -287,7 +287,6 @@ public class DropboxPath extends Path {
             this.getSession().message(MessageFormat.format(Locale.localizedString("Renaming {0} to {1}", "Status"),
                     this.getName(), renamed));
 
-            this.getSession().setWorkdir(this.getParent());
             this.getSession().getClient().move(this.getAbsolute(), renamed.getAbsolute());
             // The directory listing of the target is no more current
             renamed.getParent().invalidate();
