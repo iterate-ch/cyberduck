@@ -649,9 +649,8 @@ public class GDPath extends Path {
             this.getSession().message(MessageFormat.format(Locale.localizedString("Listing directory {0}", "Status"),
                     this.getName()));
 
-            this.getSession().setWorkdir(this);
-
             children.addAll(this.list(new DocumentQuery(new URL(this.getFolderFeed()))));
+            this.getSession().setWorkdir(this);
         }
         catch(ServiceException e) {
             log.warn("Listing directory failed:" + e.getMessage());
