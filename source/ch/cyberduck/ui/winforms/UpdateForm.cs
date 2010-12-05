@@ -17,6 +17,7 @@
 // 
 using System;
 using System.Drawing;
+using System.IO;
 using System.Windows.Forms;
 using ch.cyberduck.core;
 using Ch.Cyberduck.Core;
@@ -104,6 +105,12 @@ namespace Ch.Cyberduck.Ui.Winforms
             String feedUrl = Preferences.instance().getProperty("update.feed." + currentFeed);
             Log.debug("Setting feed URL to " + feedUrl);
 
+            if (!File.Exists("Updater.exe"))
+            {
+                //as of Beta7 the updater filename is Updater.exe. wyUpdate.exe is not automatically renamed.
+                updater.wyUpdateLocation = "wyUpdate.exe";
+            }
+            
             updater.wyUpdateCommandline = "-server=\"" + feedUrl + "\"";
             updater.ContainerForm = this;
             updater.KeepHidden = true;

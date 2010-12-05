@@ -162,6 +162,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.updater.Size = new System.Drawing.Size(16, 16);
             this.updater.TabIndex = 9;
             this.updater.wyUpdateCommandline = null;
+            this.updater.wyUpdateLocation = "Updater.exe";
             // 
             // statusLabel
             // 
