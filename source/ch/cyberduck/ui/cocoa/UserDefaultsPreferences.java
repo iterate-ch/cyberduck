@@ -211,7 +211,11 @@ public class UserDefaultsPreferences extends Preferences {
 
     @Override
     public String locale() {
-        final List<String> languages = this.getList("AppleLanguages");
+        NSObject value = props.objectForKey("AppleLanguages");
+        if(null == value) {
+            return super.locale();
+        }
+        final List<String> languages = this.toList(Rococoa.cast(value, NSArray.class));
         if(null != languages) {
             return languages.iterator().next();
         }
