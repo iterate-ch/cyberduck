@@ -58,7 +58,7 @@ public class LaxUnixFTPEntryParser extends CommonUnixFTPEntryParser {
                     /**
                      year (for non-recent standard format) or time (for numeric or recent standard format
                      */
-                    + "((?:\\d{4}\\s?)|(?:\\d{2}:\\d{2}))\\s"
+                    + "((?:\\d{4}\\s?)|(?:\\d{1,2}:\\d{2}))\\s"
                     /**
                      * Filename and special token like symbolic link target
                      */

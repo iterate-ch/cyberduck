@@ -409,6 +409,39 @@ public class UnixFTPEntryParserTest extends AbstractTestCase {
         assertFalse(parsed.hasPermission(FTPFile.WORLD_ACCESS, FTPFile.EXECUTE_PERMISSION));
     }
 
+    public void testWindowsNTSystem() throws Exception {
+        FTPFileEntryParser parser = new FTPParserFactory().createFileEntryParser("Windows_NT version 5.0");
+
+        FTPFile parsed;
+
+        // #5505
+        parsed = parser.parseFTPEntry(
+                "drwxrwxrwx   1 owner    group               0 Dec  5  0:45 adele.handmadebyflloyd.com"
+        );
+        assertNotNull(parsed);
+        assertEquals("adele.handmadebyflloyd.com", parsed.getName());
+        assertEquals("owner", parsed.getUser());
+        assertEquals("group", parsed.getGroup());
+        assertNotNull(parsed.getTimestamp());
+        assertEquals(parsed.getTimestamp().get(Calendar.MONTH), Calendar.DECEMBER);
+        assertTrue(parsed.getTimestamp().get(Calendar.DAY_OF_MONTH) == 5);
+        assertEquals(parsed.getTimestamp().get(Calendar.YEAR), Calendar.getInstance().get(Calendar.YEAR));
+
+        // #5505
+        parsed = parser.parseFTPEntry(
+                "drwxrwxrwx   1 owner    group               0 Jan 22  2009 contact"
+        );
+        assertNotNull(parsed);
+        assertEquals("contact", parsed.getName());
+        assertEquals("owner", parsed.getUser());
+        assertEquals("group", parsed.getGroup());
+        assertNotNull(parsed.getTimestamp());
+        assertEquals(parsed.getTimestamp().get(Calendar.MONTH), Calendar.JANUARY);
+        assertTrue(parsed.getTimestamp().get(Calendar.DAY_OF_MONTH) == 22);
+        assertEquals(parsed.getTimestamp().get(Calendar.YEAR), 2009);
+
+    }
+
     public static Test suite() {
         return new TestSuite(UnixFTPEntryParserTest.class);
     }

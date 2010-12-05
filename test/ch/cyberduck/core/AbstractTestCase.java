@@ -281,7 +281,7 @@ public class AbstractTestCase extends TestCase {
         }
     }
 
-    protected class TestPathReference extends PathReference {
+    private static class TestPathReference extends PathReference {
 
         private AbstractPath reference;
 
