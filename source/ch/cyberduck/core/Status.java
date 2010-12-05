@@ -56,9 +56,9 @@ public class Status {
      */
     private boolean complete = false;
 
-    public static long KILO = 1024; //2^10
-    public static long MEGA = 1048576; // 2^20
-    public static long GIGA = 1073741824; // 2^30
+    public static long KILO = -1;
+    public static long MEGA = -1;
+    public static long GIGA = -1;
 
     static {
         if(Preferences.instance().getBoolean("browser.filesize.decimal")) {
