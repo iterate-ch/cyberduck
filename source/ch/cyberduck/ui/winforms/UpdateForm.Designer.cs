@@ -166,11 +166,12 @@ namespace Ch.Cyberduck.Ui.Winforms
             // statusLabel
             // 
             this.statusLabel.AutoSize = true;
+            this.tableLayoutPanel.SetColumnSpan(this.statusLabel, 3);
             this.statusLabel.Location = new System.Drawing.Point(3, 268);
             this.statusLabel.Name = "statusLabel";
             this.statusLabel.Size = new System.Drawing.Size(38, 15);
             this.statusLabel.TabIndex = 7;
-            this.statusLabel.Text = "label1";
+            this.statusLabel.Text = "status";
             // 
             // progressBar
             // 

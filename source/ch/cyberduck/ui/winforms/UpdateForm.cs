@@ -40,7 +40,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             Closing += delegate { updater.Cancel(); };
 
             ConfigureUpdater();
-            
+
             pictureBox.Image = IconCache.Instance.IconForName("cyberduck", 64);
             newVersionAvailableLabel.Text =
                 Locale.localizedString("A new version of %@ is available!", "Sparkle").Replace("%@",
@@ -144,15 +144,15 @@ namespace Ch.Cyberduck.Ui.Winforms
 
             // error cases
             updater.CheckingFailed +=
-                delegate(object sender, FailArgs args) { UpdateStatusLabel(args.ErrorTitle, true); };
+                delegate(object sender, FailArgs args) { UpdateStatusLabel(args.ErrorTitle + Environment.NewLine + args.ErrorMessage, true); };
 
             updater.UpdateFailed +=
                 (sender, args) =>
-                UpdateStatusLabel(args.ErrorTitle, true);
+                UpdateStatusLabel(args.ErrorTitle + Environment.NewLine + args.ErrorMessage, true);
 
             updater.DownloadingOrExtractingFailed +=
                 (sender, args) =>
-                UpdateStatusLabel(args.ErrorTitle, true);
+                UpdateStatusLabel(args.ErrorTitle + Environment.NewLine + args.ErrorMessage, true);
             // end error cases
 
             updater.ProgressChanged += delegate(object sender, int progress) { progressBar.Value = progress; };
