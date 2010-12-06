@@ -1892,7 +1892,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         }
 
         private void browser_KeyDown(object sender, KeyEventArgs e)
-        {
+        {            
             if (browser.SelectedObjects.Count > 0 && e.KeyCode == Keys.F2)
             {
                 browser.GetItem(browser.SelectedIndices[0]).BeginEdit();
@@ -2803,6 +2803,18 @@ namespace Ch.Cyberduck.Ui.Winforms
                 Rectangle rect = new Rectangle(new Point(e.ImageRectangle.Left - 2, e.ImageRectangle.Top - 2),
                                                new Size(img.Width, img.Height));
                 e.Graphics.DrawImage(img, rect);
+            }
+        }
+
+        private void browser_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == (char)Keys.Enter)
+            {
+                if (browser.SelectedObjects.Count == 1)
+                {
+                    browser.ToggleExpansion(browser.SelectedObject);
+                    e.Handled = true;    
+                }
             }
         }
     }

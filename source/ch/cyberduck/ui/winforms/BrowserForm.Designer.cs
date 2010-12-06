@@ -1682,8 +1682,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.panelManager1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panelManager1.Location = new System.Drawing.Point(0, 31);
             this.panelManager1.Name = "panelManager1";
-            this.panelManager1.SelectedIndex = 1;
-            this.panelManager1.SelectedPanel = this.managedBookmarkPanel2;
+            this.panelManager1.SelectedIndex = 0;
+            this.panelManager1.SelectedPanel = this.managedBrowserPanel1;
             this.panelManager1.Size = new System.Drawing.Size(1028, 497);
             this.panelManager1.TabIndex = 3;
             // 
@@ -1692,7 +1692,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.managedBrowserPanel1.Controls.Add(this.splitContainer);
             this.managedBrowserPanel1.Location = new System.Drawing.Point(0, 0);
             this.managedBrowserPanel1.Name = "managedBrowserPanel1";
-            this.managedBrowserPanel1.Size = new System.Drawing.Size(0, 0);
+            this.managedBrowserPanel1.Size = new System.Drawing.Size(1028, 497);
             this.managedBrowserPanel1.Text = "managedBrowserPanel1";
             // 
             // splitContainer
@@ -1712,8 +1712,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.splitContainer.Panel2.Controls.Add(this.transcriptBox);
             this.splitContainer.Panel2MinSize = 50;
-            this.splitContainer.Size = new System.Drawing.Size(0, 62);
-            this.splitContainer.SplitterDistance = 4;
+            this.splitContainer.Size = new System.Drawing.Size(1028, 497);
+            this.splitContainer.SplitterDistance = 441;
             this.splitContainer.SplitterWidth = 3;
             this.splitContainer.TabIndex = 2;
             // 
@@ -1742,7 +1742,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.browser.Name = "browser";
             this.browser.OwnerDraw = true;
             this.browser.ShowGroups = false;
-            this.browser.Size = new System.Drawing.Size(0, 4);
+            this.browser.Size = new System.Drawing.Size(1028, 441);
             this.browser.TabIndex = 15;
             this.browser.UseCompatibleStateImageBehavior = false;
             this.browser.View = System.Windows.Forms.View.Details;
@@ -1751,6 +1751,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.browser.AfterLabelEdit += new System.Windows.Forms.LabelEditEventHandler(this.browser_AfterLabelEdit);
             this.browser.DoubleClick += new System.EventHandler(this.browser_DoubleClick);
             this.browser.KeyDown += new System.Windows.Forms.KeyEventHandler(this.browser_KeyDown);
+            this.browser.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.browser_KeyPress);
             // 
             // treeColumnName
             // 
@@ -1801,7 +1802,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.transcriptBox.Location = new System.Drawing.Point(0, 0);
             this.transcriptBox.Name = "transcriptBox";
             this.transcriptBox.ReadOnly = true;
-            this.transcriptBox.Size = new System.Drawing.Size(0, 55);
+            this.transcriptBox.Size = new System.Drawing.Size(1028, 53);
             this.transcriptBox.TabIndex = 0;
             this.transcriptBox.Text = "";
             this.transcriptBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.transcriptBox_KeyDown);
@@ -1812,7 +1813,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.managedBookmarkPanel2.Controls.Add(this.actionToolStrip);
             this.managedBookmarkPanel2.Location = new System.Drawing.Point(0, 0);
             this.managedBookmarkPanel2.Name = "managedBookmarkPanel2";
-            this.managedBookmarkPanel2.Size = new System.Drawing.Size(0, 0);
+            this.managedBookmarkPanel2.Size = new System.Drawing.Size(1028, 497);
             this.managedBookmarkPanel2.Text = "managedBookmarkPanel2";
             // 
             // bookmarkListView
@@ -1833,7 +1834,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.bookmarkListView.OwnerDraw = true;
             this.bookmarkListView.RowHeight = 37;
             this.bookmarkListView.ShowGroups = false;
-            this.bookmarkListView.Size = new System.Drawing.Size(0, 0);
+            this.bookmarkListView.Size = new System.Drawing.Size(1028, 464);
             this.bookmarkListView.TabIndex = 10;
             this.bookmarkListView.UseCompatibleStateImageBehavior = false;
             this.bookmarkListView.View = System.Windows.Forms.View.Details;
@@ -1869,10 +1870,10 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.editBookmarkToolStripButton,
             this.deleteBookmarkToolStripButton});
             this.actionToolStrip.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.HorizontalStackWithOverflow;
-            this.actionToolStrip.Location = new System.Drawing.Point(0, -33);
+            this.actionToolStrip.Location = new System.Drawing.Point(0, 464);
             this.actionToolStrip.Name = "actionToolStrip";
             this.actionToolStrip.ShowItemToolTips = false;
-            this.actionToolStrip.Size = new System.Drawing.Size(0, 33);
+            this.actionToolStrip.Size = new System.Drawing.Size(1028, 33);
             this.actionToolStrip.Stretch = true;
             this.actionToolStrip.TabIndex = 5;
             this.actionToolStrip.Text = "toolStrip1";
