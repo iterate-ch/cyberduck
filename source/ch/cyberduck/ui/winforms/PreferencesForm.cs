@@ -275,6 +275,12 @@ namespace Ch.Cyberduck.Ui.Winforms
             set { duplicateUploadOverwriteCheckbox.Checked = value; }
         }
 
+        public bool UploadWithTemporaryFilename
+        {
+            get { return uploadTemporaryNameCheckBox.Checked; }
+            set { uploadTemporaryNameCheckBox.Checked = value; }
+        }
+
         public bool ChmodDownload
         {
             get { return chmodDownloadCheckbox.Checked; }
@@ -758,6 +764,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         public event VoidHandler RetriesChangedEvent = delegate { };
         public event VoidHandler DefaultStorageClassChangedEvent = delegate { };
         public event VoidHandler LocaleChanged = delegate { };
+        public event VoidHandler UploadWithTemporaryFilenameChangedEvent = delegate { };
 
         public bool AutomaticUpdateCheck
         {
@@ -1478,6 +1485,11 @@ namespace Ch.Cyberduck.Ui.Winforms
         private void systemProxyCheckBox_CheckStateChanged(object sender, EventArgs e)
         {
             UseSystemProxyChangedEvent();
+        }
+
+        private void uploadTemporaryNameCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            UploadWithTemporaryFilenameChangedEvent();
         }
     }
 }

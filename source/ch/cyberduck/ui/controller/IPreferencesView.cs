@@ -17,7 +17,6 @@
 // 
 using System.Collections.Generic;
 using ch.cyberduck.core;
-using ch.cyberduck.ui.controller;
 using Ch.Cyberduck.Ui.Winforms.Controls;
 
 namespace Ch.Cyberduck.Ui.Controller
@@ -49,6 +48,7 @@ namespace Ch.Cyberduck.Ui.Controller
         string DuplicateUploadAction { set; get; }
         bool DuplicateDownloadOverwrite { set; get; }
         bool DuplicateUploadOverwrite { set; get; }
+        bool UploadWithTemporaryFilename { set; get; }
 
         bool ChmodDownload { set; get; }
         bool ChmodDownloadUseDefault { set; get; }
@@ -167,6 +167,7 @@ namespace Ch.Cyberduck.Ui.Controller
         event VoidHandler DuplicateUploadActionChangedEvent;
         event VoidHandler DuplicateDownloadOverwriteChangedEvent;
         event VoidHandler DuplicateUploadOverwriteChangedEvent;
+        event VoidHandler UploadWithTemporaryFilenameChangedEvent;
 
         event VoidHandler ChmodDownloadChangedEvent;
         event VoidHandler ChmodDownloadUseDefaultChangedEvent;

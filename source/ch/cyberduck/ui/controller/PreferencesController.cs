@@ -1,4 +1,4 @@
-﻿﻿//
+﻿// 
 // Copyright (c) 2010 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
@@ -87,6 +87,7 @@ namespace Ch.Cyberduck.Ui.Controller
             View.DuplicateUploadActionChangedEvent += View_DuplicateUploadActionChangedEvent;
             View.DuplicateDownloadOverwriteChangedEvent += View_DuplicateDownloadOverwriteChangedEvent;
             View.DuplicateUploadOverwriteChangedEvent += View_DuplicateUploadOverwriteChangedEvent;
+            View.UploadWithTemporaryFilenameChangedEvent += View_UploadWithTemporaryFilenameChangedEvent;
 
             View.ChmodDownloadChangedEvent += View_ChmodDownloadChangedEvent;
             View.ChmodDownloadUseDefaultChangedEvent += View_ChmodDownloadUseDefaultChangedEvent;
@@ -213,6 +214,11 @@ namespace Ch.Cyberduck.Ui.Controller
             Host selected = View.DefaultBookmark;
             PopulateBookmarks();
             SelectDefaultBookmark(selected);
+        }
+
+        private void View_UploadWithTemporaryFilenameChangedEvent()
+        {
+            Preferences.instance().setProperty("queue.upload.file.temporary", View.UploadWithTemporaryFilename);
         }
 
         private void View_UseSystemProxyChangedEvent()
@@ -950,6 +956,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                                     TransferAction.ACTION_OVERWRITE.toString())
                                                 ? true
                                                 : false;
+            View.UploadWithTemporaryFilename = Preferences.instance().getBoolean("queue.upload.file.temporary");
 
             #endregion
 
@@ -1133,9 +1140,14 @@ namespace Ch.Cyberduck.Ui.Controller
             IList<KeyValuePair<float, string>> list = new List<KeyValuePair<float, string>>();
             list.Add(new KeyValuePair<float, string>(BandwidthThrottle.UNLIMITED,
                                                      Locale.localizedString("Unlimited Bandwidth", "Preferences")));
-            foreach (String option in Preferences.instance().getProperty("queue.bandwidth.options").Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+            foreach (
+                String option in
+                    Preferences.instance().getProperty("queue.bandwidth.options").Split(new[] {','},
+                                                                                        StringSplitOptions.
+                                                                                            RemoveEmptyEntries))
             {
-                list.Add(new KeyValuePair<float, string>(Convert.ToInt32(option.Trim()), (Status.getSizeAsString(Convert.ToInt32(option.Trim())) + "/s")));
+                list.Add(new KeyValuePair<float, string>(Convert.ToInt32(option.Trim()),
+                                                         (Status.getSizeAsString(Convert.ToInt32(option.Trim())) + "/s")));
             }
             View.PopulateDefaultUploadThrottleList(list);
         }
@@ -1145,9 +1157,14 @@ namespace Ch.Cyberduck.Ui.Controller
             IList<KeyValuePair<float, string>> list = new List<KeyValuePair<float, string>>();
             list.Add(new KeyValuePair<float, string>(BandwidthThrottle.UNLIMITED,
                                                      Locale.localizedString("Unlimited Bandwidth", "Preferences")));
-            foreach (String option in Preferences.instance().getProperty("queue.bandwidth.options").Split(new char[] {','}, StringSplitOptions.RemoveEmptyEntries))
+            foreach (
+                String option in
+                    Preferences.instance().getProperty("queue.bandwidth.options").Split(new[] {','},
+                                                                                        StringSplitOptions.
+                                                                                            RemoveEmptyEntries))
             {
-                list.Add(new KeyValuePair<float, string>(Convert.ToInt32(option.Trim()), (Status.getSizeAsString(Convert.ToInt32(option.Trim())) + "/s")));
+                list.Add(new KeyValuePair<float, string>(Convert.ToInt32(option.Trim()),
+                                                         (Status.getSizeAsString(Convert.ToInt32(option.Trim())) + "/s")));
             }
             View.PopulateDefaultDownloadThrottleList(list);
         }
