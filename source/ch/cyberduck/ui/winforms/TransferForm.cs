@@ -23,7 +23,6 @@ using System.Windows.Forms;
 using ch.cyberduck.core;
 using Ch.Cyberduck.Core;
 using ch.cyberduck.core.io;
-using ch.cyberduck.ui.controller;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Winforms.Controls;
 using Windows7.DesktopIntegration;
@@ -409,6 +408,11 @@ namespace Ch.Cyberduck.Ui.Winforms
             TranscriptHeightChangedEvent();
         }
 
+        private void transferListView_DoubleClick(object sender, EventArgs e)
+        {
+            ReloadEvent();
+        }
+
         private void transferListView_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter)
@@ -421,9 +425,13 @@ namespace Ch.Cyberduck.Ui.Winforms
             }
         }
 
-        private void transferListView_DoubleClick(object sender, EventArgs e)
+        private void transferListView_KeyPress(object sender, KeyPressEventArgs e)
         {
-            ReloadEvent();
+            //do not beep
+            if (e.KeyChar == (char) Keys.Enter)
+            {
+                e.Handled = true;
+            }
         }
     }
 }
