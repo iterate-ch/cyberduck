@@ -24,7 +24,6 @@ import org.apache.log4j.Logger;
 
 import javax.net.ssl.*;
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -53,6 +52,10 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
         for(String protocol : Preferences.instance().getProperty("connection.ssl.protocols").split(",")) {
             ENABLED_SSL_PROTOCOLS.add(protocol.trim());
         }
+    }
+
+    public List<String> getEnabledProtocols() {
+        return ENABLED_SSL_PROTOCOLS;
     }
 
     /**
@@ -93,12 +96,7 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
         if(socket instanceof SSLSocket) {
             try {
                 log.debug("Configure SSL parameters with protocol:" + Arrays.toString(protocols));
-                Method parametersGetter = socket.getClass().getMethod("getSSLParameters");
-                Object parameters = parametersGetter.invoke(socket);
-                Method protocolSetter = parameters.getClass().getMethod("setProtocols", String[].class);
-                protocolSetter.invoke(parameters, (Object) protocols);
-                Method parametersSetter = socket.getClass().getMethod("setSSLParameters", parameters.getClass());
-                parametersSetter.invoke(socket, parameters);
+                ((SSLSocket) socket).setEnabledProtocols(protocols);
             }
             catch(Exception e) {
                 log.warn("Failed to configure SSL parameters:" + e.getMessage());
@@ -142,6 +140,15 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
     @Override
     public String[] getSupportedCipherSuites() {
         return ((SSLSocketFactory) SSLSocketFactory.getDefault()).getSupportedCipherSuites();
+    }
+
+    @Override
+    public Socket createSocket() throws IOException {
+        return this.handshake(new SocketGetter() {
+            public Socket create() throws IOException {
+                return factory.createSocket();
+            }
+        });
     }
 
     @Override
