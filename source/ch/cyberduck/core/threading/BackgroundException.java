@@ -75,7 +75,7 @@ public class BackgroundException extends Exception {
         if(null == cause) {
             return this;
         }
-        while(cause.getCause() != null) {
+        while(cause.getCause() != null && StringUtils.isNotBlank(cause.getCause().getMessage())) {
             cause = cause.getCause();
         }
         return cause;
