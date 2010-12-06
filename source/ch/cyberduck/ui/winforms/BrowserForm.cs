@@ -28,7 +28,6 @@ using BrightIdeasSoftware;
 using ch.cyberduck.core;
 using Ch.Cyberduck.Core;
 using ch.cyberduck.core.i18n;
-using ch.cyberduck.ui.controller;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Winforms.Commondialog;
 using Ch.Cyberduck.Ui.Winforms.Controls;

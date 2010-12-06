@@ -1,5 +1,5 @@
 ﻿using System;
-using ch.cyberduck.ui.controller;
+using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Winforms.Controls;
 
 namespace Ch.Cyberduck.Ui.Winforms
@@ -365,7 +365,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.label4.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(67, 62);
+            this.label4.Location = new System.Drawing.Point(67, 65);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(60, 15);
             this.label4.TabIndex = 49;
@@ -398,7 +398,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.label3.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(38, 35);
+            this.label3.Location = new System.Drawing.Point(38, 36);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(89, 15);
             this.label3.TabIndex = 47;
@@ -425,7 +425,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.optionsPanel.SetColumnSpan(this.comboBoxEncoding, 3);
             this.comboBoxEncoding.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBoxEncoding.FormattingEnabled = true;
-            this.comboBoxEncoding.Location = new System.Drawing.Point(133, 59);
+            this.comboBoxEncoding.Location = new System.Drawing.Point(133, 61);
             this.comboBoxEncoding.Name = "comboBoxEncoding";
             this.comboBoxEncoding.Size = new System.Drawing.Size(335, 23);
             this.comboBoxEncoding.TabIndex = 50;
@@ -436,7 +436,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.checkBoxPKA.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.checkBoxPKA.AutoSize = true;
             this.optionsPanel.SetColumnSpan(this.checkBoxPKA, 3);
-            this.checkBoxPKA.Location = new System.Drawing.Point(133, 86);
+            this.checkBoxPKA.Location = new System.Drawing.Point(133, 90);
             this.checkBoxPKA.Name = "checkBoxPKA";
             this.checkBoxPKA.Size = new System.Drawing.Size(185, 19);
             this.checkBoxPKA.TabIndex = 51;
@@ -450,7 +450,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.pkLabel.AutoSize = true;
             this.optionsPanel.SetColumnSpan(this.pkLabel, 3);
-            this.pkLabel.Location = new System.Drawing.Point(150, 108);
+            this.pkLabel.Location = new System.Drawing.Point(150, 112);
             this.pkLabel.Margin = new System.Windows.Forms.Padding(20, 0, 3, 0);
             this.pkLabel.MinimumSize = new System.Drawing.Size(0, 25);
             this.pkLabel.Name = "pkLabel";

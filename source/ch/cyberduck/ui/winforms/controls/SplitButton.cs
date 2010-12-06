@@ -32,7 +32,7 @@ using ContentAlignment = System.Drawing.ContentAlignment;
 
 //Get the latest version of SplitButton at: http://wyday.com/splitbutton/
 
-namespace ch.cyberduck.ui.winforms.controls
+namespace Ch.Cyberduck.Ui.Winforms.Controls
 {
     public class SplitButton : Button
     {

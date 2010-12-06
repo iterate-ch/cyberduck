@@ -106,7 +106,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.metadataTableLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
             this.label30 = new System.Windows.Forms.Label();
             this.metadataDataGridView = new System.Windows.Forms.DataGridView();
-            this.addHeaderButton = new ch.cyberduck.ui.winforms.controls.SplitButton();
+            this.addHeaderButton = new SplitButton();
             this.addMetadataContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
@@ -137,7 +137,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.AclLabel = new System.Windows.Forms.Label();
             this.aclDataGridView = new System.Windows.Forms.DataGridView();
-            this.addAclButton = new ch.cyberduck.ui.winforms.controls.SplitButton();
+            this.addAclButton = new SplitButton();
             this.addAclContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.yvesOwnerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.canoncalUserIDToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -1781,7 +1781,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         private System.Windows.Forms.Label AclLabel;
         private System.Windows.Forms.Button applyRecursivePermissionsButton;
         private System.Windows.Forms.DataGridView aclDataGridView;
-        private ch.cyberduck.ui.winforms.controls.SplitButton addAclButton;
+        private SplitButton addAclButton;
         private System.Windows.Forms.ContextMenuStrip addAclContextMenuStrip;
         private System.Windows.Forms.ToolStripMenuItem yvesOwnerToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem canoncalUserIDToolStripMenuItem;
@@ -1790,7 +1790,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         private System.Windows.Forms.TableLayoutPanel metadataTableLayoutPanel;
         private System.Windows.Forms.Label label30;
         private System.Windows.Forms.DataGridView metadataDataGridView;
-        private ch.cyberduck.ui.winforms.controls.SplitButton addHeaderButton;
+        private SplitButton addHeaderButton;
         private System.Windows.Forms.ContextMenuStrip addMetadataContextMenuStrip;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem2;

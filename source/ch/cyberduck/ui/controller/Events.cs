@@ -19,9 +19,8 @@ using System;
 using System.Collections.Generic;
 using BrightIdeasSoftware;
 using ch.cyberduck.core;
-using Ch.Cyberduck.Ui.Controller;
 
-namespace ch.cyberduck.ui.controller
+namespace Ch.Cyberduck.Ui.Controller
 {
     public delegate void VoidHandler();
 

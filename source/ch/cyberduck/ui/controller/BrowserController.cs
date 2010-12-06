@@ -29,7 +29,6 @@ using ch.cyberduck.core.io;
 using ch.cyberduck.core.serializer;
 using ch.cyberduck.core.ssl;
 using ch.cyberduck.core.threading;
-using ch.cyberduck.ui.controller;
 using Ch.Cyberduck.Ui.Controller.Threading;
 using Ch.Cyberduck.Ui.Winforms.Taskdialog;
 using java.lang;

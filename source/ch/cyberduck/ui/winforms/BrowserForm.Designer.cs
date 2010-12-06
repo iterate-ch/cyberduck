@@ -1,5 +1,4 @@
-﻿using Ch.Cyberduck.ui.winforms.controls;
-using Ch.Cyberduck.Ui.Winforms.Controls;
+﻿using Ch.Cyberduck.Ui.Winforms.Controls;
 
 namespace Ch.Cyberduck.Ui.Winforms
 {
@@ -1802,7 +1801,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.transcriptBox.Location = new System.Drawing.Point(0, 0);
             this.transcriptBox.Name = "transcriptBox";
             this.transcriptBox.ReadOnly = true;
-            this.transcriptBox.ShortcutsEnabled = true;
             this.transcriptBox.Size = new System.Drawing.Size(0, 55);
             this.transcriptBox.TabIndex = 0;
             this.transcriptBox.Text = "";
