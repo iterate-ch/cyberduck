@@ -2983,17 +2983,28 @@ namespace Ch.Cyberduck.Ui.Controller
                     View.CurrentView = BrowserView.Bookmark;
                     _bookmarkModel.Source = BookmarkCollection.defaultCollection();
                     ReloadBookmarks();
+                    SelectHost();
                     break;
                 case BrowserView.History:
                     View.CurrentView = BrowserView.History;
                     _bookmarkModel.Source = HistoryCollection.defaultCollection();
                     ReloadBookmarks();
+                    SelectHost();
                     break;
                 case BrowserView.Bonjour:
                     View.CurrentView = BrowserView.Bonjour;
                     _bookmarkModel.Source = RendezvousCollection.defaultCollection();
                     ReloadBookmarks();
+                    SelectHost();
                     break;
+            }
+        }
+
+        private void SelectHost()
+        {
+            if (IsMounted())
+            {
+                View.SelectBookmark(getSession().getHost());
             }
         }
 

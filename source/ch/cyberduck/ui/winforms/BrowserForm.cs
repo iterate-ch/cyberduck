@@ -686,6 +686,8 @@ namespace Ch.Cyberduck.Ui.Winforms
         public void SelectBookmark(Host host)
         {
             bookmarkListView.SelectObject(host, true);
+            bookmarkListView.EnsureModelVisible(host);
+            bookmarkListView.Focus();
         }
 
         public void PopulatePaths(List<string> paths)
