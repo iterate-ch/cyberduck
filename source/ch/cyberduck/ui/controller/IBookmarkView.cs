@@ -68,6 +68,7 @@ namespace Ch.Cyberduck.Ui.Controller
         bool SavePasswordChecked { get; set; }
         bool SavePasswordEnabled { set; }
         bool AnonymousChecked { get; set; }
+        bool AnonymousEnabled { get; set; }
         event VoidHandler ToggleOptions;
 
         void PopulateProtocols(List<KeyValueIconTriple<Protocol, string>> protocols);

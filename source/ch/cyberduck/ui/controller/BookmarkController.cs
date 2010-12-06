@@ -467,6 +467,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 View.PasswordEnabled = true;
                 View.Password = String.Empty;
             }
+            ItemChanged();
             Update();
         }
 
@@ -564,7 +565,9 @@ namespace Ch.Cyberduck.Ui.Controller
             View.PortFieldEnabled = _host.getProtocol().isHostnameConfigurable();
             View.Path = _host.getDefaultPath();
             View.Username = _host.getCredentials().getUsername();
-
+            View.UsernameEnabled = !_host.getCredentials().isAnonymousLogin();
+            View.AnonymousEnabled = _host.getProtocol().isAnonymousConfigurable();
+            View.AnonymousChecked = _host.getCredentials().isAnonymousLogin();
             if (string.Empty.Equals(_host.getProtocol().getUsernamePlaceholder()))
             {
                 View.UsernameLabel = Locale.localizedString("Username", "Credentials");

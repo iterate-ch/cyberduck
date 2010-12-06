@@ -1,4 +1,4 @@
-﻿//
+﻿// 
 // Copyright (c) 2010 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
@@ -21,7 +21,6 @@ using ch.cyberduck.core;
 using Ch.Cyberduck.Core;
 using ch.cyberduck.core.i18n;
 using ch.cyberduck.core.threading;
-using ch.cyberduck.ui.controller;
 using Ch.Cyberduck.Ui.Winforms.Controls;
 using com.enterprisedt.net.ftp;
 using java.lang;
@@ -394,6 +393,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 View.SelectedEncoding = Default;
             }
             View.EncodingFieldEnabled = protocol.isEncodingConfigurable();
+            View.AnonymousEnabled = protocol.isAnonymousConfigurable();
 
             UpdateIdentity();
             UpdateUrlLabel();

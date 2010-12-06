@@ -291,6 +291,12 @@ namespace Ch.Cyberduck.Ui.Winforms
             set { anonymousCheckBox.Checked = value; }
         }
 
+        public bool AnonymousEnabled
+        {
+            get { return anonymousCheckBox.Enabled; }
+            set { anonymousCheckBox.Enabled = value; }
+        }
+
         public void PopulateProtocols(List<KeyValueIconTriple<Protocol, string>> protocols)
         {
             protocol.DataSource = protocols;

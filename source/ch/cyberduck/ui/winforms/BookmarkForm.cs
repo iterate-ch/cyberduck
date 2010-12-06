@@ -70,8 +70,14 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public bool AnonymousChecked
         {
-            get { return false; }
-            set { ; }
+            get { return checkBoxAnonymous.Checked; }
+            set { checkBoxAnonymous.Checked = value; }
+        }
+
+        public bool AnonymousEnabled
+        {
+            get { return checkBoxAnonymous.Enabled; }
+            set { checkBoxAnonymous.Enabled = value; }
         }
 
         public void PopulateProtocols(List<KeyValueIconTriple<Protocol, string>> protocols)
@@ -486,6 +492,11 @@ namespace Ch.Cyberduck.Ui.Winforms
         private void button1_Click(object sender, EventArgs e)
         {
             Close();
+        }
+
+        private void checkBoxAnonymous_CheckedChanged(object sender, EventArgs e)
+        {
+            ChangedAnonymousCheckboxEvent();
         }
     }
 }
