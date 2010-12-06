@@ -119,6 +119,7 @@ namespace Ch.Cyberduck.Ui.Controller
         string CurrentLocale { set; get; }
         bool AutomaticUpdateCheck { set; get; }
         string LastUpdateCheck { set; }
+        string UpdateFeed { set; get; }
 
         bool UseSystemProxy { set; get; }
         void MarkDownloadSkipRegex(int position);
@@ -140,6 +141,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         event VoidHandler AutomaticUpdateChangedEvent;
         event VoidHandler CheckForUpdateEvent;
+        event VoidHandler UpdateFeedChangedEvent;
 
         event VoidHandler UseSystemProxyChangedEvent;
         event VoidHandler SaveWorkspaceChangedEvent;
@@ -238,5 +240,6 @@ namespace Ch.Cyberduck.Ui.Controller
         void PopulateDefaultStorageClasses(IList<KeyValuePair<string, string>> classes);
         void PopulateDefaultDownloadThrottleList(IList<KeyValuePair<float, string>> throttles);
         void PopulateDefaultUploadThrottleList(IList<KeyValuePair<float, string>> throttles);
+        void PopulateUpdateFeeds(IList<KeyValuePair<string, string>> feeds);
     }
 }

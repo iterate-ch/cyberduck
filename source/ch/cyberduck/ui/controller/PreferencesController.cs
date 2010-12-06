@@ -169,6 +169,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
             View.AutomaticUpdateChangedEvent += View_AutomaticUpdateChangedEvent;
             View.CheckForUpdateEvent += View_CheckForUpdateEvent;
+            View.UpdateFeedChangedEvent += View_UpdateFeedChangedEvent;
 
             #endregion
         }
@@ -214,6 +215,11 @@ namespace Ch.Cyberduck.Ui.Controller
             Host selected = View.DefaultBookmark;
             PopulateBookmarks();
             SelectDefaultBookmark(selected);
+        }
+
+        private void View_UpdateFeedChangedEvent()
+        {
+            Preferences.instance().setProperty("update.feed", View.UpdateFeed);
         }
 
         private void View_UploadWithTemporaryFilenameChangedEvent()
@@ -1064,6 +1070,8 @@ namespace Ch.Cyberduck.Ui.Controller
                                        ? String.Empty
                                        : UserDefaultsDateFormatter.GetLongFormat(
                                            new DateTime(Preferences.instance().getLong("update.check.last")));
+            PopulateFeeds();
+            View.UpdateFeed = Preferences.instance().getProperty("update.feed");
 
             #endregion
 
@@ -1082,6 +1090,21 @@ namespace Ch.Cyberduck.Ui.Controller
             }
 
             #endregion
+        }
+
+        private void PopulateFeeds()
+        {
+            IList<KeyValuePair<string, string>> feeds = new List<KeyValuePair<string, string>>();
+            feeds.Add(new KeyValuePair<string, string>(
+                          "release",
+                          Locale.localizedString("Release")));
+            feeds.Add(new KeyValuePair<string, string>(
+                          "beta",
+                          Locale.localizedString("Beta")));
+            feeds.Add(new KeyValuePair<string, string>(
+                          "nightly",
+                          Locale.localizedString("Snapshot Builds")));
+            View.PopulateUpdateFeeds(feeds);
         }
 
         private void PopulateLanguages()

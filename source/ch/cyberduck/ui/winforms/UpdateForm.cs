@@ -61,6 +61,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public void CheckForUpdates(bool background)
         {
+            SetFeedUrl();
             if (!background)
             {
                 UpdateStatusLabel("Looking for newer versions of Cyberduck.", false);
@@ -78,6 +79,14 @@ namespace Ch.Cyberduck.Ui.Winforms
         public bool AboutToInstallUpdate
         {
             get { return updater.UpdateStepOn == UpdateStepOn.UpdateReadyToInstall; }
+        }
+
+        private void SetFeedUrl()
+        {
+            String currentFeed = Preferences.instance().getProperty("update.feed");
+            String feedUrl = Preferences.instance().getProperty("update.feed." + currentFeed);
+            Log.debug("Setting feed URL to " + feedUrl);
+            updater.wyUpdateCommandline = "-server=\"" + feedUrl + "\"";
         }
 
         public static void SetButtonShield(Button btn, bool showShield)
@@ -101,17 +110,12 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         private void ConfigureUpdater()
         {
-            String currentFeed = Preferences.instance().getProperty("update.feed");
-            String feedUrl = Preferences.instance().getProperty("update.feed." + currentFeed);
-            Log.debug("Setting feed URL to " + feedUrl);
-
             if (!File.Exists("Updater.exe"))
             {
                 //as of Beta7 the updater filename is Updater.exe. wyUpdate.exe is not automatically renamed.
                 updater.wyUpdateLocation = "wyUpdate.exe";
             }
-            
-            updater.wyUpdateCommandline = "-server=\"" + feedUrl + "\"";
+
             updater.ContainerForm = this;
             updater.KeepHidden = true;
             updater.Visible = false;

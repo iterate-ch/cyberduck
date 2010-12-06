@@ -35,6 +35,16 @@ namespace Ch.Cyberduck.Ui.Controller
             get { return _instance; }
         }
 
+        public override bool Singleton
+        {
+            get { return true; }
+        }
+
+        public bool AboutToInstallUpdate
+        {
+            get { return View.AboutToInstallUpdate; }
+        }
+
         public void CheckForUpdatesIfNecessary()
         {
             if (Preferences.instance().getBoolean("update.check"))
@@ -49,16 +59,6 @@ namespace Ch.Cyberduck.Ui.Controller
                     ForceCheckForUpdates(true);
                 }
             }
-        }
-
-        public override bool Singleton
-        {
-            get { return true; }
-        }
-
-        public bool AboutToInstallUpdate
-        {
-            get { return View.AboutToInstallUpdate;  }
         }
 
         /// <summary>

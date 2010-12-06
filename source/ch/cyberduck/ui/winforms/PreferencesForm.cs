@@ -685,6 +685,12 @@ namespace Ch.Cyberduck.Ui.Winforms
             set { lastUpdateLabel.Text = value; }
         }
 
+        public string UpdateFeed
+        {
+            get { return (string)updateFeedComboBox.SelectedValue; }
+            set { updateFeedComboBox.SelectedValue = value; }
+        }
+
         public bool UseSystemProxy
         {
             get { return systemProxyCheckBox.Checked; }
@@ -765,6 +771,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         public event VoidHandler DefaultStorageClassChangedEvent = delegate { };
         public event VoidHandler LocaleChanged = delegate { };
         public event VoidHandler UploadWithTemporaryFilenameChangedEvent = delegate { };
+        public event VoidHandler UpdateFeedChangedEvent = delegate { };
 
         public bool AutomaticUpdateCheck
         {
@@ -926,6 +933,13 @@ namespace Ch.Cyberduck.Ui.Winforms
             defaultUploadThrottleCombobox.DataSource = throttles;
             defaultUploadThrottleCombobox.ValueMember = "Key";
             defaultUploadThrottleCombobox.DisplayMember = "Value";
+        }
+
+        public void PopulateUpdateFeeds(IList<KeyValuePair<string, string>> feeds)
+        {
+            updateFeedComboBox.DataSource = feeds;
+            updateFeedComboBox.ValueMember = "Key";
+            updateFeedComboBox.DisplayMember = "Value";
         }
 
         public Protocol DefaultProtocol
@@ -1490,6 +1504,11 @@ namespace Ch.Cyberduck.Ui.Winforms
         private void uploadTemporaryNameCheckBox_CheckedChanged(object sender, EventArgs e)
         {
             UploadWithTemporaryFilenameChangedEvent();
+        }
+
+        private void updateFeedComboBox_SelectionChangeCommitted(object sender, EventArgs e)
+        {
+            UpdateFeedChangedEvent();
         }
     }
 }
