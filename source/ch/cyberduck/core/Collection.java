@@ -124,7 +124,6 @@ public class Collection<E> extends ArrayList<E> implements CollectionListener<E>
             Object item = e.next();
             if(c.contains(item)) {
                 e.remove();
-                this.collectionItemRemoved((E) item);
                 modified = true;
             }
         }
