@@ -155,7 +155,7 @@ public class SystemConfigurationProxy extends AbstractProxy implements Proxy {
         if(!loadNative()) {
             return null;
         }
-        return this.getHTTPSProxyHostNative();
+        return this.getHTTPProxyHostNative();
     }
 
     public int getHTTPProxyPort() {
