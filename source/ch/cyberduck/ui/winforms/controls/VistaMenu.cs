@@ -264,15 +264,19 @@ namespace Ch.Cyberduck.Ui.Winforms.Controls
 
         private void AddPreVistaMenuItem(MenuItem mnuItem)
         {
-            if (menuParents[mnuItem.Parent] == null)
+            //if (menuParents[mnuItem.Parent] == null)
             {
                 menuParents[mnuItem.Parent] = true;
-
                 if (formHasBeenIntialized)
                 {
                     //add all the menu items with custom paint events
                     foreach (MenuItem menu in mnuItem.Parent.MenuItems)
                     {
+                        //take dynamically added items into account, means removing the handlers first
+                        menu.DrawItem -= MenuItem_DrawItem;
+                        menu.MeasureItem -= MenuItem_MeasureItem;
+
+                        //and add them again. This way no multiple handler invocations should happen.
                         menu.DrawItem += MenuItem_DrawItem;
                         menu.MeasureItem += MenuItem_MeasureItem;
                         menu.OwnerDraw = true;
