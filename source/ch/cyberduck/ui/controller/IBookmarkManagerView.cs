@@ -36,7 +36,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         ImageGetterDelegate BookmarkStatusImageGetter { set; }
 
-        void SetBookmarkModel(IEnumerable hosts);
+        void SetBookmarkModel(IEnumerable hosts, Host selected);
         void RefreshBookmark(Host host);
         void AddBookmark(Host host);
         void RemoveBookmark(Host host);

@@ -284,7 +284,7 @@ namespace Ch.Cyberduck.Ui.Controller
             //todo eigene ListenerKlasse muss her
             //hostCollection.addListener(this);
             View.ViewClosedEvent += delegate { bookmarkCollection.removeListener(this); };
-            View.SetBookmarkModel(bookmarkCollection);
+            View.SetBookmarkModel(bookmarkCollection, null);
         }
 
         private bool View_ValidateNewBrowser()
@@ -1109,8 +1109,6 @@ namespace Ch.Cyberduck.Ui.Controller
         private void View_DeleteBookmark()
         {
             List<Host> selected = View.SelectedBookmarks;
-            //View.SelectBookmark(host);
-            //View.EnsureBookmarkVisible(host);
             StringBuilder alertText = new StringBuilder();
             int i = 0;
             foreach (Host host in selected)
@@ -3013,8 +3011,16 @@ namespace Ch.Cyberduck.Ui.Controller
         /// </summary>
         public void ReloadBookmarks()
         {
+            ReloadBookmarks(null);
+        }
+
+        /// <summary>
+        /// Reload bookmarks table from the currently selected model
+        /// </summary>
+        public void ReloadBookmarks(Host selected)
+        {
             //Note: expensive for a big bookmark list (might need a refactoring)
-            View.SetBookmarkModel(_bookmarkModel.Source);
+            View.SetBookmarkModel(_bookmarkModel.Source, selected);
             UpdateStatusLabel();
         }
 

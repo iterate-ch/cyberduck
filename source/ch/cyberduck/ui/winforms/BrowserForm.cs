@@ -789,9 +789,26 @@ namespace Ch.Cyberduck.Ui.Winforms
             set { activeColumn.ImageGetter = value; }
         }
 
-        public void SetBookmarkModel(IEnumerable hosts)
+        public void SetBookmarkModel(IEnumerable hosts, Host selected)
         {
-            bookmarkListView.SetObjects(hosts);
+            int index = -1;
+            if (null != selected)
+            {
+                OLVListItem item = bookmarkListView.ModelToItem(selected);
+                if (null != item)
+                {
+                    index = item.Index;
+                }
+            }
+            bookmarkListView.SetObjects(hosts, true);
+            if (index != -1 && bookmarkListView.Items.Count > 0)
+            {
+                if (index >= bookmarkListView.Items.Count)
+                {
+                    index = bookmarkListView.Items.Count-1;
+                }
+                bookmarkListView.EnsureVisible(index);    
+            }            
         }
 
         public void RefreshBookmark(Host host)

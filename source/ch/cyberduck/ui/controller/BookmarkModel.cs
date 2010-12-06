@@ -56,7 +56,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         }
                     }
                     //todo hmm, wo wird dieser entfernt?
-                    _filtered.addListener(new BookmarkListener(_controller));
+                    _filtered.addListener(new FilterBookmarkListener(_source));
                 }
                 return _filtered;
             }
@@ -149,12 +149,42 @@ namespace Ch.Cyberduck.Ui.Controller
 
             public void collectionItemRemoved(object host)
             {
-                _controller.Invoke(() => _controller.ReloadBookmarks());
+                _controller.Invoke(() => _controller.ReloadBookmarks(host as Host));
             }
 
             public void collectionItemChanged(object host)
             {
                 _controller.Invoke(() => _controller.View.RefreshBookmark(host as Host));
+            }
+        }
+
+        private class FilterBookmarkListener : CollectionListener
+        {
+            private readonly AbstractHostCollection _source;
+
+            public FilterBookmarkListener(AbstractHostCollection source)
+            {
+                _source = source;
+            }
+
+            public void collectionLoaded()
+            {
+                _source.collectionLoaded();
+            }
+
+            public void collectionItemAdded(object host)
+            {
+                _source.add(host as Host);
+            }
+
+            public void collectionItemRemoved(object host)
+            {
+                _source.remove(host as Host);
+            }
+
+            public void collectionItemChanged(object host)
+            {
+                _source.collectionItemChanged(host);
             }
         }
 
