@@ -230,26 +230,20 @@ public class BrowserController extends WindowController implements NSToolbar.Del
      * Marks the current browser as the first responder
      */
     private void getFocus() {
+        NSView view;
         if(this.getSelectedTabView() == TAB_BOOKMARKS) {
-            if(this.isMounted()) {
-                int row = this.bookmarkModel.getSource().indexOf(this.getSession().getHost());
-                if(row != -1) {
-                    this.bookmarkTable.selectRowIndexes(NSIndexSet.indexSetWithIndex(new NSInteger(row)), false);
-                    this.bookmarkTable.scrollRowToVisible(new NSInteger(row));
-                }
-            }
-            this.updateStatusLabel(this.bookmarkTable.numberOfRows() + " " + Locale.localizedString("Bookmarks"));
-            this.window().makeFirstResponder(bookmarkTable);
+            view = bookmarkTable;
         }
         else {
             if(this.isMounted()) {
-                this.window().makeFirstResponder(this.getSelectedBrowserView());
+                view = this.getSelectedBrowserView();
             }
             else {
-                this.window().makeFirstResponder(this.quickConnectPopup);
+                view = quickConnectPopup;
             }
-            this.updateStatusLabel();
         }
+        this.updateStatusLabel();
+        this.window().makeFirstResponder(view);
     }
 
     /**
@@ -762,6 +756,13 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             // Display bookmarks
             this.browserTabView.selectTabViewItemAtIndex(TAB_BOOKMARKS);
             this.updateBookmarkSource();
+            if(this.isMounted()) {
+                int row = this.bookmarkModel.getSource().indexOf(this.getSession().getHost());
+                if(row != -1) {
+                    this.bookmarkTable.selectRowIndexes(NSIndexSet.indexSetWithIndex(new NSInteger(row)), false);
+                    this.bookmarkTable.scrollRowToVisible(new NSInteger(row));
+                }
+            }
         }
         else {
             this.setBookmarkFilter(null);
