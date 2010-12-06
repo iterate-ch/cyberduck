@@ -182,7 +182,7 @@ public class UserDefaultsPreferences extends Preferences {
          * Location of the openssh known_hosts file
          */
         defaults.put("ssh.knownhosts", "~/.ssh/known_hosts");
-        defaults.put("browser.filesize.decimal", String.valueOf(Factory.VERSION_PLATFORM.matches("10\\.5.*")));
+        defaults.put("browser.filesize.decimal", String.valueOf(Factory.VERSION_PLATFORM.matches("10\\.6.*")));
     }
 
     /**
