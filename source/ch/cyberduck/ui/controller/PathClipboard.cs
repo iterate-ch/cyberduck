@@ -26,18 +26,15 @@ namespace Ch.Cyberduck.Ui.Controller
         private static readonly PathClipboardDictionary Instances =
             new PathClipboardDictionary();
 
-        private Host _host;
-
-        private PathClipboard(Host host)
+        private PathClipboard()
         {
-            _host = host;
         }
 
         public static PathClipboard GetClipboard(Host host)
         {
             if (!Instances.ContainsKey(host))
             {
-                Instances.Add(host, new PathClipboard(host));
+                Instances.Add(host, new PathClipboard());
             }
             return Instances[host];
         }
