@@ -8,6 +8,12 @@ Changelog. Last modified: $Date$
 - [Feature] Version for Microsoft Windows XP, Windows Vista & Windows 7.
 - [Feature] Connecting to Windows Azure Blob Storage (Azure) (#3938)
 
+3.8.1 [http://trac.cyberduck.ch/milestone/3.8.1]
+- [Bugfix] Fails to display custom language preference (#5500)
+- [Bugfix] Clear data channels not supported (#5509) (FTP-TLS)
+- [Bugfix] Some files not displayed (#5505) (FTP)
+- [Bugfix] Wrong file size reported for uploads (#5503)
+
 3.8 [http://trac.cyberduck.ch/milestone/3.8]
 - [Feature] CDN configuration with custom origin server (Amazon CloudFront)
 - [Feature] CDN invalidation requests (Amazon CloudFront) (#5197)
