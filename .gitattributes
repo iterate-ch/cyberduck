@@ -2053,6 +2053,7 @@ source/ch/cyberduck/core/dav/DAVResource.java -text
 source/ch/cyberduck/core/dav/DAVSession.java -text
 source/ch/cyberduck/core/dropbox/DropboxPath.java -text
 source/ch/cyberduck/core/dropbox/DropboxSession.java -text
+source/ch/cyberduck/core/editor/AbstractEditor.java -text
 source/ch/cyberduck/core/eucalyptus/ECPath.java -text
 source/ch/cyberduck/core/eucalyptus/ECSession.java -text
 source/ch/cyberduck/core/ftp/parser/CommonUnixFTPEntryParser.java -text

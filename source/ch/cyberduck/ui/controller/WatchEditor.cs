@@ -37,8 +37,6 @@ namespace Ch.Cyberduck.Ui.Controller
         {
         }
 
-        public bool Open { get; set; }
-
         protected override void edit()
         {
             Process process = new Process();
@@ -48,59 +46,28 @@ namespace Ch.Cyberduck.Ui.Controller
             try
             {
                 process.Start();
-                // workaround because of process re-use
-                // see http://stackoverflow.com/questions/303339/c-process-start-how-to-prevent-re-use-of-existing-application
-                if (process.WaitForInputIdle(10000) && !process.HasExited)
-                {
-                    Log.debug("Attach exit handler");
-                    process.Exited += EditorExited;
-                    process.EnableRaisingEvents = true;
-                }
-                else
-                {
-                    Log.debug("No exit handler could be attached");
-                }
             }
-            catch (InvalidOperationException)
+            catch (InvalidOperationException e)
             {
-                // catch silently 
+                Log.error(e);
             }
             catch (Win32Exception e)
             {
                 Log.error(e);
             }
-
-            Open = true;
-
             _watcher = new FileSystemWatcher();
             _watcher.Path = edited.getLocal().getParent().getAbsolute();
             _watcher.Filter = edited.getLocal().getName();
             _watcher.NotifyFilter = NotifyFilters.LastAccess | NotifyFilters.LastWrite
                                     | NotifyFilters.FileName | NotifyFilters.DirectoryName;
-
             RegisterHandlers();
-
             _atomicSaveTimer = new Timer(delegate
                                              {
                                                  RemoveHandlers();
                                                  _atomicSaveTimer.Change(Timeout.Infinite, Timeout.Infinite);
                                              }, null, Timeout.Infinite, Timeout.Infinite);
-
             // Begin watching.
             _watcher.EnableRaisingEvents = true;
-        }
-
-        private void EditorExited(object sender, EventArgs e)
-        {
-            Open = false;
-            if (!edited.status().isComplete())
-            {
-                setDeferredDelete(true);
-            }
-            else
-            {
-                delete();
-            }
         }
 
         private void FileNeedsToBeUpdated(string path)
@@ -131,13 +98,14 @@ namespace Ch.Cyberduck.Ui.Controller
         private void HasDeleted(object sender, FileSystemEventArgs e)
         {
             Log.info("HasDeleted:" + e.FullPath);
-            //an atomic must not last longer than 5 seconds. After elapsing the handlers are removed.
+            //an atomic save must not last longer than 5 seconds. After elapsing the handlers are removed.
             _atomicSaveTimer.Change(5000, Timeout.Infinite);
         }
 
         private void HasChanged(object sender, FileSystemEventArgs e)
         {
             Log.info("HasChanged:" + e.FullPath);
+            Console.WriteLine("Changed!");
             FileNeedsToBeUpdated(e.FullPath);
         }
 
@@ -160,20 +128,6 @@ namespace Ch.Cyberduck.Ui.Controller
             _watcher.Changed -= HasChanged;
             _watcher.Deleted -= HasDeleted;
             _watcher.Renamed -= HasRenamed;
-        }
-
-        protected override void setDeferredDelete(Boolean deferredDelete)
-        {
-            if (!isOpen())
-            {
-                delete();
-            }
-            base.setDeferredDelete(deferredDelete);
-        }
-
-        public override bool isOpen()
-        {
-            return Open;
         }
     }
 }
