@@ -553,7 +553,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.duplicateFileToolStripMenuItem.Name = "duplicateFileToolStripMenuItem";
             this.duplicateFileToolStripMenuItem.Size = new System.Drawing.Size(177, 22);
-            this.duplicateFileToolStripMenuItem.Text = "Duplicate File…";
+            this.duplicateFileToolStripMenuItem.Text = "Duplicate…";
             // 
             // toolStripSeparator9
             // 
@@ -1402,7 +1402,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.duplicateFileContextToolStripMenuItem.Name = "duplicateFileContextToolStripMenuItem";
             this.duplicateFileContextToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
-            this.duplicateFileContextToolStripMenuItem.Text = "Duplicate File…";
+            this.duplicateFileContextToolStripMenuItem.Text = "Duplicate…";
             // 
             // toolStripSeparator26
             // 
@@ -2851,7 +2851,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // duplicateFileBrowserContextMenuItem
             // 
             this.duplicateFileBrowserContextMenuItem.Index = 5;
-            this.duplicateFileBrowserContextMenuItem.Text = "Duplicate File…";
+            this.duplicateFileBrowserContextMenuItem.Text = "Duplicate…";
             // 
             // menuItem96
             // 
