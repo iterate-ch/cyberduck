@@ -21,6 +21,7 @@ package ch.cyberduck.core.importer;
 
 import ch.cyberduck.core.*;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.enterprisedt.net.ftp.FTPConnectMode;
@@ -157,8 +158,27 @@ public class FilezillaBookmarkCollection extends XmlBookmarkCollection {
             else if(name.equals("Comments")) {
                 current.setComment(elementText);
             }
+            else if(name.equals("LocalDir")) {
+                current.setDownloadFolder(elementText);
+            }
             else if(name.equals("RemoteDir")) {
-                current.setDefaultPath(elementText);
+                if(StringUtils.isNotBlank(elementText)) {
+                    StringBuilder b = new StringBuilder();
+                    int i = 0;
+                    //Path is written using wxString::Format(_T("%d %s "), (int)iter->Length(), iter->c_str());
+                    for(String component : elementText.substring(3).split("\\s")) {
+                        if(i % 2 == 0) {
+                            b.append(component);
+                        }
+                        else {
+                            b.append(Path.DELIMITER);
+                        }
+                        i++;
+                    }
+                    if(StringUtils.isNotBlank(b.toString())) {
+                        current.setDefaultPath(b.toString());
+                    }
+                }
             }
             else if(name.equals("TimezoneOffset")) {
                 ;
