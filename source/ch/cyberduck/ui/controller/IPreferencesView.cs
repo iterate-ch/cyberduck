@@ -90,16 +90,6 @@ namespace Ch.Cyberduck.Ui.Controller
         string UploadSkipRegex { set; get; }
         bool UploadSkipRegexEnabled { set; }
 
-        string AnonymousPassword { set; get; }
-        string DefaultTransferMode { set; get; }
-        string LineEnding { set; get; }
-        string TextFileTypeRegex { set; get; }
-        bool LineEndingEnabled { set; }
-        bool TextFileTypeRegexEnabled { set; }
-        bool TextFileTypeRegexValid { set; }
-        bool SecureDataChannel { set; get; }
-        bool FailInsecureDataChannel { set; get; }
-
         string SshTransfer { set; get; }
         string DefaultBucketLocation { set; get; }
         string DefaultStorageClass { set; get; }
@@ -206,13 +196,6 @@ namespace Ch.Cyberduck.Ui.Controller
         event VoidHandler UploadSkipRegexChangedEvent;
         event VoidHandler UploadSkipRegexDefaultEvent;
 
-        event VoidHandler AnonymousPasswordChangedEvent;
-        event VoidHandler DefaultTransferModeChangedEvent;
-        event VoidHandler LineEndingChangedEvent;
-        event VoidHandler TextFileTypeRegexChangedEvent;
-        event VoidHandler SecureDataChannelChangedEvent;
-        event VoidHandler FailInsecureDataChannelChangedEvent;
-
         event VoidHandler SshTransferChangedEvent;
         event VoidHandler DefaultBucketLocationChangedEvent;
         event VoidHandler DefaultStorageClassChangedEvent;
@@ -233,8 +216,6 @@ namespace Ch.Cyberduck.Ui.Controller
         void PopulateDuplicateUploadActions(List<string> actions);
         void PopulateChmodDownloadTypes(List<string> types);
         void PopulateChmodUploadTypes(List<string> types);
-        void PopulateDefaultTransferModes(List<string> modes); // binary, ascii, auto
-        void PopulateLineEndings(List<string> lineEndings);
         void PopulateSshTransfers(List<string> transfers);
         void PopulateDefaultBucketLocations(IList<KeyValuePair<string, string>> locations);
         void PopulateDefaultStorageClasses(IList<KeyValuePair<string, string>> classes);

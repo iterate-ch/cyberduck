@@ -124,13 +124,6 @@ namespace Ch.Cyberduck.Ui.Controller
             View.UploadSkipRegexChangedEvent += View_UploadSkipRegexChangedEvent;
             View.UploadSkipRegexDefaultEvent += View_UploadSkipRegexDefaultEvent;
 
-            View.AnonymousPasswordChangedEvent += View_AnonymousPasswordChangedEvent;
-            View.DefaultTransferModeChangedEvent += View_DefaultTransferModeChangedEvent;
-            View.LineEndingChangedEvent += View_LineEndingChangedEvent;
-            View.TextFileTypeRegexChangedEvent += View_TextFileTypeRegexChangedEvent;
-            View.SecureDataChannelChangedEvent += View_SecureDataChannelChangedEvent;
-            View.FailInsecureDataChannelChangedEvent += View_FailInsecureDataChannelChangedEvent;
-
             View.SshTransferChangedEvent += View_SshTransferChangedEvent;
 
             View.DefaultDownloadThrottleChangedEvent += View_DefaultDownloadThrottleChangedEvent;
@@ -328,85 +321,6 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 Preferences.instance().setProperty("ssh.transfer", Protocol.SCP.getIdentifier());
             }
-        }
-
-        private void View_FailInsecureDataChannelChangedEvent()
-        {
-            Preferences.instance().setProperty("ftp.tls.datachannel.failOnError",
-                                               !View.FailInsecureDataChannel);
-        }
-
-        private void View_SecureDataChannelChangedEvent()
-        {
-            if (View.SecureDataChannel)
-            {
-                Preferences.instance().setProperty("ftp.tls.datachannel", "P");
-            }
-            if (!View.SecureDataChannel)
-            {
-                Preferences.instance().setProperty("ftp.tls.datachannel", "C");
-            }
-        }
-
-        private void View_TextFileTypeRegexChangedEvent()
-        {
-            string value = View.TextFileTypeRegex.Trim();
-            try
-            {
-                Pattern compiled = Pattern.compile(value);
-                View.TextFileTypeRegexValid = true;
-                Preferences.instance().setProperty("filetype.text.regex",
-                                                   compiled.pattern());
-            }
-            catch (PatternSyntaxException)
-            {
-                View.TextFileTypeRegexValid = false;
-            }
-        }
-
-        private void View_LineEndingChangedEvent()
-        {
-            if (View.LineEnding.Equals(UnixLineEndings))
-            {
-                Preferences.instance().setProperty("ftp.line.separator", "unix");
-            }
-            else if (View.LineEnding.Equals(MacLineEndings))
-            {
-                Preferences.instance().setProperty("ftp.line.separator", "mac");
-            }
-            else if (View.LineEnding.Equals(WindowsLineEndings))
-            {
-                Preferences.instance().setProperty("ftp.line.separator", "win");
-            }
-        }
-
-        private void View_DefaultTransferModeChangedEvent()
-        {
-            if (View.DefaultTransferMode.Equals(TransfermodeBinary))
-            {
-                Preferences.instance().setProperty("ftp.transfermode",
-                                                   FTPTransferType.BINARY.toString());
-                View.LineEndingEnabled = false;
-                View.TextFileTypeRegexEnabled = false;
-            }
-            else if (View.DefaultTransferMode.Equals(TransfermodeAscii))
-            {
-                Preferences.instance().setProperty("ftp.transfermode",
-                                                   FTPTransferType.ASCII.toString());
-                View.LineEndingEnabled = true;
-                View.TextFileTypeRegexEnabled = false;
-            }
-            else if (View.DefaultTransferMode.Equals(TransfermodeAuto))
-            {
-                Preferences.instance().setProperty("ftp.transfermode", FTPTransferType.AUTO.toString());
-                View.LineEndingEnabled = true;
-                View.TextFileTypeRegexEnabled = true;
-            }
-        }
-
-        private void View_AnonymousPasswordChangedEvent()
-        {
-            Preferences.instance().setProperty("connection.login.anon.pass", View.AnonymousPassword);
         }
 
         private void View_UploadSkipRegexDefaultEvent()
@@ -1004,12 +918,6 @@ namespace Ch.Cyberduck.Ui.Controller
             View.UploadSkipRegex = Preferences.instance().getProperty("queue.upload.skip.regex");
             View.UploadSkipRegexEnabled = View.UploadSkip;
 
-            View.AnonymousPassword = Preferences.instance().getProperty("connection.login.anon.pass");
-            View.TextFileTypeRegex = Preferences.instance().getProperty("filetype.text.regex");
-            View.TextFileTypeRegexValid = true;
-            PopulateDefaultTransferModes();
-            PopulateLineEndings();
-
             PopulateSshTransfers();
             if (
                 Preferences.instance().getProperty("ssh.transfer").Equals(
@@ -1226,24 +1134,6 @@ namespace Ch.Cyberduck.Ui.Controller
             sshTransfers.Add(Protocol.SFTP.getDescription());
             sshTransfers.Add(Protocol.SCP.getDescription());
             View.PopulateSshTransfers(sshTransfers);
-        }
-
-        private void PopulateLineEndings()
-        {
-            List<string> lineEndings = new List<string>();
-            lineEndings.Add(UnixLineEndings);
-            lineEndings.Add(MacLineEndings);
-            lineEndings.Add(WindowsLineEndings);
-            View.PopulateLineEndings(lineEndings);
-        }
-
-        private void PopulateDefaultTransferModes()
-        {
-            List<string> defaultTransferModes = new List<string>();
-            defaultTransferModes.Add(TransfermodeAuto);
-            defaultTransferModes.Add(TransfermodeBinary);
-            defaultTransferModes.Add(TransfermodeAscii);
-            View.PopulateDefaultTransferModes(defaultTransferModes);
         }
 
         private void PopulateChmodTypes()

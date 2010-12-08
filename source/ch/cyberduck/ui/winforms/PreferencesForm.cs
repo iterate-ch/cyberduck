@@ -21,7 +21,6 @@ using System.Drawing;
 using System.Windows.Forms;
 using ch.cyberduck.core;
 using ch.cyberduck.core.i18n;
-using ch.cyberduck.ui.controller;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Winforms.Controls;
 
@@ -573,67 +572,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             uploadSkipRegexRichTextbox.SelectionColor = Color.Black;
         }
 
-        public string AnonymousPassword
-        {
-            get { return anonymousPasswordTextbox.Text; }
-            set { anonymousPasswordTextbox.Text = value; }
-        }
-
-        public string DefaultTransferMode
-        {
-            get { return defaultTransferModeCombobox.Text; }
-            set { defaultTransferModeCombobox.Text = value; }
-        }
-
-        public string LineEnding
-        {
-            get { return lineEndingCombobox.Text; }
-            set { lineEndingCombobox.Text = value; }
-        }
-
-        public string TextFileTypeRegex
-        {
-            get { return textFileTypeRegexTextbox.Text; }
-            set { textFileTypeRegexTextbox.Text = value; }
-        }
-
-        public bool LineEndingEnabled
-        {
-            set { lineEndingCombobox.Enabled = value; }
-        }
-
-        public bool TextFileTypeRegexEnabled
-        {
-            set { textFileTypeRegexTextbox.Enabled = value; }
-        }
-
-        public bool TextFileTypeRegexValid
-        {
-            set
-            {
-                if (value)
-                {
-                    textFileTypeRegexTextbox.ForeColor = Color.Black;
-                }
-                else
-                {
-                    textFileTypeRegexTextbox.ForeColor = Color.Red;
-                }
-            }
-        }
-
-        public bool SecureDataChannel
-        {
-            get { return secureDataChannelCheckbox.Checked; }
-            set { secureDataChannelCheckbox.Checked = value; }
-        }
-
-        public bool FailInsecureDataChannel
-        {
-            get { return failInsecureDataChannelCheckbox.Checked; }
-            set { failInsecureDataChannelCheckbox.Checked = value; }
-        }
-
         public string SshTransfer
         {
             get { return sshTransfersCombobox.Text; }
@@ -890,16 +828,6 @@ namespace Ch.Cyberduck.Ui.Winforms
         public void PopulateChmodUploadTypes(List<string> types)
         {
             chmodUploadTypeCombobox.DataSource = types;
-        }
-
-        public void PopulateDefaultTransferModes(List<string> modes)
-        {
-            defaultTransferModeCombobox.DataSource = modes;
-        }
-
-        public void PopulateLineEndings(List<string> lineEndings)
-        {
-            lineEndingCombobox.DataSource = lineEndings;
         }
 
         public void PopulateSshTransfers(List<string> transfers)
@@ -1280,50 +1208,6 @@ namespace Ch.Cyberduck.Ui.Winforms
         private void uploadSkipRegexDefaultButton_Click(object sender, EventArgs e)
         {
             UploadSkipRegexDefaultEvent();
-        }
-
-        private void ftpButton_Click(object sender, EventArgs e)
-        {
-            if (!ftpButton.Checked)
-            {
-                DisableAll();
-                ftpButton.Checked = true;
-                panelManager.SelectedPanel = managedFtpPanel;
-            }
-        }
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-        }
-
-        private void anonymousPasswordTextbox_Validated(object sender, EventArgs e)
-        {
-            AnonymousPasswordChangedEvent();
-        }
-
-        private void defaultTransferModeCombobox_SelectionChangeCommitted(object sender, EventArgs e)
-        {
-            DefaultTransferModeChangedEvent();
-        }
-
-        private void lineEndingCombobox_SelectionChangeCommitted(object sender, EventArgs e)
-        {
-            LineEndingChangedEvent();
-        }
-
-        private void textFileTypeRegexTextbox_TextChanged(object sender, EventArgs e)
-        {
-            TextFileTypeRegexChangedEvent();
-        }
-
-        private void secureDataChannelCheckbox_CheckedChanged(object sender, EventArgs e)
-        {
-            SecureDataChannelChangedEvent();
-        }
-
-        private void failInsecureDataChannelCheckbox_CheckedChanged(object sender, EventArgs e)
-        {
-            FailInsecureDataChannelChangedEvent();
         }
 
         private void sftpButton_Click(object sender, EventArgs e)
