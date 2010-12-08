@@ -1,4 +1,4 @@
-package com.dropbox.client;
+package ch.cyberduck.core.dropbox.client;
 
 /*
  * Copyright (c) 2002-2010 David Kocher. All rights reserved.

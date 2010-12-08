@@ -28,7 +28,7 @@ import org.apache.http.entity.mime.content.InputStreamBody;
 import org.apache.log4j.Logger;
 import org.soyatec.windows.azure.error.StorageException;
 
-import com.dropbox.client.ListEntryResponse;
+import ch.cyberduck.core.dropbox.client.ListEntryResponse;
 
 import java.io.IOException;
 import java.io.InputStream;

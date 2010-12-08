@@ -24,8 +24,8 @@ import ch.cyberduck.core.http.HTTP4Session;
 
 import org.apache.log4j.Logger;
 
-import com.dropbox.client.Account;
-import com.dropbox.client.DropboxClient;
+import ch.cyberduck.core.dropbox.client.Account;
+import ch.cyberduck.core.dropbox.client.DropboxClient;
 
 import java.io.IOException;
 
