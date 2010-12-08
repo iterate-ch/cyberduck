@@ -19,7 +19,6 @@ using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
-using System.Threading;
 using Ch.Cyberduck.Core;
 using org.apache.log4j;
 using Path = ch.cyberduck.core.Path;
@@ -29,8 +28,7 @@ namespace Ch.Cyberduck.Ui.Controller
     public class WatchEditor : Editor
     {
         private static readonly Logger Log = Logger.getLogger(typeof (WatchEditor).FullName);
-        private readonly string _editor;
-        private Timer _atomicSaveTimer;
+        private string _editor;
         private FileSystemWatcher _watcher;
 
         public WatchEditor(BrowserController controller, Path path, String editor)
@@ -39,10 +37,15 @@ namespace Ch.Cyberduck.Ui.Controller
             _editor = editor;
         }
 
+        public string Editor
+        {
+            get { return _editor; }
+            set { _editor = value; }
+        }
+
         protected override void edit()
         {
             Process process = new Process();
-
             if (Utils.IsBlank(_editor))
             {
                 process.StartInfo.FileName = edited.getLocal().getAbsolute();
@@ -50,7 +53,7 @@ namespace Ch.Cyberduck.Ui.Controller
             else
             {
                 process.StartInfo.FileName = _editor;
-                process.StartInfo.Arguments = edited.getLocal().getAbsolute();
+                process.StartInfo.Arguments = "\"" + edited.getLocal().getAbsolute() + "\"";
             }
             try
             {
@@ -72,47 +75,25 @@ namespace Ch.Cyberduck.Ui.Controller
             _watcher.NotifyFilter = NotifyFilters.LastAccess | NotifyFilters.LastWrite
                                     | NotifyFilters.FileName | NotifyFilters.DirectoryName;
             RegisterHandlers();
-            _atomicSaveTimer = new Timer(delegate
-                                             {
-                                                 RemoveHandlers();
-                                                 _atomicSaveTimer.Change(Timeout.Infinite, Timeout.Infinite);
-                                             }, null, Timeout.Infinite, Timeout.Infinite);
             // Begin watching.
             _watcher.EnableRaisingEvents = true;
         }
 
-        private void FileNeedsToBeUpdated(string path)
+        private void FileNeedsToBeUpdated()
         {
-            try
-            {
-                _watcher.EnableRaisingEvents = false;
-                save();
-            }
-            finally
-            {
-                _watcher.EnableRaisingEvents = true;
-            }
+            
         }
 
         private void HasRenamed(object sender, RenamedEventArgs e)
         {
-            Log.info(String.Format("HasRenamed: from {0} to {1}", e.OldFullPath, e.FullPath));
-            //prevent removing handlers
-            //_atomicSaveTimer.Change(Timeout.Infinite, Timeout.Infinite);
-            FileNeedsToBeUpdated(e.FullPath);
-        }
-
-        private void HasDeleted(object sender, FileSystemEventArgs e)
-        {
-            Log.info("HasDeleted:" + e.FullPath);
-            //an atomic save must not last longer than 5 seconds. After elapsing the handlers are removed.
-            //_atomicSaveTimer.Change(5000, Timeout.Infinite);
+            Log.debug(String.Format("HasRenamed: from {0} to {1}", e.OldFullPath, e.FullPath));
+            save();
         }
 
         private void HasChanged(object sender, FileSystemEventArgs e)
         {
-            Log.info("HasChanged:" + e.FullPath);
-            FileNeedsToBeUpdated(e.FullPath);
+            Log.debug("HasChanged:" + e.FullPath);
+            save();
         }
 
         protected override void delete()
@@ -125,14 +106,12 @@ namespace Ch.Cyberduck.Ui.Controller
         private void RegisterHandlers()
         {
             _watcher.Changed += HasChanged;
-            _watcher.Deleted += HasDeleted;
             _watcher.Renamed += HasRenamed;
         }
 
         private void RemoveHandlers()
         {
             _watcher.Changed -= HasChanged;
-            _watcher.Deleted -= HasDeleted;
             _watcher.Renamed -= HasRenamed;
         }
     }

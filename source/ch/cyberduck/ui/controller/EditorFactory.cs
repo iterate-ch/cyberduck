@@ -22,7 +22,7 @@ namespace Ch.Cyberduck.Ui.Controller
 {
     public class EditorFactory
     {
-        private static readonly IDictionary<Path, Editor> editors = new Dictionary<Path, Editor>();
+        private static readonly IDictionary<Path, WatchEditor> editors = new Dictionary<Path, WatchEditor>();
 
         /// <summary>
         /// 
@@ -43,12 +43,13 @@ namespace Ch.Cyberduck.Ui.Controller
         /// <returns>New editor instance for the given file type.</returns>
         public static Editor createEditor(BrowserController c, Path path, string app)
         {
-            Editor editor;
+            WatchEditor editor;
             if (!editors.TryGetValue(path, out editor))
             {
                 editor = new WatchEditor(c, path, app);
                 editors.Add(path, editor);
             }
+            editor.Editor = app;
             return editor;
         }
     }
