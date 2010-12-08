@@ -170,12 +170,14 @@ namespace Ch.Cyberduck.Ui.Winforms
             // restore additional UI settings
             Load += delegate
                         {
-                            //correct width for disconnect button
+                            //correct width for disconnect button                            
                             Size preferredSize = disconnectStripButton.GetPreferredSize(Size.Empty);
                             disconnectStripButton.AutoSize = false;
                             disconnectStripButton.Width = preferredSize.Width;
                             splitContainer.SplitterDistance = PersistenceHandler.Get("Splitter.Distance", 400);
 
+                            Menu = mainMenu;
+                            
                             //add menu shortcuts, needs to be done in the Load event handler
                             ConfigureShortcuts();
                         };

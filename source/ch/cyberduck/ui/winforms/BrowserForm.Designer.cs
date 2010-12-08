@@ -31,6 +31,96 @@ namespace Ch.Cyberduck.Ui.Winforms
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            this.mainMenu = new System.Windows.Forms.MainMenu(this.components);
+            this.menuItem1 = new System.Windows.Forms.MenuItem();
+            this.newBrowserMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.openConnectionMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.menuItem4 = new System.Windows.Forms.MenuItem();
+            this.newDownloadMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.menuItem6 = new System.Windows.Forms.MenuItem();
+            this.newFolderMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.newFileMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.renameMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.duplicateMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.menuItem11 = new System.Windows.Forms.MenuItem();
+            this.openUrlMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.editMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.infoMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.menuItem2 = new System.Windows.Forms.MenuItem();
+            this.downloadMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.downloadAsMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.downloadToMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.uploadMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.synchronizeMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.menuItem21 = new System.Windows.Forms.MenuItem();
+            this.deleteMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.revertMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.menuItem24 = new System.Windows.Forms.MenuItem();
+            this.createArchiveMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.expandArchiveMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.menuItem27 = new System.Windows.Forms.MenuItem();
+            this.printMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.menuItem29 = new System.Windows.Forms.MenuItem();
+            this.exitMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.mainMenuItem2 = new System.Windows.Forms.MenuItem();
+            this.cutMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.copyMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.copyUrlMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.pasteMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.selectAllMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.menuItem37 = new System.Windows.Forms.MenuItem();
+            this.preferencesMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.menuItem39 = new System.Windows.Forms.MenuItem();
+            this.toggleToolbarMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.customizeToolbarMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.menuItem42 = new System.Windows.Forms.MenuItem();
+            this.menuItem43 = new System.Windows.Forms.MenuItem();
+            this.columnMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.menuItem45 = new System.Windows.Forms.MenuItem();
+            this.showHiddenFilesMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.textEncodingMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.menuItem48 = new System.Windows.Forms.MenuItem();
+            this.toggleLogDrawerMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.menuItem50 = new System.Windows.Forms.MenuItem();
+            this.refreshMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.menuItem52 = new System.Windows.Forms.MenuItem();
+            this.goToFolderMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.backMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.forwardMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.enclosingFolderMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.insideMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.searchMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.menuItem59 = new System.Windows.Forms.MenuItem();
+            this.sendCommandMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.menuItem61 = new System.Windows.Forms.MenuItem();
+            this.stopMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.disconnectMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.menuItem64 = new System.Windows.Forms.MenuItem();
+            this.toggleBookmarksMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.menuItem66 = new System.Windows.Forms.MenuItem();
+            this.newBookmarkMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.deleteBookmarkMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.editBookmarkMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.duplicateBookmarkMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.menuItem71 = new System.Windows.Forms.MenuItem();
+            this.historyMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.bonjourMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.menuItem74 = new System.Windows.Forms.MenuItem();
+            this.menuItem75 = new System.Windows.Forms.MenuItem();
+            this.minimizeMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.menuItem77 = new System.Windows.Forms.MenuItem();
+            this.transfersMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.activityMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.menuItem80 = new System.Windows.Forms.MenuItem();
+            this.helpMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.licenseMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.acknowledgmentsMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.menuItem84 = new System.Windows.Forms.MenuItem();
+            this.bugMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.menuItem86 = new System.Windows.Forms.MenuItem();
+            this.updateMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.menuItem88 = new System.Windows.Forms.MenuItem();
+            this.aboutMainMenuItem = new System.Windows.Forms.MenuItem();
             this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.toolStripProgress = new System.Windows.Forms.ToolStripStatusLabel();
             this.statusLabel = new System.Windows.Forms.ToolStripStatusLabel();
@@ -241,96 +331,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
             this.folderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
-            this.mainMenu = new System.Windows.Forms.MainMenu(this.components);
-            this.menuItem1 = new System.Windows.Forms.MenuItem();
-            this.newBrowserMainMenuItem = new System.Windows.Forms.MenuItem();
-            this.openConnectionMainMenuItem = new System.Windows.Forms.MenuItem();
-            this.menuItem4 = new System.Windows.Forms.MenuItem();
-            this.newDownloadMainMenuItem = new System.Windows.Forms.MenuItem();
-            this.menuItem6 = new System.Windows.Forms.MenuItem();
-            this.newFolderMainMenuItem = new System.Windows.Forms.MenuItem();
-            this.newFileMainMenuItem = new System.Windows.Forms.MenuItem();
-            this.renameMainMenuItem = new System.Windows.Forms.MenuItem();
-            this.duplicateMainMenuItem = new System.Windows.Forms.MenuItem();
-            this.menuItem11 = new System.Windows.Forms.MenuItem();
-            this.openUrlMainMenuItem = new System.Windows.Forms.MenuItem();
-            this.editMainMenuItem = new System.Windows.Forms.MenuItem();
-            this.infoMainMenuItem = new System.Windows.Forms.MenuItem();
-            this.menuItem2 = new System.Windows.Forms.MenuItem();
-            this.downloadMainMenuItem = new System.Windows.Forms.MenuItem();
-            this.downloadAsMainMenuItem = new System.Windows.Forms.MenuItem();
-            this.downloadToMainMenuItem = new System.Windows.Forms.MenuItem();
-            this.uploadMainMenuItem = new System.Windows.Forms.MenuItem();
-            this.synchronizeMainMenuItem = new System.Windows.Forms.MenuItem();
-            this.menuItem21 = new System.Windows.Forms.MenuItem();
-            this.deleteMainMenuItem = new System.Windows.Forms.MenuItem();
-            this.revertMainMenuItem = new System.Windows.Forms.MenuItem();
-            this.menuItem24 = new System.Windows.Forms.MenuItem();
-            this.createArchiveMainMenuItem = new System.Windows.Forms.MenuItem();
-            this.expandArchiveMainMenuItem = new System.Windows.Forms.MenuItem();
-            this.menuItem27 = new System.Windows.Forms.MenuItem();
-            this.printMainMenuItem = new System.Windows.Forms.MenuItem();
-            this.menuItem29 = new System.Windows.Forms.MenuItem();
-            this.exitMainMenuItem = new System.Windows.Forms.MenuItem();
-            this.mainMenuItem2 = new System.Windows.Forms.MenuItem();
-            this.cutMainMenuItem = new System.Windows.Forms.MenuItem();
-            this.copyMainMenuItem = new System.Windows.Forms.MenuItem();
-            this.copyUrlMainMenuItem = new System.Windows.Forms.MenuItem();
-            this.pasteMainMenuItem = new System.Windows.Forms.MenuItem();
-            this.selectAllMainMenuItem = new System.Windows.Forms.MenuItem();
-            this.menuItem37 = new System.Windows.Forms.MenuItem();
-            this.preferencesMainMenuItem = new System.Windows.Forms.MenuItem();
-            this.menuItem39 = new System.Windows.Forms.MenuItem();
-            this.toggleToolbarMainMenuItem = new System.Windows.Forms.MenuItem();
-            this.customizeToolbarMainMenuItem = new System.Windows.Forms.MenuItem();
-            this.menuItem42 = new System.Windows.Forms.MenuItem();
-            this.menuItem43 = new System.Windows.Forms.MenuItem();
-            this.columnMainMenuItem = new System.Windows.Forms.MenuItem();
-            this.menuItem45 = new System.Windows.Forms.MenuItem();
-            this.showHiddenFilesMainMenuItem = new System.Windows.Forms.MenuItem();
-            this.textEncodingMainMenuItem = new System.Windows.Forms.MenuItem();
-            this.menuItem48 = new System.Windows.Forms.MenuItem();
-            this.toggleLogDrawerMainMenuItem = new System.Windows.Forms.MenuItem();
-            this.menuItem50 = new System.Windows.Forms.MenuItem();
-            this.refreshMainMenuItem = new System.Windows.Forms.MenuItem();
-            this.menuItem52 = new System.Windows.Forms.MenuItem();
-            this.goToFolderMainMenuItem = new System.Windows.Forms.MenuItem();
-            this.backMainMenuItem = new System.Windows.Forms.MenuItem();
-            this.forwardMainMenuItem = new System.Windows.Forms.MenuItem();
-            this.enclosingFolderMainMenuItem = new System.Windows.Forms.MenuItem();
-            this.insideMainMenuItem = new System.Windows.Forms.MenuItem();
-            this.searchMainMenuItem = new System.Windows.Forms.MenuItem();
-            this.menuItem59 = new System.Windows.Forms.MenuItem();
-            this.sendCommandMainMenuItem = new System.Windows.Forms.MenuItem();
-            this.menuItem61 = new System.Windows.Forms.MenuItem();
-            this.stopMainMenuItem = new System.Windows.Forms.MenuItem();
-            this.disconnectMainMenuItem = new System.Windows.Forms.MenuItem();
-            this.menuItem64 = new System.Windows.Forms.MenuItem();
-            this.toggleBookmarksMainMenuItem = new System.Windows.Forms.MenuItem();
-            this.menuItem66 = new System.Windows.Forms.MenuItem();
-            this.newBookmarkMainMenuItem = new System.Windows.Forms.MenuItem();
-            this.deleteBookmarkMainMenuItem = new System.Windows.Forms.MenuItem();
-            this.editBookmarkMainMenuItem = new System.Windows.Forms.MenuItem();
-            this.duplicateBookmarkMainMenuItem = new System.Windows.Forms.MenuItem();
-            this.menuItem71 = new System.Windows.Forms.MenuItem();
-            this.historyMainMenuItem = new System.Windows.Forms.MenuItem();
-            this.bonjourMainMenuItem = new System.Windows.Forms.MenuItem();
-            this.menuItem74 = new System.Windows.Forms.MenuItem();
-            this.menuItem75 = new System.Windows.Forms.MenuItem();
-            this.minimizeMainMenuItem = new System.Windows.Forms.MenuItem();
-            this.menuItem77 = new System.Windows.Forms.MenuItem();
-            this.transfersMainMenuItem = new System.Windows.Forms.MenuItem();
-            this.activityMainMenuItem = new System.Windows.Forms.MenuItem();
-            this.menuItem80 = new System.Windows.Forms.MenuItem();
-            this.helpMainMenuItem = new System.Windows.Forms.MenuItem();
-            this.licenseMainMenuItem = new System.Windows.Forms.MenuItem();
-            this.acknowledgmentsMainMenuItem = new System.Windows.Forms.MenuItem();
-            this.menuItem84 = new System.Windows.Forms.MenuItem();
-            this.bugMainMenuItem = new System.Windows.Forms.MenuItem();
-            this.menuItem86 = new System.Windows.Forms.MenuItem();
-            this.updateMainMenuItem = new System.Windows.Forms.MenuItem();
-            this.menuItem88 = new System.Windows.Forms.MenuItem();
-            this.aboutMainMenuItem = new System.Windows.Forms.MenuItem();
             this.vistaMenu1 = new Ch.Cyberduck.Ui.Winforms.Controls.VistaMenu(this.components);
             this.toolbarContextMenu1 = new System.Windows.Forms.ContextMenu();
             this.openConnectionToolbarMenuItem = new System.Windows.Forms.MenuItem();
@@ -410,6 +410,554 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.bookmarkContextMenuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.vistaMenu1)).BeginInit();
             this.SuspendLayout();
+            // 
+            // mainMenu
+            // 
+            this.mainMenu.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.menuItem1,
+            this.mainMenuItem2,
+            this.menuItem39,
+            this.menuItem50,
+            this.menuItem64,
+            this.menuItem75,
+            this.menuItem80});
+            // 
+            // menuItem1
+            // 
+            this.menuItem1.Index = 0;
+            this.menuItem1.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.newBrowserMainMenuItem,
+            this.openConnectionMainMenuItem,
+            this.menuItem4,
+            this.newDownloadMainMenuItem,
+            this.menuItem6,
+            this.newFolderMainMenuItem,
+            this.newFileMainMenuItem,
+            this.renameMainMenuItem,
+            this.duplicateMainMenuItem,
+            this.menuItem11,
+            this.openUrlMainMenuItem,
+            this.editMainMenuItem,
+            this.infoMainMenuItem,
+            this.menuItem2,
+            this.downloadMainMenuItem,
+            this.downloadAsMainMenuItem,
+            this.downloadToMainMenuItem,
+            this.uploadMainMenuItem,
+            this.synchronizeMainMenuItem,
+            this.menuItem21,
+            this.deleteMainMenuItem,
+            this.revertMainMenuItem,
+            this.menuItem24,
+            this.createArchiveMainMenuItem,
+            this.expandArchiveMainMenuItem,
+            this.menuItem27,
+            this.printMainMenuItem,
+            this.menuItem29,
+            this.exitMainMenuItem});
+            this.menuItem1.Text = "&File";
+            // 
+            // newBrowserMainMenuItem
+            // 
+            this.newBrowserMainMenuItem.Index = 0;
+            this.newBrowserMainMenuItem.Text = "New Browser";
+            // 
+            // openConnectionMainMenuItem
+            // 
+            this.openConnectionMainMenuItem.Index = 1;
+            this.openConnectionMainMenuItem.Text = "Open Connection…";
+            // 
+            // menuItem4
+            // 
+            this.menuItem4.Index = 2;
+            this.menuItem4.Text = "-";
+            // 
+            // newDownloadMainMenuItem
+            // 
+            this.newDownloadMainMenuItem.Index = 3;
+            this.newDownloadMainMenuItem.Text = "New Download";
+            // 
+            // menuItem6
+            // 
+            this.menuItem6.Index = 4;
+            this.menuItem6.Text = "-";
+            // 
+            // newFolderMainMenuItem
+            // 
+            this.newFolderMainMenuItem.Index = 5;
+            this.newFolderMainMenuItem.Text = "New Folder…";
+            // 
+            // newFileMainMenuItem
+            // 
+            this.newFileMainMenuItem.Index = 6;
+            this.newFileMainMenuItem.Text = "New File…";
+            // 
+            // renameMainMenuItem
+            // 
+            this.renameMainMenuItem.Index = 7;
+            this.renameMainMenuItem.Text = "Rename…";
+            // 
+            // duplicateMainMenuItem
+            // 
+            this.duplicateMainMenuItem.Index = 8;
+            this.duplicateMainMenuItem.Text = "Duplicate…";
+            // 
+            // menuItem11
+            // 
+            this.menuItem11.Index = 9;
+            this.menuItem11.Text = "-";
+            // 
+            // openUrlMainMenuItem
+            // 
+            this.openUrlMainMenuItem.Index = 10;
+            this.openUrlMainMenuItem.Text = "Open URL";
+            // 
+            // editMainMenuItem
+            // 
+            this.editMainMenuItem.Index = 11;
+            this.editMainMenuItem.Text = "Edit";
+            // 
+            // infoMainMenuItem
+            // 
+            this.infoMainMenuItem.Index = 12;
+            this.infoMainMenuItem.Text = "Info";
+            // 
+            // menuItem2
+            // 
+            this.menuItem2.Index = 13;
+            this.menuItem2.Text = "-";
+            // 
+            // downloadMainMenuItem
+            // 
+            this.downloadMainMenuItem.Index = 14;
+            this.downloadMainMenuItem.Text = "Download";
+            // 
+            // downloadAsMainMenuItem
+            // 
+            this.downloadAsMainMenuItem.Index = 15;
+            this.downloadAsMainMenuItem.Text = "Download As…";
+            // 
+            // downloadToMainMenuItem
+            // 
+            this.downloadToMainMenuItem.Index = 16;
+            this.downloadToMainMenuItem.Text = "Download To…";
+            // 
+            // uploadMainMenuItem
+            // 
+            this.uploadMainMenuItem.Index = 17;
+            this.uploadMainMenuItem.Text = "Upload…";
+            // 
+            // synchronizeMainMenuItem
+            // 
+            this.synchronizeMainMenuItem.Index = 18;
+            this.synchronizeMainMenuItem.Text = "Synchronize…";
+            // 
+            // menuItem21
+            // 
+            this.menuItem21.Index = 19;
+            this.menuItem21.Text = "-";
+            // 
+            // deleteMainMenuItem
+            // 
+            this.deleteMainMenuItem.Index = 20;
+            this.deleteMainMenuItem.Text = "Delete";
+            // 
+            // revertMainMenuItem
+            // 
+            this.revertMainMenuItem.Index = 21;
+            this.revertMainMenuItem.Text = "Revert";
+            // 
+            // menuItem24
+            // 
+            this.menuItem24.Index = 22;
+            this.menuItem24.Text = "-";
+            // 
+            // createArchiveMainMenuItem
+            // 
+            this.createArchiveMainMenuItem.Index = 23;
+            this.createArchiveMainMenuItem.Text = "Create Archive";
+            // 
+            // expandArchiveMainMenuItem
+            // 
+            this.expandArchiveMainMenuItem.Index = 24;
+            this.expandArchiveMainMenuItem.Text = "Expand Archive";
+            // 
+            // menuItem27
+            // 
+            this.menuItem27.Index = 25;
+            this.menuItem27.Text = "-";
+            // 
+            // printMainMenuItem
+            // 
+            this.printMainMenuItem.Index = 26;
+            this.printMainMenuItem.Text = "Print…";
+            // 
+            // menuItem29
+            // 
+            this.menuItem29.Index = 27;
+            this.menuItem29.Text = "-";
+            // 
+            // exitMainMenuItem
+            // 
+            this.exitMainMenuItem.Index = 28;
+            this.exitMainMenuItem.Text = "Exit";
+            // 
+            // mainMenuItem2
+            // 
+            this.mainMenuItem2.Index = 1;
+            this.mainMenuItem2.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.cutMainMenuItem,
+            this.copyMainMenuItem,
+            this.copyUrlMainMenuItem,
+            this.pasteMainMenuItem,
+            this.selectAllMainMenuItem,
+            this.menuItem37,
+            this.preferencesMainMenuItem});
+            this.mainMenuItem2.Text = "&Edit";
+            // 
+            // cutMainMenuItem
+            // 
+            this.cutMainMenuItem.Index = 0;
+            this.cutMainMenuItem.Text = "Cut";
+            // 
+            // copyMainMenuItem
+            // 
+            this.copyMainMenuItem.Index = 1;
+            this.copyMainMenuItem.Text = "Copy";
+            // 
+            // copyUrlMainMenuItem
+            // 
+            this.copyUrlMainMenuItem.Index = 2;
+            this.copyUrlMainMenuItem.Text = "Copy URL";
+            // 
+            // pasteMainMenuItem
+            // 
+            this.pasteMainMenuItem.Index = 3;
+            this.pasteMainMenuItem.Text = "Paste";
+            // 
+            // selectAllMainMenuItem
+            // 
+            this.selectAllMainMenuItem.Index = 4;
+            this.selectAllMainMenuItem.Text = "Select All";
+            // 
+            // menuItem37
+            // 
+            this.menuItem37.Index = 5;
+            this.menuItem37.Text = "-";
+            // 
+            // preferencesMainMenuItem
+            // 
+            this.preferencesMainMenuItem.Index = 6;
+            this.preferencesMainMenuItem.Text = "Preferences…";
+            // 
+            // menuItem39
+            // 
+            this.menuItem39.Index = 2;
+            this.menuItem39.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.toggleToolbarMainMenuItem,
+            this.customizeToolbarMainMenuItem,
+            this.menuItem43,
+            this.columnMainMenuItem,
+            this.menuItem45,
+            this.showHiddenFilesMainMenuItem,
+            this.textEncodingMainMenuItem,
+            this.menuItem48,
+            this.toggleLogDrawerMainMenuItem});
+            this.menuItem39.Text = "&View";
+            // 
+            // toggleToolbarMainMenuItem
+            // 
+            this.toggleToolbarMainMenuItem.Index = 0;
+            this.toggleToolbarMainMenuItem.Text = "Hide Toolbar";
+            // 
+            // customizeToolbarMainMenuItem
+            // 
+            this.customizeToolbarMainMenuItem.Index = 1;
+            this.customizeToolbarMainMenuItem.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.menuItem42});
+            this.customizeToolbarMainMenuItem.Text = "Customize Toolbar…";
+            this.customizeToolbarMainMenuItem.Popup += new System.EventHandler(this.customizeToolbarMenuItem_Popup);
+            // 
+            // menuItem42
+            // 
+            this.menuItem42.Index = 0;
+            this.menuItem42.Text = "noch";
+            // 
+            // menuItem43
+            // 
+            this.menuItem43.Index = 2;
+            this.menuItem43.Text = "-";
+            // 
+            // columnMainMenuItem
+            // 
+            this.columnMainMenuItem.Index = 3;
+            this.columnMainMenuItem.Text = "Column";
+            this.columnMainMenuItem.Popup += new System.EventHandler(this.columnMenuItem_Popup);
+            // 
+            // menuItem45
+            // 
+            this.menuItem45.Index = 4;
+            this.menuItem45.Text = "-";
+            // 
+            // showHiddenFilesMainMenuItem
+            // 
+            this.showHiddenFilesMainMenuItem.Index = 5;
+            this.showHiddenFilesMainMenuItem.Text = "Show Hidden Files";
+            // 
+            // textEncodingMainMenuItem
+            // 
+            this.textEncodingMainMenuItem.Index = 6;
+            this.textEncodingMainMenuItem.Text = "Text Encoding";
+            // 
+            // menuItem48
+            // 
+            this.menuItem48.Index = 7;
+            this.menuItem48.Text = "-";
+            // 
+            // toggleLogDrawerMainMenuItem
+            // 
+            this.toggleLogDrawerMainMenuItem.Index = 8;
+            this.toggleLogDrawerMainMenuItem.Text = "Toggle Log Drawer";
+            // 
+            // menuItem50
+            // 
+            this.menuItem50.Index = 3;
+            this.menuItem50.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.refreshMainMenuItem,
+            this.menuItem52,
+            this.goToFolderMainMenuItem,
+            this.backMainMenuItem,
+            this.forwardMainMenuItem,
+            this.enclosingFolderMainMenuItem,
+            this.insideMainMenuItem,
+            this.searchMainMenuItem,
+            this.menuItem59,
+            this.sendCommandMainMenuItem,
+            this.menuItem61,
+            this.stopMainMenuItem,
+            this.disconnectMainMenuItem});
+            this.menuItem50.Text = "&Go";
+            // 
+            // refreshMainMenuItem
+            // 
+            this.refreshMainMenuItem.Index = 0;
+            this.refreshMainMenuItem.Text = "Refresh";
+            // 
+            // menuItem52
+            // 
+            this.menuItem52.Index = 1;
+            this.menuItem52.Text = "-";
+            // 
+            // goToFolderMainMenuItem
+            // 
+            this.goToFolderMainMenuItem.Index = 2;
+            this.goToFolderMainMenuItem.Text = "Go to Folder…";
+            // 
+            // backMainMenuItem
+            // 
+            this.backMainMenuItem.Index = 3;
+            this.backMainMenuItem.Text = "Back";
+            // 
+            // forwardMainMenuItem
+            // 
+            this.forwardMainMenuItem.Index = 4;
+            this.forwardMainMenuItem.Text = "Forward";
+            // 
+            // enclosingFolderMainMenuItem
+            // 
+            this.enclosingFolderMainMenuItem.Index = 5;
+            this.enclosingFolderMainMenuItem.Text = "Enclosing Folder";
+            // 
+            // insideMainMenuItem
+            // 
+            this.insideMainMenuItem.Index = 6;
+            this.insideMainMenuItem.Text = "Inside";
+            // 
+            // searchMainMenuItem
+            // 
+            this.searchMainMenuItem.Index = 7;
+            this.searchMainMenuItem.Text = "Search…";
+            // 
+            // menuItem59
+            // 
+            this.menuItem59.Index = 8;
+            this.menuItem59.Text = "-";
+            // 
+            // sendCommandMainMenuItem
+            // 
+            this.sendCommandMainMenuItem.Index = 9;
+            this.sendCommandMainMenuItem.Text = "Send Command…";
+            // 
+            // menuItem61
+            // 
+            this.menuItem61.Index = 10;
+            this.menuItem61.Text = "-";
+            // 
+            // stopMainMenuItem
+            // 
+            this.stopMainMenuItem.Index = 11;
+            this.stopMainMenuItem.Text = "Stop";
+            // 
+            // disconnectMainMenuItem
+            // 
+            this.disconnectMainMenuItem.Index = 12;
+            this.disconnectMainMenuItem.Text = "Disconnect";
+            // 
+            // menuItem64
+            // 
+            this.menuItem64.Index = 4;
+            this.menuItem64.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.toggleBookmarksMainMenuItem,
+            this.menuItem66,
+            this.newBookmarkMainMenuItem,
+            this.deleteBookmarkMainMenuItem,
+            this.editBookmarkMainMenuItem,
+            this.duplicateBookmarkMainMenuItem,
+            this.menuItem71,
+            this.historyMainMenuItem,
+            this.bonjourMainMenuItem,
+            this.menuItem74});
+            this.menuItem64.Text = "&Bookmark";
+            // 
+            // toggleBookmarksMainMenuItem
+            // 
+            this.toggleBookmarksMainMenuItem.Index = 0;
+            this.toggleBookmarksMainMenuItem.Text = "Toggle Bookmarks";
+            // 
+            // menuItem66
+            // 
+            this.menuItem66.Index = 1;
+            this.menuItem66.Text = "-";
+            // 
+            // newBookmarkMainMenuItem
+            // 
+            this.newBookmarkMainMenuItem.Index = 2;
+            this.newBookmarkMainMenuItem.Text = "New Bookmark";
+            // 
+            // deleteBookmarkMainMenuItem
+            // 
+            this.deleteBookmarkMainMenuItem.Index = 3;
+            this.deleteBookmarkMainMenuItem.Text = "Delete Bookmark";
+            // 
+            // editBookmarkMainMenuItem
+            // 
+            this.editBookmarkMainMenuItem.Index = 4;
+            this.editBookmarkMainMenuItem.Text = "Edit Bookmark";
+            // 
+            // duplicateBookmarkMainMenuItem
+            // 
+            this.duplicateBookmarkMainMenuItem.Index = 5;
+            this.duplicateBookmarkMainMenuItem.Text = "Duplicate Bookmark";
+            // 
+            // menuItem71
+            // 
+            this.menuItem71.Index = 6;
+            this.menuItem71.Text = "-";
+            // 
+            // historyMainMenuItem
+            // 
+            this.historyMainMenuItem.Index = 7;
+            this.historyMainMenuItem.Text = "History";
+            // 
+            // bonjourMainMenuItem
+            // 
+            this.bonjourMainMenuItem.Index = 8;
+            this.bonjourMainMenuItem.Text = "Bonjour";
+            // 
+            // menuItem74
+            // 
+            this.menuItem74.Index = 9;
+            this.menuItem74.Text = "-";
+            // 
+            // menuItem75
+            // 
+            this.menuItem75.Index = 5;
+            this.menuItem75.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.minimizeMainMenuItem,
+            this.menuItem77,
+            this.transfersMainMenuItem,
+            this.activityMainMenuItem});
+            this.menuItem75.Text = "&Window";
+            // 
+            // minimizeMainMenuItem
+            // 
+            this.minimizeMainMenuItem.Index = 0;
+            this.minimizeMainMenuItem.Text = "Minimize";
+            // 
+            // menuItem77
+            // 
+            this.menuItem77.Index = 1;
+            this.menuItem77.Text = "-";
+            // 
+            // transfersMainMenuItem
+            // 
+            this.transfersMainMenuItem.Index = 2;
+            this.transfersMainMenuItem.Text = "Transfers";
+            // 
+            // activityMainMenuItem
+            // 
+            this.activityMainMenuItem.Index = 3;
+            this.activityMainMenuItem.Text = "Activity";
+            // 
+            // menuItem80
+            // 
+            this.menuItem80.Index = 6;
+            this.menuItem80.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.helpMainMenuItem,
+            this.licenseMainMenuItem,
+            this.acknowledgmentsMainMenuItem,
+            this.menuItem84,
+            this.bugMainMenuItem,
+            this.menuItem86,
+            this.updateMainMenuItem,
+            this.menuItem88,
+            this.aboutMainMenuItem});
+            this.menuItem80.Text = "&Help";
+            // 
+            // helpMainMenuItem
+            // 
+            this.helpMainMenuItem.Index = 0;
+            this.helpMainMenuItem.Text = "Cyberduck Help";
+            // 
+            // licenseMainMenuItem
+            // 
+            this.licenseMainMenuItem.Index = 1;
+            this.licenseMainMenuItem.Text = "License";
+            // 
+            // acknowledgmentsMainMenuItem
+            // 
+            this.acknowledgmentsMainMenuItem.Index = 2;
+            this.acknowledgmentsMainMenuItem.Text = "Acknowledgments";
+            // 
+            // menuItem84
+            // 
+            this.menuItem84.Index = 3;
+            this.menuItem84.Text = "-";
+            // 
+            // bugMainMenuItem
+            // 
+            this.bugMainMenuItem.Index = 4;
+            this.bugMainMenuItem.Text = "Report a Bug";
+            // 
+            // menuItem86
+            // 
+            this.menuItem86.Index = 5;
+            this.menuItem86.Text = "-";
+            // 
+            // updateMainMenuItem
+            // 
+            this.updateMainMenuItem.Index = 6;
+            this.updateMainMenuItem.Text = "Check for Update…";
+            // 
+            // menuItem88
+            // 
+            this.menuItem88.Index = 7;
+            this.menuItem88.Text = "-";
+            // 
+            // aboutMainMenuItem
+            // 
+            this.aboutMainMenuItem.Index = 8;
+            this.aboutMainMenuItem.Text = "About Cyberduck";
             // 
             // statusStrip
             // 
@@ -1245,18 +1793,18 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.editor2ToolStripMenuItem});
             this.editorMenuStrip.Name = "editorMenuStrip";
             this.editorMenuStrip.OwnerItem = this.editToolStripSplitButton;
-            this.editorMenuStrip.Size = new System.Drawing.Size(153, 70);
+            this.editorMenuStrip.Size = new System.Drawing.Size(115, 48);
             // 
             // editor1ToolStripMenuItem
             // 
             this.editor1ToolStripMenuItem.Name = "editor1ToolStripMenuItem";
-            this.editor1ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.editor1ToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
             this.editor1ToolStripMenuItem.Text = "Editor 1";
             // 
             // editor2ToolStripMenuItem
             // 
             this.editor2ToolStripMenuItem.Name = "editor2ToolStripMenuItem";
-            this.editor2ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.editor2ToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
             this.editor2ToolStripMenuItem.Text = "Editor 2";
             // 
             // editToolStripSplitButton
@@ -1714,7 +2262,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.splitContainer.Panel2.Controls.Add(this.transcriptBox);
             this.splitContainer.Panel2MinSize = 50;
             this.splitContainer.Size = new System.Drawing.Size(0, 0);
-            this.splitContainer.SplitterDistance = 0;
+            this.splitContainer.SplitterDistance = 444;
             this.splitContainer.SplitterWidth = 3;
             this.splitContainer.TabIndex = 2;
             // 
@@ -1743,7 +2291,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.browser.Name = "browser";
             this.browser.OwnerDraw = true;
             this.browser.ShowGroups = false;
-            this.browser.Size = new System.Drawing.Size(0, 0);
+            this.browser.Size = new System.Drawing.Size(1028, 444);
             this.browser.TabIndex = 15;
             this.browser.UseCompatibleStateImageBehavior = false;
             this.browser.View = System.Windows.Forms.View.Details;
@@ -1803,7 +2351,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.transcriptBox.Location = new System.Drawing.Point(0, 0);
             this.transcriptBox.Name = "transcriptBox";
             this.transcriptBox.ReadOnly = true;
-            this.transcriptBox.Size = new System.Drawing.Size(0, 51);
+            this.transcriptBox.Size = new System.Drawing.Size(1028, 50);
             this.transcriptBox.TabIndex = 0;
             this.transcriptBox.Text = "";
             this.transcriptBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.transcriptBox_KeyDown);
@@ -2140,554 +2688,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.openFileDialog.Multiselect = true;
             this.openFileDialog.Title = "Upload";
-            // 
-            // mainMenu
-            // 
-            this.mainMenu.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-            this.menuItem1,
-            this.mainMenuItem2,
-            this.menuItem39,
-            this.menuItem50,
-            this.menuItem64,
-            this.menuItem75,
-            this.menuItem80});
-            // 
-            // menuItem1
-            // 
-            this.menuItem1.Index = 0;
-            this.menuItem1.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-            this.newBrowserMainMenuItem,
-            this.openConnectionMainMenuItem,
-            this.menuItem4,
-            this.newDownloadMainMenuItem,
-            this.menuItem6,
-            this.newFolderMainMenuItem,
-            this.newFileMainMenuItem,
-            this.renameMainMenuItem,
-            this.duplicateMainMenuItem,
-            this.menuItem11,
-            this.openUrlMainMenuItem,
-            this.editMainMenuItem,
-            this.infoMainMenuItem,
-            this.menuItem2,
-            this.downloadMainMenuItem,
-            this.downloadAsMainMenuItem,
-            this.downloadToMainMenuItem,
-            this.uploadMainMenuItem,
-            this.synchronizeMainMenuItem,
-            this.menuItem21,
-            this.deleteMainMenuItem,
-            this.revertMainMenuItem,
-            this.menuItem24,
-            this.createArchiveMainMenuItem,
-            this.expandArchiveMainMenuItem,
-            this.menuItem27,
-            this.printMainMenuItem,
-            this.menuItem29,
-            this.exitMainMenuItem});
-            this.menuItem1.Text = "&File";
-            // 
-            // newBrowserMainMenuItem
-            // 
-            this.newBrowserMainMenuItem.Index = 0;
-            this.newBrowserMainMenuItem.Text = "New Browser";
-            // 
-            // openConnectionMainMenuItem
-            // 
-            this.openConnectionMainMenuItem.Index = 1;
-            this.openConnectionMainMenuItem.Text = "Open Connection…";
-            // 
-            // menuItem4
-            // 
-            this.menuItem4.Index = 2;
-            this.menuItem4.Text = "-";
-            // 
-            // newDownloadMainMenuItem
-            // 
-            this.newDownloadMainMenuItem.Index = 3;
-            this.newDownloadMainMenuItem.Text = "New Download";
-            // 
-            // menuItem6
-            // 
-            this.menuItem6.Index = 4;
-            this.menuItem6.Text = "-";
-            // 
-            // newFolderMainMenuItem
-            // 
-            this.newFolderMainMenuItem.Index = 5;
-            this.newFolderMainMenuItem.Text = "New Folder…";
-            // 
-            // newFileMainMenuItem
-            // 
-            this.newFileMainMenuItem.Index = 6;
-            this.newFileMainMenuItem.Text = "New File…";
-            // 
-            // renameMainMenuItem
-            // 
-            this.renameMainMenuItem.Index = 7;
-            this.renameMainMenuItem.Text = "Rename…";
-            // 
-            // duplicateMainMenuItem
-            // 
-            this.duplicateMainMenuItem.Index = 8;
-            this.duplicateMainMenuItem.Text = "Duplicate…";
-            // 
-            // menuItem11
-            // 
-            this.menuItem11.Index = 9;
-            this.menuItem11.Text = "-";
-            // 
-            // openUrlMainMenuItem
-            // 
-            this.openUrlMainMenuItem.Index = 10;
-            this.openUrlMainMenuItem.Text = "Open URL";
-            // 
-            // editMainMenuItem
-            // 
-            this.editMainMenuItem.Index = 11;
-            this.editMainMenuItem.Text = "Edit";
-            // 
-            // infoMainMenuItem
-            // 
-            this.infoMainMenuItem.Index = 12;
-            this.infoMainMenuItem.Text = "Info";
-            // 
-            // menuItem2
-            // 
-            this.menuItem2.Index = 13;
-            this.menuItem2.Text = "-";
-            // 
-            // downloadMainMenuItem
-            // 
-            this.downloadMainMenuItem.Index = 14;
-            this.downloadMainMenuItem.Text = "Download";
-            // 
-            // downloadAsMainMenuItem
-            // 
-            this.downloadAsMainMenuItem.Index = 15;
-            this.downloadAsMainMenuItem.Text = "Download As…";
-            // 
-            // downloadToMainMenuItem
-            // 
-            this.downloadToMainMenuItem.Index = 16;
-            this.downloadToMainMenuItem.Text = "Download To…";
-            // 
-            // uploadMainMenuItem
-            // 
-            this.uploadMainMenuItem.Index = 17;
-            this.uploadMainMenuItem.Text = "Upload…";
-            // 
-            // synchronizeMainMenuItem
-            // 
-            this.synchronizeMainMenuItem.Index = 18;
-            this.synchronizeMainMenuItem.Text = "Synchronize…";
-            // 
-            // menuItem21
-            // 
-            this.menuItem21.Index = 19;
-            this.menuItem21.Text = "-";
-            // 
-            // deleteMainMenuItem
-            // 
-            this.deleteMainMenuItem.Index = 20;
-            this.deleteMainMenuItem.Text = "Delete";
-            // 
-            // revertMainMenuItem
-            // 
-            this.revertMainMenuItem.Index = 21;
-            this.revertMainMenuItem.Text = "Revert";
-            // 
-            // menuItem24
-            // 
-            this.menuItem24.Index = 22;
-            this.menuItem24.Text = "-";
-            // 
-            // createArchiveMainMenuItem
-            // 
-            this.createArchiveMainMenuItem.Index = 23;
-            this.createArchiveMainMenuItem.Text = "Create Archive";
-            // 
-            // expandArchiveMainMenuItem
-            // 
-            this.expandArchiveMainMenuItem.Index = 24;
-            this.expandArchiveMainMenuItem.Text = "Expand Archive";
-            // 
-            // menuItem27
-            // 
-            this.menuItem27.Index = 25;
-            this.menuItem27.Text = "-";
-            // 
-            // printMainMenuItem
-            // 
-            this.printMainMenuItem.Index = 26;
-            this.printMainMenuItem.Text = "Print…";
-            // 
-            // menuItem29
-            // 
-            this.menuItem29.Index = 27;
-            this.menuItem29.Text = "-";
-            // 
-            // exitMainMenuItem
-            // 
-            this.exitMainMenuItem.Index = 28;
-            this.exitMainMenuItem.Text = "Exit";
-            // 
-            // mainMenuItem2
-            // 
-            this.mainMenuItem2.Index = 1;
-            this.mainMenuItem2.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-            this.cutMainMenuItem,
-            this.copyMainMenuItem,
-            this.copyUrlMainMenuItem,
-            this.pasteMainMenuItem,
-            this.selectAllMainMenuItem,
-            this.menuItem37,
-            this.preferencesMainMenuItem});
-            this.mainMenuItem2.Text = "&Edit";
-            // 
-            // cutMainMenuItem
-            // 
-            this.cutMainMenuItem.Index = 0;
-            this.cutMainMenuItem.Text = "Cut";
-            // 
-            // copyMainMenuItem
-            // 
-            this.copyMainMenuItem.Index = 1;
-            this.copyMainMenuItem.Text = "Copy";
-            // 
-            // copyUrlMainMenuItem
-            // 
-            this.copyUrlMainMenuItem.Index = 2;
-            this.copyUrlMainMenuItem.Text = "Copy URL";
-            // 
-            // pasteMainMenuItem
-            // 
-            this.pasteMainMenuItem.Index = 3;
-            this.pasteMainMenuItem.Text = "Paste";
-            // 
-            // selectAllMainMenuItem
-            // 
-            this.selectAllMainMenuItem.Index = 4;
-            this.selectAllMainMenuItem.Text = "Select All";
-            // 
-            // menuItem37
-            // 
-            this.menuItem37.Index = 5;
-            this.menuItem37.Text = "-";
-            // 
-            // preferencesMainMenuItem
-            // 
-            this.preferencesMainMenuItem.Index = 6;
-            this.preferencesMainMenuItem.Text = "Preferences…";
-            // 
-            // menuItem39
-            // 
-            this.menuItem39.Index = 2;
-            this.menuItem39.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-            this.toggleToolbarMainMenuItem,
-            this.customizeToolbarMainMenuItem,
-            this.menuItem43,
-            this.columnMainMenuItem,
-            this.menuItem45,
-            this.showHiddenFilesMainMenuItem,
-            this.textEncodingMainMenuItem,
-            this.menuItem48,
-            this.toggleLogDrawerMainMenuItem});
-            this.menuItem39.Text = "&View";
-            // 
-            // toggleToolbarMainMenuItem
-            // 
-            this.toggleToolbarMainMenuItem.Index = 0;
-            this.toggleToolbarMainMenuItem.Text = "Hide Toolbar";
-            // 
-            // customizeToolbarMainMenuItem
-            // 
-            this.customizeToolbarMainMenuItem.Index = 1;
-            this.customizeToolbarMainMenuItem.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-            this.menuItem42});
-            this.customizeToolbarMainMenuItem.Text = "Customize Toolbar…";
-            this.customizeToolbarMainMenuItem.Popup += new System.EventHandler(this.customizeToolbarMenuItem_Popup);
-            // 
-            // menuItem42
-            // 
-            this.menuItem42.Index = 0;
-            this.menuItem42.Text = "noch";
-            // 
-            // menuItem43
-            // 
-            this.menuItem43.Index = 2;
-            this.menuItem43.Text = "-";
-            // 
-            // columnMainMenuItem
-            // 
-            this.columnMainMenuItem.Index = 3;
-            this.columnMainMenuItem.Text = "Column";
-            this.columnMainMenuItem.Popup += new System.EventHandler(this.columnMenuItem_Popup);
-            // 
-            // menuItem45
-            // 
-            this.menuItem45.Index = 4;
-            this.menuItem45.Text = "-";
-            // 
-            // showHiddenFilesMainMenuItem
-            // 
-            this.showHiddenFilesMainMenuItem.Index = 5;
-            this.showHiddenFilesMainMenuItem.Text = "Show Hidden Files";
-            // 
-            // textEncodingMainMenuItem
-            // 
-            this.textEncodingMainMenuItem.Index = 6;
-            this.textEncodingMainMenuItem.Text = "Text Encoding";
-            // 
-            // menuItem48
-            // 
-            this.menuItem48.Index = 7;
-            this.menuItem48.Text = "-";
-            // 
-            // toggleLogDrawerMainMenuItem
-            // 
-            this.toggleLogDrawerMainMenuItem.Index = 8;
-            this.toggleLogDrawerMainMenuItem.Text = "Toggle Log Drawer";
-            // 
-            // menuItem50
-            // 
-            this.menuItem50.Index = 3;
-            this.menuItem50.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-            this.refreshMainMenuItem,
-            this.menuItem52,
-            this.goToFolderMainMenuItem,
-            this.backMainMenuItem,
-            this.forwardMainMenuItem,
-            this.enclosingFolderMainMenuItem,
-            this.insideMainMenuItem,
-            this.searchMainMenuItem,
-            this.menuItem59,
-            this.sendCommandMainMenuItem,
-            this.menuItem61,
-            this.stopMainMenuItem,
-            this.disconnectMainMenuItem});
-            this.menuItem50.Text = "&Go";
-            // 
-            // refreshMainMenuItem
-            // 
-            this.refreshMainMenuItem.Index = 0;
-            this.refreshMainMenuItem.Text = "Refresh";
-            // 
-            // menuItem52
-            // 
-            this.menuItem52.Index = 1;
-            this.menuItem52.Text = "-";
-            // 
-            // goToFolderMainMenuItem
-            // 
-            this.goToFolderMainMenuItem.Index = 2;
-            this.goToFolderMainMenuItem.Text = "Go to Folder…";
-            // 
-            // backMainMenuItem
-            // 
-            this.backMainMenuItem.Index = 3;
-            this.backMainMenuItem.Text = "Back";
-            // 
-            // forwardMainMenuItem
-            // 
-            this.forwardMainMenuItem.Index = 4;
-            this.forwardMainMenuItem.Text = "Forward";
-            // 
-            // enclosingFolderMainMenuItem
-            // 
-            this.enclosingFolderMainMenuItem.Index = 5;
-            this.enclosingFolderMainMenuItem.Text = "Enclosing Folder";
-            // 
-            // insideMainMenuItem
-            // 
-            this.insideMainMenuItem.Index = 6;
-            this.insideMainMenuItem.Text = "Inside";
-            // 
-            // searchMainMenuItem
-            // 
-            this.searchMainMenuItem.Index = 7;
-            this.searchMainMenuItem.Text = "Search…";
-            // 
-            // menuItem59
-            // 
-            this.menuItem59.Index = 8;
-            this.menuItem59.Text = "-";
-            // 
-            // sendCommandMainMenuItem
-            // 
-            this.sendCommandMainMenuItem.Index = 9;
-            this.sendCommandMainMenuItem.Text = "Send Command…";
-            // 
-            // menuItem61
-            // 
-            this.menuItem61.Index = 10;
-            this.menuItem61.Text = "-";
-            // 
-            // stopMainMenuItem
-            // 
-            this.stopMainMenuItem.Index = 11;
-            this.stopMainMenuItem.Text = "Stop";
-            // 
-            // disconnectMainMenuItem
-            // 
-            this.disconnectMainMenuItem.Index = 12;
-            this.disconnectMainMenuItem.Text = "Disconnect";
-            // 
-            // menuItem64
-            // 
-            this.menuItem64.Index = 4;
-            this.menuItem64.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-            this.toggleBookmarksMainMenuItem,
-            this.menuItem66,
-            this.newBookmarkMainMenuItem,
-            this.deleteBookmarkMainMenuItem,
-            this.editBookmarkMainMenuItem,
-            this.duplicateBookmarkMainMenuItem,
-            this.menuItem71,
-            this.historyMainMenuItem,
-            this.bonjourMainMenuItem,
-            this.menuItem74});
-            this.menuItem64.Text = "&Bookmark";
-            // 
-            // toggleBookmarksMainMenuItem
-            // 
-            this.toggleBookmarksMainMenuItem.Index = 0;
-            this.toggleBookmarksMainMenuItem.Text = "Toggle Bookmarks";
-            // 
-            // menuItem66
-            // 
-            this.menuItem66.Index = 1;
-            this.menuItem66.Text = "-";
-            // 
-            // newBookmarkMainMenuItem
-            // 
-            this.newBookmarkMainMenuItem.Index = 2;
-            this.newBookmarkMainMenuItem.Text = "New Bookmark";
-            // 
-            // deleteBookmarkMainMenuItem
-            // 
-            this.deleteBookmarkMainMenuItem.Index = 3;
-            this.deleteBookmarkMainMenuItem.Text = "Delete Bookmark";
-            // 
-            // editBookmarkMainMenuItem
-            // 
-            this.editBookmarkMainMenuItem.Index = 4;
-            this.editBookmarkMainMenuItem.Text = "Edit Bookmark";
-            // 
-            // duplicateBookmarkMainMenuItem
-            // 
-            this.duplicateBookmarkMainMenuItem.Index = 5;
-            this.duplicateBookmarkMainMenuItem.Text = "Duplicate Bookmark";
-            // 
-            // menuItem71
-            // 
-            this.menuItem71.Index = 6;
-            this.menuItem71.Text = "-";
-            // 
-            // historyMainMenuItem
-            // 
-            this.historyMainMenuItem.Index = 7;
-            this.historyMainMenuItem.Text = "History";
-            // 
-            // bonjourMainMenuItem
-            // 
-            this.bonjourMainMenuItem.Index = 8;
-            this.bonjourMainMenuItem.Text = "Bonjour";
-            // 
-            // menuItem74
-            // 
-            this.menuItem74.Index = 9;
-            this.menuItem74.Text = "-";
-            // 
-            // menuItem75
-            // 
-            this.menuItem75.Index = 5;
-            this.menuItem75.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-            this.minimizeMainMenuItem,
-            this.menuItem77,
-            this.transfersMainMenuItem,
-            this.activityMainMenuItem});
-            this.menuItem75.Text = "&Window";
-            // 
-            // minimizeMainMenuItem
-            // 
-            this.minimizeMainMenuItem.Index = 0;
-            this.minimizeMainMenuItem.Text = "Minimize";
-            // 
-            // menuItem77
-            // 
-            this.menuItem77.Index = 1;
-            this.menuItem77.Text = "-";
-            // 
-            // transfersMainMenuItem
-            // 
-            this.transfersMainMenuItem.Index = 2;
-            this.transfersMainMenuItem.Text = "Transfers";
-            // 
-            // activityMainMenuItem
-            // 
-            this.activityMainMenuItem.Index = 3;
-            this.activityMainMenuItem.Text = "Activity";
-            // 
-            // menuItem80
-            // 
-            this.menuItem80.Index = 6;
-            this.menuItem80.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-            this.helpMainMenuItem,
-            this.licenseMainMenuItem,
-            this.acknowledgmentsMainMenuItem,
-            this.menuItem84,
-            this.bugMainMenuItem,
-            this.menuItem86,
-            this.updateMainMenuItem,
-            this.menuItem88,
-            this.aboutMainMenuItem});
-            this.menuItem80.Text = "&Help";
-            // 
-            // helpMainMenuItem
-            // 
-            this.helpMainMenuItem.Index = 0;
-            this.helpMainMenuItem.Text = "Cyberduck Help";
-            // 
-            // licenseMainMenuItem
-            // 
-            this.licenseMainMenuItem.Index = 1;
-            this.licenseMainMenuItem.Text = "License";
-            // 
-            // acknowledgmentsMainMenuItem
-            // 
-            this.acknowledgmentsMainMenuItem.Index = 2;
-            this.acknowledgmentsMainMenuItem.Text = "Acknowledgments";
-            // 
-            // menuItem84
-            // 
-            this.menuItem84.Index = 3;
-            this.menuItem84.Text = "-";
-            // 
-            // bugMainMenuItem
-            // 
-            this.bugMainMenuItem.Index = 4;
-            this.bugMainMenuItem.Text = "Report a Bug";
-            // 
-            // menuItem86
-            // 
-            this.menuItem86.Index = 5;
-            this.menuItem86.Text = "-";
-            // 
-            // updateMainMenuItem
-            // 
-            this.updateMainMenuItem.Index = 6;
-            this.updateMainMenuItem.Text = "Check for Update…";
-            // 
-            // menuItem88
-            // 
-            this.menuItem88.Index = 7;
-            this.menuItem88.Text = "-";
-            // 
-            // aboutMainMenuItem
-            // 
-            this.aboutMainMenuItem.Index = 8;
-            this.aboutMainMenuItem.Text = "About Cyberduck";
             // 
             // vistaMenu1
             // 
