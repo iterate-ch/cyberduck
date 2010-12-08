@@ -119,7 +119,9 @@ public abstract class AbstractHttpDropboxClient {
             consumer.sign(request);
         }
         catch(OAuthException e) {
-            throw new IOException(e.getMessage());
+            IOException failure = new IOException(e.getMessage());
+            failure.initCause(e);
+            throw failure;
         }
 
         JSONObject credentials = this.parse(this.execute(request));
@@ -146,7 +148,9 @@ public abstract class AbstractHttpDropboxClient {
             auth.sign(req);
         }
         catch(OAuthException e) {
-            throw new IOException(e.getMessage());
+            IOException failure = new IOException(e.getMessage());
+            failure.initCause(e);
+            throw failure;
         }
         return this.execute(req);
     }

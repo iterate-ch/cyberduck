@@ -138,7 +138,9 @@ public class DropboxClient extends AbstractHttpDropboxClient {
             auth.sign(req);
         }
         catch(OAuthException e) {
-            throw new IOException(e.getMessage());
+            IOException failure = new IOException(e.getMessage());
+            failure.initCause(e);
+            throw failure;
         }
         // now we can add the real file multipart and we're good
         MultipartEntity entity = new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE);
