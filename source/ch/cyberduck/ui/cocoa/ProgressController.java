@@ -85,16 +85,6 @@ public class ProgressController extends BundleController {
 
     private void init() {
         this.loadBundle();
-        this.transfer.getSession().addProgressListener(this.pl = new ProgressListener() {
-            public void message(final String message) {
-                messageText = message;
-                invoke(new DefaultMainAction() {
-                    public void run() {
-                        setMessageText();
-                    }
-                });
-            }
-        });
         this.transfer.addListener(this.tl = new TransferAdapter() {
             /**
              * Timer to update the progress indicator
@@ -108,6 +98,16 @@ public class ProgressController extends BundleController {
             public void transferWillStart() {
                 invoke(new DefaultMainAction() {
                     public void run() {
+                        transfer.getSession().addProgressListener(pl = new ProgressListener() {
+                            public void message(final String message) {
+                                messageText = message;
+                                invoke(new DefaultMainAction() {
+                                    public void run() {
+                                        setMessageText();
+                                    }
+                                });
+                            }
+                        });
                         progressBar.setHidden(false);
                         progressBar.setIndeterminate(true);
                         progressBar.startAnimation(null);
@@ -122,6 +122,7 @@ public class ProgressController extends BundleController {
             public void transferDidEnd() {
                 invoke(new DefaultMainAction() {
                     public void run() {
+                        transfer.getSession().removeProgressListener(pl);
                         progressBar.stopAnimation(null);
                         progressBar.setIndeterminate(true);
                         progressBar.setHidden(true);
@@ -256,11 +257,18 @@ public class ProgressController extends BundleController {
                     NSAttributedString.ParagraphStyleAttributeName)
     );
 
+    private boolean highlighted;
+
+    public boolean isHighlighted() {
+        return highlighted;
+    }
+
     public void setHighlighted(final boolean highlighted) {
         statusField.setTextColor(highlighted ? NSColor.whiteColor() : NSColor.textColor());
         progressField.setTextColor(highlighted ? NSColor.whiteColor() : NSColor.darkGrayColor());
         messageField.setTextColor(highlighted ? NSColor.whiteColor() : NSColor.darkGrayColor());
         this.setMenuHighlighted(highlighted);
+        this.highlighted = highlighted;
     }
 
     private void setMenuHighlighted(boolean highlighted) {

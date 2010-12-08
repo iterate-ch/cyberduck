@@ -229,6 +229,10 @@ public class TransferTableDataSource extends ListDataSource {
         return controllers.get(t);
     }
 
+    public boolean isHighlighted(int row) {
+        return this.getController(row).isHighlighted();
+    }
+
     /**
      * @param row
      * @param highlighted

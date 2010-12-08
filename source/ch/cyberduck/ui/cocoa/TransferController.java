@@ -532,7 +532,11 @@ public class TransferController extends WindowController implements NSToolbar.De
         boolean main = window().isMainWindow();
         NSIndexSet selected = transferTable.selectedRowIndexes();
         for(int i = 0; i < transferTableModel.numberOfRowsInTableView(transferTable).intValue(); i++) {
-            transferTableModel.setHighlighted(i, selected.containsIndex(new NSUInteger(i)) && main);
+            boolean highlighted = selected.containsIndex(new NSUInteger(i)) && main;
+            if(transferTableModel.isHighlighted(i) == highlighted) {
+                continue;
+            }
+            transferTableModel.setHighlighted(i, highlighted);
         }
     }
 
