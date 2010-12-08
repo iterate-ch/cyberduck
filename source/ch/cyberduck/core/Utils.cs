@@ -376,8 +376,8 @@ namespace Ch.Cyberduck.Core
             return map;
         }
 
-        public static String GetApplicationNameForExe(string exe)
-        {
+        public static String GetApplicationNameForExe(string exe)        
+        {   //Vista/Win7
             using (
                 RegistryKey muiCache =
                     Registry.ClassesRoot.OpenSubKey(
@@ -387,9 +387,26 @@ namespace Ch.Cyberduck.Core
                 {
                     foreach (string valueName in muiCache.GetValueNames())
                     {
-                        if (valueName.Equals(exe))
+                        if (valueName.Equals(exe, StringComparison.CurrentCultureIgnoreCase))
                         {
                             return (string) muiCache.GetValue(valueName);
+                        }
+                    }
+                }
+            }
+            //WindowsXP
+            using (
+                RegistryKey muiCache =
+                    Registry.CurrentUser.OpenSubKey(
+                        "Software\\Microsoft\\Windows\\ShellNoRoam\\MUICache"))
+            {
+                if (null != muiCache)
+                {
+                    foreach (string valueName in muiCache.GetValueNames())
+                    {
+                        if (valueName.Equals(exe, StringComparison.CurrentCultureIgnoreCase))
+                        {
+                            return (string)muiCache.GetValue(valueName);
                         }
                     }
                 }
