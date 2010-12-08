@@ -131,7 +131,9 @@ public class CFSession extends CloudHTTP3Session {
         }
         catch(URISyntaxException e) {
             log.error("Failure parsing URI:" + e.getMessage());
-            throw new IOException(e.getMessage());
+            IOException failure = new IOException(e.getMessage());
+            failure.initCause(e);
+            throw failure;
         }
 
     }

@@ -393,7 +393,9 @@ public class S3Session extends CloudHTTP3Session {
                 this.login();
             }
             else {
-                throw new IOException(e.getMessage());
+                IOException failure = new IOException(e.getMessage());
+                failure.initCause(e);
+                throw failure;
             }
         }
     }

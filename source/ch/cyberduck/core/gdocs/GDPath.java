@@ -853,7 +853,9 @@ public class GDPath extends Path {
                     this.getSession().getClient().insert(new URL(((GDPath) this.getParent()).getFolderFeed()), folder);
                 }
                 catch(ServiceException e) {
-                    throw new IOException(e.getMessage());
+                    IOException failure = new IOException(e.getMessage());
+                    failure.initCause(e);
+                    throw failure;
                 }
                 this.cache().put(this.getReference(), AttributedList.<Path>emptyList());
                 // The directory listing is no more current
@@ -895,10 +897,14 @@ public class GDPath extends Path {
                         new URL(this.getResourceFeed()), this.attributes().getChecksum());
             }
             catch(ServiceException e) {
-                throw new IOException(e.getMessage());
+                IOException failure = new IOException(e.getMessage());
+                failure.initCause(e);
+                throw failure;
             }
             catch(MalformedURLException e) {
-                throw new IOException(e.getMessage());
+                IOException failure = new IOException(e.getMessage());
+                failure.initCause(e);
+                throw failure;
             }
             // The directory listing is no more current
             this.getParent().invalidate();
@@ -925,10 +931,14 @@ public class GDPath extends Path {
                     this.getSession().getClient().update(new URL(this.getResourceFeed()), moved, this.attributes().getChecksum());
                 }
                 catch(ServiceException e) {
-                    throw new IOException(e.getMessage());
+                    IOException failure = new IOException(e.getMessage());
+                    failure.initCause(e);
+                    throw failure;
                 }
                 catch(MalformedURLException e) {
-                    throw new IOException(e.getMessage());
+                    IOException failure = new IOException(e.getMessage());
+                    failure.initCause(e);
+                    throw failure;
                 }
             }
             else {
@@ -941,10 +951,14 @@ public class GDPath extends Path {
                             "/" + this.getResourceId()), update.getEtag());
                 }
                 catch(ServiceException e) {
-                    throw new IOException(e.getMessage());
+                    IOException failure = new IOException(e.getMessage());
+                    failure.initCause(e);
+                    throw failure;
                 }
                 catch(MalformedURLException e) {
-                    throw new IOException(e.getMessage());
+                    IOException failure = new IOException(e.getMessage());
+                    failure.initCause(e);
+                    throw failure;
                 }
             }
             // The directory listing of the target is no more current
@@ -971,7 +985,9 @@ public class GDPath extends Path {
                     this.getSession().getClient().insert(new URL(((GDPath) this.getParent()).getFolderFeed()), file);
                 }
                 catch(ServiceException e) {
-                    throw new IOException(e.getMessage());
+                    IOException failure = new IOException(e.getMessage());
+                    failure.initCause(e);
+                    throw failure;
                 }
                 // The directory listing is no more current
                 this.getParent().invalidate();
