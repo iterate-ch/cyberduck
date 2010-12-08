@@ -20,7 +20,8 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
-using System.Text.RegularExpressions;
+using System.IO;
+using System.Linq;
 using ch.cyberduck.core;
 using java.nio.charset;
 using java.util;
@@ -199,10 +200,10 @@ namespace Ch.Cyberduck.Core
                         string progid = (string) uc.GetValue("Progid");
                         if (null != progid)
                         {
-                            string command = GetOpenCommand(Registry.ClassesRoot);
-                            if (null != command)
+                            string exe = GetExeFromOpenCommand(Registry.ClassesRoot);
+                            if (null != exe)
                             {
-                                return ExtractExeFromCommand(command);
+                                return exe;
                             }
                         }
                     }
@@ -222,19 +223,25 @@ namespace Ch.Cyberduck.Core
 
         public static string ExtractExeFromCommand(string command)
         {
-            Regex regex = new Regex("(\\\".*\\\")\\s.*");
-
-            Match match = regex.Match(command);
-            if (match.Groups.Count > 1)
+            if (!String.IsNullOrEmpty(command))
             {
-                return match.Groups[1].Value.Replace("\"", "");
-            }
-            else
-            {
-                int i = command.IndexOf(" ");
-                if (i > 0)
+                String cmd = null;
+                if (command.StartsWith("\""))
                 {
-                    return command.Substring(0, i);
+                    int i = command.IndexOf("\"", 1);
+                    if (i > 2)
+                        cmd = command.Substring(1, i - 1);
+                }
+                else
+                {
+                    int i = command.IndexOf(" ");
+                    if (i > 0)
+                        cmd = command.Substring(0, i);
+                }
+
+                if (null != cmd && LocalFactory.createLocal(cmd).exists())
+                {
+                    return cmd;
                 }
             }
             return null;
@@ -245,7 +252,7 @@ namespace Ch.Cyberduck.Core
         /// </summary>
         /// <param name="root">expected substructure is shell/open/command</param>
         /// <returns>null if not found</returns>
-        private static string GetOpenCommand(RegistryKey root)
+        private static string GetOpenCommand2(RegistryKey root)
         {
             using (var editSk = root.OpenSubKey("shell\\open\\command"))
             {
@@ -274,6 +281,227 @@ namespace Ch.Cyberduck.Core
                 }
             }
             return charsets.ToArray();
+        }
+
+
+        private static IList<String> OpenWithListForExtension(String ext, RegistryKey rootKey)
+        {
+            IList<String> result = new List<string>();
+
+            if (null != rootKey)
+            {
+                //PerceivedType
+                String perceivedType = (String) rootKey.GetValue("PerceivedType");
+                if (null != perceivedType)
+                {
+                    using (
+                        RegistryKey openWithKey =
+                            Registry.ClassesRoot.OpenSubKey("SystemFileAssociations\\" + perceivedType +
+                                                            "\\OpenWithList"))
+                    {
+                        IList<String> appCmds = GetApplicationCmdsFromOpenWithList(openWithKey);
+                        foreach (string appCmd in appCmds)
+                        {
+                            result.Add(appCmd);
+                        }
+                    }
+                }
+
+                //OpenWithProgIds
+                using (RegistryKey key = rootKey.OpenSubKey("OpenWithProgIds"))
+                {
+                    IList<String> appCmds = GetApplicationCmdsFromOpenWithProgIds(key);
+                    foreach (string appCmd in appCmds)
+                    {
+                        result.Add(appCmd);
+                    }
+                }
+
+                //OpenWithList
+                using (RegistryKey openWithKey = rootKey.OpenSubKey("OpenWithList"))
+                {
+                    IList<String> appCmds = GetApplicationCmdsFromOpenWithList(openWithKey);
+                    foreach (string appCmd in appCmds)
+                    {
+                        result.Add(appCmd);
+                    }
+                }
+            }
+            return result;
+        }
+
+        public static IList<KeyValuePair<string, string>> OpenWithListForExtension(String ext)
+        {
+            IList<String> progs = new List<string>();
+            List<KeyValuePair<string, string>> map = new List<KeyValuePair<string, string>>();
+
+            if (IsBlank(ext)) return map;
+
+            if (!ext.StartsWith(".")) ext = "." + ext;
+            using (RegistryKey clsExt = Registry.ClassesRoot.OpenSubKey(ext))
+            {
+                IList<string> rootList = OpenWithListForExtension(ext, clsExt);
+                foreach (string s in rootList)
+                {
+                    progs.Add(s);
+                }
+            }
+            using (
+                RegistryKey clsExt =
+                    Registry.CurrentUser.OpenSubKey(
+                        "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FileExts\\" + ext))
+            {
+                IList<string> explorerList = OpenWithListForExtension(ext, clsExt);
+                foreach (string s in explorerList)
+                {
+                    progs.Add(s);
+                }
+            }
+
+            foreach (string exe in progs.Distinct())
+            {
+                String appName = GetApplicationNameForExe(exe);
+                if (null != appName)
+                {
+                    map.Add(new KeyValuePair<string, string>(appName, exe));
+                }
+                else
+                {
+                    map.Add(new KeyValuePair<string, string>(LocalFactory.createLocal(exe).getName(), exe));
+                }
+            }
+            map.Sort(
+                delegate(KeyValuePair<string, string> pair1, KeyValuePair<string, string> pair2) { return pair1.Key.CompareTo(pair2.Key); });
+
+            return map;
+        }
+
+        public static String GetApplicationNameForExe(string exe)
+        {
+            using (
+                RegistryKey muiCache =
+                    Registry.ClassesRoot.OpenSubKey(
+                        "Local Settings\\Software\\Microsoft\\Windows\\Shell\\MuiCache"))
+            {
+                if (null != muiCache)
+                {
+                    foreach (string valueName in muiCache.GetValueNames())
+                    {
+                        if (valueName.Equals(exe))
+                        {
+                            return (string) muiCache.GetValue(valueName);
+                        }
+                    }
+                }
+            }
+            return null;
+        }
+
+        private static IList<String> GetApplicationCmdsFromOpenWithList(RegistryKey openWithKey)
+        {
+            IList<String> appCmds = new List<string>();
+            if (openWithKey != null)
+            {
+                //all subkeys
+                string[] exes = openWithKey.GetSubKeyNames();
+                IList<String> cands = exes.ToList();
+                //all values);
+                string[] values = openWithKey.GetValueNames();
+                foreach (string value in values)
+                {
+                    object o = openWithKey.GetValue(value);
+                    if (o is String)
+                    {
+                        cands.Add(o as String);
+                    }
+                }
+
+
+                foreach (string s in exes)
+                {
+                    cands.Add(s);
+                }
+
+                foreach (string progid in cands)
+                {
+                    using (RegistryKey key = Registry.ClassesRoot.OpenSubKey("Applications\\" + progid))
+                    {
+                        String cmd = GetExeFromOpenCommand(key);
+                        if (!String.IsNullOrEmpty(cmd))
+                        {
+                            appCmds.Add(cmd);
+                        }
+                    }
+                }
+            }
+            return appCmds;
+        }
+
+        private static IList<String> GetApplicationCmdsFromOpenWithProgIds(RegistryKey key)
+        {
+            IList<String> appCmds = new List<string>();
+            if (key != null)
+            {
+                string[] progids = key.GetValueNames();
+                foreach (string progid in progids)
+                {
+                    if (!string.IsNullOrEmpty(progid))
+                    {
+                        using (RegistryKey clsProgid = Registry.ClassesRoot.OpenSubKey(progid))
+                        {
+                            String cmd = GetExeFromOpenCommand(clsProgid);
+                            if (!String.IsNullOrEmpty(cmd))
+                            {
+                                appCmds.Add(cmd);
+                            }
+                        }
+                    }
+                }
+            }
+            return appCmds;
+        }
+
+
+        /// <summary>
+        /// Extract open command
+        /// </summary>
+        /// <param name="root">expected substructure is shell/open/command</param>
+        /// <returns>null if not found</returns>
+        private static string GetExeFromOpenCommand(RegistryKey root)
+        {
+            if (null != root)
+            {
+                using (var editSk = root.OpenSubKey("shell\\open\\command"))
+                {
+                    if (null != editSk)
+                    {
+                        String cmd = (String) editSk.GetValue("");
+                        //todo replcae with extract exe from command
+                        if (!String.IsNullOrEmpty(cmd))
+                        {
+                            String command = null;
+                            if (cmd.StartsWith("\""))
+                            {
+                                int i = cmd.IndexOf("\"", 1);
+                                if (i > 2)
+                                    command = cmd.Substring(1, i - 1);
+                            }
+                            else
+                            {
+                                int i = cmd.IndexOf(" ");
+                                if (i > 0)
+                                    command = cmd.Substring(0, i);
+                            }
+
+                            if (File.Exists(command))
+                            {
+                                return command;
+                            }
+                        }
+                    }
+                }
+            }
+            return null;
         }
     }
 }

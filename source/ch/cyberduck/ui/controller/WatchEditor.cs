@@ -20,6 +20,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Threading;
+using Ch.Cyberduck.Core;
 using org.apache.log4j;
 using Path = ch.cyberduck.core.Path;
 
@@ -28,21 +29,29 @@ namespace Ch.Cyberduck.Ui.Controller
     public class WatchEditor : Editor
     {
         private static readonly Logger Log = Logger.getLogger(typeof (WatchEditor).FullName);
+        private readonly string _editor;
         private Timer _atomicSaveTimer;
-        private DateTime _lastWriteTime;
         private FileSystemWatcher _watcher;
 
-        public WatchEditor(BrowserController controller, Path path)
+        public WatchEditor(BrowserController controller, Path path, String editor)
             : base(controller, null, path)
         {
+            _editor = editor;
         }
 
         protected override void edit()
         {
             Process process = new Process();
-            process.StartInfo.FileName = edited.getLocal().getAbsolute();
-            //process.StartInfo.Verb = "Edit";            
-            //process.StartInfo.Verb = "Open"; // open with dialog does not come up for unknown file types if Verb = Open            
+
+            if (Utils.IsBlank(_editor))
+            {
+                process.StartInfo.FileName = edited.getLocal().getAbsolute();
+            }
+            else
+            {
+                process.StartInfo.FileName = _editor;
+                process.StartInfo.Arguments = edited.getLocal().getAbsolute();
+            }
             try
             {
                 process.Start();
@@ -50,10 +59,12 @@ namespace Ch.Cyberduck.Ui.Controller
             catch (InvalidOperationException e)
             {
                 Log.error(e);
+                return;
             }
             catch (Win32Exception e)
             {
                 Log.error(e);
+                return;
             }
             _watcher = new FileSystemWatcher();
             _watcher.Path = edited.getLocal().getParent().getAbsolute();
@@ -75,11 +86,7 @@ namespace Ch.Cyberduck.Ui.Controller
             try
             {
                 _watcher.EnableRaisingEvents = false;
-                DateTime lastWriteTime = File.GetLastWriteTime(path);
-                if (lastWriteTime.Equals(_lastWriteTime)) return;
-                //workaround: http://stackoverflow.com/questions/1764809/filesystemwatcher-changed-event-is-raised-twice                                
                 save();
-                _lastWriteTime = lastWriteTime;
             }
             finally
             {
@@ -91,7 +98,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             Log.info(String.Format("HasRenamed: from {0} to {1}", e.OldFullPath, e.FullPath));
             //prevent removing handlers
-            _atomicSaveTimer.Change(Timeout.Infinite, Timeout.Infinite);
+            //_atomicSaveTimer.Change(Timeout.Infinite, Timeout.Infinite);
             FileNeedsToBeUpdated(e.FullPath);
         }
 
@@ -99,13 +106,12 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             Log.info("HasDeleted:" + e.FullPath);
             //an atomic save must not last longer than 5 seconds. After elapsing the handlers are removed.
-            _atomicSaveTimer.Change(5000, Timeout.Infinite);
+            //_atomicSaveTimer.Change(5000, Timeout.Infinite);
         }
 
         private void HasChanged(object sender, FileSystemEventArgs e)
         {
             Log.info("HasChanged:" + e.FullPath);
-            Console.WriteLine("Changed!");
             FileNeedsToBeUpdated(e.FullPath);
         }
 

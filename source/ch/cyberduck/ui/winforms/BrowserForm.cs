@@ -117,6 +117,11 @@ namespace Ch.Cyberduck.Ui.Winforms
             browserContextMenu.Popup += delegate { Commands.Validate(); };
 
             editorMenuStrip.Opening += OnEditorMenuStripOnOpening;
+
+
+            editToolStripSplitButton.DropDownOpening += OnEditorActionMenuOpening;
+
+
             // add dummy entry to force the right arrow appearing in the menu
             columnContextMenu.Items.Add(string.Empty);
             archiveMenuStrip.Items.Add(string.Empty);
@@ -206,7 +211,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         public event VoidHandler FolderUp;
         public event VoidHandler HistoryBack;
         public event VoidHandler HistoryForward;
-        public event VoidHandler EditEvent;
+        public event EditWithHandler EditEvent;
         public event VoidHandler ShowInspector;
         public event DropHandler BrowserCanDrop;
         public event ModelDropHandler BrowserModelCanDrop;
@@ -442,7 +447,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public Bitmap EditIcon
         {
-            set { editToolStripButton.Image = value; }
+            set { editToolStripSplitButton.Image = value; }
         }
 
         public Bitmap OpenIcon
@@ -805,10 +810,10 @@ namespace Ch.Cyberduck.Ui.Winforms
             {
                 if (index >= bookmarkListView.Items.Count)
                 {
-                    index = bookmarkListView.Items.Count-1;
+                    index = bookmarkListView.Items.Count - 1;
                 }
-                bookmarkListView.EnsureVisible(index);    
-            }            
+                bookmarkListView.EnsureVisible(index);
+            }
         }
 
         public void RefreshBookmark(Host host)
@@ -869,6 +874,20 @@ namespace Ch.Cyberduck.Ui.Winforms
         public bool SecureConnection
         {
             set { securityToolStripStatusLabel.Image = IconCache.Instance.IconForName(value ? "locked" : "unlocked"); }
+        }
+
+        private void OnEditorActionMenuOpening(object sender, EventArgs e)
+        {
+            editorMenuStrip.Items.Clear();
+            foreach (KeyValuePair<string, string> pair in GetEditors())
+            {
+                ToolStripItem item = new ToolStripMenuItem(pair.Key);
+                item.Tag = pair.Value;
+                Console.WriteLine(pair.Value);
+                item.Image = IconCache.Instance.ExtractIconFromExecutable(pair.Value, IconCache.IconSize.Small);
+                item.Click += (o, args) => EditEvent(item.Tag as String);
+                editorMenuStrip.Items.Add(item);
+            }
         }
 
         private void OnCopyUrlMenuItemPopup(object sender, EventArgs e)
@@ -1103,11 +1122,11 @@ namespace Ch.Cyberduck.Ui.Winforms
             h = delegate
                     {
                         editToolbarMenuItem.Checked = !editToolbarMenuItem.Checked;
-                        editToolStripButton.Visible = !editToolStripButton.Visible;
+                        editToolStripSplitButton.Visible = !editToolStripSplitButton.Visible;
                         UpdateSeparators();
                         Preferences.instance().setProperty(
                             "browser.toolbar.edit",
-                            editToolStripButton.Visible);
+                            editToolStripSplitButton.Visible);
                     };
             editToolStripMenuItem1.Click += h;
             editToolbarMenuItem.Click += h;
@@ -1227,7 +1246,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                 actionToolStripDropDownButton.Visible = Preferences.instance().getBoolean("browser.toolbar.action");
             bool b4 = infoToolStripButton.Visible = Preferences.instance().getBoolean("browser.toolbar.info");
             bool b5 = refreshToolStripButton.Visible = Preferences.instance().getBoolean("browser.toolbar.refresh");
-            bool b6 = editToolStripButton.Visible = Preferences.instance().getBoolean("browser.toolbar.edit");
+            bool b6 = editToolStripSplitButton.Visible = Preferences.instance().getBoolean("browser.toolbar.edit");
             bool b7 =
                 openInBrowserToolStripButton.Visible =
                 Preferences.instance().getBoolean("browser.toolbar.openinbrowser");
@@ -1761,9 +1780,17 @@ namespace Ch.Cyberduck.Ui.Winforms
                              {
                                  editWithToolStripMenuItem,
                                  editContextToolStripMenuItem,
-                                 editToolStripButton
+                                 editToolStripSplitButton
                              }, new[] {editMainMenuItem, editBrowserContextMenuItem},
-                         (sender, args) => EditEvent(), () => ValidateEditWith());
+                         (sender, args) =>
+                             {
+                                 if (sender == editToolStripSplitButton &&
+                                     editToolStripSplitButton.DropDownButtonPressed)
+                                 {
+                                     return;
+                                 }
+                                 EditEvent(null);
+                             }, () => ValidateEditWith());
             Commands.Add(new ToolStripItem[]
                              {
                                  infoToolStripMenuItem,
@@ -1871,11 +1898,20 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         private void OnEditorMenuStripOnOpening(object sender, CancelEventArgs args)
         {
+            //todo
+            /*
             editorMenuStrip.Items.Clear();
+
+            foreach (KeyValuePair<string, string> pair in GetEditors())
+            {
+                editorMenuStrip.
+            }
+            
+            
             foreach (string editor in GetEditors())
             {
                 editorMenuStrip.Items.Add(editor);
-            }
+            }*/
         }
 
         private void browser_DoubleClick(object sender, EventArgs e)
@@ -1911,7 +1947,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         }
 
         private void browser_KeyDown(object sender, KeyEventArgs e)
-        {            
+        {
             if (browser.SelectedObjects.Count > 0 && e.KeyCode == Keys.F2)
             {
                 browser.GetItem(browser.SelectedIndices[0]).BeginEdit();
@@ -2133,6 +2169,18 @@ namespace Ch.Cyberduck.Ui.Winforms
                 //forward click event
                 nItem.Checked = item.Checked;
                 columnMainMenuItem.MenuItems.Add(nItem);
+            }
+        }
+
+        private void browser_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == (char) Keys.Enter)
+            {
+                if (browser.SelectedObjects.Count == 1)
+                {
+                    browser.ToggleExpansion(browser.SelectedObject);
+                    e.Handled = true;
+                }
             }
         }
 
@@ -2822,18 +2870,6 @@ namespace Ch.Cyberduck.Ui.Winforms
                 Rectangle rect = new Rectangle(new Point(e.ImageRectangle.Left - 2, e.ImageRectangle.Top - 2),
                                                new Size(img.Width, img.Height));
                 e.Graphics.DrawImage(img, rect);
-            }
-        }
-
-        private void browser_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            if (e.KeyChar == (char)Keys.Enter)
-            {
-                if (browser.SelectedObjects.Count == 1)
-                {
-                    browser.ToggleExpansion(browser.SelectedObject);
-                    e.Handled = true;    
-                }
             }
         }
     }

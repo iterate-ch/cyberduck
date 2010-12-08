@@ -252,18 +252,55 @@ namespace Ch.Cyberduck.Ui.Controller
             return IconForName("notfound", 32);
         }
 
+        public Bitmap ExtractIconFromExecutable(string exe, IconSize size)
+        {
+            int s = size == IconSize.Small ? 16 : 32;
+
+            Bitmap bitmap = _bitmapCache.Get(exe, s);
+            if (null != bitmap) return bitmap;
+
+            try
+            {
+                    Icon icon = Icon.ExtractAssociatedIcon(exe);
+                    if (null != icon)
+                    {
+                        if (size == IconSize.Small)
+                        {
+                            icon = new Icon(icon, s, s);
+                        }                        
+                        Bitmap res = icon.ToBitmap();
+                        
+                        
+                        res = ResizeImage((Image)res, s);
+
+
+                        _bitmapCache.Put(exe, res, s);
+                        return res;
+                    }                
+            }
+            catch
+            {
+                //return default icon
+            }
+            return IconForName("notfound", s);            
+        }
+
         public Bitmap ExtractIconForFilename(string file)
         {
             try
             {
-                return Icon.ExtractAssociatedIcon(file).ToBitmap();
+                Icon icon = Icon.ExtractAssociatedIcon(file);
+                if (null != icon)
+                {
+                    return icon.ToBitmap();
+                }
+                
             }
             catch (Exception)
             {
-                return null;
             }
+            return null;
         }
-
 
         /// <summary>
         /// Get the associated icon for a given file type (according to its extension)

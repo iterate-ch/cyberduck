@@ -31,8 +31,9 @@ namespace Ch.Cyberduck.Ui.Controller
     public delegate void ModelDropHandler(ModelDropEventArgs dropArgs);
 
     public delegate bool RenamePathname(Path path, string newName);
+    public delegate void EditWithHandler(String exe);
 
-    public delegate List<string> EditorsHandler();
+    public delegate IList<KeyValuePair<string, string>> EditorsHandler();
 
     public delegate List<string> ArchivesHandler();
     public delegate List<KeyValuePair<String, List<String>>> CopyUrlHandler();

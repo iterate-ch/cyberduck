@@ -21,7 +21,6 @@ using System.Drawing;
 using BrightIdeasSoftware;
 using ch.cyberduck.core;
 using Ch.Cyberduck.Core;
-using ch.cyberduck.ui.controller;
 using Ch.Cyberduck.Ui.Winforms.Controls;
 
 namespace Ch.Cyberduck.Ui.Controller
@@ -201,7 +200,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         event VoidHandler BrowserSelectionChanged;
         event VoidHandler PathSelectionChanged;
-        event VoidHandler EditEvent;
+        event EditWithHandler EditEvent;
 
         event VoidHandler ShowTransfers;
         event VoidHandler ShowCertificate;

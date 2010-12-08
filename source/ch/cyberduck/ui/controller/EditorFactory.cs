@@ -15,12 +15,15 @@
 // Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
 // 
+using System.Collections.Generic;
 using ch.cyberduck.core;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
     public class EditorFactory
     {
+        private static readonly IDictionary<Path, Editor> editors = new Dictionary<Path, Editor>();
+
         /// <summary>
         /// 
         /// </summary>
@@ -29,7 +32,24 @@ namespace Ch.Cyberduck.Ui.Controller
         /// <returns>New editor instance for the given file type.</returns>
         public static Editor createEditor(BrowserController c, Path path)
         {
-            return new WatchEditor(c, path);
+            return createEditor(c, path, null);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="c"></param>
+        /// <param name="path"></param>
+        /// <returns>New editor instance for the given file type.</returns>
+        public static Editor createEditor(BrowserController c, Path path, string app)
+        {
+            Editor editor;
+            if (!editors.TryGetValue(path, out editor))
+            {
+                editor = new WatchEditor(c, path, app);
+                editors.Add(path, editor);
+            }
+            return editor;
         }
     }
 }
