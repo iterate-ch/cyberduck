@@ -164,7 +164,6 @@
                 <include name="org/kohsuke/putty/**/*.class"/>
                 <include name="org/spearce/jgit/**/*.class"/>
                 <include name="org/soyatec/**/*.class"/>
-                <include name="com/enterprisedt/**/*.class"/>
             </fileset>
             <fileset dir="${lib}">
                 <include name="cloudfiles.properties"/>
