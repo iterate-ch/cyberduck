@@ -207,11 +207,6 @@ namespace Ch.Cyberduck.Ui.Controller
             return Settings.Default[property];
         }
 
-        public override List getList(string str)
-        {
-            throw new InvalidOperationException();
-        }
-
         public override void save()
         {
             Log.debug("Saving preferences");
