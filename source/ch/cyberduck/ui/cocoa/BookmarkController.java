@@ -19,6 +19,7 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.ftp.FTPConnectMode;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.ui.cocoa.application.*;
@@ -33,8 +34,6 @@ import org.rococoa.cocoa.foundation.NSInteger;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.spearce.jgit.transport.OpenSshConfig;
-
-import com.enterprisedt.net.ftp.FTPConnectMode;
 
 import java.util.*;
 
@@ -398,10 +397,10 @@ public class BookmarkController extends WindowController {
     @Action
     public void connectmodePopupClicked(final NSPopUpButton sender) {
         if(sender.selectedItem().title().equals(DEFAULT)) {
-            host.setFTPConnectMode((FTPConnectMode) null);
+            host.setFTPConnectMode(null);
         }
         else if(sender.selectedItem().title().equals(CONNECTMODE_ACTIVE)) {
-            host.setFTPConnectMode(FTPConnectMode.ACTIVE);
+            host.setFTPConnectMode(FTPConnectMode.PORT);
         }
         else if(sender.selectedItem().title().equals(CONNECTMODE_PASSIVE)) {
             host.setFTPConnectMode(FTPConnectMode.PASV);
@@ -807,7 +806,7 @@ public class BookmarkController extends WindowController {
             else if(host.getFTPConnectMode().equals(FTPConnectMode.PASV)) {
                 connectmodePopup.selectItemWithTitle(CONNECTMODE_PASSIVE);
             }
-            else if(host.getFTPConnectMode().equals(FTPConnectMode.ACTIVE)) {
+            else if(host.getFTPConnectMode().equals(FTPConnectMode.PORT)) {
                 connectmodePopup.selectItemWithTitle(CONNECTMODE_ACTIVE);
             }
         }

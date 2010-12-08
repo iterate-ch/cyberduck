@@ -20,11 +20,10 @@ package ch.cyberduck.core.importer;
  */
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.ftp.FTPConnectMode;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-
-import com.enterprisedt.net.ftp.FTPConnectMode;
 
 /**
  * @version $Id$
@@ -146,13 +145,13 @@ public class FilezillaBookmarkCollection extends XmlBookmarkCollection {
             }
             else if(name.equals("PasvMode")) {
                 if("MODE_DEFAULT".equals(elementText)) {
-                    current.setFTPConnectMode((FTPConnectMode) null);
+                    current.setFTPConnectMode(null);
                 }
                 else if("MODE_PASSIVE".equals(elementText)) {
                     current.setFTPConnectMode(FTPConnectMode.PASV);
                 }
                 else if("MODE_ACTIVE".equals(elementText)) {
-                    current.setFTPConnectMode(FTPConnectMode.ACTIVE);
+                    current.setFTPConnectMode(FTPConnectMode.PORT);
                 }
             }
             else if(name.equals("Comments")) {

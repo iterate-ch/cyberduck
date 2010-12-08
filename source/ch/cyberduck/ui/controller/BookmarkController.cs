@@ -27,7 +27,7 @@ using ch.cyberduck.core.i18n;
 using ch.cyberduck.core.threading;
 using ch.cyberduck.ui.controller;
 using Ch.Cyberduck.Ui.Winforms.Controls;
-using com.enterprisedt.net.ftp;
+using ch.cyberduck.core.ftp;
 using java.lang;
 using org.apache.commons.lang;
 using org.apache.log4j;

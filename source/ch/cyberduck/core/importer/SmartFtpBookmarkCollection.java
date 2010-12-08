@@ -20,12 +20,11 @@ package ch.cyberduck.core.importer;
  */
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.ftp.FTPConnectMode;
 
 import org.apache.log4j.Logger;
 import org.w3c.util.DateParser;
 import org.w3c.util.InvalidDateException;
-
-import com.enterprisedt.net.ftp.FTPConnectMode;
 
 /**
  * @version $Id$
@@ -138,7 +137,7 @@ public class SmartFtpBookmarkCollection extends XmlBookmarkCollection {
                 try {
                     switch(Integer.parseInt(elementText)) {
                         case 0:
-                            current.setFTPConnectMode(FTPConnectMode.ACTIVE);
+                            current.setFTPConnectMode(FTPConnectMode.PORT);
                             break;
                         case 1:
                             current.setFTPConnectMode(FTPConnectMode.PASV);

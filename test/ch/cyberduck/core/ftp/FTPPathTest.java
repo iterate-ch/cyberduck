@@ -26,8 +26,7 @@ import ch.cyberduck.core.*;
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPFileEntryParser;
 
-import java.io.BufferedReader;
-import java.io.StringReader;
+import java.util.Collections;
 
 /**
  * @version $Id$
@@ -60,7 +59,7 @@ public class FTPPathTest extends AbstractTestCase {
 
         final AttributedList<Path> list = new AttributedList<Path>();
         final boolean success = path.parse(list, parser,
-                new BufferedReader(new StringReader(" drwxrwx--x 1 owner group          512 Jun 12 15:40 SunnyD")));
+                Collections.singletonList(" drwxrwx--x 1 owner group          512 Jun 12 15:40 SunnyD"));
 
         assertFalse(success);
         assertTrue(list.isEmpty());
@@ -78,7 +77,7 @@ public class FTPPathTest extends AbstractTestCase {
 
         final AttributedList<Path> list = new AttributedList<Path>();
         final boolean success = path.parse(list, parser,
-                new BufferedReader(new StringReader("lrwxrwxrwx    1 mk basicgrp       27 Sep 23  2004 www -> /www/basic/mk")));
+                Collections.singletonList("lrwxrwxrwx    1 mk basicgrp       27 Sep 23  2004 www -> /www/basic/mk"));
 
         assertTrue(success);
         assertFalse(list.isEmpty());
@@ -97,7 +96,7 @@ public class FTPPathTest extends AbstractTestCase {
 
         final AttributedList<Path> list = new AttributedList<Path>();
         final boolean success = path.parse(list, parser,
-                new BufferedReader(new StringReader("lrwxrwxrwx    1 mk basicgrp       27 Sep 23  2004 /home/mk/www -> /www/basic/mk")));
+                Collections.singletonList("lrwxrwxrwx    1 mk basicgrp       27 Sep 23  2004 /home/mk/www -> /www/basic/mk"));
 
         assertFalse(success);
         assertTrue(list.isEmpty());

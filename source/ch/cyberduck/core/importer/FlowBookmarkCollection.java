@@ -20,13 +20,12 @@ package ch.cyberduck.core.importer;
  */
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.ftp.FTPConnectMode;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 import ch.cyberduck.ui.cocoa.serializer.PlistDeserializer;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-
-import com.enterprisedt.net.ftp.FTPConnectMode;
 
 import java.util.List;
 
@@ -96,7 +95,7 @@ public class FlowBookmarkCollection extends ThirdpartyBookmarkCollection {
                         host.setFTPConnectMode(FTPConnectMode.PASV);
                     }
                     if("Active".equals(mode)) {
-                        host.setFTPConnectMode(FTPConnectMode.ACTIVE);
+                        host.setFTPConnectMode(FTPConnectMode.PORT);
                     }
                 }
                 String protocol = bookmark.stringForKey("Protocol");

@@ -20,12 +20,11 @@ package ch.cyberduck.core.importer;
  */
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.ftp.FTPConnectMode;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-
-import com.enterprisedt.net.ftp.FTPConnectMode;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -147,7 +146,7 @@ public class FireFtpBookmarkCollection extends ThirdpartyBookmarkCollection {
                                         current.setFTPConnectMode(FTPConnectMode.PASV);
                                     }
                                     if(Boolean.FALSE.toString().equals(value)) {
-                                        current.setFTPConnectMode(FTPConnectMode.ACTIVE);
+                                        current.setFTPConnectMode(FTPConnectMode.PORT);
                                     }
                                 }
                                 else if("login".equals(name)) {

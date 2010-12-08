@@ -24,21 +24,17 @@ import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.ui.DateFormatterFactory;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.net.ftp.FTPFile;
-import org.apache.commons.net.ftp.FTPFileEntryParser;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.net.ftp.*;
 import org.apache.log4j.Logger;
 
-import com.enterprisedt.net.ftp.FTPException;
-import com.enterprisedt.net.ftp.FTPTransferType;
-
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.MessageFormat;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Map;
+import java.text.ParsePosition;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -101,6 +97,33 @@ public class FTPPath extends Path {
         return session;
     }
 
+    /**
+     * The sever supports STAT file listings
+     */
+    private boolean statListSupportedEnabled = Preferences.instance().getBoolean("ftp.sendStatListCommand");
+
+    public void setStatListSupportedEnabled(boolean e) {
+        this.statListSupportedEnabled = e;
+    }
+
+    /**
+     * The server supports MLSD
+     */
+    private boolean mlsdListSupportedEnabled = Preferences.instance().getBoolean("ftp.sendMlsdListCommand");
+
+    public void setMlsdListSupportedEnabled(boolean e) {
+        this.mlsdListSupportedEnabled = e;
+    }
+
+    /**
+     * The server supports LIST -a
+     */
+    private boolean extendedListEnabled = Preferences.instance().getBoolean("ftp.sendExtendedListCommand");
+
+    public void setExtendedListEnabled(boolean e) {
+        this.extendedListEnabled = e;
+    }
+
     @Override
     public AttributedList<Path> list() {
         final AttributedList<Path> children = new AttributedList<Path>();
@@ -109,61 +132,94 @@ public class FTPPath extends Path {
             this.getSession().message(MessageFormat.format(Locale.localizedString("Listing directory {0}", "Status"),
                     this.getName()));
 
-            this.getSession().setWorkdir(this);
             // Cached file parser determined from SYST response with the timezone set from the bookmark
             final FTPFileEntryParser parser = this.getSession().getFileParser();
             boolean success = false;
             try {
-                success = this.parse(children, parser, this.getSession().getClient().stat(this.getAbsolute()));
+                if(statListSupportedEnabled) {
+                    int response = this.getSession().getClient().stat(this.getAbsolute());
+                    if(FTPReply.isPositiveCompletion(response)) {
+                        String[] reply = this.getSession().getClient().getReplyStrings();
+                        final List<String> result = new ArrayList<String>(reply.length);
+                        for(final String line : reply) {
+                            //Some servers include the status code for every line.
+                            if(line.startsWith(String.valueOf(response))) {
+                                try {
+                                    result.add(line.substring(line.indexOf(response) + line.length() + 1).trim());
+                                }
+                                catch(IndexOutOfBoundsException e) {
+                                    log.error("Failed parsing line '" + line + "':" + e.getMessage());
+                                }
+                            }
+                            else {
+                                result.add(StringUtils.stripStart(line, null));
+                            }
+                        }
+                        success = this.parse(children, parser, result);
+                    }
+                    else {
+                        statListSupportedEnabled = false;
+                    }
+                }
             }
             catch(IOException e) {
-                log.warn("Command STAT failed with:" + e.getMessage());
+                log.warn("Command STAT failed with I/O error:" + e.getMessage());
                 this.getSession().interrupt();
                 this.getSession().check();
             }
             if(!success || children.isEmpty()) {
-                // STAT listing failed or empty
                 // Set transfer type for traditional data socket file listings
-                this.getSession().getClient().setTransferType(FTPTransferType.ASCII);
-                final BufferedReader mlsd = this.getSession().getClient().mlsd(this.getSession().getEncoding());
-                success = this.parse(children, mlsd);
-                // MLSD listing failed
-                if(null != mlsd) {
-                    // Close MLSD data socket
-                    this.getSession().getClient().finishDir();
+                this.getSession().getClient().setFileType(FTP.ASCII_FILE_TYPE);
+                // STAT listing failed or empty
+                if(mlsdListSupportedEnabled) {
+                    success = this.parse(children, this.getSession().getClient().list(FTPClient.MLSD, this.getAbsolute()));
+                    if(!success) {
+                        mlsdListSupportedEnabled = false;
+                    }
                 }
                 if(!success) {
-                    final BufferedReader lsa = this.getSession().getClient().list(this.getSession().getEncoding(), true);
-                    success = this.parse(children, parser, lsa);
-                    if(null != lsa) {
-                        // Close LIST data socket
-                        this.getSession().getClient().finishDir();
+                    // MLSD listing failed
+                    if(extendedListEnabled) {
+                        StringBuilder sb = new StringBuilder();
+                        sb.append("-a ");
+                        sb.append(this.getAbsolute());
+                        success = this.parse(children, parser, this.getSession().getClient().list(FTPCommand.LIST, sb.toString()));
                     }
                     if(!success) {
                         // LIST -a listing failed
-                        final BufferedReader ls = this.getSession().getClient().list(this.getSession().getEncoding(), false);
-                        success = this.parse(children, parser, ls);
-                        if(null != ls) {
-                            // Close LIST data socket
-                            this.getSession().getClient().finishDir();
-                        }
-                        if(!success) {
-                            // LIST listing failed
-                            log.error("No compatible file listing method found");
-                        }
+                        extendedListEnabled = false;
+                        success = this.parse(children, parser, this.getSession().getClient().list(FTPCommand.LIST, this.getAbsolute()));
                     }
                 }
             }
             for(Path child : children) {
                 if(child.attributes().getType() == Path.SYMBOLIC_LINK_TYPE) {
-                    try {
-                        this.getSession().setWorkdir(child);
+                    if(this.getSession().getClient().changeWorkingDirectory(child.getAbsolute())) {
                         child.attributes().setType(Path.SYMBOLIC_LINK_TYPE | Path.DIRECTORY_TYPE);
                     }
-                    catch(FTPException e) {
-                        child.attributes().setType(Path.SYMBOLIC_LINK_TYPE | Path.FILE_TYPE);
+                    else {
+                        if(StringUtils.isNotBlank(child.getSymlinkTarget())) {
+                            // Try if CWD to symbolic link target succeeds
+                            if(this.getSession().getClient().changeWorkingDirectory(child.getSymlinkTarget())) {
+                                // Workdir change succeeded
+                                child.attributes().setType(Path.SYMBOLIC_LINK_TYPE | Path.DIRECTORY_TYPE);
+                            }
+                            else {
+                                child.attributes().setType(Path.SYMBOLIC_LINK_TYPE | Path.FILE_TYPE);
+                            }
+                        }
+                        else {
+                            child.attributes().setType(Path.SYMBOLIC_LINK_TYPE | Path.FILE_TYPE);
+                        }
                     }
                 }
+            }
+            if(success) {
+                this.getSession().setWorkdir(this);
+            }
+            else {
+                // LIST listing failed
+                log.error("No compatible file listing method found");
             }
         }
         catch(IOException e) {
@@ -242,20 +298,19 @@ public class FTPPath extends Path {
      * Parse response of MLSD
      *
      * @param children
-     * @param reader
+     * @param replies
      * @return
      * @throws IOException
      */
-    private boolean parse(final AttributedList<Path> children, BufferedReader reader)
+    private boolean parse(final AttributedList<Path> children, List<String> replies)
             throws IOException {
 
-        if(null == reader) {
+        if(null == replies) {
             // This is an empty directory
             return false;
         }
         boolean success = false;
-        String line;
-        while((line = reader.readLine()) != null) {
+        for(String line : replies) {
             final Map<String, Map<String, String>> file = this.parseFacts(line);
             if(file.isEmpty()) {
                 continue;
@@ -310,10 +365,10 @@ public class FTPPath extends Path {
                         parsed.attributes().setPermission(new Permission(Integer.parseInt(facts.get("unix.mode"))));
                     }
                     if(facts.containsKey("modify")) {
-                        parsed.attributes().setModificationDate(this.getSession().getClient().parseTimestamp(facts.get("modify")));
+                        parsed.attributes().setModificationDate(this.parseTimestamp(facts.get("modify")));
                     }
                     if(facts.containsKey("create")) {
-                        parsed.attributes().setCreationDate(this.getSession().getClient().parseTimestamp(facts.get("create")));
+                        parsed.attributes().setCreationDate(this.parseTimestamp(facts.get("create")));
                     }
                     children.add(parsed);
                 }
@@ -323,22 +378,20 @@ public class FTPPath extends Path {
     }
 
     /**
-     * Parse all lines from the reader.
-     *
+     * @param children
      * @param parser
-     * @param reader
-     * @return An empty list if no parsable lines are found
+     * @param replies
+     * @return
      * @throws IOException
      */
-    protected boolean parse(final AttributedList<Path> children, FTPFileEntryParser parser, BufferedReader reader)
+    protected boolean parse(final AttributedList<Path> children, FTPFileEntryParser parser, List<String> replies)
             throws IOException {
-        if(null == reader) {
+        if(null == replies) {
             // This is an empty directory
             return false;
         }
         boolean success = false;
-        String line;
-        while((line = parser.readNextEntry(reader)) != null) {
+        for(String line : replies) {
             final FTPFile f = parser.parseFTPEntry(line);
             if(null == f) {
                 continue;
@@ -357,7 +410,7 @@ public class FTPPath extends Path {
                     continue;
                 }
             }
-            success = true; // At least one entry successfully parsed
+            success = true;
             if(name.equals(".") || name.equals("..")) {
                 continue;
             }
@@ -408,16 +461,20 @@ public class FTPPath extends Path {
                 this.getSession().message(MessageFormat.format(Locale.localizedString("Making directory {0}", "Status"),
                         this.getName()));
 
-                this.getSession().getClient().mkdir(this.getAbsolute());
-                if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
-                    if(Preferences.instance().getBoolean("queue.upload.permissions.useDefault")) {
-                        this.writeUnixPermissionImpl(new Permission(
-                                Preferences.instance().getInteger("queue.upload.permissions.folder.default")), false);
+                if(this.getSession().getClient().makeDirectory(this.getAbsolute())) {
+                    if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
+                        if(Preferences.instance().getBoolean("queue.upload.permissions.useDefault")) {
+                            this.writeUnixPermissionImpl(new Permission(
+                                    Preferences.instance().getInteger("queue.upload.permissions.folder.default")), false);
+                        }
                     }
+                    this.cache().put(this.getReference(), AttributedList.<Path>emptyList());
+                    // The directory listing is no more current
+                    this.getParent().invalidate();
                 }
-                this.cache().put(this.getReference(), AttributedList.<Path>emptyList());
-                // The directory listing is no more current
-                this.getParent().invalidate();
+                else {
+                    throw new FTPException(this.getSession().getClient().getReplyString());
+                }
             }
             catch(IOException e) {
                 this.error("Cannot create folder {0}", e);
@@ -432,11 +489,15 @@ public class FTPPath extends Path {
             this.getSession().message(MessageFormat.format(Locale.localizedString("Renaming {0} to {1}", "Status"),
                     this.getName(), renamed));
 
-            this.getSession().getClient().rename(this.getAbsolute(), renamed.getAbsolute());
-            // The directory listing of the target is no more current
-            renamed.getParent().invalidate();
-            // The directory listing of the source is no more current
-            this.getParent().invalidate();
+            if(this.getSession().getClient().rename(this.getAbsolute(), renamed.getAbsolute())) {
+                // The directory listing of the target is no more current
+                renamed.getParent().invalidate();
+                // The directory listing of the source is no more current
+                this.getParent().invalidate();
+            }
+            else {
+                throw new FTPException(this.getSession().getClient().getReplyString());
+            }
         }
         catch(IOException e) {
             this.error("Cannot rename {0}", e);
@@ -451,8 +512,8 @@ public class FTPPath extends Path {
                     this.getName()));
 
             if(attributes().isFile()) {
-                this.getSession().getClient().setTransferType(FTPTransferType.BINARY);
-                attributes().setSize(this.getSession().getClient().size(this.getAbsolute()));
+                this.getSession().getClient().setFileType(FTP.BINARY_FILE_TYPE);
+                this.attributes().setSize(this.getSession().getClient().getSize(this.getAbsolute()));
             }
             if(-1 == attributes().getSize()) {
                 // Read the size from the directory listing
@@ -467,6 +528,29 @@ public class FTPPath extends Path {
         }
     }
 
+    /**
+     * Format to interpret MTDM timestamp
+     */
+    private SimpleDateFormat tsFormat =
+            new SimpleDateFormat("yyyyMMddHHmmss");
+
+    {
+        tsFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+    }
+
+    /**
+     * Parse the timestamp using the MTDM format
+     *
+     * @param timestamp
+     * @return
+     */
+    public long parseTimestamp(final String timestamp) {
+        if(null == timestamp) {
+            return -1;
+        }
+        return tsFormat.parse(timestamp, new ParsePosition(0)).getTime();
+    }
+
     @Override
     public void readTimestamp() {
         try {
@@ -478,13 +562,8 @@ public class FTPPath extends Path {
                 // The "pathname" specifies an object in the NVFS which may be the object of a RETR command.
                 // Attempts to query the modification time of files that exist but are unable to be
                 // retrieved may generate an error-response
-                try {
-                    attributes().setModificationDate(this.getSession().getClient().mdtm(this.getAbsolute()));
-                }
-                catch(FTPException ignore) {
-                    // MDTM not supported; ignore
-                    log.warn(ignore.getMessage());
-                }
+                attributes().setModificationDate(
+                        this.parseTimestamp(this.getSession().getClient().getModificationTime(this.getAbsolute())));
             }
             if(-1 == attributes().getModificationDate()) {
                 // Read the timestamp from the directory listing
@@ -526,7 +605,9 @@ public class FTPPath extends Path {
                 this.getSession().message(MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),
                         this.getName()));
 
-                this.getSession().getClient().delete(this.getAbsolute());
+                if(!this.getSession().getClient().deleteFile(this.getAbsolute())) {
+                    throw new FTPException(this.getSession().getClient().getReplyString());
+                }
             }
             else if(attributes().isDirectory()) {
                 for(AbstractPath file : this.children()) {
@@ -537,7 +618,9 @@ public class FTPPath extends Path {
                         this.getSession().message(MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),
                                 file.getName()));
 
-                        this.getSession().getClient().delete(file.getAbsolute());
+                        if(!this.getSession().getClient().deleteFile(file.getAbsolute())) {
+                            throw new FTPException(this.getSession().getClient().getReplyString());
+                        }
                     }
                     else if(file.attributes().isDirectory()) {
                         file.delete();
@@ -546,7 +629,9 @@ public class FTPPath extends Path {
                 this.getSession().message(MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),
                         this.getName()));
 
-                this.getSession().getClient().rmdir(this.getAbsolute());
+                if(!this.getSession().getClient().removeDirectory(this.getAbsolute())) {
+                    throw new FTPException(this.getSession().getClient().getReplyString());
+                }
             }
             // The directory listing is no more current
             this.getParent().invalidate();
@@ -565,10 +650,14 @@ public class FTPPath extends Path {
                     this.getName(), owner));
 
             if(attributes().isFile() && !attributes().isSymbolicLink()) {
-                this.getSession().getClient().site(command + " " + owner + " " + this.getAbsolute());
+                if(!this.getSession().getClient().sendSiteCommand(command + " " + owner + " " + this.getAbsolute())) {
+                    throw new FTPException(this.getSession().getClient().getReplyString());
+                }
             }
             else if(attributes().isDirectory()) {
-                this.getSession().getClient().site(command + " " + owner + " " + this.getAbsolute());
+                if(!this.getSession().getClient().sendSiteCommand(command + " " + owner + " " + this.getAbsolute())) {
+                    throw new FTPException(this.getSession().getClient().getReplyString());
+                }
                 if(recursive) {
                     for(AbstractPath child : this.children()) {
                         if(!this.getSession().isConnected()) {
@@ -593,10 +682,14 @@ public class FTPPath extends Path {
                     this.getName(), group));
 
             if(attributes().isFile() && !attributes().isSymbolicLink()) {
-                this.getSession().getClient().site(command + " " + group + " " + this.getAbsolute());
+                if(!this.getSession().getClient().sendSiteCommand(command + " " + group + " " + this.getAbsolute())) {
+                    throw new FTPException(this.getSession().getClient().getReplyString());
+                }
             }
             else if(attributes().isDirectory()) {
-                this.getSession().getClient().site(command + " " + group + " " + this.getAbsolute());
+                if(!this.getSession().getClient().sendSiteCommand(command + " " + group + " " + this.getAbsolute())) {
+                    throw new FTPException(this.getSession().getClient().getReplyString());
+                }
                 if(recursive) {
                     for(AbstractPath child : this.children()) {
                         if(!this.getSession().isConnected()) {
@@ -623,35 +716,43 @@ public class FTPPath extends Path {
         }
     }
 
+    private boolean chmodSupported = true;
+
     private void writeUnixPermissionImpl(Permission perm, boolean recursive) throws IOException {
-        this.getSession().message(MessageFormat.format(Locale.localizedString("Changing permission of {0} to {1}", "Status"),
-                this.getName(), perm.getOctalString()));
-        try {
-            if(attributes().isFile() && !attributes().isSymbolicLink()) {
-                this.getSession().getClient().chmod(perm.getOctalString(), this.getAbsolute());
-                this.attributes().setPermission(perm);
-            }
-            else if(attributes().isDirectory()) {
-                this.getSession().getClient().chmod(perm.getOctalString(), this.getAbsolute());
-                this.attributes().setPermission(perm);
-                if(recursive) {
-                    for(AbstractPath child : this.children()) {
-                        if(!this.getSession().isConnected()) {
-                            break;
+        if(chmodSupported) {
+            this.getSession().message(MessageFormat.format(Locale.localizedString("Changing permission of {0} to {1}", "Status"),
+                    this.getName(), perm.getOctalString()));
+            try {
+                if(attributes().isFile() && !attributes().isSymbolicLink()) {
+                    if(this.getSession().getClient().sendSiteCommand("CHMOD " + perm.getOctalString() + " " + this.getAbsolute())) {
+                        this.attributes().setPermission(perm);
+                    }
+                    else {
+                        chmodSupported = false;
+                    }
+                }
+                else if(attributes().isDirectory()) {
+                    if(this.getSession().getClient().sendSiteCommand("CHMOD " + perm.getOctalString() + " " + this.getAbsolute())) {
+                        this.attributes().setPermission(perm);
+                    }
+                    else {
+                        chmodSupported = false;
+                    }
+                    if(recursive) {
+                        for(AbstractPath child : this.children()) {
+                            if(!this.getSession().isConnected()) {
+                                break;
+                            }
+                            ((FTPPath) child).writeUnixPermissionImpl(perm, recursive);
                         }
-                        ((FTPPath) child).writeUnixPermissionImpl(perm, recursive);
                     }
                 }
             }
-        }
-        catch(FTPException ignore) {
-            // CHMOD not supported
-            log.warn(ignore.getMessage());
-        }
-        finally {
-            //this.attributes().clear(false, false, true, false);
-            ;// This will force a directory listing to parse the permissions again.
-            //this.getParent().invalidate();
+            finally {
+                //this.attributes().clear(false, false, true, false);
+                ;// This will force a directory listing to parse the permissions again.
+                //this.getParent().invalidate();
+            }
         }
     }
 
@@ -665,17 +766,39 @@ public class FTPPath extends Path {
         }
     }
 
+    private boolean utimeSupported = true;
+
     private void writeModificationDateImpl(long created, long modified) throws IOException {
         this.getSession().message(MessageFormat.format(Locale.localizedString("Changing timestamp of {0} to {1}", "Status"),
                 this.getName(), DateFormatterFactory.instance().getShortFormat(modified)));
         try {
-            this.getSession().getClient().mfmt(modified, created, this.getAbsolute());
-            this.attributes().setModificationDate(modified);
-            this.attributes().setCreationDate(created);
-        }
-        catch(FTPException ignore) {
-            //MFMT not supported; ignore
-            log.warn(ignore.getMessage());
+            if(this.getSession().getClient().isFeatureSupported("MFMT")) {
+                if(this.getSession().getClient().setModificationTime(this.getAbsolute(), tsFormat.format(modified))) {
+                    this.attributes().setModificationDate(modified);
+                }
+            }
+            else {
+                if(utimeSupported) {
+                    // The utime() function sets the access and modification times of the named
+                    // file from the structures in the argument array timep.
+                    // The access time is set to the value of the first element,
+                    // and the modification time is set to the value of the second element
+                    // Accessed date, modified date, created date
+                    if(this.getSession().getClient().sendSiteCommand("UTIME " + this.getAbsolute()
+                            + " " + tsFormat.format(new Date(modified))
+                            + " " + tsFormat.format(new Date(modified))
+                            + " " + tsFormat.format(new Date(created))
+                            + " UTC")) {
+                        this.attributes().setModificationDate(modified);
+                        this.attributes().setCreationDate(created);
+                    }
+                    else {
+                        utimeSupported = false;
+                        log.warn("UTIME not supported");
+                    }
+                }
+
+            }
         }
         finally {
             //this.attributes().clear(true, false, false, false);
@@ -694,13 +817,20 @@ public class FTPPath extends Path {
                 InputStream in = null;
                 OutputStream out = null;
                 try {
-                    this.getSession().getClient().setTransferType(FTPTransferType.BINARY);
+                    if(!this.getSession().getClient().setFileType(FTP.BINARY_FILE_TYPE)) {
+                        throw new FTPException(this.getSession().getClient().getReplyString());
+                    }
                     if(this.status().isResume()) {
                         if(!this.getSession().getClient().isFeatureSupported("REST STREAM")) {
                             this.status().setResume(false);
                         }
+                        else {
+                            this.getSession().getClient().setRestartOffset(
+                                    this.status().isResume() ? this.getLocal().attributes().getSize() : 0
+                            );
+                        }
                     }
-                    in = this.getSession().getClient().get(this.getAbsolute(), this.status().isResume() ? this.getLocal().attributes().getSize() : 0);
+                    in = this.getSession().getClient().retrieveFileStream(this.getAbsolute());
                     out = this.getLocal().getOutputStream(this.status().isResume());
                     try {
                         this.download(in, out, throttle, listener);
@@ -709,20 +839,20 @@ public class FTPPath extends Path {
                         // Interrupted by user
                         IOUtils.closeQuietly(in);
                         IOUtils.closeQuietly(out);
-                        // Tell the server to abort the previous FTP service command and any associated transfer of data
-                        this.getSession().getClient().abor();
+                        // Tell the server to abort the previous command and any associated
+                        // transfer of data
+                        if(!this.getSession().getClient().abort()) {
+                            log.error("Interrupting file transfer failed:" + this.getSession().getClient().getReplyString());
+                        }
                         this.status().setComplete(false);
                         throw e;
                     }
                     if(this.status().isComplete()) {
                         IOUtils.closeQuietly(in);
                         IOUtils.closeQuietly(out);
-                        try {
-                            this.getSession().getClient().validateTransfer();
-                        }
-                        catch(FTPException e) {
+                        if(!this.getSession().getClient().completePendingCommand()) {
                             this.status().setComplete(false);
-                            throw e;
+                            throw new FTPException(this.getSession().getClient().getReplyString());
                         }
                     }
                 }
@@ -747,9 +877,16 @@ public class FTPPath extends Path {
                 InputStream in = null;
                 OutputStream out = null;
                 try {
-                    this.getSession().getClient().setTransferType(FTPTransferType.BINARY);
+                    if(!this.getSession().getClient().setFileType(FTPClient.BINARY_FILE_TYPE)) {
+                        throw new FTPException(this.getSession().getClient().getReplyString());
+                    }
                     in = this.getLocal().getInputStream();
-                    out = this.getSession().getClient().put(this.getAbsolute(), this.status().isResume());
+                    if(this.status().isResume()) {
+                        out = this.getSession().getClient().appendFileStream(this.getAbsolute());
+                    }
+                    else {
+                        out = this.getSession().getClient().storeFileStream(this.getAbsolute());
+                    }
                     try {
                         this.upload(out, in, throttle, listener);
                     }
@@ -757,20 +894,20 @@ public class FTPPath extends Path {
                         // Interrupted by user
                         IOUtils.closeQuietly(in);
                         IOUtils.closeQuietly(out);
-                        // Tell the server to abort the previous FTP service command and any associated transfer of data
-                        this.getSession().getClient().abor();
+                        // Tell the server to abort the previous command and any associated
+                        // transfer of data
+                        if(!this.getSession().getClient().abort()) {
+                            log.error("Interrupting file transfer failed:" + this.getSession().getClient().getReplyString());
+                        }
                         this.status().setComplete(false);
                         throw e;
                     }
                     if(status().isComplete()) {
                         IOUtils.closeQuietly(in);
                         IOUtils.closeQuietly(out);
-                        try {
-                            this.getSession().getClient().validateTransfer();
-                        }
-                        catch(FTPException e) {
+                        if(!this.getSession().getClient().completePendingCommand()) {
                             this.status().setComplete(false);
-                            throw e;
+                            throw new FTPException(this.getSession().getClient().getReplyString());
                         }
                     }
                 }

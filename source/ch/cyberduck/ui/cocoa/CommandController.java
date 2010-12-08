@@ -20,6 +20,7 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TranscriptListener;
+import ch.cyberduck.core.ftp.FTPException;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
@@ -31,8 +32,6 @@ import org.rococoa.cocoa.foundation.NSUInteger;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-
-import com.enterprisedt.net.ftp.FTPException;
 
 import java.io.IOException;
 

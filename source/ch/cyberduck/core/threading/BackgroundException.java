@@ -20,6 +20,7 @@ package ch.cyberduck.core.threading;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.ftp.FTPException;
 import ch.cyberduck.core.i18n.Locale;
 import ch.ethz.ssh2.sftp.SFTPException;
 
@@ -30,7 +31,6 @@ import org.jets3t.service.CloudFrontServiceException;
 import org.jets3t.service.ServiceException;
 import org.soyatec.windows.azure.error.StorageServerException;
 
-import com.enterprisedt.net.ftp.FTPException;
 import com.rackspacecloud.client.cloudfiles.FilesException;
 
 import java.io.IOException;
@@ -54,10 +54,10 @@ public class BackgroundException extends Exception {
         this.session = session;
         this.path = path;
         if(null == path) {
-            this.message = message;
+            this.message = StringUtils.chomp(message);
         }
         else {
-            this.message = MessageFormat.format(message, path.getName());
+            this.message = MessageFormat.format(StringUtils.chomp(message), path.getName());
         }
     }
 
@@ -121,8 +121,9 @@ public class BackgroundException extends Exception {
         StringBuilder buffer = new StringBuilder();
         if(null != cause) {
             if(StringUtils.isNotBlank(cause.getMessage())) {
-                buffer.append(cause.getMessage());
-                if(!cause.getMessage().endsWith(".")) {
+                String m = StringUtils.chomp(cause.getMessage());
+                buffer.append(m);
+                if(!m.endsWith(".")) {
                     buffer.append(".");
                 }
             }

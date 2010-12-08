@@ -18,6 +18,7 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.ftp.FTPConnectMode;
 import ch.cyberduck.core.serializer.Deserializer;
 import ch.cyberduck.core.serializer.DeserializerFactory;
 import ch.cyberduck.core.serializer.Serializer;
@@ -27,7 +28,6 @@ import org.apache.commons.lang.CharUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import com.enterprisedt.net.ftp.FTPConnectMode;
 import com.ibm.icu.text.IDNA;
 import com.ibm.icu.text.StringPrepParseException;
 
@@ -283,8 +283,8 @@ public class Host implements Serializable {
         }
         Object connectModeObj = dict.stringForKey("FTP Connect Mode");
         if(connectModeObj != null) {
-            if(connectModeObj.toString().equals(FTPConnectMode.ACTIVE.toString())) {
-                this.setFTPConnectMode(FTPConnectMode.ACTIVE);
+            if(connectModeObj.toString().equals(FTPConnectMode.PORT.toString())) {
+                this.setFTPConnectMode(FTPConnectMode.PORT);
             }
             if(connectModeObj.toString().equals(FTPConnectMode.PASV.toString())) {
                 this.setFTPConnectMode(FTPConnectMode.PASV);
@@ -343,8 +343,8 @@ public class Host implements Serializable {
         }
         if(this.getProtocol().equals(Protocol.FTP) || this.getProtocol().equals(Protocol.FTP_TLS)) {
             if(null != this.getFTPConnectMode()) {
-                if(this.getFTPConnectMode().equals(FTPConnectMode.ACTIVE)) {
-                    dict.setStringForKey(FTPConnectMode.ACTIVE.toString(), "FTP Connect Mode");
+                if(this.getFTPConnectMode().equals(FTPConnectMode.PORT)) {
+                    dict.setStringForKey(FTPConnectMode.PORT.toString(), "FTP Connect Mode");
                 }
                 else if(this.getFTPConnectMode().equals(FTPConnectMode.PASV)) {
                     dict.setStringForKey(FTPConnectMode.PASV.toString(), "FTP Connect Mode");

@@ -22,21 +22,23 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.core.ftp.parser.CompositeFileEntryParser;
 import ch.cyberduck.core.ftp.parser.LaxUnixFTPEntryParser;
 import ch.cyberduck.core.ftp.parser.RumpusFTPEntryParser;
-import ch.cyberduck.core.ftps.FTPSClient;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.ssl.SSLSession;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.net.ProtocolCommandEvent;
+import org.apache.commons.net.ProtocolCommandListener;
 import org.apache.commons.net.ftp.Configurable;
+import org.apache.commons.net.ftp.FTPConnectionClosedException;
 import org.apache.commons.net.ftp.FTPFileEntryParser;
+import org.apache.commons.net.ftp.FTPReply;
 import org.apache.commons.net.ftp.parser.NetwareFTPEntryParser;
 import org.apache.commons.net.ftp.parser.ParserInitializationException;
 import org.apache.commons.net.ftp.parser.UnixFTPEntryParser;
 import org.apache.log4j.Logger;
 
-import com.enterprisedt.net.ftp.*;
-
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import java.text.MessageFormat;
 import java.util.*;
 
@@ -59,7 +61,7 @@ public class FTPSession extends SSLSession {
         return new Factory();
     }
 
-    private FTPSClient FTP;
+    private FTPClient FTP;
     protected FTPFileEntryParser parser;
 
     public FTPSession(Host h) {
@@ -67,7 +69,7 @@ public class FTPSession extends SSLSession {
     }
 
     @Override
-    protected FTPSClient getClient() throws ConnectionCanceledException {
+    protected FTPClient getClient() throws ConnectionCanceledException {
         if(null == FTP) {
             throw new ConnectionCanceledException();
         }
@@ -117,12 +119,9 @@ public class FTPSession extends SSLSession {
                 parser = null;
             }
             if(null == parser) {
-                String system = null;
-                try {
-                    system = this.getClient().system();
-                }
-                catch(FTPException e) {
-                    log.warn(this.host.getHostname() + " does not support the SYST command:" + e.getMessage());
+                String system = this.getClient().getSystemType();
+                if(null == system) {
+                    log.warn(this.host.getHostname() + " does not support the SYST command");
                 }
                 parser = new FTPParserFactory().createFileEntryParser(system, tz);
                 if(parser instanceof Configurable) {
@@ -133,7 +132,9 @@ public class FTPSession extends SSLSession {
             return parser;
         }
         catch(ParserInitializationException e) {
-            throw new IOException(e.getMessage());
+            IOException failure = new IOException(e.getMessage());
+            failure.initCause(e);
+            throw failure;
         }
     }
 
@@ -143,54 +144,54 @@ public class FTPSession extends SSLSession {
      * if available. Result is error prone because of additional daylight saving offsets.
      */
     private List<TimeZone> calculateTimezone() throws IOException {
-        try {
-            // Determine the server offset from UTC
-            final AttributedList<Path> list = this.workdir().children();
-            if(list.isEmpty()) {
-                log.warn("Cannot determine timezone with empty directory listing");
-                return Collections.emptyList();
-            }
-            for(Path test : list) {
-                if(test.attributes().isFile()) {
-                    // Read the modify fact which must be UTC
-                    long utc = this.getClient().mdtm(test.getAbsolute());
-                    // Subtract seconds
-                    utc -= utc % 60000;
-                    long local = test.attributes().getModificationDate();
-                    if(-1 == local) {
-                        log.warn("No modification date in directory listing to calculate timezone");
-                        continue;
-                    }
-                    // Subtract seconds
-                    local -= local % 60000;
-                    long offset = local - utc;
-                    log.info("Calculated UTC offset is " + offset + "ms");
-                    final List<TimeZone> zones = new ArrayList<TimeZone>();
-                    if(TimeZone.getTimeZone(Preferences.instance().getProperty("ftp.timezone.default")).getOffset(utc) == offset) {
-                        log.info("Offset equals local timezone offset.");
-                        zones.add(TimeZone.getTimeZone(Preferences.instance().getProperty("ftp.timezone.default")));
-                        return zones;
-                    }
-                    // The offset should be the raw GMT offset without the daylight saving offset.
-                    // However the determied offset *does* include daylight saving time and therefore
-                    // the call to TimeZone#getAvailableIDs leads to errorneous results.
-                    final String[] timezones = TimeZone.getAvailableIDs((int) offset);
-                    for(String timezone : timezones) {
-                        log.info("Matching timezone identifier:" + timezone);
-                        final TimeZone match = TimeZone.getTimeZone(timezone);
-                        log.info("Determined timezone:" + match);
-                        zones.add(match);
-                    }
-                    if(zones.isEmpty()) {
-                        log.warn("Failed to calculate timezone for offset:" + offset);
-                        continue;
-                    }
+        // Determine the server offset from UTC
+        final AttributedList<Path> list = this.workdir().children();
+        if(list.isEmpty()) {
+            log.warn("Cannot determine timezone with empty directory listing");
+            return Collections.emptyList();
+        }
+        for(Path test : list) {
+            if(test.attributes().isFile()) {
+                long local = test.attributes().getModificationDate();
+                if(-1 == local) {
+                    log.warn("No modification date in directory listing to calculate timezone");
+                    continue;
+                }
+                // Subtract seconds
+                local -= local % 60000;
+                // Read the modify fact which must be UTC
+                test.readTimestamp();
+                long utc = test.attributes().getModificationDate();
+                if(-1 == utc) {
+                    log.warn("No UTC support on server");
+                    continue;
+                }
+                // Subtract seconds
+                utc -= utc % 60000;
+                long offset = local - utc;
+                log.info("Calculated UTC offset is " + offset + "ms");
+                final List<TimeZone> zones = new ArrayList<TimeZone>();
+                if(TimeZone.getTimeZone(Preferences.instance().getProperty("ftp.timezone.default")).getOffset(utc) == offset) {
+                    log.info("Offset equals local timezone offset.");
+                    zones.add(TimeZone.getTimeZone(Preferences.instance().getProperty("ftp.timezone.default")));
                     return zones;
                 }
+                // The offset should be the raw GMT offset without the daylight saving offset.
+                // However the determied offset *does* include daylight saving time and therefore
+                // the call to TimeZone#getAvailableIDs leads to errorneous results.
+                final String[] timezones = TimeZone.getAvailableIDs((int) offset);
+                for(String timezone : timezones) {
+                    log.info("Matching timezone identifier:" + timezone);
+                    final TimeZone match = TimeZone.getTimeZone(timezone);
+                    log.info("Determined timezone:" + match);
+                    zones.add(match);
+                }
+                if(zones.isEmpty()) {
+                    log.warn("Failed to calculate timezone for offset:" + offset);
+                    continue;
+                }
+                return zones;
             }
-        }
-        catch(FTPException e) {
-            log.warn("Failed to calculate timezone:" + e.getMessage());
         }
         log.warn("No file in directory listing to calculate timezone");
         return Collections.emptyList();
@@ -232,16 +233,14 @@ public class FTPSession extends SSLSession {
         try {
             if(this.isConnected()) {
                 this.fireConnectionWillCloseEvent();
-                this.getClient().quit();
+                this.getClient().logout();
             }
-        }
-        catch(FTPException e) {
-            log.error("FTP Error: " + e.getMessage());
         }
         catch(IOException e) {
             log.error("IO Error: " + e.getMessage());
         }
         finally {
+            FTP.removeProtocolCommandListener(listener);
             FTP = null;
             this.fireConnectionDidCloseEvent();
         }
@@ -251,12 +250,13 @@ public class FTPSession extends SSLSession {
     public void interrupt() {
         try {
             this.fireConnectionWillCloseEvent();
-            this.getClient().interrupt();
+            this.getClient().disconnect();
         }
         catch(IOException e) {
             log.error(e.getMessage());
         }
         finally {
+            FTP.removeProtocolCommandListener(listener);
             FTP = null;
             this.fireConnectionDidCloseEvent();
         }
@@ -267,40 +267,46 @@ public class FTPSession extends SSLSession {
         try {
             super.check();
         }
-        catch(FTPException e) {
-            log.debug(e.getMessage());
-            this.interrupt();
-            this.connect();
-        }
-        catch(FTPNullReplyException e) {
+        catch(FTPConnectionClosedException e) {
             log.debug(e.getMessage());
             this.interrupt();
             this.connect();
         }
     }
 
-    final protected FTPMessageListener messageListener = new FTPMessageListener() {
-        public void logCommand(String cmd) {
-            FTPSession.this.log(true, cmd);
+    private ProtocolCommandListener listener = new ProtocolCommandListener() {
+        public void protocolCommandSent(ProtocolCommandEvent event) {
+            FTPSession.this.log(true, StringUtils.chomp(event.getMessage()));
         }
 
-        public void logReply(String reply) {
-            FTPSession.this.log(false, reply);
+        public void protocolReplyReceived(ProtocolCommandEvent event) {
+            FTPSession.this.log(false, StringUtils.chomp(event.getMessage()));
         }
     };
 
-    protected void configure(FTPSClient client) throws IOException {
-        client.setTimeout(this.timeout());
-        client.setStatListSupportedEnabled(Preferences.instance().getBoolean("ftp.sendStatListCommand"));
-        client.setExtendedListEnabled(Preferences.instance().getBoolean("ftp.sendExtendedListCommand"));
-        client.setMlsdListSupportedEnabled(Preferences.instance().getBoolean("ftp.sendMlsdListCommand"));
-        client.setStrictReturnCodes(true);
-        client.setConnectMode(this.getConnectMode());
-        client.setSecureDataSocket(host.getProtocol().isSecure()
-                && Preferences.instance().getProperty("ftp.tls.datachannel").equals("P"));
-        client.setTrustManager(host.getProtocol().isSecure() ? this.getTrustManager() : null);
-        // AUTH command required before login
-        auth = true;
+    protected void configure(FTPClient client) throws IOException {
+        client.setControlEncoding(this.getEncoding());
+        client.removeProtocolCommandListener(listener);
+        client.addProtocolCommandListener(listener);
+        client.setConnectTimeout(this.timeout());
+        client.setDefaultPort(Protocol.FTP.getDefaultPort());
+        client.setParserFactory(new FTPParserFactory());
+        client.setDataTimeout(this.timeout());
+        client.setRemoteVerificationEnabled(true);
+        if(this.getConnectMode().equals(FTPConnectMode.PASV)) {
+            client.enterLocalPassiveMode();
+        }
+        if(this.getConnectMode().equals(FTPConnectMode.PORT)) {
+            client.enterLocalActiveMode();
+        }
+        if(this.getHost().getProtocol().isSecure()) {
+            List<String> protocols = new ArrayList<String>();
+            for(String protocol : Preferences.instance().getProperty("connection.ssl.protocols").split(",")) {
+                protocols.add(protocol.trim());
+            }
+            client.setEnabledProtocols(protocols.toArray(new String[protocols.size()]));
+            client.setTrustManager(host.getProtocol().isSecure() ? this.getTrustManager() : null);
+        }
     }
 
     /**
@@ -320,42 +326,49 @@ public class FTPSession extends SSLSession {
         }
         this.fireConnectionWillOpenEvent();
 
-        FTP = new FTPSClient(this.getEncoding(), messageListener);
-
+        try {
+            this.FTP = new FTPClient();
+        }
+        catch(NoSuchAlgorithmException e) {
+            IOException failure = new IOException(e.getMessage());
+            failure.initCause(e);
+            throw failure;
+        }
         this.configure(this.getClient());
-
         this.getClient().connect(host.getHostname(true), host.getPort());
         if(!this.isConnected()) {
             throw new ConnectionCanceledException();
         }
+        // Connect inits defaults
+        this.configure(this.getClient());
         this.login();
+
+        if(this.getHost().getProtocol().isSecure()) {
+            this.getClient().execPBSZ(0);
+            // Negotiate data connection security
+            this.getClient().execPROT(Preferences.instance().getProperty("ftp.tls.datachannel"));
+        }
+
         this.fireConnectionDidOpenEvent();
         if("UTF-8".equals(this.getEncoding())) {
-            this.getClient().utf8();
+            if(this.getClient().isFeatureSupported("UTF8")) {
+                if(!FTPReply.isPositiveCompletion(this.getClient().sendCommand("OPTS UTF8 ON"))) {
+                    log.warn("Failed to negogiate UTF-8 charset:" + this.getClient().getReplyString());
+                }
+            }
         }
     }
 
-    /**
-     * @return The custom encoding specified in the host of this session
-     *         or the default encoding if no cusdtom encoding is set
-     * @see Preferences
-     * @see Host
-     */
     protected FTPConnectMode getConnectMode() {
         if(null == this.host.getFTPConnectMode()) {
             if(ProxyFactory.instance().usePassiveFTP()) {
                 return FTPConnectMode.PASV;
             }
-            return FTPConnectMode.ACTIVE;
+            return FTPConnectMode.PORT;
         }
         return this.host.getFTPConnectMode();
 
     }
-
-    /**
-     * Send TLS AUTH command before user credentials.
-     */
-    private boolean auth;
 
     private boolean unsecureswitch =
             Preferences.instance().getBoolean("connection.unsecure.switch");
@@ -399,6 +412,8 @@ public class FTPSession extends SSLSession {
                 }
                 // Reconfigure client for TLS
                 this.configure(this.getClient());
+                this.getClient().execAUTH();
+                this.getClient().sslNegotiation();
             }
             finally {
                 // Do not warn again upon subsequent login
@@ -412,26 +427,13 @@ public class FTPSession extends SSLSession {
 
     @Override
     protected void login(LoginController controller, Credentials credentials) throws IOException {
-        try {
-            final FTPClient client = this.getClient();
-            if(this.getHost().getProtocol().isSecure()) {
-                if(auth) {
-                    // Only send AUTH before the first login attempt
-                    ((FTPSClient) client).auth();
-                    auth = false;
-                }
-            }
-            client.login(credentials.getUsername(), credentials.getPassword());
+        final FTPClient client = this.getClient();
+        if(client.login(credentials.getUsername(), credentials.getPassword())) {
             this.message(Locale.localizedString("Login successful", "Credentials"));
-
-            if(this.getHost().getProtocol().isSecure()) {
-                // Negotiate data connection security
-                ((FTPSClient) client).prot();
-            }
         }
-        catch(FTPException e) {
+        else {
             this.message(Locale.localizedString("Login failed", "Credentials"));
-            controller.fail(host.getProtocol(), credentials, e.getMessage());
+            controller.fail(host.getProtocol(), credentials, client.getReplyString());
             this.login();
         }
     }
@@ -442,7 +444,7 @@ public class FTPSession extends SSLSession {
             throw new ConnectionCanceledException();
         }
         if(null == workdir) {
-            workdir = PathFactory.createPath(this, this.getClient().pwd(), Path.DIRECTORY_TYPE);
+            workdir = PathFactory.createPath(this, this.getClient().printWorkingDirectory(), Path.DIRECTORY_TYPE);
             if(workdir.isRoot()) {
                 workdir.attributes().setType(Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
             }
@@ -451,34 +453,9 @@ public class FTPSession extends SSLSession {
     }
 
     @Override
-    public void setWorkdir(Path workdir) throws IOException {
-        if(workdir.equals(this.workdir)) {
-            // Do not attempt to change the workdir if the same
-            return;
-        }
-        if(!this.isConnected()) {
-            throw new ConnectionCanceledException();
-        }
-        try {
-            this.getClient().chdir(workdir.getAbsolute());
-        }
-        catch(FTPException e) {
-            if(StringUtils.isNotBlank(workdir.getSymlinkTarget())) {
-                // Try if CWD to symbolic link target succeeds
-                this.getClient().chdir(workdir.getSymlinkTarget());
-            }
-            else {
-                throw e;
-            }
-        }
-        // Workdir change succeeded
-        super.setWorkdir(workdir);
-    }
-
-    @Override
     protected void noop() throws IOException {
         if(this.isConnected()) {
-            this.getClient().noop();
+            this.getClient().sendNoOp();
         }
     }
 
@@ -491,8 +468,7 @@ public class FTPSession extends SSLSession {
     public void sendCommand(String command) throws IOException {
         if(this.isConnected()) {
             this.message(command);
-
-            this.getClient().quote(command);
+            this.getClient().sendSiteCommand(command);
         }
     }
 

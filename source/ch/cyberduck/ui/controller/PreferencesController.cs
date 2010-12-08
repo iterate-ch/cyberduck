@@ -23,7 +23,7 @@ using ch.cyberduck.core.io;
 using ch.cyberduck.core.s3;
 using Ch.Cyberduck.Ui.Winforms;
 using Ch.Cyberduck.Ui.Winforms.Controls;
-using com.enterprisedt.net.ftp;
+using ch.cyberduck.core.ftp;
 using java.util;
 using java.util.regex;
 using org.apache.log4j;

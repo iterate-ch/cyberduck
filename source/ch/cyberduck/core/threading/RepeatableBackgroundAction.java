@@ -25,8 +25,6 @@ import ch.cyberduck.ui.growl.Growl;
 
 import org.apache.log4j.Logger;
 
-import com.enterprisedt.net.ftp.FTPNullReplyException;
-
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
@@ -164,8 +162,7 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
                 // Check for an exception we consider possibly temporary
                 if(cause instanceof SocketException
                         || cause instanceof SocketTimeoutException
-                        || cause instanceof UnknownHostException
-                        || cause instanceof FTPNullReplyException) {
+                        || cause instanceof UnknownHostException) {
                     // The initial connection attempt does not count
                     return repeatAttempts - repeatCount;
                 }

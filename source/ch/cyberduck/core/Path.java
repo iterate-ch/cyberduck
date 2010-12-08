@@ -794,11 +794,9 @@ public abstract class Path extends AbstractPath implements Serializable {
 
             public void bytesReceived(long bytes) {
                 if(-1 == bytes) {
-                    if(updateIcon) {
-                        // Remove custom icon if complete. The Finder will display the default
-                        // icon for this filetype
-                        local.setIcon(-1);
-                    }
+                    // Remove custom icon if complete. The Finder will display the default
+                    // icon for this filetype
+                    local.setIcon(-1);
                 }
                 else {
                     l.bytesReceived(bytes);
