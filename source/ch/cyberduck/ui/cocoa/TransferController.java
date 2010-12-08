@@ -1013,10 +1013,12 @@ public class TransferController extends WindowController implements NSToolbar.De
     public void deleteButtonClicked(final ID sender) {
         NSIndexSet iterator = transferTable.selectedRowIndexes();
         final Collection<Transfer> transfers = transferTableModel.getSource();
+        int i = 0;
         for(NSUInteger index = iterator.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = iterator.indexGreaterThanIndex(index)) {
-            final Transfer transfer = transfers.get(index.intValue());
+            final Transfer transfer = transfers.get(index.intValue() - i);
             if(!transfer.isRunning()) {
                 TransferCollection.defaultCollection().remove(transfer);
+                i++;
             }
         }
         TransferCollection.defaultCollection().save();
