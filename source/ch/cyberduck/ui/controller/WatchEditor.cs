@@ -79,11 +79,6 @@ namespace Ch.Cyberduck.Ui.Controller
             _watcher.EnableRaisingEvents = true;
         }
 
-        private void FileNeedsToBeUpdated()
-        {
-            
-        }
-
         private void HasRenamed(object sender, RenamedEventArgs e)
         {
             Log.debug(String.Format("HasRenamed: from {0} to {1}", e.OldFullPath, e.FullPath));
