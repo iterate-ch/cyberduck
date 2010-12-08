@@ -215,7 +215,7 @@ Section "MainSection" SEC01
 	  File "Bonjour.msi"
   ${EndIf}
   
-  ExecWait "MsiExec.exe /quiet /i $BonjourFilename" $0
+  ExecWait "MsiExec.exe /quiet /norestart /i $BonjourFilename" $0
   ;DetailPrint "Bonjour exit code = $0"
   Delete "$INSTDIR\$BonjourFilename"
      
