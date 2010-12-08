@@ -471,13 +471,19 @@ public class SFTPSession extends Session {
                 this.log(false, line);
             }
             // Here is the output from stderr
+            StringBuilder error = new StringBuilder();
             while(true) {
                 String line = stderrReader.readLine();
                 if(null == line) {
                     break;
                 }
                 this.log(false, line);
+                if(StringUtils.isNotBlank(error.toString())) {
+                    error.append(" ");
+                }
+                error.append(line).append(".");
             }
+            this.error(error.toString(), null);
         }
         finally {
             sess.close();
