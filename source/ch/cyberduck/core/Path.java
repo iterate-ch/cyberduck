@@ -893,6 +893,7 @@ public abstract class Path extends AbstractPath implements Serializable {
             }
         }
         finally {
+            this.setLocal(null);
             local.delete();
         }
     }

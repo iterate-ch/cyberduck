@@ -47,7 +47,13 @@ public abstract class AbstractEditor {
     private String lastchecksum;
 
     public AbstractEditor(Path path) {
-        this.edited = path;
+        // Create a copy of the path as to not interfere with the browser. #5524
+        this.edited = PathFactory.createPath(path.getSession(), path.<String>getAsDictionary());
+        final Local folder = LocalFactory.createLocal(
+                new File(Preferences.instance().getProperty("editor.tmp.directory"),
+                        edited.getHost().getUuid() + String.valueOf(Path.DELIMITER) + edited.getParent().getAbsolute()));
+        final Local local = LocalFactory.createLocal(folder, edited.getName());
+        edited.setLocal(local);
     }
 
     protected void setDeferredDelete(boolean deferredDelete) {
@@ -82,16 +88,10 @@ public abstract class AbstractEditor {
      * Open the file in the parent directory
      */
     public void open() {
-        final Local folder = LocalFactory.createLocal(
-                new File(Preferences.instance().getProperty("editor.tmp.directory"),
-                        edited.getHost().getUuid() + String.valueOf(Path.DELIMITER) + edited.getParent().getAbsolute()));
-        final Local local = LocalFactory.createLocal(folder, edited.getName());
-        edited.setLocal(local);
         BackgroundAction background = new AbstractBackgroundAction() {
             public void run() {
-
                 // Delete any existing file which might be used by a watch editor already
-                local.delete(Preferences.instance().getBoolean("editor.file.trash"));
+                edited.getLocal().delete(Preferences.instance().getBoolean("editor.file.trash"));
                 TransferOptions options = new TransferOptions();
                 options.closeSession = false;
                 Transfer download = new DownloadTransfer(edited) {
