@@ -201,7 +201,7 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             else if (View.SelectedConnectMode.Equals(ConnectmodeActive))
             {
-                _host.setFTPConnectMode(FTPConnectMode.ACTIVE);
+                _host.setFTPConnectMode(FTPConnectMode.PORT);
             }
             else if (View.SelectedConnectMode.Equals(ConnectmodePassive))
             {
@@ -601,7 +601,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     View.SelectedConnectMode = ConnectmodePassive;
                 }
-                else if (_host.getFTPConnectMode().equals(FTPConnectMode.ACTIVE))
+                else if (_host.getFTPConnectMode().equals(FTPConnectMode.PORT))
                 {
                     View.SelectedConnectMode = ConnectmodeActive;
                 }

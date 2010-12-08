@@ -84,7 +84,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     }
                     else if (View.SelectedConnectMode.Equals(ConnectmodeActive))
                     {
-                        host.setFTPConnectMode(FTPConnectMode.ACTIVE);
+                        host.setFTPConnectMode(FTPConnectMode.PORT);
                     }
                     else if (View.SelectedConnectMode.Equals(ConnectmodePassive))
                     {
