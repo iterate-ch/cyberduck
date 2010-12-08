@@ -264,16 +264,12 @@ namespace Ch.Cyberduck.Ui.Controller
                     Icon icon = Icon.ExtractAssociatedIcon(exe);
                     if (null != icon)
                     {
+                        Bitmap res = icon.ToBitmap();
                         if (size == IconSize.Small)
                         {
-                            icon = new Icon(icon, s, s);
+                            res = ResizeImage(res, s);
                         }                        
-                        Bitmap res = icon.ToBitmap();
                         
-                        
-                        res = ResizeImage((Image)res, s);
-
-
                         _bitmapCache.Put(exe, res, s);
                         return res;
                     }                
@@ -459,7 +455,7 @@ namespace Ch.Cyberduck.Ui.Controller
             return ResizeImage(imgToResize, new Size(size, size));
         }
 
-        private static Bitmap ResizeImage(Image imgToResize, Size size)
+        public static Bitmap ResizeImage(Image imgToResize, Size size)
         {
             Bitmap b = new Bitmap(size.Width, size.Height);
             using (Graphics g = Graphics.FromImage(b))

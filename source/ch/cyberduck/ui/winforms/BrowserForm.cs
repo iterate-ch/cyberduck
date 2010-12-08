@@ -116,15 +116,18 @@ namespace Ch.Cyberduck.Ui.Winforms
             bookmarkContextMenu.Popup += delegate { Commands.Validate(); };
             browserContextMenu.Popup += delegate { Commands.Validate(); };
 
-            editorMenuStrip.Opening += OnEditorMenuStripOnOpening;
-
-
-            editToolStripSplitButton.DropDownOpening += OnEditorActionMenuOpening;
-
+            editorMenuStrip.Opening += OnEditorActionMenuOpening;
+            
+            editMainMenuItem.MenuItems.Add(string.Empty);
+            editMainMenuItem.Popup += OnEditMenuItemPopup;            
+            editBrowserContextMenuItem.MenuItems.Add(string.Empty);
+            editBrowserContextMenuItem.Popup += OnEditMenuItemPopup;
 
             // add dummy entry to force the right arrow appearing in the menu
             columnContextMenu.Items.Add(string.Empty);
             archiveMenuStrip.Items.Add(string.Empty);
+
+            archiveMenuStrip.Opening += OnArchiveMenuStripOpening;
             createArchiveMainMenuItem.MenuItems.Add(string.Empty);
             createArchiveMainMenuItem.Popup += OnArchiveMenuItemOnPopup;
             createArchiveBrowserContextMenuItem.MenuItems.Add(string.Empty);
@@ -193,6 +196,46 @@ namespace Ch.Cyberduck.Ui.Winforms
                               BookmarkCollection.defaultCollection().removeListener(bookmarkMenuCollectionListener);
                               HistoryCollection.defaultCollection().removeListener(historyMenuCollectionListener);
                           };
+        }
+
+        private void OnEditMenuItemPopup(object sender, EventArgs e)
+        {
+            MenuItem mainItem = sender as MenuItem;
+            mainItem.MenuItems.Clear();
+
+            //Add default entry
+            {
+                MenuItem item = mainItem.MenuItems.Add(Locale.localizedString("Default"));
+                item.Click += delegate { EditEvent(null); };
+                //todo refactor! no direct IconCache access.
+                vistaMenu1.SetImage(item, IconCache.ResizeImage(editToolStripSplitButton.Image, new Size(16, 16)));
+                SetShortcutText(item, editWithToolStripMenuItem, null);                
+            }
+            IList<KeyValuePair<string, string>> editors = GetEditors();
+            if (editors.Count > 0)
+            {
+                mainItem.MenuItems.Add("-");
+            }
+            foreach (KeyValuePair<string, string> pair in editors)
+            {
+                MenuItem item = mainItem.MenuItems.Add(pair.Key);
+                item.Tag = pair.Value;
+                item.Click += delegate { EditEvent(item.Tag as String); };
+                vistaMenu1.UpdateParent(mainItem);
+                vistaMenu1.SetImage(item, IconCache.Instance.ExtractIconFromExecutable(pair.Value, IconCache.IconSize.Small));
+            }
+        }
+
+        private void OnArchiveMenuStripOpening(object sender, CancelEventArgs e)
+        {
+            archiveMenuStrip.Items.Clear();
+            foreach (string archive in GetArchives())
+            {
+                ToolStripMenuItem item = new ToolStripMenuItem(archive);
+                string archiveName = archive;
+                item.Click += delegate { CreateArchive(this, new CreateArchiveEventArgs(archiveName)); };
+                archiveMenuStrip.Items.Add(item);
+            }
         }
 
         public Image Favicon
@@ -885,10 +928,17 @@ namespace Ch.Cyberduck.Ui.Winforms
             {
                 ToolStripItem item = new ToolStripMenuItem(pair.Key);
                 item.Tag = pair.Value;
-                Console.WriteLine(pair.Value);
                 item.Image = IconCache.Instance.ExtractIconFromExecutable(pair.Value, IconCache.IconSize.Small);
                 item.Click += (o, args) => EditEvent(item.Tag as String);
                 editorMenuStrip.Items.Add(item);
+            }
+            if (editorMenuStrip.Items.Count == 0)
+            {
+                //Add default entry
+                ToolStripItem item = new ToolStripMenuItem(Locale.localizedString("Default"));
+                item.Image = editToolStripSplitButton.Image;
+                item.Click += (o, args) => EditEvent(null);
+                editorMenuStrip.Items.Add(item);                
             }
         }
 
@@ -1553,7 +1603,9 @@ namespace Ch.Cyberduck.Ui.Winforms
                                        String shortCutText)
         {
             toolstripItem.ShortcutKeys = keys;
-            SetShortcutText(menuItem, toolstripItem, shortCutText);
+            if (null != menuItem){
+                SetShortcutText(menuItem, toolstripItem, shortCutText);
+            }
         }
 
         private void ConfigureShortcuts()
@@ -1566,7 +1618,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             ConfigureShortcut(newFolderToolStripMenuItem, newFolderMainMenuItem, Keys.Control | Keys.Shift | Keys.N);
             ConfigureShortcut(newFileToolStripMenuItem, newFileMainMenuItem, Keys.Control | Keys.Shift | Keys.F);
             ConfigureShortcut(duplicateFileToolStripMenuItem, duplicateMainMenuItem, Keys.Control | Keys.D);
-            ConfigureShortcut(editWithToolStripMenuItem, editMainMenuItem, Keys.Control | Keys.K);
+            ConfigureShortcut(editWithToolStripMenuItem, null, Keys.Control | Keys.K);
             ConfigureShortcut(infoToolStripMenuItem, infoMainMenuItem, Keys.Alt | Keys.Enter);
             ConfigureShortcut(downloadToolStripMenuItem, downloadMainMenuItem, Keys.Alt | Keys.Down);
             ConfigureShortcut(downloadAsToolStripMenuItem, downloadAsMainMenuItem, Keys.Alt | Keys.Shift | Keys.Down);
