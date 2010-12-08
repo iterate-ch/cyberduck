@@ -105,6 +105,9 @@ public class TransferTableDataSource extends ListDataSource {
         if(null == filter) {
             return TransferCollection.defaultCollection();
         }
+        if(filter instanceof NullTransferFilter) {
+            return TransferCollection.defaultCollection();
+        }
         Collection<Transfer> filtered = new Collection<Transfer>(TransferCollection.defaultCollection());
         for(Iterator<Transfer> i = filtered.iterator(); i.hasNext();) {
             if(!filter.accept(i.next())) {
