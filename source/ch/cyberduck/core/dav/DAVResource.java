@@ -134,7 +134,7 @@ public class DAVResource extends WebdavResource {
             return method.getResponseBodyAsStream();
         }
         else {
-            throw new IOException("Couldn't get file");
+            throw new IOException(method.getStatusText());
         }
     }
 
