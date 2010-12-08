@@ -549,13 +549,15 @@ public class InfoController extends ToolbarWindowController {
              */
             public NSObject tableView_objectValueForTableColumn_row(NSTableView view, NSTableColumn tableColumn,
                                                                     NSInteger row) {
-                final String identifier = tableColumn.identifier();
-                final Acl.UserAndRole grant = acl.get(row.intValue());
-                if(identifier.equals(HEADER_ACL_GRANTEE_COLUMN)) {
-                    return NSString.stringWithString(grant.getUser().getDisplayName());
-                }
-                if(identifier.equals(HEADER_ACL_PERMISSION_COLUMN)) {
-                    return NSString.stringWithString(grant.getRole().getName());
+                if(row.intValue() < acl.size()) {
+                    final String identifier = tableColumn.identifier();
+                    final Acl.UserAndRole grant = acl.get(row.intValue());
+                    if(identifier.equals(HEADER_ACL_GRANTEE_COLUMN)) {
+                        return NSString.stringWithString(grant.getUser().getDisplayName());
+                    }
+                    if(identifier.equals(HEADER_ACL_PERMISSION_COLUMN)) {
+                        return NSString.stringWithString(grant.getRole().getName());
+                    }
                 }
                 return null;
             }
@@ -563,16 +565,18 @@ public class InfoController extends ToolbarWindowController {
             @Override
             public void tableView_setObjectValue_forTableColumn_row(NSTableView view, NSObject value,
                                                                     NSTableColumn c, NSInteger row) {
-                final Acl.UserAndRole grant = acl.get(row.intValue());
-                if(c.identifier().equals(HEADER_ACL_GRANTEE_COLUMN)) {
-                    grant.getUser().setIdentifier(value.toString());
-                }
-                if(c.identifier().equals(HEADER_ACL_PERMISSION_COLUMN)) {
-                    grant.getRole().setName(value.toString());
-                }
-                if(StringUtils.isNotBlank(grant.getUser().getIdentifier())
-                        && StringUtils.isNotBlank(grant.getRole().getName())) {
-                    InfoController.this.aclInputDidEndEditing();
+                if(row.intValue() < acl.size()) {
+                    final Acl.UserAndRole grant = acl.get(row.intValue());
+                    if(c.identifier().equals(HEADER_ACL_GRANTEE_COLUMN)) {
+                        grant.getUser().setIdentifier(value.toString());
+                    }
+                    if(c.identifier().equals(HEADER_ACL_PERMISSION_COLUMN)) {
+                        grant.getRole().setName(value.toString());
+                    }
+                    if(StringUtils.isNotBlank(grant.getUser().getIdentifier())
+                            && StringUtils.isNotBlank(grant.getRole().getName())) {
+                        InfoController.this.aclInputDidEndEditing();
+                    }
                 }
             }
         }).id());
@@ -810,17 +814,19 @@ public class InfoController extends ToolbarWindowController {
              */
             public NSObject tableView_objectValueForTableColumn_row(NSTableView view, NSTableColumn tableColumn,
                                                                     NSInteger row) {
-                final String identifier = tableColumn.identifier();
-                if(identifier.equals(HEADER_METADATA_NAME_COLUMN)) {
-                    final String name = metadata.get(row.intValue()).getName();
-                    return NSString.stringWithString(StringUtils.isNotEmpty(name) ? name : "");
-                }
-                if(identifier.equals(HEADER_METADATA_VALUE_COLUMN)) {
-                    final String value = metadata.get(row.intValue()).getValue();
-                    if(StringUtils.isEmpty(value)) {
-                        return null;
+                if(row.intValue() < metadata.size()) {
+                    final String identifier = tableColumn.identifier();
+                    if(identifier.equals(HEADER_METADATA_NAME_COLUMN)) {
+                        final String name = metadata.get(row.intValue()).getName();
+                        return NSString.stringWithString(StringUtils.isNotEmpty(name) ? name : "");
                     }
-                    return NSString.stringWithString(StringUtils.isNotEmpty(value) ? value : "");
+                    if(identifier.equals(HEADER_METADATA_VALUE_COLUMN)) {
+                        final String value = metadata.get(row.intValue()).getValue();
+                        if(StringUtils.isEmpty(value)) {
+                            return null;
+                        }
+                        return NSString.stringWithString(StringUtils.isNotEmpty(value) ? value : "");
+                    }
                 }
                 return null;
             }
@@ -828,16 +834,18 @@ public class InfoController extends ToolbarWindowController {
             @Override
             public void tableView_setObjectValue_forTableColumn_row(NSTableView view, NSObject value,
                                                                     NSTableColumn c, NSInteger row) {
-                Header header = metadata.get(row.intValue());
-                if(c.identifier().equals(HEADER_METADATA_NAME_COLUMN)) {
-                    header.setName(value.toString());
-                }
-                if(c.identifier().equals(HEADER_METADATA_VALUE_COLUMN)) {
-                    header.setValue(value.toString());
-                }
-                if(StringUtils.isNotBlank(header.getName()) && StringUtils.isNotBlank(header.getValue())) {
-                    // Only update if both fields are set
-                    metadataInputDidEndEditing();
+                if(row.intValue() < metadata.size()) {
+                    Header header = metadata.get(row.intValue());
+                    if(c.identifier().equals(HEADER_METADATA_NAME_COLUMN)) {
+                        header.setName(value.toString());
+                    }
+                    if(c.identifier().equals(HEADER_METADATA_VALUE_COLUMN)) {
+                        header.setValue(value.toString());
+                    }
+                    if(StringUtils.isNotBlank(header.getName()) && StringUtils.isNotBlank(header.getValue())) {
+                        // Only update if both fields are set
+                        metadataInputDidEndEditing();
+                    }
                 }
             }
         }).id());
