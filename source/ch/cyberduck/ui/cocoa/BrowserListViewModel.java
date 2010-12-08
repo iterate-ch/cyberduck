@@ -75,7 +75,7 @@ public class BrowserListViewModel extends BrowserTableDataSource implements NSTa
             Path destination = controller.workdir();
             if(row.intValue() < this.numberOfRowsInTableView(view).intValue()) {
                 int draggingColumn = view.columnAtPoint(draggingInfo.draggingLocation()).intValue();
-                if(0 == draggingColumn || 1 == draggingColumn) {
+                if(-1 == draggingColumn || 0 == draggingColumn || 1 == draggingColumn) {
                     // Allow drags to icon and filename column
                     if(row.intValue() != -1) {
                         Path p = this.children(this.controller.workdir()).get(row.intValue());

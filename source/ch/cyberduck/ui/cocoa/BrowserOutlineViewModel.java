@@ -147,7 +147,7 @@ public class BrowserOutlineViewModel extends BrowserTableDataSource implements N
         return super.objectValueForItem(controller.lookup(new OutlinePathReference(item)), tableColumn.identifier());
     }
 
-    public NSUInteger outlineView_validateDrop_proposedItem_proposedChildIndex(final NSOutlineView outlineView, final NSDraggingInfo draggingInfo, NSObject item, NSInteger row) {
+    public NSUInteger outlineView_validateDrop_proposedItem_proposedChildIndex(final NSOutlineView view, final NSDraggingInfo draggingInfo, NSObject item, NSInteger row) {
         if(controller.isMounted()) {
             Path destination = null;
             if(null != item) {
@@ -155,34 +155,34 @@ public class BrowserOutlineViewModel extends BrowserTableDataSource implements N
             }
             if(null == destination) {
                 // Dragging over empty rows
-                outlineView.setDropItem(null, NSOutlineView.NSOutlineViewDropOnItemIndex);
-                return super.validateDrop(outlineView, controller.workdir(), row, draggingInfo);
+                view.setDropItem(null, NSOutlineView.NSOutlineViewDropOnItemIndex);
+                return super.validateDrop(view, controller.workdir(), row, draggingInfo);
             }
             else {
                 // Dragging over file or folder
-                final int draggingColumn = outlineView.columnAtPoint(draggingInfo.draggingLocation()).intValue();
-                if(0 == draggingColumn && destination.attributes().isDirectory()) {
-                    // Drop target is directory
-                    outlineView.setDropItem(destination.<NSObject>getReference().unique(), NSOutlineView.NSOutlineViewDropOnItemIndex);
-                    return super.validateDrop(outlineView, destination, row, draggingInfo);
-                }
-                else {
-                    for(Path next : PathPasteboard.getPasteboard(controller.getSession())) {
-                        if(destination.equals(next)) {
-                            // Do not allow dragging onto myself. Fix #4320
-                            return NSDraggingInfo.NSDragOperationNone;
-                        }
+                final int draggingColumn = view.columnAtPoint(draggingInfo.draggingLocation()).intValue();
+                if(-1 == draggingColumn || 0 == draggingColumn) {
+                    if(destination.attributes().isDirectory()) {
+                        // Drop target is directory
+                        view.setDropItem(destination.<NSObject>getReference().unique(), NSOutlineView.NSOutlineViewDropOnItemIndex);
+                        return super.validateDrop(view, destination, row, draggingInfo);
                     }
-                    outlineView.setDropItem(null, NSOutlineView.NSOutlineViewDropOnItemIndex);
-                    return super.validateDrop(outlineView, controller.workdir(), row, draggingInfo);
                 }
+                for(Path next : PathPasteboard.getPasteboard(controller.getSession())) {
+                    if(destination.equals(next)) {
+                        // Do not allow dragging onto myself. Fix #4320
+                        return NSDraggingInfo.NSDragOperationNone;
+                    }
+                }
+                view.setDropItem(null, NSOutlineView.NSOutlineViewDropOnItemIndex);
+                return super.validateDrop(view, controller.workdir(), row, draggingInfo);
             }
         }
         // Passing to super to look for URLs to mount
         if(draggingInfo.draggingPasteboard().availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.URLPboardType)) != null) {
-            outlineView.setDropItem(null, NSOutlineView.NSOutlineViewDropOnItemIndex);
+            view.setDropItem(null, NSOutlineView.NSOutlineViewDropOnItemIndex);
         }
-        return super.validateDrop(outlineView, null, row, draggingInfo);
+        return super.validateDrop(view, null, row, draggingInfo);
     }
 
     public boolean outlineView_acceptDrop_item_childIndex(final NSOutlineView outlineView, final NSDraggingInfo info, NSObject item, NSInteger row) {
