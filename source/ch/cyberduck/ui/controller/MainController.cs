@@ -112,9 +112,9 @@ namespace Ch.Cyberduck.Ui.Controller
                                     {
                                         RendezvousFactory.instance().quit();
                                     }
-                                    catch (COMException)
+                                    catch (SystemException se)
                                     {
-                                        Logger.warn("No Bonjour support available");
+                                        Logger.warn("No Bonjour support available", se);
                                     }
                                 }
                                 Preferences.instance().setProperty("uses", Preferences.instance().getInteger("uses") + 1);
