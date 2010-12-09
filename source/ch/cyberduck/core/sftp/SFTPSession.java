@@ -478,12 +478,15 @@ public class SFTPSession extends Session {
                     break;
                 }
                 this.log(false, line);
+                // Standard error output contains all status messages, not only errors.
                 if(StringUtils.isNotBlank(error.toString())) {
                     error.append(" ");
                 }
                 error.append(line).append(".");
             }
-            this.error(error.toString(), null);
+            if(StringUtils.isNotBlank(error.toString())) {
+                this.error(error.toString(), null);
+            }
         }
         finally {
             sess.close();

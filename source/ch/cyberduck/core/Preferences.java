@@ -682,22 +682,22 @@ public abstract class Preferences {
         /**
          * Archiver
          */
-        defaults.put("archive.command.create.tar", "tar -cvpPf {0}.tar {1}");
-        defaults.put("archive.command.create.tar.gz", "tar -czvpPf {0}.tar.gz {1}");
-        defaults.put("archive.command.create.tar.bz2", "tar -cjvpPf {0}.tar.bz2 {1}");
-        defaults.put("archive.command.create.zip", "zip -rv {0}.zip {1}");
-        defaults.put("archive.command.create.gz", "gzip -rv {1}");
-        defaults.put("archive.command.create.bz2", "bzip2 -zvk {1}");
+        defaults.put("archive.command.create.tar", "tar -cpPf {0}.tar {1}");
+        defaults.put("archive.command.create.tar.gz", "tar -czpPf {0}.tar.gz {1}");
+        defaults.put("archive.command.create.tar.bz2", "tar -cjpPf {0}.tar.bz2 {1}");
+        defaults.put("archive.command.create.zip", "zip -qr {0}.zip {1}");
+        defaults.put("archive.command.create.gz", "gzip -qr {1}");
+        defaults.put("archive.command.create.bz2", "bzip2 -zk {1}");
 
         /**
          * Unarchiver
          */
-        defaults.put("archive.command.expand.tar", "tar -xvpPf {0} -C {1}");
-        defaults.put("archive.command.expand.tar.gz", "tar -xzvpPf {0} -C {1}");
-        defaults.put("archive.command.expand.tar.bz2", "tar -xjvpPf {0} -C {1}");
-        defaults.put("archive.command.expand.zip", "unzip -n {0} -d {1}");
-        defaults.put("archive.command.expand.gz", "gzip -dv {0}");
-        defaults.put("archive.command.expand.bz2", "bzip2 -dvk {0}");
+        defaults.put("archive.command.expand.tar", "tar -xpPf {0} -C {1}");
+        defaults.put("archive.command.expand.tar.gz", "tar -xzpPf {0} -C {1}");
+        defaults.put("archive.command.expand.tar.bz2", "tar -xjpPf {0} -C {1}");
+        defaults.put("archive.command.expand.zip", "unzip -qn {0} -d {1}");
+        defaults.put("archive.command.expand.gz", "gzip -d {0}");
+        defaults.put("archive.command.expand.bz2", "bzip2 -dk {0}");
 
         defaults.put("update.check", String.valueOf(true));
         final int DAY = 60 * 60 * 24;
