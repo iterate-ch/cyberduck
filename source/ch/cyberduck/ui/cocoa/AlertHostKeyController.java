@@ -113,6 +113,7 @@ public class AlertHostKeyController extends MemoryHostKeyVerifier {
                 Locale.localizedString("Deny"), // alternate button
                 isHostKeyDatabaseWritable() ? Locale.localizedString("Always") : null //other button
         );
+        alert.setShowsHelp(true);
         SheetController c = new AlertController(parent, alert) {
             public void callback(final int returncode) {
                 if(returncode == DEFAULT_OPTION) {// allow host (once)
@@ -124,6 +125,13 @@ public class AlertHostKeyController extends MemoryHostKeyVerifier {
                 if(returncode == ALTERNATE_OPTION) {
                     log.warn("Cannot continue without a valid host key");
                 }
+            }
+
+            @Override
+            protected void help() {
+                StringBuilder site = new StringBuilder(Preferences.instance().getProperty("website.help"));
+                site.append("/").append(Protocol.SFTP.getIdentifier());
+                openUrl(site.toString());
             }
         };
         c.beginSheet();

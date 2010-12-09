@@ -212,6 +212,15 @@ public abstract class WindowController extends BundleController implements NSWin
      */
     @Override
     protected int alert(final NSAlert alert) {
+        return this.alert(alert, (String) null);
+    }
+
+    /**
+     * @param alert
+     * @param help
+     * @return
+     */
+    protected int alert(final NSAlert alert, String help) {
         final int[] response = new int[1];
         this.alert(alert, new SheetCallback() {
             public void callback(final int returncode) {
@@ -228,9 +237,28 @@ public abstract class WindowController extends BundleController implements NSWin
      * @param callback
      */
     protected void alert(final NSAlert alert, final SheetCallback callback) {
+        this.alert(alert, callback, null);
+    }
+
+    /**
+     * @param alert
+     * @param callback
+     * @param help
+     */
+    protected void alert(final NSAlert alert, final SheetCallback callback, final String help) {
         SheetController c = new AlertController(this, alert) {
             public void callback(final int returncode) {
                 callback.callback(returncode);
+            }
+
+            @Override
+            protected void help() {
+                if(StringUtils.isBlank(help)) {
+                    super.help();
+                }
+                else {
+                    openUrl(help);
+                }
             }
         };
         c.beginSheet();
@@ -285,7 +313,6 @@ public abstract class WindowController extends BundleController implements NSWin
     }
 
     /**
-     * 
      * @param view
      */
     protected void print(NSView view) {

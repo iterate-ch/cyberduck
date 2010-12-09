@@ -76,10 +76,13 @@ public class PromptLoginController extends AbstractLoginController {
                 null, // Alternate button
                 disconnectButton // Other
         );
+        alert.setShowsHelp(true);
         alert.setShowsSuppressionButton(true);
         alert.suppressionButton().setTitle(Locale.localizedString("Don't show again", "Credentials"));
         alert.setAlertStyle(NSAlert.NSWarningAlertStyle);
-        int option = this.parent.alert(alert);
+        StringBuilder site = new StringBuilder(Preferences.instance().getProperty("website.help"));
+        site.append("/").append(Protocol.FTP.getIdentifier());
+        int option = this.parent.alert(alert, site.toString());
         if(alert.suppressionButton().state() == NSCell.NSOnState) {
             // Never show again.
             Preferences.instance().setProperty(preference, true);

@@ -19,6 +19,7 @@ package ch.cyberduck.ui.cocoa;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Preferences;
 import ch.cyberduck.ui.cocoa.application.NSAlert;
 import ch.cyberduck.ui.cocoa.application.NSView;
 
@@ -80,7 +81,7 @@ public abstract class AlertController extends SheetController {
      * Open help page.
      */
     protected void help() {
-        ;
+        openUrl(Preferences.instance().getProperty("website.help"));
     }
 
     /**
