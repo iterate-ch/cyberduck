@@ -240,7 +240,9 @@ public class FTPSession extends SSLSession {
             log.error("IO Error: " + e.getMessage());
         }
         finally {
-            FTP.removeProtocolCommandListener(listener);
+            if(null != FTP) {
+                FTP.removeProtocolCommandListener(listener);
+            }
             FTP = null;
             this.fireConnectionDidCloseEvent();
         }
@@ -256,7 +258,9 @@ public class FTPSession extends SSLSession {
             log.error(e.getMessage());
         }
         finally {
-            FTP.removeProtocolCommandListener(listener);
+            if(null != FTP) {
+                FTP.removeProtocolCommandListener(listener);
+            }
             FTP = null;
             this.fireConnectionDidCloseEvent();
         }
