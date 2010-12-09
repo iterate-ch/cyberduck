@@ -90,7 +90,9 @@ public abstract class FileController extends SheetController {
     protected Path getWorkdir() {
         if(((BrowserController) parent).getSelectionCount() == 1) {
             final Path selected = ((BrowserController) parent).getSelectedPath();
-            return selected.getParent();
+            if(null != selected) {
+                return selected.getParent();
+            }
         }
         return ((BrowserController) parent).workdir();
     }
