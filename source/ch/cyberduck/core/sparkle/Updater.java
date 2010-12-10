@@ -19,10 +19,16 @@ package ch.cyberduck.core.sparkle;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Preferences;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
 import org.rococoa.ID;
 import org.rococoa.ObjCClass;
+
+import org.apache.log4j.Logger;
+
+import java.net.MalformedURLException;
+import java.net.URL;
 
 /**
  * @version $Id:$
@@ -30,12 +36,25 @@ import org.rococoa.ObjCClass;
 public abstract class Updater extends NSObject {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("SUUpdater", _Class.class);
 
+    private static Logger log = Logger.getLogger(Updater.class);
+
     public static Updater create() {
         return CLASS.alloc().init();
     }
 
     public interface _Class extends ObjCClass {
         Updater alloc();
+    }
+
+    public static URL getFeed() {
+        String feed = Preferences.instance().getDefault("SUFeedURL");
+        try {
+            return new URL(feed);
+        }
+        catch(MalformedURLException e) {
+            log.info("No valid update URL configured:" + feed);
+        }
+        return null;
     }
 
     public abstract Updater init();

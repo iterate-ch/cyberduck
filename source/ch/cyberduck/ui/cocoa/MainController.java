@@ -144,6 +144,7 @@ public class MainController extends BundleController implements NSApplication.De
     public void setApplicationMenu(NSMenu menu) {
         this.applicationMenu = menu;
         this.updateLicenseMenu();
+        this.updateUpdateMenu();
     }
 
     private void updateLicenseMenu() {
@@ -155,6 +156,12 @@ public class MainController extends BundleController implements NSApplication.De
         this.applicationMenu.itemAtIndex(new NSInteger(5)).setAttributedTitle(
                 NSAttributedString.attributedStringWithAttributes(name, KEY_FONT_ATTRIBUTES)
         );
+    }
+
+    private void updateUpdateMenu() {
+        if(null == Updater.getFeed()) {
+            this.applicationMenu.removeItemAtIndex(new NSInteger(1));
+        }
     }
 
     @Outlet

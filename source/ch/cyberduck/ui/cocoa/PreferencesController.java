@@ -22,6 +22,7 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.s3.S3Session;
+import ch.cyberduck.core.sparkle.Updater;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.foundation.*;
 import ch.cyberduck.ui.cocoa.model.FinderLocal;
@@ -146,14 +147,42 @@ public class PreferencesController extends ToolbarWindowController {
 
     @Override
     protected List<NSView> getPanels() {
-        return Arrays.asList(panelGeneral, panelBrowser, panelTransfer, panelEditor, panelFTP, panelSFTP, panelS3,
-                panelGoogle, panelBandwidth, panelAdvanced, panelUpdate, panelLanguage);
+        List<NSView> views = new ArrayList<NSView>();
+        views.add(panelGeneral);
+        views.add(panelBrowser);
+        views.add(panelTransfer);
+        views.add(panelEditor);
+        views.add(panelFTP);
+        views.add(panelSFTP);
+        views.add(panelS3);
+        views.add(panelGoogle);
+        views.add(panelBandwidth);
+        views.add(panelAdvanced);
+        if(null != Updater.getFeed()) {
+            views.add(panelUpdate);
+        }
+        views.add(panelLanguage);
+        return views;
     }
 
     @Override
     protected List<String> getPanelIdentifiers() {
-        return Arrays.asList("general", "browser", "queue", "pencil", "ftp", "sftp", "s3", "google", "bandwidth",
-                "connection", "update", "language");
+        List<String> views = new ArrayList<String>();
+        views.add("general");
+        views.add("browser");
+        views.add("queue");
+        views.add("pencil");
+        views.add("ftp");
+        views.add("sftp");
+        views.add("s3");
+        views.add("google");
+        views.add("bandwidth");
+        views.add("connection");
+        if(null != Updater.getFeed()) {
+            views.add("update");
+        }
+        views.add("language");
+        return views;
     }
 
     @Override
