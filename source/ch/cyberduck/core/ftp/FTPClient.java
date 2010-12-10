@@ -100,13 +100,31 @@ public class FTPClient extends FTPSClient {
         commands.put(MLSD, "MLSD");
     }
 
+    /**
+     * Take MLSD into account
+     *
+     * @param command
+     * @param args
+     * @return
+     * @throws IOException
+     */
     @Override
     public int sendCommand(int command, String args) throws IOException {
+        return super.sendCommand(this.getCommand(command), args);
+    }
+
+    /**
+     * Take MLSD into account
+     *
+     * @param command
+     * @return
+     */
+    protected String getCommand(int command) {
         String value = commands.get(command);
         if(null == value) {
-            return super.sendCommand(command, args);
+            return FTPCommand.getCommand(command);
         }
-        return super.sendCommand(value, args);
+        return value;
     }
 
     /**
@@ -239,7 +257,7 @@ public class FTPClient extends FTPSClient {
      * @throws IOException
      */
     public List<String> list(int command, String pathname) throws IOException {
-        this.pret(FTPCommand.getCommand(command));
+        this.pret(this.getCommand(command));
 
         Socket socket = _openDataConnection_(command, pathname);
         if(null == socket) {
@@ -268,37 +286,37 @@ public class FTPClient extends FTPSClient {
 
     @Override
     public boolean retrieveFile(String remote, OutputStream local) throws IOException {
-        this.pret(FTPCommand.getCommand(FTPCommand.RETR));
+        this.pret(this.getCommand(FTPCommand.RETR));
         return super.retrieveFile(remote, local);
     }
 
     @Override
     public InputStream retrieveFileStream(String remote) throws IOException {
-        this.pret(FTPCommand.getCommand(FTPCommand.RETR));
+        this.pret(this.getCommand(FTPCommand.RETR));
         return super.retrieveFileStream(remote);
     }
 
     @Override
     public boolean storeFile(String remote, InputStream local) throws IOException {
-        this.pret(FTPCommand.getCommand(FTPCommand.STOR));
+        this.pret(this.getCommand(FTPCommand.STOR));
         return super.storeFile(remote, local);
     }
 
     @Override
     public OutputStream storeFileStream(String remote) throws IOException {
-        this.pret(FTPCommand.getCommand(FTPCommand.STOR));
+        this.pret(this.getCommand(FTPCommand.STOR));
         return super.storeFileStream(remote);
     }
 
     @Override
     public boolean appendFile(String remote, InputStream local) throws IOException {
-        this.pret(FTPCommand.getCommand(FTPCommand.APPE));
+        this.pret(this.getCommand(FTPCommand.APPE));
         return super.appendFile(remote, local);
     }
 
     @Override
     public OutputStream appendFileStream(String remote) throws IOException {
-        this.pret(FTPCommand.getCommand(FTPCommand.APPE));
+        this.pret(this.getCommand(FTPCommand.APPE));
         return super.appendFileStream(remote);
     }
 
