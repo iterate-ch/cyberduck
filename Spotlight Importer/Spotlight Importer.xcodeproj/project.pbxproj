@@ -133,7 +133,14 @@
 			isa = PBXProject;
 			buildConfigurationList = 47C421D4085658DB00FDBB79 /* Build configuration list for PBXProject "Spotlight Importer" */;
 			compatibilityVersion = "Xcode 2.4";
+			developmentRegion = English;
 			hasScannedForEncodings = 1;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+			);
 			mainGroup = 089C166AFE841209C02AAC07 /* Cyberduck Spotlight Importer */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -236,7 +243,6 @@
 			buildSettings = {
 				ARCHS = (
 					ppc7400,
-					ppc64,
 					i386,
 					x86_64,
 				);
