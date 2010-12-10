@@ -55,6 +55,9 @@ public abstract class CloudberryBookmarkCollection extends XmlBookmarkCollection
                 else if("S3Settings".equals(type)) {
                     current = new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname(), Protocol.S3_SSL.getDefaultPort());
                 }
+                else if("WalrusSettings".equals(type)) {
+                    current = new Host(Protocol.EUCALYPTUS, Protocol.EUCALYPTUS.getDefaultHostname(), Protocol.EUCALYPTUS.getDefaultPort());
+                }
                 else if("DunkelSettings".equals(type)) {
                     current = new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname(), Protocol.S3_SSL.getDefaultPort());
                 }
@@ -75,6 +78,9 @@ public abstract class CloudberryBookmarkCollection extends XmlBookmarkCollection
 
         @Override
         public void endElement(String name, String elementText) {
+            if(null == current) {
+                return;
+            }
             if(name.equals("ServicePoint")) {
                 current.setHostname(elementText);
             }
