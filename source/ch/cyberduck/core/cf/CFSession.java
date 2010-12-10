@@ -207,6 +207,11 @@ public class CFSession extends CloudHTTP3Session {
     }
 
     @Override
+    public boolean isCDNSupported() {
+        return host.getHostname().equals(Protocol.CLOUDFILES.getDefaultHostname());
+    }
+
+    @Override
     public DistributionConfiguration cdn() {
         if(host.getHostname().equals(Protocol.CLOUDFILES.getDefaultHostname())) {
             if(null == cdn) {
