@@ -633,77 +633,79 @@ public class S3Path extends CloudPath {
     @Override
     public AttributedList<Path> list() {
         final AttributedList<Path> children = new AttributedList<Path>();
-        try {
-            this.getSession().check();
-            this.getSession().message(MessageFormat.format(Locale.localizedString("Listing directory {0}", "Status"),
-                    this.getName()));
+        if(this.attributes().isDirectory()) {
+            try {
+                this.getSession().check();
+                this.getSession().message(MessageFormat.format(Locale.localizedString("Listing directory {0}", "Status"),
+                        this.getName()));
 
-            if(this.isRoot()) {
-                // List all buckets
-                for(S3Bucket bucket : this.getSession().getBuckets(true)) {
-                    Path p = PathFactory.createPath(this.getSession(), this.getAbsolute(), bucket.getName(),
-                            Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
-                    if(null != bucket.getOwner()) {
-                        p.attributes().setOwner(bucket.getOwner().getDisplayName());
-                        p.attributes().setGroup(bucket.getOwner().getId());
-                    }
-                    if(null != bucket.getCreationDate()) {
-                        p.attributes().setCreationDate(bucket.getCreationDate().getTime());
-                    }
-                    children.add(p);
-                }
-            }
-            else {
-                final String container = this.getContainerName();
-                // Keys can be listed by prefix. By choosing a common prefix
-                // for the names of related keys and marking these keys with
-                // a special character that delimits hierarchy, you can use the list
-                // operation to select and browse keys hierarchically
-                String prefix = StringUtils.EMPTY;
-                if(!this.isContainer()) {
-                    // estricts the response to only contain results that begin with the
-                    // specified prefix. If you omit this optional argument, the value
-                    // of Prefix for your query will be the empty string.
-                    // In other words, the results will be not be restricted by prefix.
-                    prefix = this.getKey() + String.valueOf(Path.DELIMITER);
-                }
-                // If this optional, Unicode string parameter is included with your request,
-                // then keys that contain the same string between the prefix and the first
-                // occurrence of the delimiter will be rolled up into a single result
-                // element in the CommonPrefixes collection. These rolled-up keys are
-                // not returned elsewhere in the response.
-                final String delimiter = String.valueOf(Path.DELIMITER);
-                children.addAll(this.listObjects(container, prefix, delimiter));
-                if(Preferences.instance().getBoolean("s3.revisions.enable")) {
-                    if(this.getSession().isVersioning(container)) {
-                        String priorLastKey = null;
-                        String priorLastVersionId = null;
-                        do {
-                            final VersionOrDeleteMarkersChunk chunk = this.getSession().getClient().listVersionedObjectsChunked(
-                                    container, prefix, delimiter,
-                                    Preferences.instance().getInteger("s3.listing.chunksize"),
-                                    priorLastKey, priorLastVersionId, true);
-                            children.addAll(this.listVersions(container, Arrays.asList(chunk.getItems())));
+                if(this.isRoot()) {
+                    // List all buckets
+                    for(S3Bucket bucket : this.getSession().getBuckets(true)) {
+                        Path p = PathFactory.createPath(this.getSession(), this.getAbsolute(), bucket.getName(),
+                                Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
+                        if(null != bucket.getOwner()) {
+                            p.attributes().setOwner(bucket.getOwner().getDisplayName());
+                            p.attributes().setGroup(bucket.getOwner().getId());
                         }
-                        while(priorLastKey != null);
+                        if(null != bucket.getCreationDate()) {
+                            p.attributes().setCreationDate(bucket.getCreationDate().getTime());
+                        }
+                        children.add(p);
                     }
                 }
+                else {
+                    final String container = this.getContainerName();
+                    // Keys can be listed by prefix. By choosing a common prefix
+                    // for the names of related keys and marking these keys with
+                    // a special character that delimits hierarchy, you can use the list
+                    // operation to select and browse keys hierarchically
+                    String prefix = StringUtils.EMPTY;
+                    if(!this.isContainer()) {
+                        // estricts the response to only contain results that begin with the
+                        // specified prefix. If you omit this optional argument, the value
+                        // of Prefix for your query will be the empty string.
+                        // In other words, the results will be not be restricted by prefix.
+                        prefix = this.getKey() + String.valueOf(Path.DELIMITER);
+                    }
+                    // If this optional, Unicode string parameter is included with your request,
+                    // then keys that contain the same string between the prefix and the first
+                    // occurrence of the delimiter will be rolled up into a single result
+                    // element in the CommonPrefixes collection. These rolled-up keys are
+                    // not returned elsewhere in the response.
+                    final String delimiter = String.valueOf(Path.DELIMITER);
+                    children.addAll(this.listObjects(container, prefix, delimiter));
+                    if(Preferences.instance().getBoolean("s3.revisions.enable")) {
+                        if(this.getSession().isVersioning(container)) {
+                            String priorLastKey = null;
+                            String priorLastVersionId = null;
+                            do {
+                                final VersionOrDeleteMarkersChunk chunk = this.getSession().getClient().listVersionedObjectsChunked(
+                                        container, prefix, delimiter,
+                                        Preferences.instance().getInteger("s3.listing.chunksize"),
+                                        priorLastKey, priorLastVersionId, true);
+                                children.addAll(this.listVersions(container, Arrays.asList(chunk.getItems())));
+                            }
+                            while(priorLastKey != null);
+                        }
+                    }
 
+                }
+                this.getSession().setWorkdir(this);
             }
-            this.getSession().setWorkdir(this);
-        }
-        catch(ServiceException e) {
-            log.warn("Listing directory failed:" + e.getMessage());
-            children.attributes().setReadable(false);
-            if(this.cache().isEmpty()) {
-                this.error(e.getMessage(), e);
+            catch(ServiceException e) {
+                log.warn("Listing directory failed:" + e.getMessage());
+                children.attributes().setReadable(false);
+                if(this.cache().isEmpty()) {
+                    this.error(e.getMessage(), e);
+                }
             }
-        }
-        catch(IOException e) {
-            log.warn("Listing directory failed:" + e.getMessage());
-            children.attributes().setReadable(false);
-            if(this.cache().isEmpty()) {
-                this.error(e.getMessage(), e);
+            catch(IOException e) {
+                log.warn("Listing directory failed:" + e.getMessage());
+                children.attributes().setReadable(false);
+                if(this.cache().isEmpty()) {
+                    this.error(e.getMessage(), e);
+                }
             }
         }
         return children;
@@ -1080,10 +1082,10 @@ public class S3Path extends CloudPath {
                 // Moving the object retaining the metadata of the original.
                 this.getSession().getClient().moveObject(this.getContainerName(), this.getKey(), ((S3Path) renamed).getContainerName(),
                         destination, false);
-            // The directory listing of the target is no more current
-            renamed.getParent().invalidate();
-            // The directory listing of the source is no more current
-            this.getParent().invalidate();
+                // The directory listing of the target is no more current
+                renamed.getParent().invalidate();
+                // The directory listing of the source is no more current
+                this.getParent().invalidate();
             }
             if(attributes().isDirectory()) {
                 for(AbstractPath i : this.children()) {

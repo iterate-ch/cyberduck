@@ -20,6 +20,7 @@ package ch.cyberduck.core.dropbox;
  */
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.dropbox.client.ListEntryResponse;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
 
@@ -27,8 +28,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.http.entity.mime.content.InputStreamBody;
 import org.apache.log4j.Logger;
 import org.soyatec.windows.azure.error.StorageException;
-
-import ch.cyberduck.core.dropbox.client.ListEntryResponse;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -104,34 +103,36 @@ public class DropboxPath extends Path {
     @Override
     public AttributedList<Path> list() {
         final AttributedList<Path> children = new AttributedList<Path>();
-        try {
-            this.getSession().check();
-            this.getSession().message(MessageFormat.format(Locale.localizedString("Listing directory {0}", "Status"),
-                    this.getName()));
+        if(this.attributes().isDirectory()) {
+            try {
+                this.getSession().check();
+                this.getSession().message(MessageFormat.format(Locale.localizedString("Listing directory {0}", "Status"),
+                        this.getName()));
 
-            for(ListEntryResponse entry : this.getSession().getClient().list(this.getAbsolute()).getContents()) {
-                final Path file = PathFactory.createPath(this.getSession(), entry.getPath(),
-                        entry.isDirectory() ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
-                file.setParent(this);
-                file.attributes().setSize(entry.getLength());
-                file.attributes().setChecksum(entry.getHash());
-                try {
-                    file.attributes().setModificationDate(SIMPLE_DATE_FORMAT.parse(entry.getModified()).getTime());
+                for(ListEntryResponse entry : this.getSession().getClient().list(this.getAbsolute()).getContents()) {
+                    final Path file = PathFactory.createPath(this.getSession(), entry.getPath(),
+                            entry.isDirectory() ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
+                    file.setParent(this);
+                    file.attributes().setSize(entry.getLength());
+                    file.attributes().setChecksum(entry.getHash());
+                    try {
+                        file.attributes().setModificationDate(SIMPLE_DATE_FORMAT.parse(entry.getModified()).getTime());
+                    }
+                    catch(ParseException e) {
+                        log.warn("Failed parsing modification date:" + e.getMessage());
+                    }
+                    file.attributes().setRevision(entry.getRevision());
+                    file.attributes().setChecksum(entry.getHash());
+                    children.add(file);
                 }
-                catch(ParseException e) {
-                    log.warn("Failed parsing modification date:" + e.getMessage());
-                }
-                file.attributes().setRevision(entry.getRevision());
-                file.attributes().setChecksum(entry.getHash());
-                children.add(file);
+                this.getSession().setWorkdir(this);
             }
-            this.getSession().setWorkdir(this);
-        }
-        catch(IOException e) {
-            log.warn("Listing directory failed:" + e.getMessage());
-            children.attributes().setReadable(false);
-            if(this.cache().isEmpty()) {
-                this.error(e.getMessage(), e);
+            catch(IOException e) {
+                log.warn("Listing directory failed:" + e.getMessage());
+                children.attributes().setReadable(false);
+                if(this.cache().isEmpty()) {
+                    this.error(e.getMessage(), e);
+                }
             }
         }
         return children;
@@ -143,31 +144,35 @@ public class DropboxPath extends Path {
 
     @Override
     public void readSize() {
-        try {
-            this.getSession().check();
-            this.getSession().message(MessageFormat.format(Locale.localizedString("Getting size of {0}", "Status"),
-                    this.getName()));
+        if(this.attributes().isFile()) {
+            try {
+                this.getSession().check();
+                this.getSession().message(MessageFormat.format(Locale.localizedString("Getting size of {0}", "Status"),
+                        this.getName()));
 
-            ListEntryResponse response = this.readMetadata();
-            this.attributes().setSize(response.getLength());
-        }
-        catch(IOException e) {
-            this.error("Cannot read file attributes", e);
+                ListEntryResponse response = this.readMetadata();
+                this.attributes().setSize(response.getLength());
+            }
+            catch(IOException e) {
+                this.error("Cannot read file attributes", e);
+            }
         }
     }
 
     @Override
     public void readChecksum() {
-        try {
-            this.getSession().check();
-            this.getSession().message(MessageFormat.format(Locale.localizedString("Compute MD5 hash of {0}", "Status"),
-                    this.getName()));
+        if(this.attributes().isFile()) {
+            try {
+                this.getSession().check();
+                this.getSession().message(MessageFormat.format(Locale.localizedString("Compute MD5 hash of {0}", "Status"),
+                        this.getName()));
 
-            ListEntryResponse response = this.readMetadata();
-            this.attributes().setChecksum(response.getHash());
-        }
-        catch(IOException e) {
-            this.error("Cannot read file attributes", e);
+                ListEntryResponse response = this.readMetadata();
+                this.attributes().setChecksum(response.getHash());
+            }
+            catch(IOException e) {
+                this.error("Cannot read file attributes", e);
+            }
         }
     }
 

@@ -150,29 +150,29 @@ public class CFPath extends CloudPath {
 
     @Override
     public void readChecksum() {
-        try {
-            this.getSession().check();
-            this.getSession().message(MessageFormat.format(Locale.localizedString("Compute MD5 hash of {0}", "Status"),
-                    this.getName()));
+        if(this.attributes().isFile()) {
+            try {
+                this.getSession().check();
+                this.getSession().message(MessageFormat.format(Locale.localizedString("Compute MD5 hash of {0}", "Status"),
+                        this.getName()));
 
-            if(this.attributes().isFile()) {
                 attributes().setChecksum(
                         this.getSession().getClient().getObjectMetaData(this.getContainerName(), this.getKey()).getETag());
             }
-        }
-        catch(IOException e) {
-            this.error("Cannot read file attributes", e);
+            catch(IOException e) {
+                this.error("Cannot read file attributes", e);
+            }
         }
     }
 
     @Override
     public void readTimestamp() {
-        try {
-            this.getSession().check();
-            this.getSession().message(MessageFormat.format(Locale.localizedString("Getting timestamp of {0}", "Status"),
-                    this.getName()));
+        if(this.attributes().isFile()) {
+            try {
+                this.getSession().check();
+                this.getSession().message(MessageFormat.format(Locale.localizedString("Getting timestamp of {0}", "Status"),
+                        this.getName()));
 
-            if(this.attributes().isFile()) {
                 try {
                     attributes().setModificationDate(
                             ServiceUtils.parseRfc822Date(this.getSession().getClient().getObjectMetaData(this.getContainerName(),
@@ -182,68 +182,69 @@ public class CFPath extends CloudPath {
                 catch(ParseException e) {
                     log.error(e);
                 }
-
             }
-        }
-        catch(IOException e) {
-            this.error("Cannot read file attributes", e);
+            catch(IOException e) {
+                this.error("Cannot read file attributes", e);
+            }
         }
     }
 
     @Override
     public AttributedList<Path> list() {
         final AttributedList<Path> children = new AttributedList<Path>();
-        try {
-            this.getSession().check();
-            this.getSession().message(MessageFormat.format(Locale.localizedString("Listing directory {0}", "Status"),
-                    this.getName()));
+        if(this.attributes().isDirectory()) {
+            try {
+                this.getSession().check();
+                this.getSession().message(MessageFormat.format(Locale.localizedString("Listing directory {0}", "Status"),
+                        this.getName()));
 
-            if(this.isRoot()) {
-                // List all containers
-                for(FilesContainerInfo container : this.getSession().getClient().listContainersInfo()) {
-                    Path p = PathFactory.createPath(this.getSession(), this.getAbsolute(), container.getName(),
-                            Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
-                    p.attributes().setSize(container.getTotalSize());
-                    p.attributes().setOwner(this.getSession().getClient().getUserName());
+                if(this.isRoot()) {
+                    // List all containers
+                    for(FilesContainerInfo container : this.getSession().getClient().listContainersInfo()) {
+                        Path p = PathFactory.createPath(this.getSession(), this.getAbsolute(), container.getName(),
+                                Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
+                        p.attributes().setSize(container.getTotalSize());
+                        p.attributes().setOwner(this.getSession().getClient().getUserName());
 
-                    children.add(p);
+                        children.add(p);
+                    }
+                    this.getSession().cdn().clear();
                 }
-                this.getSession().cdn().clear();
-            }
-            else {
-                for(FilesObject object : this.getSession().getClient().listObjects(this.getContainerName(),
-                        this.isContainer() ? StringUtils.EMPTY : this.getKey(), -1, null)) {
-                    final Path file = PathFactory.createPath(this.getSession(), this.getContainerName(), object.getName(),
-                            "application/directory".equals(object.getMimeType()) ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
-                    file.setParent(this);
-                    if(file.attributes().getType() == Path.FILE_TYPE) {
-                        file.attributes().setSize(object.getSize());
-                        file.attributes().setChecksum(object.getMd5sum());
-                    }
-                    if(file.attributes().getType() == Path.DIRECTORY_TYPE) {
-                        file.attributes().setPlaceholder(true);
-                    }
-                    try {
-                        final Date modified = DateParser.parse(object.getLastModified());
-                        if(null != modified) {
-                            file.attributes().setModificationDate(modified.getTime());
+                else {
+                    for(FilesObject object : this.getSession().getClient().listObjects(this.getContainerName(),
+                            this.isContainer() ? StringUtils.EMPTY : this.getKey(), -1, null)) {
+                        final Path file = PathFactory.createPath(this.getSession(), this.getContainerName(), object.getName(),
+                                "application/directory".equals(object.getMimeType()) ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
+                        file.setParent(this);
+                        if(file.attributes().getType() == Path.FILE_TYPE) {
+                            file.attributes().setSize(object.getSize());
+                            file.attributes().setChecksum(object.getMd5sum());
                         }
-                    }
-                    catch(InvalidDateException e) {
-                        log.warn("Not ISO 8601 format:" + e.getMessage());
-                    }
-                    file.attributes().setOwner(this.attributes().getOwner());
+                        if(file.attributes().getType() == Path.DIRECTORY_TYPE) {
+                            file.attributes().setPlaceholder(true);
+                        }
+                        try {
+                            final Date modified = DateParser.parse(object.getLastModified());
+                            if(null != modified) {
+                                file.attributes().setModificationDate(modified.getTime());
+                            }
+                        }
+                        catch(InvalidDateException e) {
+                            log.warn("Not ISO 8601 format:" + e.getMessage());
+                        }
+                        file.attributes().setOwner(this.attributes().getOwner());
 
-                    children.add(file);
+                        children.add(file);
+                    }
                 }
+                this.getSession().setWorkdir(this);
             }
-            this.getSession().setWorkdir(this);
-        }
-        catch(IOException e) {
-            log.warn("Listing directory failed:" + e.getMessage());
-            children.attributes().setReadable(false);
-            if(this.cache().isEmpty()) {
-                this.error(e.getMessage(), e);
+            catch(IOException e) {
+                log.warn("Listing directory failed:" + e.getMessage());
+                children.attributes().setReadable(false);
+                if(this.cache().isEmpty()) {
+                    this.error(e.getMessage(), e);
+                }
             }
         }
         return children;
@@ -282,8 +283,8 @@ public class CFPath extends CloudPath {
 
     @Override
     protected void upload(final BandwidthThrottle throttle, final StreamListener listener, boolean check) {
-        try {
-            if(attributes().isFile()) {
+        if(attributes().isFile()) {
+            try {
                 if(check) {
                     this.getSession().check();
                 }
@@ -378,9 +379,9 @@ public class CFPath extends CloudPath {
                     }
                 }
             }
-        }
-        catch(IOException e) {
-            this.error("Upload failed", e);
+            catch(IOException e) {
+                this.error("Upload failed", e);
+            }
         }
     }
 
@@ -468,7 +469,7 @@ public class CFPath extends CloudPath {
 
     @Override
     public void writeMetadata(Map<String, String> meta) {
-        if(attributes().isFile()) {
+        if(attributes().isFile() || attributes().isPlaceholder()) {
             try {
                 this.getSession().check();
                 this.getSession().message(MessageFormat.format(Locale.localizedString("Writing metadata of {0}", "Status"),

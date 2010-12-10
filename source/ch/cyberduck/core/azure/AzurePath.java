@@ -123,7 +123,7 @@ public class AzurePath extends CloudPath {
                 }
                 this.attributes().setMetadata(metadata);
             }
-            else {
+            else if(this.attributes().isFile()) {
                 Map<String, String> metadata = new HashMap<String, String>();
                 final IBlobProperties properties = container.getBlobProperties(this.getKey());
                 if(null == properties.getMetadata()) {
@@ -159,7 +159,7 @@ public class AzurePath extends CloudPath {
             if(this.isContainer()) {
                 container.setContainerMetadata(collection);
             }
-            else {
+            else if(this.attributes().isFile()) {
                 BlobProperties properties = new BlobProperties(this.getKey());
                 properties.setMetadata(collection);
                 container.updateBlobMetadata(properties);
@@ -181,16 +181,18 @@ public class AzurePath extends CloudPath {
      */
     @Override
     public void readAcl() {
-        try {
-            IBlobContainer container = this.getSession().getContainer(this.getContainerName());
-            final ContainerAccessControl acl = container.getContainerAccessControl();
-            this.attributes().setAcl(this.convert(acl));
-        }
-        catch(StorageException e) {
-            this.error("Cannot read file attributes", e);
-        }
-        catch(IOException e) {
-            this.error("Cannot read file attributes", e);
+        if(this.isContainer()) {
+            try {
+                IBlobContainer container = this.getSession().getContainer(this.getContainerName());
+                final ContainerAccessControl acl = container.getContainerAccessControl();
+                this.attributes().setAcl(this.convert(acl));
+            }
+            catch(StorageException e) {
+                this.error("Cannot read file attributes", e);
+            }
+            catch(IOException e) {
+                this.error("Cannot read file attributes", e);
+            }
         }
     }
 
@@ -238,8 +240,8 @@ public class AzurePath extends CloudPath {
      */
     @Override
     public void writeAcl(Acl acl, boolean recursive) {
-        try {
-            if(this.isContainer()) {
+        if(this.isContainer()) {
+            try {
                 IBlobContainer container = this.getSession().getContainer(this.getContainerName());
                 final ContainerAccessControl list;
                 if(acl.asList().contains(PUBLIC_ACL)) {
@@ -258,15 +260,15 @@ public class AzurePath extends CloudPath {
                 }
                 container.setContainerAccessControl(list);
             }
-        }
-        catch(StorageException e) {
-            this.error("Cannot change permissions", e);
-        }
-        catch(IOException e) {
-            this.error("Cannot change permissions", e);
-        }
-        finally {
-            this.attributes().clear(false, false, true, false);
+            catch(StorageException e) {
+                this.error("Cannot change permissions", e);
+            }
+            catch(IOException e) {
+                this.error("Cannot change permissions", e);
+            }
+            finally {
+                this.attributes().clear(false, false, true, false);
+            }
         }
     }
 
@@ -301,55 +303,57 @@ public class AzurePath extends CloudPath {
     @Override
     public AttributedList<Path> list() {
         final AttributedList<Path> children = new AttributedList<Path>();
-        try {
-            this.getSession().check();
-            this.getSession().message(MessageFormat.format(Locale.localizedString("Listing directory {0}", "Status"),
-                    this.getName()));
+        if(this.attributes().isDirectory()) {
+            try {
+                this.getSession().check();
+                this.getSession().message(MessageFormat.format(Locale.localizedString("Listing directory {0}", "Status"),
+                        this.getName()));
 
-            if(this.isRoot()) {
-                // List all containers
-                for(IBlobContainer container : this.getSession().getContainers(true)) {
-                    Path p = PathFactory.createPath(this.getSession(), this.getAbsolute(), container.getContainerName(),
-                            Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
-                    p.attributes().setOwner(container.getAccountName());
-                    p.attributes().setModificationDate(container.getLastModifiedTime().getTime());
-                    children.add(p);
-                }
-            }
-            else {
-                IBlobContainer container = this.getSession().getContainer(this.getContainerName());
-                final Iterator<IBlobProperties> blobs = container.listBlobs(this.getKey(), true);
-                while(blobs.hasNext()) {
-                    final IBlobProperties object = blobs.next();
-                    final Path file = PathFactory.createPath(this.getSession(), this.getContainerName(), object.getName(),
-                            "application/directory".equals(object.getContentType()) ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
-                    if(file.getParent().equals(this)) {
-                        file.setParent(this);
-                        file.attributes().setSize(object.getContentLength());
-                        file.attributes().setChecksum(object.getETag());
-                        file.attributes().setModificationDate(object.getLastModifiedTime().getTime());
-                        file.attributes().setOwner(this.attributes().getOwner());
-                        if(file.attributes().getType() == Path.DIRECTORY_TYPE) {
-                            file.attributes().setPlaceholder(true);
-                        }
-                        children.add(file);
+                if(this.isRoot()) {
+                    // List all containers
+                    for(IBlobContainer container : this.getSession().getContainers(true)) {
+                        Path p = PathFactory.createPath(this.getSession(), this.getAbsolute(), container.getContainerName(),
+                                Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
+                        p.attributes().setOwner(container.getAccountName());
+                        p.attributes().setModificationDate(container.getLastModifiedTime().getTime());
+                        children.add(p);
                     }
                 }
+                else {
+                    IBlobContainer container = this.getSession().getContainer(this.getContainerName());
+                    final Iterator<IBlobProperties> blobs = container.listBlobs(this.getKey(), true);
+                    while(blobs.hasNext()) {
+                        final IBlobProperties object = blobs.next();
+                        final Path file = PathFactory.createPath(this.getSession(), this.getContainerName(), object.getName(),
+                                "application/directory".equals(object.getContentType()) ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
+                        if(file.getParent().equals(this)) {
+                            file.setParent(this);
+                            file.attributes().setSize(object.getContentLength());
+                            file.attributes().setChecksum(object.getETag());
+                            file.attributes().setModificationDate(object.getLastModifiedTime().getTime());
+                            file.attributes().setOwner(this.attributes().getOwner());
+                            if(file.attributes().getType() == Path.DIRECTORY_TYPE) {
+                                file.attributes().setPlaceholder(true);
+                            }
+                            children.add(file);
+                        }
+                    }
+                }
+                this.getSession().setWorkdir(this);
             }
-            this.getSession().setWorkdir(this);
-        }
-        catch(StorageException e) {
-            log.warn("Listing directory failed:" + e.getMessage());
-            children.attributes().setReadable(false);
-            if(this.cache().isEmpty()) {
-                this.error(e.getMessage(), e);
+            catch(StorageException e) {
+                log.warn("Listing directory failed:" + e.getMessage());
+                children.attributes().setReadable(false);
+                if(this.cache().isEmpty()) {
+                    this.error(e.getMessage(), e);
+                }
             }
-        }
-        catch(IOException e) {
-            log.warn("Listing directory failed:" + e.getMessage());
-            children.attributes().setReadable(false);
-            if(this.cache().isEmpty()) {
-                this.error(e.getMessage(), e);
+            catch(IOException e) {
+                log.warn("Listing directory failed:" + e.getMessage());
+                children.attributes().setReadable(false);
+                if(this.cache().isEmpty()) {
+                    this.error(e.getMessage(), e);
+                }
             }
         }
         return children;
@@ -357,24 +361,21 @@ public class AzurePath extends CloudPath {
 
     @Override
     public void readSize() {
-        try {
-            this.getSession().check();
-            this.getSession().message(MessageFormat.format(Locale.localizedString("Getting size of {0}", "Status"),
-                    this.getName()));
+        if(this.attributes().isFile()) {
+            try {
+                this.getSession().check();
+                this.getSession().message(MessageFormat.format(Locale.localizedString("Getting size of {0}", "Status"),
+                        this.getName()));
 
-            IBlobContainer container = this.getSession().getContainer(this.getContainerName());
-            if(this.isContainer()) {
-                ;
-            }
-            else if(this.attributes().isFile()) {
+                IBlobContainer container = this.getSession().getContainer(this.getContainerName());
                 attributes().setSize(container.getBlobProperties(this.getKey()).getContentLength());
             }
-        }
-        catch(StorageException e) {
-            this.error("Cannot read file attributes", e);
-        }
-        catch(IOException e) {
-            this.error("Cannot read file attributes", e);
+            catch(StorageException e) {
+                this.error("Cannot read file attributes", e);
+            }
+            catch(IOException e) {
+                this.error("Cannot read file attributes", e);
+            }
         }
     }
 
@@ -403,21 +404,21 @@ public class AzurePath extends CloudPath {
 
     @Override
     public void readChecksum() {
-        try {
-            this.getSession().check();
-            this.getSession().message(MessageFormat.format(Locale.localizedString("Compute MD5 hash of {0}", "Status"),
-                    this.getName()));
+        if(attributes().isFile()) {
+            try {
+                this.getSession().check();
+                this.getSession().message(MessageFormat.format(Locale.localizedString("Compute MD5 hash of {0}", "Status"),
+                        this.getName()));
 
-            IBlobContainer container = this.getSession().getContainer(this.getContainerName());
-            if(this.attributes().isFile()) {
+                IBlobContainer container = this.getSession().getContainer(this.getContainerName());
                 attributes().setChecksum(container.getBlobProperties(this.getKey()).getETag());
             }
-        }
-        catch(StorageException e) {
-            this.error("Cannot read file attributes", e);
-        }
-        catch(IOException e) {
-            this.error("Cannot read file attributes", e);
+            catch(StorageException e) {
+                this.error("Cannot read file attributes", e);
+            }
+            catch(IOException e) {
+                this.error("Cannot read file attributes", e);
+            }
         }
     }
 

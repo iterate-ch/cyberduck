@@ -97,29 +97,31 @@ public class SFTPPath extends Path {
     @Override
     public AttributedList<Path> list() {
         final AttributedList<Path> children = new AttributedList<Path>();
-        try {
-            this.getSession().check();
-            this.getSession().message(MessageFormat.format(Locale.localizedString("Listing directory {0}", "Status"),
-                    this.getName()));
+        if(this.attributes().isDirectory()) {
+            try {
+                this.getSession().check();
+                this.getSession().message(MessageFormat.format(Locale.localizedString("Listing directory {0}", "Status"),
+                        this.getName()));
 
-            for(SFTPv3DirectoryEntry f : (List<SFTPv3DirectoryEntry>) this.getSession().sftp().ls(this.getAbsolute())) {
-                if(f.filename.equals(".") || f.filename.equals("..")) {
-                    continue;
+                for(SFTPv3DirectoryEntry f : (List<SFTPv3DirectoryEntry>) this.getSession().sftp().ls(this.getAbsolute())) {
+                    if(f.filename.equals(".") || f.filename.equals("..")) {
+                        continue;
+                    }
+                    SFTPv3FileAttributes attributes = f.attributes;
+                    SFTPPath p = new SFTPPath(this.getSession(), this.getAbsolute(),
+                            f.filename, attributes.isDirectory() ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
+                    p.setParent(this);
+                    p.readAttributes(attributes);
+                    children.add(p);
                 }
-                SFTPv3FileAttributes attributes = f.attributes;
-                SFTPPath p = new SFTPPath(this.getSession(), this.getAbsolute(),
-                        f.filename, attributes.isDirectory() ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
-                p.setParent(this);
-                p.readAttributes(attributes);
-                children.add(p);
+                this.getSession().setWorkdir(this);
             }
-            this.getSession().setWorkdir(this);
-        }
-        catch(IOException e) {
-            log.warn("Listing directory failed:" + e.getMessage());
-            children.attributes().setReadable(false);
-            if(this.cache().isEmpty()) {
-                this.error(e.getMessage(), e);
+            catch(IOException e) {
+                log.warn("Listing directory failed:" + e.getMessage());
+                children.attributes().setReadable(false);
+                if(this.cache().isEmpty()) {
+                    this.error(e.getMessage(), e);
+                }
             }
         }
         return children;

@@ -97,19 +97,21 @@ public class DAVPath extends Path {
 
     @Override
     public void readSize() {
-        try {
-            this.getSession().check();
-            this.getSession().message(MessageFormat.format(Locale.localizedString("Getting size of {0}", "Status"),
-                    this.getName()));
+        if(this.attributes().isFile()) {
+            try {
+                this.getSession().check();
+                this.getSession().message(MessageFormat.format(Locale.localizedString("Getting size of {0}", "Status"),
+                        this.getName()));
 
-            this.getSession().getClient().setPath(this.attributes().isDirectory() ?
-                    this.getAbsolute() + String.valueOf(Path.DELIMITER) : this.getAbsolute());
+                this.getSession().getClient().setPath(this.attributes().isDirectory() ?
+                        this.getAbsolute() + String.valueOf(Path.DELIMITER) : this.getAbsolute());
 
-            this.getSession().getClient().setProperties(WebdavResource.BASIC, DepthSupport.DEPTH_1);
-            attributes().setSize(this.getSession().getClient().getGetContentLength());
-        }
-        catch(IOException e) {
-            this.error("Cannot read file attributes", e);
+                this.getSession().getClient().setProperties(WebdavResource.BASIC, DepthSupport.DEPTH_1);
+                attributes().setSize(this.getSession().getClient().getGetContentLength());
+            }
+            catch(IOException e) {
+                this.error("Cannot read file attributes", e);
+            }
         }
     }
 
@@ -153,51 +155,53 @@ public class DAVPath extends Path {
     @Override
     public AttributedList<Path> list() {
         final AttributedList<Path> children = new AttributedList<Path>();
-        try {
-            this.getSession().check();
-            this.getSession().message(MessageFormat.format(Locale.localizedString("Listing directory {0}", "Status"),
-                    this.getName()));
+        if(this.attributes().isDirectory()) {
+            try {
+                this.getSession().check();
+                this.getSession().message(MessageFormat.format(Locale.localizedString("Listing directory {0}", "Status"),
+                        this.getName()));
 
-            this.getSession().setWorkdir(this);
-            this.getSession().getClient().setContentType("text/xml");
-            WebdavResource[] resources = this.getSession().getClient().listWebdavResources();
+                this.getSession().setWorkdir(this);
+                this.getSession().getClient().setContentType("text/xml");
+                WebdavResource[] resources = this.getSession().getClient().listWebdavResources();
 
-            for(final WebdavResource resource : resources) {
-                if(null == resource.getResourceType()) {
-                    log.warn("Skipping unknown resource type:" + resource);
-                    continue;
-                }
-                try {
-                    // Try to parse as RFC 2396
-                    URI uri = new URI(new String(resource.getHttpURL().getRawURI()));
-                    Path p = PathFactory.createPath(this.getSession(), uri.getPath(),
-                            resource.getResourceType().isCollection() ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
-                    p.setParent(this);
-                    if(!p.isChild(this)) {
-                        log.warn("Skipping invalid resource:" + resource);
+                for(final WebdavResource resource : resources) {
+                    if(null == resource.getResourceType()) {
+                        log.warn("Skipping unknown resource type:" + resource);
                         continue;
                     }
-                    p.attributes().setOwner(resource.getOwner());
-                    if(resource.getGetLastModified() > 0) {
-                        p.attributes().setModificationDate(resource.getGetLastModified());
-                    }
-                    if(resource.getCreationDate() > 0) {
-                        p.attributes().setCreationDate(resource.getCreationDate());
-                    }
-                    p.attributes().setSize(resource.getGetContentLength());
+                    try {
+                        // Try to parse as RFC 2396
+                        URI uri = new URI(new String(resource.getHttpURL().getRawURI()));
+                        Path p = PathFactory.createPath(this.getSession(), uri.getPath(),
+                                resource.getResourceType().isCollection() ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
+                        p.setParent(this);
+                        if(!p.isChild(this)) {
+                            log.warn("Skipping invalid resource:" + resource);
+                            continue;
+                        }
+                        p.attributes().setOwner(resource.getOwner());
+                        if(resource.getGetLastModified() > 0) {
+                            p.attributes().setModificationDate(resource.getGetLastModified());
+                        }
+                        if(resource.getCreationDate() > 0) {
+                            p.attributes().setCreationDate(resource.getCreationDate());
+                        }
+                        p.attributes().setSize(resource.getGetContentLength());
 
-                    children.add(p);
-                }
-                catch(URISyntaxException e) {
-                    log.error("Failure parsing URI:" + e.getMessage());
+                        children.add(p);
+                    }
+                    catch(URISyntaxException e) {
+                        log.error("Failure parsing URI:" + e.getMessage());
+                    }
                 }
             }
-        }
-        catch(IOException e) {
-            log.warn("Listing directory failed:" + e.getMessage());
-            children.attributes().setReadable(false);
-            if(this.cache().isEmpty()) {
-                this.error(e.getMessage(), e);
+            catch(IOException e) {
+                log.warn("Listing directory failed:" + e.getMessage());
+                children.attributes().setReadable(false);
+                if(this.cache().isEmpty()) {
+                    this.error(e.getMessage(), e);
+                }
             }
         }
         return children;
@@ -329,8 +333,8 @@ public class DAVPath extends Path {
 
     @Override
     protected void upload(final BandwidthThrottle throttle, final StreamListener listener, boolean check) {
-        try {
-            if(attributes().isFile()) {
+        if(attributes().isFile()) {
+            try {
                 if(check) {
                     this.getSession().check();
                 }
@@ -368,9 +372,9 @@ public class DAVPath extends Path {
                     IOUtils.closeQuietly(in);
                 }
             }
-        }
-        catch(IOException e) {
-            this.error("Upload failed", e);
+            catch(IOException e) {
+                this.error("Upload failed", e);
+            }
         }
     }
 

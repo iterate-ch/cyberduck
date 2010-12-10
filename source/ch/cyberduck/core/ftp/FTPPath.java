@@ -127,106 +127,108 @@ public class FTPPath extends Path {
     @Override
     public AttributedList<Path> list() {
         final AttributedList<Path> children = new AttributedList<Path>();
-        try {
-            this.getSession().check();
-            this.getSession().message(MessageFormat.format(Locale.localizedString("Listing directory {0}", "Status"),
-                    this.getName()));
-
-            // Cached file parser determined from SYST response with the timezone set from the bookmark
-            final FTPFileEntryParser parser = this.getSession().getFileParser();
-            boolean success = false;
+        if(this.attributes().isDirectory()) {
             try {
-                if(statListSupportedEnabled) {
-                    int response = this.getSession().getClient().stat(this.getAbsolute());
-                    if(FTPReply.isPositiveCompletion(response)) {
-                        String[] reply = this.getSession().getClient().getReplyStrings();
-                        final List<String> result = new ArrayList<String>(reply.length);
-                        for(final String line : reply) {
-                            //Some servers include the status code for every line.
-                            if(line.startsWith(String.valueOf(response))) {
-                                try {
-                                    result.add(line.substring(line.indexOf(response) + line.length() + 1).trim());
-                                }
-                                catch(IndexOutOfBoundsException e) {
-                                    log.error("Failed parsing line '" + line + "':" + e.getMessage());
-                                }
-                            }
-                            else {
-                                result.add(StringUtils.stripStart(line, null));
-                            }
-                        }
-                        success = this.parse(children, parser, result);
-                    }
-                    else {
-                        statListSupportedEnabled = false;
-                    }
-                }
-            }
-            catch(IOException e) {
-                log.warn("Command STAT failed with I/O error:" + e.getMessage());
-                this.getSession().interrupt();
                 this.getSession().check();
-            }
-            if(!success || children.isEmpty()) {
-                // Set transfer type for traditional data socket file listings
-                this.getSession().getClient().setFileType(FTP.ASCII_FILE_TYPE);
-                // STAT listing failed or empty
-                if(mlsdListSupportedEnabled) {
-                    success = this.parse(children, this.getSession().getClient().list(FTPClient.MLSD, this.getAbsolute()));
-                    if(!success) {
-                        mlsdListSupportedEnabled = false;
+                this.getSession().message(MessageFormat.format(Locale.localizedString("Listing directory {0}", "Status"),
+                        this.getName()));
+
+                // Cached file parser determined from SYST response with the timezone set from the bookmark
+                final FTPFileEntryParser parser = this.getSession().getFileParser();
+                boolean success = false;
+                try {
+                    if(statListSupportedEnabled) {
+                        int response = this.getSession().getClient().stat(this.getAbsolute());
+                        if(FTPReply.isPositiveCompletion(response)) {
+                            String[] reply = this.getSession().getClient().getReplyStrings();
+                            final List<String> result = new ArrayList<String>(reply.length);
+                            for(final String line : reply) {
+                                //Some servers include the status code for every line.
+                                if(line.startsWith(String.valueOf(response))) {
+                                    try {
+                                        result.add(line.substring(line.indexOf(response) + line.length() + 1).trim());
+                                    }
+                                    catch(IndexOutOfBoundsException e) {
+                                        log.error("Failed parsing line '" + line + "':" + e.getMessage());
+                                    }
+                                }
+                                else {
+                                    result.add(StringUtils.stripStart(line, null));
+                                }
+                            }
+                            success = this.parse(children, parser, result);
+                        }
+                        else {
+                            statListSupportedEnabled = false;
+                        }
                     }
                 }
-                if(!success) {
-                    // MLSD listing failed
-                    if(extendedListEnabled) {
-                        StringBuilder sb = new StringBuilder();
-                        sb.append("-a ");
-                        sb.append(this.getAbsolute());
-                        success = this.parse(children, parser, this.getSession().getClient().list(FTPCommand.LIST, sb.toString()));
+                catch(IOException e) {
+                    log.warn("Command STAT failed with I/O error:" + e.getMessage());
+                    this.getSession().interrupt();
+                    this.getSession().check();
+                }
+                if(!success || children.isEmpty()) {
+                    // Set transfer type for traditional data socket file listings
+                    this.getSession().getClient().setFileType(FTP.ASCII_FILE_TYPE);
+                    // STAT listing failed or empty
+                    if(mlsdListSupportedEnabled) {
+                        success = this.parse(children, this.getSession().getClient().list(FTPClient.MLSD, this.getAbsolute()));
+                        if(!success) {
+                            mlsdListSupportedEnabled = false;
+                        }
                     }
                     if(!success) {
-                        // LIST -a listing failed
-                        extendedListEnabled = false;
-                        success = this.parse(children, parser, this.getSession().getClient().list(FTPCommand.LIST, this.getAbsolute()));
+                        // MLSD listing failed
+                        if(extendedListEnabled) {
+                            StringBuilder sb = new StringBuilder();
+                            sb.append("-a ");
+                            sb.append(this.getAbsolute());
+                            success = this.parse(children, parser, this.getSession().getClient().list(FTPCommand.LIST, sb.toString()));
+                        }
+                        if(!success) {
+                            // LIST -a listing failed
+                            extendedListEnabled = false;
+                            success = this.parse(children, parser, this.getSession().getClient().list(FTPCommand.LIST, this.getAbsolute()));
+                        }
                     }
                 }
-            }
-            for(Path child : children) {
-                if(child.attributes().getType() == Path.SYMBOLIC_LINK_TYPE) {
-                    if(this.getSession().getClient().changeWorkingDirectory(child.getAbsolute())) {
-                        child.attributes().setType(Path.SYMBOLIC_LINK_TYPE | Path.DIRECTORY_TYPE);
-                    }
-                    else {
-                        if(StringUtils.isNotBlank(child.getSymlinkTarget())) {
-                            // Try if CWD to symbolic link target succeeds
-                            if(this.getSession().getClient().changeWorkingDirectory(child.getSymlinkTarget())) {
-                                // Workdir change succeeded
-                                child.attributes().setType(Path.SYMBOLIC_LINK_TYPE | Path.DIRECTORY_TYPE);
+                for(Path child : children) {
+                    if(child.attributes().getType() == Path.SYMBOLIC_LINK_TYPE) {
+                        if(this.getSession().getClient().changeWorkingDirectory(child.getAbsolute())) {
+                            child.attributes().setType(Path.SYMBOLIC_LINK_TYPE | Path.DIRECTORY_TYPE);
+                        }
+                        else {
+                            if(StringUtils.isNotBlank(child.getSymlinkTarget())) {
+                                // Try if CWD to symbolic link target succeeds
+                                if(this.getSession().getClient().changeWorkingDirectory(child.getSymlinkTarget())) {
+                                    // Workdir change succeeded
+                                    child.attributes().setType(Path.SYMBOLIC_LINK_TYPE | Path.DIRECTORY_TYPE);
+                                }
+                                else {
+                                    child.attributes().setType(Path.SYMBOLIC_LINK_TYPE | Path.FILE_TYPE);
+                                }
                             }
                             else {
                                 child.attributes().setType(Path.SYMBOLIC_LINK_TYPE | Path.FILE_TYPE);
                             }
                         }
-                        else {
-                            child.attributes().setType(Path.SYMBOLIC_LINK_TYPE | Path.FILE_TYPE);
-                        }
                     }
                 }
+                if(success) {
+                    this.getSession().setWorkdir(this);
+                }
+                else {
+                    // LIST listing failed
+                    log.error("No compatible file listing method found");
+                }
             }
-            if(success) {
-                this.getSession().setWorkdir(this);
-            }
-            else {
-                // LIST listing failed
-                log.error("No compatible file listing method found");
-            }
-        }
-        catch(IOException e) {
-            log.warn("Listing directory failed:" + e.getMessage());
-            children.attributes().setReadable(false);
-            if(this.cache().isEmpty()) {
-                this.error(e.getMessage(), e);
+            catch(IOException e) {
+                log.warn("Listing directory failed:" + e.getMessage());
+                children.attributes().setReadable(false);
+                if(this.cache().isEmpty()) {
+                    this.error(e.getMessage(), e);
+                }
             }
         }
         return children;
