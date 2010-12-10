@@ -506,25 +506,25 @@ public class FTPPath extends Path {
 
     @Override
     public void readSize() {
-        try {
-            this.getSession().check();
-            this.getSession().message(MessageFormat.format(Locale.localizedString("Getting size of {0}", "Status"),
-                    this.getName()));
+        if(this.attributes().isFile()) {
+            try {
+                this.getSession().check();
+                this.getSession().message(MessageFormat.format(Locale.localizedString("Getting size of {0}", "Status"),
+                        this.getName()));
 
-            if(attributes().isFile()) {
                 this.getSession().getClient().setFileType(FTP.BINARY_FILE_TYPE);
                 this.attributes().setSize(this.getSession().getClient().getSize(this.getAbsolute()));
-            }
-            if(-1 == attributes().getSize()) {
-                // Read the size from the directory listing
-                final AttributedList<AbstractPath> l = this.getParent().children();
-                if(l.contains(this.getReference())) {
-                    attributes().setSize(l.get(this.getReference()).attributes().getSize());
+                if(-1 == attributes().getSize()) {
+                    // Read the size from the directory listing
+                    final AttributedList<AbstractPath> l = this.getParent().children();
+                    if(l.contains(this.getReference())) {
+                        attributes().setSize(l.get(this.getReference()).attributes().getSize());
+                    }
                 }
             }
-        }
-        catch(IOException e) {
-            this.error("Cannot read file attributes", e);
+            catch(IOException e) {
+                this.error("Cannot read file attributes", e);
+            }
         }
     }
 
@@ -553,29 +553,29 @@ public class FTPPath extends Path {
 
     @Override
     public void readTimestamp() {
-        try {
-            this.getSession().check();
-            this.getSession().message(MessageFormat.format(Locale.localizedString("Getting timestamp of {0}", "Status"),
-                    this.getName()));
+        if(this.attributes().isFile()) {
+            try {
+                this.getSession().check();
+                this.getSession().message(MessageFormat.format(Locale.localizedString("Getting timestamp of {0}", "Status"),
+                        this.getName()));
 
-            if(attributes().isFile()) {
                 // The "pathname" specifies an object in the NVFS which may be the object of a RETR command.
                 // Attempts to query the modification time of files that exist but are unable to be
                 // retrieved may generate an error-response
                 attributes().setModificationDate(
                         this.parseTimestamp(this.getSession().getClient().getModificationTime(this.getAbsolute())));
-            }
-            if(-1 == attributes().getModificationDate()) {
-                // Read the timestamp from the directory listing
-                final AttributedList<AbstractPath> l = this.getParent().children();
-                if(l.contains(this.getReference())) {
-                    attributes().setModificationDate(l.get(this.getReference()).attributes().getModificationDate());
+                if(-1 == attributes().getModificationDate()) {
+                    // Read the timestamp from the directory listing
+                    final AttributedList<AbstractPath> l = this.getParent().children();
+                    if(l.contains(this.getReference())) {
+                        attributes().setModificationDate(l.get(this.getReference()).attributes().getModificationDate());
+                    }
                 }
             }
-        }
-        catch(IOException e) {
-            this.error("Cannot read file attributes", e);
+            catch(IOException e) {
+                this.error("Cannot read file attributes", e);
 
+            }
         }
     }
 
@@ -809,8 +809,8 @@ public class FTPPath extends Path {
 
     @Override
     protected void download(final BandwidthThrottle throttle, final StreamListener listener, final boolean check) {
-        try {
-            if(attributes().isFile()) {
+        if(this.attributes().isFile()) {
+            try {
                 if(check) {
                     this.getSession().check();
                 }
@@ -861,16 +861,16 @@ public class FTPPath extends Path {
                     IOUtils.closeQuietly(out);
                 }
             }
-        }
-        catch(IOException e) {
-            this.error("Download failed", e);
+            catch(IOException e) {
+                this.error("Download failed", e);
+            }
         }
     }
 
     @Override
     protected void upload(BandwidthThrottle throttle, StreamListener listener, boolean check) {
-        try {
-            if(attributes().isFile()) {
+        if(this.attributes().isFile()) {
+            try {
                 if(check) {
                     this.getSession().check();
                 }
@@ -916,9 +916,9 @@ public class FTPPath extends Path {
                     IOUtils.closeQuietly(out);
                 }
             }
-        }
-        catch(IOException e) {
-            this.error("Upload failed", e);
+            catch(IOException e) {
+                this.error("Upload failed", e);
+            }
         }
     }
 }

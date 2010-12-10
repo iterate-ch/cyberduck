@@ -254,15 +254,17 @@ public class SFTPPath extends Path {
 
     @Override
     public void readSize() {
-        try {
-            this.getSession().check();
-            this.getSession().message(MessageFormat.format(Locale.localizedString("Getting size of {0}", "Status"),
-                    this.getName()));
+        if(this.attributes().isFile()) {
+            try {
+                this.getSession().check();
+                this.getSession().message(MessageFormat.format(Locale.localizedString("Getting size of {0}", "Status"),
+                        this.getName()));
 
-            this.readAttributes();
-        }
-        catch(IOException e) {
-            this.error("Cannot read file attributes", e);
+                this.readAttributes();
+            }
+            catch(IOException e) {
+                this.error("Cannot read file attributes", e);
+            }
         }
     }
 
@@ -417,13 +419,13 @@ public class SFTPPath extends Path {
 
     @Override
     protected void download(BandwidthThrottle throttle, StreamListener listener, final boolean check) {
-        InputStream in = null;
-        OutputStream out = null;
-        try {
-            if(check) {
-                this.getSession().check();
-            }
-            if(attributes().isFile()) {
+        if(this.attributes().isFile()) {
+            InputStream in = null;
+            OutputStream out = null;
+            try {
+                if(check) {
+                    this.getSession().check();
+                }
                 if(Preferences.instance().getProperty("ssh.transfer").equals(Protocol.SFTP.getIdentifier())) {
                     SFTPv3FileHandle handle = this.getSession().sftp().openFileRO(this.getAbsolute());
                     in = new SFTPInputStream(handle);
@@ -447,23 +449,23 @@ public class SFTPPath extends Path {
                 );
                 this.download(in, out, throttle, listener);
             }
-        }
-        catch(IOException e) {
-            this.error("Download failed", e);
-        }
-        finally {
-            IOUtils.closeQuietly(in);
-            IOUtils.closeQuietly(out);
+            catch(IOException e) {
+                this.error("Download failed", e);
+            }
+            finally {
+                IOUtils.closeQuietly(in);
+                IOUtils.closeQuietly(out);
+            }
         }
     }
 
     @Override
     protected void upload(BandwidthThrottle throttle, StreamListener listener, final boolean check) {
-        InputStream in = null;
-        OutputStream out = null;
-        SFTPv3FileHandle handle = null;
-        try {
-            if(attributes().isFile()) {
+        if(this.attributes().isFile()) {
+            InputStream in = null;
+            OutputStream out = null;
+            SFTPv3FileHandle handle = null;
+            try {
                 if(check) {
                     this.getSession().check();
                 }
@@ -528,20 +530,20 @@ public class SFTPPath extends Path {
                 );
                 this.upload(out, in, throttle, listener);
             }
-        }
-        catch(IOException e) {
-            this.error("Upload failed", e);
-        }
-        finally {
-            try {
-                if(handle != null) {
-                    this.getSession().sftp().closeFile(handle);
-                }
-                IOUtils.closeQuietly(in);
-                IOUtils.closeQuietly(out);
-            }
             catch(IOException e) {
-                log.error(e.getMessage());
+                this.error("Upload failed", e);
+            }
+            finally {
+                try {
+                    if(handle != null) {
+                        this.getSession().sftp().closeFile(handle);
+                    }
+                    IOUtils.closeQuietly(in);
+                    IOUtils.closeQuietly(out);
+                }
+                catch(IOException e) {
+                    log.error(e.getMessage());
+                }
             }
         }
     }
