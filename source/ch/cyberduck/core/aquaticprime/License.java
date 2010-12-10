@@ -40,4 +40,9 @@ public interface License {
      * @return Email address if name is not known.
      */
     String getName();
+
+    /**
+     * @return
+     */
+    boolean isReceipt();
 }

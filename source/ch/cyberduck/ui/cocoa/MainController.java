@@ -147,8 +147,12 @@ public class MainController extends BundleController implements NSApplication.De
         this.updateUpdateMenu();
     }
 
+    /**
+     * Set name of key in menu item
+     */
     private void updateLicenseMenu() {
-        String name = LicenseFactory.find().toString();
+        License key = LicenseFactory.find();
+        String name = key.toString();
         NSDictionary KEY_FONT_ATTRIBUTES = NSDictionary.dictionaryWithObjectsForKeys(
                 NSArray.arrayWithObjects(NSFont.userFontOfSize(NSFont.smallSystemFontSize()), NSColor.darkGrayColor()),
                 NSArray.arrayWithObjects(NSAttributedString.FontAttributeName, NSAttributedString.ForegroundColorAttributeName)
@@ -156,8 +160,14 @@ public class MainController extends BundleController implements NSApplication.De
         this.applicationMenu.itemAtIndex(new NSInteger(5)).setAttributedTitle(
                 NSAttributedString.attributedStringWithAttributes(name, KEY_FONT_ATTRIBUTES)
         );
+        if(key.isReceipt()) {
+            this.applicationMenu.removeItemAtIndex(new NSInteger(4));
+        }
     }
 
+    /**
+     * Remove software update menu item if no update feed available
+     */
     private void updateUpdateMenu() {
         if(null == Updater.getFeed()) {
             this.applicationMenu.removeItemAtIndex(new NSInteger(1));

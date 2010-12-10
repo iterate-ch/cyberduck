@@ -26,16 +26,25 @@
     <property name="jdk.home" value="${user.home}/bin/1.5.0"/>
     <!--<property name="jdk.home" value="/System/Library/Frameworks/JavaVM.framework/Versions/1.5"/>-->
 
-    <property name="build.deploy" value="${build}/${configuration}"/>
+    <property name="build.deploy" location="${build}/${configuration}"/>
     <property name="app.bundle" value="${build.deploy}/${app.name}.app"/>
     <property name="app.contents" value="${app.bundle}/Contents"/>
     <property name="app.macos" location="${app.contents}/MacOS"/>
+    <property name="app.executable" location="${app.macos}/${ant.project.name}"/>
     <property name="app.library" value="${app.contents}/Library"/>
     <property name="app.resources" value="${app.contents}/Resources"/>
     <property name="app.java" value="${app.resources}/Java"/>
     <property name="app.spotlight" value="${app.library}/Spotlight"/>
+    <property name="app.spotlight.executable"
+              value="${app.spotlight}/Cyberduck Spotlight Importer.mdimporter/Contents/MacOS/Cyberduck Spotlight Importer"/>
     <property name="apple.appstub"
               location="/System/Library/Frameworks/JavaVM.framework/Resources/MacOS/JavaApplicationStub"/>
+
+    <property name="codesign.certificate" value="Cyberduck Code Signing Certificate"/>
+    <property name="codesign.keychain" value="${user.home}/Library/Keychains/codesign.keychain"/>
+
+    <property name="installer.certificate" value="3rd Party Mac Developer Application: David Kocher"/>
+    <property name="installer.keychain" value="${user.home}/Library/Keychains/codesign.keychain"/>
 
     <property name="spotlight" value="${home}/Spotlight Importer"/>
     <property name="build.spotlight" value="${spotlight}/build/${configuration}"/>
@@ -135,7 +144,7 @@
     <target name="codesign">
         <echo message="Code signing application bundle..."/>
         <exec dir="${home}" executable="/usr/bin/codesign" spawn="false">
-            <arg line="--force --sign 'Cyberduck Code Signing Certificate' --keychain ${user.home}/Library/Keychains/codesign.keychain -v ${app.bundle}"/>
+            <arg line="--force --sign '${codesign.certificate}' --keychain ${codesign.keychain} -v ${app.bundle}"/>
         </exec>
     </target>
 
@@ -152,7 +161,7 @@
     <target name="stub">
         <echo message="Using stub: ${apple.appstub}"/>
         <!-- copy application stub -->
-        <copy file="${apple.appstub}" toFile="${app.macos}/${ant.project.name}" overwrite="true"/>
+        <copy file="${apple.appstub}" toFile="${app.executable}" overwrite="true"/>
         <!-- fix stub permissions -->
         <chmod perm="755" type="file">
             <fileset dir="${app.macos}">
@@ -262,6 +271,30 @@
         </antcall>
         <!-- Releases include ZIP -->
         <antcall target="zip"/>
+    </target>
+
+    <target name="package-appstore" depends="clean, revision">
+        <antcall target="package">
+            <param name="url.archive" value="/dev/null"/>
+            <param name="url.changelog" value="/dev/null"/>
+            <param name="sparkle.feed" value="/dev/null"/>
+        </antcall>
+        <echo message="Remove PPC slice from ${app.executable}"/>
+        <exec dir="${home}" executable="/usr/bin/lipo" spawn="false" failonerror="false">
+            <arg line="-remove ppc7400 -output ${app.executable} ${app.executable}"/>
+        </exec>
+        <echo message="Remove PPC slice from ${app.spotlight.executable}"/>
+        <exec dir="${home}" executable="/usr/bin/lipo" spawn="false" failonerror="false">
+            <arg line="-remove ppc7400 -output '${app.spotlight.executable}' '${app.spotlight.executable}'"/>
+        </exec>
+        <antcall target="codesign"/>
+        <echo message="Building ${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.pkg"/>
+        <property name="build.absolute" location="${build}"/>
+        <exec dir="${build.deploy}" executable="/usr/bin/productbuild" spawn="false" failonerror="true">
+            <arg line="--component ${app.bundle} /Applications --version ${cyberduck.version.major}.${cyberduck.version.minor} --sign '${installer.certificate}' --keychain ${installer.keychain} ${build.absolute}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.pkg"/>
+        </exec>
+        <checksum file="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.pkg"
+                  algorithm="md5"/>
     </target>
 
     <target name="package-beta" depends="clean, revision">

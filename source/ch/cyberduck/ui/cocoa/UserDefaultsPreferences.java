@@ -160,6 +160,8 @@ public class UserDefaultsPreferences extends Preferences {
         defaults.put("application.version",
                 NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleShortVersionString").toString());
 
+        defaults.put("application.receipt.path", NSBundle.mainBundle().bundlePath() + "/Contents/_MASReceipt");
+
         defaults.put("update.feed.release", "http://version.cyberduck.ch/changelog.rss");
         defaults.put("update.feed.beta", "http://version.cyberduck.ch/beta/changelog.rss");
         defaults.put("update.feed.nightly", "http://version.cyberduck.ch/nightly/changelog.rss");

@@ -20,8 +20,16 @@ package ch.cyberduck.core.aquaticprime;
 
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Native;
+import ch.cyberduck.core.Preferences;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.bouncycastle.jce.PKCS7SignedData;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+
+import java.io.FileInputStream;
+import java.security.Security;
 
 /**
  * @version $Id$
@@ -35,8 +43,55 @@ public class NativeLicense extends AbstractLicense {
 
     private static class Factory extends LicenseFactory {
         @Override
-        protected License open(Local file) {
-            return new NativeLicense(file);
+        protected License open(final Local file) {
+            if(file.getName().endsWith(".cyberducklicense")) {
+                return new NativeLicense(file);
+            }
+            AbstractLicense l = new AbstractLicense(file) {
+                private static final int APPSTORE_VALIDATION_FAILURE = 173;
+
+                /**
+                 * Verifies the App Store Receipt
+                 * @return
+                 */
+                public boolean verify() {
+                    try {
+                        Security.addProvider(new BouncyCastleProvider());
+                        PKCS7SignedData signature = new PKCS7SignedData(IOUtils.toByteArray(new FileInputStream(
+                                file.getAbsolute()
+                        )));
+                        signature.verify();
+                        return true;
+                    }
+                    catch(Throwable e) {
+                        log.error(e.getMessage());
+                        // Shutdown if receipt is not valid
+                        System.exit(APPSTORE_VALIDATION_FAILURE);
+                    }
+                    return false;
+                }
+
+                @Override
+                public boolean isReceipt() {
+                    return true;
+                }
+
+                public String getValue(String property) {
+                    return StringUtils.EMPTY;
+                }
+
+                @Override
+                public String getName() {
+                    String id = Preferences.instance().getProperty("AppleID");
+                    if(StringUtils.isNotBlank(id)) {
+                        return id;
+                    }
+                    return "Mac App Store";
+                }
+            };
+            // Verify immediatly and exit if not a valid receipt
+            l.verify();
+            return l;
         }
 
         /**

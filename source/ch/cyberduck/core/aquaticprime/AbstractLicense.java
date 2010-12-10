@@ -53,6 +53,10 @@ public abstract class AbstractLicense implements License {
         return to;
     }
 
+    public boolean isReceipt() {
+        return false;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if(obj instanceof AbstractLicense) {

@@ -27,6 +27,7 @@ import ch.cyberduck.core.i18n.Locale;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.FalseFileFilter;
+import org.apache.commons.io.filefilter.NameFileFilter;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.apache.log4j.Logger;
 
@@ -82,6 +83,12 @@ public abstract class LicenseFactory extends Factory<License> {
         for(File license : licenses) {
             return LicenseFactory.create(LocalFactory.createLocal(license));
         }
+        final Collection<File> receipts = FileUtils.listFiles(
+                new File(LocalFactory.createLocal(Preferences.instance().getProperty("application.receipt.path")).getAbsolute()),
+                new NameFileFilter("receipt"), FalseFileFilter.FALSE);
+        for(File receipt : receipts) {
+            return LicenseFactory.create(LocalFactory.createLocal(receipt));
+        }
         log.info("No license found");
         return EMPTY_LICENSE;
     }
@@ -97,6 +104,10 @@ public abstract class LicenseFactory extends Factory<License> {
 
         public String getName() {
             return Locale.localizedString("Not a valid donation key", "License");
+        }
+
+        public boolean isReceipt() {
+            return false;
         }
 
         @Override
