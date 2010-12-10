@@ -287,6 +287,7 @@ namespace Ch.Cyberduck.Ui.Controller
             //disable reminder for procotol handler registration
             defaults.put("defaulthandler.reminder", false.ToString());
             defaults.put("application.support.path", RoamingApplicationDataPath);
+            defaults.put("application.receipt.path", RoamingApplicationDataPath);
             defaults.put("update.check.last", "0");
 
             defaults.put("queue.download.folder", DefaultDownloadPath);
