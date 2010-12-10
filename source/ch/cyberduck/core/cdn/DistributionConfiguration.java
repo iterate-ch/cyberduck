@@ -115,7 +115,7 @@ public interface DistributionConfiguration {
     /**
      * Clear any cached distribution information.
      *
-     * @see #isConfigured()
+     * @see #isConfigured(ch.cyberduck.core.cdn.Distribution.Method)
      */
     void clear();
 }
