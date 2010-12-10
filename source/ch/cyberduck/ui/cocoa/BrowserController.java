@@ -2574,7 +2574,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     @Action
     public void downloadAsButtonClicked(final ID sender) {
         downloadAsPanel = NSSavePanel.savePanel();
-        downloadAsPanel.setMessage(Locale.localizedString("Download the selected file to..."));
+        downloadAsPanel.setMessage(Locale.localizedString("Download the selected file to…"));
         downloadAsPanel.setNameFieldLabel(Locale.localizedString("Download As:"));
         downloadAsPanel.setPrompt(Locale.localizedString("Download"));
         downloadAsPanel.setCanCreateDirectories(true);

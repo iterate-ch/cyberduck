@@ -909,7 +909,7 @@ public class MainController extends BundleController implements NSApplication.De
                             Locale.localizedString("You are connected to at least one remote site. Do you want to review open browsers?"),
                             Locale.localizedString("Quit Anyway"), //default
                             Locale.localizedString("Cancel"), //other
-                            Locale.localizedString("Review..."));
+                            Locale.localizedString("Review…"));
                     alert.setAlertStyle(NSAlert.NSWarningAlertStyle);
                     alert.setShowsSuppressionButton(true);
                     alert.suppressionButton().setTitle(Locale.localizedString("Don't Ask Again", "Configuration"));
