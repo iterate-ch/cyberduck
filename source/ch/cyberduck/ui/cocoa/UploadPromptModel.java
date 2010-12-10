@@ -40,10 +40,18 @@ public class UploadPromptModel extends TransferPromptModel {
      */
     private PathFilter<Path> filter = new PromptFilter() {
         @Override
-        public boolean accept(Path child) {
-            log.debug("accept:" + child);
-            if(child.exists()) {
-                return super.accept(child);
+        public boolean accept(Path file) {
+            log.debug("accept:" + file);
+            if(file.exists()) {
+                if(file.attributes().getSize() == -1) {
+                    file.readSize();
+                }
+                if(file.getSession().isTimestampSupported()) {
+                    if(file.attributes().getModificationDate() == -1) {
+                        file.readTimestamp();
+                    }
+                }
+                return super.accept(file);
             }
             return false;
         }

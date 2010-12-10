@@ -72,6 +72,14 @@ namespace Ch.Cyberduck.Ui.Controller
                 Log.debug("accept:" + child);
                 if (child.exists())
                 {
+                    if(child.attributes().getSize() == -1) {
+                        child.readSize();
+                    }
+                    if(child.getSession().isTimestampSupported()) {
+                        if(child.attributes().getModificationDate() == -1) {
+                            child.readTimestamp();
+                        }
+                    }
                     return base.accept(child);
                 }
                 return false;
