@@ -1461,7 +1461,7 @@ public class InfoController extends ToolbarWindowController {
     protected List<NSView> getPanels() {
         List<NSView> views = new ArrayList<NSView>();
         views.add(panelGeneral);
-        if(!controller.getSession().isAclSupported() /*controller.getSession().isUnixPermissionsSupported()*/) {
+        if(controller.getSession().isUnixPermissionsSupported()) {
             views.add(panelPermissions);
         }
         if(controller.getSession().isAclSupported()) {
@@ -1477,7 +1477,7 @@ public class InfoController extends ToolbarWindowController {
     protected List<String> getPanelIdentifiers() {
         List<String> identifiers = new ArrayList<String>();
         identifiers.add(TOOLBAR_ITEM_GENERAL);
-        if(!controller.getSession().isAclSupported() /*controller.getSession().isUnixPermissionsSupported()*/) {
+        if(controller.getSession().isUnixPermissionsSupported()) {
             identifiers.add(TOOLBAR_ITEM_PERMISSIONS);
         }
         if(controller.getSession().isAclSupported()) {
