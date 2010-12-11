@@ -1,4 +1,4 @@
-﻿﻿//
+﻿﻿﻿//
 // Copyright (c) 2010 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
@@ -119,7 +119,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public void UpdateStatusLabel()
         {
-            View.StatusLabel = View.NumberOfFiles + " " + Locale.localizedString("Files");
+            View.StatusLabel = String.Format(Locale.localizedString("{0} Files"), View.NumberOfFiles)
         }
 
         private void View_ToggleDetailsEvent()
