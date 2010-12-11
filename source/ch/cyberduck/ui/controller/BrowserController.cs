@@ -1907,17 +1907,13 @@ namespace Ch.Cyberduck.Ui.Controller
                     if (Workdir == destination)
                     {
                         args.DropTargetLocation = DropTargetLocation.Background;
-                        (args.DataObject as DataObject).SetDropDescription((DropImageType) args.Effect,
-                                                                           "Copy to working directory", null);
-                        //todo needs localization
                     }
-                    else if (null != destination)
+                    else
                     {
                         args.DropTargetItem = args.ListView.ModelToItem(new TreePathReference(destination));
-                        (args.DataObject as DataObject).SetDropDescription((DropImageType) args.Effect, "Copy to %1",
-                                                                           destination.getName());
-                        //todo needs localization
                     }
+                    (args.DataObject as DataObject).SetDropDescription((DropImageType) args.Effect, "Copy to %1",
+                                                                       destination.getName());
                 }
             }
         }
