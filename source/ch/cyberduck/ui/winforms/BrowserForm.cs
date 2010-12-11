@@ -1,4 +1,4 @@
-﻿// 
+﻿﻿//
 // Copyright (c) 2010 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
@@ -2813,8 +2813,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 
                 if (!(e.Data is OLVDataObject))
                 {
-                    DropTargetHelper.DragEnter(_form.browser, e.Data, new Point(e.X, e.Y), e.Effect, "Copy to %1",
-                                               "Here"); //todo needs to be localized
+                    DropTargetHelper.DragEnter(_form.browser, e.Data, new Point(e.X, e.Y), e.Effect);
                 }
             }
 
