@@ -1997,7 +1997,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         else {
             if(this.isMounted()) {
                 if(this.isConnected()) {
-                    label = this.getSelectedBrowserView().numberOfRows() + " " + Locale.localizedString("Files");
+                    label = MessageFormat.format(Locale.localizedString("{0} Files"), this.getSelectedBrowserView().numberOfRows());
                 }
                 else {
                     label = Locale.localizedString("Disconnected", "Status");
@@ -2997,13 +2997,20 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
     @Action
     public void copy(final ID sender) {
-        final NSPasteboard pasteboard = NSPasteboard.generalPasteboard();
-        pasteboard.declareTypes(NSArray.arrayWithObject(NSString.stringWithString(NSPasteboard.StringPboardType)), null);
+        PathPasteboard pasteboard = PathPasteboard.getPasteboard(this.getSession());
+        pasteboard.clear();
+        pasteboard.setCopy(true);
+        for(Path selected : this.getSelectedPaths()) {
+            // Writing data for private use when the item gets dragged to the transfer queue.
+            pasteboard.add(selected);
+        }
+        final NSPasteboard clipboard = NSPasteboard.generalPasteboard();
+        clipboard.declareTypes(NSArray.arrayWithObject(NSString.stringWithString(NSPasteboard.StringPboardType)), null);
         StringBuilder copy = new StringBuilder();
         for(Path selected : this.getSelectedPaths()) {
             copy.append(selected.getAbsolute()).append("\n");
         }
-        if(!pasteboard.setStringForType(copy.toString(), NSPasteboard.StringPboardType)) {
+        if(!clipboard.setStringForType(copy.toString(), NSPasteboard.StringPboardType)) {
             log.error("Error writing absolute path of selected item to NSPasteboard.StringPboardType.");
         }
     }
@@ -3012,6 +3019,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     public void cut(final ID sender) {
         PathPasteboard pasteboard = PathPasteboard.getPasteboard(this.getSession());
         pasteboard.clear();
+        pasteboard.setCut(true);
         for(Path selected : this.getSelectedPaths()) {
             // Writing data for private use when the item gets dragged to the transfer queue.
             pasteboard.add(selected);
@@ -3027,50 +3035,52 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     public void paste(final ID sender) {
         final PathPasteboard pasteboard = PathPasteboard.getPasteboard(this.getSession());
         if(pasteboard.isEmpty()) {
-            return;
-        }
-        final Map<Path, Path> files = new HashMap<Path, Path>();
-        Path parent = this.workdir();
-        if(this.getSelectionCount() == 1) {
-            Path selected = this.getSelectedPath();
-            if(selected.attributes().isDirectory()) {
-                parent = selected;
-            }
-            else {
-                parent = selected.getParent();
-            }
-        }
-        for(final Path next : pasteboard) {
-            Path current = PathFactory.createPath(getSession(),
-                    next.getAbsolute(), next.attributes().getType());
-            Path renamed = PathFactory.createPath(getSession(),
-                    parent.getAbsolute(), current.getName(), next.attributes().getType());
-            files.put(current, renamed);
-        }
-        pasteboard.clear();
-        this.renamePaths(files);
-    }
-
-    @Action
-    public void pasteFromFinder(final ID sender) {
-        NSPasteboard pboard = NSPasteboard.generalPasteboard();
-        if(pboard.availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.FilenamesPboardType)) != null) {
-            NSObject o = pboard.propertyListForType(NSPasteboard.FilenamesPboardType);
-            if(o != null) {
-                final NSArray elements = Rococoa.cast(o, NSArray.class);
-                final Path workdir = this.workdir();
-                final Session session = this.getTransferSession();
-                final List<Path> roots = new Collection<Path>();
-                for(int i = 0; i < elements.count().intValue(); i++) {
-                    Path p = PathFactory.createPath(session,
-                            workdir.getAbsolute(),
-                            LocalFactory.createLocal(elements.objectAtIndex(new NSUInteger(i)).toString()));
-                    roots.add(p);
+            NSPasteboard pboard = NSPasteboard.generalPasteboard();
+            if(pboard.availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.FilenamesPboardType)) != null) {
+                NSObject o = pboard.propertyListForType(NSPasteboard.FilenamesPboardType);
+                if(o != null) {
+                    final NSArray elements = Rococoa.cast(o, NSArray.class);
+                    final Path workdir = this.workdir();
+                    final Session session = this.getTransferSession();
+                    final List<Path> roots = new Collection<Path>();
+                    for(int i = 0; i < elements.count().intValue(); i++) {
+                        Path p = PathFactory.createPath(session,
+                                workdir.getAbsolute(),
+                                LocalFactory.createLocal(elements.objectAtIndex(new NSUInteger(i)).toString()));
+                        roots.add(p);
+                    }
+                    final Transfer q = new UploadTransfer(roots);
+                    if(q.numberOfRoots() > 0) {
+                        this.transfer(q, workdir);
+                    }
                 }
-                final Transfer q = new UploadTransfer(roots);
-                if(q.numberOfRoots() > 0) {
-                    this.transfer(q, workdir);
+            }
+        }
+        else {
+            final Map<Path, Path> files = new HashMap<Path, Path>();
+            Path parent = this.workdir();
+            if(this.getSelectionCount() == 1) {
+                Path selected = this.getSelectedPath();
+                if(selected.attributes().isDirectory()) {
+                    parent = selected;
                 }
+                else {
+                    parent = selected.getParent();
+                }
+            }
+            for(final Path next : pasteboard) {
+                Path current = PathFactory.createPath(getSession(),
+                        next.getAbsolute(), next.attributes().getType());
+                Path renamed = PathFactory.createPath(getSession(),
+                        parent.getAbsolute(), current.getName(), next.attributes().getType());
+                files.put(current, renamed);
+            }
+            pasteboard.clear();
+            if(pasteboard.isCut()) {
+                this.renamePaths(files);
+            }
+            if(pasteboard.isCopy()) {
+                this.duplicatePaths(files, false);
             }
         }
     }
@@ -3374,12 +3384,13 @@ public class BrowserController extends WindowController implements NSToolbar.Del
      */
     private Session init(final Host host) {
         if(this.hasSession()) {
-            this.session.removeConnectionListener(listener);
+            PathPasteboard.getPasteboard(session).delete();
+            session.removeConnectionListener(listener);
         }
-        this.session = SessionFactory.createSession(host);
+        session = SessionFactory.createSession(host);
         this.setWorkdir(null);
-        this.setEncoding(this.session.getEncoding());
-        this.session.addProgressListener(new ProgressListener() {
+        this.setEncoding(session.getEncoding());
+        session.addProgressListener(new ProgressListener() {
             public void message(final String message) {
                 invoke(new WindowMainAction(BrowserController.this) {
                     public void run() {
@@ -3721,58 +3732,53 @@ public class BrowserController extends WindowController implements NSToolbar.Del
      */
     public boolean validateMenuItem(NSMenuItem item) {
         final Selector action = item.action();
-        if(action.equals(Foundation.selector("pasteFromFinder:"))) {
-            boolean valid = false;
+        if(action.equals(Foundation.selector("paste:"))) {
+            item.setTitle(MessageFormat.format(Locale.localizedString("Paste {0}"), StringUtils.EMPTY));
             if(this.isMounted()) {
-                if(NSPasteboard.generalPasteboard().availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.FilenamesPboardType)) != null) {
-                    NSObject o = NSPasteboard.generalPasteboard().propertyListForType(NSPasteboard.FilenamesPboardType);
-                    if(o != null) {
-                        final NSArray elements = Rococoa.cast(o, NSArray.class);
-                        if(elements.count().intValue() == 1) {
-                            item.setTitle(Locale.localizedString("Paste") + " \""
-                                    + elements.objectAtIndex(new NSUInteger(0)) + "\"");
+                final PathPasteboard pasteboard = PathPasteboard.getPasteboard(this.getSession());
+                if(pasteboard.isEmpty()) {
+                    if(NSPasteboard.generalPasteboard().availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.FilenamesPboardType)) != null) {
+                        NSObject o = NSPasteboard.generalPasteboard().propertyListForType(NSPasteboard.FilenamesPboardType);
+                        if(o != null) {
+                            final NSArray elements = Rococoa.cast(o, NSArray.class);
+                            if(elements.count().intValue() == 1) {
+                                item.setTitle(MessageFormat.format(Locale.localizedString("Paste {0}"), elements.objectAtIndex(new NSUInteger(0))));
+                            }
+                            else {
+                                item.setTitle(MessageFormat.format(Locale.localizedString("Paste {0}"),
+                                        MessageFormat.format(Locale.localizedString("{0} Files"), elements.count().intValue())));
+                            }
                         }
-                        else {
-                            item.setTitle(Locale.localizedString("Paste from Finder") + " (" +
-                                    elements.count().intValue() + " " +
-                                    Locale.localizedString("files") + ")");
-                        }
-                        valid = true;
+                    }
+                }
+                else {
+                    if(pasteboard.size() == 1) {
+                        item.setTitle(MessageFormat.format(Locale.localizedString("Paste {0}"), pasteboard.get(0).getName()));
+                    }
+                    else {
+                        item.setTitle(MessageFormat.format(Locale.localizedString("Paste {0}"),
+                                MessageFormat.format(Locale.localizedString("{0} Files"), pasteboard.size())));
                     }
                 }
             }
-            if(!valid) {
-                item.setTitle(Locale.localizedString("Paste from Finder"));
-            }
-        }
-        else if(action.equals(Foundation.selector("paste:"))) {
-            final PathPasteboard pasteboard = PathPasteboard.getPasteboard(this.getSession());
-            if(this.isMounted() && !pasteboard.isEmpty()) {
-                if(pasteboard.size() == 1) {
-                    item.setTitle(Locale.localizedString("Paste") + " \"" + pasteboard.get(0).getName() + "\"");
-                }
-                else {
-                    item.setTitle(Locale.localizedString("Paste") + " (" + pasteboard.size() + " " + Locale.localizedString("files") + ")");
-                }
-            }
-            else {
-                item.setTitle(Locale.localizedString("Paste"));
-            }
         }
         else if(action.equals(Foundation.selector("cut:"))) {
-            int count = this.getSelectionCount();
-            if(this.isMounted() && count > 0) {
-                if(count > 1) {
-                    item.setTitle(Locale.localizedString("Cut")
-                            + " " + this.getSelectionCount() + " " +
-                            Locale.localizedString("files"));
+            if(this.isMounted()) {
+                int count = this.getSelectionCount();
+                if(0 == count) {
+                    item.setTitle(MessageFormat.format(Locale.localizedString("Cut {0}"), StringUtils.EMPTY));
+                }
+                else if(1 == count) {
+                    item.setTitle(MessageFormat.format(Locale.localizedString("Cut {0}"),
+                            this.getSelectedPath().getName()));
                 }
                 else {
-                    item.setTitle(Locale.localizedString("Cut") + " \"" + this.getSelectedPath().getName() + "\"");
+                    item.setTitle(MessageFormat.format(Locale.localizedString("Cut {0}"),
+                            MessageFormat.format(Locale.localizedString("{0} Files"), this.getSelectionCount())));
                 }
             }
             else {
-                item.setTitle(Locale.localizedString("Cut"));
+                item.setTitle(MessageFormat.format(Locale.localizedString("Cut {0}"), StringUtils.EMPTY));
             }
         }
         else if(action.equals(Foundation.selector("showHiddenFilesClicked:"))) {
@@ -3818,21 +3824,20 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         else if(action.equals(Foundation.selector("copy:"))) {
             return this.isMounted() && this.getSelectionCount() > 0;
         }
-        else if(action.equals(Foundation.selector("pasteFromFinder:"))) {
-            if(this.isMounted()) {
-                NSPasteboard pboard = NSPasteboard.generalPasteboard();
-                if(pboard.availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.FilenamesPboardType)) != null) {
-                    Object o = pboard.propertyListForType(NSPasteboard.FilenamesPboardType);
-                    if(o != null) {
-                        return true;
-                    }
-                }
-            }
-            return false;
-        }
         else if(action.equals(Foundation.selector("paste:"))) {
             if(this.isMounted()) {
-                return !PathPasteboard.getPasteboard(this.getSession()).isEmpty();
+                PathPasteboard pasteboard = PathPasteboard.getPasteboard(this.getSession());
+                if(pasteboard.isEmpty()) {
+                    NSPasteboard pboard = NSPasteboard.generalPasteboard();
+                    if(pboard.availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.FilenamesPboardType)) != null) {
+                        Object o = pboard.propertyListForType(NSPasteboard.FilenamesPboardType);
+                        if(o != null) {
+                            return true;
+                        }
+                    }
+                    return false;
+                }
+                return true;
             }
             return false;
         }

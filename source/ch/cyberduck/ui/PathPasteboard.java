@@ -46,6 +46,24 @@ public class PathPasteboard extends Collection<Path> implements Pasteboard<Path>
         }
     };
 
+    private boolean cut;
+
+    public void setCut(boolean cut) {
+        this.cut = cut;
+    }
+
+    public void setCopy(boolean copy) {
+        this.cut = !copy;
+    }
+
+    public boolean isCut() {
+        return cut;
+    }
+
+    public boolean isCopy() {
+        return !cut;
+    }
+
     /**
      * @param session
      * @return Pasteboard for a given session
@@ -93,9 +111,18 @@ public class PathPasteboard extends Collection<Path> implements Pasteboard<Path>
         return content;
     }
 
+    /**
+     * Delete this pasteboard
+     */
+    public void delete() {
+        instances.remove(session);
+    }
+
+    /**
+     * Remove content from clipboard
+     */
     @Override
     public void clear() {
-        instances.remove(session);
         super.clear();
     }
 }
