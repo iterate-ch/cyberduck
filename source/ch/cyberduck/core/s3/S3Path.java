@@ -1270,7 +1270,7 @@ public class S3Path extends CloudPath {
                         this.getKey()));
             }
             catch(ConnectionCanceledException e) {
-                log.error(e.getMessage());
+                log.warn(e.getMessage());
             }
         }
         return new DescriptiveUrl(null, null);
