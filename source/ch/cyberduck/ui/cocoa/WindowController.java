@@ -226,7 +226,7 @@ public abstract class WindowController extends BundleController implements NSWin
             public void callback(final int returncode) {
                 response[0] = returncode;
             }
-        });
+        }, help);
         return response[0];
     }
 
