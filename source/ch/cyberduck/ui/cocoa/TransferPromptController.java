@@ -39,6 +39,7 @@ import org.rococoa.cocoa.foundation.NSUInteger;
 
 import org.apache.log4j.Logger;
 
+import java.text.MessageFormat;
 import java.util.HashMap;
 
 /**
@@ -148,7 +149,7 @@ public abstract class TransferPromptController extends SheetController implement
         browserView.reloadData();
         statusIndicator.stopAnimation(null);
         statusLabel.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
-                browserView.numberOfRows() + " " + Locale.localizedString("Files"),
+                MessageFormat.format(Locale.localizedString("{0} Files"), browserView.numberOfRows()),
                 TRUNCATE_MIDDLE_ATTRIBUTES));
     }
 

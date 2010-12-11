@@ -44,6 +44,7 @@ import org.rococoa.cocoa.foundation.NSUInteger;
 
 import org.apache.log4j.Logger;
 
+import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -1109,11 +1110,11 @@ public class TransferController extends WindowController implements NSToolbar.De
             if(pasteboards.size() == 1) {
                 for(PathPasteboard pasteboard : pasteboards) {
                     if(pasteboard.size() == 1) {
-                        item.setTitle(Locale.localizedString("Paste") + " \"" + pasteboard.get(0).getName() + "\"");
+                        item.setTitle(MessageFormat.format(Locale.localizedString("Paste {0}"), pasteboard.get(0).getName()));
                     }
                     else {
-                        item.setTitle(Locale.localizedString("Paste") + " (" + pasteboard.size() + " " +
-                                Locale.localizedString("files") + ")");
+                        item.setTitle(MessageFormat.format(Locale.localizedString("Paste {0}"),
+                                MessageFormat.format(Locale.localizedString("{0} Files"), pasteboard.size()) + ")"));
                     }
                 }
             }
