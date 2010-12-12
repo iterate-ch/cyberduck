@@ -119,7 +119,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public void UpdateStatusLabel()
         {
-            View.StatusLabel = String.Format(Locale.localizedString("{0} Files"), View.NumberOfFiles)
+            View.StatusLabel = String.Format(Locale.localizedString("{0} Files"), View.NumberOfFiles);
         }
 
         private void View_ToggleDetailsEvent()

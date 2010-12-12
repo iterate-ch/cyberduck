@@ -2592,7 +2592,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     {
                         if (IsConnected())
                         {
-                            label = String.Format(Locale.localizedString("{0} Files"), View.NumberOfFiles)
+                            label = String.Format(Locale.localizedString("{0} Files"), View.NumberOfFiles);
                         }
                     }
                     break;
