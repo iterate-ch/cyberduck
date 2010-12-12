@@ -793,6 +793,7 @@ public class Host implements Serializable {
 
     public void setWebURL(String webURL) {
         if(this.getDefaultWebURL().equals(webURL)) {
+            this.webURL = null;
             return;
         }
         this.webURL = webURL;
