@@ -85,6 +85,8 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private Bitmap OverlayImages(Bitmap original, Bitmap overlay)
         {
+            if (null == original)
+                return null;
             Image cloned = (Image) original.Clone();
             Graphics gra = Graphics.FromImage(cloned);
             gra.DrawImage(overlay, new Point(0, 0));
@@ -394,16 +396,19 @@ namespace Ch.Cyberduck.Ui.Controller
                     fileAttributes = Shell32.FILE_ATTRIBUTE_NORMAL;
                 }
 
-                Shell32.SHGetFileInfo(name,
+                IntPtr hSuccess = Shell32.SHGetFileInfo(name,
                                       fileAttributes,
                                       ref shfi,
                                       (uint) Marshal.SizeOf(shfi),
                                       flags);
-
-                // Copy (clone) the returned icon to a new object, thus allowing us to clean-up properly
-                icon = (Icon) Icon.FromHandle(shfi.hIcon).Clone();
-                _iconCache.Put(key, icon, s);
-                User32.DestroyIcon(shfi.hIcon); // Cleanup
+                if (hSuccess != IntPtr.Zero)
+                {
+                    // Copy (clone) the returned icon to a new object, thus allowing us to clean-up properly
+                    icon = (Icon)Icon.FromHandle(shfi.hIcon).Clone();
+                    _iconCache.Put(key, icon, s);
+                    // Release icon handle
+                    User32.DestroyIcon(shfi.hIcon);
+                }
             }
             return icon;
         }
