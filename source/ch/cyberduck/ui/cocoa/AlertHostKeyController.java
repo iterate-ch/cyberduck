@@ -147,7 +147,7 @@ public class AlertHostKeyController extends MemoryHostKeyVerifier {
     protected boolean isChangedKeyAccepted(final String hostname, final int port, final String serverHostKeyAlgorithm,
                                            final byte[] serverHostKey) throws ConnectionCanceledException {
         NSAlert alert = NSAlert.alert(MessageFormat.format(Locale.localizedString("Host key mismatch for {0}"), hostname), //title
-                Locale.localizedString(MessageFormat.format("The host key supplied is {0}."),
+                MessageFormat.format(Locale.localizedString("The host key supplied is {0}."),
                         KnownHosts.createHexFingerprint(serverHostKeyAlgorithm, serverHostKey)),
                 Locale.localizedString("Allow"), // defaultbutton
                 Locale.localizedString("Deny"), //alternative button
