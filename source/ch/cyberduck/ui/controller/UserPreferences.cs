@@ -1,4 +1,4 @@
-﻿// 
+﻿﻿//
 // Copyright (c) 2010 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
@@ -251,8 +251,7 @@ namespace Ch.Cyberduck.Ui.Controller
             defaults.put("update.feed.beta", "http://version.cyberduck.ch/beta/changelog.wys");
             defaults.put("update.feed.nightly", "http://version.cyberduck.ch/nightly/changelog.wys");
 
-            //todo set to release before going public!
-            defaults.put("update.feed", "nightly");
+            defaults.put("update.feed", "beta");
 
             // Importers
             defaults.put("bookmark.import.filezilla.location", Path.Combine(Environment.GetFolderPath(
@@ -281,8 +280,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
             base.setDefaults();
 
-            defaults.put("logging", "debug");
-            //defaults.put("rendezvous.enable", false.ToString());
+            defaults.put("logging", "error");
 
             //disable reminder for procotol handler registration
             defaults.put("defaulthandler.reminder", false.ToString());
