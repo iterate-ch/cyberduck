@@ -41,13 +41,10 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 return true;
             }
-            int r = cTaskDialog.ShowCommandBox(Locale.localizedString("Unknown host key for") + " " + hostname,
+            int r = cTaskDialog.ShowCommandBox(String.Format(Locale.localizedString("Unknown host key for {0}."), hostname),
                                                null,
-                                               Locale.localizedString(
-                                                   "The host is currently unknown to the system. The host key fingerprint is")
-                                               + ": " +
-                                               KnownHosts.createHexFingerprint(serverHostKeyAlgorithm, serverHostKey) +
-                                               ".",
+                                               String.Format(Locale.localizedString("The host is currently unknown to the system. The host key fingerprint is {0}."),
+                                                   KnownHosts.createHexFingerprint(serverHostKeyAlgorithm, serverHostKey)),
                                                null,
                                                null,
                                                isHostKeyDatabaseWritable() ? Locale.localizedString("Always") : null,
@@ -77,14 +74,9 @@ namespace Ch.Cyberduck.Ui.Controller
                                    ? "|" + Locale.localizedString("Always")
                                    : string.Empty);
 
-            int r = cTaskDialog.ShowCommandBox(Locale.localizedString("Host key mismatch:") + " " + hostname,
+            int r = cTaskDialog.ShowCommandBox(String.Format(Locale.localizedString("Host key mismatch for {0}"), hostname),
                                                null,
-                                               Locale.localizedString("The host key supplied is") + ": " +
-                                               KnownHosts.createHexFingerprint(serverHostKeyAlgorithm, serverHostKey)
-                                               //                                + "\n" + Locale.localizedString("The current allowed key for this host is") + " : "
-                                               //                                + allowedHostKey.getFingerprint()
-                                               + "\n"
-                                               + Locale.localizedString("Do you want to allow the host access?"),
+                                               String.Format(Locale.localizedString("The host key supplied is {0}."), KnownHosts.createHexFingerprint(serverHostKeyAlgorithm, serverHostKey)),
                                                null,
                                                null,
                                                null, commands,

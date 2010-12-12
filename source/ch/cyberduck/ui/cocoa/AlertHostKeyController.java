@@ -31,6 +31,7 @@ import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.MessageFormat;
 
 /**
  * Using known_hosts from OpenSSH to store accepted host keys.
@@ -105,10 +106,11 @@ public class AlertHostKeyController extends MemoryHostKeyVerifier {
     @Override
     protected boolean isUnknownKeyAccepted(final String hostname, final int port, final String serverHostKeyAlgorithm,
                                            final byte[] serverHostKey) throws ConnectionCanceledException {
-        NSAlert alert = NSAlert.alert(Locale.localizedString("Unknown host key for") + " "
-                + hostname, //title
-                Locale.localizedString("The host is currently unknown to the system. The host key fingerprint is")
-                        + ": " + KnownHosts.createHexFingerprint(serverHostKeyAlgorithm, serverHostKey) + ".",
+        NSAlert alert = NSAlert.alert(MessageFormat.format(Locale.localizedString("Unknown host key for {0}."), hostname), //title
+                Locale.localizedString(MessageFormat.format(
+                        "The host is currently unknown to the system. The host key fingerprint is {0}.",
+                        KnownHosts.createHexFingerprint(serverHostKeyAlgorithm, serverHostKey))
+                ),
                 Locale.localizedString("Allow"), // default button
                 Locale.localizedString("Deny"), // alternate button
                 isHostKeyDatabaseWritable() ? Locale.localizedString("Always") : null //other button
@@ -146,13 +148,9 @@ public class AlertHostKeyController extends MemoryHostKeyVerifier {
     @Override
     protected boolean isChangedKeyAccepted(final String hostname, final int port, final String serverHostKeyAlgorithm,
                                            final byte[] serverHostKey) throws ConnectionCanceledException {
-        NSAlert alert = NSAlert.alert(Locale.localizedString("Host key mismatch:") + " " + hostname, //title
-                Locale.localizedString("The host key supplied is") + ": "
-                        + KnownHosts.createHexFingerprint(serverHostKeyAlgorithm, serverHostKey)
-//                                + "\n" + Locale.localizedString("The current allowed key for this host is") + " : "
-//                                + allowedHostKey.getFingerprint()
-                        + "\n"
-                        + Locale.localizedString("Do you want to allow the host access?"),
+        NSAlert alert = NSAlert.alert(MessageFormat.format(Locale.localizedString("Host key mismatch for {0}"), hostname), //title
+                Locale.localizedString(MessageFormat.format("The host key supplied is {0}."),
+                        KnownHosts.createHexFingerprint(serverHostKeyAlgorithm, serverHostKey)),
                 Locale.localizedString("Allow"), // defaultbutton
                 Locale.localizedString("Deny"), //alternative button
                 isHostKeyDatabaseWritable() ? Locale.localizedString("Always") : null //other button
