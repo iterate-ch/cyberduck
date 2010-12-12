@@ -87,12 +87,12 @@ namespace Ch.Cyberduck.Core
         /// <returns></returns>
         public static string GetSafeExtension(string filename)
         {
-            String ext = LocalFactory.createLocal(filename).getExtension();
             if (IsNotBlank(filename))
             {
-                ext = "." + ext;
+                String ext = LocalFactory.createLocal(filename).getExtension();
+                return "." + ext;
             }
-            return ext;
+            return String.Empty;
         }
 
         public static string SafeString(string s)
