@@ -107,10 +107,8 @@ public class AlertHostKeyController extends MemoryHostKeyVerifier {
     protected boolean isUnknownKeyAccepted(final String hostname, final int port, final String serverHostKeyAlgorithm,
                                            final byte[] serverHostKey) throws ConnectionCanceledException {
         NSAlert alert = NSAlert.alert(MessageFormat.format(Locale.localizedString("Unknown host key for {0}."), hostname), //title
-                Locale.localizedString(MessageFormat.format(
-                        "The host is currently unknown to the system. The host key fingerprint is {0}.",
-                        KnownHosts.createHexFingerprint(serverHostKeyAlgorithm, serverHostKey))
-                ),
+                MessageFormat.format(Locale.localizedString("The host is currently unknown to the system. The host key fingerprint is {0}."),
+                        KnownHosts.createHexFingerprint(serverHostKeyAlgorithm, serverHostKey)),
                 Locale.localizedString("Allow"), // default button
                 Locale.localizedString("Deny"), // alternate button
                 isHostKeyDatabaseWritable() ? Locale.localizedString("Always") : null //other button
