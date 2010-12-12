@@ -121,6 +121,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.updateMainMenuItem = new System.Windows.Forms.MenuItem();
             this.menuItem88 = new System.Windows.Forms.MenuItem();
             this.aboutMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.keyMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.donateMainMenuItem = new System.Windows.Forms.MenuItem();
             this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.toolStripProgress = new System.Windows.Forms.ToolStripStatusLabel();
             this.statusLabel = new System.Windows.Forms.ToolStripStatusLabel();
@@ -240,8 +242,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.editorMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.editor1ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editor2ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.editContextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editToolStripSplitButton = new System.Windows.Forms.ToolStripSplitButton();
+            this.editContextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolBar = new Ch.Cyberduck.Ui.Winforms.Controls.ClickThroughToolStrip();
             this.openConnectionToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparatorAfterOpenConnection = new System.Windows.Forms.ToolStripSeparator();
@@ -911,7 +913,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.menuItem86,
             this.updateMainMenuItem,
             this.menuItem88,
-            this.aboutMainMenuItem});
+            this.aboutMainMenuItem,
+            this.keyMainMenuItem,
+            this.donateMainMenuItem});
             this.menuItem80.Text = "&Help";
             // 
             // helpMainMenuItem
@@ -958,6 +962,16 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.aboutMainMenuItem.Index = 8;
             this.aboutMainMenuItem.Text = "About Cyberduck";
+            // 
+            // keyMainMenuItem
+            // 
+            this.keyMainMenuItem.Index = 9;
+            this.keyMainMenuItem.Text = "Registered to…";
+            // 
+            // donateMainMenuItem
+            // 
+            this.donateMainMenuItem.Index = 10;
+            this.donateMainMenuItem.Text = "Donate…";
             // 
             // statusStrip
             // 
@@ -1792,6 +1806,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.editor1ToolStripMenuItem,
             this.editor2ToolStripMenuItem});
             this.editorMenuStrip.Name = "editorMenuStrip";
+            this.editorMenuStrip.OwnerItem = this.editContextToolStripMenuItem;
             this.editorMenuStrip.Size = new System.Drawing.Size(115, 48);
             // 
             // editor1ToolStripMenuItem
@@ -1806,13 +1821,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.editor2ToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
             this.editor2ToolStripMenuItem.Text = "Editor 2";
             // 
-            // editContextToolStripMenuItem
-            // 
-            this.editContextToolStripMenuItem.DropDown = this.editorMenuStrip;
-            this.editContextToolStripMenuItem.Name = "editContextToolStripMenuItem";
-            this.editContextToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
-            this.editContextToolStripMenuItem.Text = "Edit With";
-            // 
             // editToolStripSplitButton
             // 
             this.editToolStripSplitButton.DropDown = this.editorMenuStrip;
@@ -1823,6 +1831,13 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.editToolStripSplitButton.Size = new System.Drawing.Size(48, 53);
             this.editToolStripSplitButton.Text = "Edit";
             this.editToolStripSplitButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
+            // 
+            // editContextToolStripMenuItem
+            // 
+            this.editContextToolStripMenuItem.DropDown = this.editorMenuStrip;
+            this.editContextToolStripMenuItem.Name = "editContextToolStripMenuItem";
+            this.editContextToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+            this.editContextToolStripMenuItem.Text = "Edit With";
             // 
             // toolBar
             // 
@@ -1932,6 +1947,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.newBrowserContextToolStripMenuItem,
             this.newBookmarkContextToolStripMenuItem});
             this.contextMenuStrip.Name = "contextMenuStrip1";
+            this.contextMenuStrip.OwnerItem = this.actionToolStripDropDownButton;
             this.contextMenuStrip.Size = new System.Drawing.Size(156, 486);
             // 
             // refreshContextToolStripMenuItem
@@ -2261,7 +2277,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.splitContainer.Panel2.Controls.Add(this.transcriptBox);
             this.splitContainer.Panel2MinSize = 50;
             this.splitContainer.Size = new System.Drawing.Size(0, 0);
-            this.splitContainer.SplitterDistance = 0;
+            this.splitContainer.SplitterDistance = 444;
             this.splitContainer.SplitterWidth = 3;
             this.splitContainer.TabIndex = 2;
             // 
@@ -2290,7 +2306,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.browser.Name = "browser";
             this.browser.OwnerDraw = true;
             this.browser.ShowGroups = false;
-            this.browser.Size = new System.Drawing.Size(0, 0);
+            this.browser.Size = new System.Drawing.Size(1028, 444);
             this.browser.TabIndex = 15;
             this.browser.UseCompatibleStateImageBehavior = false;
             this.browser.View = System.Windows.Forms.View.Details;
@@ -2350,7 +2366,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.transcriptBox.Location = new System.Drawing.Point(0, 0);
             this.transcriptBox.Name = "transcriptBox";
             this.transcriptBox.ReadOnly = true;
-            this.transcriptBox.Size = new System.Drawing.Size(0, 51);
+            this.transcriptBox.Size = new System.Drawing.Size(1028, 50);
             this.transcriptBox.TabIndex = 0;
             this.transcriptBox.Text = "";
             this.transcriptBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.transcriptBox_KeyDown);
@@ -3403,6 +3419,8 @@ namespace Ch.Cyberduck.Ui.Winforms
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator23;
         private System.Windows.Forms.ToolStripMenuItem copyURLContextToolStripMenuItem;
         private System.Windows.Forms.ToolStripSplitButton editToolStripSplitButton;
+        private System.Windows.Forms.MenuItem keyMainMenuItem;
+        private System.Windows.Forms.MenuItem donateMainMenuItem;
     }
 }
 

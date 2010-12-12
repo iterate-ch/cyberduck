@@ -27,6 +27,7 @@ using System.Windows.Forms;
 using BrightIdeasSoftware;
 using ch.cyberduck.core;
 using Ch.Cyberduck.Core;
+using ch.cyberduck.core.aquaticprime;
 using ch.cyberduck.core.i18n;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Winforms.Commondialog;
@@ -159,6 +160,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             bookmarksToolStripButton.ToolTipText = Locale.localizedString("Bookmarks", "Preferences");
             historyToolStripButton.ToolTipText = Locale.localizedString("History");
             bonjourToolStripButton.ToolTipText = Locale.localizedString("Bonjour", "Browser");
+
+            keyMainMenuItem.Text = LicenseFactory.find().ToString();
+            keyMainMenuItem.Enabled = false;
 
             ConfigureToolbar();
             ConfigureFileCommands();
@@ -1434,6 +1438,9 @@ namespace Ch.Cyberduck.Ui.Winforms
                          (sender, args) => Utils.StartProcess("Acknowledgments.rtf"), () => true);
             Commands.Add(new ToolStripItem[] {cyberduckHelpToolStripMenuItem}, new[] {helpMainMenuItem},
                          (sender, args) => Utils.StartProcess(Preferences.instance().getProperty("website.help")),
+                         () => true);
+            Commands.Add(new ToolStripItem[] {cyberduckHelpToolStripMenuItem}, new[] {donateMainMenuItem},
+                         (sender, args) => Utils.StartProcess(Preferences.instance().getProperty("website.donate")),
                          () => true);
             Commands.Add(new ToolStripItem[] {reportABugToolStripMenuItem}, new[] {bugMainMenuItem},
                          (sender, args) => Utils.StartProcess(Preferences.instance().getProperty("website.bug")),
