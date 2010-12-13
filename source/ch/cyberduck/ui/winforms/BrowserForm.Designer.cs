@@ -155,7 +155,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.toolStripSeparator11 = new System.Windows.Forms.ToolStripSeparator();
             this.createArchiveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.archiveMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.createArchiveContextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.expandArchiveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator12 = new System.Windows.Forms.ToolStripSeparator();
             this.printToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -240,11 +239,12 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.checkToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator28 = new System.Windows.Forms.ToolStripSeparator();
             this.aboutCyberduckToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.createArchiveContextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editorMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.editor1ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editor2ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.editContextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editToolStripSplitButton = new System.Windows.Forms.ToolStripSplitButton();
+            this.editContextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolBar = new Ch.Cyberduck.Ui.Winforms.Controls.ClickThroughToolStrip();
             this.openConnectionToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparatorAfterOpenConnection = new System.Windows.Forms.ToolStripSeparator();
@@ -303,14 +303,14 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.treeColumnKind = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
             this.transcriptBox = new System.Windows.Forms.RichTextBox();
             this.managedBookmarkPanel2 = new Ch.Cyberduck.Ui.Winforms.Controls.ManagedPanel();
-            this.actionToolStrip = new System.Windows.Forms.ToolStrip();
-            this.newBookmarkToolStripButton = new System.Windows.Forms.ToolStripButton();
-            this.editBookmarkToolStripButton = new System.Windows.Forms.ToolStripButton();
-            this.deleteBookmarkToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.bookmarkListView = new Ch.Cyberduck.Ui.Winforms.Controls.LineSeparatedObjectListView();
             this.bookmarkImageColumn = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
             this.bookmarkDescriptionColumn = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
             this.activeColumn = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+            this.actionToolStrip = new System.Windows.Forms.ToolStrip();
+            this.newBookmarkToolStripButton = new System.Windows.Forms.ToolStripButton();
+            this.editBookmarkToolStripButton = new System.Windows.Forms.ToolStripButton();
+            this.deleteBookmarkToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.viewPanel = new System.Windows.Forms.Panel();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.viewToolStrip = new Ch.Cyberduck.Ui.Winforms.Controls.ClickThroughToolStrip();
@@ -405,8 +405,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.splitContainer.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.browser)).BeginInit();
             this.managedBookmarkPanel2.SuspendLayout();
-            this.actionToolStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.bookmarkListView)).BeginInit();
+            this.actionToolStrip.SuspendLayout();
             this.viewPanel.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.viewToolStrip.SuspendLayout();
@@ -592,6 +592,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             // printMainMenuItem
             // 
+            this.printMainMenuItem.Enabled = false;
             this.printMainMenuItem.Index = 26;
             this.printMainMenuItem.Text = "Print…";
             // 
@@ -1214,15 +1215,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             // archiveMenuStrip
             // 
             this.archiveMenuStrip.Name = "archiveMenuStrip";
-            this.archiveMenuStrip.OwnerItem = this.createArchiveToolStripMenuItem;
+            this.archiveMenuStrip.OwnerItem = this.createArchiveContextToolStripMenuItem;
             this.archiveMenuStrip.Size = new System.Drawing.Size(61, 4);
-            // 
-            // createArchiveContextToolStripMenuItem
-            // 
-            this.createArchiveContextToolStripMenuItem.DropDown = this.archiveMenuStrip;
-            this.createArchiveContextToolStripMenuItem.Name = "createArchiveContextToolStripMenuItem";
-            this.createArchiveContextToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
-            this.createArchiveContextToolStripMenuItem.Text = "Create Archive";
             // 
             // expandArchiveToolStripMenuItem
             // 
@@ -1807,13 +1801,20 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.aboutCyberduckToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
             this.aboutCyberduckToolStripMenuItem.Text = "&About Cyberduck";
             // 
+            // createArchiveContextToolStripMenuItem
+            // 
+            this.createArchiveContextToolStripMenuItem.DropDown = this.archiveMenuStrip;
+            this.createArchiveContextToolStripMenuItem.Name = "createArchiveContextToolStripMenuItem";
+            this.createArchiveContextToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+            this.createArchiveContextToolStripMenuItem.Text = "Create Archive";
+            // 
             // editorMenuStrip
             // 
             this.editorMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.editor1ToolStripMenuItem,
             this.editor2ToolStripMenuItem});
             this.editorMenuStrip.Name = "editorMenuStrip";
-            this.editorMenuStrip.OwnerItem = this.editToolStripSplitButton;
+            this.editorMenuStrip.OwnerItem = this.editContextToolStripMenuItem;
             this.editorMenuStrip.Size = new System.Drawing.Size(115, 48);
             // 
             // editor1ToolStripMenuItem
@@ -1828,13 +1829,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.editor2ToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
             this.editor2ToolStripMenuItem.Text = "Editor 2";
             // 
-            // editContextToolStripMenuItem
-            // 
-            this.editContextToolStripMenuItem.DropDown = this.editorMenuStrip;
-            this.editContextToolStripMenuItem.Name = "editContextToolStripMenuItem";
-            this.editContextToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
-            this.editContextToolStripMenuItem.Text = "Edit With";
-            // 
             // editToolStripSplitButton
             // 
             this.editToolStripSplitButton.DropDown = this.editorMenuStrip;
@@ -1845,6 +1839,13 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.editToolStripSplitButton.Size = new System.Drawing.Size(48, 53);
             this.editToolStripSplitButton.Text = "Edit";
             this.editToolStripSplitButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
+            // 
+            // editContextToolStripMenuItem
+            // 
+            this.editContextToolStripMenuItem.DropDown = this.editorMenuStrip;
+            this.editContextToolStripMenuItem.Name = "editContextToolStripMenuItem";
+            this.editContextToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+            this.editContextToolStripMenuItem.Text = "Edit With";
             // 
             // toolBar
             // 
@@ -2263,7 +2264,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.managedBrowserPanel1.Controls.Add(this.splitContainer);
             this.managedBrowserPanel1.Location = new System.Drawing.Point(0, 0);
             this.managedBrowserPanel1.Name = "managedBrowserPanel1";
-            this.managedBrowserPanel1.Size = new System.Drawing.Size(1028, 497);
+            this.managedBrowserPanel1.Size = new System.Drawing.Size(0, 0);
             this.managedBrowserPanel1.Text = "managedBrowserPanel1";
             // 
             // splitContainer
@@ -2384,8 +2385,50 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.managedBookmarkPanel2.Controls.Add(this.actionToolStrip);
             this.managedBookmarkPanel2.Location = new System.Drawing.Point(0, 0);
             this.managedBookmarkPanel2.Name = "managedBookmarkPanel2";
-            this.managedBookmarkPanel2.Size = new System.Drawing.Size(1028, 497);
+            this.managedBookmarkPanel2.Size = new System.Drawing.Size(0, 0);
             this.managedBookmarkPanel2.Text = "managedBookmarkPanel2";
+            // 
+            // bookmarkListView
+            // 
+            this.bookmarkListView.AllColumns.Add(this.bookmarkImageColumn);
+            this.bookmarkListView.AllColumns.Add(this.bookmarkDescriptionColumn);
+            this.bookmarkListView.AllColumns.Add(this.activeColumn);
+            this.bookmarkListView.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.bookmarkListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.bookmarkImageColumn,
+            this.bookmarkDescriptionColumn,
+            this.activeColumn});
+            this.bookmarkListView.Cursor = System.Windows.Forms.Cursors.Default;
+            this.bookmarkListView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.bookmarkListView.FullRowSelect = true;
+            this.bookmarkListView.Location = new System.Drawing.Point(0, 0);
+            this.bookmarkListView.Name = "bookmarkListView";
+            this.bookmarkListView.OwnerDraw = true;
+            this.bookmarkListView.RowHeight = 37;
+            this.bookmarkListView.ShowGroups = false;
+            this.bookmarkListView.Size = new System.Drawing.Size(0, 0);
+            this.bookmarkListView.TabIndex = 10;
+            this.bookmarkListView.UseCompatibleStateImageBehavior = false;
+            this.bookmarkListView.View = System.Windows.Forms.View.Details;
+            this.bookmarkListView.DoubleClick += new System.EventHandler(this.bookmarkListView_DoubleClick);
+            this.bookmarkListView.KeyDown += new System.Windows.Forms.KeyEventHandler(this.bookmarkListView_KeyDown);
+            // 
+            // bookmarkImageColumn
+            // 
+            this.bookmarkImageColumn.AspectName = "";
+            this.bookmarkImageColumn.IsEditable = false;
+            this.bookmarkImageColumn.Text = "";
+            this.bookmarkImageColumn.Width = 32;
+            // 
+            // bookmarkDescriptionColumn
+            // 
+            this.bookmarkDescriptionColumn.AspectName = "";
+            this.bookmarkDescriptionColumn.Text = "";
+            this.bookmarkDescriptionColumn.Width = 200;
+            // 
+            // activeColumn
+            // 
+            this.activeColumn.Text = "";
             // 
             // actionToolStrip
             // 
@@ -2399,10 +2442,10 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.editBookmarkToolStripButton,
             this.deleteBookmarkToolStripButton});
             this.actionToolStrip.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.HorizontalStackWithOverflow;
-            this.actionToolStrip.Location = new System.Drawing.Point(0, 464);
+            this.actionToolStrip.Location = new System.Drawing.Point(0, -33);
             this.actionToolStrip.Name = "actionToolStrip";
             this.actionToolStrip.ShowItemToolTips = false;
-            this.actionToolStrip.Size = new System.Drawing.Size(1028, 33);
+            this.actionToolStrip.Size = new System.Drawing.Size(0, 33);
             this.actionToolStrip.Stretch = true;
             this.actionToolStrip.TabIndex = 5;
             this.actionToolStrip.Text = "toolStrip1";
@@ -2441,48 +2484,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.deleteBookmarkToolStripButton.Name = "deleteBookmarkToolStripButton";
             this.deleteBookmarkToolStripButton.Size = new System.Drawing.Size(22, 22);
             this.deleteBookmarkToolStripButton.Text = "toolStripButton3";
-            // 
-            // bookmarkListView
-            // 
-            this.bookmarkListView.AllColumns.Add(this.bookmarkImageColumn);
-            this.bookmarkListView.AllColumns.Add(this.bookmarkDescriptionColumn);
-            this.bookmarkListView.AllColumns.Add(this.activeColumn);
-            this.bookmarkListView.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.bookmarkListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.bookmarkImageColumn,
-            this.bookmarkDescriptionColumn,
-            this.activeColumn});
-            this.bookmarkListView.Cursor = System.Windows.Forms.Cursors.Default;
-            this.bookmarkListView.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.bookmarkListView.FullRowSelect = true;
-            this.bookmarkListView.Location = new System.Drawing.Point(0, 0);
-            this.bookmarkListView.Name = "bookmarkListView";
-            this.bookmarkListView.OwnerDraw = true;
-            this.bookmarkListView.RowHeight = 37;
-            this.bookmarkListView.ShowGroups = false;
-            this.bookmarkListView.Size = new System.Drawing.Size(1028, 464);
-            this.bookmarkListView.TabIndex = 10;
-            this.bookmarkListView.UseCompatibleStateImageBehavior = false;
-            this.bookmarkListView.View = System.Windows.Forms.View.Details;
-            this.bookmarkListView.DoubleClick += new System.EventHandler(this.bookmarkListView_DoubleClick);
-            this.bookmarkListView.KeyDown += new System.Windows.Forms.KeyEventHandler(this.bookmarkListView_KeyDown);
-            // 
-            // bookmarkImageColumn
-            // 
-            this.bookmarkImageColumn.AspectName = "";
-            this.bookmarkImageColumn.IsEditable = false;
-            this.bookmarkImageColumn.Text = "";
-            this.bookmarkImageColumn.Width = 32;
-            // 
-            // bookmarkDescriptionColumn
-            // 
-            this.bookmarkDescriptionColumn.AspectName = "";
-            this.bookmarkDescriptionColumn.Text = "";
-            this.bookmarkDescriptionColumn.Width = 200;
-            // 
-            // activeColumn
-            // 
-            this.activeColumn.Text = "";
             // 
             // viewPanel
             // 
@@ -3055,9 +3056,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.splitContainer.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.browser)).EndInit();
             this.managedBookmarkPanel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.bookmarkListView)).EndInit();
             this.actionToolStrip.ResumeLayout(false);
             this.actionToolStrip.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.bookmarkListView)).EndInit();
             this.viewPanel.ResumeLayout(false);
             this.viewPanel.PerformLayout();
             this.tableLayoutPanel1.ResumeLayout(false);
