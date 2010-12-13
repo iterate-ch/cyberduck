@@ -472,8 +472,6 @@ namespace Ch.Cyberduck.Ui.Controller
                 if (!transfer.isRunning())
                 {
                     TransferCollection.defaultCollection().remove(transfer);
-                    _transferMap.Remove(transfer);
-                    View.RemoveTransfer(progressView);
                 }
             }
             TransferCollection.defaultCollection().save();
@@ -541,23 +539,13 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             if (!TransferCollection.defaultCollection().contains(transfer))
             {
-                AddTransfer(transfer);
+                TransferCollection.defaultCollection().add(transfer);
             }
             if (Preferences.instance().getBoolean("queue.orderFrontOnStart"))
             {
                 View.Show();
             }
             background(new TransferBackgroundAction(this, transfer, resumeRequested, reloadRequested));
-        }
-
-        private void AddTransfer(Transfer transfer)
-        {
-            TransferCollection.defaultCollection().add(transfer);
-        }
-
-        private void RemoveTransfer(Transfer transfer)
-        {
-            TransferCollection.defaultCollection().remove(transfer);
         }
 
         private class LogAction : WindowMainAction
@@ -636,7 +624,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     {
                         if (Preferences.instance().getBoolean("queue.removeItemWhenComplete"))
                         {
-                            _controller.RemoveTransfer(_transfer);
+                            TransferCollection.defaultCollection().remove(_transfer);
                         }
                         if (Preferences.instance().getBoolean("queue.orderBackOnStop"))
                         {
