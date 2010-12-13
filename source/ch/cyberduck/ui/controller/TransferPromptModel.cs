@@ -169,13 +169,11 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public virtual object GetCreateImage(TreePathReference reference)
         {
-            //todo was ist das?
             return null;
         }
 
         public virtual object GetSyncGetter(TreePathReference reference)
         {
-            //todo was ist das?
             return null;
         }
 
