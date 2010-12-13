@@ -130,7 +130,7 @@ public class FTPPath extends Path {
                                     result.add(StringUtils.stripStart(line, null));
                                 }
                             }
-                            success = this.parse(children, parser, result);
+                            success = this.parseListResponse(children, parser, result);
                         }
                         else {
                             this.getSession().setStatListSupportedEnabled(false);
@@ -143,30 +143,32 @@ public class FTPPath extends Path {
                     this.getSession().check();
                 }
                 if(!success || children.isEmpty()) {
-                    // Set transfer type for traditional data socket file listings
-                    this.getSession().getClient().setFileType(FTP.ASCII_FILE_TYPE);
                     // STAT listing failed or empty
                     if(this.getSession().isMlsdListSupportedEnabled()
                             // Note that there is no distinct FEAT output for MLSD.
                             // The presence of the MLST feature indicates that both MLST and MLSD are supported.
                             && this.getSession().getClient().isFeatureSupported(FTPClient.MLST)) {
-                        success = this.parse(children, this.getSession().getClient().list(FTPClient.MLSD, this.getAbsolute()));
+                        success = this.parseMlsdResponse(children, this.getSession().getClient().list(FTPClient.MLSD, this.getAbsolute()));
                         if(!success) {
                             this.getSession().setMlsdListSupportedEnabled(false);
                         }
                     }
                     if(!success) {
                         // MLSD listing failed
+                        this.getSession().getClient().setFileType(FTP.ASCII_FILE_TYPE);
+                        // Set transfer type for traditional data socket file listings. The data transfer is over the
+                        // data connection in type ASCII or type EBCDIC. (The user must ensure that
+                        // the TYPE is appropriately ASCII or EBCDIC)
                         if(this.getSession().isExtendedListEnabled()) {
                             StringBuilder sb = new StringBuilder();
                             sb.append("-a ");
                             sb.append(this.getAbsolute());
-                            success = this.parse(children, parser, this.getSession().getClient().list(FTPCommand.LIST, sb.toString()));
+                            success = this.parseListResponse(children, parser, this.getSession().getClient().list(FTPCommand.LIST, sb.toString()));
                         }
                         if(!success) {
                             // LIST -a listing failed
                             this.getSession().setExtendedListEnabled(false);
-                            success = this.parse(children, parser, this.getSession().getClient().list(FTPCommand.LIST, this.getAbsolute()));
+                            success = this.parseListResponse(children, parser, this.getSession().getClient().list(FTPCommand.LIST, this.getAbsolute()));
                         }
                     }
                 }
@@ -266,11 +268,10 @@ public class FTPPath extends Path {
                 }
             }
             file.put(filename, facts);
+            return file;
         }
-        else {
-            log.warn("No match for " + line);
-        }
-        return file;
+        log.warn("No match for " + line);
+        return null;
     }
 
     /**
@@ -281,7 +282,7 @@ public class FTPPath extends Path {
      * @return
      * @throws IOException
      */
-    private boolean parse(final AttributedList<Path> children, List<String> replies)
+    private boolean parseMlsdResponse(final AttributedList<Path> children, List<String> replies)
             throws IOException {
 
         if(null == replies) {
@@ -291,25 +292,37 @@ public class FTPPath extends Path {
         boolean success = false;
         for(String line : replies) {
             final Map<String, Map<String, String>> file = this.parseFacts(line);
-            if(file.isEmpty()) {
+            if(null == file) {
+                log.error("Error parsing line:" + line);
                 continue;
             }
-            success = true; // At least one entry successfully parsed
+            success = false; // At least one entry successfully parsed
             for(String name : file.keySet()) {
+                if(!success) {
+                    if(this.getName().equals(name)) {
+                        log.warn("Skipping possibly bogus response:" + line);
+                        continue;
+                    }
+                    if(name.contains(String.valueOf(DELIMITER))) {
+                        // The filename should never contain a delimiter according to RFC 3669
+                        log.warn("Skip listing entry with delimiter:" + name);
+                        continue;
+                    }
+                }
                 final Path parsed = PathFactory.createPath(this.getSession(), this.getAbsolute(), name, Path.FILE_TYPE);
                 parsed.setParent(this);
-                //                * size       -- Size in octets
-                //                * modify     -- Last modification time
-                //                * create     -- Creation time
-                //                * type       -- Entry type
-                //                * unique     -- Unique id of file/directory
-                //                * perm       -- File permissions, whether read, write, execute is
-                //                * allowed for the login id.
-                //                * lang       -- Language of the file name per IANA [11] registry.
-                //                * media-type -- MIME media-type of file contents per IANA registry.
-                //                * charset    -- Character set per IANA registry (if not UTF-8)
+                // size       -- Size in octets
+                // modify     -- Last modification time
+                // create     -- Creation time
+                // type       -- Entry type
+                // unique     -- Unique id of file/directory
+                // perm       -- File permissions, whether read, write, execute is allowed for the login id.
+                // lang       -- Language of the file name per IANA [11] registry.
+                // media-type -- MIME media-type of file contents per IANA registry.
+                // charset    -- Character set per IANA registry (if not UTF-8)
                 for(Map<String, String> facts : file.values()) {
                     if(!facts.containsKey("type")) {
+                        log.error("No type fact:" + line);
                         continue;
                     }
                     if("dir".equals(facts.get("type").toLowerCase())) {
@@ -319,9 +332,10 @@ public class FTPPath extends Path {
                         parsed.attributes().setType(Path.FILE_TYPE);
                     }
                     else {
-                        log.warn("Unsupported type: " + line);
+                        log.warn("Ignored type: " + line);
                         continue;
                     }
+                    success = true;
                     if(facts.containsKey("sizd")) {
                         parsed.attributes().setSize(Long.parseLong(facts.get("sizd")));
                     }
@@ -341,13 +355,25 @@ public class FTPPath extends Path {
                         parsed.attributes().setGroup(facts.get("unix.group"));
                     }
                     if(facts.containsKey("unix.mode")) {
-                        parsed.attributes().setPermission(new Permission(Integer.parseInt(facts.get("unix.mode"))));
+                        try {
+                            parsed.attributes().setPermission(new Permission(Integer.parseInt(facts.get("unix.mode"))));
+                        }
+                        catch(NumberFormatException e) {
+                            log.error("Failed to parse fact:" + facts.get("unix.mode"));
+                        }
                     }
                     if(facts.containsKey("modify")) {
                         parsed.attributes().setModificationDate(this.parseTimestamp(facts.get("modify")));
                     }
                     if(facts.containsKey("create")) {
                         parsed.attributes().setCreationDate(this.parseTimestamp(facts.get("create")));
+                    }
+                    if(facts.containsKey("charset")) {
+                        if(!facts.get("charset").toLowerCase().equals(this.getSession().getEncoding().toLowerCase())) {
+                            log.error("Incompatible charset " + facts.get("charset")
+                                    + " but session is configured with "
+                                    + this.getSession().getEncoding());
+                        }
                     }
                     children.add(parsed);
                 }
@@ -363,7 +389,7 @@ public class FTPPath extends Path {
      * @return
      * @throws IOException
      */
-    protected boolean parse(final AttributedList<Path> children, FTPFileEntryParser parser, List<String> replies)
+    protected boolean parseListResponse(final AttributedList<Path> children, FTPFileEntryParser parser, List<String> replies)
             throws IOException {
         if(null == replies) {
             // This is an empty directory
@@ -491,8 +517,10 @@ public class FTPPath extends Path {
                 this.getSession().message(MessageFormat.format(Locale.localizedString("Getting size of {0}", "Status"),
                         this.getName()));
 
-                this.getSession().getClient().setFileType(FTP.BINARY_FILE_TYPE);
-                this.attributes().setSize(this.getSession().getClient().getSize(this.getAbsolute()));
+                if(this.getSession().getClient().isFeatureSupported(FTPClient.SIZE)) {
+                    this.getSession().getClient().setFileType(FTP.BINARY_FILE_TYPE);
+                    this.attributes().setSize(this.getSession().getClient().getSize(this.getAbsolute()));
+                }
                 if(-1 == attributes().getSize()) {
                     // Read the size from the directory listing
                     final AttributedList<AbstractPath> l = this.getParent().children();
@@ -527,7 +555,12 @@ public class FTPPath extends Path {
         if(null == timestamp) {
             return -1;
         }
-        return tsFormat.parse(timestamp, new ParsePosition(0)).getTime();
+        Date parsed = tsFormat.parse(timestamp, new ParsePosition(0));
+        if(null == parsed) {
+            log.error("Failed to parse timestamp:" + timestamp);
+            return -1;
+        }
+        return parsed.getTime();
     }
 
     @Override
@@ -538,11 +571,13 @@ public class FTPPath extends Path {
                 this.getSession().message(MessageFormat.format(Locale.localizedString("Getting timestamp of {0}", "Status"),
                         this.getName()));
 
-                // The "pathname" specifies an object in the NVFS which may be the object of a RETR command.
-                // Attempts to query the modification time of files that exist but are unable to be
-                // retrieved may generate an error-response
-                attributes().setModificationDate(
-                        this.parseTimestamp(this.getSession().getClient().getModificationTime(this.getAbsolute())));
+                if(this.getSession().getClient().isFeatureSupported(FTPCommand.MDTM)) {
+                    // The "pathname" specifies an object in the NVFS which may be the object of a RETR command.
+                    // Attempts to query the modification time of files that exist but are unable to be
+                    // retrieved may generate an error-response
+                    attributes().setModificationDate(
+                            this.parseTimestamp(this.getSession().getClient().getModificationTime(this.getAbsolute())));
+                }
                 if(-1 == attributes().getModificationDate()) {
                     // Read the timestamp from the directory listing
                     final AttributedList<AbstractPath> l = this.getParent().children();
@@ -745,19 +780,17 @@ public class FTPPath extends Path {
         }
     }
 
-    private boolean utimeSupported = true;
-
     private void writeModificationDateImpl(long created, long modified) throws IOException {
         this.getSession().message(MessageFormat.format(Locale.localizedString("Changing timestamp of {0} to {1}", "Status"),
                 this.getName(), DateFormatterFactory.instance().getShortFormat(modified)));
         try {
-            if(this.getSession().getClient().isFeatureSupported("MFMT")) {
+            if(this.getSession().getClient().isFeatureSupported(FTPCommand.MFMT)) {
                 if(this.getSession().getClient().setModificationTime(this.getAbsolute(), tsFormat.format(modified))) {
                     this.attributes().setModificationDate(modified);
                 }
             }
             else {
-                if(utimeSupported) {
+                if(this.getSession().isUtimeSupported()) {
                     // The utime() function sets the access and modification times of the named
                     // file from the structures in the argument array timep.
                     // The access time is set to the value of the first element,
@@ -772,7 +805,7 @@ public class FTPPath extends Path {
                         this.attributes().setCreationDate(created);
                     }
                     else {
-                        utimeSupported = false;
+                        this.getSession().setUtimeSupported(false);
                         log.warn("UTIME not supported");
                     }
                 }
@@ -800,6 +833,7 @@ public class FTPPath extends Path {
                         throw new FTPException(this.getSession().getClient().getReplyString());
                     }
                     if(this.status().isResume()) {
+                        // Where a server process supports RESTart in STREAM mode
                         if(!this.getSession().getClient().isFeatureSupported("REST STREAM")) {
                             this.status().setResume(false);
                         }

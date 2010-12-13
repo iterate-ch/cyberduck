@@ -58,7 +58,7 @@ public class FTPPathTest extends AbstractTestCase {
         assertEquals("/SunnyD", path.getAbsolute());
 
         final AttributedList<Path> list = new AttributedList<Path>();
-        final boolean success = path.parse(list, parser,
+        final boolean success = path.parseListResponse(list, parser,
                 Collections.singletonList(" drwxrwx--x 1 owner group          512 Jun 12 15:40 SunnyD"));
 
         assertFalse(success);
@@ -76,7 +76,7 @@ public class FTPPathTest extends AbstractTestCase {
         assertEquals("/", path.getAbsolute());
 
         final AttributedList<Path> list = new AttributedList<Path>();
-        final boolean success = path.parse(list, parser,
+        final boolean success = path.parseListResponse(list, parser,
                 Collections.singletonList("lrwxrwxrwx    1 mk basicgrp       27 Sep 23  2004 www -> /www/basic/mk"));
 
         assertTrue(success);
@@ -95,7 +95,7 @@ public class FTPPathTest extends AbstractTestCase {
         assertEquals("/www", path.getAbsolute());
 
         final AttributedList<Path> list = new AttributedList<Path>();
-        final boolean success = path.parse(list, parser,
+        final boolean success = path.parseListResponse(list, parser,
                 Collections.singletonList("lrwxrwxrwx    1 mk basicgrp       27 Sep 23  2004 /home/mk/www -> /www/basic/mk"));
 
         assertFalse(success);

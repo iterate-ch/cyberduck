@@ -524,4 +524,14 @@ public class FTPSession extends SSLSession {
     public boolean isExtendedListEnabled() {
         return extendedListEnabled;
     }
+
+    private boolean utimeSupported = true;
+
+    public boolean isUtimeSupported() {
+        return utimeSupported;
+    }
+
+    public void setUtimeSupported(boolean utimeSupported) {
+        this.utimeSupported = utimeSupported;
+    }
 }
