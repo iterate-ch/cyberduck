@@ -211,8 +211,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public override List getDefaultApplications()
         {
-            //Todo. Return #getDefaultApplication() as List.
-            return null;
+            return Utils.ConvertToJavaList(Utils.OpenWithListForExtension(this.getExtension()));
         }
 
         public override bool exists()
