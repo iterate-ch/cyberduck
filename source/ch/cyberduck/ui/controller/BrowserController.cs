@@ -679,8 +679,7 @@ namespace Ch.Cyberduck.Ui.Controller
             using (File.Create(tfile))
             {
                 FileInfo tmpFile = new FileInfo(tfile);
-                tmpFile.Attributes |= FileAttributes.Hidden;
-                tmpFile.Attributes |= FileAttributes.System; //good idea?
+                tmpFile.Attributes |= FileAttributes.Hidden;                
             }
 
             DriveInfo[] allDrives = DriveInfo.GetDrives();
