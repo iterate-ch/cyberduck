@@ -59,7 +59,7 @@ public class FTPClient extends FTPSClient {
      * @return string containing server features, or null if no features or not
      *         supported
      */
-    public List<String> parseFeatures() throws IOException {
+    public List<String> listFeatures() throws IOException {
         if(features.isEmpty()) {
             if(featSupported) {
                 if(FTPReply.isPositiveCompletion(this.feat())) {
@@ -88,8 +88,8 @@ public class FTPClient extends FTPSClient {
      * @throws IOException
      */
     public boolean isFeatureSupported(final String feature) throws IOException {
-        for(String item : this.parseFeatures()) {
-            if(feature.equals(item.trim())) {
+        for(String item : this.listFeatures()) {
+            if(item.trim().startsWith(feature)) {
                 return true;
             }
         }
@@ -105,10 +105,14 @@ public class FTPClient extends FTPSClient {
 
     public static final int MLST = 50;
     public static final int MLSD = 51;
+    public static final int SIZE = 52;
+    public static final int PRET = 53;
 
     static {
         commands.put(MLST, "MLST");
         commands.put(MLSD, "MLSD");
+        commands.put(SIZE, "SIZE");
+        commands.put(PRET, "PRET");
     }
 
     /**
@@ -334,13 +338,13 @@ public class FTPClient extends FTPSClient {
     /**
      * http://drftpd.org/index.php/PRET_Specifications
      *
-     * @param cmd
+     * @param file
      * @throws IOException
      */
-    protected void pret(String cmd) throws IOException {
-        if(this.isFeatureSupported("PRET")) {
+    protected void pret(String file) throws IOException {
+        if(this.isFeatureSupported(PRET)) {
             // PRET support
-            if(!FTPReply.isPositiveCompletion(this.sendCommand("PRET " + cmd))) {
+            if(!FTPReply.isPositiveCompletion(this.sendCommand(PRET, file))) {
                 log.warn("PRET command failed:" + this.getReplyString());
             }
         }
@@ -351,11 +355,11 @@ public class FTPClient extends FTPSClient {
      * @return -1 if unknown
      */
     public long getSize(String pathname) throws IOException {
-        if(this.isFeatureSupported("SIZE")) {
+        if(this.isFeatureSupported(SIZE)) {
             if(!this.setFileType(FTPClient.BINARY_FILE_TYPE)) {
                 throw new FTPException(this.getReplyString());
             }
-            if(FTPReply.isPositiveCompletion(this.sendCommand("SIZE", pathname))) {
+            if(FTPReply.isPositiveCompletion(this.sendCommand(SIZE, pathname))) {
                 String status = StringUtils.chomp(this.getReplyString().substring(3).trim());
                 // Trim off any trailing characters after a space, e.g. webstar
                 // responds to SIZE with 213 55564 bytes
@@ -365,7 +369,7 @@ public class FTPClient extends FTPSClient {
                         return Long.parseLong(matcher.group());
                     }
                     catch(NumberFormatException ex) {
-                        log.warn("Failed to parse reply: " + status);
+                        log.warn("Failed to parse reply:" + status);
                     }
                 }
             }
