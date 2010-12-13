@@ -703,18 +703,22 @@ namespace Ch.Cyberduck.Ui.Winforms
                     {
                         case BrowserView.File:
                             panelManager1.SelectedPanel = managedBrowserPanel1;
+                            browser.Focus();
                             EnableViewToolStripButton(browserToolStripButton);
                             return;
                         case BrowserView.Bookmark:
-                            panelManager1.SelectedPanel = managedBookmarkPanel2;
+                            panelManager1.SelectedPanel = managedBookmarkPanel2;                            
                             EnableViewToolStripButton(bookmarksToolStripButton);
+                            bookmarkListView.Focus();
                             return;
                         case BrowserView.History:
                             panelManager1.SelectedPanel = managedBookmarkPanel2;
+                            bookmarkListView.Focus();
                             EnableViewToolStripButton(historyToolStripButton);
                             return;
                         case BrowserView.Bonjour:
                             panelManager1.SelectedPanel = managedBookmarkPanel2;
+                            bookmarkListView.Focus();
                             EnableViewToolStripButton(bonjourToolStripButton);
                             return;
                     }
@@ -1637,7 +1641,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             ConfigureShortcut(downloadToolStripMenuItem, downloadMainMenuItem, Keys.Alt | Keys.Down);
             ConfigureShortcut(downloadAsToolStripMenuItem, downloadAsMainMenuItem, Keys.Alt | Keys.Shift | Keys.Down);
             ConfigureShortcut(uploadToolStripMenuItem, uploadMainMenuItem, Keys.Alt | Keys.Up);
-            ConfigureShortcut(deleteToolStripMenuItem, deleteMainMenuItem, Keys.Delete);
+            ConfigureShortcut(deleteToolStripMenuItem, deleteMainMenuItem, Keys.None, ShortcutToText(Keys.Delete, String.Empty));
             ConfigureShortcut(exitToolStripMenuItem, exitMainMenuItem, Keys.Control | Keys.Q);
 
             #endregion
@@ -1746,7 +1750,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             activated = delegate
                             {
                                 ConfigureShortcut(connectBookmarkContextToolStripMenuItem,
-                                                  connectBookmarkContextMenuItem, Keys.None, "Enter");
+                                                  connectBookmarkContextMenuItem, Keys.None, ShortcutToText(Keys.Enter, String.Empty));
                                 ConfigureShortcut(newBookmarkContextToolStripMenuItem1, newBookmarkContextMenuItem,
                                                   newBookmarkToolStripMenuItem.ShortcutKeys);
                                 ConfigureShortcut(editBookmarkContextToolStripMenuItem1, editBookmarkContextMenuItem,
@@ -2019,6 +2023,10 @@ namespace Ch.Cyberduck.Ui.Winforms
             if (browser.SelectedObjects.Count > 0 && e.KeyCode == Keys.F2)
             {
                 browser.GetItem(browser.SelectedIndices[0]).BeginEdit();
+            }
+            if (e.KeyCode == Keys.Delete)
+            {
+                Delete();
             }
         }
 
