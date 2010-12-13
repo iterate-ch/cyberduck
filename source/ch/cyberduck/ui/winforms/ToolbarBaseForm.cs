@@ -34,40 +34,5 @@ namespace Ch.Cyberduck.Ui.Winforms
         {
             get { return null; }
         }
-
-        /*
-        public void ResizeForm(Panel contentPanel, bool animated)
-        {
-            //todo kann wohl schöner gelöst werden als mit einem lock
-            lock (_syncroot)
-            {
-                int toolstripHeight = ToolStrip == null ? 0 : ToolStrip.Height;
-                int desiredHeight = toolstripHeight + contentPanel.Size.Height + SystemInformation.CaptionHeight + 25;
-
-                if (!animated)
-                {
-                    Height = desiredHeight;
-                    return;
-                }
-                int step = 0;
-                int ratioHeight = ((Height - desiredHeight)/NumberOfSteps)*-1;
-                Timer timer = new Timer();
-                timer.Tick += delegate
-                                  {
-                                      step++;
-                                      Height += ratioHeight;
-                                      if (step == NumberOfSteps)
-                                      {
-                                          timer.Stop();
-                                          Height = desiredHeight;
-                                          ResumeLayout();
-                                      }
-                                  };
-                timer.Interval = UpdateInterval;
-                // prevent smearing
-                SuspendLayout();
-                timer.Start();
-            }
-        }*/
     }
 }
