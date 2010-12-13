@@ -36,6 +36,7 @@ using java.security.cert;
 using java.util;
 using org.apache.log4j;
 using StructureMap;
+using Boolean = java.lang.Boolean;
 using Collection = ch.cyberduck.core.Collection;
 using DataObject = System.Windows.Forms.DataObject;
 using Locale = ch.cyberduck.core.i18n.Locale;
@@ -679,7 +680,7 @@ namespace Ch.Cyberduck.Ui.Controller
             using (File.Create(tfile))
             {
                 FileInfo tmpFile = new FileInfo(tfile);
-                tmpFile.Attributes |= FileAttributes.Hidden;                
+                tmpFile.Attributes |= FileAttributes.Hidden;
             }
 
             DriveInfo[] allDrives = DriveInfo.GetDrives();
@@ -1553,9 +1554,9 @@ namespace Ch.Cyberduck.Ui.Controller
                                                    null);
             if (null != folder)
             {
-                selection = PathFactory.createPath(getTransferSession(), selection.getAsDictionary());
-                selection.setLocal(LocalFactory.createLocal(folder));
-                Transfer q = new SyncTransfer(selection);
+                Path root = PathFactory.createPath(getTransferSession(true), selection.getAsDictionary());
+                root.setLocal(LocalFactory.createLocal(folder));
+                Transfer q = new SyncTransfer(root);
                 transfer(q, selection);
             }
         }
@@ -2176,13 +2177,21 @@ namespace Ch.Cyberduck.Ui.Controller
         /// <returns>The session to be used for file transfers. Null if not mounted</returns>
         protected Session getTransferSession()
         {
+            return this.getTransferSession(false);
+        }
+
+        protected Session getTransferSession(bool force)
+        {
             if (!IsMounted())
             {
                 return null;
             }
-            if (_session.getMaxConnections() == 1)
+            if (!force)
             {
-                return _session;
+                if (_session.getMaxConnections() == 1)
+                {
+                    return _session;
+                }
             }
             Host h = new Host(_session.getHost().getAsDictionary());
             // Copy credentials of the browser
