@@ -20,7 +20,6 @@ using System.Windows.Forms;
 using ch.cyberduck.core;
 using Ch.Cyberduck.Core;
 using ch.cyberduck.core.i18n;
-using ch.cyberduck.ui.controller;
 using Ch.Cyberduck.Ui.Winforms.Taskdialog;
 using org.apache.log4j;
 using org.apache.commons.lang;
