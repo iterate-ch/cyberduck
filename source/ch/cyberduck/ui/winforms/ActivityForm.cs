@@ -21,7 +21,6 @@ using System.Drawing;
 using System.Windows.Forms;
 using BrightIdeasSoftware;
 using ch.cyberduck.core.threading;
-using ch.cyberduck.ui.controller;
 using Ch.Cyberduck.Ui.Controller;
 
 namespace Ch.Cyberduck.Ui.Winforms
@@ -45,7 +44,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             images.Images.Add("stop", ResourcesBundle.stop);
             images.Images.Add("throbber", ResourcesBundle.throbber);
             */
-            
+
             //todo config gemäss ErrorForm (vor allem resizing)
             activitiyListView.RowHeight = 45;
             activitiyListView.ShowGroups = false;
