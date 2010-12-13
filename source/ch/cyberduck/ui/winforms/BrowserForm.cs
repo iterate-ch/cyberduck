@@ -1570,7 +1570,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                              {
                                  activitiyToolStripMenuItem,
                              }, new[] {activityMainMenuItem},
-                         (sender, args) => ((Form) ActivityController.Instance.View).Show(), () => true);
+                         (sender, args) => ((Form) ActivityController.Instance.View).Show(), () => false);
             Commands.Add(new ToolStripItem[]
                              {
                                  minimizeToolStripMenuItem,
