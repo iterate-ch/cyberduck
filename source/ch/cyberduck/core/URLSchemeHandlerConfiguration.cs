@@ -18,11 +18,14 @@
 using System;
 using System.Windows.Forms;
 using Microsoft.Win32;
+using org.apache.log4j;
 
 namespace Ch.Cyberduck.Core
 {
     internal class URLSchemeHandlerConfiguration
     {
+        private static readonly Logger Logger = Logger.getLogger(typeof(URLSchemeHandlerConfiguration).FullName);
+
         private static readonly URLSchemeHandlerConfiguration instance = new URLSchemeHandlerConfiguration();
 
         private URLSchemeHandlerConfiguration()
@@ -146,12 +149,9 @@ namespace Ch.Cyberduck.Core
                     command.SetValue("", "\"" + applicationPath + "\" \"%1\"");
                 }
             }
-            catch (UnauthorizedAccessException)
+            catch (UnauthorizedAccessException e)
             {
-                //todo localize
-                MessageBox.Show(
-                    "You do not have permission to make changes to the registry!\n\nMake sure that you have administrative rights on this computer.",
-                    "Cyberduck", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Logger.error(e.Message);
             }
             finally
             {
