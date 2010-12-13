@@ -485,4 +485,43 @@ public class FTPSession extends SSLSession {
     public boolean isUploadResumable() {
         return true;
     }
+
+    /**
+     * The sever supports STAT file listings
+     */
+    private boolean statListSupportedEnabled = Preferences.instance().getBoolean("ftp.sendStatListCommand");
+
+    public void setStatListSupportedEnabled(boolean e) {
+        this.statListSupportedEnabled = e;
+    }
+
+    public boolean isStatListSupportedEnabled() {
+        return statListSupportedEnabled;
+    }
+
+    /**
+     * The server supports MLSD
+     */
+    private boolean mlsdListSupportedEnabled = Preferences.instance().getBoolean("ftp.sendMlsdListCommand");
+
+    public void setMlsdListSupportedEnabled(boolean e) {
+        this.mlsdListSupportedEnabled = e;
+    }
+
+    public boolean isMlsdListSupportedEnabled() {
+        return mlsdListSupportedEnabled;
+    }
+
+    /**
+     * The server supports LIST -a
+     */
+    private boolean extendedListEnabled = Preferences.instance().getBoolean("ftp.sendExtendedListCommand");
+
+    public void setExtendedListEnabled(boolean e) {
+        this.extendedListEnabled = e;
+    }
+
+    public boolean isExtendedListEnabled() {
+        return extendedListEnabled;
+    }
 }

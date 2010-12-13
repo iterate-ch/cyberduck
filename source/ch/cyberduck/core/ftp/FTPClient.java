@@ -74,6 +74,15 @@ public class FTPClient extends FTPSClient {
     }
 
     /**
+     * @param command
+     * @return
+     * @throws IOException
+     */
+    public boolean isFeatureSupported(final int command) throws IOException {
+        return this.isFeatureSupported(this.getCommand(command));
+    }
+
+    /**
      * @param feature
      * @return
      * @throws IOException
@@ -94,9 +103,11 @@ public class FTPClient extends FTPSClient {
     private static final Map<Integer, String> commands
             = new HashMap<Integer, String>();
 
-    public static final int MLSD = 50;
+    public static final int MLST = 50;
+    public static final int MLSD = 51;
 
     static {
+        commands.put(MLST, "MLST");
         commands.put(MLSD, "MLSD");
     }
 

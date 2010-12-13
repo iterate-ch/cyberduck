@@ -97,33 +97,6 @@ public class FTPPath extends Path {
         return session;
     }
 
-    /**
-     * The sever supports STAT file listings
-     */
-    private boolean statListSupportedEnabled = Preferences.instance().getBoolean("ftp.sendStatListCommand");
-
-    public void setStatListSupportedEnabled(boolean e) {
-        this.statListSupportedEnabled = e;
-    }
-
-    /**
-     * The server supports MLSD
-     */
-    private boolean mlsdListSupportedEnabled = Preferences.instance().getBoolean("ftp.sendMlsdListCommand");
-
-    public void setMlsdListSupportedEnabled(boolean e) {
-        this.mlsdListSupportedEnabled = e;
-    }
-
-    /**
-     * The server supports LIST -a
-     */
-    private boolean extendedListEnabled = Preferences.instance().getBoolean("ftp.sendExtendedListCommand");
-
-    public void setExtendedListEnabled(boolean e) {
-        this.extendedListEnabled = e;
-    }
-
     @Override
     public AttributedList<Path> list() {
         final AttributedList<Path> children = new AttributedList<Path>();
@@ -137,7 +110,8 @@ public class FTPPath extends Path {
                 final FTPFileEntryParser parser = this.getSession().getFileParser();
                 boolean success = false;
                 try {
-                    if(statListSupportedEnabled) {
+                    if(this.getSession().isStatListSupportedEnabled()
+                            && this.getSession().getClient().isFeatureSupported(FTPCommand.STAT)) {
                         int response = this.getSession().getClient().stat(this.getAbsolute());
                         if(FTPReply.isPositiveCompletion(response)) {
                             String[] reply = this.getSession().getClient().getReplyStrings();
@@ -159,7 +133,7 @@ public class FTPPath extends Path {
                             success = this.parse(children, parser, result);
                         }
                         else {
-                            statListSupportedEnabled = false;
+                            this.getSession().setStatListSupportedEnabled(false);
                         }
                     }
                 }
@@ -172,15 +146,18 @@ public class FTPPath extends Path {
                     // Set transfer type for traditional data socket file listings
                     this.getSession().getClient().setFileType(FTP.ASCII_FILE_TYPE);
                     // STAT listing failed or empty
-                    if(mlsdListSupportedEnabled) {
+                    if(this.getSession().isMlsdListSupportedEnabled()
+                            // Note that there is no distinct FEAT output for MLSD.
+                            // The presence of the MLST feature indicates that both MLST and MLSD are supported.
+                            && this.getSession().getClient().isFeatureSupported(FTPClient.MLST)) {
                         success = this.parse(children, this.getSession().getClient().list(FTPClient.MLSD, this.getAbsolute()));
                         if(!success) {
-                            mlsdListSupportedEnabled = false;
+                            this.getSession().setMlsdListSupportedEnabled(false);
                         }
                     }
                     if(!success) {
                         // MLSD listing failed
-                        if(extendedListEnabled) {
+                        if(this.getSession().isExtendedListEnabled()) {
                             StringBuilder sb = new StringBuilder();
                             sb.append("-a ");
                             sb.append(this.getAbsolute());
@@ -188,7 +165,7 @@ public class FTPPath extends Path {
                         }
                         if(!success) {
                             // LIST -a listing failed
-                            extendedListEnabled = false;
+                            this.getSession().setExtendedListEnabled(false);
                             success = this.parse(children, parser, this.getSession().getClient().list(FTPCommand.LIST, this.getAbsolute()));
                         }
                     }
