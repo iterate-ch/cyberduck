@@ -120,9 +120,10 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.menuItem86 = new System.Windows.Forms.MenuItem();
             this.updateMainMenuItem = new System.Windows.Forms.MenuItem();
             this.menuItem88 = new System.Windows.Forms.MenuItem();
-            this.aboutMainMenuItem = new System.Windows.Forms.MenuItem();
             this.keyMainMenuItem = new System.Windows.Forms.MenuItem();
             this.donateMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.menuItem7 = new System.Windows.Forms.MenuItem();
+            this.aboutMainMenuItem = new System.Windows.Forms.MenuItem();
             this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.toolStripProgress = new System.Windows.Forms.ToolStripStatusLabel();
             this.statusLabel = new System.Windows.Forms.ToolStripStatusLabel();
@@ -302,14 +303,14 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.treeColumnKind = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
             this.transcriptBox = new System.Windows.Forms.RichTextBox();
             this.managedBookmarkPanel2 = new Ch.Cyberduck.Ui.Winforms.Controls.ManagedPanel();
-            this.bookmarkListView = new Ch.Cyberduck.Ui.Winforms.Controls.LineSeparatedObjectListView();
-            this.bookmarkImageColumn = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
-            this.bookmarkDescriptionColumn = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
-            this.activeColumn = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
             this.actionToolStrip = new System.Windows.Forms.ToolStrip();
             this.newBookmarkToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.editBookmarkToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.deleteBookmarkToolStripButton = new System.Windows.Forms.ToolStripButton();
+            this.bookmarkListView = new Ch.Cyberduck.Ui.Winforms.Controls.LineSeparatedObjectListView();
+            this.bookmarkImageColumn = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+            this.bookmarkDescriptionColumn = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+            this.activeColumn = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
             this.viewPanel = new System.Windows.Forms.Panel();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.viewToolStrip = new Ch.Cyberduck.Ui.Winforms.Controls.ClickThroughToolStrip();
@@ -386,7 +387,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.deleteBookmarkContextMenuItem = new System.Windows.Forms.MenuItem();
             this.editBookmarkContextMenuItem = new System.Windows.Forms.MenuItem();
             this.duplicateBookmarkContextMenuItem = new System.Windows.Forms.MenuItem();
-            this.menuItem7 = new System.Windows.Forms.MenuItem();
             this.statusStrip.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.toolbarContextMenu.SuspendLayout();
@@ -405,8 +405,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.splitContainer.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.browser)).BeginInit();
             this.managedBookmarkPanel2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.bookmarkListView)).BeginInit();
             this.actionToolStrip.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.bookmarkListView)).BeginInit();
             this.viewPanel.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.viewToolStrip.SuspendLayout();
@@ -960,11 +960,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.menuItem88.Index = 7;
             this.menuItem88.Text = "-";
             // 
-            // aboutMainMenuItem
-            // 
-            this.aboutMainMenuItem.Index = 11;
-            this.aboutMainMenuItem.Text = "About Cyberduck";
-            // 
             // keyMainMenuItem
             // 
             this.keyMainMenuItem.Index = 8;
@@ -974,6 +969,16 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.donateMainMenuItem.Index = 9;
             this.donateMainMenuItem.Text = "Donate…";
+            // 
+            // menuItem7
+            // 
+            this.menuItem7.Index = 10;
+            this.menuItem7.Text = "-";
+            // 
+            // aboutMainMenuItem
+            // 
+            this.aboutMainMenuItem.Index = 11;
+            this.aboutMainMenuItem.Text = "About Cyberduck";
             // 
             // statusStrip
             // 
@@ -2248,8 +2253,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.panelManager1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panelManager1.Location = new System.Drawing.Point(0, 31);
             this.panelManager1.Name = "panelManager1";
-            this.panelManager1.SelectedIndex = 0;
-            this.panelManager1.SelectedPanel = this.managedBrowserPanel1;
+            this.panelManager1.SelectedIndex = 1;
+            this.panelManager1.SelectedPanel = this.managedBookmarkPanel2;
             this.panelManager1.Size = new System.Drawing.Size(1028, 497);
             this.panelManager1.TabIndex = 3;
             // 
@@ -2258,7 +2263,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.managedBrowserPanel1.Controls.Add(this.splitContainer);
             this.managedBrowserPanel1.Location = new System.Drawing.Point(0, 0);
             this.managedBrowserPanel1.Name = "managedBrowserPanel1";
-            this.managedBrowserPanel1.Size = new System.Drawing.Size(0, 0);
+            this.managedBrowserPanel1.Size = new System.Drawing.Size(1028, 497);
             this.managedBrowserPanel1.Text = "managedBrowserPanel1";
             // 
             // splitContainer
@@ -2278,8 +2283,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.splitContainer.Panel2.Controls.Add(this.transcriptBox);
             this.splitContainer.Panel2MinSize = 50;
-            this.splitContainer.Size = new System.Drawing.Size(0, 0);
-            this.splitContainer.SplitterDistance = 0;
+            this.splitContainer.Size = new System.Drawing.Size(1028, 497);
+            this.splitContainer.SplitterDistance = 444;
             this.splitContainer.SplitterWidth = 3;
             this.splitContainer.TabIndex = 2;
             // 
@@ -2308,7 +2313,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.browser.Name = "browser";
             this.browser.OwnerDraw = true;
             this.browser.ShowGroups = false;
-            this.browser.Size = new System.Drawing.Size(0, 0);
+            this.browser.Size = new System.Drawing.Size(1028, 444);
             this.browser.TabIndex = 15;
             this.browser.UseCompatibleStateImageBehavior = false;
             this.browser.View = System.Windows.Forms.View.Details;
@@ -2368,7 +2373,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.transcriptBox.Location = new System.Drawing.Point(0, 0);
             this.transcriptBox.Name = "transcriptBox";
             this.transcriptBox.ReadOnly = true;
-            this.transcriptBox.Size = new System.Drawing.Size(0, 51);
+            this.transcriptBox.Size = new System.Drawing.Size(1028, 50);
             this.transcriptBox.TabIndex = 0;
             this.transcriptBox.Text = "";
             this.transcriptBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.transcriptBox_KeyDown);
@@ -2379,50 +2384,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.managedBookmarkPanel2.Controls.Add(this.actionToolStrip);
             this.managedBookmarkPanel2.Location = new System.Drawing.Point(0, 0);
             this.managedBookmarkPanel2.Name = "managedBookmarkPanel2";
-            this.managedBookmarkPanel2.Size = new System.Drawing.Size(0, 0);
+            this.managedBookmarkPanel2.Size = new System.Drawing.Size(1028, 497);
             this.managedBookmarkPanel2.Text = "managedBookmarkPanel2";
-            // 
-            // bookmarkListView
-            // 
-            this.bookmarkListView.AllColumns.Add(this.bookmarkImageColumn);
-            this.bookmarkListView.AllColumns.Add(this.bookmarkDescriptionColumn);
-            this.bookmarkListView.AllColumns.Add(this.activeColumn);
-            this.bookmarkListView.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.bookmarkListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.bookmarkImageColumn,
-            this.bookmarkDescriptionColumn,
-            this.activeColumn});
-            this.bookmarkListView.Cursor = System.Windows.Forms.Cursors.Default;
-            this.bookmarkListView.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.bookmarkListView.FullRowSelect = true;
-            this.bookmarkListView.Location = new System.Drawing.Point(0, 0);
-            this.bookmarkListView.Name = "bookmarkListView";
-            this.bookmarkListView.OwnerDraw = true;
-            this.bookmarkListView.RowHeight = 37;
-            this.bookmarkListView.ShowGroups = false;
-            this.bookmarkListView.Size = new System.Drawing.Size(0, 0);
-            this.bookmarkListView.TabIndex = 10;
-            this.bookmarkListView.UseCompatibleStateImageBehavior = false;
-            this.bookmarkListView.View = System.Windows.Forms.View.Details;
-            this.bookmarkListView.DoubleClick += new System.EventHandler(this.bookmarkListView_DoubleClick);
-            this.bookmarkListView.KeyDown += new System.Windows.Forms.KeyEventHandler(this.bookmarkListView_KeyDown);
-            // 
-            // bookmarkImageColumn
-            // 
-            this.bookmarkImageColumn.AspectName = "";
-            this.bookmarkImageColumn.IsEditable = false;
-            this.bookmarkImageColumn.Text = "";
-            this.bookmarkImageColumn.Width = 32;
-            // 
-            // bookmarkDescriptionColumn
-            // 
-            this.bookmarkDescriptionColumn.AspectName = "";
-            this.bookmarkDescriptionColumn.Text = "";
-            this.bookmarkDescriptionColumn.Width = 200;
-            // 
-            // activeColumn
-            // 
-            this.activeColumn.Text = "";
             // 
             // actionToolStrip
             // 
@@ -2436,14 +2399,13 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.editBookmarkToolStripButton,
             this.deleteBookmarkToolStripButton});
             this.actionToolStrip.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.HorizontalStackWithOverflow;
-            this.actionToolStrip.Location = new System.Drawing.Point(0, -33);
+            this.actionToolStrip.Location = new System.Drawing.Point(0, 464);
             this.actionToolStrip.Name = "actionToolStrip";
             this.actionToolStrip.ShowItemToolTips = false;
-            this.actionToolStrip.Size = new System.Drawing.Size(0, 33);
+            this.actionToolStrip.Size = new System.Drawing.Size(1028, 33);
             this.actionToolStrip.Stretch = true;
             this.actionToolStrip.TabIndex = 5;
             this.actionToolStrip.Text = "toolStrip1";
-            this.actionToolStrip.Visible = false;
             // 
             // newBookmarkToolStripButton
             // 
@@ -2479,6 +2441,48 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.deleteBookmarkToolStripButton.Name = "deleteBookmarkToolStripButton";
             this.deleteBookmarkToolStripButton.Size = new System.Drawing.Size(22, 22);
             this.deleteBookmarkToolStripButton.Text = "toolStripButton3";
+            // 
+            // bookmarkListView
+            // 
+            this.bookmarkListView.AllColumns.Add(this.bookmarkImageColumn);
+            this.bookmarkListView.AllColumns.Add(this.bookmarkDescriptionColumn);
+            this.bookmarkListView.AllColumns.Add(this.activeColumn);
+            this.bookmarkListView.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.bookmarkListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.bookmarkImageColumn,
+            this.bookmarkDescriptionColumn,
+            this.activeColumn});
+            this.bookmarkListView.Cursor = System.Windows.Forms.Cursors.Default;
+            this.bookmarkListView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.bookmarkListView.FullRowSelect = true;
+            this.bookmarkListView.Location = new System.Drawing.Point(0, 0);
+            this.bookmarkListView.Name = "bookmarkListView";
+            this.bookmarkListView.OwnerDraw = true;
+            this.bookmarkListView.RowHeight = 37;
+            this.bookmarkListView.ShowGroups = false;
+            this.bookmarkListView.Size = new System.Drawing.Size(1028, 464);
+            this.bookmarkListView.TabIndex = 10;
+            this.bookmarkListView.UseCompatibleStateImageBehavior = false;
+            this.bookmarkListView.View = System.Windows.Forms.View.Details;
+            this.bookmarkListView.DoubleClick += new System.EventHandler(this.bookmarkListView_DoubleClick);
+            this.bookmarkListView.KeyDown += new System.Windows.Forms.KeyEventHandler(this.bookmarkListView_KeyDown);
+            // 
+            // bookmarkImageColumn
+            // 
+            this.bookmarkImageColumn.AspectName = "";
+            this.bookmarkImageColumn.IsEditable = false;
+            this.bookmarkImageColumn.Text = "";
+            this.bookmarkImageColumn.Width = 32;
+            // 
+            // bookmarkDescriptionColumn
+            // 
+            this.bookmarkDescriptionColumn.AspectName = "";
+            this.bookmarkDescriptionColumn.Text = "";
+            this.bookmarkDescriptionColumn.Width = 200;
+            // 
+            // activeColumn
+            // 
+            this.activeColumn.Text = "";
             // 
             // viewPanel
             // 
@@ -3017,11 +3021,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.duplicateBookmarkContextMenuItem.Index = 5;
             this.duplicateBookmarkContextMenuItem.Text = "Duplicate Bookmark";
             // 
-            // menuItem7
-            // 
-            this.menuItem7.Index = 10;
-            this.menuItem7.Text = "-";
-            // 
             // BrowserForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -3056,9 +3055,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.splitContainer.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.browser)).EndInit();
             this.managedBookmarkPanel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.bookmarkListView)).EndInit();
             this.actionToolStrip.ResumeLayout(false);
             this.actionToolStrip.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.bookmarkListView)).EndInit();
             this.viewPanel.ResumeLayout(false);
             this.viewPanel.PerformLayout();
             this.tableLayoutPanel1.ResumeLayout(false);
