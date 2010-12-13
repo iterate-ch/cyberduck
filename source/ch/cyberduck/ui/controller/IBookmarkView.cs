@@ -38,7 +38,6 @@ namespace Ch.Cyberduck.Ui.Controller
 
         string Nickname { get; set; }
         string URL { get; set; }
-        string UsernamePlaceholder { set; }
         string DownloadFolder { set; }
         string SelectedConnectMode { get; set; }
         string SelectedEncoding { get; set; }

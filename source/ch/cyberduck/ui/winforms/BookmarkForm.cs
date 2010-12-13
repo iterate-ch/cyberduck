@@ -264,16 +264,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             set { protocol.SelectedValue = value; }
         }
 
-        public string UsernamePlaceholder
-        {
-            set
-            {
-                // todo, über das label des Username gelöst
-                // http://www.aaronlerch.com/blog/2007/12/01/watermarked-edit-controls/
-                ;
-            }
-        }
-
         public string Nickname
         {
             get { return textBoxNickname.Text; }

@@ -124,11 +124,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             get { return linkLabelURL.Text; }
         }
 
-        public string UsernamePlaceholder
-        {
-            set { ; }
-        }
-
         public string DownloadFolder
         {
             set { ; }
