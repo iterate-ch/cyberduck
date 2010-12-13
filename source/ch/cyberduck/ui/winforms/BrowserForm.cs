@@ -1,4 +1,4 @@
-﻿﻿//
+﻿// 
 // Copyright (c) 2010 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
@@ -64,11 +64,17 @@ namespace Ch.Cyberduck.Ui.Winforms
 
             BookmarkMenuCollectionListener bookmarkMenuCollectionListener = new BookmarkMenuCollectionListener(this);
             BookmarkCollection.defaultCollection().addListener(bookmarkMenuCollectionListener);
-            MenuCollectionListener historyMenuCollectionListener = new MenuCollectionListener(this, historyMainMenuItem, 
-                HistoryCollection.defaultCollection(), Locale.localizedString("No recently connected servers available"));
+            MenuCollectionListener historyMenuCollectionListener = new MenuCollectionListener(this, historyMainMenuItem,
+                                                                                              HistoryCollection.
+                                                                                                  defaultCollection(),
+                                                                                              Locale.localizedString(
+                                                                                                  "No recently connected servers available"));
             HistoryCollection.defaultCollection().addListener(historyMenuCollectionListener);
-            MenuCollectionListener bonjourMenuCollectionListener = new MenuCollectionListener(this, bonjourMainMenuItem, 
-                RendezvousCollection.defaultCollection(), Locale.localizedString("No Bonjour services available"));
+            MenuCollectionListener bonjourMenuCollectionListener = new MenuCollectionListener(this, bonjourMainMenuItem,
+                                                                                              RendezvousCollection.
+                                                                                                  defaultCollection(),
+                                                                                              Locale.localizedString(
+                                                                                                  "No Bonjour services available"));
             RendezvousCollection.defaultCollection().addListener(bonjourMenuCollectionListener);
 
             if (!DesignMode)
@@ -99,7 +105,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             browser.ContextMenuStrip = null;
             browser.ContextMenu = browserContextMenu;
             browser.DropSink = new ExpandingBrowserDropSink(this);
-            browser.DragSource = new BrowserDragSource(this);           
+            browser.DragSource = new BrowserDragSource(this);
 
             browser.AllowColumnReorder = true;
             browser.ShowImagesOnSubItems = true;
@@ -205,47 +211,6 @@ namespace Ch.Cyberduck.Ui.Winforms
                               HistoryCollection.defaultCollection().removeListener(historyMenuCollectionListener);
                               RendezvousCollection.defaultCollection().removeListener(bonjourMenuCollectionListener);
                           };
-        }
-
-        private void OnEditMenuItemPopup(object sender, EventArgs e)
-        {
-            MenuItem mainItem = sender as MenuItem;
-            mainItem.MenuItems.Clear();
-
-            //Add default entry
-            {
-                MenuItem item = mainItem.MenuItems.Add(Locale.localizedString("Default"));
-                item.Click += delegate { EditEvent(null); };
-                //todo refactor! no direct IconCache access.
-                vistaMenu1.SetImage(item, IconCache.ResizeImage(editToolStripSplitButton.Image, new Size(16, 16)));
-                SetShortcutText(item, editWithToolStripMenuItem, null);
-            }
-            IList<KeyValuePair<string, string>> editors = GetEditors();
-            if (editors.Count > 0)
-            {
-                mainItem.MenuItems.Add("-");
-            }
-            foreach (KeyValuePair<string, string> pair in editors)
-            {
-                MenuItem item = mainItem.MenuItems.Add(pair.Key);
-                item.Tag = pair.Value;
-                item.Click += delegate { EditEvent(item.Tag as String); };
-                vistaMenu1.UpdateParent(mainItem);
-                vistaMenu1.SetImage(item,
-                                    IconCache.Instance.ExtractIconFromExecutable(pair.Value, IconCache.IconSize.Small));
-            }
-        }
-
-        private void OnArchiveMenuStripOpening(object sender, CancelEventArgs e)
-        {
-            archiveMenuStrip.Items.Clear();
-            foreach (string archive in GetArchives())
-            {
-                ToolStripMenuItem item = new ToolStripMenuItem(archive);
-                string archiveName = archive;
-                item.Click += delegate { CreateArchive(this, new CreateArchiveEventArgs(archiveName)); };
-                archiveMenuStrip.Items.Add(item);
-            }
         }
 
         public Image Favicon
@@ -707,7 +672,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                             EnableViewToolStripButton(browserToolStripButton);
                             return;
                         case BrowserView.Bookmark:
-                            panelManager1.SelectedPanel = managedBookmarkPanel2;                            
+                            panelManager1.SelectedPanel = managedBookmarkPanel2;
                             EnableViewToolStripButton(bookmarksToolStripButton);
                             bookmarkListView.Focus();
                             return;
@@ -933,6 +898,47 @@ namespace Ch.Cyberduck.Ui.Winforms
         public bool SecureConnection
         {
             set { securityToolStripStatusLabel.Image = IconCache.Instance.IconForName(value ? "locked" : "unlocked"); }
+        }
+
+        private void OnEditMenuItemPopup(object sender, EventArgs e)
+        {
+            MenuItem mainItem = sender as MenuItem;
+            mainItem.MenuItems.Clear();
+
+            //Add default entry
+            {
+                MenuItem item = mainItem.MenuItems.Add(Locale.localizedString("Default"));
+                item.Click += delegate { EditEvent(null); };
+                //todo refactor! no direct IconCache access.
+                vistaMenu1.SetImage(item, IconCache.ResizeImage(editToolStripSplitButton.Image, new Size(16, 16)));
+                SetShortcutText(item, editWithToolStripMenuItem, null);
+            }
+            IList<KeyValuePair<string, string>> editors = GetEditors();
+            if (editors.Count > 0)
+            {
+                mainItem.MenuItems.Add("-");
+            }
+            foreach (KeyValuePair<string, string> pair in editors)
+            {
+                MenuItem item = mainItem.MenuItems.Add(pair.Key);
+                item.Tag = pair.Value;
+                item.Click += delegate { EditEvent(item.Tag as String); };
+                vistaMenu1.UpdateParent(mainItem);
+                vistaMenu1.SetImage(item,
+                                    IconCache.Instance.ExtractIconFromExecutable(pair.Value, IconCache.IconSize.Small));
+            }
+        }
+
+        private void OnArchiveMenuStripOpening(object sender, CancelEventArgs e)
+        {
+            archiveMenuStrip.Items.Clear();
+            foreach (string archive in GetArchives())
+            {
+                ToolStripMenuItem item = new ToolStripMenuItem(archive);
+                string archiveName = archive;
+                item.Click += delegate { CreateArchive(this, new CreateArchiveEventArgs(archiveName)); };
+                archiveMenuStrip.Items.Add(item);
+            }
         }
 
         private void OnEditorActionMenuOpening(object sender, EventArgs e)
@@ -1637,7 +1643,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             ConfigureShortcut(downloadToolStripMenuItem, downloadMainMenuItem, Keys.Alt | Keys.Down);
             ConfigureShortcut(downloadAsToolStripMenuItem, downloadAsMainMenuItem, Keys.Alt | Keys.Shift | Keys.Down);
             ConfigureShortcut(uploadToolStripMenuItem, uploadMainMenuItem, Keys.Alt | Keys.Up);
-            ConfigureShortcut(deleteToolStripMenuItem, deleteMainMenuItem, Keys.None, ShortcutToText(Keys.Delete, String.Empty));
+            ConfigureShortcut(deleteToolStripMenuItem, deleteMainMenuItem, Keys.None,
+                              ShortcutToText(Keys.Delete, String.Empty));
             ConfigureShortcut(exitToolStripMenuItem, exitMainMenuItem, Keys.Control | Keys.Q);
 
             #endregion
@@ -1648,7 +1655,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             ConfigureShortcut(copyToolStripMenuItem, copyMainMenuItem, Keys.Control | Keys.C);
             ConfigureShortcut(copyURLToolStripMenuItem, copyUrlMainMenuItem, Keys.Control | Keys.Shift | Keys.C);
             ConfigureShortcut(pasteToolStripMenuItem, pasteMainMenuItem, Keys.Control | Keys.V);
-            ConfigureShortcut(selectAllToolStripMenuItem, selectAllMainMenuItem, Keys.None, ShortcutToText(Keys.Control | Keys.A, String.Empty));
+            ConfigureShortcut(selectAllToolStripMenuItem, selectAllMainMenuItem, Keys.None,
+                              ShortcutToText(Keys.Control | Keys.A, String.Empty));
             ConfigureShortcut(preferencesToolStripMenuItem, preferencesMainMenuItem, Keys.Control | Keys.Oemcomma,
                               "Ctrl+,");
 
@@ -1746,7 +1754,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             activated = delegate
                             {
                                 ConfigureShortcut(connectBookmarkContextToolStripMenuItem,
-                                                  connectBookmarkContextMenuItem, Keys.None, ShortcutToText(Keys.Enter, String.Empty));
+                                                  connectBookmarkContextMenuItem, Keys.None,
+                                                  ShortcutToText(Keys.Enter, String.Empty));
                                 ConfigureShortcut(newBookmarkContextToolStripMenuItem1, newBookmarkContextMenuItem,
                                                   newBookmarkToolStripMenuItem.ShortcutKeys);
                                 ConfigureShortcut(editBookmarkContextToolStripMenuItem1, editBookmarkContextMenuItem,
@@ -1961,24 +1970,6 @@ namespace Ch.Cyberduck.Ui.Winforms
                 PersistenceHandler.Set("Tree.State", browser.SaveState());
             }
             PersistenceHandler.Set("Splitter.Distance", splitContainer.SplitterDistance);
-        }
-
-        private void OnEditorMenuStripOnOpening(object sender, CancelEventArgs args)
-        {
-            //todo
-            /*
-            editorMenuStrip.Items.Clear();
-
-            foreach (KeyValuePair<string, string> pair in GetEditors())
-            {
-                editorMenuStrip.
-            }
-            
-            
-            foreach (string editor in GetEditors())
-            {
-                editorMenuStrip.Items.Add(editor);
-            }*/
         }
 
         private void browser_DoubleClick(object sender, EventArgs e)
@@ -2247,11 +2238,8 @@ namespace Ch.Cyberduck.Ui.Winforms
         {
             if (e.KeyChar == (char) Keys.Enter)
             {
-                if (browser.SelectedObjects.Count == 1)
-                {
-                    browser.ToggleExpansion(browser.SelectedObject);
-                    e.Handled = true;
-                }
+                BrowserDoubleClicked();
+                e.Handled = true;
             }
         }
 
@@ -2618,121 +2606,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             }
         }
 
-        private class MenuCollectionListener : CollectionListener
-        {
-            private readonly BrowserForm _form;
-            private readonly AbstractHostCollection _collection;
-            private readonly ImageList.ImageCollection _icons = IconCache.Instance.GetProtocolIcons().Images;
-            private readonly MenuItem _menu;
-            private readonly String _empty;
-
-            public MenuCollectionListener(BrowserForm f, MenuItem menu, AbstractHostCollection collection, String empty)
-            {
-                _form = f;
-                _menu = menu;
-                _collection = collection;
-                _empty = empty;
-            }
-
-            public void collectionLoaded()
-            {
-                _form.Invoke(new AsyncController.AsyncDelegate(BuildMenuItems));
-            }
-
-            public void collectionItemAdded(object obj)
-            {
-                _form.Invoke(new AsyncController.AsyncDelegate(delegate
-                {
-                    if (_collection.size() == 1)
-                    {
-                        BuildMenuItems();
-                    }
-                    else
-                    {
-                        int pos = _collection.indexOf(obj);
-                        Host h = (Host)obj;
-                        MenuItem i = new MenuItem(h.getNickname());
-                        i.Tag = h;
-                        i.Click += (o, args) => _form.ConnectBookmark(this, new ConnectBookmarkArgs(h));
-                        _menu.MenuItems.Add(pos, i);
-                        _form.vistaMenu1.SetImage(i, _icons[h.getProtocol().getIdentifier()]);
-                    }
-                }));
-            }
-
-            public void collectionItemRemoved(object obj)
-            {
-                _form.Invoke(new AsyncController.AsyncDelegate(delegate
-                {
-                    foreach (MenuItem item in _menu.MenuItems)
-                    {
-                        if (obj.Equals(item.Tag))
-                        {
-                            _menu.MenuItems.Remove(item);
-                            break;
-                        }
-                    }
-                    if (
-                        _collection.size() == 0)
-                    {
-                        BuildMenuItems();
-                    }
-                }));
-            }
-
-            public void collectionItemChanged(object obj)
-            {
-                _form.Invoke(new AsyncController.AsyncDelegate(delegate
-                {
-                    foreach (
-                        MenuItem item in _menu.MenuItems)
-                    {
-                        if (obj.Equals(item.Tag))
-                        {
-                            Host h = (Host)obj;
-                            item.Text = h.getNickname();
-                            _form.vistaMenu1.SetImage(item, _icons[h.getProtocol().getIdentifier()]);
-                            break;
-                        }
-                    }
-                }));
-            }
-
-            public void BuildMenuItems()
-            {
-                _menu.MenuItems.Clear();
-                if (_collection.size() > 0)
-                {
-                    List<MenuItem> items = new List<MenuItem>();
-                    foreach (Host bookmark in _collection)
-                    {
-                        MenuItem item = new MenuItem(bookmark.getNickname());
-                        item.Tag = bookmark;
-                        item.Click += (o, args) => _form.ConnectBookmark(this, new ConnectBookmarkArgs(item.Tag as Host));
-                        items.Add(item);
-                    }
-                    // separator and clear item
-//                    items.Add(new MenuItem("-"));
-//                    MenuItem clear = new MenuItem(Locale.localizedString("Clear Menu"));
-//                    clear.Click += (o, args) => _form.ClearHistory();
-//                    items.Add(clear);
-
-                    _menu.MenuItems.AddRange(items.ToArray());
-                    foreach (MenuItem item in items)
-                    {
-                        if (null != item.Tag)
-                            _form.vistaMenu1.SetImage(item, _icons[((Host)item.Tag).getProtocol().getIdentifier()]);
-                    }
-                }
-                else
-                {
-                    MenuItem noitem = new MenuItem(_empty);
-                    noitem.Enabled = false;
-                    _menu.MenuItems.Add(noitem);
-                }
-            }
-        }
-
         private class HostDragSource : SimpleDragSource
         {
             private readonly BrowserForm _form;
@@ -2869,6 +2742,137 @@ namespace Ch.Cyberduck.Ui.Winforms
                 if (!(e.Data is OLVDataObject))
                 {
                     DropTargetHelper.DragOver(new Point(e.X, e.Y), e.Effect);
+                }
+            }
+        }
+
+        private class MenuCollectionListener : CollectionListener
+        {
+            private readonly AbstractHostCollection _collection;
+            private readonly String _empty;
+            private readonly BrowserForm _form;
+            private readonly ImageList.ImageCollection _icons = IconCache.Instance.GetProtocolIcons().Images;
+            private readonly MenuItem _menu;
+
+            public MenuCollectionListener(BrowserForm f, MenuItem menu, AbstractHostCollection collection, String empty)
+            {
+                _form = f;
+                _menu = menu;
+                _collection = collection;
+                _empty = empty;
+            }
+
+            public void collectionLoaded()
+            {
+                _form.Invoke(new AsyncController.AsyncDelegate(BuildMenuItems));
+            }
+
+            public void collectionItemAdded(object obj)
+            {
+                _form.Invoke(new AsyncController.AsyncDelegate(delegate
+                                                                   {
+                                                                       if (_collection.size() == 1)
+                                                                       {
+                                                                           BuildMenuItems();
+                                                                       }
+                                                                       else
+                                                                       {
+                                                                           int pos = _collection.indexOf(obj);
+                                                                           Host h = (Host) obj;
+                                                                           MenuItem i = new MenuItem(h.getNickname());
+                                                                           i.Tag = h;
+                                                                           i.Click +=
+                                                                               (o, args) =>
+                                                                               _form.ConnectBookmark(this,
+                                                                                                     new ConnectBookmarkArgs
+                                                                                                         (h));
+                                                                           _menu.MenuItems.Add(pos, i);
+                                                                           _form.vistaMenu1.SetImage(i,
+                                                                                                     _icons[
+                                                                                                         h.getProtocol()
+                                                                                                             .
+                                                                                                             getIdentifier
+                                                                                                             ()]);
+                                                                       }
+                                                                   }));
+            }
+
+            public void collectionItemRemoved(object obj)
+            {
+                _form.Invoke(new AsyncController.AsyncDelegate(delegate
+                                                                   {
+                                                                       foreach (MenuItem item in _menu.MenuItems)
+                                                                       {
+                                                                           if (obj.Equals(item.Tag))
+                                                                           {
+                                                                               _menu.MenuItems.Remove(item);
+                                                                               break;
+                                                                           }
+                                                                       }
+                                                                       if (
+                                                                           _collection.size() == 0)
+                                                                       {
+                                                                           BuildMenuItems();
+                                                                       }
+                                                                   }));
+            }
+
+            public void collectionItemChanged(object obj)
+            {
+                _form.Invoke(new AsyncController.AsyncDelegate(delegate
+                                                                   {
+                                                                       foreach (
+                                                                           MenuItem item in _menu.MenuItems)
+                                                                       {
+                                                                           if (obj.Equals(item.Tag))
+                                                                           {
+                                                                               Host h = (Host) obj;
+                                                                               item.Text = h.getNickname();
+                                                                               _form.vistaMenu1.SetImage(item,
+                                                                                                         _icons[
+                                                                                                             h.
+                                                                                                                 getProtocol
+                                                                                                                 ().
+                                                                                                                 getIdentifier
+                                                                                                                 ()]);
+                                                                               break;
+                                                                           }
+                                                                       }
+                                                                   }));
+            }
+
+            public void BuildMenuItems()
+            {
+                _menu.MenuItems.Clear();
+                if (_collection.size() > 0)
+                {
+                    List<MenuItem> items = new List<MenuItem>();
+                    foreach (Host bookmark in _collection)
+                    {
+                        MenuItem item = new MenuItem(bookmark.getNickname());
+                        item.Tag = bookmark;
+                        item.Click +=
+                            (o, args) => _form.ConnectBookmark(this, new ConnectBookmarkArgs(item.Tag as Host));
+                        items.Add(item);
+                    }
+                    // separator and clear item
+//                    items.Add(new MenuItem("-"));
+//                    MenuItem clear = new MenuItem(Locale.localizedString("Clear Menu"));
+//                    clear.Click += (o, args) => _form.ClearHistory();
+//                    items.Add(clear);
+
+                    _menu.MenuItems.AddRange(items.ToArray());
+                    foreach (MenuItem item in items)
+                    {
+                        if (null != item.Tag)
+                            _form.vistaMenu1.SetImage(item, _icons[((Host) item.Tag).getProtocol().getIdentifier()]);
+                    }
+                }
+                else
+                {
+                    MenuItem noitem = new MenuItem(_empty);
+                    noitem.Enabled = false;
+                    _menu.MenuItems.Add(noitem);
                 }
             }
         }
