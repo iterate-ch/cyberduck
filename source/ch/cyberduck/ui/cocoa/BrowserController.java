@@ -2626,17 +2626,17 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         sheet.close();
         if(returncode == SheetCallback.DEFAULT_OPTION) {
             if(sheet.filenames().count().intValue() > 0) {
-                final Path selection;
-                if(this.getSelectionCount() == 1 &&
-                        this.getSelectedPath().attributes().isDirectory()) {
-                    selection = PathFactory.createPath(getTransferSession(), this.getSelectedPath().getAsDictionary());
+                final Path selected;
+                if(this.getSelectionCount() == 1 && this.getSelectedPath().attributes().isDirectory()) {
+                    selected = this.getSelectedPath();
                 }
                 else {
-                    selection = PathFactory.createPath(getTransferSession(), this.workdir().getAsDictionary());
+                    selected = this.workdir();
                 }
-                selection.setLocal(LocalFactory.createLocal(sheet.filenames().lastObject().toString()));
-                final Transfer q = new SyncTransfer(selection);
-                transfer(q, selection);
+                Path root = PathFactory.createPath(getTransferSession(true), selected.getAsDictionary());
+                root.setLocal(LocalFactory.createLocal(sheet.filenames().lastObject().toString()));
+                final Transfer q = new SyncTransfer(root);
+                transfer(q, selected);
             }
         }
     }
@@ -2743,11 +2743,21 @@ public class BrowserController extends WindowController implements NSToolbar.Del
      * @return The session to be used for file transfers. Null if not mounted
      */
     protected Session getTransferSession() {
+        return this.getTransferSession(false);
+    }
+
+    /**
+     * @param force Force to create a new session and not reuse the browser session
+     * @return The session to be used for file transfers. Null if not mounted
+     */
+    protected Session getTransferSession(boolean force) {
         if(!this.isMounted()) {
             return null;
         }
-        if(this.session.getMaxConnections() == 1) {
-            return this.session;
+        if(!force) {
+            if(this.session.getMaxConnections() == 1) {
+                return this.session;
+            }
         }
         final Host h = new Host(this.session.getHost().<NSDictionary>getAsDictionary());
         // Copy credentials of the browser
