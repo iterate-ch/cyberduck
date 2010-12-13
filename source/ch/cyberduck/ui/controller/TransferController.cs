@@ -68,8 +68,10 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public void log(bool request, string transcript)
         {
-            //todo implement if (logDrawer==open)
-            invoke(new LogAction(this, request, transcript));
+            if (View.TranscriptVisible)
+            {
+                invoke(new LogAction(this, request, transcript));
+            }
         }
 
         public static bool ApplicationShouldTerminate()
