@@ -77,17 +77,23 @@ public abstract class LicenseFactory extends Factory<License> {
      * @see #EMPTY_LICENSE
      */
     public static License find() {
-        final Collection<File> licenses = FileUtils.listFiles(
-                new File(LocalFactory.createLocal(Preferences.instance().getProperty("application.support.path")).getAbsolute()),
-                new SuffixFileFilter(".cyberducklicense"), FalseFileFilter.FALSE);
-        for(File license : licenses) {
-            return LicenseFactory.create(LocalFactory.createLocal(license));
+        Local support = LocalFactory.createLocal(Preferences.instance().getProperty("application.support.path"));
+        if(support.exists()) {
+            final Collection<File> keys = FileUtils.listFiles(
+                    new File(support.getAbsolute()),
+                    new SuffixFileFilter(".cyberducklicense"), FalseFileFilter.FALSE);
+            for(File key : keys) {
+                return LicenseFactory.create(LocalFactory.createLocal(key));
+            }
         }
-        final Collection<File> receipts = FileUtils.listFiles(
-                new File(LocalFactory.createLocal(Preferences.instance().getProperty("application.receipt.path")).getAbsolute()),
-                new NameFileFilter("receipt"), FalseFileFilter.FALSE);
-        for(File receipt : receipts) {
-            return LicenseFactory.create(LocalFactory.createLocal(receipt));
+        Local receipt = LocalFactory.createLocal(Preferences.instance().getProperty("application.receipt.path"));
+        if(receipt.exists()) {
+            final Collection<File> receipts = FileUtils.listFiles(
+                    new File(receipt.getAbsolute()),
+                    new NameFileFilter("receipt"), FalseFileFilter.FALSE);
+            for(File key : receipts) {
+                return LicenseFactory.create(LocalFactory.createLocal(key));
+            }
         }
         log.info("No license found");
         return EMPTY_LICENSE;
