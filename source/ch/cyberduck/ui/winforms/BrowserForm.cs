@@ -99,7 +99,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             browser.ContextMenuStrip = null;
             browser.ContextMenu = browserContextMenu;
             browser.DropSink = new ExpandingBrowserDropSink(this);
-            browser.DragSource = new BrowserDragSource(this);
+            browser.DragSource = new BrowserDragSource(this);           
 
             browser.AllowColumnReorder = true;
             browser.ShowImagesOnSubItems = true;
@@ -1652,7 +1652,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             ConfigureShortcut(copyToolStripMenuItem, copyMainMenuItem, Keys.Control | Keys.C);
             ConfigureShortcut(copyURLToolStripMenuItem, copyUrlMainMenuItem, Keys.Control | Keys.Shift | Keys.C);
             ConfigureShortcut(pasteToolStripMenuItem, pasteMainMenuItem, Keys.Control | Keys.V);
-            ConfigureShortcut(selectAllToolStripMenuItem, selectAllMainMenuItem, Keys.Control | Keys.A);
+            ConfigureShortcut(selectAllToolStripMenuItem, selectAllMainMenuItem, Keys.None, ShortcutToText(Keys.Control | Keys.A, String.Empty));
             ConfigureShortcut(preferencesToolStripMenuItem, preferencesMainMenuItem, Keys.Control | Keys.Oemcomma,
                               "Ctrl+,");
 
