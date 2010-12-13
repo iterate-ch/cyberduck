@@ -90,8 +90,11 @@ namespace Ch.Cyberduck.Ui.Controller
         private void View_StopActionEvent()
         {
             BackgroundAction action = View.SelectedTask;
-            Log.debug("Cancel action:" + action);
-            action.cancel();
+            if (null != action)
+            {
+                Log.debug("Cancel action:" + action);
+                action.cancel();
+            }
         }
 
         private class BackgroundActionListener : AbstractCollectionListener

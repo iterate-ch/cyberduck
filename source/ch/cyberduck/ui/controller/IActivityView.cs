@@ -17,9 +17,7 @@
 // 
 using System.Collections;
 using BrightIdeasSoftware;
-using Ch.Cyberduck.Core;
 using ch.cyberduck.core.threading;
-using ch.cyberduck.ui.controller;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
