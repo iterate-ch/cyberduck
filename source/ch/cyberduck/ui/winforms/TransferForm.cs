@@ -181,7 +181,12 @@ namespace Ch.Cyberduck.Ui.Winforms
             transferListView.Objects = model;
             for (int i = 0; i < model.Count; i++)
             {
-                transferListView.AddEmbeddedControl((model[i] as Control), 1, i, DockStyle.Fill);
+                Control c = model[i] as Control;
+                if (null != c)
+                {
+                    c.DoubleClick += delegate { ReloadEvent(); };
+                    transferListView.AddEmbeddedControl((model[i] as Control), 1, i, DockStyle.Fill);
+                }
             }
         }
 
@@ -196,8 +201,13 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public void AddTransfer(IProgressView view)
         {
-            transferListView.AddObject(view);
-            transferListView.AddEmbeddedControl(view as Control, 1, transferListView.GetItemCount() - 1, DockStyle.Fill);
+            Control c = view as Control;
+            if (null != c)
+            {
+                transferListView.AddObject(view);
+                c.DoubleClick += delegate { ReloadEvent(); };
+                transferListView.AddEmbeddedControl(c, 1, transferListView.GetItemCount() - 1, DockStyle.Fill);
+            }
         }
 
         public void RemoveTransfer(IProgressView view)
@@ -406,11 +416,6 @@ namespace Ch.Cyberduck.Ui.Winforms
         private void splitContainer_SplitterMoved(object sender, SplitterEventArgs e)
         {
             TranscriptHeightChangedEvent();
-        }
-
-        private void transferListView_DoubleClick(object sender, EventArgs e)
-        {
-            ReloadEvent();
         }
 
         private void transferListView_KeyDown(object sender, KeyEventArgs e)

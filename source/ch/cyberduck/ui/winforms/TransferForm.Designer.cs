@@ -301,7 +301,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.transferListView.TabIndex = 6;
             this.transferListView.UseCompatibleStateImageBehavior = false;
             this.transferListView.View = System.Windows.Forms.View.Details;
-            this.transferListView.DoubleClick += new System.EventHandler(this.transferListView_DoubleClick);
             this.transferListView.KeyDown += new System.Windows.Forms.KeyEventHandler(this.transferListView_KeyDown);
             this.transferListView.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.transferListView_KeyPress);
             // 

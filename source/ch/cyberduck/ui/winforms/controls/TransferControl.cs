@@ -41,12 +41,18 @@ namespace Ch.Cyberduck.Ui.Winforms.Controls
                 ControlStyles.OptimizedDoubleBuffer, true);
 
             // route events to parent control which is normally a ListView
-            statusLabel.Click += delegate { OnClick(EventArgs.Empty); };
-            progressLabel.Click += delegate { OnClick(EventArgs.Empty); };
-            messageLabel.Click += delegate { OnClick(EventArgs.Empty); };
-            directionPictureBox.Click += delegate { OnClick(EventArgs.Empty); };
-            statusPictureBox.Click += delegate { OnClick(EventArgs.Empty); };
-            progressBar.Click += delegate { OnClick(EventArgs.Empty); };
+            statusLabel.Click += DelegateOnClick;
+            statusLabel.DoubleClick += DelegateOnDoubleClick;
+            progressLabel.Click += DelegateOnClick;
+            progressLabel.DoubleClick += DelegateOnDoubleClick;
+            messageLabel.Click += DelegateOnClick;
+            messageLabel.DoubleClick += DelegateOnDoubleClick;
+            directionPictureBox.Click += DelegateOnClick;
+            directionPictureBox.DoubleClick += DelegateOnDoubleClick;
+            statusPictureBox.Click += DelegateOnClick;
+            statusPictureBox.DoubleClick += DelegateOnDoubleClick;
+            progressBar.Click += DelegateOnClick;
+            progressBar.DoubleClick += DelegateOnDoubleClick;
 
             filesComboBox.Click += delegate
                                        {
@@ -60,6 +66,16 @@ namespace Ch.Cyberduck.Ui.Winforms.Controls
 
             // initialize colors
             Selected = false;
+        }
+
+        private void DelegateOnDoubleClick(object sender, EventArgs e)
+        {
+            OnDoubleClick(EventArgs.Empty);
+        }
+
+        private void DelegateOnClick(object sender, EventArgs e)
+        {
+            OnClick(EventArgs.Empty);
         }
 
         public bool FocusRemoveAllowed
