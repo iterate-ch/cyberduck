@@ -16,6 +16,7 @@
 // yves@cyberduck.ch
 // 
 using System.Collections.Generic;
+using System.Media;
 using System.Threading;
 using ch.cyberduck.core;
 using Ch.Cyberduck.Core;
@@ -132,13 +133,14 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public override bool ViewShouldClose()
         {
-            //todo mit SheetController/-Form und validate mit beep
             if (Utils.IsBlank(View.Hostname))
             {
+                SystemSounds.Beep.Play();
                 return false;
             }
             if (Utils.IsBlank(View.Username))
             {
+                SystemSounds.Beep.Play();
                 return false;
             }
             return true;
@@ -153,10 +155,7 @@ namespace Ch.Cyberduck.Ui.Controller
             View.Username = Preferences.instance().getProperty("connection.login.name");
             View.PkLabel = Locale.localizedString("No private key selected");
             View.SavePasswordChecked = Preferences.instance().getBoolean(
-                "connection.login.useKeychain")
-                                       &&
-                                       Preferences.instance().getBoolean(
-                                           "connection.login.addKeychain");
+                "connection.login.useKeychain") && Preferences.instance().getBoolean("connection.login.addKeychain");
             View.AnonymousChecked = false;
             View.PkCheckboxState = false;
             View.SelectedEncoding = Default;
