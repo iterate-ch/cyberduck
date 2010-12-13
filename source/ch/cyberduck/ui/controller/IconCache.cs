@@ -225,6 +225,10 @@ namespace Ch.Cyberduck.Ui.Controller
                 icon = GetFolderIcon(size, FolderType.Open);
                 _iconCache.Put("folder", icon, s);
             }
+            if (null == icon)
+            {
+                return IconForName("notfound", s);
+            }
             return icon.ToBitmap();
         }
 
@@ -263,24 +267,25 @@ namespace Ch.Cyberduck.Ui.Controller
 
             try
             {
-                    Icon icon = Icon.ExtractAssociatedIcon(exe);
-                    if (null != icon)
+                Icon icon = Icon.ExtractAssociatedIcon(exe);
+                if (null != icon)
+                {
+                    Bitmap res = icon.ToBitmap();
+                    if (size == IconSize.Small)
                     {
-                        Bitmap res = icon.ToBitmap();
-                        if (size == IconSize.Small)
-                        {
-                            res = ResizeImage(res, s);
-                        }                        
-                        
-                        _bitmapCache.Put(exe, res, s);
-                        return res;
-                    }                
+                        res = ResizeImage(res, s);
+                    }
+
+                    _bitmapCache.Put(exe, res, s);
+                    return res;
+                }
             }
             catch
             {
-                //return default icon
+                
             }
-            return IconForName("notfound", s);            
+            //return default icon
+            return IconForName("notfound", s);
         }
 
         public Bitmap ExtractIconForFilename(string file)
@@ -292,7 +297,6 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     return icon.ToBitmap();
                 }
-                
             }
             catch (Exception)
             {
@@ -307,7 +311,12 @@ namespace Ch.Cyberduck.Ui.Controller
         /// <returns></returns>
         public Bitmap IconForFilename(string file, IconSize size)
         {
-            return GetFileIcon(file, size, false).ToBitmap();
+            Icon icon = GetFileIcon(file, size, false);
+            if (null == icon)
+            {
+                return IconForName("notfound", size);
+            }
+            return icon.ToBitmap();
         }
 
         /// <summary>
@@ -359,7 +368,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             //by extension
             string key = Utils.GetSafeExtension(name);
-            if(isFolder)
+            if (isFolder)
             {
                 key += "-folder";
             }
@@ -397,14 +406,14 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
 
                 IntPtr hSuccess = Shell32.SHGetFileInfo(name,
-                                      fileAttributes,
-                                      ref shfi,
-                                      (uint) Marshal.SizeOf(shfi),
-                                      flags);
+                                                        fileAttributes,
+                                                        ref shfi,
+                                                        (uint) Marshal.SizeOf(shfi),
+                                                        flags);
                 if (hSuccess != IntPtr.Zero)
                 {
                     // Copy (clone) the returned icon to a new object, thus allowing us to clean-up properly
-                    icon = (Icon)Icon.FromHandle(shfi.hIcon).Clone();
+                    icon = (Icon) Icon.FromHandle(shfi.hIcon).Clone();
                     _iconCache.Put(key, icon, s);
                     // Release icon handle
                     User32.DestroyIcon(shfi.hIcon);
@@ -440,19 +449,22 @@ namespace Ch.Cyberduck.Ui.Controller
 
             // Get the folder icon
             Shell32.SHFILEINFO shfi = new Shell32.SHFILEINFO();
-            Shell32.SHGetFileInfo("_unknown",
-                                  Shell32.FILE_ATTRIBUTE_DIRECTORY,
-                                  ref shfi,
-                                  (uint) Marshal.SizeOf(shfi),
-                                  flags);
+            IntPtr hSuccess = Shell32.SHGetFileInfo("_unknown",
+                                                    Shell32.FILE_ATTRIBUTE_DIRECTORY,
+                                                    ref shfi,
+                                                    (uint) Marshal.SizeOf(shfi),
+                                                    flags);
+            if (hSuccess != IntPtr.Zero)
+            {
+                Icon.FromHandle(shfi.hIcon); // Load the icon from an HICON handle
 
-            Icon.FromHandle(shfi.hIcon); // Load the icon from an HICON handle
+                // Now clone the icon, so that it can be successfully stored in an ImageList
+                Icon icon = (Icon) Icon.FromHandle(shfi.hIcon).Clone();
 
-            // Now clone the icon, so that it can be successfully stored in an ImageList
-            Icon icon = (Icon) Icon.FromHandle(shfi.hIcon).Clone();
-
-            User32.DestroyIcon(shfi.hIcon); // Cleanup
-            return icon;
+                User32.DestroyIcon(shfi.hIcon); // Cleanup
+                return icon;
+            }
+            return null;
         }
 
         private static Bitmap ResizeImage(Image imgToResize, int size)
