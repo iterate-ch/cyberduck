@@ -17,6 +17,7 @@
 // 
 using System;
 using System.Drawing;
+using System.Media;
 using System.Windows.Forms;
 using ch.cyberduck.core.i18n;
 using Ch.Cyberduck.Ui.Controller;
@@ -35,6 +36,16 @@ namespace Ch.Cyberduck.Ui.Winforms
             //todo localization
             openFileDialog.Filter = "Private Key Files (*.pem;*.crt;*.ppk)|*.pem;*.crt;*.ppk|All Files (*.*)|*.*";
             openFileDialog.FilterIndex = 1;
+
+            FormClosing += delegate(object sender, FormClosingEventArgs args)
+                               {
+                                   bool cancel = DialogResult != DialogResult.Cancel && !ValidateInput();
+                                   if (cancel)
+                                   {
+                                       args.Cancel = true;
+                                       SystemSounds.Beep.Play();
+                                   }
+                               };
         }
 
         public string Title
@@ -151,6 +162,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         public event VoidHandler ChangedAnonymousCheckboxEvent;
         public event VoidHandler ChangedPkCheckboxEvent;
         public event EventHandler<PrivateKeyArgs> ChangedPrivateKey;
+        public event ValidateInputHandler ValidateInput;
 
         private void textBoxUsername_TextChanged(object sender, EventArgs e)
         {

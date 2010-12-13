@@ -53,6 +53,7 @@ namespace Ch.Cyberduck.Ui.Controller
         event VoidHandler ChangedAnonymousCheckboxEvent;
         event VoidHandler ChangedPkCheckboxEvent;
         event EventHandler<PrivateKeyArgs> ChangedPrivateKey;
+        event ValidateInputHandler ValidateInput;
 
         #endregion
     }

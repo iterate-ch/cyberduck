@@ -1,4 +1,4 @@
-﻿//
+﻿// 
 // Copyright (c) 2010 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
@@ -21,8 +21,8 @@ using ch.cyberduck.core;
 using Ch.Cyberduck.Core;
 using ch.cyberduck.core.i18n;
 using Ch.Cyberduck.Ui.Winforms.Taskdialog;
-using org.apache.log4j;
 using org.apache.commons.lang;
+using org.apache.log4j;
 using StructureMap;
 
 namespace Ch.Cyberduck.Ui.Controller
@@ -30,6 +30,7 @@ namespace Ch.Cyberduck.Ui.Controller
     public class LoginController : AbstractLoginController
     {
         private static readonly Logger Log = Logger.getLogger(typeof (LoginController).FullName);
+        private readonly WindowController _browser;
         private Credentials _credentials;
         private bool _enableAnonymous;
 
@@ -37,7 +38,6 @@ namespace Ch.Cyberduck.Ui.Controller
         private bool _enablePublicKey;
         private Protocol _protocol;
         private ILoginView _view;
-        private WindowController _browser;
 
         private LoginController(WindowController c)
         {
@@ -108,9 +108,12 @@ namespace Ch.Cyberduck.Ui.Controller
             _credentials.setUsername(_view.Username);
             if (StringUtils.isNotBlank(_credentials.getUsername()))
             {
-                String password = KeychainFactory.instance().getPassword(_protocol.getScheme(), _protocol.getDefaultPort(),
-                        _protocol.getDefaultHostname(), _credentials.getUsername());
-                if(StringUtils.isNotBlank(password)) {
+                String password = KeychainFactory.instance().getPassword(_protocol.getScheme(),
+                                                                         _protocol.getDefaultPort(),
+                                                                         _protocol.getDefaultHostname(),
+                                                                         _credentials.getUsername());
+                if (StringUtils.isNotBlank(password))
+                {
                     _view.Password = password;
                 }
             }
@@ -193,6 +196,12 @@ namespace Ch.Cyberduck.Ui.Controller
             View.ChangedAnonymousCheckboxEvent += View_ChangedAnonymousCheckboxEvent;
             View.ChangedPkCheckboxEvent += View_ChangedPkCheckboxEvent;
             View.ChangedPrivateKey += View_ChangedPrivateKey;
+            View.ValidateInput += View_ValidateInput;
+        }
+
+        private bool View_ValidateInput()
+        {
+            return _credentials.validate(_protocol);
         }
 
         private void View_ChangedPrivateKey(object sender, PrivateKeyArgs e)
@@ -248,10 +257,10 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     if (c.getSession() == s)
                     {
-                        return this.create(c);
+                        return create(c);
                     }
                 }
-                return (ch.cyberduck.core.LoginController) this.create();
+                return (ch.cyberduck.core.LoginController) create();
             }
 
             public override ch.cyberduck.core.LoginController create(ch.cyberduck.ui.Controller c)
