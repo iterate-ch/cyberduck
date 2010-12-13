@@ -19,7 +19,6 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 using ch.cyberduck.core.i18n;
-using ch.cyberduck.ui.controller;
 using Ch.Cyberduck.Ui.Controller;
 
 namespace Ch.Cyberduck.Ui.Winforms
