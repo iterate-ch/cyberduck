@@ -2646,6 +2646,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                 CanDropOnBackground = true;
                 CanDropBetween = true;
                 FeedbackColor = Color.LightBlue;
+                AcceptExternal = true;
             }
 
             /// <summary>
