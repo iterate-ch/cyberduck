@@ -1,4 +1,4 @@
-﻿//
+﻿﻿//
 // Copyright (c) 2010 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
@@ -1442,8 +1442,6 @@ namespace Ch.Cyberduck.Ui.Winforms
         private void ConfigureHelpCommands()
         {
             //direct commands
-
-            //todo move handlers to the controller
             Commands.Add(new ToolStripItem[] {acknowledgmentsToolStripMenuItem}, new[] {acknowledgmentsMainMenuItem},
                          (sender, args) => Utils.StartProcess("Acknowledgments.rtf"), () => true);
             Commands.Add(new ToolStripItem[] {cyberduckHelpToolStripMenuItem}, new[] {helpMainMenuItem},
@@ -1578,8 +1576,6 @@ namespace Ch.Cyberduck.Ui.Winforms
                                  minimizeToolStripMenuItem,
                              }, new[] {minimizeMainMenuItem},
                          (sender, args) => WindowState = FormWindowState.Minimized, () => true);
-            //todo muss ShowActivity() sein
-            //(ActivityController.Instance.View as Form).Show();
         }
 
         private void ConfigureEditCommands()
@@ -1937,7 +1933,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             vistaMenu1.SetImage(infoMainMenuItem, IconCache.Instance.IconForName("info", 16));
             vistaMenu1.SetImage(infoBrowserContextMenuItem, IconCache.Instance.IconForName("info", 16));
             infoContextToolStripMenuItem.Image = IconCache.Instance.IconForName("info", 16);
-            //todo correct application icon (move SetImage to PopUp handler)
             vistaMenu1.SetImage(editMainMenuItem, IconCache.Instance.IconForName("pencil", 16));
             vistaMenu1.SetImage(editBrowserContextMenuItem, IconCache.Instance.IconForName("pencil", 16));
             editContextToolStripMenuItem.Image = IconCache.Instance.IconForName("pencil", 16);

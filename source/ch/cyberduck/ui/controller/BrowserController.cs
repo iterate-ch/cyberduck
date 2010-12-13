@@ -266,7 +266,6 @@ namespace Ch.Cyberduck.Ui.Controller
             View.ToolbarVisible = Preferences.instance().getBoolean("browser.toolbar");
             View.LogDrawerVisible = Preferences.instance().getBoolean("browser.logDrawer.isOpen");
 
-            //todo
             View.GetEditors += View_GetEditors;
             View.GetBookmarks += View_GetBookmarks;
             View.GetHistory += View_GetHistory;
@@ -1065,7 +1064,6 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 BookmarkController.Factory.Create(View.SelectedBookmark).View.Show(View);
             }
-            //todo: was ist mit speichern? wird das irgendwo sonst erledigt?
         }
 
         private void View_NewBookmark()
@@ -1103,7 +1101,6 @@ namespace Ch.Cyberduck.Ui.Controller
         private void AddBookmark(Host item, int index)
         {
             _bookmarkModel.Filter = null;
-            //todo prüfen wieso das Adden so teuer ist. Wohl wegen den Listener. Aber welche?
             if (index != -1)
             {
                 _bookmarkModel.Source.add(index, item);

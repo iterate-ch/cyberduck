@@ -1,4 +1,4 @@
-﻿﻿﻿//
+﻿﻿﻿﻿//
 // Copyright (c) 2010 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
@@ -135,7 +135,6 @@ namespace Ch.Cyberduck.Ui.Controller
                 Path selected = View.SelectedPath.Unique;
                 if (null != selected)
                 {
-                    //todo wieso die ganze hidden geschichte?
                     View.LocalFileUrl = selected.getLocal().getAbsolute();
                     if (selected.getLocal().exists())
                     {

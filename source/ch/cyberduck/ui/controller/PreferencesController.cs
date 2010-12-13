@@ -1,4 +1,4 @@
-﻿// 
+﻿﻿//
 // Copyright (c) 2010 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
@@ -805,9 +805,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_NewBrowserOnStartupChangedEvent()
         {
-            //todo gibt es wohl nicht unter Windows (es gibt grundsätzlich immer ein Fenster), siehe MainController#applicationDidFinishLaunching(NSNotification notification) {
-            Preferences.instance().setProperty("browser.openUntitled",
-                                               View.NewBrowserOnStartup);
+            Preferences.instance().setProperty("browser.openUntitled", View.NewBrowserOnStartup);
         }
 
         private void View_SaveWorkspaceChangedEvent()

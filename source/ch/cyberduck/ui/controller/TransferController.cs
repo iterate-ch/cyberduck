@@ -1,4 +1,4 @@
-﻿﻿//
+﻿﻿﻿//
 // Copyright (c) 2010 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
@@ -495,10 +495,6 @@ namespace Ch.Cyberduck.Ui.Controller
             if (Preferences.instance().getBoolean("queue.orderFrontOnStart"))
             {
                 View.Show();
-
-                //todo
-                //View.MakeFront...
-                //this.window.makeKeyAndOrderFront(null);
             }
             background(new TransferBackgroundAction(this, transfer, resumeRequested, reloadRequested));
         }

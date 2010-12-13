@@ -1,4 +1,4 @@
-﻿// 
+﻿﻿//
 // Copyright (c) 2010 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
@@ -122,7 +122,6 @@ namespace Ch.Cyberduck.Ui.Controller
         event ValidateCommand ValidateDuplicateFile;
         event VoidHandler OpenUrl;
         event ValidateCommand ValidateOpenWebUrl;
-        // todo irgendwie EditWith...
         event ValidateCommand ValidateEditWith;
         event EditorsHandler GetEditors;
         event VoidHandler ShowInspector;
