@@ -4,7 +4,7 @@
 - [Feature] Dragging files between browser windows to move or copy between servers
 - [Feature] Copy URLs to clipboard
 - [Feature] Open HTTP URLs in web browser
-- [Bugfix] Importing bookmarks (#3017)
+- [Bugfix] Importing bookmarks (#5527, #5491)
 
 4.0b7 [http://trac.cyberduck.ch/milestone/4.0b7]
 - [Feature] Bonjour support
