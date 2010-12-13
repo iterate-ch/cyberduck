@@ -250,9 +250,13 @@ namespace Ch.Cyberduck.Ui.Controller
         public static string kind(string extension)
         {
             Shell32.SHFILEINFO shinfo = new Shell32.SHFILEINFO();
-            IntPtr i = Shell32.SHGetFileInfo(extension, 0, ref shinfo, (uint) Marshal.SizeOf(shinfo),
+            IntPtr hSuccess = Shell32.SHGetFileInfo(extension, 0, ref shinfo, (uint)Marshal.SizeOf(shinfo),
                                              Shell32.SHGFI_TYPENAME | Shell32.SHGFI_USEFILEATTRIBUTES);
-            return Convert.ToString(shinfo.szTypeName.Trim());
+            if (hSuccess != IntPtr.Zero)
+            {
+                return Convert.ToString(shinfo.szTypeName.Trim());
+            }
+            return null;
         }
 
         public override string kind()
