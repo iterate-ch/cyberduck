@@ -35,7 +35,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ConnectionForm));
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.label1 = new System.Windows.Forms.Label();
+            this.labelPassword = new System.Windows.Forms.Label();
             this.protocol = new Ch.Cyberduck.Ui.Winforms.Controls.ImageComboBox();
             this.alertIcon = new System.Windows.Forms.PictureBox();
             this.labelURL = new System.Windows.Forms.Label();
@@ -55,10 +55,10 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.cancelButton = new System.Windows.Forms.Button();
             this.connectButton = new System.Windows.Forms.Button();
             this.optionsPanel = new System.Windows.Forms.TableLayoutPanel();
-            this.label4 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
+            this.labelEncoding = new System.Windows.Forms.Label();
+            this.labelPath = new System.Windows.Forms.Label();
             this.textBoxPath = new System.Windows.Forms.TextBox();
-            this.label3 = new System.Windows.Forms.Label();
+            this.labelConnectMode = new System.Windows.Forms.Label();
             this.comboBoxConnectMode = new System.Windows.Forms.ComboBox();
             this.comboBoxEncoding = new System.Windows.Forms.ComboBox();
             this.checkBoxPKA = new System.Windows.Forms.CheckBox();
@@ -78,7 +78,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 50F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel1.Controls.Add(this.label1, 0, 4);
+            this.tableLayoutPanel1.Controls.Add(this.labelPassword, 0, 4);
             this.tableLayoutPanel1.Controls.Add(this.protocol, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.alertIcon, 3, 2);
             this.tableLayoutPanel1.Controls.Add(this.labelURL, 0, 2);
@@ -108,16 +108,16 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.tableLayoutPanel1.Size = new System.Drawing.Size(481, 206);
             this.tableLayoutPanel1.TabIndex = 37;
             // 
-            // label1
+            // labelPassword
             // 
-            this.label1.Anchor = System.Windows.Forms.AnchorStyles.Right;
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(67, 132);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(60, 15);
-            this.label1.TabIndex = 34;
-            this.label1.Text = "Password:";
-            this.label1.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            this.labelPassword.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.labelPassword.AutoSize = true;
+            this.labelPassword.Location = new System.Drawing.Point(67, 132);
+            this.labelPassword.Name = "labelPassword";
+            this.labelPassword.Size = new System.Drawing.Size(60, 15);
+            this.labelPassword.TabIndex = 34;
+            this.labelPassword.Text = "Password:";
+            this.labelPassword.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
             // protocol
             // 
@@ -340,10 +340,10 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.optionsPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.optionsPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.optionsPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.optionsPanel.Controls.Add(this.label4, 0, 2);
-            this.optionsPanel.Controls.Add(this.label2, 0, 0);
+            this.optionsPanel.Controls.Add(this.labelEncoding, 0, 2);
+            this.optionsPanel.Controls.Add(this.labelPath, 0, 0);
             this.optionsPanel.Controls.Add(this.textBoxPath, 1, 0);
-            this.optionsPanel.Controls.Add(this.label3, 0, 1);
+            this.optionsPanel.Controls.Add(this.labelConnectMode, 0, 1);
             this.optionsPanel.Controls.Add(this.comboBoxConnectMode, 1, 1);
             this.optionsPanel.Controls.Add(this.comboBoxEncoding, 1, 2);
             this.optionsPanel.Controls.Add(this.checkBoxPKA, 1, 3);
@@ -361,27 +361,27 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.optionsPanel.Size = new System.Drawing.Size(481, 133);
             this.optionsPanel.TabIndex = 45;
             // 
-            // label4
+            // labelEncoding
             // 
-            this.label4.Anchor = System.Windows.Forms.AnchorStyles.Right;
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(67, 65);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(60, 15);
-            this.label4.TabIndex = 49;
-            this.label4.Text = "Encoding:";
-            this.label4.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            this.labelEncoding.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.labelEncoding.AutoSize = true;
+            this.labelEncoding.Location = new System.Drawing.Point(67, 65);
+            this.labelEncoding.Name = "labelEncoding";
+            this.labelEncoding.Size = new System.Drawing.Size(60, 15);
+            this.labelEncoding.TabIndex = 49;
+            this.labelEncoding.Text = "Encoding:";
+            this.labelEncoding.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
-            // label2
+            // labelPath
             // 
-            this.label2.Anchor = System.Windows.Forms.AnchorStyles.Right;
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(93, 7);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(34, 15);
-            this.label2.TabIndex = 45;
-            this.label2.Text = "Path:";
-            this.label2.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            this.labelPath.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.labelPath.AutoSize = true;
+            this.labelPath.Location = new System.Drawing.Point(93, 7);
+            this.labelPath.Name = "labelPath";
+            this.labelPath.Size = new System.Drawing.Size(34, 15);
+            this.labelPath.TabIndex = 45;
+            this.labelPath.Text = "Path:";
+            this.labelPath.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
             // textBoxPath
             // 
@@ -394,16 +394,16 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.textBoxPath.TabIndex = 46;
             this.textBoxPath.TextChanged += new System.EventHandler(this.textBoxPath_TextChanged);
             // 
-            // label3
+            // labelConnectMode
             // 
-            this.label3.Anchor = System.Windows.Forms.AnchorStyles.Right;
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(38, 36);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(89, 15);
-            this.label3.TabIndex = 47;
-            this.label3.Text = "Connect Mode:";
-            this.label3.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            this.labelConnectMode.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.labelConnectMode.AutoSize = true;
+            this.labelConnectMode.Location = new System.Drawing.Point(38, 36);
+            this.labelConnectMode.Name = "labelConnectMode";
+            this.labelConnectMode.Size = new System.Drawing.Size(89, 15);
+            this.labelConnectMode.TabIndex = 47;
+            this.labelConnectMode.Text = "Connect Mode:";
+            this.labelConnectMode.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
             // comboBoxConnectMode
             // 
@@ -507,7 +507,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         #endregion
 
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
-        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label labelPassword;
         private ImageComboBox protocol;
         private System.Windows.Forms.PictureBox alertIcon;
         private System.Windows.Forms.Label labelURL;
@@ -527,11 +527,11 @@ namespace Ch.Cyberduck.Ui.Winforms
         private System.Windows.Forms.Button cancelButton;
         private System.Windows.Forms.Button connectButton;
         private System.Windows.Forms.TableLayoutPanel optionsPanel;
-        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label labelPath;
         private System.Windows.Forms.TextBox textBoxPath;
-        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label labelConnectMode;
         private System.Windows.Forms.ComboBox comboBoxConnectMode;
-        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label labelEncoding;
         private System.Windows.Forms.ComboBox comboBoxEncoding;
         private System.Windows.Forms.CheckBox checkBoxPKA;
         private EllipsisLabel pkLabel;

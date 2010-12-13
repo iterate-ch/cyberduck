@@ -566,16 +566,9 @@ namespace Ch.Cyberduck.Ui.Controller
             View.Path = _host.getDefaultPath();
             View.Username = _host.getCredentials().getUsername();
             View.UsernameEnabled = !_host.getCredentials().isAnonymousLogin();
+            View.UsernameLabel = _host.getProtocol().getUsernamePlaceholder();
             View.AnonymousEnabled = _host.getProtocol().isAnonymousConfigurable();
             View.AnonymousChecked = _host.getCredentials().isAnonymousLogin();
-            if (string.Empty.Equals(_host.getProtocol().getUsernamePlaceholder()))
-            {
-                View.UsernameLabel = Locale.localizedString("Username", "Credentials");
-            }
-            else
-            {
-                View.UsernameLabel = _host.getProtocol().getUsernamePlaceholder();
-            }
             View.SelectedProtocol = _host.getProtocol();
 
             if (null == _host.getMaxConnections())

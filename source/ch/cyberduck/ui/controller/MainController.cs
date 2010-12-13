@@ -28,7 +28,6 @@ using ch.cyberduck.core.aquaticprime;
 using ch.cyberduck.core.i18n;
 using ch.cyberduck.core.importer;
 using ch.cyberduck.core.serializer;
-using ch.cyberduck.core.sftp;
 using ch.cyberduck.ui;
 using Ch.Cyberduck.Ui.Controller.Growl;
 using Ch.Cyberduck.Ui.Winforms;

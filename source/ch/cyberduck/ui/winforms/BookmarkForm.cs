@@ -21,7 +21,6 @@ using System.Drawing;
 using System.Windows.Forms;
 using ch.cyberduck.core;
 using ch.cyberduck.core.i18n;
-using ch.cyberduck.ui.controller;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Winforms.Controls;
 
@@ -134,6 +133,11 @@ namespace Ch.Cyberduck.Ui.Winforms
         public string UsernameLabel
         {
             set { labelUsername.Text = value; }
+        }
+
+        public string PasswordLabel
+        {
+            set { }
         }
 
         bool IBookmarkView.HostFieldEnabled { get; set; }

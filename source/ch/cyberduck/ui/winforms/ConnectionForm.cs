@@ -206,6 +206,11 @@ namespace Ch.Cyberduck.Ui.Winforms
             set { labelUsername.Text = value; }
         }
 
+        public string PasswordLabel
+        {
+            set { labelPassword.Text = value; }
+        }
+
         public bool HostFieldEnabled
         {
             set { textBoxServer.Enabled = value; }

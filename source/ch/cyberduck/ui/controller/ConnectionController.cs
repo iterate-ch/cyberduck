@@ -374,19 +374,8 @@ namespace Ch.Cyberduck.Ui.Controller
                 View.PortFieldEnabled = true;
                 View.PathEnabled = true;
             }
-            //todo placeholder setzen bzw. label korrekt setzen je nach protokoll
-            if (protocol.Equals(Protocol.IDISK))
-            {
-                String member = Preferences.instance().getProperty("iToolsMember");
-                if (!string.IsNullOrEmpty(member))
-                {
-                    // Account name configured in System Preferences
-                    View.Username = member;
-                    View.UsernameEnabled = false;
-                    View.Path = Path.DELIMITER + member;
-                    View.PathEnabled = false;
-                }
-            }
+            View.UsernameLabel = protocol.getUsernamePlaceholder();
+            View.PasswordLabel = protocol.getPasswordPlaceholder();
             View.ConnectModeFieldEnabled = protocol.isConnectModeConfigurable();
             if (!protocol.isEncodingConfigurable())
             {

@@ -19,7 +19,6 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using ch.cyberduck.core;
-using ch.cyberduck.ui.controller;
 using Ch.Cyberduck.Ui.Winforms.Controls;
 
 namespace Ch.Cyberduck.Ui.Controller
@@ -54,6 +53,7 @@ namespace Ch.Cyberduck.Ui.Controller
         bool PkCheckboxEnabled { set; }
         string PkLabel { get; set; }
         string UsernameLabel { set; }
+        string PasswordLabel { set; }
         bool HostFieldEnabled { get; set; }
         bool PortFieldEnabled { set; }
         Protocol SelectedProtocol { get; set; }
