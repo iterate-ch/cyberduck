@@ -373,8 +373,8 @@ namespace Ch.Cyberduck.Ui.Controller
                 View.PortFieldEnabled = true;
                 View.PathEnabled = true;
             }
-            View.UsernameLabel = protocol.getUsernamePlaceholder();
-            View.PasswordLabel = protocol.getPasswordPlaceholder();
+            View.UsernameLabel = protocol.getUsernamePlaceholder() + ":";
+            View.PasswordLabel = protocol.getPasswordPlaceholder() + ":";
             View.ConnectModeFieldEnabled = protocol.isConnectModeConfigurable();
             if (!protocol.isEncodingConfigurable())
             {
