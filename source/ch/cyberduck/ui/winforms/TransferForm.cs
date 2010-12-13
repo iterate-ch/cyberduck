@@ -81,6 +81,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             transferListView.ItemSelectionChanged += (sender, e) => SelectionChangedEvent();
             transferListView.ItemsChanged +=
                 delegate { transferListView.GridLines = transferListView.GetItemCount() > 0; };
+
+            //force handle creation
+            IntPtr intPtr = Handle;
         }
 
         public override string[] BundleNames

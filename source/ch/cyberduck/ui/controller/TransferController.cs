@@ -1,4 +1,4 @@
-﻿﻿﻿//
+﻿// 
 // Copyright (c) 2010 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
@@ -29,7 +29,7 @@ using StructureMap;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
-    public class TransferController : WindowController<ITransferView>, TranscriptListener
+    public class TransferController : WindowController<ITransferView>, TranscriptListener, CollectionListener
     {
         private static readonly Logger Log = Logger.getLogger(typeof (TransferController).FullName);
 
@@ -64,6 +64,58 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
                 return _instance;
             }
+        }
+
+        public void collectionLoaded()
+        {
+            Invoke(delegate
+                       {
+                           IList<IProgressView> model = new List<IProgressView>();
+                           foreach (Transfer transfer in TransferCollection.defaultCollection())
+                           {
+                               ProgressController progressController = new ProgressController(transfer);
+                               model.Add(progressController.View);
+                               _transferMap.Add(new KeyValuePair<Transfer, ProgressController>(transfer,
+                                                                                               progressController));
+                           }
+                           View.SetModel(model);
+                       }
+                );
+        }
+
+        public void collectionItemAdded(object obj)
+        {
+            Invoke(delegate
+                       {
+                           Transfer transfer = obj as Transfer;
+                           ProgressController progressController = new ProgressController(transfer);
+                           _transferMap.Add(new KeyValuePair<Transfer, ProgressController>(transfer, progressController));
+                           IProgressView progressView = progressController.View;
+                           View.AddTransfer(progressView);
+                           View.SelectTransfer(progressView);
+                       });
+        }
+
+        public void collectionItemRemoved(object obj)
+        {
+            Invoke(delegate
+                       {
+                           Transfer transfer = obj as Transfer;
+                           if (null != transfer)
+                           {
+                               ProgressController progressController;
+                               if (_transferMap.TryGetValue(transfer, out progressController))
+                               {
+                                   View.RemoveTransfer(progressController.View);
+                                   _transferMap.Remove(transfer);
+                               }
+                           }
+                       });
+        }
+
+        public void collectionItemChanged(object obj)
+        {
+            ;
         }
 
         public void log(bool request, string transcript)
@@ -110,21 +162,15 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void Init()
         {
-            IList<IProgressView> model = new List<IProgressView>();
-            foreach (Transfer transfer in TransferCollection.defaultCollection())
-            {
-                ProgressController progressController = new ProgressController(transfer);
-                model.Add(progressController.View);
-                _transferMap.Add(new KeyValuePair<Transfer, ProgressController>(transfer, progressController));
-            }
+            collectionLoaded();
+            TransferCollection.defaultCollection().addListener(this);
+
             PopulateBandwithList();
 
             View.TranscriptVisible = Preferences.instance().getBoolean("queue.logDrawer.isOpen");
             View.TranscriptHeight = Preferences.instance().getInteger("queue.logDrawer.size.height");
             View.QueueSize = Preferences.instance().getInteger("queue.maxtransfers");
             View.BandwidthEnabled = false;
-
-            View.SetModel(model);
 
             View.ResumeEvent += View_ResumeEvent;
             View.ReloadEvent += View_ReloadEvent;
@@ -273,9 +319,14 @@ namespace Ch.Cyberduck.Ui.Controller
             IList<KeyValuePair<float, string>> list = new List<KeyValuePair<float, string>>();
             list.Add(new KeyValuePair<float, string>(BandwidthThrottle.UNLIMITED,
                                                      Locale.localizedString("Unlimited Bandwidth", "Preferences")));
-            foreach (String option in Preferences.instance().getProperty("queue.bandwidth.options").Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+            foreach (
+                String option in
+                    Preferences.instance().getProperty("queue.bandwidth.options").Split(new[] {','},
+                                                                                        StringSplitOptions.
+                                                                                            RemoveEmptyEntries))
             {
-                list.Add(new KeyValuePair<float, string>(Convert.ToInt32(option.Trim()), (Status.getSizeAsString(Convert.ToInt32(option.Trim())) + "/s")));
+                list.Add(new KeyValuePair<float, string>(Convert.ToInt32(option.Trim()),
+                                                         (Status.getSizeAsString(Convert.ToInt32(option.Trim())) + "/s")));
             }
             View.PopulateBandwidthList(list);
         }
@@ -502,22 +553,11 @@ namespace Ch.Cyberduck.Ui.Controller
         private void AddTransfer(Transfer transfer)
         {
             TransferCollection.defaultCollection().add(transfer);
-            ProgressController progressController = new ProgressController(transfer);
-            _transferMap.Add(new KeyValuePair<Transfer, ProgressController>(transfer, progressController));
-            IProgressView progressView = progressController.View;
-            View.AddTransfer(progressView);
-            View.SelectTransfer(progressView);
         }
 
         private void RemoveTransfer(Transfer transfer)
         {
             TransferCollection.defaultCollection().remove(transfer);
-            ProgressController progressController;
-            if (_transferMap.TryGetValue(transfer, out progressController))
-            {
-                View.RemoveTransfer(progressController.View);
-                _transferMap.Remove(transfer);
-            }
         }
 
         private class LogAction : WindowMainAction
