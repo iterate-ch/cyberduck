@@ -1653,7 +1653,8 @@ namespace Ch.Cyberduck.Ui.Winforms
 
             ConfigureShortcut(cutToolStripMenuItem, cutMainMenuItem, Keys.Control | Keys.X);
             ConfigureShortcut(copyToolStripMenuItem, copyMainMenuItem, Keys.Control | Keys.C);
-            ConfigureShortcut(copyURLToolStripMenuItem, copyUrlMainMenuItem, Keys.Control | Keys.Shift | Keys.C);
+            //todo
+            //ConfigureShortcut(copyURLToolStripMenuItem, copyUrlMainMenuItem, Keys.Control | Keys.Shift | Keys.C);
             ConfigureShortcut(pasteToolStripMenuItem, pasteMainMenuItem, Keys.Control | Keys.V);
             ConfigureShortcut(selectAllToolStripMenuItem, selectAllMainMenuItem, Keys.None,
                               ShortcutToText(Keys.Control | Keys.A, String.Empty));
