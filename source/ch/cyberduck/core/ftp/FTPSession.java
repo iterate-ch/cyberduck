@@ -293,9 +293,10 @@ public class FTPSession extends SSLSession {
         client.removeProtocolCommandListener(listener);
         client.addProtocolCommandListener(listener);
         client.setConnectTimeout(this.timeout());
+        client.setDefaultTimeout(this.timeout());
+        client.setDataTimeout(this.timeout());
         client.setDefaultPort(Protocol.FTP.getDefaultPort());
         client.setParserFactory(new FTPParserFactory());
-        client.setDataTimeout(this.timeout());
         client.setRemoteVerificationEnabled(true);
         if(this.getConnectMode().equals(FTPConnectMode.PASV)) {
             client.enterLocalPassiveMode();
