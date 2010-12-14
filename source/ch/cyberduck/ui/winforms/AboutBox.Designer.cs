@@ -82,7 +82,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.labelProductName.AutoSize = true;
             this.labelProductName.Location = new System.Drawing.Point(7, 166);
             this.labelProductName.Margin = new System.Windows.Forms.Padding(7, 0, 3, 0);
-            this.labelProductName.MaximumSize = new System.Drawing.Size(0, 20);
             this.labelProductName.Name = "labelProductName";
             this.labelProductName.Size = new System.Drawing.Size(338, 15);
             this.labelProductName.TabIndex = 19;
