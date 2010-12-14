@@ -26,7 +26,10 @@ import ch.cyberduck.core.*;
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPFileEntryParser;
 
+import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.TimeZone;
 
 /**
  * @version $Id$
@@ -101,6 +104,203 @@ public class FTPPathTest extends AbstractTestCase {
         assertFalse(success);
         assertTrue(list.isEmpty());
 
+    }
+
+    public void testMlsd() throws Exception {
+        final AttributedList<Path> children = new AttributedList<Path>();
+
+        FTPPath path = (FTPPath) PathFactory.createPath(SessionFactory.createSession(new Host(Protocol.FTP, "localhost")),
+                "/www", Path.DIRECTORY_TYPE);
+
+        String[] replies = new String[]{
+                "Type=file;Perm=awr;Unique=keVO1+8G4; writable",
+                "Type=file;Perm=r;Unique=keVO1+IH4;  leading space",
+                "Type=dir;Perm=cpmel;Unique=keVO1+7G4; incoming",
+        };
+
+        boolean success = path.parseMlsdResponse(children, Arrays.asList(replies));
+        assertTrue(success);
+        assertEquals(3, children.size());
+        assertEquals("writable", children.get(0).getName());
+        assertTrue(children.get(0).attributes().isFile());
+        assertEquals(" leading space", children.get(1).getName());
+        assertTrue(children.get(1).attributes().isFile());
+        assertTrue(children.get(2).attributes().isDirectory());
+    }
+
+    public void testMlsdCdir() throws Exception {
+        FTPPath path = (FTPPath) PathFactory.createPath(SessionFactory.createSession(new Host(Protocol.FTP, "localhost")),
+                "/www", Path.DIRECTORY_TYPE);
+
+        {
+            final AttributedList<Path> children = new AttributedList<Path>();
+            String[] replies = new String[]{
+                    "Type=cdir;Perm=el;Unique=keVO1+ZF4; test", //skipped
+            };
+
+            boolean success = path.parseMlsdResponse(children, Arrays.asList(replies));
+            assertFalse(success);
+            assertEquals(0, children.size());
+        }
+        {
+            final AttributedList<Path> children = new AttributedList<Path>();
+            String[] replies = new String[]{
+                    "Type=cdir;Modify=19990112033515; /iana/assignments/character-set-info", //skipped
+            };
+
+            boolean success = path.parseMlsdResponse(children, Arrays.asList(replies));
+            assertFalse(success);
+            assertEquals(0, children.size());
+        }
+    }
+
+    public void testMlsdPdir() throws Exception {
+        final AttributedList<Path> children = new AttributedList<Path>();
+
+        FTPPath path = (FTPPath) PathFactory.createPath(SessionFactory.createSession(new Host(Protocol.FTP, "localhost")),
+                "/www", Path.DIRECTORY_TYPE);
+
+        String[] replies = new String[]{
+                "Type=pdir;Perm=e;Unique=keVO1+d?3; ..", //skipped
+        };
+
+        boolean success = path.parseMlsdResponse(children, Arrays.asList(replies));
+        assertFalse(success);
+        assertEquals(0, children.size());
+    }
+
+    public void testMlsdDirInvalid() throws Exception {
+        final AttributedList<Path> children = new AttributedList<Path>();
+
+        FTPPath path = (FTPPath) PathFactory.createPath(SessionFactory.createSession(new Host(Protocol.FTP, "localhost")),
+                "/www", Path.DIRECTORY_TYPE);
+
+        String[] replies = new String[]{
+                "Type=dir;Unique=aaaaacUYqaaa;Perm=cpmel; /", //skipped
+        };
+
+        boolean success = path.parseMlsdResponse(children, Arrays.asList(replies));
+        assertFalse(success);
+        assertEquals(0, children.size());
+    }
+
+    public void testSkipParentDir() throws Exception {
+        final AttributedList<Path> children = new AttributedList<Path>();
+
+        FTPPath path = (FTPPath) PathFactory.createPath(SessionFactory.createSession(new Host(Protocol.FTP, "localhost")),
+                "/www", Path.DIRECTORY_TYPE);
+
+        String[] replies = new String[]{
+                "Type=pdir;Unique=aaaaacUYqaaa;Perm=cpmel; /",
+                "Type=pdir;Unique=aaaaacUYqaaa;Perm=cpmel; ..",
+                "Type=file;Unique=aaab8bUYqaaa;Perm=rf;Size=34589; ftpd.c"
+        };
+
+        boolean success = path.parseMlsdResponse(children, Arrays.asList(replies));
+        assertTrue(success);
+        assertEquals(1, children.size());
+        assertEquals("ftpd.c", children.get(0).getName());
+    }
+
+    public void testSize() throws Exception {
+        final AttributedList<Path> children = new AttributedList<Path>();
+
+        FTPPath path = (FTPPath) PathFactory.createPath(SessionFactory.createSession(new Host(Protocol.FTP, "localhost")),
+                "/www", Path.DIRECTORY_TYPE);
+
+        String[] replies = new String[]{
+                "Type=file;Unique=aaab8bUYqaaa;Perm=rf;Size=34589; ftpd.c"
+        };
+
+        boolean success = path.parseMlsdResponse(children, Arrays.asList(replies));
+        assertTrue(success);
+        assertEquals(1, children.size());
+        assertEquals(34589, children.get(0).attributes().getSize());
+    }
+
+    public void testTimestamp() throws Exception {
+        final AttributedList<Path> children = new AttributedList<Path>();
+
+        FTPPath path = (FTPPath) PathFactory.createPath(SessionFactory.createSession(new Host(Protocol.FTP, "localhost")),
+                "/www", Path.DIRECTORY_TYPE);
+
+        String[] replies = new String[]{
+                "Type=dir;Modify=19990112033045; text" //yyyyMMddHHmmss
+        };
+
+        boolean success = path.parseMlsdResponse(children, Arrays.asList(replies));
+        assertTrue(success);
+        assertEquals(1, children.size());
+        Calendar date = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        date.set(1999, 0, 12, 3, 30, 45);
+        date.set(Calendar.MILLISECOND, 0);
+        assertEquals(date.getTime().getTime(), children.get(0).attributes().getModificationDate());
+    }
+
+    public void testBrokenMlsd() throws Exception {
+        FTPPath path = (FTPPath) PathFactory.createPath(SessionFactory.createSession(new Host(Protocol.FTP, "localhost")),
+                "/Dummies_Infoblaetter", Path.DIRECTORY_TYPE);
+
+        {
+            final AttributedList<Path> children = new AttributedList<Path>();
+            String[] replies = new String[]{
+                    "Type=dir;Modify=20101209140859;Win32.ea=0x00000010; Dummies_Infoblaetter",
+            };
+
+            boolean success = path.parseMlsdResponse(children, Arrays.asList(replies));
+            assertFalse(success);
+            assertEquals(1, children.size());
+        }
+        {
+            final AttributedList<Path> children = new AttributedList<Path>();
+            String[] replies = new String[]{
+                    "Type=dir;Modify=20101209140859;Win32.ea=0x00000010; Dummies_Infoblaetter",
+                    "Type=file;Unique=aaab8bUYqaaa;Perm=rf;Size=34589; ftpd.c"
+            };
+
+            boolean success = path.parseMlsdResponse(children, Arrays.asList(replies));
+            assertTrue(success);
+            assertEquals(2, children.size());
+        }
+        {
+            final AttributedList<Path> children = new AttributedList<Path>();
+            String[] replies = new String[]{
+                    "Type=file;Unique=aaab8bUYqaaa;Perm=rf;Size=34589; ftpd.c",
+                    "Type=dir;Modify=20101209140859;Win32.ea=0x00000010; Dummies_Infoblaetter"
+            };
+
+            boolean success = path.parseMlsdResponse(children, Arrays.asList(replies));
+            assertTrue(success);
+            assertEquals(2, children.size());
+        }
+    }
+
+    public void testParseUNIXPermissions() throws Exception {
+        FTPPath path = (FTPPath) PathFactory.createPath(SessionFactory.createSession(new Host(Protocol.FTP, "localhost")),
+                "/www", Path.DIRECTORY_TYPE);
+
+        {
+            final AttributedList<Path> children = new AttributedList<Path>();
+            String[] replies = new String[]{
+                    "modify=19990307234236;perm=adfr;size=60;type=file;unique=FE03U10001724;UNIX.group=1001;UNIX.mode=0664;UNIX.owner=2000; kalahari.diz"
+            };
+
+            boolean success = path.parseMlsdResponse(children, Arrays.asList(replies));
+            assertTrue(success);
+            assertEquals(1, children.size());
+            assertEquals("664", children.get(0).attributes().getPermission().getOctalString());
+        }
+        {
+            final AttributedList<Path> children = new AttributedList<Path>();
+            String[] replies = new String[]{
+                    "modify=20090210192929;perm=fle;type=dir;unique=FE03U10006D95;UNIX.group=1001;UNIX.mode=02775;UNIX.owner=2000; tangerine"
+            };
+
+            boolean success = path.parseMlsdResponse(children, Arrays.asList(replies));
+            assertTrue(success);
+            assertEquals(1, children.size());
+            assertEquals("775", children.get(0).attributes().getPermission().getOctalString());
+        }
     }
 
     public static Test suite() {

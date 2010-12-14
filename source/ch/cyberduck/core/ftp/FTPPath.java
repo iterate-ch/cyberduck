@@ -32,7 +32,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.MessageFormat;
-import java.text.ParsePosition;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -264,7 +264,10 @@ public class FTPPath extends Path {
             final Map<String, String> facts = new HashMap<String, String>();
             for(String fact : result.group(1).split(";")) {
                 if(fact.contains("=")) {
-                    facts.put(fact.split("=")[0].toLowerCase(), fact.split("=")[1].toLowerCase());
+                    String[] parts = fact.split("=");
+                    if(parts.length == 2) {
+                        facts.put(parts[0].toLowerCase(), parts[1].toLowerCase());
+                    }
                 }
             }
             file.put(filename, facts);
@@ -282,33 +285,21 @@ public class FTPPath extends Path {
      * @return
      * @throws IOException
      */
-    private boolean parseMlsdResponse(final AttributedList<Path> children, List<String> replies)
+    protected boolean parseMlsdResponse(final AttributedList<Path> children, List<String> replies)
             throws IOException {
 
         if(null == replies) {
             // This is an empty directory
             return false;
         }
-        boolean success = false;
+        boolean success = false; // At least one entry successfully parsed
         for(String line : replies) {
             final Map<String, Map<String, String>> file = this.parseFacts(line);
             if(null == file) {
                 log.error("Error parsing line:" + line);
                 continue;
             }
-            success = false; // At least one entry successfully parsed
             for(String name : file.keySet()) {
-                if(!success) {
-                    if(this.getName().equals(name)) {
-                        log.warn("Skipping possibly bogus response:" + line);
-                        continue;
-                    }
-                    if(name.contains(String.valueOf(DELIMITER))) {
-                        // The filename should never contain a delimiter according to RFC 3669
-                        log.warn("Skip listing entry with delimiter:" + name);
-                        continue;
-                    }
-                }
                 final Path parsed = PathFactory.createPath(this.getSession(), this.getAbsolute(), name, Path.FILE_TYPE);
                 parsed.setParent(this);
                 // size       -- Size in octets
@@ -333,9 +324,21 @@ public class FTPPath extends Path {
                     }
                     else {
                         log.warn("Ignored type: " + line);
-                        continue;
+                        break;
                     }
-                    success = true;
+                    if(name.contains(String.valueOf(DELIMITER))) {
+                        // The filename should never contain a delimiter according to RFC 3669
+                        log.warn("Skip entry with delimiter:" + name);
+                        break;
+                    }
+                    if(!success) {
+                        if("dir".equals(facts.get("type").toLowerCase()) && this.getName().equals(name)) {
+                            log.warn("Possibly bogus response:" + line);
+                        }
+                        else {
+                            success = true;
+                        }
+                    }
                     if(facts.containsKey("sizd")) {
                         parsed.attributes().setSize(Long.parseLong(facts.get("sizd")));
                     }
@@ -538,11 +541,21 @@ public class FTPPath extends Path {
     /**
      * Format to interpret MTDM timestamp
      */
-    private SimpleDateFormat tsFormat =
+    private SimpleDateFormat tsFormatSeconds =
             new SimpleDateFormat("yyyyMMddHHmmss");
 
     {
-        tsFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+        tsFormatSeconds.setTimeZone(TimeZone.getTimeZone("UTC"));
+    }
+
+    /**
+     * Format to interpret MTDM timestamp
+     */
+    private SimpleDateFormat tsFormatMilliseconds =
+            new SimpleDateFormat("yyyyMMddHHmmss.SSS");
+
+    {
+        tsFormatMilliseconds.setTimeZone(TimeZone.getTimeZone("UTC"));
     }
 
     /**
@@ -555,12 +568,22 @@ public class FTPPath extends Path {
         if(null == timestamp) {
             return -1;
         }
-        Date parsed = tsFormat.parse(timestamp, new ParsePosition(0));
-        if(null == parsed) {
-            log.error("Failed to parse timestamp:" + timestamp);
-            return -1;
+        try {
+            Date parsed = tsFormatSeconds.parse(timestamp);
+            return parsed.getTime();
         }
-        return parsed.getTime();
+        catch(ParseException e) {
+            log.warn("Failed to parse timestamp:" + e.getMessage());
+            try {
+                Date parsed = tsFormatMilliseconds.parse(timestamp);
+                return parsed.getTime();
+            }
+            catch(ParseException f) {
+                log.warn("Failed to parse timestamp:" + f.getMessage());
+            }
+        }
+        log.error("Failed to parse timestamp:" + timestamp);
+        return -1;
     }
 
     @Override
@@ -785,7 +808,7 @@ public class FTPPath extends Path {
                 this.getName(), DateFormatterFactory.instance().getShortFormat(modified)));
         try {
             if(this.getSession().getClient().isFeatureSupported(FTPCommand.MFMT)) {
-                if(this.getSession().getClient().setModificationTime(this.getAbsolute(), tsFormat.format(modified))) {
+                if(this.getSession().getClient().setModificationTime(this.getAbsolute(), tsFormatSeconds.format(modified))) {
                     this.attributes().setModificationDate(modified);
                 }
             }
@@ -797,9 +820,9 @@ public class FTPPath extends Path {
                     // and the modification time is set to the value of the second element
                     // Accessed date, modified date, created date
                     if(this.getSession().getClient().sendSiteCommand("UTIME " + this.getAbsolute()
-                            + " " + tsFormat.format(new Date(modified))
-                            + " " + tsFormat.format(new Date(modified))
-                            + " " + tsFormat.format(new Date(created))
+                            + " " + tsFormatSeconds.format(new Date(modified))
+                            + " " + tsFormatSeconds.format(new Date(modified))
+                            + " " + tsFormatSeconds.format(new Date(created))
                             + " UTC")) {
                         this.attributes().setModificationDate(modified);
                         this.attributes().setCreationDate(created);
