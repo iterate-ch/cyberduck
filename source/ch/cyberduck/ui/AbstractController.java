@@ -94,7 +94,9 @@ public abstract class AbstractController implements Controller {
             }
         };
         ThreadPool.instance().execute(command);
-        log.info("Scheduled background runnable for execution:" + runnable);
+        if(log.isInfoEnabled()) {
+            log.info("Scheduled background runnable for execution:" + runnable);
+        }
     }
 
     /**

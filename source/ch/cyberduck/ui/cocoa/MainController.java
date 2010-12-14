@@ -646,8 +646,8 @@ public class MainController extends BundleController implements NSApplication.De
      * @param notification
      */
     public void applicationDidFinishLaunching(NSNotification notification) {
-        log.info("Running Java " + System.getProperty("java.version") + " on " + System.getProperty("os.arch"));
         if(log.isInfoEnabled()) {
+            log.info("Running Java " + System.getProperty("java.version") + " on " + System.getProperty("os.arch"));
             log.info("Available localizations:" + NSBundle.mainBundle().localizations());
             log.info("Current locale:" + java.util.Locale.getDefault());
         }

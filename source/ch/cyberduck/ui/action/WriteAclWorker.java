@@ -67,7 +67,9 @@ public abstract class WriteAclWorker extends Worker<Acl> {
             }
             else {
                 if(acl.equals(next.attributes().getAcl())) {
-                    log.info("Skip writing equal ACL for " + next);
+                    if(log.isInfoEnabled()) {
+                        log.info("Skip writing equal ACL for " + next);
+                    }
                     return acl;
                 }
                 // Additional entry added

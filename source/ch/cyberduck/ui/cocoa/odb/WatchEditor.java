@@ -130,16 +130,22 @@ public class WatchEditor extends Editor implements FileWatcherListener {
     }
 
     public void fileWritten(Local file) {
-        log.info("fileWritten:" + file);
+        if(log.isInfoEnabled()) {
+            log.info("fileWritten:" + file);
+        }
         this.save();
     }
 
     public void fileRenamed(Local file) {
-        log.info("fileRenamed:" + file);
+        if(log.isInfoEnabled()) {
+            log.info("fileRenamed:" + file);
+        }
     }
 
     public void fileDeleted(Local file) {
-        log.info("fileDeleted:" + file);
+        if(log.isInfoEnabled()) {
+            log.info("fileDeleted:" + file);
+        }
         monitor.removeListener(this);
     }
 }

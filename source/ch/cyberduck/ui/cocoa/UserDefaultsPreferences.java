@@ -93,7 +93,9 @@ public class UserDefaultsPreferences extends Preferences {
 
     @Override
     public void setProperty(final String property, final String value) {
-        log.info("setProperty:" + property + "," + value);
+        if(log.isInfoEnabled()) {
+            log.info("setProperty:" + property + "," + value);
+        }
         if(StringUtils.isNotEmpty(value)) {
             // Sets the value of the default identified by defaultName in the standard application domain.
             // Setting a default has no effect on the value returned by the objectForKey method if

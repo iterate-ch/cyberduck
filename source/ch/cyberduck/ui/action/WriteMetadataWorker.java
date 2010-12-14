@@ -71,7 +71,9 @@ public abstract class WriteMetadataWorker extends Worker<Map<String, String>> {
                 }
             }
             if(updated.equals(next.attributes().getMetadata())) {
-                log.info("Skip writing equal metadata for " + next);
+                if(log.isInfoEnabled()) {
+                    log.info("Skip writing equal metadata for " + next);
+                }
                 return metadata;
             }
             ((CloudPath) next).writeMetadata(updated);

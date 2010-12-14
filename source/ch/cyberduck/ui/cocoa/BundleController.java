@@ -55,7 +55,9 @@ public abstract class BundleController extends ProxyController {
             log.warn("Bundle " + bundleName + " already loaded");
             return;
         }
-        log.info("Loading bundle " + bundleName);
+        if(log.isInfoEnabled()) {
+            log.info("Loading bundle " + bundleName);
+        }
         if(!NSBundle.loadNibNamed(bundleName, this.id())) {
             log.fatal("Couldn't load " + bundleName + ".nib");
             return;
