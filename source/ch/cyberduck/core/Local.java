@@ -249,7 +249,9 @@ public abstract class Local extends AbstractPath {
     public void mkdir(boolean recursive) {
         if(recursive) {
             if(_impl.mkdirs()) {
-                log.info("Created directory " + this.getAbsolute());
+                if(log.isInfoEnabled()) {
+                    log.info("Created directory " + this.getAbsolute());
+                }
             }
         }
         else {
@@ -260,7 +262,9 @@ public abstract class Local extends AbstractPath {
     @Override
     public void mkdir() {
         if(_impl.mkdir()) {
-            log.warn("Created directory " + this.getAbsolute());
+            if(log.isInfoEnabled()) {
+                log.info("Created directory " + this.getAbsolute());
+            }
         }
     }
 

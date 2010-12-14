@@ -61,11 +61,15 @@ public class KeychainX509TrustManager extends AbstractX509TrustManager {
             throws CertificateException {
 
         if(Arrays.asList(this.getAcceptedIssuers()).containsAll(Arrays.asList(certs))) {
-            log.info("Certificate for " + this.getHostname() + " previously trusted");
+            if(log.isInfoEnabled()) {
+                log.info("Certificate for " + this.getHostname() + " previously trusted");
+            }
             return;
         }
         if(KeychainFactory.instance().isTrusted(this.getHostname(), certs)) {
-            log.info("Certificate for " + this.getHostname() + " trusted in Keychain");
+            if(log.isInfoEnabled()) {
+                log.info("Certificate for " + this.getHostname() + " trusted in Keychain");
+            }
             // We still accept the certificate if we find it in the Keychain
             // regardless of its trust settings. There is currently no way I am
             // aware of to read the trust settings for a certificate in the Keychain
@@ -137,7 +141,9 @@ public class KeychainX509TrustManager extends AbstractX509TrustManager {
             X509Certificate cert = KeychainFactory.instance().chooseCertificate(list.toArray(new String[list.size()]),
                     MessageFormat.format(Locale.localizedString("Select the certificate to use when connecting to {0}."), this.getHostname()));
             if(null == cert) {
-                log.info("No certificate selected for hostname:" + this.getHostname());
+                if(log.isInfoEnabled()) {
+                    log.info("No certificate selected for hostname:" + this.getHostname());
+                }
                 return null;
             }
             String alias = store.getCertificateAlias(cert);

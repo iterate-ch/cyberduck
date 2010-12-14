@@ -105,7 +105,9 @@ public abstract class AbstractFolderHostCollection extends AbstractHostCollectio
 
     @Override
     public void load() {
-        log.info("Reloading:" + folder);
+        if(log.isInfoEnabled()) {
+            log.info("Reloading:" + folder);
+        }
         final AttributedList<Local> bookmarks = folder.children(
                 new PathFilter<Local>() {
                     public boolean accept(Local file) {

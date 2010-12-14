@@ -120,7 +120,9 @@ public class TransferCollection extends Collection<Transfer> {
     private void load(Local f) {
         log.debug("load");
         if(f.exists()) {
-            log.info("Found Queue file: " + f.toString());
+            if(log.isInfoEnabled()) {
+                log.info("Found Queue file: " + f.toString());
+            }
             this.addAll(TransferReaderFactory.instance().readCollection(f));
         }
     }

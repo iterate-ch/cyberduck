@@ -474,25 +474,25 @@ public class SFTPPath extends Path {
                 in = this.getLocal().getInputStream();
                 if(Preferences.instance().getProperty("ssh.transfer").equals(Protocol.SFTP.getIdentifier())) {
                     try {
-                        SFTPv3FileAttributes attrs = new SFTPv3FileAttributes();
+                        SFTPv3FileAttributes attr = new SFTPv3FileAttributes();
                         if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
                             int t = (int) (this.attributes().getModificationDate() / 1000);
                             // We must both set the accessed and modified time. See AttribFlags.SSH_FILEXFER_ATTR_V3_ACMODTIME
-                            attrs.atime = t;
-                            attrs.mtime = t;
+                            attr.atime = t;
+                            attr.mtime = t;
                         }
                         if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
                             // We do set the permissions here as otherwise we might have an empty mask for
                             // interrupted file transfers
-                            attrs.permissions = this.attributes().getPermission().getOctalNumber();
+                            attr.permissions = this.attributes().getPermission().getOctalNumber();
                         }
                         if(status().isResume() && this.exists()) {
                             handle = this.getSession().sftp().openFile(this.getAbsolute(),
-                                    SFTPv3Client.SSH_FXF_WRITE | SFTPv3Client.SSH_FXF_APPEND, attrs);
+                                    SFTPv3Client.SSH_FXF_WRITE | SFTPv3Client.SSH_FXF_APPEND, attr);
                         }
                         else {
                             handle = this.getSession().sftp().openFile(this.getAbsolute(),
-                                    SFTPv3Client.SSH_FXF_CREAT | SFTPv3Client.SSH_FXF_TRUNC | SFTPv3Client.SSH_FXF_WRITE, attrs);
+                                    SFTPv3Client.SSH_FXF_CREAT | SFTPv3Client.SSH_FXF_TRUNC | SFTPv3Client.SSH_FXF_WRITE, attr);
                         }
                     }
                     catch(SFTPException ignore) {

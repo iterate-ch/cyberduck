@@ -145,7 +145,9 @@ public abstract class AbstractEditor {
                 edited.getSession().message(MessageFormat.format(
                         Locale.localizedString("Compute MD5 hash of {0}", "Status"), edited.getName()));
                 if(lastchecksum.equals(edited.getLocal().attributes().getChecksum())) {
-                    log.info("File not modified:" + edited.getLocal());
+                    if(log.isInfoEnabled()) {
+                        log.info("File not modified:" + edited.getLocal());
+                    }
                     return;
                 }
                 lastchecksum = edited.getLocal().attributes().getChecksum();

@@ -20,12 +20,11 @@ package ch.cyberduck.core.dropbox;
  */
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.dropbox.client.Account;
+import ch.cyberduck.core.dropbox.client.DropboxClient;
 import ch.cyberduck.core.http.HTTP4Session;
 
 import org.apache.log4j.Logger;
-
-import ch.cyberduck.core.dropbox.client.Account;
-import ch.cyberduck.core.dropbox.client.DropboxClient;
 
 import java.io.IOException;
 
@@ -72,8 +71,10 @@ public class DropboxSession extends HTTP4Session {
         // Prompt the login credentials first
         this.login();
 
-        Account account = this.getClient().account();
-        log.info("Logged in as " + account.getDisplayName() + "(" + account.getUid() + ")");
+        if(log.isInfoEnabled()) {
+            Account account = this.getClient().account();
+            log.info("Logged in as " + account.getDisplayName() + "(" + account.getUid() + ")");
+        }
 
         this.fireConnectionDidOpenEvent();
     }

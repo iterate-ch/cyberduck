@@ -129,7 +129,9 @@ public class NativeLicense extends AbstractLicense {
         }
         final boolean valid = this.verify(this.getFile().getAbsolute());
         if(valid) {
-            log.info("Valid donation key:" + this.getFile().getAbsolute());
+            if(log.isInfoEnabled()) {
+                log.info("Valid donation key:" + this.getFile().getAbsolute());
+            }
         }
         else {
             log.warn("Not a valid donation key:" + this.getFile().getAbsolute());

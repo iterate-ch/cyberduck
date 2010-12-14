@@ -203,7 +203,9 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
     @Override
     public void finish() {
         while(this.hasFailed() && this.retry() > 0) {
-            log.info("Retry failed background action:" + this);
+            if(log.isInfoEnabled()) {
+                log.info("Retry failed background action:" + this);
+            }
             // This is an automated retry. Wait some time first.
             this.pause();
             if(!this.isCanceled()) {

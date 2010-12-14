@@ -163,7 +163,9 @@ public class Status {
 
     public void setComplete(boolean complete) {
         this.complete = complete;
-        log.info("Complete:" + complete + "," + this.getCurrent());
+        if(log.isInfoEnabled()) {
+            log.info("Complete:" + complete + "," + this.getCurrent());
+        }
     }
 
     public boolean isComplete() {

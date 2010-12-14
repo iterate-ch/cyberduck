@@ -60,7 +60,9 @@ public abstract class AbstractProxy implements Proxy {
             properties.put(SOCKS_PORT, Integer.toString(port));
             final String proxy = this.getSOCKSProxyHost();
             properties.put(SOCKS_HOST, proxy);
-            log.info("Using SOCKS Proxy " + proxy + ":" + port);
+            if(log.isInfoEnabled()) {
+                log.info("Using SOCKS Proxy " + proxy + ":" + port);
+            }
         }
         else {
             properties.remove(SOCKS_HOST);

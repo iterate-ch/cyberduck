@@ -108,7 +108,9 @@ public class UploadTransfer extends Transfer {
                         upload.setPath(parent, proposal);
                     }
                     while(false);//(upload.exists());
-                    log.info("Changed name to:" + upload.getName());
+                    if(log.isInfoEnabled()) {
+                        log.info("Changed name to:" + upload.getName());
+                    }
                 }
             }
             // Prunes the list of selected files. Files which are a child of an already included directory
@@ -304,7 +306,9 @@ public class UploadTransfer extends Transfer {
                     }
                     file.setPath(parent, proposal);
                 }
-                log.info("Changed local name to:" + file.getName());
+                if(log.isInfoEnabled()) {
+                    log.info("Changed local name to:" + file.getName());
+                }
             }
             if(file.attributes().isFile()) {
                 file.status().setResume(false);

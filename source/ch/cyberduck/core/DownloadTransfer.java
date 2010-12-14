@@ -88,7 +88,9 @@ public class DownloadTransfer extends Transfer {
                         download.setLocal(LocalFactory.createLocal(parent, proposal));
                     }
                     while(download.getLocal().exists());
-                    log.info("Changed local name to:" + download.getName());
+                    if(log.isInfoEnabled()) {
+                        log.info("Changed local name to:" + download.getName());
+                    }
                 }
             }
             // Prunes the list of selected files. Files which are a child of an already included directory
@@ -264,7 +266,9 @@ public class DownloadTransfer extends Transfer {
                     }
                     file.setLocal(LocalFactory.createLocal(parent, proposal));
                 }
-                log.info("Changed local name to:" + file.getLocal().getName());
+                if(log.isInfoEnabled()) {
+                    log.info("Changed local name to:" + file.getLocal().getName());
+                }
             }
             super.prepare(file);
         }
@@ -414,14 +418,18 @@ public class DownloadTransfer extends Transfer {
                     permission.getOwnerPermissions()[Permission.READ] = true;
                     permission.getOwnerPermissions()[Permission.WRITE] = true;
                 }
-                log.info("Updating permissions:" + local + "," + permission);
+                if(log.isInfoEnabled()) {
+                    log.info("Updating permissions:" + local + "," + permission);
+                }
                 local.writeUnixPermission(permission, false);
             }
         }
         if(Preferences.instance().getBoolean("queue.download.preserveDate")) {
             if(file.attributes().getModificationDate() != -1) {
                 long timestamp = file.attributes().getModificationDate();
-                log.info("Updating timestamp:" + local + "," + timestamp);
+                if(log.isInfoEnabled()) {
+                    log.info("Updating timestamp:" + local + "," + timestamp);
+                }
                 local.writeTimestamp(-1, timestamp, -1);
             }
         }

@@ -66,10 +66,14 @@ public class Queue {
      * @param t This transfer should respect the settings for maximum number of transfers
      */
     public void add(final Transfer t) {
-        log.debug("add:" + t);
+        if(log.isDebugEnabled()) {
+            log.debug("add:" + t);
+        }
         if(running.size() >= Preferences.instance().getInteger("queue.maxtransfers")) {
             t.fireTransferQueued();
-            log.info("Queuing:" + t);
+            if(log.isInfoEnabled()) {
+                log.info("Queuing:" + t);
+            }
             // The maximum number of transfers is already reached
             try {
                 boolean offer = false;
@@ -81,7 +85,9 @@ public class Queue {
             catch(InterruptedException e) {
                 log.error(e.getMessage());
             }
-            log.info("released from queue:" + t);
+            if(log.isInfoEnabled()) {
+                log.info("released from queue:" + t);
+            }
             t.fireTransferResumed();
         }
         else {

@@ -64,7 +64,9 @@ public class MultipleBookmarkCollection extends Collection<FolderBookmarkCollect
 
     @Override
     public void load() {
-        log.info("Reloading:" + folder);
+        if(log.isInfoEnabled()) {
+            log.info("Reloading:" + folder);
+        }
         final AttributedList<Local> groups = folder.children(
                 new PathFilter<Local>() {
                     public boolean accept(Local file) {

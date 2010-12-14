@@ -244,7 +244,9 @@ public class BookmarkCollection extends AbstractHostCollection {
     public void load() {
         FolderBookmarkCollection favorites = FolderBookmarkCollection.favoritesCollection();
         if(file.exists()) {
-            log.info("Found Bookmarks file: " + file.getAbsolute());
+            if(log.isInfoEnabled()) {
+                log.info("Found Bookmarks file: " + file.getAbsolute());
+            }
             favorites.load(HostReaderFactory.instance().readCollection(file));
             log.info("Moving deprecated bookmarks file to Trash");
             file.delete(true);

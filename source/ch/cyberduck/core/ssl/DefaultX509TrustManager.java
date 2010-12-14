@@ -67,9 +67,11 @@ public class DefaultX509TrustManager implements X509TrustManager {
     public void checkServerTrusted(X509Certificate[] x509Certificates, String authType)
             throws CertificateException {
         if((x509Certificates != null)) {
-            log.info("Server certificate chain:");
-            for(int i = 0; i < x509Certificates.length; i++) {
-                log.info("X509Certificate[" + i + "]=" + x509Certificates[i]);
+            if(log.isInfoEnabled()) {
+                log.info("Server certificate chain:");
+                for(int i = 0; i < x509Certificates.length; i++) {
+                    log.info("X509Certificate[" + i + "]=" + x509Certificates[i]);
+                }
             }
         }
         if((x509Certificates != null) && (x509Certificates.length == 1)) {

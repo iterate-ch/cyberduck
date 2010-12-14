@@ -53,7 +53,7 @@ public class Cache<E extends AbstractPath> {
      * @see ch.cyberduck.core.AttributedList#get(PathReference)
      */
     public E lookup(PathReference reference) {
-        synchronized (_impl) {
+        synchronized(_impl) {
             for(AttributedList list : _impl.values()) {
                 final AbstractPath path = list.get(reference);
                 if(null == path) {
@@ -65,7 +65,7 @@ public class Cache<E extends AbstractPath> {
             return null;
         }
     }
-    
+
     public boolean isEmpty() {
         return _impl.isEmpty();
     }
@@ -104,7 +104,7 @@ public class Cache<E extends AbstractPath> {
     }
 
     /**
-     * @param reference       Absolute path
+     * @param reference  Absolute path
      * @param comparator Sorting comparator to apply the the file listing. If null the list
      *                   is returned as is from the last used comparator
      * @param filter     Path filter to apply. All files that don't match are moved to the
@@ -172,7 +172,9 @@ public class Cache<E extends AbstractPath> {
      * Clear all cached directory listings
      */
     public void clear() {
-        log.info("Clearing cache " + this.toString());
+        if(log.isInfoEnabled()) {
+            log.info("Clearing cache " + this.toString());
+        }
         _impl.clear();
     }
 }

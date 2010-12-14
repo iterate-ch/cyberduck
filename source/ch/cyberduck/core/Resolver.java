@@ -51,7 +51,6 @@ public class Resolver implements Runnable {
     private UnknownHostException exception;
 
     /**
-     *
      * @return True if the lookup has failed and the host is unkown
      */
     public boolean hasFailed() {
@@ -59,7 +58,6 @@ public class Resolver implements Runnable {
     }
 
     /**
-     *
      * @param hostname The hostname to lookup
      */
     public Resolver(String hostname) {
@@ -76,8 +74,9 @@ public class Resolver implements Runnable {
     /**
      * This method is blocking until the hostname has been resolved or the lookup
      * has been canceled using #cancel
+     *
      * @return The resolved IP address for this hostname
-     * @throws UnknownHostException If the hostname cannot be resolved
+     * @throws UnknownHostException     If the hostname cannot be resolved
      * @throws ResolveCanceledException If the lookup has been interrupted
      * @see #cancel
      */
@@ -120,6 +119,7 @@ public class Resolver implements Runnable {
     /**
      * Unblocks the #resolve method for the hostname lookup to finish. #resolve will
      * throw a ResolveCanceledException
+     *
      * @see #resolve
      * @see ResolveCanceledException
      */
@@ -135,7 +135,9 @@ public class Resolver implements Runnable {
     public void run() {
         try {
             this.resolved = InetAddress.getByName(this.hostname);
-            log.info("Resolved " + this.hostname + " to " + this.resolved.getHostAddress());
+            if(log.isInfoEnabled()) {
+                log.info("Resolved " + this.hostname + " to " + this.resolved.getHostAddress());
+            }
         }
         catch(UnknownHostException e) {
             log.warn("Failed resolving " + this.hostname);
@@ -151,6 +153,6 @@ public class Resolver implements Runnable {
 
     @Override
     public String toString() {
-        return "Resolver for "+this.hostname;
+        return "Resolver for " + this.hostname;
     }
 }

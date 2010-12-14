@@ -52,7 +52,7 @@ public abstract class Updater extends NSObject {
             return new URL(feed);
         }
         catch(MalformedURLException e) {
-            log.info("No valid update URL configured:" + feed);
+            log.warn("No valid update URL configured:" + feed);
         }
         return null;
     }

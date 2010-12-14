@@ -609,7 +609,9 @@ public class Host implements Serializable {
                     // and do not use STD3 ASCII rules If unassigned code points are found
                     // the operation fails with ParseException
                     final String idn = IDNA.convertIDNToASCII(this.hostname, IDNA.DEFAULT).toString();
-                    log.info("IDN hostname for " + this.hostname + ":" + idn);
+                    if(log.isInfoEnabled()) {
+                        log.info("IDN hostname for " + this.hostname + ":" + idn);
+                    }
                     this.punycode = idn;
                 }
                 catch(StringPrepParseException e) {

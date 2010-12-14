@@ -395,7 +395,6 @@ public abstract class Transfer implements Serializable {
     }
 
     /**
-     *
      * @param item
      * @return
      */
@@ -431,7 +430,9 @@ public abstract class Transfer implements Serializable {
      */
     private void transfer(final Path p, final TransferFilter filter) {
         if(!this.isIncluded(p)) {
-            log.info("Not included in transfer:" + p);
+            if(log.isInfoEnabled()) {
+                log.info("Not included in transfer:" + p);
+            }
             p.status().setComplete(true);
             return;
         }
@@ -513,7 +514,9 @@ public abstract class Transfer implements Serializable {
             // Determine the filter to match files against
             final TransferAction action = this.action(options.resumeRequested, options.reloadRequested);
             if(action.equals(TransferAction.ACTION_CANCEL)) {
-                log.info("Transfer canceled by user:" + this);
+                if(log.isInfoEnabled()) {
+                    log.info("Transfer canceled by user:" + this);
+                }
                 this.cancel();
                 return;
             }
@@ -568,13 +571,17 @@ public abstract class Transfer implements Serializable {
         }
 
         if(!this.isIncluded(p)) {
-            log.info("Not included in transfer:" + p);
+            if(log.isInfoEnabled()) {
+                log.info("Not included in transfer:" + p);
+            }
             return;
         }
 
         // Only prepare the path it will be actually transferred
         if(filter.accept(p)) {
-            log.info("Accepted in transfer:" + p);
+            if(log.isInfoEnabled()) {
+                log.info("Accepted in transfer:" + p);
+            }
             this.getSession().message(MessageFormat.format(Locale.localizedString("Prepare {0}", "Status"), p.getName()));
             filter.prepare(p);
         }
