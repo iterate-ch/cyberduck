@@ -31,6 +31,7 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.SocketTimeoutException;
 import java.text.MessageFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -97,6 +98,71 @@ public class FTPPath extends Path {
         return session;
     }
 
+    /**
+     *
+     */
+    private abstract static class DataConnectionAction {
+        /**
+         * Implementation
+         *
+         * @return
+         * @throws IOException
+         */
+        public abstract boolean run() throws IOException;
+    }
+
+    private boolean data(DataConnectionAction action) throws IOException {
+        try {
+            return action.run();
+        }
+        catch(FTPException failure) {
+            log.warn("Error requesting data socket:" + failure.getMessage());
+            // Fallback handling
+            if(Preferences.instance().getBoolean("ftp.connectmode.fallback")) {
+                try {
+                    return this.fallback(action);
+                }
+                catch(IOException e) {
+                    this.getSession().interrupt();
+                    log.warn("Connect mode fallback failed:" + e.getMessage());
+                    // Throw original error message
+                    throw failure;
+                }
+            }
+        }
+        catch(SocketTimeoutException failure) {
+            log.warn("Timeout opening data socket:" + failure.getMessage());
+            // Fallback handling
+            if(Preferences.instance().getBoolean("ftp.connectmode.fallback")) {
+                this.getSession().interrupt();
+                this.getSession().check();
+                try {
+                    return this.fallback(action);
+                }
+                catch(IOException e) {
+                    this.getSession().interrupt();
+                    log.warn("Connect mode fallback failed:" + e.getMessage());
+                    // Throw original error message
+                    throw failure;
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean fallback(DataConnectionAction action) throws IOException {
+        // Fallback to other connect mode
+        if(getSession().getClient().getDataConnectionMode() == FTPClient.PASSIVE_LOCAL_DATA_CONNECTION_MODE) {
+            log.info("Fallback to active data connection");
+            this.getSession().getClient().enterLocalActiveMode();
+        }
+        else if(this.getSession().getClient().getDataConnectionMode() == FTPClient.ACTIVE_LOCAL_DATA_CONNECTION_MODE) {
+            log.info("Fallback to passive data connection");
+            this.getSession().getClient().enterLocalPassiveMode();
+        }
+        return action.run();
+    }
+
     @Override
     public AttributedList<Path> list() {
         final AttributedList<Path> children = new AttributedList<Path>();
@@ -143,34 +209,43 @@ public class FTPPath extends Path {
                     this.getSession().check();
                 }
                 if(!success || children.isEmpty()) {
-                    // STAT listing failed or empty
-                    if(this.getSession().isMlsdListSupportedEnabled()
-                            // Note that there is no distinct FEAT output for MLSD.
-                            // The presence of the MLST feature indicates that both MLST and MLSD are supported.
-                            && this.getSession().getClient().isFeatureSupported(FTPClient.MLST)) {
-                        success = this.parseMlsdResponse(children, this.getSession().getClient().list(FTPClient.MLSD, this.getAbsolute()));
-                        if(!success) {
-                            this.getSession().setMlsdListSupportedEnabled(false);
+                    success = this.data(new DataConnectionAction() {
+                        @Override
+                        public boolean run() throws IOException {
+                            boolean success = false;
+                            // STAT listing failed or empty
+                            if(getSession().isMlsdListSupportedEnabled()
+                                    // Note that there is no distinct FEAT output for MLSD.
+                                    // The presence of the MLST feature indicates that both MLST and MLSD are supported.
+                                    && getSession().getClient().isFeatureSupported(FTPClient.MLST)) {
+                                success = parseMlsdResponse(children, getSession().getClient().list(FTPClient.MLSD, getAbsolute()));
+                                if(!success) {
+                                    getSession().setMlsdListSupportedEnabled(false);
+                                }
+                            }
+                            if(!success) {
+                                // MLSD listing failed
+                                if(!getSession().getClient().setFileType(FTPClient.ASCII_FILE_TYPE)) {
+                                    throw new FTPException(getSession().getClient().getReplyString());
+                                }
+                                // Set transfer type for traditional data socket file listings. The data transfer is over the
+                                // data connection in type ASCII or type EBCDIC. (The user must ensure that
+                                // the TYPE is appropriately ASCII or EBCDIC)
+                                if(getSession().isExtendedListEnabled()) {
+                                    StringBuilder sb = new StringBuilder();
+                                    sb.append("-a ");
+                                    sb.append(getAbsolute());
+                                    success = parseListResponse(children, parser, getSession().getClient().list(FTPCommand.LIST, sb.toString()));
+                                }
+                                if(!success) {
+                                    // LIST -a listing failed
+                                    getSession().setExtendedListEnabled(false);
+                                    success = parseListResponse(children, parser, getSession().getClient().list(FTPCommand.LIST, getAbsolute()));
+                                }
+                            }
+                            return success;
                         }
-                    }
-                    if(!success) {
-                        // MLSD listing failed
-                        this.getSession().getClient().setFileType(FTP.ASCII_FILE_TYPE);
-                        // Set transfer type for traditional data socket file listings. The data transfer is over the
-                        // data connection in type ASCII or type EBCDIC. (The user must ensure that
-                        // the TYPE is appropriately ASCII or EBCDIC)
-                        if(this.getSession().isExtendedListEnabled()) {
-                            StringBuilder sb = new StringBuilder();
-                            sb.append("-a ");
-                            sb.append(this.getAbsolute());
-                            success = this.parseListResponse(children, parser, this.getSession().getClient().list(FTPCommand.LIST, sb.toString()));
-                        }
-                        if(!success) {
-                            // LIST -a listing failed
-                            this.getSession().setExtendedListEnabled(false);
-                            success = this.parseListResponse(children, parser, this.getSession().getClient().list(FTPCommand.LIST, this.getAbsolute()));
-                        }
-                    }
+                    });
                 }
                 for(Path child : children) {
                     if(child.attributes().getType() == Path.SYMBOLIC_LINK_TYPE) {
@@ -521,7 +596,9 @@ public class FTPPath extends Path {
                         this.getName()));
 
                 if(this.getSession().getClient().isFeatureSupported(FTPClient.SIZE)) {
-                    this.getSession().getClient().setFileType(FTP.BINARY_FILE_TYPE);
+                    if(!getSession().getClient().setFileType(FTPClient.BINARY_FILE_TYPE)) {
+                        throw new FTPException(getSession().getClient().getReplyString());
+                    }
                     this.attributes().setSize(this.getSession().getClient().getSize(this.getAbsolute()));
                 }
                 if(-1 == attributes().getSize()) {
@@ -849,53 +926,59 @@ public class FTPPath extends Path {
                 if(check) {
                     this.getSession().check();
                 }
-                InputStream in = null;
-                OutputStream out = null;
-                try {
-                    if(!this.getSession().getClient().setFileType(FTP.BINARY_FILE_TYPE)) {
-                        throw new FTPException(this.getSession().getClient().getReplyString());
-                    }
-                    if(this.status().isResume()) {
-                        // Where a server process supports RESTart in STREAM mode
-                        if(!this.getSession().getClient().isFeatureSupported("REST STREAM")) {
-                            this.status().setResume(false);
+                this.data(new DataConnectionAction() {
+                    @Override
+                    public boolean run() throws IOException {
+                        InputStream in = null;
+                        OutputStream out = null;
+                        try {
+                            if(!getSession().getClient().setFileType(FTP.BINARY_FILE_TYPE)) {
+                                throw new FTPException(getSession().getClient().getReplyString());
+                            }
+                            if(status().isResume()) {
+                                // Where a server process supports RESTart in STREAM mode
+                                if(!getSession().getClient().isFeatureSupported("REST STREAM")) {
+                                    status().setResume(false);
+                                }
+                                else {
+                                    getSession().getClient().setRestartOffset(
+                                            status().isResume() ? getLocal().attributes().getSize() : 0
+                                    );
+                                }
+                            }
+                            in = getSession().getClient().retrieveFileStream(getAbsolute());
+                            out = getLocal().getOutputStream(status().isResume());
+                            try {
+                                download(in, out, throttle, listener);
+                            }
+                            catch(ConnectionCanceledException e) {
+                                // Interrupted by user
+                                IOUtils.closeQuietly(in);
+                                IOUtils.closeQuietly(out);
+                                // Tell the server to abort the previous command and any associated
+                                // transfer of data
+                                if(!getSession().getClient().abort()) {
+                                    log.error("Interrupting file transfer failed:" + getSession().getClient().getReplyString());
+                                }
+                                status().setComplete(false);
+                                throw e;
+                            }
+                            if(status().isComplete()) {
+                                IOUtils.closeQuietly(in);
+                                IOUtils.closeQuietly(out);
+                                if(!getSession().getClient().completePendingCommand()) {
+                                    status().setComplete(false);
+                                    throw new FTPException(getSession().getClient().getReplyString());
+                                }
+                            }
                         }
-                        else {
-                            this.getSession().getClient().setRestartOffset(
-                                    this.status().isResume() ? this.getLocal().attributes().getSize() : 0
-                            );
+                        finally {
+                            IOUtils.closeQuietly(in);
+                            IOUtils.closeQuietly(out);
                         }
+                        return true;
                     }
-                    in = this.getSession().getClient().retrieveFileStream(this.getAbsolute());
-                    out = this.getLocal().getOutputStream(this.status().isResume());
-                    try {
-                        this.download(in, out, throttle, listener);
-                    }
-                    catch(ConnectionCanceledException e) {
-                        // Interrupted by user
-                        IOUtils.closeQuietly(in);
-                        IOUtils.closeQuietly(out);
-                        // Tell the server to abort the previous command and any associated
-                        // transfer of data
-                        if(!this.getSession().getClient().abort()) {
-                            log.error("Interrupting file transfer failed:" + this.getSession().getClient().getReplyString());
-                        }
-                        this.status().setComplete(false);
-                        throw e;
-                    }
-                    if(this.status().isComplete()) {
-                        IOUtils.closeQuietly(in);
-                        IOUtils.closeQuietly(out);
-                        if(!this.getSession().getClient().completePendingCommand()) {
-                            this.status().setComplete(false);
-                            throw new FTPException(this.getSession().getClient().getReplyString());
-                        }
-                    }
-                }
-                finally {
-                    IOUtils.closeQuietly(in);
-                    IOUtils.closeQuietly(out);
-                }
+                });
             }
             catch(IOException e) {
                 this.error("Download failed", e);
@@ -904,53 +987,60 @@ public class FTPPath extends Path {
     }
 
     @Override
-    protected void upload(BandwidthThrottle throttle, StreamListener listener, boolean check) {
+    protected void upload(final BandwidthThrottle throttle, final StreamListener listener, final boolean check) {
         if(this.attributes().isFile()) {
             try {
                 if(check) {
                     this.getSession().check();
                 }
-                InputStream in = null;
-                OutputStream out = null;
-                try {
-                    if(!this.getSession().getClient().setFileType(FTPClient.BINARY_FILE_TYPE)) {
-                        throw new FTPException(this.getSession().getClient().getReplyString());
-                    }
-                    in = this.getLocal().getInputStream();
-                    if(this.status().isResume()) {
-                        out = this.getSession().getClient().appendFileStream(this.getAbsolute());
-                    }
-                    else {
-                        out = this.getSession().getClient().storeFileStream(this.getAbsolute());
-                    }
-                    try {
-                        this.upload(out, in, throttle, listener);
-                    }
-                    catch(ConnectionCanceledException e) {
-                        // Interrupted by user
-                        IOUtils.closeQuietly(in);
-                        IOUtils.closeQuietly(out);
-                        // Tell the server to abort the previous command and any associated
-                        // transfer of data
-                        if(!this.getSession().getClient().abort()) {
-                            log.error("Interrupting file transfer failed:" + this.getSession().getClient().getReplyString());
+                this.data(new DataConnectionAction() {
+                    @Override
+                    public boolean run() throws IOException {
+                        InputStream in = null;
+                        OutputStream out = null;
+                        try {
+                            if(!getSession().getClient().setFileType(FTPClient.BINARY_FILE_TYPE)) {
+                                throw new FTPException(getSession().getClient().getReplyString());
+                            }
+                            in = getLocal().getInputStream();
+                            if(status().isResume()) {
+                                out = getSession().getClient().appendFileStream(
+                                        getAbsolute());
+                            }
+                            else {
+                                out = getSession().getClient().storeFileStream(getAbsolute());
+                            }
+                            try {
+                                upload(out, in, throttle, listener);
+                            }
+                            catch(ConnectionCanceledException e) {
+                                // Interrupted by user
+                                IOUtils.closeQuietly(in);
+                                IOUtils.closeQuietly(out);
+                                // Tell the server to abort the previous command and any associated
+                                // transfer of data
+                                if(!getSession().getClient().abort()) {
+                                    log.error("Interrupting file transfer failed:" + getSession().getClient().getReplyString());
+                                }
+                                status().setComplete(false);
+                                throw e;
+                            }
+                            if(status().isComplete()) {
+                                IOUtils.closeQuietly(in);
+                                IOUtils.closeQuietly(out);
+                                if(!getSession().getClient().completePendingCommand()) {
+                                    status().setComplete(false);
+                                    throw new FTPException(getSession().getClient().getReplyString());
+                                }
+                            }
                         }
-                        this.status().setComplete(false);
-                        throw e;
-                    }
-                    if(status().isComplete()) {
-                        IOUtils.closeQuietly(in);
-                        IOUtils.closeQuietly(out);
-                        if(!this.getSession().getClient().completePendingCommand()) {
-                            this.status().setComplete(false);
-                            throw new FTPException(this.getSession().getClient().getReplyString());
+                        finally {
+                            IOUtils.closeQuietly(in);
+                            IOUtils.closeQuietly(out);
                         }
+                        return true;
                     }
-                }
-                finally {
-                    IOUtils.closeQuietly(in);
-                    IOUtils.closeQuietly(out);
-                }
+                });
             }
             catch(IOException e) {
                 this.error("Upload failed", e);

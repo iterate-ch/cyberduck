@@ -19,8 +19,6 @@ package ch.cyberduck.core.ftp;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Preferences;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.net.ftp.FTPCommand;
 import org.apache.commons.net.ftp.FTPReply;
@@ -29,7 +27,6 @@ import org.apache.log4j.Logger;
 
 import javax.net.ssl.SSLException;
 import java.io.*;
-import java.net.InetAddress;
 import java.net.Socket;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
@@ -142,81 +139,13 @@ public class FTPClient extends FTPSClient {
         return value;
     }
 
-    /**
-     * True if data connection is open
-     */
-    private boolean _data = false;
-
     @Override
     protected Socket _openDataConnection_(int command, String arg) throws IOException {
-        _data = false;
         Socket socket = super._openDataConnection_(command, arg);
         if(null == socket) {
-            String reply = this.getReplyString();
-            if(!_data) {
-                log.error("Opening data socket failed:" + this.getReplyString());
-                if(FTPReply.isNegativePermanent(this.getReplyCode())) {
-                    if(Preferences.instance().getBoolean("ftp.connectmode.fallback")) {
-                        // Fallback to other connect mode
-                        if(this.getDataConnectionMode() == PASSIVE_LOCAL_DATA_CONNECTION_MODE) {
-                            log.info("Fallback to active data connection");
-                            this.enterLocalActiveMode();
-                            socket = super._openDataConnection_(command, arg);
-                        }
-                        else if(this.getDataConnectionMode() == ACTIVE_LOCAL_DATA_CONNECTION_MODE) {
-                            log.info("Fallback to passive data connection");
-                            this.enterLocalPassiveMode();
-                            socket = super._openDataConnection_(command, arg);
-                        }
-                    }
-                }
-                if(null == socket) {
-                    log.error("Opening data socket failed:" + this.getReplyString());
-                    // Throw original error message
-                    throw new FTPException(reply);
-                }
-            }
-            else {
-                log.warn("Listing method " + command + " not supported:" + reply);
-            }
+            throw new FTPException(this.getReplyString());
         }
         return socket;
-    }
-
-    @Override
-    public int port(InetAddress host, int port) throws IOException {
-        int reply = super.port(host, port);
-        if(FTPReply.isPositiveCompletion(reply)) {
-            _data = true;
-        }
-        return reply;
-    }
-
-    @Override
-    public int eprt(InetAddress host, int port) throws IOException {
-        int reply = super.eprt(host, port);
-        if(FTPReply.isPositiveCompletion(reply)) {
-            _data = true;
-        }
-        return reply;
-    }
-
-    @Override
-    public int pasv() throws IOException {
-        int reply = super.pasv();
-        if(FTPReply.isPositiveCompletion(reply)) {
-            _data = true;
-        }
-        return reply;
-    }
-
-    @Override
-    public int epsv() throws IOException {
-        int reply = super.epsv();
-        if(FTPReply.isPositiveCompletion(reply)) {
-            _data = true;
-        }
-        return reply;
     }
 
     /**
@@ -275,11 +204,6 @@ public class FTPClient extends FTPSClient {
         this.pret(this.getCommand(command));
 
         Socket socket = _openDataConnection_(command, pathname);
-        if(null == socket) {
-            log.warn("Listing failed:" + this.getReplyString());
-            // Command failed.
-            return Collections.emptyList();
-        }
 
         BufferedReader reader = new BufferedReader(
                 new InputStreamReader(socket.getInputStream(), getControlEncoding()));
