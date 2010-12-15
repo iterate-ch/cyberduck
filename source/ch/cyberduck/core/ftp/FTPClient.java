@@ -19,6 +19,8 @@ package ch.cyberduck.core.ftp;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Preferences;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.net.ftp.FTPCommand;
 import org.apache.commons.net.ftp.FTPReply;
@@ -48,7 +50,10 @@ public class FTPClient extends FTPSClient {
      */
     private List<String> features = Collections.emptyList();
 
-    private boolean featSupported = true;
+    /**
+     * Query feature set.
+     */
+    private boolean featSupported = Preferences.instance().getBoolean("ftp.command.feat");
 
     /**
      * Get the server supplied features

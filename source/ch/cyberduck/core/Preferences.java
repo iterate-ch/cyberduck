@@ -469,12 +469,14 @@ public abstract class Preferences {
         defaults.put("queue.logDrawer.isOpen", String.valueOf(false));
         defaults.put("queue.logDrawer.size.height", String.valueOf(200));
 
+        defaults.put("ftp.command.feat", String.valueOf(true));
         /**
          * Send LIST -a
          */
-        defaults.put("ftp.sendExtendedListCommand", String.valueOf(true));
-        defaults.put("ftp.sendStatListCommand", String.valueOf(true));
-        defaults.put("ftp.sendMlsdListCommand", String.valueOf(true));
+        defaults.put("ftp.command.lista", String.valueOf(true));
+        defaults.put("ftp.command.stat", String.valueOf(true));
+        defaults.put("ftp.command.mlsd", String.valueOf(true));
+        defaults.put("ftp.command.utime", String.valueOf(true));
 
         /**
          * Fallback to active or passive mode respectively

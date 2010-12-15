@@ -490,7 +490,7 @@ public class FTPSession extends SSLSession {
     /**
      * The sever supports STAT file listings
      */
-    private boolean statListSupportedEnabled = Preferences.instance().getBoolean("ftp.sendStatListCommand");
+    private boolean statListSupportedEnabled = Preferences.instance().getBoolean("ftp.command.stat");
 
     public void setStatListSupportedEnabled(boolean e) {
         this.statListSupportedEnabled = e;
@@ -503,7 +503,7 @@ public class FTPSession extends SSLSession {
     /**
      * The server supports MLSD
      */
-    private boolean mlsdListSupportedEnabled = Preferences.instance().getBoolean("ftp.sendMlsdListCommand");
+    private boolean mlsdListSupportedEnabled = Preferences.instance().getBoolean("ftp.command.mlsd");
 
     public void setMlsdListSupportedEnabled(boolean e) {
         this.mlsdListSupportedEnabled = e;
@@ -516,7 +516,7 @@ public class FTPSession extends SSLSession {
     /**
      * The server supports LIST -a
      */
-    private boolean extendedListEnabled = Preferences.instance().getBoolean("ftp.sendExtendedListCommand");
+    private boolean extendedListEnabled = Preferences.instance().getBoolean("ftp.command.lista");
 
     public void setExtendedListEnabled(boolean e) {
         this.extendedListEnabled = e;
@@ -526,7 +526,7 @@ public class FTPSession extends SSLSession {
         return extendedListEnabled;
     }
 
-    private boolean utimeSupported = true;
+    private boolean utimeSupported = Preferences.instance().getBoolean("ftp.command.utime");
 
     public boolean isUtimeSupported() {
         return utimeSupported;
