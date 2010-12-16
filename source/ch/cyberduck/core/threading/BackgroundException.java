@@ -24,9 +24,8 @@ import ch.cyberduck.core.ftp.FTPException;
 import ch.cyberduck.core.i18n.Locale;
 import ch.ethz.ssh2.sftp.SFTPException;
 
-import org.apache.commons.httpclient.HttpException;
-import org.apache.commons.httpclient.StatusLine;
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.StatusLine;
 import org.jets3t.service.CloudFrontServiceException;
 import org.jets3t.service.ServiceException;
 import org.soyatec.windows.azure.error.StorageServerException;
@@ -98,7 +97,10 @@ public class BackgroundException extends Exception {
         if(cause instanceof CloudFrontServiceException) {
             return "CloudFront " + Locale.localizedString("Error");
         }
-        if(cause instanceof HttpException) {
+        if(cause instanceof org.apache.commons.httpclient.HttpException) {
+            return "HTTP " + Locale.localizedString("Error");
+        }
+        if(cause instanceof org.apache.http.HttpException) {
             return "HTTP " + Locale.localizedString("Error");
         }
         if(cause instanceof SocketException) {
