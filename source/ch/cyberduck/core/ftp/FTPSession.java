@@ -28,10 +28,7 @@ import ch.cyberduck.core.ssl.SSLSession;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.net.ProtocolCommandEvent;
 import org.apache.commons.net.ProtocolCommandListener;
-import org.apache.commons.net.ftp.Configurable;
-import org.apache.commons.net.ftp.FTPConnectionClosedException;
-import org.apache.commons.net.ftp.FTPFileEntryParser;
-import org.apache.commons.net.ftp.FTPReply;
+import org.apache.commons.net.ftp.*;
 import org.apache.commons.net.ftp.parser.NetwareFTPEntryParser;
 import org.apache.commons.net.ftp.parser.ParserInitializationException;
 import org.apache.commons.net.ftp.parser.UnixFTPEntryParser;
@@ -127,6 +124,11 @@ public class FTPSession extends SSLSession {
                 if(parser instanceof Configurable) {
                     // Configure with default configuration
                     ((Configurable) parser).configure(null);
+                }
+                String ukey = system.toUpperCase();
+                if(ukey.indexOf(FTPClientConfig.SYST_NT) >= 0) {
+                    // Workaround for #5572.
+                    this.setStatListSupportedEnabled(false);
                 }
             }
             return parser;
