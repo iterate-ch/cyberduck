@@ -25,6 +25,7 @@ import ch.cyberduck.ui.growl.Growl;
 
 import org.apache.log4j.Logger;
 
+import javax.net.ssl.SSLPeerUnverifiedException;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
@@ -90,7 +91,12 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
         }
         if(cause instanceof CertificateException) {
             log.warn(cause.getMessage());
-            // Do not report as failed if instanceof ConnectionCanceledException
+            // Server certificate not accepted
+            return;
+        }
+        if(cause instanceof SSLPeerUnverifiedException) {
+            log.warn(cause.getMessage());
+            // Server certificate not accepted
             return;
         }
         final String description
