@@ -41,16 +41,6 @@ import java.util.Set;
 public abstract class AbstractX509TrustManager implements X509TrustManager, X509KeyManager {
     protected static Logger log = Logger.getLogger(AbstractX509TrustManager.class);
 
-    private String hostname;
-
-    protected AbstractX509TrustManager(String hostname) {
-        this.hostname = hostname;
-    }
-
-    public String getHostname() {
-        return hostname;
-    }
-
     /**
      * A set of all X509 certificates accepted by the user that contains
      * no duplicate elements

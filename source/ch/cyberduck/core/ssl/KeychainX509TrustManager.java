@@ -41,8 +41,14 @@ import java.util.List;
 public class KeychainX509TrustManager extends AbstractX509TrustManager {
     protected static Logger log = Logger.getLogger(KeychainX509TrustManager.class);
 
+    private String hostname;
+
     public KeychainX509TrustManager(String hostname) {
-        super(hostname);
+        this.hostname = hostname;
+    }
+
+    public String getHostname() {
+        return hostname;
     }
 
     public void checkClientTrusted(final X509Certificate[] x509Certificates, String authType)
