@@ -29,7 +29,7 @@ import org.apache.commons.net.ftp.FTPFileEntryParser;
 import java.util.Calendar;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class NetwareFTPEntryParserTest extends AbstractTestCase {
 
@@ -43,7 +43,7 @@ public class NetwareFTPEntryParserTest extends AbstractTestCase {
     @Override
     public void setUp() {
         super.setUp();
-        this.parser = new FTPParserFactory().createFileEntryParser("NETWARE");
+        this.parser = new FTPParserFactory().createFileEntryParser("NETWARE  Type : L8");
     }
 
     @Override
@@ -52,11 +52,11 @@ public class NetwareFTPEntryParserTest extends AbstractTestCase {
     }
 
     /**
-     * http://trac.cyberduck.ch/ticket/1996
+     * #1996
      *
      * @throws Exception
      */
-    public void testParse() throws Exception {
+    public void testDateYearParser() throws Exception {
         FTPFile parsed;
 
         parsed = parser.parseFTPEntry(
@@ -83,6 +83,22 @@ public class NetwareFTPEntryParserTest extends AbstractTestCase {
         assertTrue(parsed.getTimestamp().get(Calendar.YEAR) == year);
         assertTrue(parsed.getTimestamp().get(Calendar.MONTH) == Calendar.MAY);
         assertTrue(parsed.getTimestamp().get(Calendar.DAY_OF_MONTH) == 1);
+    }
+
+    /**
+     * #5573
+     *
+     * @throws Exception
+     */
+    public void testListingWithAbsolutePaths() throws Exception {
+        FTPFile parsed;
+
+        parsed = parser.parseFTPEntry(
+                "- [RWCEAFMS] Petersm                             0 May 05  2004 /data/FTP_pub/WelcomeTo_PeakFTP"
+        );
+        assertNotNull(parsed);
+        assertEquals(parsed.getName(), "/data/FTP_pub/WelcomeTo_PeakFTP");
+        assertTrue(parsed.getType() == FTPFile.FILE_TYPE);
     }
 
     public static Test suite() {

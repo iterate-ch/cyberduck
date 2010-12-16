@@ -303,6 +303,25 @@ public class FTPPathTest extends AbstractTestCase {
         }
     }
 
+    public void testParseAbsolutePaths() throws Exception {
+        FTPPath path = (FTPPath) PathFactory.createPath(SessionFactory.createSession(new Host(Protocol.FTP, "localhost")),
+                "/data/FTP_pub", Path.DIRECTORY_TYPE);
+
+        {
+            final AttributedList<Path> children = new AttributedList<Path>();
+            String[] replies = new String[]{
+                    "- [RWCEAFMS] Petersm                             0 May 05  2004 /data/FTP_pub/WelcomeTo_PeakFTP"
+            };
+
+            boolean success = path.parseListResponse(children, new FTPParserFactory().createFileEntryParser("NETWARE  Type : L8"),
+                    Arrays.asList(replies));
+            assertTrue(success);
+            assertEquals(1, children.size());
+            assertEquals("WelcomeTo_PeakFTP", children.get(0).getName());
+            assertEquals("/data/FTP_pub", children.get(0).getParent().getAbsolute());
+        }
+    }
+
     public static Test suite() {
         return new TestSuite(FTPPathTest.class);
     }

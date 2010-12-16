@@ -375,7 +375,8 @@ public class FTPPath extends Path {
                 continue;
             }
             for(String name : file.keySet()) {
-                final Path parsed = PathFactory.createPath(this.getSession(), this.getAbsolute(), name, Path.FILE_TYPE);
+                final Path parsed = PathFactory.createPath(this.getSession(), this.getAbsolute(),
+                        StringUtils.removeStart(name, this.getAbsolute() + Path.DELIMITER), Path.FILE_TYPE);
                 parsed.setParent(this);
                 // size       -- Size in octets
                 // modify     -- Last modification time
@@ -402,9 +403,11 @@ public class FTPPath extends Path {
                         break;
                     }
                     if(name.contains(String.valueOf(DELIMITER))) {
-                        // The filename should never contain a delimiter according to RFC 3669
-                        log.warn("Skip entry with delimiter:" + name);
-                        break;
+                        if(!name.startsWith(this.getAbsolute() + Path.DELIMITER)) {
+                            // Workaround for #2434.
+                            log.warn("Skip listing entry with delimiter:" + name);
+                            continue;
+                        }
                     }
                     if(!success) {
                         if("dir".equals(facts.get("type").toLowerCase()) && this.getName().equals(name)) {
@@ -486,18 +489,20 @@ public class FTPPath extends Path {
                 if(this.getAbsolute().equals(name)) {
                     continue;
                 }
-                // Workaround for #2434.
                 if(name.contains(String.valueOf(DELIMITER))) {
-                    // The filename should never contain a delimiter
-                    log.warn("Skip listing entry with delimiter:" + name);
-                    continue;
+                    if(!name.startsWith(this.getAbsolute() + Path.DELIMITER)) {
+                        // Workaround for #2434.
+                        log.warn("Skip listing entry with delimiter:" + name);
+                        continue;
+                    }
                 }
             }
             success = true;
             if(name.equals(".") || name.equals("..")) {
                 continue;
             }
-            final Path parsed = PathFactory.createPath(this.getSession(), this.getAbsolute(), name,
+            final Path parsed = PathFactory.createPath(this.getSession(), this.getAbsolute(),
+                    StringUtils.removeStart(name, this.getAbsolute() + Path.DELIMITER),
                     f.getType() == FTPFile.DIRECTORY_TYPE ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
             parsed.setParent(this);
             switch(f.getType()) {
