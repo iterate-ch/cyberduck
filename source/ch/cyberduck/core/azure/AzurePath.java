@@ -28,7 +28,9 @@ import ch.cyberduck.ui.DateFormatterFactory;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.Header;
-import org.apache.http.HttpEntity;
+import org.apache.http.entity.AbstractHttpEntity;
+import org.apache.http.message.BasicHeader;
+import org.apache.http.protocol.HTTP;
 import org.apache.log4j.Logger;
 import org.soyatec.windows.azure.blob.*;
 import org.soyatec.windows.azure.blob.internal.BlobContents;
@@ -497,25 +499,20 @@ public class AzurePath extends CloudPath {
                         metadata.put(name, value);
                     }
                     properties.setMetadata(metadata);
-                    boolean blob = container.createBlob(properties, new HttpEntity() {
+                    boolean blob = container.createBlob(properties, new AbstractHttpEntity() {
+                        private boolean consumed = false;
+
                         public boolean isRepeatable() {
                             return false;
                         }
 
-                        public boolean isChunked() {
-                            return false;
+                        @Override
+                        public Header getContentType() {
+                            return new BasicHeader(HTTP.CONTENT_TYPE, getLocal().getMimeType());
                         }
 
                         public long getContentLength() {
-                            return getLocal().attributes().getSize();
-                        }
-
-                        public Header getContentType() {
-                            return null;
-                        }
-
-                        public Header getContentEncoding() {
-                            return null;
+                            return getLocal().attributes().getSize() - status.getCurrent();
                         }
 
                         public InputStream getContent() throws IOException, IllegalStateException {
@@ -524,14 +521,19 @@ public class AzurePath extends CloudPath {
 
                         public void writeTo(OutputStream out) throws IOException {
                             upload(out, in, throttle, listener);
+                            consumed = true;
                         }
 
                         public boolean isStreaming() {
-                            return true;
+                            return !consumed;
                         }
 
+                        @Override
                         public void consumeContent() throws IOException {
-                            ;
+                            this.consumed = true;
+                            // If the input stream is from a connection, closing it will read to
+                            // the end of the content. Otherwise, we don't care what it does.
+                            getLocal().getInputStream().close();
                         }
                     });
                     if(!blob) {
