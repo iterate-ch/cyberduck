@@ -63,8 +63,6 @@ public abstract class URLMenuDelegate extends AbstractMenuDelegate {
      */
     protected abstract List<Path> getSelected();
 
-    protected abstract String getLabel();
-
     public NSInteger numberOfItemsInMenu(NSMenu menu) {
         List<Path> selected = this.getSelected();
         if(selected.isEmpty()) {
@@ -78,9 +76,12 @@ public abstract class URLMenuDelegate extends AbstractMenuDelegate {
         return new NSInteger(urls * 2);
     }
 
-    protected List<AbstractPath.DescriptiveUrl> getURLs(Path selected) {
-        return new ArrayList<AbstractPath.DescriptiveUrl>(selected.getURLs());
-    }
+    /**
+     *
+     * @param selected
+     * @return
+     */
+    protected abstract List<AbstractPath.DescriptiveUrl> getURLs(Path selected);
 
     @Override
     public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, NSInteger index, boolean cancel) {

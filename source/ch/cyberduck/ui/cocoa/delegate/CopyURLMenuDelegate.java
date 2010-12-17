@@ -19,6 +19,8 @@ package ch.cyberduck.ui.cocoa.delegate;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.AbstractPath;
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.ui.cocoa.Action;
 import ch.cyberduck.ui.cocoa.application.AppKitFunctions;
@@ -31,6 +33,8 @@ import ch.cyberduck.ui.cocoa.foundation.NSString;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @version $Id:$
@@ -49,20 +53,17 @@ public abstract class CopyURLMenuDelegate extends URLMenuDelegate {
     }
 
     @Override
-    protected String getLabel() {
-        return Locale.localizedString("Copy");
+    protected abstract List<Path> getSelected();
+
+    @Override
+    protected List<AbstractPath.DescriptiveUrl> getURLs(Path selected) {
+        return new ArrayList<AbstractPath.DescriptiveUrl>(selected.getURLs());
     }
 
     @Action
     @Override
     public void urlClicked(final NSMenuItem sender) {
-        this.copy(sender.representedObject());
-    }
-
-    /**
-     * @param url
-     */
-    private void copy(String url) {
+        String url = sender.representedObject();
         if(StringUtils.isNotBlank(url)) {
             NSPasteboard pboard = NSPasteboard.generalPasteboard();
             pboard.declareTypes(NSArray.arrayWithObject(NSString.stringWithString(NSPasteboard.StringPboardType)), null);

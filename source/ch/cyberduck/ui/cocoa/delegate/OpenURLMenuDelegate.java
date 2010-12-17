@@ -34,7 +34,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-
 /**
  * @version $Id:$
  */
@@ -48,18 +47,11 @@ public abstract class OpenURLMenuDelegate extends URLMenuDelegate {
 
     @Override
     protected int getModifierMask() {
-        return NSEvent.NSCommandKeyMask | NSEvent.NSAlternateKeyMask;
+        return NSEvent.NSCommandKeyMask | NSEvent.NSShiftKeyMask;
     }
 
     @Override
-    protected String getLabel() {
-        return Locale.localizedString("Open");
-    }
-
-    @Override
-    protected List<Path> getSelected() {
-        return Collections.emptyList();
-    }
+    protected abstract List<Path> getSelected();
 
     /**
      * Only select URLs with http://
