@@ -22,10 +22,12 @@ package ch.cyberduck.core.cf;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
-import ch.cyberduck.core.cloud.CloudHTTP3Session;
+import ch.cyberduck.core.cloud.CloudHTTP4Session;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.ssl.AbstractX509TrustManager;
+import ch.cyberduck.core.ssl.KeychainX509TrustManager;
 
+import org.apache.http.HttpException;
 import org.apache.log4j.Logger;
 
 import com.rackspacecloud.client.cloudfiles.FilesCDNContainer;
@@ -43,7 +45,7 @@ import java.util.*;
  *
  * @version $Id$
  */
-public class CFSession extends CloudHTTP3Session {
+public class CFSession extends CloudHTTP4Session {
     private static Logger log = Logger.getLogger(CFSession.class);
 
     private static class Factory extends SessionFactory {
@@ -84,7 +86,7 @@ public class CFSession extends CloudHTTP3Session {
         if(this.isConnected()) {
             return;
         }
-        this.CF = new FilesClient(null, null, null, this.timeout());
+        this.CF = new FilesClient(this.http(), null, null, null, null, this.timeout());
         this.fireConnectionWillOpenEvent();
 
         // Configure for authentication URL
@@ -92,9 +94,6 @@ public class CFSession extends CloudHTTP3Session {
 
         // Prompt the login credentials first
         this.login();
-
-        // Configure for storage URL
-        this.configure();
 
         this.fireConnectionDidOpenEvent();
     }
@@ -104,38 +103,77 @@ public class CFSession extends CloudHTTP3Session {
      */
     protected void configure() throws IOException {
         FilesClient client = this.getClient();
-        try {
-            if(!client.isLoggedin()) {
-                client.setConnectionTimeOut(this.timeout());
-                client.setUserAgent(this.getUserAgent());
-                Host host = this.getHost();
-                StringBuilder authentication = new StringBuilder(host.getProtocol().getScheme()).append("://");
-                if(host.getHostname().equals(Protocol.CLOUDFILES.getDefaultHostname())) {
-                    // Use default authentication server. Rackspace.
-                    authentication.append(Preferences.instance().getProperty("cf.authentication.host"));
-                }
-                else {
-                    // Use custom authentication server. Swift (OpenStack Object Storage) installation.
-                    authentication.append(host.getHostname()).append(":").append(host.getPort());
-                }
-                authentication.append(Preferences.instance().getProperty("cf.authentication.context"));
-                log.info("Using authentication URL " + authentication.toString());
-                client.setAuthenticationURL(authentication.toString());
-                URI url = new URI(authentication.toString());
-                client.setHostConfiguration(this.getHostConfiguration(url.getScheme(), url.getHost(), url.getPort()));
-            }
-            else {
-                URI url = new URI(client.getStorageURL());
-                client.setHostConfiguration(this.getHostConfiguration(url.getScheme(), url.getHost(), url.getPort()));
-            }
-        }
-        catch(URISyntaxException e) {
-            log.error("Failure parsing URI:" + e.getMessage());
-            IOException failure = new IOException(e.getMessage());
-            failure.initCause(e);
-            throw failure;
-        }
+        client.setConnectionTimeOut(this.timeout());
+        client.setUserAgent(this.getUserAgent());
+        // Do not calculate ETag in advance
+        client.setUseETag(false);
+        client.setAuthenticationURL(this.getAuthenticationUrl());
+    }
 
+    private String getAuthenticationUrl() {
+        StringBuilder authentication = new StringBuilder(host.getProtocol().getScheme()).append("://");
+        if(host.getHostname().equals(Protocol.CLOUDFILES.getDefaultHostname())) {
+            // Use default authentication server. Rackspace.
+            authentication.append(Preferences.instance().getProperty("cf.authentication.host"));
+        }
+        else {
+            // Use custom authentication server. Swift (OpenStack Object Storage) installation.
+            authentication.append(host.getHostname()).append(":").append(host.getPort());
+        }
+        authentication.append(Preferences.instance().getProperty("cf.authentication.context"));
+        if(log.isInfoEnabled()) {
+            log.info("Using authentication URL " + authentication.toString());
+        }
+        return authentication.toString();
+    }
+
+    /**
+     * Request to CDN URL in progress
+     */
+    private boolean cdnRequest;
+
+    @Override
+    public AbstractX509TrustManager getTrustManager(String hostname) {
+        if(!trust.containsKey(hostname)) {
+            trust.put(hostname, new KeychainX509TrustManager(hostname) {
+                /**
+                 * Different hostname depending if authentication has completed or not.
+                 * @return Authentication or storage hostname.
+                 */
+                @Override
+                public String getHostname() {
+                    try {
+                        if(CFSession.this.isConnected()) {
+                            FilesClient client = CFSession.this.getClient();
+                            if(!client.isLoggedin()) {
+                                URI url = new URI(client.getAuthenticationURL());
+                                return url.getHost();
+                            }
+                            if(cdnRequest) {
+                                URI url = new URI(client.getCdnManagementURL());
+                                return url.getHost();
+                            }
+                            URI url = new URI(client.getStorageURL());
+                            return url.getHost();
+                        }
+                        else {
+                            URI url = new URI(CFSession.this.getAuthenticationUrl());
+                            return url.getHost();
+                        }
+                    }
+                    catch(URISyntaxException e) {
+                        log.error("Failure parsing URI:" + e.getMessage());
+                    }
+                    catch(ConnectionCanceledException e) {
+                        log.warn(e.getMessage());
+                    }
+                    return super.getHostname();
+                }
+
+
+            });
+        }
+        return trust.get(hostname);
     }
 
     @Override
@@ -143,10 +181,17 @@ public class CFSession extends CloudHTTP3Session {
         FilesClient client = this.getClient();
         client.setUserName(credentials.getUsername());
         client.setPassword(credentials.getPassword());
-        if(!client.login()) {
-            this.message(Locale.localizedString("Login failed", "Credentials"));
-            controller.fail(host.getProtocol(), credentials);
-            this.login();
+        try {
+            if(!client.login()) {
+                this.message(Locale.localizedString("Login failed", "Credentials"));
+                controller.fail(host.getProtocol(), credentials);
+                this.login();
+            }
+        }
+        catch(HttpException e) {
+            IOException failure = new IOException(e.getMessage());
+            failure.initCause(e);
+            throw failure;
         }
     }
 
@@ -239,10 +284,8 @@ public class CFSession extends CloudHTTP3Session {
                      */
                     public void write(boolean enabled, String origin, Distribution.Method method,
                                       String[] cnames, boolean logging, String defaultRootObject) {
-                        final AbstractX509TrustManager trust = CFSession.this.getTrustManager();
                         try {
                             CFSession.this.check();
-
                             if(enabled) {
                                 CFSession.this.message(MessageFormat.format(Locale.localizedString("Enable {0} Distribution", "Status"),
                                         Locale.localizedString("Rackspace Cloud Files", "Mosso")));
@@ -251,9 +294,8 @@ public class CFSession extends CloudHTTP3Session {
                                 CFSession.this.message(MessageFormat.format(Locale.localizedString("Disable {0} Distribution", "Status"),
                                         Locale.localizedString("Rackspace Cloud Files", "Mosso")));
                             }
+                            cdnRequest = true;
                             URI url = new URI(CFSession.this.getClient().getCdnManagementURL());
-                            CFSession.this.getClient().setHostConfiguration(
-                                    CFSession.this.getHostConfiguration(url.getScheme(), url.getHost(), url.getPort()));
                             if(enabled) {
                                 try {
                                     final FilesCDNContainer info = CFSession.this.getClient().getCDNContainerInfo(origin);
@@ -273,29 +315,24 @@ public class CFSession extends CloudHTTP3Session {
                         catch(URISyntaxException e) {
                             CFSession.this.error("Cannot write CDN configuration", e);
                         }
+                        catch(HttpException e) {
+                            CFSession.this.error("Cannot write CDN configuration", e);
+                        }
                         finally {
-                            try {
-                                // Configure for storage URL
-                                CFSession.this.configure();
-                            }
-                            catch(IOException e) {
-                                log.error(e.getMessage());
-                            }
                             distributionStatus.clear();
+                            cdnRequest = false;
                         }
                     }
 
                     public Distribution read(String origin, Distribution.Method method) {
                         if(!distributionStatus.containsKey(origin)) {
-                            final AbstractX509TrustManager trust = CFSession.this.getTrustManager();
                             try {
                                 CFSession.this.check();
                                 CFSession.this.message(MessageFormat.format(Locale.localizedString("Reading CDN configuration of {0}", "Status"),
                                         origin));
 
+                                cdnRequest = true;
                                 URI url = new URI(CFSession.this.getClient().getCdnManagementURL());
-                                CFSession.this.getClient().setHostConfiguration(
-                                        CFSession.this.getHostConfiguration(url.getScheme(), url.getHost(), url.getPort()));
                                 final FilesCDNContainer info = CFSession.this.getClient().getCDNContainerInfo(origin);
                                 final Distribution distribution = new Distribution(info.getName(),
                                         new URI(CFSession.this.getClient().getStorageURL()).getHost(),
@@ -307,7 +344,7 @@ public class CFSession extends CloudHTTP3Session {
                                 }
                                 return distribution;
                             }
-                            catch(FilesException e) {
+                            catch(HttpException e) {
                                 log.warn(e.getMessage());
                                 // Not found.
                                 distributionStatus.put(origin, new Distribution(null, origin, method, false, null, Locale.localizedString("CDN Disabled", "Mosso")));
@@ -319,13 +356,7 @@ public class CFSession extends CloudHTTP3Session {
                                 CFSession.this.error("Cannot read CDN configuration", e);
                             }
                             finally {
-                                try {
-                                    // Configure for storage URL
-                                    CFSession.this.configure();
-                                }
-                                catch(IOException e) {
-                                    log.error(e.getMessage());
-                                }
+                                cdnRequest = false;
                             }
                         }
                         if(distributionStatus.containsKey(origin)) {

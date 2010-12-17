@@ -24,9 +24,13 @@ import ch.cyberduck.core.cloud.CloudPath;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
 
-import org.apache.commons.httpclient.methods.InputStreamRequestEntity;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.Header;
+import org.apache.http.HttpException;
+import org.apache.http.entity.AbstractHttpEntity;
+import org.apache.http.message.BasicHeader;
+import org.apache.http.protocol.HTTP;
 import org.apache.log4j.Logger;
 import org.jets3t.service.utils.ServiceUtils;
 import org.w3c.util.DateParser;
@@ -114,13 +118,20 @@ public class CFPath extends CloudPath {
         if(this.isRoot()) {
             return true;
         }
-        try {
-            if(this.isContainer()) {
+        if(this.isContainer()) {
+            try {
                 return this.getSession().getClient().containerExists(this.getName());
             }
-        }
-        catch(IOException e) {
-            return false;
+            catch(HttpException e) {
+                log.warn("Container does not exist:" + this.getName());
+                return false;
+            }
+            catch(ConnectionCanceledException e) {
+                log.warn(e.getMessage());
+            }
+            catch(IOException e) {
+                log.warn(e.getMessage());
+            }
         }
         return super.exists();
     }
@@ -143,6 +154,9 @@ public class CFPath extends CloudPath {
                 );
             }
         }
+        catch(HttpException e) {
+            this.error("Cannot read file attributes", e);
+        }
         catch(IOException e) {
             this.error("Cannot read file attributes", e);
         }
@@ -158,6 +172,9 @@ public class CFPath extends CloudPath {
 
                 attributes().setChecksum(
                         this.getSession().getClient().getObjectMetaData(this.getContainerName(), this.getKey()).getETag());
+            }
+            catch(HttpException e) {
+                this.error("Cannot read file attributes", e);
             }
             catch(IOException e) {
                 this.error("Cannot read file attributes", e);
@@ -182,6 +199,9 @@ public class CFPath extends CloudPath {
                 catch(ParseException e) {
                     log.error(e);
                 }
+            }
+            catch(HttpException e) {
+                this.error("Cannot read file attributes", e);
             }
             catch(IOException e) {
                 this.error("Cannot read file attributes", e);
@@ -212,7 +232,7 @@ public class CFPath extends CloudPath {
                 }
                 else {
                     for(FilesObject object : this.getSession().getClient().listObjects(this.getContainerName(),
-                            this.isContainer() ? StringUtils.EMPTY : this.getKey(), -1, null)) {
+                            this.isContainer() ? StringUtils.EMPTY : this.getKey(), Character.valueOf(Path.DELIMITER))) {
                         final Path file = PathFactory.createPath(this.getSession(), this.getContainerName(), object.getName(),
                                 "application/directory".equals(object.getMimeType()) ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
                         file.setParent(this);
@@ -238,6 +258,13 @@ public class CFPath extends CloudPath {
                     }
                 }
                 this.getSession().setWorkdir(this);
+            }
+            catch(HttpException e) {
+                log.warn("Listing directory failed:" + e.getMessage());
+                children.attributes().setReadable(false);
+                if(this.cache().isEmpty()) {
+                    this.error(e.getMessage(), e);
+                }
             }
             catch(IOException e) {
                 log.warn("Listing directory failed:" + e.getMessage());
@@ -270,6 +297,9 @@ public class CFPath extends CloudPath {
                 status.setResume(false);
                 out = this.getLocal().getOutputStream(status.isResume());
                 this.download(in, out, throttle, listener);
+            }
+            catch(HttpException e) {
+                this.error("Download failed", e);
             }
             catch(IOException e) {
                 this.error("Download failed", e);
@@ -344,13 +374,41 @@ public class CFPath extends CloudPath {
                         metadata.put(name, value);
                     }
                     etag = this.getSession().getClient().storeObjectAs(this.getContainerName(), this.getKey(),
-                            new InputStreamRequestEntity(in,
-                                    this.getLocal().attributes().getSize() - status.getCurrent(),
-                                    this.getLocal().getMimeType()) {
+                            new AbstractHttpEntity() {
+                                private boolean consumed = false;
+
+                                public boolean isRepeatable() {
+                                    return false;
+                                }
 
                                 @Override
-                                public void writeRequest(OutputStream out) throws IOException {
-                                    CFPath.this.upload(out, in, throttle, listener);
+                                public Header getContentType() {
+                                    return new BasicHeader(HTTP.CONTENT_TYPE, getLocal().getMimeType());
+                                }
+
+                                public long getContentLength() {
+                                    return getLocal().attributes().getSize() - status.getCurrent();
+                                }
+
+                                public InputStream getContent() throws IOException, IllegalStateException {
+                                    return getLocal().getInputStream();
+                                }
+
+                                public void writeTo(OutputStream out) throws IOException {
+                                    upload(out, in, throttle, listener);
+                                    consumed = true;
+                                }
+
+                                public boolean isStreaming() {
+                                    return !consumed;
+                                }
+
+                                @Override
+                                public void consumeContent() throws IOException {
+                                    this.consumed = true;
+                                    // If the input stream is from a connection, closing it will read to
+                                    // the end of the content. Otherwise, we don't care what it does.
+                                    getLocal().getInputStream().close();
                                 }
                             },
                             metadata, md5sum
@@ -379,6 +437,9 @@ public class CFPath extends CloudPath {
                     }
                 }
             }
+            catch(HttpException e) {
+                this.error("Upload failed", e);
+            }
             catch(IOException e) {
                 this.error("Upload failed", e);
             }
@@ -404,6 +465,9 @@ public class CFPath extends CloudPath {
                 this.cache().put(this.getReference(), AttributedList.<Path>emptyList());
                 // The directory listing is no more current
                 this.getParent().invalidate();
+            }
+            catch(HttpException e) {
+                this.error("Cannot create folder {0}", e);
             }
             catch(IOException e) {
                 this.error("Cannot create folder {0}", e);
@@ -441,6 +505,9 @@ public class CFPath extends CloudPath {
             // The directory listing is no more current
             this.getParent().invalidate();
         }
+        catch(HttpException e) {
+            this.error("Cannot delete {0}", e);
+        }
         catch(IOException e) {
             this.error("Cannot delete {0}", e);
         }
@@ -461,6 +528,9 @@ public class CFPath extends CloudPath {
                         = this.getSession().getClient().getObjectMetaData(this.getContainerName(), this.getKey());
                 this.attributes().setMetadata(meta.getMetaData());
             }
+            catch(HttpException e) {
+                this.error("Cannot read file attributes", e);
+            }
             catch(IOException e) {
                 this.error("Cannot read file attributes", e);
             }
@@ -476,6 +546,9 @@ public class CFPath extends CloudPath {
                         this.getName()));
 
                 this.getSession().getClient().updateObjectMetadata(this.getContainerName(), this.getKey(), meta);
+            }
+            catch(HttpException e) {
+                this.error("Cannot write file attributes", e);
             }
             catch(IOException e) {
                 this.error("Cannot write file attributes", e);
