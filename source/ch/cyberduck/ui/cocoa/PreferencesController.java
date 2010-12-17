@@ -490,13 +490,17 @@ public class PreferencesController extends ToolbarWindowController {
         public void collectionItemRemoved(final Host bookmark) {
             invoke(new WindowMainAction(PreferencesController.this) {
                 public void run() {
-                    if(defaultBookmarkCombobox.selectedItem().representedObject().equals(bookmark.getUuid())) {
-                        Preferences.instance().deleteProperty("browser.defaultBookmark");
+                    String selected = defaultBookmarkCombobox.selectedItem().representedObject();
+                    if(StringUtils.isNotEmpty(selected)) {
+                        if(selected.equals(bookmark.getUuid())) {
+                            Preferences.instance().deleteProperty("browser.defaultBookmark");
+                        }
                     }
                     NSInteger i = defaultBookmarkCombobox.menu().indexOfItemWithRepresentedObject(bookmark.getUuid());
-                    if(i.intValue() > -1) {
-                        defaultBookmarkCombobox.removeItemAtIndex(i);
+                    if(i.intValue() == -1) {
+                        return;
                     }
+                    defaultBookmarkCombobox.removeItemAtIndex(i);
                 }
             });
         }
