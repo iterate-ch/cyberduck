@@ -1989,6 +1989,9 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         this.statusLabel = statusLabel;
     }
 
+    /**
+     *
+     */
     public void updateStatusLabel() {
         String label = null;
         if(this.getSelectedTabView() == TAB_BOOKMARKS) {
@@ -1996,17 +1999,31 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         }
         else {
             if(this.isMounted()) {
-                if(this.isConnected()) {
-                    label = MessageFormat.format(Locale.localizedString("{0} Files"), this.getSelectedBrowserView().numberOfRows());
+                final BackgroundAction current = BackgroundActionRegistry.instance().getCurrent();
+                if(null == current) {
+                    if(this.isConnected()) {
+                        label = MessageFormat.format(Locale.localizedString("{0} Files"), this.getSelectedBrowserView().numberOfRows());
+                    }
+                    else {
+                        label = Locale.localizedString("Disconnected", "Status");
+                    }
                 }
                 else {
-                    label = Locale.localizedString("Disconnected", "Status");
+                    if(StringUtils.isNotBlank(laststatus)) {
+                        label = laststatus;
+                    }
+                    else {
+                        label = current.getActivity();
+                    }
                 }
             }
         }
         this.updateStatusLabel(label);
     }
 
+    /**
+     * @param label
+     */
     public void updateStatusLabel(String label) {
         if(StringUtils.isNotBlank(label)) {
             // Update the status label at the bottom of the browser window
@@ -3385,6 +3402,8 @@ public class BrowserController extends WindowController implements NSToolbar.Del
      */
     private ConnectionListener listener = null;
 
+    private String laststatus = null;
+
     /**
      * Initializes a session for the passed host. Setting up the listeners and adding any callback
      * controllers needed for login, trust management and hostkey verification.
@@ -3404,6 +3423,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             public void message(final String message) {
                 invoke(new WindowMainAction(BrowserController.this) {
                     public void run() {
+                        laststatus = message;
                         updateStatusLabel(message);
                     }
                 });
