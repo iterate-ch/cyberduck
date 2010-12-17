@@ -1998,23 +1998,21 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             label = this.bookmarkTable.numberOfRows() + " " + Locale.localizedString("Bookmarks");
         }
         else {
-            if(this.isMounted()) {
-                final BackgroundAction current = BackgroundActionRegistry.instance().getCurrent();
-                if(null == current) {
-                    if(this.isConnected()) {
-                        label = MessageFormat.format(Locale.localizedString("{0} Files"), this.getSelectedBrowserView().numberOfRows());
-                    }
-                    else {
-                        label = Locale.localizedString("Disconnected", "Status");
-                    }
+            final BackgroundAction current = BackgroundActionRegistry.instance().getCurrent();
+            if(null == current) {
+                if(this.isConnected()) {
+                    label = MessageFormat.format(Locale.localizedString("{0} Files"), this.getSelectedBrowserView().numberOfRows());
                 }
                 else {
-                    if(StringUtils.isNotBlank(laststatus)) {
-                        label = laststatus;
-                    }
-                    else {
-                        label = current.getActivity();
-                    }
+                    label = Locale.localizedString("Disconnected", "Status");
+                }
+            }
+            else {
+                if(StringUtils.isNotBlank(laststatus)) {
+                    label = laststatus;
+                }
+                else {
+                    label = current.getActivity();
                 }
             }
         }
