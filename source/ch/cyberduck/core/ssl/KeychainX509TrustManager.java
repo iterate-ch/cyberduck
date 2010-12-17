@@ -47,6 +47,11 @@ public class KeychainX509TrustManager extends AbstractX509TrustManager {
         this.hostname = hostname;
     }
 
+    /**
+     * Override if hostname is different depending on the request.
+     *
+     * @return
+     */
     public String getHostname() {
         return hostname;
     }
