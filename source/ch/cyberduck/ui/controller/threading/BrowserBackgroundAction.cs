@@ -58,13 +58,13 @@ namespace Ch.Cyberduck.Ui.Controller.Threading
 
         public override void finish()
         {
+            base.finish();
             AsyncController.AsyncDelegate mainAction = delegate
             {
                 BrowserController.View.StopActivityAnimation();
                 BrowserController.UpdateStatusLabel();
             };
             BrowserController.Invoke(mainAction);
-            base.finish();
         }
     }
 }

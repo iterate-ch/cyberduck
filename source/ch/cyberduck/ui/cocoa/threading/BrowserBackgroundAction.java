@@ -70,13 +70,13 @@ public abstract class BrowserBackgroundAction extends AlertRepeatableBackgroundA
 
     @Override
     public void finish() {
+        super.finish();
         controller.invoke(new WindowMainAction(controller) {
             public void run() {
                 controller.getStatusSpinner().stopAnimation(null);
                 controller.updateStatusLabel();
             }
         });
-        super.finish();
     }
 
     @Override
