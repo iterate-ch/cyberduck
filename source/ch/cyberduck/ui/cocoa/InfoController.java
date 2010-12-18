@@ -533,6 +533,7 @@ public class InfoController extends ToolbarWindowController {
         this.aclPermissionCellPrototype.setCompletes(false);
         this.aclPermissionCellPrototype.setBordered(false);
         this.aclPermissionCellPrototype.setButtonBordered(false);
+        this.aclTable.setColumnAutoresizingStyle(NSTableView.NSTableViewUniformColumnAutoresizingStyle);
         this.aclTable.tableColumnWithIdentifier(HEADER_ACL_PERMISSION_COLUMN).setDataCell(aclPermissionCellPrototype);
         this.aclTable.setDataSource((aclTableModel = new ListDataSource() {
             /**
@@ -655,6 +656,7 @@ public class InfoController extends ToolbarWindowController {
                 return false;
             }
         }).id());
+        this.aclTable.sizeToFit();
     }
 
     @Outlet
@@ -799,6 +801,7 @@ public class InfoController extends ToolbarWindowController {
     public void setMetadataTable(final NSTableView t) {
         this.metadataTable = t;
         this.metadataTable.setAllowsMultipleSelection(true);
+        this.metadataTable.setColumnAutoresizingStyle(NSTableView.NSTableViewUniformColumnAutoresizingStyle);
         this.metadataTable.setDataSource((metadataTableModel = new ListDataSource() {
             /**
              * @param view
@@ -899,6 +902,7 @@ public class InfoController extends ToolbarWindowController {
                 }
             }
         }).id());
+        this.metadataTable.sizeToFit();
     }
 
     @Outlet
