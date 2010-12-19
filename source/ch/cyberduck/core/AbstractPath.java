@@ -226,7 +226,7 @@ public abstract class AbstractPath {
      * @param parent The parent directory
      * @param name   The relative filename
      */
-    public void setPath(String parent, String name) {
+    protected void setPath(String parent, String name) {
         if(null == parent) {
             parent = String.valueOf(this.getPathDelimiter());
         }
@@ -239,7 +239,7 @@ public abstract class AbstractPath {
         }
     }
 
-    public abstract void setPath(String name);
+    protected abstract void setPath(String name);
 
     /**
      * @param directory
