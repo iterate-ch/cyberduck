@@ -26,6 +26,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.jets3t.service.utils.ServiceUtils;
 
+import com.ibm.icu.text.Normalizer;
+
 import java.io.*;
 import java.net.MalformedURLException;
 import java.security.NoSuchAlgorithmException;
@@ -401,13 +403,18 @@ public abstract class Local extends AbstractPath {
     }
 
     @Override
-    public void setPath(String name) {
-        _impl = new File(name);
-    }
-
-    @Override
-    public void setPath(String parent, String name) {
-        _impl = new File(parent, name);
+    protected void setPath(String name) {
+        String normalized = name;
+        if(Preferences.instance().getBoolean("local.normalize.unicode")) {
+            if(!Normalizer.isNormalized(normalized, Normalizer.NFC, Normalizer.UNICODE_3_2)) {
+                // Canonical decomposition followed by canonical composition (default)
+                normalized = Normalizer.normalize(normalized, Normalizer.NFC, Normalizer.UNICODE_3_2);
+                if(log.isInfoEnabled()) {
+                    log.info("Normalized local path '" + name + "' to '" + normalized + "'");
+                }
+            }
+        }
+        _impl = new File(normalized);
     }
 
     @Override
