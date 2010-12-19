@@ -888,8 +888,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     foreach (TreePathReference reference in dropargs.SourceModels)
                     {
                         Path next = reference.Unique;
-                        Path copy = PathFactory.createPath(getSession(), next.getAsDictionary());
-                        copy.setPath(destination.getAbsolute(), next.getName());
+                        Path copy = PathFactory.createPath(getSession(), destination.getAbsolute(), next.getName(), next.attributes().getType());
                         files.Add(next, copy);
                     }
                     DuplicatePaths(files, false);

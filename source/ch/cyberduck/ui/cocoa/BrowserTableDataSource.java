@@ -308,8 +308,8 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                     // The file should be duplicated
                     final Map<Path, Path> files = new HashMap<Path, Path>();
                     for(Path next : pasteboard) {
-                        final Path copy = PathFactory.createPath(controller.getSession(), next.getAsDictionary());
-                        copy.setPath(destination.getAbsolute(), next.getName());
+                        final Path copy = PathFactory.createPath(controller.getSession(),
+                                destination.getAbsolute(), next.getName(), next.attributes().getType());
                         files.put(next, copy);
                     }
                     controller.duplicatePaths(files, false);

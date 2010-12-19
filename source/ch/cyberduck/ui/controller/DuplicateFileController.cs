@@ -73,8 +73,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void DuplicateFile(Path selected, String filename, bool edit)
         {
-            Path duplicate = PathFactory.createPath(Session, selected.getAsDictionary());
-            duplicate.setPath(duplicate.getParent().getAbsolute(), filename);
+            Path duplicate = PathFactory.createPath(Session, selected.getParent().getAbsolute(), filename, selected.attributes().getType());
             BrowserController.DuplicatePath(selected, duplicate, edit);
         }
     }
