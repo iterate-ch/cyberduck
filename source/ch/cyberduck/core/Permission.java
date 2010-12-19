@@ -288,7 +288,10 @@ public class Permission implements Serializable {
      * @return The unix access permissions
      */
     public String getMask() {
-        return this.getRwxString();
+        String owner = this.getAccessString(this.getOwnerPermissions());
+        String group = this.getAccessString(this.getGroupPermissions());
+        String other = this.getAccessString(this.getOtherPermissions());
+        return owner + group + other;
     }
 
     /**
@@ -345,29 +348,19 @@ public class Permission implements Serializable {
     }
 
     /**
-     * @return The unix equivalent access string like rwxrwxrwx
-     */
-    private String getRwxString() {
-        String owner = this.getAccessString(this.getOwnerPermissions());
-        String group = this.getAccessString(this.getGroupPermissions());
-        String other = this.getAccessString(this.getOtherPermissions());
-        return owner + group + other;
-    }
-
-    /**
      * @return The unix equivalent octal access code like 777
      */
     public String getOctalString() {
-        String owner = "" + this.getOctalAccessNumber(this.getOwnerPermissions());
-        String group = "" + this.getOctalAccessNumber(this.getGroupPermissions());
-        String other = "" + this.getOctalAccessNumber(this.getOtherPermissions());
+        String owner = String.valueOf(this.getOctalAccessNumber(this.getOwnerPermissions()));
+        String group = String.valueOf(this.getOctalAccessNumber(this.getGroupPermissions()));
+        String other = String.valueOf(this.getOctalAccessNumber(this.getOtherPermissions()));
         return owner + group + other;
     }
 
     public int getOctalNumber() {
-        String owner = "" + this.getOctalAccessNumber(this.getOwnerPermissions());
-        String group = "" + this.getOctalAccessNumber(this.getGroupPermissions());
-        String other = "" + this.getOctalAccessNumber(this.getOtherPermissions());
+        String owner = String.valueOf(this.getOctalAccessNumber(this.getOwnerPermissions()));
+        String group = String.valueOf(this.getOctalAccessNumber(this.getGroupPermissions()));
+        String other = String.valueOf(this.getOctalAccessNumber(this.getOtherPermissions()));
         return Integer.parseInt(owner + group + other, 8);
     }
 
