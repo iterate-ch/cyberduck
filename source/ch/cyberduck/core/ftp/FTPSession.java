@@ -274,7 +274,7 @@ public class FTPSession extends SSLSession {
             super.check();
         }
         catch(FTPConnectionClosedException e) {
-            log.debug(e.getMessage());
+            log.warn(e.getMessage());
             this.interrupt();
             this.connect();
         }
@@ -446,14 +446,20 @@ public class FTPSession extends SSLSession {
     }
 
     @Override
-    public Path workdir() throws IOException {
+    public Path workdir() throws ConnectionCanceledException {
         if(!this.isConnected()) {
             throw new ConnectionCanceledException();
         }
         if(null == workdir) {
-            workdir = PathFactory.createPath(this, this.getClient().printWorkingDirectory(), Path.DIRECTORY_TYPE);
-            if(workdir.isRoot()) {
-                workdir.attributes().setType(Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
+            try {
+                workdir = PathFactory.createPath(this, this.getClient().printWorkingDirectory(), Path.DIRECTORY_TYPE);
+                if(workdir.isRoot()) {
+                    workdir.attributes().setType(Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
+                }
+            }
+            catch(IOException e) {
+                this.error("Connection failed", e);
+                throw new ConnectionCanceledException(e.getMessage());
             }
         }
         return workdir;

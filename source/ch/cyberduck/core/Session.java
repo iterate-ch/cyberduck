@@ -360,7 +360,7 @@ public abstract class Session implements TranscriptListener {
      * @return The current working directory (pwd) or null if it cannot be retrieved for whatever reason
      * @throws ConnectionCanceledException If the underlying connection has already been closed before
      */
-    public Path workdir() throws IOException {
+    public Path workdir() throws ConnectionCanceledException {
         if(!this.isConnected()) {
             throw new ConnectionCanceledException();
         }

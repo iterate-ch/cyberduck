@@ -154,7 +154,9 @@ public class SFTPSession extends Session {
         if(host.getHostname().equals(alias)) {
             return host.getHostname(true);
         }
-        log.info("Using hostname alias from ~/.ssh/config:" + alias);
+        if(log.isInfoEnabled()) {
+            log.info("Using hostname alias from ~/.ssh/config:" + alias);
+        }
         return alias;
     }
 
@@ -358,7 +360,7 @@ public class SFTPSession extends Session {
             this.getClient().close();
         }
         catch(ConnectionCanceledException e) {
-            log.error(e.getMessage());
+            log.warn(e.getMessage());
         }
         finally {
             SFTP = null;
@@ -375,7 +377,7 @@ public class SFTPSession extends Session {
             this.getClient().close(null, true);
         }
         catch(ConnectionCanceledException e) {
-            log.error(e.getMessage());
+            log.warn(e.getMessage());
         }
         finally {
             SFTP = null;
@@ -421,10 +423,19 @@ public class SFTPSession extends Session {
     }
 
     @Override
-    public Path workdir() throws IOException {
+    public Path workdir() throws ConnectionCanceledException {
         if(null == workdir) {
-            // "." as referring to the current directory
-            workdir = PathFactory.createPath(this, this.sftp().canonicalPath("."), Path.DIRECTORY_TYPE);
+            if(!this.isConnected()) {
+                throw new ConnectionCanceledException();
+            }
+            try {
+                // "." as referring to the current directory
+                workdir = PathFactory.createPath(this, this.sftp().canonicalPath("."), Path.DIRECTORY_TYPE);
+            }
+            catch(IOException e) {
+                log.warn(e.getMessage());
+                throw new ConnectionCanceledException(e.getMessage());
+            }
         }
         return workdir;
     }
