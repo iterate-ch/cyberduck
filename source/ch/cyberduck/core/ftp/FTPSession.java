@@ -282,7 +282,11 @@ public class FTPSession extends SSLSession {
 
     private ProtocolCommandListener listener = new ProtocolCommandListener() {
         public void protocolCommandSent(ProtocolCommandEvent event) {
-            FTPSession.this.log(true, StringUtils.chomp(event.getMessage()));
+            String message = StringUtils.chomp(event.getMessage());
+            if(message.startsWith("PASS")) {
+                message = "PASS ********";
+            }
+            FTPSession.this.log(true, message);
         }
 
         public void protocolReplyReceived(ProtocolCommandEvent event) {
