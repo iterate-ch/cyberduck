@@ -21,17 +21,13 @@ package ch.cyberduck.ui.cocoa.delegate;
 
 import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.i18n.Locale;
-import ch.cyberduck.ui.cocoa.Action;
 import ch.cyberduck.ui.cocoa.BundleController;
 import ch.cyberduck.ui.cocoa.application.NSEvent;
-import ch.cyberduck.ui.cocoa.application.NSMenuItem;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -64,10 +60,9 @@ public abstract class OpenURLMenuDelegate extends URLMenuDelegate {
         return new ArrayList<AbstractPath.DescriptiveUrl>(selected.getHttpURLs());
     }
 
-    @Action
     @Override
-    public void urlClicked(final NSMenuItem sender) {
-        for(String url : StringUtils.split(sender.representedObject(), "\n")) {
+    public void handle(final List<String> selected) {
+        for(String url: selected) {
             BundleController.openUrl(url);
         }
     }

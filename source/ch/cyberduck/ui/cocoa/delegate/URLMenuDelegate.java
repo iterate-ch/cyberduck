@@ -42,6 +42,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -77,7 +78,6 @@ public abstract class URLMenuDelegate extends AbstractMenuDelegate {
     }
 
     /**
-     *
      * @param selected
      * @return
      */
@@ -114,7 +114,7 @@ public abstract class URLMenuDelegate extends AbstractMenuDelegate {
             if(label) {
                 item.setEnabled(true);
                 item.setTarget(this.id());
-                item.setAction(this.getDefaultAction());
+                item.setAction(Foundation.selector("menuItemClicked:"));
                 item.setImage(IconCache.iconNamed("site.tiff", 16));
                 Iterator<Path> iter = selected.iterator();
                 AbstractPath.DescriptiveUrl url = this.getURLs(iter.next()).get(index.intValue() / 2);
@@ -135,7 +135,29 @@ public abstract class URLMenuDelegate extends AbstractMenuDelegate {
     }
 
     @Action
-    public abstract void urlClicked(final NSMenuItem sender);
+    public void menuActionSelected(final NSMenu sender) {
+        if(log.isDebugEnabled()) {
+            log.debug("menuActionSelected:" + sender);
+        }
+        List<String> selected = new ArrayList<String>();
+        for(Path path : this.getSelected()) {
+            selected.add(this.getURLs(path).iterator().next().getUrl());
+        }
+        this.handle(selected);
+    }
+
+    @Action
+    public void menuItemClicked(final NSMenuItem sender) {
+        if(log.isDebugEnabled()) {
+            log.debug("menuItemClicked:" + sender);
+        }
+        this.handle(Arrays.asList(StringUtils.split(sender.representedObject(), "\n")));
+    }
+
+    /**
+     * @param selected URLs of selected files.
+     */
+    public abstract void handle(final List<String> selected);
 
     @Override
     public boolean validateMenuItem(NSMenuItem item) {
@@ -156,6 +178,6 @@ public abstract class URLMenuDelegate extends AbstractMenuDelegate {
 
     @Override
     protected Selector getDefaultAction() {
-        return Foundation.selector("urlClicked:");
+        return Foundation.selector("menuActionSelected:");
     }
 }

@@ -21,19 +21,15 @@ package ch.cyberduck.ui.cocoa.delegate;
 
 import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.i18n.Locale;
-import ch.cyberduck.ui.cocoa.Action;
-import ch.cyberduck.ui.cocoa.application.AppKitFunctions;
 import ch.cyberduck.ui.cocoa.application.NSEvent;
-import ch.cyberduck.ui.cocoa.application.NSMenuItem;
 import ch.cyberduck.ui.cocoa.application.NSPasteboard;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSString;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -60,19 +56,19 @@ public abstract class CopyURLMenuDelegate extends URLMenuDelegate {
         return new ArrayList<AbstractPath.DescriptiveUrl>(selected.getURLs());
     }
 
-    @Action
     @Override
-    public void urlClicked(final NSMenuItem sender) {
-        String url = sender.representedObject();
-        if(StringUtils.isNotBlank(url)) {
-            NSPasteboard pboard = NSPasteboard.generalPasteboard();
-            pboard.declareTypes(NSArray.arrayWithObject(NSString.stringWithString(NSPasteboard.StringPboardType)), null);
-            if(!pboard.setStringForType(url, NSPasteboard.StringPboardType)) {
-                log.error("Error writing URL to NSPasteboard.StringPboardType.");
+    public void handle(final List<String> selected) {
+        StringBuilder url = new StringBuilder();
+        for(Iterator<String> iter = selected.iterator(); iter.hasNext();) {
+            url.append(iter.next());
+            if(iter.hasNext()) {
+                url.append("\n");
             }
         }
-        else {
-            AppKitFunctions.instance.NSBeep();
+        NSPasteboard pboard = NSPasteboard.generalPasteboard();
+        pboard.declareTypes(NSArray.arrayWithObject(NSString.stringWithString(NSPasteboard.StringPboardType)), null);
+        if(!pboard.setStringForType(url.toString(), NSPasteboard.StringPboardType)) {
+            log.error("Error writing URL to NSPasteboard.StringPboardType.");
         }
     }
 }

@@ -96,30 +96,36 @@ public abstract class AbstractMenuDelegate extends ProxyController implements NS
     }
 
     /**
-     * Lowercase shortcut key
+     * Shortcut for the first item in the menu.
      *
-     * @return Null if no key equivalent for any menu item
+     * @return Lowercase shortcut key or null if no key equivalent for any menu item
      */
     protected String getKeyEquivalent() {
         return null;
     }
 
     /**
-     * Modifier mask for item with shortcut
+     * Shortcut for the first item in the menu.
      *
-     * @return Command Mask
+     * @return Modifier mask of the shortcut
      */
     protected int getModifierMask() {
         return NSEvent.NSCommandKeyMask;
     }
 
+    /**
+     * @param menu
+     * @param event
+     * @return True if this menu has an item that has registerd a keyboard shortcut
+     *         equivalent to the event characters.
+     */
     public boolean menuHasKeyEquivalent_forEvent(NSMenu menu, NSEvent event) {
         log.debug("menuHasKeyEquivalent_forEvent:" + menu);
         if(StringUtils.isBlank(this.getKeyEquivalent())) {
             return false;
         }
         if((event.modifierFlags() & this.getModifierMask()) == this.getModifierMask()) {
-            return event.charactersIgnoringModifiers().equals(this.getKeyEquivalent());
+            return event.charactersIgnoringModifiers().toLowerCase().equals(this.getKeyEquivalent());
         }
         return false;
     }
