@@ -115,10 +115,41 @@ namespace Ch.Cyberduck.Ui.Controller
             ;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="title"></param>
+        /// <param name="message"></param>
+        /// <param name="content"></param>
+        /// <param name="buttons"></param>
+        /// <param name="icon"></param>
+        /// <returns></returns>
         public DialogResult MessageBox(string title, string message, string content, eTaskDialogButtons buttons,
                                        eSysIcons icon)
         {
             return View.MessageBox(title, message, content, buttons, icon);
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="title"></param>
+        /// <param name="mainInstruction"></param>
+        /// <param name="content"></param>
+        /// <param name="expandedInfo"></param>
+        /// <param name="footer"></param>
+        /// <param name="verificationText"></param>
+        /// <param name="commandButtons"></param>
+        /// <param name="showCancelButton"></param>
+        /// <param name="mainIcon"></param>
+        /// <param name="footerIcon"></param>
+        /// <returns></returns>
+        public int CommandBox(string title, string mainInstruction, string content, string expandedInfo, string footer,
+            string verificationText, string commandButtons, bool showCancelButton, eSysIcons mainIcon, eSysIcons footerIcon)
+        {
+            return View.CommandBox(title, mainInstruction, content, expandedInfo, footer, verificationText, commandButtons, showCancelButton,
+                mainIcon, footerIcon);
+        }
+
     }
 }

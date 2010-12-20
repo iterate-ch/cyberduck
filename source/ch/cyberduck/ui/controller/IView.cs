@@ -17,7 +17,6 @@
 // 
 using System.ComponentModel;
 using System.Windows.Forms;
-using ch.cyberduck.ui.controller;
 using Ch.Cyberduck.Ui.Winforms.Taskdialog;
 
 namespace Ch.Cyberduck.Ui.Controller
