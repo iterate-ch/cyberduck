@@ -347,7 +347,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                 "As the default application, Cyberduck will open when you click on FTP or SFTP links in other applications, such as your web browser. You can change this setting in the Preferences later.",
                                 "Configuration"),
                             null, null,
-                            Locale.localizedString("Don't Ask Again", "Configuration"),
+                            Locale.localizedString("Don't ask again", "Configuration"),
                             String.Format("{0}|{1}",
                                           Locale.localizedString("Change", "Configuration"),
                                           Locale.localizedString("Cancel", "Configuration")),
@@ -406,7 +406,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                                                                       "Configuration"), c.size()),
                                                                               null,
                                                                               null,
-                                                                              Locale.localizedString("Don't Ask Again",
+                                                                              Locale.localizedString("Don't ask again",
                                                                                                      "Configuration"),
                                                                               String.Format("{0}|{1}",
                                                                                             Locale.localizedString(
@@ -607,7 +607,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                                                 null,
                                                                 null,
                                                                 null,
-                                                                Locale.localizedString("Don't Ask Again",
+                                                                Locale.localizedString("Don't ask again",
                                                                                        "Configuration"),
                                                                 Locale.localizedString("Review…") + "|" +
                                                                 Locale.localizedString("Quit Anyway"),
