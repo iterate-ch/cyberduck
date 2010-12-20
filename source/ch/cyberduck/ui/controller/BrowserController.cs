@@ -2537,7 +2537,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                                     null,
                                                     null,
                                                     null,
-                                                    Locale.localizedString("Don't Ask Again", "Configuration"),
+                                                    Locale.localizedString("Don't ask again", "Configuration"),
                                                     String.Format("{0}",  Locale.localizedString("Disconnect")),
                                                     true,
                                                     eSysIcons.Question,
