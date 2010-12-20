@@ -396,13 +396,9 @@ namespace Ch.Cyberduck.Ui.Controller
                                        {
                                            if (!c.isEmpty())
                                            {
-                                               int r =
-                                                   cTaskDialog.ShowCommandBox(MainForm,
-                                                                              String.Format(
-                                                                                  Locale.localizedString(
+                                               int r = _bc.CommandBox(String.Format(Locale.localizedString(
                                                                                       "Import {0} Bookmarks",
-                                                                                      "Configuration"),
-                                                                                  c.getName()),
+                                                                                      "Configuration"), c.getName()),
                                                                               null,
                                                                               String.Format(
                                                                                   Locale.localizedString(
@@ -605,8 +601,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     if (Preferences.instance().getBoolean("browser.confirmDisconnect"))
                     {
                         //-1=Cancel, 0=Review, 1=Quit
-                        int result = cTaskDialog.ShowCommandBox(controller.View as Form,
-                                                                Locale.localizedString("Quit"),
+                        int result = controller.CommandBox(Locale.localizedString("Quit"),
                                                                 Locale.localizedString(
                                                                     "You are connected to at least one remote site. Do you want to review open browsers?"),
                                                                 null,
@@ -627,6 +622,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         switch (result)
                         {
                             case -1: // Cancel
+                                // Quit has been interrupted. Delete any saved sessions so far.
                                 Application._sessions.clear();
                                 return;
                             case 0: // Review
@@ -671,6 +667,10 @@ namespace Ch.Cyberduck.Ui.Controller
             BrowserController controller = new BrowserController();
             controller.View.ViewClosingEvent += delegate(object sender, FormClosingEventArgs args)
                                                     {
+                                                        if (true == args.Cancel)
+                                                        {
+                                                            return;
+                                                        }
                                                         if (1 == Browsers.Count)
                                                         {
                                                             // last browser is about to close, check if we can terminate

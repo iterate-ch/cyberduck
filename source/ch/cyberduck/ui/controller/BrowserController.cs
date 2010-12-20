@@ -34,12 +34,13 @@ using Ch.Cyberduck.Ui.Winforms.Taskdialog;
 using java.lang;
 using java.security.cert;
 using java.util;
+using org.apache.commons.lang;
 using org.apache.log4j;
 using StructureMap;
-using Boolean = java.lang.Boolean;
 using Collection = ch.cyberduck.core.Collection;
 using DataObject = System.Windows.Forms.DataObject;
 using Locale = ch.cyberduck.core.i18n.Locale;
+using NotImplementedException = System.NotImplementedException;
 using Object = System.Object;
 using Path = ch.cyberduck.core.Path;
 using String = System.String;
@@ -68,6 +69,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private InfoController _inspector;
         private BrowserView _lastBookmarkView = BrowserView.Bookmark;
         private ConnectionListener _listener;
+        private ProgessListener _progress;
 
         /*
          * No file filter.
@@ -1153,6 +1155,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             if (HasSession())
             {
+                _session.removeProgressListener(_progress);
                 _session.removeConnectionListener(_listener);
             }
             _bookmarkCollection.removeListener(this);
@@ -2408,12 +2411,13 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             if (HasSession())
             {
+                _session.removeProgressListener(_progress);
                 _session.removeConnectionListener(_listener);
             }
             _session = SessionFactory.createSession(host);
             SetWorkdir(null);
             View.SelectedEncoding = _session.getEncoding();
-            _session.addProgressListener(new ProgessListener(this));
+            _session.addProgressListener(_progress = new ProgessListener(this));
             _session.addConnectionListener(_listener = new ConnectionAdapter(this, host));
             View.ClearTranscript();
             ClearBackHistory();
@@ -2527,13 +2531,28 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 if (Preferences.instance().getBoolean("browser.confirmDisconnect"))
                 {
-                    DialogResult r =
-                        View.MessageBox(
-                            Locale.localizedString("Disconnect from") + " " + _session.getHost().getHostname(),
-                            Locale.localizedString("The connection will be closed."), null,
-                            eTaskDialogButtons.OKCancel,
-                            eSysIcons.Question);
-                    return unmountImpl(r);
+                    //-1=Cancel, 0=Review, 1=Quit
+                    int result = CommandBox(Locale.localizedString("Disconnect from") + " " + _session.getHost().getHostname(),
+                                                    Locale.localizedString("The connection will be closed."),
+                                                    null,
+                                                    null,
+                                                    null,
+                                                    Locale.localizedString("Don't Ask Again", "Configuration"),
+                                                    String.Format("{0}",  Locale.localizedString("Disconnect")),
+                                                    true,
+                                                    eSysIcons.Question,
+                                                    eSysIcons.Information);
+                    if (cTaskDialog.VerificationChecked)
+                    {
+                        // Never show again.
+                        Preferences.instance().setProperty("browser.confirmDisconnect", false);
+                    }
+                    switch (result)
+                    {
+                        case 0: // Disconnect
+                            return unmountImpl(DialogResult.OK);
+                    }
+                    return false;
                 }
                 UnmountImpl(disconnected);
                 // Unmount in progress
@@ -2592,11 +2611,20 @@ namespace Ch.Cyberduck.Ui.Controller
             switch (View.CurrentView)
             {
                 case BrowserView.File:
-                    if (IsMounted())
-                    {
+                    BackgroundAction current = BackgroundActionRegistry.instance().getCurrent();
+                    if(null == current) {
                         if (IsConnected())
                         {
                             label = String.Format(Locale.localizedString("{0} Files"), View.NumberOfFiles);
+                        }
+                    }
+                    else {
+                        if (StringUtils.isNotBlank(_progress.Laststatus))
+                        {
+                            label = _progress.Laststatus;
+                        }
+                        else {
+                            label = current.getActivity();
                         }
                     }
                     break;
@@ -3413,27 +3441,10 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
-        /// <summary>
-        /// Simple TransferListener implementation that can be queried if the transfer has been completed
-        /// </summary>
-        private class PollableTransferListener : ch.cyberduck.core.TransferAdapter
-        {
-            private bool _ended;
-
-            public bool TransferDidEnd
-            {
-                get { return _ended; }
-            }
-
-            public override void transferDidEnd()
-            {
-                _ended = true;
-            }
-        }
-
         internal class ProgessListener : ProgressListener
         {
             private readonly BrowserController _controller;
+            private string _laststatus;
 
             public ProgessListener(BrowserController controller)
             {
@@ -3442,8 +3453,14 @@ namespace Ch.Cyberduck.Ui.Controller
 
             public void message(string msg)
             {
+                _laststatus = msg;
                 AsyncDelegate updateLabel = delegate { _controller.View.StatusLabel = msg; };
                 _controller.Invoke(updateLabel);
+            }
+
+            public string Laststatus
+            {
+                get { return _laststatus; }
             }
         }
 
