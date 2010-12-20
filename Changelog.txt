@@ -6,6 +6,7 @@ Changelog. Last modified: $Date$
 
 4.0 [http://trac.cyberduck.ch/milestone/4.0]
 - [Feature] Version for Microsoft Windows XP, Windows Vista & Windows 7.
+- [Feature] Replaced protocol implementation (FTP)
 - [Feature] Connecting to Windows Azure Blob Storage (Azure) (#3938)
 
 3.8.1 [http://trac.cyberduck.ch/milestone/3.8.1]
