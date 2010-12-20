@@ -227,8 +227,7 @@ public class FinderLocal extends Local {
                 if(null == object) {
                     return Permission.EMPTY;
                 }
-                NSNumber posix = Rococoa.cast(object, NSNumber.class);
-                String posixString = Integer.toString(posix.intValue() & 0177777, 8);
+                String posixString = Integer.toOctalString(Rococoa.cast(object, NSNumber.class).intValue());
                 return new FinderLocalPermission(Integer.parseInt(posixString.substring(posixString.length() - 3)));
             }
             catch(NumberFormatException e) {
@@ -326,7 +325,7 @@ public class FinderLocal extends Local {
             public void run() {
                 boolean success = NSFileManager.defaultManager().setAttributes_ofItemAtPath_error(
                         NSDictionary.dictionaryWithObjectsForKeys(
-                                NSArray.arrayWithObject(NSNumber.numberWithInt(perm.getOctalNumber())),
+                                NSArray.arrayWithObject(NSNumber.numberWithInt(Integer.valueOf(perm.getAbsoluteMode(), 8))),
                                 NSArray.arrayWithObject(NSFileManager.NSFilePosixPermissions)),
                         _impl.getAbsolutePath(), null);
                 if(!success) {
