@@ -352,19 +352,19 @@ namespace Ch.Cyberduck.Ui.Controller
             ;
         }
 
-        public override void setPath(string parent, string name)
+        protected override void setPath(string parent, string name)
         {
             string p = MakeValidPath(parent);
             string n = MakeValidFilename(name);
             base.setPath(p, n);
         }
 
-        public override void setPath(string filename)
+        protected override void setPath(string filename)
         {
             string parent = Path.Combine(FilenameUtils.getPrefix(filename),
                                          MakeValidPath(FilenameUtils.getPath(filename)));
             string name = MakeValidFilename(FilenameUtils.getName(filename));
-            base.setPath(parent, name);
+            base.setPath(parent + name);
         }
 
         private string MakeValidPath(string path)
