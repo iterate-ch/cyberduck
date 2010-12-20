@@ -3590,7 +3590,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                         null //other button
                 );
                 alert.setShowsSuppressionButton(true);
-                alert.suppressionButton().setTitle(Locale.localizedString("Don't Ask Again", "Configuration"));
+                alert.suppressionButton().setTitle(Locale.localizedString("Don't ask again", "Configuration"));
                 this.alert(alert, new SheetCallback() {
                     public void callback(int returncode) {
                         if(alert.suppressionButton().state() == NSCell.NSOnState) {

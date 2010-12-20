@@ -760,7 +760,7 @@ public class MainController extends BundleController implements NSApplication.De
                         Locale.localizedString("Cancel", "Configuration"));
                 alert.setAlertStyle(NSAlert.NSInformationalAlertStyle);
                 alert.setShowsSuppressionButton(true);
-                alert.suppressionButton().setTitle(Locale.localizedString("Don't Ask Again", "Configuration"));
+                alert.suppressionButton().setTitle(Locale.localizedString("Don't ask again", "Configuration"));
                 int choice = alert.runModal(); //alternate
                 if(alert.suppressionButton().state() == NSCell.NSOnState) {
                     // Never show again.
@@ -836,7 +836,7 @@ public class MainController extends BundleController implements NSApplication.De
                                 null, //other
                                 Locale.localizedString("Cancel", "Configuration"));
                         alert.setShowsSuppressionButton(true);
-                        alert.suppressionButton().setTitle(Locale.localizedString("Don't Ask Again", "Configuration"));
+                        alert.suppressionButton().setTitle(Locale.localizedString("Don't ask again", "Configuration"));
                         alert.setAlertStyle(NSAlert.NSInformationalAlertStyle);
                         int choice = alert.runModal(); //alternate
                         if(alert.suppressionButton().state() == NSCell.NSOnState) {
@@ -912,7 +912,7 @@ public class MainController extends BundleController implements NSApplication.De
                             Locale.localizedString("Review…"));
                     alert.setAlertStyle(NSAlert.NSWarningAlertStyle);
                     alert.setShowsSuppressionButton(true);
-                    alert.suppressionButton().setTitle(Locale.localizedString("Don't Ask Again", "Configuration"));
+                    alert.suppressionButton().setTitle(Locale.localizedString("Don't ask again", "Configuration"));
                     int choice = alert.runModal(); //alternate
                     if(alert.suppressionButton().state() == NSCell.NSOnState) {
                         // Never show again.
