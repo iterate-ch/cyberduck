@@ -2532,13 +2532,13 @@ namespace Ch.Cyberduck.Ui.Controller
                 if (Preferences.instance().getBoolean("browser.confirmDisconnect"))
                 {
                     //-1=Cancel, 0=Review, 1=Quit
-                    int result = CommandBox(Locale.localizedString("Disconnect from") + " " + _session.getHost().getHostname(),
+                    int result = CommandBox(String.Format(Locale.localizedString("Disconnect from {0}"), _session.getHost().getHostname()),
                                                     Locale.localizedString("The connection will be closed."),
                                                     null,
                                                     null,
                                                     null,
                                                     Locale.localizedString("Don't ask again", "Configuration"),
-                                                    String.Format("{0}",  Locale.localizedString("Disconnect")),
+                                                    String.Format("{0}", Locale.localizedString("Disconnect")),
                                                     true,
                                                     eSysIcons.Question,
                                                     eSysIcons.Information);

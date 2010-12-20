@@ -3583,7 +3583,8 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         if(this.isConnected() || this.isActivityRunning()) {
             if(Preferences.instance().getBoolean("browser.confirmDisconnect")) {
                 // Defer the unmount to the callback function
-                final NSAlert alert = NSAlert.alert(Locale.localizedString("Disconnect from") + " " + this.session.getHost().getHostname(), //title
+                final NSAlert alert = NSAlert.alert(
+                        MessageFormat.format(Locale.localizedString("Disconnect from {0}"), this.session.getHost().getHostname()), //title
                         Locale.localizedString("The connection will be closed."), // message
                         Locale.localizedString("Disconnect"), // defaultbutton
                         Locale.localizedString("Cancel"), // alternate button
