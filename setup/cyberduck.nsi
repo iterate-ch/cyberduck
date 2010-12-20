@@ -5,6 +5,7 @@
 !include WinVer.nsh
 !include x64.nsh
 !include FileAssociation.nsh
+!include nsDialogs.nsh
 !include "FileFunc.nsh"
 
 !define PRODUCT_NAME "Cyberduck"
@@ -16,8 +17,7 @@
 SetCompressor /SOLID lzma
 RequestExecutionLevel admin
 
-; MUI 1.67 compatible ------
-!include "MUI.nsh"
+!include "MUI2.nsh"
 
 ; MUI Settings
 !define MUI_ABORTWARNING
@@ -41,10 +41,15 @@ RequestExecutionLevel admin
 ; Welcome page
 !define MUI_WELCOMEPAGE_TITLE_3LINES
 !insertmacro MUI_PAGE_WELCOME
+
 ; License page
 ;!insertmacro MUI_PAGE_LICENSE "C:\Users\Public\Documents\test.rtf"
+
+Page custom InstallationOptions InstallationOptionsLeave
+
 ; Directory page
 !insertmacro MUI_PAGE_DIRECTORY
+
 ; Instfiles page
 !insertmacro MUI_PAGE_INSTFILES
 ; Finish page
@@ -90,7 +95,7 @@ RequestExecutionLevel admin
 !insertmacro MUI_LANGUAGE "Ukrainian"
 !insertmacro MUI_LANGUAGE "Welsh"
 ; Reserve files
-!insertmacro MUI_RESERVEFILE_INSTALLOPTIONS
+ReserveFile "${NSISDIR}\Plugins\nsDialogs.dll"
 
 ; MUI end ------
 
@@ -108,6 +113,12 @@ Var BonjourFilename
 Var DotNetDesc
 Var TargetFilename
 
+; Custom Page - Installation Options
+Var InstallOptionDialog
+Var BonjourText
+Var BonjourCheckbox
+Var BonjourCheckbox_State
+
 Function .onInit
         System::Call 'kernel32::CreateMutexA(i 0, i 0, t "CyberduckMutex") i .r1 ?e'
         Pop $R0
@@ -120,7 +131,8 @@ Function .onInit
         Call CheckFramework
         StrCmp $0 "1" +2
         StrCpy $InstallDotNET "Yes"
-        
+
+        StrCpy $BonjourCheckbox_State ${BST_CHECKED}
 FunctionEnd
 
 Function .onInstSuccess
@@ -206,19 +218,20 @@ Section "MainSection" SEC01
   File "${BASEDIR}\..\..\update\Updater.exe"
   File "${BASEDIR}\..\..\update\*.wyc"
   
-  ;Bonjour  
-  ${If} ${RunningX64}
-      StrCpy $BonjourFilename "Bonjour64.msi"
-	  File "Bonjour64.msi"
-  ${Else}
-      StrCpy $BonjourFilename "Bonjour.msi"	  
-	  File "Bonjour.msi"
+  ${If} $BonjourCheckbox_State == ${BST_CHECKED}
+        ;Bonjour
+        ${If} ${RunningX64}
+               StrCpy $BonjourFilename "Bonjour64.msi"
+	       File "Bonjour64.msi"
+        ${Else}
+               StrCpy $BonjourFilename "Bonjour.msi"
+	       File "Bonjour.msi"
+        ${EndIf}
+        ExecWait "MsiExec.exe /quiet /norestart /i $BonjourFilename" $0
+        ;DetailPrint "Bonjour exit code = $0"
+        Delete "$INSTDIR\$BonjourFilename"
   ${EndIf}
-  
-  ExecWait "MsiExec.exe /quiet /norestart /i $BonjourFilename" $0
-  ;DetailPrint "Bonjour exit code = $0"
-  Delete "$INSTDIR\$BonjourFilename"
-     
+
   Push "v4.0"
   Call GetDotNetDir
   Pop $R0 ; .net framework v4.0 installation directory
@@ -280,6 +293,41 @@ Section Uninstall
   DeleteRegKey HKLM "${PRODUCT_DIR_REGKEY}"
   SetAutoClose true
 SectionEnd
+
+Function InstallationOptions
+	nsDialogs::Create 1018
+	Pop $InstallOptionDialog
+        ;TODO localization
+        !insertmacro MUI_HEADER_TEXT "Installation Options" "Please select the installation options."
+
+	${If} $InstallOptionDialog == error
+		Abort
+	${EndIf}
+
+	${NSD_CreateCheckbox} 0 5u 100% 10u "&Install Bonjour"
+	Pop $BonjourCheckbox
+
+	${If} $BonjourCheckbox_State == ${BST_CHECKED}
+		${NSD_Check} $BonjourCheckbox
+	${EndIf}
+
+        ;TODO localization
+        nsDialogs::CreateControl EDIT \
+		"${__NSD_Text_STYLE}|${ES_MULTILINE}|${ES_WANTRETURN}" \
+		"${__NSD_Text_EXSTYLE}" \
+		15 17u 95% 38u \
+		"Bonjour, also known as zero-configuration networking, enables automatic discovery$\r$\nof computers, devices, and services on IP networks. Bonjour uses industry standard$\r$\nIP protocols to allow devices to automatically discover each other without the need$\r$\nto enter IP addresses or configure DNS servers."
+		Pop $BonjourText
+        SendMessage $BonjourText ${EM_SETREADONLY} 1 0
+        EnableWindow $BonjourText 0
+
+	nsDialogs::Show
+FunctionEnd
+
+Function InstallationOptionsLeave
+	${NSD_GetState} $BonjourCheckbox $BonjourCheckbox_State
+FunctionEnd
+
 
 ;Check for .NET framework
 Function CheckFrameWork
