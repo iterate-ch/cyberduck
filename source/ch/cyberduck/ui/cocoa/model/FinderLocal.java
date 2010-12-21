@@ -325,7 +325,7 @@ public class FinderLocal extends Local {
             public void run() {
                 boolean success = NSFileManager.defaultManager().setAttributes_ofItemAtPath_error(
                         NSDictionary.dictionaryWithObjectsForKeys(
-                                NSArray.arrayWithObject(NSNumber.numberWithInt(Integer.valueOf(perm.getAbsoluteMode(), 8))),
+                                NSArray.arrayWithObject(NSNumber.numberWithInt(Integer.valueOf(perm.getOctalString(), 8))),
                                 NSArray.arrayWithObject(NSFileManager.NSFilePosixPermissions)),
                         _impl.getAbsolutePath(), null);
                 if(!success) {
