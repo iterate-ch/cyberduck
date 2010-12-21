@@ -125,6 +125,10 @@ public class Permission implements Serializable {
     private boolean[] group = new boolean[3];
     private boolean[] other = new boolean[3];
 
+    private boolean setuid;
+    private boolean setgid;
+    private boolean sticky;
+
     public Permission() {
         this(Permission.EMPTY_MASK);
     }
@@ -139,24 +143,24 @@ public class Permission implements Serializable {
     }
 
     /**
-     * @param mask the access string to parse the permissions from.
-     *             Must be something between --------- and rwxrwxrwx
+     * @param symbolic the access string to parse the permissions from.
+     *                 Must be something between --------- and rwxrwxrwx
      */
-    public Permission(String mask) {
-        this.init(mask);
+    public Permission(String symbolic) {
+        this.init(symbolic);
     }
 
     /**
-     * @param mask
+     * @param symbolic
      */
-    private void init(String mask) {
-        if(mask.length() != 9) {
-            log.error("Invalid mask:" + mask);
+    private void init(String symbolic) {
+        if(symbolic.length() != 9) {
+            log.error("Invalid mask:" + symbolic);
             throw new NumberFormatException("Must be a nine digit string");
         }
-        this.owner = this.getOwnerPermissions(mask);
-        this.group = this.getGroupPermissions(mask);
-        this.other = this.getOtherPermissions(mask);
+        this.owner = this.getOwnerPermissions(symbolic);
+        this.group = this.getGroupPermissions(symbolic);
+        this.other = this.getOtherPermissions(symbolic);
     }
 
     /**
@@ -185,26 +189,43 @@ public class Permission implements Serializable {
     }
 
     /**
-     * @param octal The permissions as a 3 digit octal number
+     * Modes may be absolute or symbolic.  An absolute mode is an octal number constructed from the sum of one or more of the following values:
+     * <p/>
+     * 4000    (the set-user-ID-on-execution bit) Executable files with this bit set will run with effective uid set to the uid of the file owner.
+     * Directories with the set-user-id bit set will force all files and sub-directories created in them to be owned by the directory owner
+     * and not by the uid of the creating process, if the underlying file system supports this feature: see chmod(2) and the suiddir option to
+     * mount(8).
+     * 2000    (the set-group-ID-on-execution bit) Executable files with this bit set will run with effective gid set to the gid of the file owner.
+     * 1000    (the sticky bit) See chmod(2) and sticky(8).
+     * 0400    Allow read by owner.
+     * 0200    Allow write by owner.
+     * 0100    For files, allow execution by owner.  For directories, allow the owner to search in the directory.
+     * 0040    Allow read by group members.
+     * 0020    Allow write by group members.
+     * 0010    For files, allow execution by group members.  For directories, allow group members to search in the directory.
+     * 0004    Allow read by others.
+     * 0002    Allow write by others.
+     * 0001    For files, allow execution by others.  For directories allow others to search in the directory.
+     * <p/>
+     * For example, the absolute mode that permits read, write and execute by the owner, read and execute by group members, read and execute by others, and
+     * no set-uid or set-gid behaviour is 755 (400+200+100+040+010+004+001).
+     *
+     * @param number The permissions as a 4 digit octal number
      */
-    public Permission(int octal) {
-        String octalString = String.valueOf(octal);
+    public Permission(int number) {
+        String octal = String.valueOf(number);
         StringBuilder sb = new StringBuilder();
-        int leadingZeros = 3 - octalString.length();
+        int leadingZeros = 4 - octal.length();
         while(leadingZeros > 0) {
-            sb.append('0');
+            sb.append(String.valueOf(0));
             leadingZeros--;
         }
-        sb.append(octalString);
-        octalString = sb.toString();
-
-        log.debug("Permission(octalString):" + octalString);
-
-        if(octalString.length() != 3) {
-            log.error("Invalid octal value:" + octal);
-            throw new NumberFormatException("Must be a three digit number");
+        sb.append(octal);
+        octal = sb.toString();
+        if(log.isDebugEnabled()) {
+            log.debug("Permission:" + octal);
         }
-        switch(Integer.parseInt(octalString.substring(0, 1))) {
+        switch(Integer.parseInt(octal.substring(1, 2))) {
             case (0):
                 this.owner = new boolean[]{false, false, false};
                 break;
@@ -230,7 +251,7 @@ public class Permission implements Serializable {
                 this.owner = new boolean[]{true, true, true};
                 break;
         }
-        switch(Integer.parseInt(octalString.substring(1, 2))) {
+        switch(Integer.parseInt(octal.substring(2, 3))) {
             case (0):
                 this.group = new boolean[]{false, false, false};
                 break;
@@ -256,7 +277,7 @@ public class Permission implements Serializable {
                 this.group = new boolean[]{true, true, true};
                 break;
         }
-        switch(Integer.parseInt(octalString.substring(2, 3))) {
+        switch(Integer.parseInt(octal.substring(3, 4))) {
             case (0):
                 this.other = new boolean[]{false, false, false};
                 break;
@@ -285,16 +306,6 @@ public class Permission implements Serializable {
     }
 
     /**
-     * @return The unix access permissions
-     */
-    public String getMask() {
-        String owner = this.getAccessString(this.getOwnerPermissions());
-        String group = this.getAccessString(this.getGroupPermissions());
-        String other = this.getAccessString(this.getOtherPermissions());
-        return owner + group + other;
-    }
-
-    /**
      * @return a thee-dimensional boolean array representing read, write
      *         and execute permissions (in that order) of the file owner.
      */
@@ -316,6 +327,18 @@ public class Permission implements Serializable {
      */
     public boolean[] getOtherPermissions() {
         return other;
+    }
+
+    public boolean isSetuid() {
+        return setuid;
+    }
+
+    public boolean isSetgid() {
+        return setgid;
+    }
+
+    public boolean isSticky() {
+        return sticky;
     }
 
     private boolean[] getOwnerPermissions(String s) {
@@ -348,20 +371,23 @@ public class Permission implements Serializable {
     }
 
     /**
-     * @return The unix equivalent octal access code like 777
+     * @return The unix access permissions
      */
-    public String getOctalString() {
-        String owner = String.valueOf(this.getOctalAccessNumber(this.getOwnerPermissions()));
-        String group = String.valueOf(this.getOctalAccessNumber(this.getGroupPermissions()));
-        String other = String.valueOf(this.getOctalAccessNumber(this.getOtherPermissions()));
+    public String getMask() {
+        String owner = this.getSymbolicMode(this.getOwnerPermissions());
+        String group = this.getSymbolicMode(this.getGroupPermissions());
+        String other = this.getSymbolicMode(this.getOtherPermissions());
         return owner + group + other;
     }
 
-    public int getOctalNumber() {
-        String owner = String.valueOf(this.getOctalAccessNumber(this.getOwnerPermissions()));
-        String group = String.valueOf(this.getOctalAccessNumber(this.getGroupPermissions()));
-        String other = String.valueOf(this.getOctalAccessNumber(this.getOtherPermissions()));
-        return Integer.parseInt(owner + group + other, 8);
+    /**
+     * @return The unix equivalent octal access code like 777
+     */
+    public String getOctalString() {
+        String owner = String.valueOf(this.getNumber(this.getOwnerPermissions()));
+        String group = String.valueOf(this.getNumber(this.getGroupPermissions()));
+        String other = String.valueOf(this.getNumber(this.getOtherPermissions()));
+        return owner + group + other;
     }
 
     /**
@@ -374,7 +400,7 @@ public class Permission implements Serializable {
      *         6 = read and write (4+2)
      *         7 = read and write and execute (4+2+1)
      */
-    private int getOctalAccessNumber(boolean[] permissions) {
+    private int getNumber(boolean[] permissions) {
         if(Arrays.equals(permissions, new boolean[]{false, false, false})) {
             return 0;
         }
@@ -402,7 +428,7 @@ public class Permission implements Serializable {
         return -1;
     }
 
-    private String getAccessString(boolean[] permissions) {
+    private String getSymbolicMode(boolean[] permissions) {
         String read = permissions[READ] ? "r" : "-";
         String write = permissions[WRITE] ? "w" : "-";
         String execute = permissions[EXECUTE] ? "x" : "-";
@@ -435,7 +461,7 @@ public class Permission implements Serializable {
 
     @Override
     public int hashCode() {
-        return this.getOctalNumber();
+        return Integer.parseInt(this.getOctalString());
     }
 
     @Override
@@ -445,7 +471,7 @@ public class Permission implements Serializable {
         }
         if(o instanceof Permission) {
             Permission other = (Permission) o;
-            return this.getOctalNumber() == other.getOctalNumber();
+            return Integer.valueOf(this.getOctalString()).equals(Integer.valueOf(other.getOctalString()));
         }
         return false;
     }

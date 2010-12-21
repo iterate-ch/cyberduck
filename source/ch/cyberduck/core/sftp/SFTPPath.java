@@ -136,7 +136,7 @@ public class SFTPPath extends Path {
                         this.getName()));
 
                 this.getSession().sftp().mkdir(this.getAbsolute(),
-                        new Permission(Preferences.instance().getInteger("queue.upload.permissions.folder.default")).getOctalNumber());
+                        Integer.parseInt(new Permission(Preferences.instance().getInteger("queue.upload.permissions.folder.default")).getOctalString(), 8));
 
                 this.cache().put(this.getReference(), AttributedList.<Path>emptyList());
                 // The directory listing is no more current
@@ -210,10 +210,14 @@ public class SFTPPath extends Path {
         String perm = attributes.getOctalPermissions();
         if(null != perm) {
             try {
-                this.attributes().setPermission(new Permission(Integer.parseInt(perm.substring(perm.length() - 3))));
+                String octal = Integer.toOctalString(attributes.permissions);
+                this.attributes().setPermission(new Permission(Integer.parseInt(octal.substring(octal.length() - 4))));
+            }
+            catch(IndexOutOfBoundsException e) {
+                log.warn("Failure parsing mode:" + e.getMessage());
             }
             catch(NumberFormatException e) {
-                log.error(e.getMessage());
+                log.warn("Failure parsing mode:" + e.getMessage());
             }
         }
         if(null != attributes.uid) {
@@ -367,7 +371,7 @@ public class SFTPPath extends Path {
 
         try {
             SFTPv3FileAttributes attr = new SFTPv3FileAttributes();
-            attr.permissions = perm.getOctalNumber();
+            attr.permissions = Integer.parseInt(perm.getOctalString(), 8);
             this.writeAttributes(attr);
             if(this.attributes().isDirectory()) {
                 if(recursive) {
@@ -484,7 +488,7 @@ public class SFTPPath extends Path {
                         if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
                             // We do set the permissions here as otherwise we might have an empty mask for
                             // interrupted file transfers
-                            attr.permissions = this.attributes().getPermission().getOctalNumber();
+                            attr.permissions = Integer.parseInt(this.attributes().getPermission().getOctalString(), 8);
                         }
                         if(status().isResume() && this.exists()) {
                             handle = this.getSession().sftp().openFile(this.getAbsolute(),
@@ -560,7 +564,7 @@ public class SFTPPath extends Path {
 
                 SFTPv3FileAttributes attr = new SFTPv3FileAttributes();
                 Permission permission = new Permission(Preferences.instance().getInteger("queue.upload.permissions.file.default"));
-                attr.permissions = permission.getOctalNumber();
+                attr.permissions = Integer.parseInt(permission.getOctalString(), 8);
                 this.getSession().sftp().createFile(this.getAbsolute(), attr);
                 try {
                     // Even if specified above when creating the file handle, we still need to update the
