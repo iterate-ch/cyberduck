@@ -43,7 +43,7 @@
     <property name="codesign.certificate" value="Cyberduck Code Signing Certificate"/>
     <property name="codesign.keychain" value="${user.home}/Library/Keychains/codesign.keychain"/>
 
-    <property name="installer.certificate" value="3rd Party Mac Developer Application: David Kocher"/>
+    <property name="installer.certificate" value="3rd Party Mac Developer Installer: David Kocher"/>
     <property name="installer.keychain" value="${user.home}/Library/Keychains/codesign.keychain"/>
 
     <property name="spotlight" value="${home}/Spotlight Importer"/>
