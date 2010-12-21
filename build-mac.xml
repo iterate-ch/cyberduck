@@ -273,7 +273,7 @@
         <antcall target="zip"/>
     </target>
 
-    <target name="package-appstore" depends="clean, revision">
+    <target name="package-appstore" depends="revision">
         <antcall target="package">
             <param name="url.archive" value="/dev/null"/>
             <param name="url.changelog" value="/dev/null"/>
@@ -287,7 +287,9 @@
         <exec dir="${home}" executable="/usr/bin/lipo" spawn="false" failonerror="false">
             <arg line="-remove ppc7400 -output '${app.spotlight.executable}' '${app.spotlight.executable}'"/>
         </exec>
-        <antcall target="codesign"/>
+        <antcall target="codesign">
+	            <param name="codesign.certificate" value="3rd Party Mac Developer Application: David Kocher"/>
+	        </antcall>
         <echo message="Building ${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.pkg"/>
         <property name="build.absolute" location="${build}"/>
         <exec dir="${build.deploy}" executable="/usr/bin/productbuild" spawn="false" failonerror="true">
