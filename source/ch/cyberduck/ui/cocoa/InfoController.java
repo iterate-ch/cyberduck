@@ -2037,7 +2037,7 @@ public class InfoController extends ToolbarWindowController {
      */
     private Permission getPermissionFromOctalField() {
         if(StringUtils.isNotBlank(octalField.stringValue())) {
-            if(StringUtils.length(octalField.stringValue()) == 3) {
+            if(StringUtils.length(octalField.stringValue()) >= 3) {
                 if(StringUtils.isNumeric(octalField.stringValue())) {
                     return new Permission(Integer.valueOf(octalField.stringValue()).intValue());
                 }

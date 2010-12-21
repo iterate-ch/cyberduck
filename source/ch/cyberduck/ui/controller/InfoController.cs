@@ -902,7 +902,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             if (!String.IsNullOrEmpty(View.OctalPermissions))
             {
-                if (View.OctalPermissions.Length == 3)
+                if (View.OctalPermissions.Length >= 3)
                 {
                     if (Utils.IsInt(View.OctalPermissions))
                     {
