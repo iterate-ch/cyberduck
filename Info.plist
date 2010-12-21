@@ -131,7 +131,7 @@
         <key>CFBundleVersion</key>
         <string>_REVISION_</string>
         <key>CFBundleShortVersionString</key>
-        <string>_VERSION_ (_REVISION_)</string>
+        <string>_VERSION_</string>
         <key>LSArchitecturePriority</key>
         <array>
             <string>i386</string>
