@@ -338,12 +338,15 @@ public class FTPPath extends Path {
             final String filename = result.group(2);
             final Map<String, String> facts = new HashMap<String, String>();
             for(String fact : result.group(1).split(";")) {
-                if(fact.contains("=")) {
-                    String[] parts = fact.split("=");
-                    if(parts.length == 2) {
-                        facts.put(parts[0].toLowerCase(), parts[1].toLowerCase());
-                    }
+                String key = StringUtils.substringBefore(fact, "=");
+                if(StringUtils.isBlank(key)) {
+                    continue;
                 }
+                String value = StringUtils.substringAfter(fact, "=");
+                if(StringUtils.isBlank(value)) {
+                    continue;
+                }
+                facts.put(key.toLowerCase(), value);
             }
             file.put(filename, facts);
             return file;
