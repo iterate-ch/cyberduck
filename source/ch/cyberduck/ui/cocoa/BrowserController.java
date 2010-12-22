@@ -2228,15 +2228,17 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             int i = 0;
             Iterator<Path> iter;
             boolean shouldWarn = false;
-            for(iter = selected.iterator(); i < 10 && iter.hasNext();) {
+            for(iter = selected.iterator(); iter.hasNext();) {
                 Path item = iter.next();
                 if(item.exists()) {
-                    alertText.append("\n").append(Character.toString('\u2022')).append(" ").append(item.getName());
+                    if(i < 10) {
+                        alertText.append("\n").append(Character.toString('\u2022')).append(" ").append(item.getName());
+                    }
                     shouldWarn = true;
                 }
                 i++;
             }
-            if(iter.hasNext()) {
+            if(i >= 10) {
                 alertText.append("\n" + Character.toString('\u2022') + " ...)");
             }
             if(shouldWarn) {

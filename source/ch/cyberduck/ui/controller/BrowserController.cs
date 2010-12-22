@@ -2894,19 +2894,21 @@ namespace Ch.Cyberduck.Ui.Controller
                 int i = 0;
                 IEnumerator<Path> enumerator = null;
                 bool shouldWarn = false;
-
-                for (enumerator = selected.GetEnumerator(); i < 10 && enumerator.MoveNext();)
+                for (enumerator = selected.GetEnumerator(); enumerator.MoveNext();)
                 {
                     Path item = enumerator.Current;
                     if (item.exists())
                     {
-                        // u2022 = Bullet
-                        content.Append("\n" + Character.toString('\u2022') + " " + item.getName());
+                        if (i < 10)
+                        {
+                            // u2022 = Bullet
+                            content.Append("\n" + Character.toString('\u2022') + " " + item.getName());
+                        }
                         shouldWarn = true;
                     }
                     i++;
                 }
-                if (enumerator.MoveNext())
+                if (i >= 10)
                 {
                     content.Append("\n" + Character.toString('\u2022') + " ...)");
                 }
