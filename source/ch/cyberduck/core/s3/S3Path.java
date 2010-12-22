@@ -1071,7 +1071,7 @@ public class S3Path extends CloudPath {
                 log.warn("Renaming buckets is not currently supported by S3");
                 return;
             }
-            if(attributes().isFile() | attributes().isPlaceholder()) {
+            if(attributes().isFile() || attributes().isPlaceholder()) {
                 this.getSession().check();
                 this.getSession().message(MessageFormat.format(Locale.localizedString("Renaming {0} to {1}", "Status"),
                         this.getName(), renamed));
