@@ -224,7 +224,10 @@ public class FTPPath extends Path {
                                 }
                             }
                             if(!success) {
-                                // MLSD listing failed
+                                // MLSD listing failed or not enabled
+                                if(!getSession().getClient().changeWorkingDirectory(getAbsolute())) {
+                                    throw new FTPException(getSession().getClient().getReplyString());
+                                }
                                 if(!getSession().getClient().setFileType(FTPClient.ASCII_FILE_TYPE)) {
                                     throw new FTPException(getSession().getClient().getReplyString());
                                 }
@@ -232,13 +235,10 @@ public class FTPPath extends Path {
                                 // data connection in type ASCII or type EBCDIC. (The user must ensure that
                                 // the TYPE is appropriately ASCII or EBCDIC)
                                 if(getSession().isExtendedListEnabled()) {
-                                    StringBuilder sb = new StringBuilder();
-                                    sb.append("-a ");
-                                    sb.append(getAbsolute());
-                                    success = parseListResponse(children, parser, getSession().getClient().list(FTPCommand.LIST, sb.toString()));
+                                    success = parseListResponse(children, parser, getSession().getClient().list(FTPCommand.LIST, "-a"));
                                 }
                                 if(!success) {
-                                    // LIST -a listing failed
+                                    // LIST -a listing failed or not enabled
                                     getSession().setExtendedListEnabled(false);
                                     success = parseListResponse(children, parser, getSession().getClient().list(FTPCommand.LIST, getAbsolute()));
                                 }
