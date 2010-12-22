@@ -341,6 +341,10 @@ public class S3Path extends CloudPath {
 
                 final StorageObject target = this.getDetails();
                 target.replaceAllMetadata(new HashMap<String, Object>(meta));
+                // Apply non standard ACL
+                if(Acl.EMPTY.equals(this.attributes().getAcl())) {
+                    this.readAcl();
+                }
                 target.setAcl(this.convert(this.attributes().getAcl()));
                 this.getSession().getClient().updateObjectMetadata(this.getContainerName(), target);
                 target.setMetadataComplete(false);
