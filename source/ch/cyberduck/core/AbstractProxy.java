@@ -49,7 +49,7 @@ public abstract class AbstractProxy implements Proxy {
     public void configure(final Host host) {
         Properties properties = System.getProperties();
         if(Preferences.instance().getBoolean("connection.proxy.enable")
-                && this.isSOCKSProxyEnabled() && !this.isHostExcluded(host.getHostname())) {
+                && this.isSOCKSProxyEnabled(host)) {
             // Indicates the name of the SOCKS proxy server and the port number
             // that will be used by the SOCKS protocol layer. If socksProxyHost
             // is specified then all TCP sockets will use the SOCKS proxy server

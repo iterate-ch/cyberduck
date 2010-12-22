@@ -34,11 +34,7 @@ public class ProxyTest extends AbstractTestCase {
                 throw new UnsupportedOperationException();
             }
 
-            public boolean isHostExcluded(String hostname) {
-                throw new UnsupportedOperationException();
-            }
-
-            public boolean isSOCKSProxyEnabled() {
+            public boolean isSOCKSProxyEnabled(Host host) {
                 throw new UnsupportedOperationException();
             }
 
@@ -50,7 +46,7 @@ public class ProxyTest extends AbstractTestCase {
                 throw new UnsupportedOperationException();
             }
 
-            public boolean isHTTPProxyEnabled() {
+            public boolean isHTTPProxyEnabled(Host host) {
                 throw new UnsupportedOperationException();
             }
 
@@ -62,7 +58,7 @@ public class ProxyTest extends AbstractTestCase {
                 throw new UnsupportedOperationException();
             }
 
-            public boolean isHTTPSProxyEnabled() {
+            public boolean isHTTPSProxyEnabled(Host host) {
                 throw new UnsupportedOperationException();
             }
 

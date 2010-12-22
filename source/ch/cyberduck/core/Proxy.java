@@ -25,30 +25,30 @@ package ch.cyberduck.core;
 public interface Proxy {
 
     /**
+     * Configure default proxy settings to connect to host
+     *
      * @param host
      */
-    public void configure(final Host host);
+    public void configure(Host host);
 
     /**
      * @return True if PASV should be used by default
      */
     boolean usePassiveFTP();
 
-    boolean isHostExcluded(String hostname);
-
-    boolean isSOCKSProxyEnabled();
+    boolean isSOCKSProxyEnabled(Host host);
 
     String getSOCKSProxyHost();
 
     int getSOCKSProxyPort();
 
-    boolean isHTTPProxyEnabled();
+    boolean isHTTPProxyEnabled(Host host);
 
     String getHTTPProxyHost();
 
     int getHTTPProxyPort();
 
-    boolean isHTTPSProxyEnabled();
+    boolean isHTTPSProxyEnabled(Host host);
 
     String getHTTPSProxyHost();
 

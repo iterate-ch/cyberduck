@@ -92,26 +92,24 @@ public class DAVSession extends HTTP3Session {
         client.setHostConfiguration(configuration);
         if(Preferences.instance().getBoolean("connection.proxy.enable")) {
             final Proxy proxy = ProxyFactory.instance();
-            if(!proxy.isHostExcluded(host.getHostname())) {
-                if(host.getProtocol().isSecure()) {
-                    if(proxy.isHTTPSProxyEnabled()) {
-                        this.getClient().setProxy(proxy.getHTTPSProxyHost(), proxy.getHTTPSProxyPort());
-                        //this.DAV.setProxyCredentials(new UsernamePasswordCredentials(null, null));
-                    }
-                    else {
-                        this.getClient().setProxy(null, -1);
-                        this.getClient().setProxyCredentials(null);
-                    }
+            if(host.getProtocol().isSecure()) {
+                if(proxy.isHTTPSProxyEnabled(host)) {
+                    this.getClient().setProxy(proxy.getHTTPSProxyHost(), proxy.getHTTPSProxyPort());
+                    //this.DAV.setProxyCredentials(new UsernamePasswordCredentials(null, null));
                 }
                 else {
-                    if(proxy.isHTTPProxyEnabled()) {
-                        this.getClient().setProxy(proxy.getHTTPProxyHost(), proxy.getHTTPProxyPort());
-                        //this.getClient().setProxyCredentials(new UsernamePasswordCredentials(null, null));
-                    }
-                    else {
-                        this.getClient().setProxy(null, -1);
-                        this.getClient().setProxyCredentials(null);
-                    }
+                    this.getClient().setProxy(null, -1);
+                    this.getClient().setProxyCredentials(null);
+                }
+            }
+            else {
+                if(proxy.isHTTPProxyEnabled(host)) {
+                    this.getClient().setProxy(proxy.getHTTPProxyHost(), proxy.getHTTPProxyPort());
+                    //this.getClient().setProxyCredentials(new UsernamePasswordCredentials(null, null));
+                }
+                else {
+                    this.getClient().setProxy(null, -1);
+                    this.getClient().setProxyCredentials(null);
                 }
             }
         }

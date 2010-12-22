@@ -74,7 +74,12 @@ public class SystemConfigurationProxy extends AbstractProxy implements Proxy {
         return this.usePassiveFTPNative();
     }
 
-    public boolean isHostExcluded(String hostname) {
+    /**
+     *
+     * @param hostname
+     * @return
+     */
+    private boolean isHostExcluded(String hostname) {
         if(!loadNative()) {
             return false;
         }
@@ -123,8 +128,11 @@ public class SystemConfigurationProxy extends AbstractProxy implements Proxy {
 
     public native boolean isSimpleHostnameExcludedNative();
 
-    public boolean isSOCKSProxyEnabled() {
+    public boolean isSOCKSProxyEnabled(Host host) {
         if(!loadNative()) {
+            return false;
+        }
+        if(this.isHostExcluded(host.getHostname())) {
             return false;
         }
         return this.isSOCKSProxyEnabledNative();
@@ -144,8 +152,11 @@ public class SystemConfigurationProxy extends AbstractProxy implements Proxy {
         return this.getSOCKSProxyPortNative();
     }
 
-    public boolean isHTTPProxyEnabled() {
+    public boolean isHTTPProxyEnabled(Host host) {
         if(!loadNative()) {
+            return false;
+        }
+        if(this.isHostExcluded(host.getHostname())) {
             return false;
         }
         return this.isHTTPProxyEnabledNative();
@@ -165,8 +176,11 @@ public class SystemConfigurationProxy extends AbstractProxy implements Proxy {
         return getHTTPProxyPortNative();
     }
 
-    public boolean isHTTPSProxyEnabled() {
+    public boolean isHTTPSProxyEnabled(Host host) {
         if(!loadNative()) {
+            return false;
+        }
+        if(this.isHostExcluded(host.getHostname())) {
             return false;
         }
         return this.isHTTPSProxyEnabledNative();

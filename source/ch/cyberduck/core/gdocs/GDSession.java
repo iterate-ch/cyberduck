@@ -325,19 +325,9 @@ public class GDSession extends SSLSession {
         URLConnection c = null;
         if(Preferences.instance().getBoolean("connection.proxy.enable")) {
             final Proxy proxy = ProxyFactory.instance();
-            if(!proxy.isHostExcluded(url.getHost())) {
-                if(url.getProtocol().equals("https")) {
-                    if(proxy.isHTTPSProxyEnabled()) {
-                        c = url.openConnection(new java.net.Proxy(java.net.Proxy.Type.HTTP,
-                                new InetSocketAddress(proxy.getHTTPSProxyHost(), proxy.getHTTPSProxyPort())));
-                    }
-                }
-                else {
-                    if(proxy.isHTTPProxyEnabled()) {
-                        c = url.openConnection(new java.net.Proxy(java.net.Proxy.Type.HTTP,
-                                new InetSocketAddress(proxy.getHTTPProxyHost(), proxy.getHTTPProxyPort())));
-                    }
-                }
+            if(proxy.isHTTPSProxyEnabled(new Host(Protocol.GDOCS_SSL, url.getHost(), url.getPort()))) {
+                c = url.openConnection(new java.net.Proxy(java.net.Proxy.Type.HTTP,
+                        new InetSocketAddress(proxy.getHTTPSProxyHost(), proxy.getHTTPSProxyPort())));
             }
         }
         if(null == c) {

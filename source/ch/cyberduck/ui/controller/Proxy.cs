@@ -87,8 +87,11 @@ namespace Ch.Cyberduck.Ui.Controller
                              "$");
         }
 
-        public override bool isSOCKSProxyEnabled()
+        public override bool isSOCKSProxyEnabled(Host host)
         {
+            if(this.isHostExcluded(host.getHostname())) {
+                return false;
+            }
             if (IsProxyEnabled())
             {
                 int port;
@@ -116,8 +119,11 @@ namespace Ch.Cyberduck.Ui.Controller
             return true;
         }
 
-        public override bool isHTTPProxyEnabled()
+        public override bool isHTTPProxyEnabled(Host host)
         {
+            if(this.isHostExcluded(host.getHostname())) {
+                return false;
+            }
             if (IsProxyEnabled())
             {
                 int port;
@@ -140,8 +146,11 @@ namespace Ch.Cyberduck.Ui.Controller
             return port;
         }
 
-        public override bool isHTTPSProxyEnabled()
+        public override bool isHTTPSProxyEnabled(Host host)
         {
+            if(this.isHostExcluded(host.getHostname())) {
+                return false;
+            }
             if (IsProxyEnabled())
             {
                 int port;
@@ -164,7 +173,7 @@ namespace Ch.Cyberduck.Ui.Controller
             return port;
         }
 
-        public override bool isHostExcluded(string hostname)
+        private bool isHostExcluded(string hostname)
         {
             RegistryKey registry =
                 Registry.CurrentUser.OpenSubKey("Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings", false);

@@ -153,29 +153,27 @@ public class S3Session extends CloudHTTP3Session {
         configuration.setProperty("httpclient.proxy-autodetect", String.valueOf(false));
         if(Preferences.instance().getBoolean("connection.proxy.enable")) {
             final Proxy proxy = ProxyFactory.instance();
-            if(!proxy.isHostExcluded(host.getHostname())) {
-                if(host.getProtocol().isSecure()) {
-                    if(proxy.isHTTPSProxyEnabled()) {
-                        configuration.setProperty("httpclient.proxy-host", proxy.getHTTPSProxyHost());
-                        configuration.setProperty("httpclient.proxy-port", String.valueOf(proxy.getHTTPSProxyPort()));
-                        configuration.setProperty("httpclient.proxy-user", null);
-                        configuration.setProperty("httpclient.proxy-password", null);
-                        if(StringUtils.isNotEmpty(Preferences.instance().getProperty("connection.proxy.ntlm.domain"))) {
-                            configuration.setProperty("httpclient.proxy-domain",
-                                    Preferences.instance().getProperty("connection.proxy.ntlm.domain"));
-                        }
+            if(host.getProtocol().isSecure()) {
+                if(proxy.isHTTPSProxyEnabled(host)) {
+                    configuration.setProperty("httpclient.proxy-host", proxy.getHTTPSProxyHost());
+                    configuration.setProperty("httpclient.proxy-port", String.valueOf(proxy.getHTTPSProxyPort()));
+                    configuration.setProperty("httpclient.proxy-user", null);
+                    configuration.setProperty("httpclient.proxy-password", null);
+                    if(StringUtils.isNotEmpty(Preferences.instance().getProperty("connection.proxy.ntlm.domain"))) {
+                        configuration.setProperty("httpclient.proxy-domain",
+                                Preferences.instance().getProperty("connection.proxy.ntlm.domain"));
                     }
                 }
-                else {
-                    if(proxy.isHTTPProxyEnabled()) {
-                        configuration.setProperty("httpclient.proxy-host", proxy.getHTTPProxyHost());
-                        configuration.setProperty("httpclient.proxy-port", String.valueOf(proxy.getHTTPProxyPort()));
-                        configuration.setProperty("httpclient.proxy-user", null);
-                        configuration.setProperty("httpclient.proxy-password", null);
-                        if(StringUtils.isNotEmpty(Preferences.instance().getProperty("connection.proxy.ntlm.domain"))) {
-                            configuration.setProperty("httpclient.proxy-domain",
-                                    Preferences.instance().getProperty("connection.proxy.ntlm.domain"));
-                        }
+            }
+            else {
+                if(proxy.isHTTPProxyEnabled(host)) {
+                    configuration.setProperty("httpclient.proxy-host", proxy.getHTTPProxyHost());
+                    configuration.setProperty("httpclient.proxy-port", String.valueOf(proxy.getHTTPProxyPort()));
+                    configuration.setProperty("httpclient.proxy-user", null);
+                    configuration.setProperty("httpclient.proxy-password", null);
+                    if(StringUtils.isNotEmpty(Preferences.instance().getProperty("connection.proxy.ntlm.domain"))) {
+                        configuration.setProperty("httpclient.proxy-domain",
+                                Preferences.instance().getProperty("connection.proxy.ntlm.domain"));
                     }
                 }
             }
