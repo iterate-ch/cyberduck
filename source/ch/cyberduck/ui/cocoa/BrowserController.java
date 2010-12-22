@@ -175,9 +175,11 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         return this.filenameFilter;
     }
 
-    protected void setPathFilter(final String searchString) {
-        log.debug("setPathFilter:" + searchString);
-        if(StringUtils.isBlank(searchString)) {
+    protected void setPathFilter(final String search) {
+        if(log.isDebugEnabled()) {
+            log.debug("setPathFilter:" + search);
+        }
+        if(StringUtils.isBlank(search)) {
             this.searchField.setStringValue("");
             // Revert to the last used default filter
             if(this.isShowHiddenFiles()) {
@@ -191,7 +193,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             // Setting up a custom filter for the directory listing
             this.filenameFilter = new PathFilter<Path>() {
                 public boolean accept(Path file) {
-                    if(file.getName().toLowerCase().indexOf(searchString.toLowerCase()) != -1) {
+                    if(file.getName().toLowerCase().indexOf(search.toLowerCase()) != -1) {
                         // Matching filename
                         return true;
                     }
@@ -267,12 +269,19 @@ public class BrowserController extends WindowController implements NSToolbar.Del
      * @see #setSelectedPaths(java.util.List)
      */
     protected void reloadData(final List<Path> selected) {
-        log.debug("reloadData");
+        if(log.isDebugEnabled()) {
+            log.debug("reloadData:" + selected);
+        }
         // Tell the browser view to reload the data. This will request all paths from the browser model
         // which will refetch paths from the server marked as invalid.
         final NSTableView browser = this.getSelectedBrowserView();
         browser.reloadData();
-        this.setSelectedPaths(selected);
+        this.deselectAll();
+        if(!selected.isEmpty()) {
+            for(Path path : selected) {
+                this.selectRow(path.getReference(), true);
+            }
+        }
         this.updateStatusLabel();
         // Update path navigation
         this.validateNavigationButtons();
@@ -283,46 +292,32 @@ public class BrowserController extends WindowController implements NSToolbar.Del
      * @param expand    Expand the existing selection
      */
     private void selectRow(PathReference reference, boolean expand) {
-        log.debug("selectRow:" + reference);
+        if(log.isDebugEnabled()) {
+            log.debug("selectRow:" + reference);
+        }
         final NSTableView browser = this.getSelectedBrowserView();
-        this.selectRow(this.getSelectedBrowserModel().indexOf(browser, reference), expand);
-    }
-
-    /**
-     * @param row
-     * @param expand Expand the existing selection
-     */
-    private void selectRow(int row, boolean expand) {
-        log.debug("selectRow:" + row);
+        int row = this.getSelectedBrowserModel().indexOf(browser, reference);
+        if(log.isDebugEnabled()) {
+            log.debug("selectRow:" + row);
+        }
         if(-1 == row) {
             return;
         }
-        final NSTableView browser = this.getSelectedBrowserView();
         final NSInteger index = new NSInteger(row);
         browser.selectRowIndexes(NSIndexSet.indexSetWithIndex(index), expand);
         browser.scrollRowToVisible(index);
     }
 
-    /**
-     * @param selected
-     */
-    protected void setSelectedPath(Path selected) {
-        List<Path> list = new Collection<Path>();
-        list.add(selected);
-        this.setSelectedPaths(list);
-    }
+    private List<Path> selected = Collections.emptyList();
 
     /**
      * @param selected
      */
     protected void setSelectedPaths(List<Path> selected) {
-        log.debug("setSelectedPaths");
-        this.deselectAll();
-        if(!selected.isEmpty()) {
-            for(Path path : selected) {
-                this.selectRow(path.getReference(), true);
-            }
+        if(log.isDebugEnabled()) {
+            log.debug("setSelectedPaths:" + selected);
         }
+        this.selected = selected;
     }
 
     /**
@@ -339,19 +334,8 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     /**
      * @return All selected paths or an empty list if there is no selection
      */
-    protected Collection<Path> getSelectedPaths() {
-        Collection<Path> selectedFiles = new Collection<Path>();
-        if(this.isMounted()) {
-            NSIndexSet iterator = this.getSelectedBrowserView().selectedRowIndexes();
-            for(NSUInteger index = iterator.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = iterator.indexGreaterThanIndex(index)) {
-                Path selected = this.pathAtRow(index.intValue());
-                if(null == selected) {
-                    break;
-                }
-                selectedFiles.add(selected);
-            }
-        }
-        return selectedFiles;
+    protected List<Path> getSelectedPaths() {
+        return selected;
     }
 
     protected int getSelectionCount() {
@@ -365,26 +349,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             return;
         }
         browser.deselectAll(null);
-    }
-
-    private Path pathAtRow(int row) {
-        switch(this.browserSwitchView.selectedSegment()) {
-            case SWITCH_LIST_VIEW: {
-                final AttributedList<Path> children = this.browserListModel.children(this.workdir());
-                if(row < children.size()) {
-                    return children.get(row);
-                }
-                break;
-            }
-            case SWITCH_OUTLINE_VIEW: {
-                if(row < this.browserOutlineView.numberOfRows().intValue()) {
-                    return this.lookup(new OutlinePathReference(this.browserOutlineView.itemAtRow(new NSInteger(row))));
-                }
-                break;
-            }
-        }
-        log.warn("No item at row:" + row);
-        return null;
     }
 
     @Override
@@ -840,6 +804,21 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                                                                                      NSObject item, NSPoint mouseLocation) {
             return this.tooltip(lookup(new OutlinePathReference(item)));
         }
+
+        @Override
+        protected void setBrowserColumnSortingIndicator(NSImage image, String columnIdentifier) {
+            browserOutlineView.setIndicatorImage_inTableColumn(image,
+                    browserOutlineView.tableColumnWithIdentifier(columnIdentifier));
+        }
+
+        @Override
+        protected Path pathAtRow(int row) {
+            if(row < browserOutlineView.numberOfRows().intValue()) {
+                return lookup(new OutlinePathReference(browserOutlineView.itemAtRow(new NSInteger(row))));
+            }
+            log.warn("No item at row:" + row);
+            return null;
+        }
     }
 
     private abstract class AbstractBrowserListViewDelegate<E> extends AbstractBrowserTableDelegate<E>
@@ -849,6 +828,22 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                                                                                   ID rect, NSTableColumn c,
                                                                                   NSInteger row, NSPoint mouseLocation) {
             return this.tooltip(browserListModel.children(workdir()).get(row.intValue()));
+        }
+
+        @Override
+        protected void setBrowserColumnSortingIndicator(NSImage image, String columnIdentifier) {
+            browserListView.setIndicatorImage_inTableColumn(image,
+                    browserListView.tableColumnWithIdentifier(columnIdentifier));
+        }
+
+        @Override
+        protected Path pathAtRow(int row) {
+            final AttributedList<Path> children = browserListModel.children(workdir());
+            if(row < children.size()) {
+                return children.get(row);
+            }
+            log.warn("No item at row:" + row);
+            return null;
         }
     }
 
@@ -895,7 +890,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         /**
          * @param selected
          */
-        private void updateQuickLookSelection(final Collection<Path> selected) {
+        private void updateQuickLookSelection(final List<Path> selected) {
             if(QuickLookFactory.instance().isAvailable()) {
                 final Collection<Path> downloads = new Collection<Path>();
                 for(Path path : selected) {
@@ -992,29 +987,31 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
         @Override
         public void selectionDidChange(NSNotification notification) {
-            final Collection<Path> selected = getSelectedPaths();
+            List<Path> selected = new ArrayList<Path>();
+            NSIndexSet iterator = getSelectedBrowserView().selectedRowIndexes();
+            for(NSUInteger index = iterator.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = iterator.indexGreaterThanIndex(index)) {
+                Path file = this.pathAtRow(index.intValue());
+                if(null == file) {
+                    break;
+                }
+                selected.add(file);
+            }
+            setSelectedPaths(selected);
             if(QuickLookFactory.instance().isOpen()) {
-                this.updateQuickLookSelection(selected);
+                this.updateQuickLookSelection(BrowserController.this.selected);
             }
             if(Preferences.instance().getBoolean("browser.info.isInspector")) {
                 InfoController c = InfoController.Factory.get(BrowserController.this);
                 if(null == c) {
                     return;
                 }
-                c.setFiles(selected);
+                c.setFiles(BrowserController.this.selected);
             }
         }
 
-        private void setBrowserColumnSortingIndicator(NSImage image, String columnIdentifier) {
-            if(browserListView.tableColumnWithIdentifier(columnIdentifier) != null) {
-                browserListView.setIndicatorImage_inTableColumn(image,
-                        browserListView.tableColumnWithIdentifier(columnIdentifier));
-            }
-            if(browserOutlineView.tableColumnWithIdentifier(columnIdentifier) != null) {
-                browserOutlineView.setIndicatorImage_inTableColumn(image,
-                        browserOutlineView.tableColumnWithIdentifier(columnIdentifier));
-            }
-        }
+        protected abstract Path pathAtRow(int row);
+
+        protected abstract void setBrowserColumnSortingIndicator(NSImage image, String columnIdentifier);
     }
 
     /**
@@ -2078,7 +2075,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     @Action
     public void reloadButtonClicked(final ID sender) {
         if(this.isMounted()) {
-            final Collection<Path> selected = this.getSelectedPaths();
+            final List<Path> selected = this.getSelectedPaths();
             switch(this.browserSwitchView.selectedSegment()) {
                 case SWITCH_LIST_VIEW: {
                     this.workdir().invalidate();
@@ -2374,6 +2371,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
      * @param selected The files selected in the browser to delete
      */
     public void deletePaths(final List<Path> selected) {
+
         final List<Path> normalized = this.checkHierarchy(selected);
         if(normalized.isEmpty()) {
             return;
@@ -3170,7 +3168,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
      * @param archive
      */
     private void archiveClicked(final Archive archive) {
-        final Collection<Path> selected = this.getSelectedPaths();
+        final List<Path> selected = this.getSelectedPaths();
         this.checkOverwrite(Collections.singletonList(archive.getArchive(selected)), new BrowserBackgroundAction(this) {
 
             public void run() {
@@ -3270,7 +3268,9 @@ public class BrowserController extends WindowController implements NSToolbar.Del
      * @param directory The new working directory to display or null to detach any working directory from the browser
      */
     public void setWorkdir(final Path directory, final List<Path> selected) {
-        log.debug("setWorkdir:" + directory);
+        if(log.isDebugEnabled()) {
+            log.debug("setWorkdir:" + directory);
+        }
         if(null == directory) {
             // Clear the browser view if no working directory is given
             this.workdir = null;
@@ -3513,7 +3513,9 @@ public class BrowserController extends WindowController implements NSToolbar.Del
      * @return The session to be used for any further operations
      */
     public void mount(final Host host) {
-        log.debug("mount:" + host);
+        if(log.isDebugEnabled()) {
+            log.debug("mount:" + host);
+        }
         this.unmount(new Runnable() {
             public void run() {
                 // The browser has no session, we are allowed to proceed
@@ -3581,7 +3583,9 @@ public class BrowserController extends WindowController implements NSToolbar.Del
      * @return
      */
     public boolean unmount(final SheetCallback callback, final Runnable disconnected) {
-        log.debug("unmount");
+        if(log.isDebugEnabled()) {
+            log.debug("unmount:" + session);
+        }
         if(this.isConnected() || this.isActivityRunning()) {
             if(Preferences.instance().getBoolean("browser.confirmDisconnect")) {
                 // Defer the unmount to the callback function
@@ -4147,7 +4151,9 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             = new HashMap<String, NSToolbarItem>();
 
     public NSToolbarItem toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar(NSToolbar toolbar, final String itemIdentifier, boolean flag) {
-        log.debug("toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar");
+        if(log.isDebugEnabled()) {
+            log.debug("toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar:" + toolbar);
+        }
         if(!toolbarItems.containsKey(itemIdentifier)) {
             toolbarItems.put(itemIdentifier, NSToolbarItem.itemWithIdentifier(itemIdentifier));
         }
