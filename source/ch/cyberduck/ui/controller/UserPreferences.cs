@@ -1,4 +1,4 @@
-﻿﻿//
+﻿//
 // Copyright (c) 2010 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
@@ -155,8 +155,6 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 return "Welsh";
             }
-
-            //new Locale(...) seems to be very expensive (>100ms on my machine)
             CultureInfo cultureInfo = CultureInfo.GetCultureInfo(locale.Replace('_', '-'));
             return cultureInfo.TextInfo.ToTitleCase(cultureInfo.NativeName);
         }
@@ -166,27 +164,23 @@ namespace Ch.Cyberduck.Ui.Controller
             Assembly asm = Assembly.GetExecutingAssembly();
             string[] names = asm.GetManifestResourceNames();
             // the dots apparently come from the relative path in the msbuild file
-            Regex regex = new Regex("Ch.Cyberduck..........([^\\..]*).lproj.*"); //exclude Sparkle
+            Regex regex = new Regex("Ch.Cyberduck\\.\\.\\.\\.\\.\\.\\.\\.\\.\\.([^\\..]*).lproj\\.Localizable\\.strings");
             List<string> distinctNames = new List<string>();
             foreach (var name in names)
             {
                 Match match = regex.Match(name);
                 if (match.Groups.Count > 1)
                 {
-                    string cand = match.Groups[1].Value.Replace('_', '-');
-                    if (!distinctNames.Contains(cand))
-                    {
-                        if (("ja".Equals(cand) ||
-                             "ko".Equals(cand) ||
-                             "ka".Equals(cand) ||
-                             "zh-CN".Equals(cand) ||
-                             "zh-TW".Equals(cand)) && !HasEastAsianFontSupport())
-                        {
-                            continue;
-                        }
-                        distinctNames.Add(cand);
-                    }
+                    distinctNames.Add(match.Groups[1].Value);
                 }
+            }
+            if (!HasEastAsianFontSupport())
+            {
+                distinctNames.Remove("ja");
+                distinctNames.Remove("ko");
+                distinctNames.Remove("ka");
+                distinctNames.Remove("zh_CN");
+                distinctNames.Remove("zh_TW");
             }
             return Utils.ConvertToJavaList(distinctNames);
         }
@@ -217,14 +211,12 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public override List systemLocales()
         {
-            List sysLocales = new ArrayList();
-
+            List locales = new ArrayList();
             //add current UI culture
-            sysLocales.add(CultureInfo.CurrentUICulture.Name);
+            locales.add(CultureInfo.CurrentUICulture.Name);
             //add current system culture
-            sysLocales.add(Application.CurrentCulture.Name);
-
-            return sysLocales;
+            locales.add(Application.CurrentCulture.Name);
+            return locales;
         }
 
         protected override void load()
@@ -326,11 +318,10 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             List sysLocales = systemLocales();
             List appLocales = applicationLocales();
-
             for (int i = 0; i < sysLocales.size(); i++)
             {
                 string s = (string) sysLocales.get(i);
-                string match = TryToMatchLocale(s, appLocales);
+                string match = TryToMatchLocale(s.Replace('-', '_'), appLocales);
                 if (null != match)
                 {
                     Log.debug(String.Format("Default locale is '{0}' for system locale '{1}'", match, s));

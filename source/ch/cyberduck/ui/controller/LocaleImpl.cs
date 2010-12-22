@@ -41,9 +41,8 @@ namespace Ch.Cyberduck.Ui.Controller
             Log.debug("Caching bundle " + bundle);
             Assembly asm = Assembly.GetExecutingAssembly();
             // the dots apparently come from the relative path in the msbuild file
-            Stream stream =
-                asm.GetManifestResourceStream(string.Format("Ch.Cyberduck..........{0}.lproj.{1}.strings", _language,
-                                                            bundle));
+            Stream stream = asm.GetManifestResourceStream(
+                string.Format("Ch.Cyberduck..........{0}.lproj.{1}.strings", _language, bundle));
             if (null == stream)
             {
                 stream =
