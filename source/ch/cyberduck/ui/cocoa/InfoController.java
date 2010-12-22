@@ -1998,12 +1998,12 @@ public class InfoController extends ToolbarWindowController {
                 }
                 if(StringUtils.isBlank(filenameField.stringValue())) {
                     filenameField.setStringValue(current.getName());
-                    this.initWebUrl();
                 }
                 else {
                     final Path renamed = PathFactory.createPath(controller.getSession(),
                             current.getParent().getAbsolute(), filenameField.stringValue(), current.attributes().getType());
                     controller.renamePath(current, renamed);
+                    this.initWebUrl();
                 }
             }
         }

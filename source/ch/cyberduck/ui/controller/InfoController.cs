@@ -1,4 +1,4 @@
-﻿﻿﻿//
+﻿﻿﻿﻿//
 // Copyright (c) 2010 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
@@ -565,9 +565,8 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 Path current = _files[0];
 
-                if (View.Filename.Equals(current))
+                if (!View.Filename.Equals(current.getName()))
                 {
-                    //todo evtl. auf '/' und '\' prüfen
                     if (View.Filename.Contains(Path.DELIMITER.ToString()))
                     {
                         SystemSounds.Beep.Play();
@@ -576,7 +575,6 @@ namespace Ch.Cyberduck.Ui.Controller
                     if (string.IsNullOrEmpty(View.Filename))
                     {
                         View.Filename = current.getName();
-                        InitWebUrl();
                     }
                     else
                     {
@@ -584,6 +582,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                                               current.getParent().getAbsolute(), View.Filename,
                                                               current.attributes().getType());
                         _controller.RenamePath(current, renamed);
+                        InitWebUrl();
                     }
                 }
             }
