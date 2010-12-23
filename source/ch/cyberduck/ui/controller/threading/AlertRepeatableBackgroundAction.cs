@@ -15,11 +15,14 @@
 // Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
 // 
+using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
 using ch.cyberduck.core;
 using Ch.Cyberduck.Core;
+using ch.cyberduck.core.i18n;
 using ch.cyberduck.core.threading;
+using Ch.Cyberduck.Ui.Winforms.Taskdialog;
 using StructureMap;
 
 namespace Ch.Cyberduck.Ui.Controller.Threading
@@ -56,30 +59,60 @@ namespace Ch.Cyberduck.Ui.Controller.Threading
         {
             _controller.Invoke(delegate
                                    {
-                                       ICollection<BackgroundException> backgroundExceptions =
-                                           Utils.ConvertFromJavaList<BackgroundException>(getExceptions());
-
-                                       ErrorController errorController =
-                                           new ErrorController(ObjectFactory.GetInstance<IErrorView>(),
-                                                               backgroundExceptions, getTranscript());
-                                       DialogResult result = errorController.View.ShowDialog(_controller.View);
-
-                                       if (DialogResult.OK == result)
+                                       if (this.getExceptions().size() == 1)
                                        {
-                                           foreach (BackgroundException e in backgroundExceptions)
+                                           BackgroundException failure =
+                                               this.getExceptions().get(0) as BackgroundException;
+                                           int r =
+                                               cTaskDialog.ShowCommandBox(_controller.View as Form,
+                                                                          failure.getReadableTitle(),
+                                                                          failure.getMessage(),
+                                                                          failure.getDetailedCauseMessage(),
+                                                                          null, 
+                                                                          null,
+                                                                          null,
+                                                                          String.Format("{0}", Locale.localizedString("Try Again", "Alert")),
+                                                                          true, // Cancel
+                                                                          eSysIcons.Warning, eSysIcons.Information);
+                                           switch (r)
                                            {
-                                               Path workdir = e.getPath();
-                                               if (null == workdir)
-                                               {
-                                                   continue;
-                                               }
-                                               workdir.invalidate();
+                                               case 0:
+                                                   Callback(DialogResult.OK);
+                                                   break;
                                            }
-                                           reset();
-                                           // Re-run the action with the previous lock used
-                                           _controller.background(this);
+                                       }
+                                       else
+                                       {
+                                           ICollection<BackgroundException> backgroundExceptions =
+                                               Utils.ConvertFromJavaList<BackgroundException>(getExceptions());
+                                           ErrorController errorController =
+                                               new ErrorController(ObjectFactory.GetInstance<IErrorView>(),
+                                                                   backgroundExceptions, getTranscript());
+                                           DialogResult result = errorController.View.ShowDialog(_controller.View);
+                                           Callback(result);
                                        }
                                    }, true);
+        }
+
+        private void Callback(DialogResult result)
+        {
+            if (DialogResult.OK == result)
+            {
+                ICollection<BackgroundException> backgroundExceptions =
+                    Utils.ConvertFromJavaList<BackgroundException>(getExceptions());
+                foreach (BackgroundException e in backgroundExceptions)
+                {
+                    Path workdir = e.getPath();
+                    if (null == workdir)
+                    {
+                        continue;
+                    }
+                    workdir.invalidate();
+                }
+                reset();
+                // Re-run the action with the previous lock used
+                _controller.background(this);
+            }
         }
     }
 }
