@@ -95,7 +95,7 @@ public abstract class AlertRepeatableBackgroundAction extends RepeatableBackgrou
                         AlertRepeatableBackgroundAction.this.isNetworkFailure() ? Locale.localizedString("Network Diagnostics") : null, //other button
                         Locale.localizedString("Cancel") // alternate button
                 );
-                alert.setShowsHelp(null != failure.getPath());
+                alert.setShowsHelp(true);
                 final AlertController c = new AlertController(AlertRepeatableBackgroundAction.this.controller, alert) {
                     public void callback(final int returncode) {
                         if(returncode == SheetCallback.ALTERNATE_OPTION) {
@@ -109,7 +109,9 @@ public abstract class AlertRepeatableBackgroundAction extends RepeatableBackgrou
                     @Override
                     protected void help() {
                         StringBuilder site = new StringBuilder(Preferences.instance().getProperty("website.help"));
-                        site.append("/").append(failure.getPath().getSession().getHost().getProtocol().getIdentifier());
+                        if(null != failure.getPath()) {
+                            site.append("/").append(failure.getPath().getSession().getHost().getProtocol().getIdentifier());
+                        }
                         openUrl(site.toString());
                     }
                 };
