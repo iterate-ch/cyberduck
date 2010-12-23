@@ -226,8 +226,8 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             //todo did not find a way to show the chain in the case of self signed certs
             X509Certificate2 cert = ConvertCertificate(certificates[0]);
+            //todo: dialog does not have the focus, means we have to click twice to close the form. Pass parent handle?
             X509Certificate2UI.DisplayCertificate(cert);
-
             return true;
         }
 
