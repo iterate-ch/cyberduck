@@ -961,7 +961,6 @@ namespace Ch.Cyberduck.Ui.Controller
                     Log.warn("No accepted certificates found");
                     return;
                 }
-                //todo: dialog does not have the focus, means we have to click twice to close the form. why?
                 KeychainFactory.instance().displayCertificates(certificates);
             }
         }
@@ -1005,10 +1004,8 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             List<string> list = new List<string>();
             list.AddRange(Utils.AvailableCharsets());
-
             View.PopulateEncodings(list);
-            //default to UTF-8
-            View.SelectedEncoding = "UTF-8";
+            View.SelectedEncoding = Preferences.instance().getProperty("browser.charset.encoding");
         }
 
         private void View_EncodingChanged(object sender, EncodingChangedArgs e)
