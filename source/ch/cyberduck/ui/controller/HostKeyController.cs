@@ -30,8 +30,14 @@ namespace Ch.Cyberduck.Ui.Controller
     {
         private static readonly Logger Log = Logger.getLogger(typeof (HostKeyController).FullName);
 
-        private HostKeyController()
+        /// <summary>
+        /// Parent browser
+        /// </summary>
+        private WindowController Parent;
+
+        private HostKeyController(WindowController c)
         {
+            Parent = c;
         }
 
         protected override bool isUnknownKeyAccepted(string hostname, int port, string serverHostKeyAlgorithm,
@@ -41,18 +47,18 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 return true;
             }
-            int r = cTaskDialog.ShowCommandBox(String.Format(Locale.localizedString("Unknown host key for {0}."), hostname),
-                                               null,
-                                               String.Format(Locale.localizedString("The host is currently unknown to the system. The host key fingerprint is {0}."),
-                                                   KnownHosts.createHexFingerprint(serverHostKeyAlgorithm, serverHostKey)),
-                                               null,
-                                               null,
-                                               isHostKeyDatabaseWritable() ? Locale.localizedString("Always") : null,
-                                               String.Format("{0}|{1}",
-                                                             Locale.localizedString("Allow"),
-                                                             Locale.localizedString("Deny")),
-                                               false,
-                                               eSysIcons.Warning, eSysIcons.Information);
+            int r = Parent.CommandBox(String.Format(Locale.localizedString("Unknown host key for {0}."), hostname),
+                                null,
+                                String.Format(Locale.localizedString("The host is currently unknown to the system. The host key fingerprint is {0}."),
+                                    KnownHosts.createHexFingerprint(serverHostKeyAlgorithm, serverHostKey)),
+                                null,
+                                null,
+                                isHostKeyDatabaseWritable() ? Locale.localizedString("Always") : null,
+                                String.Format("{0}|{1}",
+                                                Locale.localizedString("Allow"),
+                                                Locale.localizedString("Deny")),
+                                false,
+                                eSysIcons.Question, eSysIcons.Information);
             switch (r)
             {
                 case 0:
@@ -74,14 +80,14 @@ namespace Ch.Cyberduck.Ui.Controller
                                    ? "|" + Locale.localizedString("Always")
                                    : string.Empty);
 
-            int r = cTaskDialog.ShowCommandBox(String.Format(Locale.localizedString("Host key mismatch for {0}"), hostname),
-                                               null,
-                                               String.Format(Locale.localizedString("The host key supplied is {0}."), KnownHosts.createHexFingerprint(serverHostKeyAlgorithm, serverHostKey)),
-                                               null,
-                                               null,
-                                               null, commands,
-                                               false,
-                                               eSysIcons.Warning, eSysIcons.Information);
+            int r = Parent.CommandBox(String.Format(Locale.localizedString("Host key mismatch for {0}"), hostname),
+                                null,
+                                String.Format(Locale.localizedString("The host key supplied is {0}."), KnownHosts.createHexFingerprint(serverHostKeyAlgorithm, serverHostKey)),
+                                null,
+                                null,
+                                null, commands,
+                                false,
+                                eSysIcons.Warning, eSysIcons.Information);
             switch (r)
             {
                 case 0:
@@ -106,17 +112,22 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             protected override object create()
             {
-                return new HostKeyController();
+                return new HostKeyController(TransferController.Instance);
             }
 
             public override ch.cyberduck.core.sftp.HostKeyController create(Session s)
             {
-                return (HostKeyController) create();
+                foreach(BrowserController c in MainController.Browsers) {
+                    if(c.getSession() == s) {
+                        return this.create(c);
+                    }
+                }
+                return this.create() as HostKeyController;
             }
 
             public override ch.cyberduck.core.sftp.HostKeyController create(ch.cyberduck.ui.Controller c)
             {
-                return (HostKeyController) create();
+                return create(c as WindowController);
             }
         }
     }
