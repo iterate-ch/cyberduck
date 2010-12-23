@@ -134,27 +134,30 @@ namespace Ch.Cyberduck.Ui.Controller
                 Preferences.instance().setProperty("queue.openByDefault", _instance.Visible);
                 if (TransferCollection.defaultCollection().numberOfRunningTransfers() > 0)
                 {
-                    DialogResult result = _instance.MessageBox(Locale.localizedString("Transfer in progress"),
+                    int result = _instance.CommandBox(Locale.localizedString("Transfer in progress"),
+                                                               null,
                                                                Locale.localizedString(
                                                                    "There are files currently being transferred. Quit anyway?"),
-                                                               null,
-                                                               eTaskDialogButtons.OKCancel, eSysIcons.Question);
-                    if (DialogResult.OK == result) // Quit
+                                                               null, null, null,
+                                                               String.Format("{0}", Locale.localizedString("Exit")),
+                                                               true, //Cancel
+                                                               eSysIcons.Question, eSysIcons.Information);
+                    switch(result)
                     {
-                        for (int i = 0; i < TransferCollection.defaultCollection().size(); i++)
-                        {
-                            Transfer transfer = (Transfer) TransferCollection.defaultCollection().get(i);
-                            if (transfer.isRunning())
+                        case 0:
+                            // Quit
+                            for (int i = 0; i < TransferCollection.defaultCollection().size(); i++)
                             {
-                                transfer.interrupt();
+                                Transfer transfer = (Transfer) TransferCollection.defaultCollection().get(i);
+                                if (transfer.isRunning())
+                                {
+                                    transfer.interrupt();
+                                }
                             }
-                        }
+                            return true;
                     }
-                    else
-                    {
-                        // Cancel
-                        return false;
-                    }
+                    // Cancel
+                    return false;
                 }
             }
             return true;
