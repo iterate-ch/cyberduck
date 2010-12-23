@@ -544,7 +544,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 List<Path> selected = BrowserController.this.getSelectedPaths();
                 if(selected.isEmpty()) {
                     if(BrowserController.this.isMounted()) {
-                        selected.add(BrowserController.this.workdir());
+                        return Collections.singletonList(BrowserController.this.workdir());
                     }
                 }
                 return selected;
@@ -565,7 +565,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 List<Path> selected = BrowserController.this.getSelectedPaths();
                 if(selected.isEmpty()) {
                     if(BrowserController.this.isMounted()) {
-                        selected.add(BrowserController.this.workdir());
+                        return Collections.singletonList(BrowserController.this.workdir());
                     }
                 }
                 return selected;

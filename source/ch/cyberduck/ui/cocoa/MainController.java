@@ -257,7 +257,7 @@ public class MainController extends BundleController implements NSApplication.De
                         List<Path> selected = controller.getSelectedPaths();
                         if(selected.isEmpty()) {
                             if(controller.isMounted()) {
-                                selected.add(controller.workdir());
+                                return Collections.singletonList(controller.workdir());
                             }
                         }
                         return selected;
@@ -284,7 +284,7 @@ public class MainController extends BundleController implements NSApplication.De
                         List<Path> selected = controller.getSelectedPaths();
                         if(selected.isEmpty()) {
                             if(controller.isMounted()) {
-                                selected.add(controller.workdir());
+                                return Collections.singletonList(controller.workdir());
                             }
                         }
                         return selected;
