@@ -85,7 +85,9 @@ public class MainApplication {
                 PromptLoginController.register();
                 AlertHostKeyController.register();
 
-                Rendezvous.register();
+                if(Preferences.instance().getBoolean("rendezvous.enable")) {
+                    Rendezvous.register();
+                }
             }
 
             final Logger root = Logger.getRootLogger();
