@@ -127,7 +127,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
             public override ch.cyberduck.core.sftp.HostKeyController create(ch.cyberduck.ui.Controller c)
             {
-                return create(c as WindowController);
+                return new HostKeyController(c as WindowController);
             }
         }
     }
