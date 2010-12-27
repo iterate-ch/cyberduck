@@ -100,8 +100,8 @@ public abstract class HTTP4Session extends SSLSession {
             HttpProtocolParams.setUserAgent(params, getUserAgent());
             SchemeRegistry registry = new SchemeRegistry();
             if(host.getProtocol().isSecure()) {
-                org.apache.http.conn.ssl.SSLSocketFactory factory = new SSLSocketFactory(new CustomTrustSSLProtocolSocketFactory(
-                        getTrustManager()).getSSLContext());
+                org.apache.http.conn.ssl.SSLSocketFactory factory = new SSLSocketFactory(
+                        new CustomTrustSSLProtocolSocketFactory(this.getTrustManager()).getSSLContext());
                 // We make sure to verify the hostname later using the trust manager
                 factory.setHostnameVerifier(org.apache.http.conn.ssl.SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
                 registry.register(

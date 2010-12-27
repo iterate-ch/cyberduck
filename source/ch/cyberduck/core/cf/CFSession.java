@@ -135,7 +135,7 @@ public class CFSession extends CloudHTTP4Session {
     @Override
     public AbstractX509TrustManager getTrustManager(String hostname) {
         if(!trust.containsKey(hostname)) {
-            trust.put(hostname, new KeychainX509TrustManager(hostname) {
+            trust.put(hostname, new KeychainX509TrustManager() {
                 /**
                  * Different hostname depending if authentication has completed or not.
                  * @return Authentication or storage hostname.
@@ -167,10 +167,8 @@ public class CFSession extends CloudHTTP4Session {
                     catch(ConnectionCanceledException e) {
                         log.warn(e.getMessage());
                     }
-                    return super.getHostname();
+                    return null;
                 }
-
-
             });
         }
         return trust.get(hostname);
