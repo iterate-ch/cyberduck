@@ -38,23 +38,15 @@ import java.util.List;
 /**
  * @version $Id$
  */
-public class KeychainX509TrustManager extends AbstractX509TrustManager {
+public abstract class KeychainX509TrustManager extends AbstractX509TrustManager {
     protected static Logger log = Logger.getLogger(KeychainX509TrustManager.class);
-
-    private String hostname;
-
-    public KeychainX509TrustManager(String hostname) {
-        this.hostname = hostname;
-    }
 
     /**
      * Override if hostname is different depending on the request.
      *
      * @return
      */
-    public String getHostname() {
-        return hostname;
-    }
+    public abstract String getHostname();
 
     public void checkClientTrusted(final X509Certificate[] x509Certificates, String authType)
             throws CertificateException {

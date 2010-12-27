@@ -43,9 +43,14 @@ public abstract class SSLSession extends Session {
         return this.getTrustManager(host.getHostname());
     }
 
-    public AbstractX509TrustManager getTrustManager(String hostname) {
+    public AbstractX509TrustManager getTrustManager(final String hostname) {
         if(!trust.containsKey(hostname)) {
-            trust.put(hostname, new KeychainX509TrustManager(hostname));
+            trust.put(hostname, new KeychainX509TrustManager() {
+                @Override
+                public String getHostname() {
+                    return hostname;
+                }
+            });
         }
         return trust.get(hostname);
     }
