@@ -29,9 +29,9 @@ import java.util.Map;
  */
 public abstract class LoginControllerFactory extends Factory<LoginController> {
 
-    public abstract LoginController create(Controller c);
+    protected abstract LoginController create(Controller c);
 
-    public abstract LoginController create(Session s);
+    protected abstract LoginController create(Session s);
 
     /**
      * Registered factories

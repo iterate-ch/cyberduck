@@ -47,12 +47,12 @@ public class PromptLoginController extends AbstractLoginController {
         }
 
         @Override
-        public LoginController create(Controller c) {
+        protected LoginController create(Controller c) {
             return new PromptLoginController((WindowController) c);
         }
 
         @Override
-        public LoginController create(Session s) {
+        protected LoginController create(Session s) {
             for(BrowserController c : MainController.getBrowsers()) {
                 if(c.getSession() == s) {
                     return this.create(c);
