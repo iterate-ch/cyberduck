@@ -137,6 +137,12 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
     }
 
     @Override
+    public void init() {
+        // Add to the registry so it will be displayed in the activity window.
+        BackgroundActionRegistry.global().add(this);
+    }
+
+    @Override
     public boolean prepare() {
         final Session session = this.getSession();
         if(session != null) {

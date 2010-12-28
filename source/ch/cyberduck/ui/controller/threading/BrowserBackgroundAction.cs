@@ -39,12 +39,6 @@ namespace Ch.Cyberduck.Ui.Controller.Threading
             return getSession();
         }
 
-        public override void init()
-        {
-            // Add to the registry so it will be displayed in the activity window.
-            BackgroundActionRegistry.instance().add(this);
-        }
-
         public override bool prepare()
         {
             AsyncController.AsyncDelegate mainAction = delegate

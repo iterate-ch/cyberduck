@@ -64,7 +64,7 @@ public class ActivityController extends WindowController {
 
     @Override
     protected void invalidate() {
-        BackgroundActionRegistry.instance().removeListener(backgroundActionListener);
+        BackgroundActionRegistry.global().removeListener(backgroundActionListener);
         table.setDataSource(null);
         table.setDelegate(null);
         super.invalidate();
@@ -99,10 +99,10 @@ public class ActivityController extends WindowController {
     };
 
     private void init() {
-        BackgroundActionRegistry.instance().addListener(backgroundActionListener);
+        BackgroundActionRegistry.global().addListener(backgroundActionListener);
         // Add already running background actions
-        final BackgroundAction[] actions = BackgroundActionRegistry.instance().toArray(
-                new BackgroundAction[BackgroundActionRegistry.instance().size()]);
+        final BackgroundAction[] actions = BackgroundActionRegistry.global().toArray(
+                new BackgroundAction[BackgroundActionRegistry.global().size()]);
         for(final BackgroundAction action : actions) {
             tasks.put(action, new TaskController(action));
         }

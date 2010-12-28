@@ -27,7 +27,6 @@ import ch.cyberduck.core.sftp.SFTPSession;
 import ch.cyberduck.core.ssl.SSLSession;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.core.threading.BackgroundAction;
-import ch.cyberduck.core.threading.BackgroundActionRegistry;
 import ch.cyberduck.ui.PathPasteboard;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.application.NSImage;
@@ -1995,7 +1994,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             label = this.bookmarkTable.numberOfRows() + " " + Locale.localizedString("Bookmarks");
         }
         else {
-            final BackgroundAction current = BackgroundActionRegistry.instance().getCurrent();
+            final BackgroundAction current = this.getActions().getCurrent();
             if(null == current) {
                 if(this.isConnected()) {
                     label = MessageFormat.format(Locale.localizedString("{0} Files"), this.getSelectedBrowserView().numberOfRows());
@@ -2371,7 +2370,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
      * @param selected The files selected in the browser to delete
      */
     public void deletePaths(final List<Path> selected) {
-
         final List<Path> normalized = this.checkHierarchy(selected);
         if(normalized.isEmpty()) {
             return;
@@ -2956,8 +2954,8 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     @Action
     public void interruptButtonClicked(final ID sender) {
         // Remove all pending actions
-        for(BackgroundAction action : BackgroundActionRegistry.instance().toArray(
-                new BackgroundAction[BackgroundActionRegistry.instance().size()])) {
+        for(BackgroundAction action : this.getActions().toArray(
+                new BackgroundAction[this.getActions().size()])) {
             action.cancel();
         }
         // Interrupt any pending operation by forcefully closing the socket
@@ -3221,14 +3219,11 @@ public class BrowserController extends WindowController implements NSToolbar.Del
      * @return true if there is any network activity running in the background
      */
     public boolean isActivityRunning() {
-        final BackgroundAction current = BackgroundActionRegistry.instance().getCurrent();
+        final BackgroundAction current = this.getActions().getCurrent();
         if(null == current) {
             return false;
         }
-        if(current instanceof BrowserBackgroundAction) {
-            return ((BrowserBackgroundAction) current).getController() == this;
-        }
-        return false;
+        return true;
     }
 
     /**
@@ -3656,7 +3651,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     private void interrupt() {
         if(this.hasSession()) {
             if(this.isActivityRunning()) {
-                final BackgroundAction current = BackgroundActionRegistry.instance().getCurrent();
+                final BackgroundAction current = this.getActions().getCurrent();
                 if(null != current) {
                     current.cancel();
                 }

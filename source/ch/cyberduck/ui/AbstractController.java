@@ -18,10 +18,7 @@ package ch.cyberduck.ui;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.threading.BackgroundAction;
-import ch.cyberduck.core.threading.ControllerMainAction;
-import ch.cyberduck.core.threading.MainAction;
-import ch.cyberduck.core.threading.ThreadPool;
+import ch.cyberduck.core.threading.*;
 
 import org.apache.log4j.Logger;
 
@@ -44,6 +41,21 @@ public abstract class AbstractController implements Controller {
     }
 
     /**
+     * List of pending background tasks or this browser
+     */
+    private BackgroundActionRegistry actions
+            = new BackgroundActionRegistry();
+
+    /**
+     * Pending background actions
+     *
+     * @return List of tasks.
+     */
+    public BackgroundActionRegistry getActions() {
+        return actions;
+    }
+
+    /**
      * Will queue up the <code>BackgroundAction</code> to be run in a background thread. Will be executed
      * as soon as no other previous <code>BackgroundAction</code> is pending.
      * Will return immediatly but not run the runnable before the lock of the runnable is acquired.
@@ -57,6 +69,7 @@ public abstract class AbstractController implements Controller {
             log.debug("background:" + runnable);
         }
         runnable.init();
+        actions.add(runnable);
         // Start background task
         Runnable command = new Runnable() {
             public void run() {

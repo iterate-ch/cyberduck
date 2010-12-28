@@ -1269,8 +1269,8 @@ namespace Ch.Cyberduck.Ui.Controller
         private void View_Stop()
         {
             // Remove all pending actions)
-            foreach (BackgroundAction action in BackgroundActionRegistry.instance().toArray(
-                new BackgroundAction[BackgroundActionRegistry.instance().size()]))
+            foreach (BackgroundAction action in this.getActions().toArray(
+                new BackgroundAction[this.getActions().size()]))
             {
                 action.cancel();
             }
@@ -2462,7 +2462,7 @@ namespace Ch.Cyberduck.Ui.Controller
         /// <returns>true if there is any network activity running in the background</returns>
         public bool IsActivityRunning()
         {
-            BackgroundAction current = BackgroundActionRegistry.instance().getCurrent();
+            BackgroundAction current = this.getActions().getCurrent();
             if (null == current)
             {
                 return false;
@@ -2572,7 +2572,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 if (IsActivityRunning())
                 {
-                    BackgroundAction current = BackgroundActionRegistry.instance().getCurrent();
+                    BackgroundAction current = this.getActions().getCurrent();
                     if (null != current)
                     {
                         current.cancel();
@@ -2605,7 +2605,7 @@ namespace Ch.Cyberduck.Ui.Controller
             switch (View.CurrentView)
             {
                 case BrowserView.File:
-                    BackgroundAction current = BackgroundActionRegistry.instance().getCurrent();
+                    BackgroundAction current = this.getActions().getCurrent();
                     if (null == current)
                     {
                         if (IsConnected())

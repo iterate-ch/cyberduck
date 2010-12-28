@@ -26,16 +26,16 @@ import org.apache.log4j.Logger;
 public class BackgroundActionRegistry extends AbstractActionRegistry<BackgroundAction> {
     private static Logger log = Logger.getLogger(BackgroundActionRegistry.class);
 
-    private static BackgroundActionRegistry instance = null;
+    private static BackgroundActionRegistry global = null;
 
     private static final Object lock = new Object();
 
-    public static BackgroundActionRegistry instance() {
+    public static BackgroundActionRegistry global() {
         synchronized(lock) {
-            if(null == instance) {
-                instance = new BackgroundActionRegistry();
+            if(null == global) {
+                global = new BackgroundActionRegistry();
             }
-            return instance;
+            return global;
         }
     }
 
@@ -48,6 +48,12 @@ public class BackgroundActionRegistry extends AbstractActionRegistry<BackgroundA
         return current;
     }
 
+    /**
+     * Actions addded are automatically removed when canceled or stopped.
+     *
+     * @param action
+     * @return True if not already present in the list.
+     */
     @Override
     public boolean add(final BackgroundAction action) {
         action.addListener(new BackgroundActionListener() {
@@ -63,35 +69,12 @@ public class BackgroundActionRegistry extends AbstractActionRegistry<BackgroundA
                 current = null;
                 action.removeListener(this);
                 remove(action);
-                synchronized(block) {
-                    block.notify();
-                }
             }
         });
         return super.add(action);
     }
 
-    private BackgroundActionRegistry() {
+    public BackgroundActionRegistry() {
         ;
-    }
-
-    private final Object block = new Object();
-
-    /**
-     * Blocks the calling thread until all background actions have completed
-     */
-    public void block() {
-        while(!this.isEmpty()) {
-            synchronized(block) {
-                try {
-                    log.info("Waiting for all background actions to complete...");
-                    block.wait();
-                }
-                catch(InterruptedException e) {
-                    log.error(e.getMessage());
-                }
-            }
-        }
-        log.info("All background actions completed");
     }
 }

@@ -70,12 +70,12 @@ namespace Ch.Cyberduck.Ui.Controller
             BackgroundActionRegistry.instance().addListener(new BackgroundActionListener(this));
             // Add already running background actions
             ArrayList tasks = new ArrayList();
-            int size = BackgroundActionRegistry.instance().size();
+            int size = BackgroundActionRegistry.global().size();
             for (int i = 0; i < size; i++)
             {
                 try
                 {
-                    BackgroundAction action = (BackgroundAction) BackgroundActionRegistry.instance().get(i);
+                    BackgroundAction action = (BackgroundAction) BackgroundActionRegistry.global().get(i);
                     tasks.Add(action);
                 }
                 catch (Exception)
