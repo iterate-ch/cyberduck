@@ -86,7 +86,7 @@ public class MainApplication {
                 AlertHostKeyController.register();
 
                 if(Preferences.instance().getBoolean("rendezvous.enable")) {
-                    Rendezvous.register();
+                    RendezvousResponder.register();
                 }
             }
 
