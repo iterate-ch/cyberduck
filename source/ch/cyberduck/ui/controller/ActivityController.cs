@@ -67,7 +67,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 delegate(object rowObject) { return ((BackgroundAction) rowObject).isRunning(); };
             View.StopActionEvent += View_StopActionEvent;
 
-            BackgroundActionRegistry.instance().addListener(new BackgroundActionListener(this));
+            BackgroundActionRegistry.global().addListener(new BackgroundActionListener(this));
             // Add already running background actions
             ArrayList tasks = new ArrayList();
             int size = BackgroundActionRegistry.global().size();
