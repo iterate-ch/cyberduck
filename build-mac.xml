@@ -23,7 +23,7 @@
 
 <project name="Cyberduck for Mac" basedir=".">
 
-    <property name="jdk.home" value="/System/Library/Java/JavaVirtualMachines/1.5.0.jdk/Contents"/>
+    <property name="jdk.home" value="/System/Library/Java/JavaVirtualMachines/1.5.0.jdk/Contents/Home"/>
     <property name="build.deploy" location="${build}/${configuration}"/>
     <property name="app.bundle" value="${build.deploy}/${app.name}.app"/>
     <property name="app.contents" value="${app.bundle}/Contents"/>
