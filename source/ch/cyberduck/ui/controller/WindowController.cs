@@ -120,36 +120,101 @@ namespace Ch.Cyberduck.Ui.Controller
         /// </summary>
         /// <param name="title"></param>
         /// <param name="message"></param>
-        /// <param name="content"></param>
-        /// <param name="buttons"></param>
-        /// <param name="icon"></param>
+        /// <param name="detail"></param>
+        /// <param name="help"></param>
         /// <returns></returns>
-        public DialogResult MessageBox(string title, string message, string content, eTaskDialogButtons buttons,
-                                       eSysIcons icon)
+        public DialogResult MessageBox(string title, string message, string detail, string help)
         {
-            return View.MessageBox(title, message, content, buttons, icon);
+            return View.MessageBox(title, message, detail, null, help,
+                                   null, delegate(int option, bool verificationChecked) { });
         }
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="title"></param>
-        /// <param name="mainInstruction"></param>
-        /// <param name="content"></param>
-        /// <param name="expandedInfo"></param>
-        /// <param name="footer"></param>
-        /// <param name="verificationText"></param>
+        /// <param name="message"></param>
+        /// <param name="detail"></param>
         /// <param name="commandButtons"></param>
         /// <param name="showCancelButton"></param>
-        /// <param name="mainIcon"></param>
-        /// <param name="footerIcon"></param>
         /// <returns></returns>
-        public int CommandBox(string title, string mainInstruction, string content, string expandedInfo, string footer,
-            string verificationText, string commandButtons, bool showCancelButton, eSysIcons mainIcon, eSysIcons footerIcon)
+        public DialogResult QuestionBox(string title, string message, string detail, string commandButtons,
+                                        bool showCancelButton)
         {
-            return View.CommandBox(title, mainInstruction, content, expandedInfo, footer, verificationText, commandButtons, showCancelButton,
-                mainIcon, footerIcon);
+            return CommandBox(title, message, detail, commandButtons, showCancelButton, null,
+                              SysIcons.Question, delegate(int option, bool verificationChecked) { });
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="title"></param>
+        /// <param name="message"></param>
+        /// <param name="detail"></param>
+        /// <param name="expanded">Text expandable container</param>
+        /// <param name="commandButtons"></param>
+        /// <param name="showCancelButton"></param>
+        /// <param name="help"></param>
+        /// <returns></returns>
+        public DialogResult WarningBox(string title, string message, string detail, string expanded, string commandButtons, bool showCancelButton, string help)
+        {
+            return View.CommandBox(title, message, detail, expanded, help, null, commandButtons,
+                                   showCancelButton, SysIcons.Warning, SysIcons.Information, delegate(int option, bool verificationChecked) { });
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="title"></param>
+        /// <param name="message"></param>
+        /// <param name="detail"></param>
+        /// <param name="commandButtons"></param>
+        /// <param name="verificationText"></param>
+        /// <param name="showCancelButton"></param>
+        /// <param name="mainIcon"></param>
+        /// <returns></returns>
+        public DialogResult InfoBox(string title, string message, string detail, string commandButtons, string verificationText, bool showCancelButton)
+        {
+            return CommandBox(title, message, detail, commandButtons, showCancelButton,
+                              verificationText, SysIcons.Information, null, delegate(int option, bool verificationChecked) { });
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="title"></param>
+        /// <param name="message"></param>
+        /// <param name="detail"></param>
+        /// <param name="commandButtons"></param>
+        /// <param name="showCancelButton"></param>
+        /// <param name="verificationText"></param>
+        /// <param name="mainIcon"></param>
+        /// <param name="handler"></param>
+        /// <returns></returns>
+        public DialogResult CommandBox(string title, string message, string detail, string commandButtons, bool showCancelButton, string verificationText, SysIcons mainIcon, DialogResponseHandler handler)
+        {
+            return CommandBox(title, message, detail, commandButtons, showCancelButton,
+                              verificationText, mainIcon, null, handler);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="title"></param>
+        /// <param name="message"></param>
+        /// <param name="detail"></param>
+        /// <param name="commandButtons"></param>
+        /// <param name="showCancelButton"></param>
+        /// <param name="verificationText"></param>
+        /// <param name="mainIcon"></param>
+        /// <param name="help">Help URL</param>
+        /// <param name="handler"></param>
+        /// <returns></returns>
+        public DialogResult CommandBox(string title, string message, string detail, string commandButtons, bool showCancelButton, string verificationText, SysIcons mainIcon, string help, DialogResponseHandler handler)
+        {
+            return View.CommandBox(title, message, detail, null, help, verificationText, commandButtons,
+                                   showCancelButton,
+                                   mainIcon, SysIcons.Information, handler);
+        }
     }
 }

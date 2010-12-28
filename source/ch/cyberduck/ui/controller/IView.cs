@@ -21,6 +21,8 @@ using Ch.Cyberduck.Ui.Winforms.Taskdialog;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
+    public delegate void DialogResponseHandler(int option, bool verificationChecked);
+
     public interface IView : ISynchronizeInvoke
     {
         bool Visible { get; set; }
@@ -44,20 +46,22 @@ namespace Ch.Cyberduck.Ui.Controller
             string title,
             string message,
             string content,
-            eTaskDialogButtons buttons,
-            eSysIcons icon);
+            string expandedInfo,
+            string help,
+            string verificationText,
+            DialogResponseHandler handler);
 
-        int CommandBox(
+        DialogResult CommandBox(
             string title,
             string mainInstruction,
             string content,
             string expandedInfo,
-            string footer,
+            string help,
             string verificationText,
             string commandButtons,
             bool showCancelButton,
-            eSysIcons mainIcon,
-            eSysIcons footerIcon);
+            SysIcons mainIcon,
+            SysIcons footerIcon, DialogResponseHandler handler);
 
         //todo evtl. extend form that implements these events
         event VoidHandler ViewShownEvent;

@@ -24,7 +24,6 @@ using System.Windows.Forms;
 using BrightIdeasSoftware;
 using Ch.Cyberduck.Core;
 using ch.cyberduck.core.i18n;
-using ch.cyberduck.ui.controller;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Winforms.Taskdialog;
 
@@ -129,34 +128,64 @@ namespace Ch.Cyberduck.Ui.Winforms
             get { return new ContextMenu[0]; }
         }
 
-        public DialogResult MessageBox(string title, string message, string content, eTaskDialogButtons buttons,
-                                       eSysIcons icon)
+        public DialogResult MessageBox(string title, string message, string content,
+                                       string expandedInfo,
+                                       string help,
+                                       string verificationText,
+                                       DialogResponseHandler handler)
         {
-            BringToFront();
-            return cTaskDialog.MessageBox(this,
-                                          title,
-                                          message,
-                                          content,
-                                          buttons,
-                                          icon);
+            //BringToFront();
+            TaskDialog dialog = new TaskDialog();
+            dialog.HelpDelegate = delegate(string url) { Utils.StartProcess(url); };
+            DialogResult result = dialog.MessageBox(this,
+                                                    title,
+                                                    message,
+                                                    content,
+                                                    expandedInfo,
+                                                    FormatHelp(help),
+                                                    verificationText,
+                                                    TaskDialogButtons.OK, SysIcons.Information, SysIcons.Information);
+            if (DialogResult.OK == result)
+            {
+                handler(-1, dialog.VerificationChecked);
+            }
+            return result;
         }
 
-        public int CommandBox(string title, string mainInstruction, string content, string expandedInfo, string footer,
-                              string verificationText, string commandButtons, bool showCancelButton, eSysIcons mainIcon,
-                              eSysIcons footerIcon)
+        public DialogResult CommandBox(string title, string mainInstruction, string content,
+                                       string expandedInfo,
+                                       string help,
+                                       string verificationText, string commandButtons, bool showCancelButton,
+                                       SysIcons mainIcon,
+                                       SysIcons footerIcon, DialogResponseHandler handler)
         {
-            BringToFront();
-            return cTaskDialog.ShowCommandBox(this,
-                                              title,
-                                              mainInstruction,
-                                              content,
-                                              expandedInfo,
-                                              footer,
-                                              verificationText,
-                                              commandButtons,
-                                              showCancelButton,
-                                              mainIcon,
-                                              footerIcon);
+            //BringToFront();
+            TaskDialog dialog = new TaskDialog();
+            dialog.HelpDelegate = delegate(string url) { Utils.StartProcess(url); };
+            DialogResult result = dialog.ShowCommandBox(this, title,
+                                                        mainInstruction,
+                                                        content,
+                                                        expandedInfo,
+                                                        FormatHelp(help),
+                                                        verificationText,
+                                                        commandButtons,
+                                                        showCancelButton,
+                                                        mainIcon,
+                                                        footerIcon);
+            if (DialogResult.OK == result)
+            {
+                handler(dialog.CommandButtonResult, dialog.VerificationChecked);
+            }
+            return result;
+        }
+
+        private string FormatHelp(string help)
+        {
+            if (String.IsNullOrEmpty(help))
+            {
+                return null;
+            }
+            return "<A HREF=\"" + help + "\">" + Locale.localizedString("Help", "Main") + "</A>";
         }
 
         public event VoidHandler ViewShownEvent;

@@ -19,7 +19,6 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
-using ch.cyberduck.ui.controller;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Winforms.Taskdialog;
 
@@ -232,17 +231,16 @@ namespace Ch.Cyberduck.Ui.Winforms.Controls
             return DialogResult.None;
         }
 
-        public DialogResult MessageBox(string title, string message, string content, eTaskDialogButtons buttons,
-                                       eSysIcons icon)
+        public DialogResult MessageBox(string title, string message, string content, string expandedInfo,
+                                       string help,
+                                       string verificationText, DialogResponseHandler handler)
         {
             return DialogResult.None;
         }
 
-        public int CommandBox(string title, string mainInstruction, string content, string expandedInfo, string footer,
-                              string verificationText, string commandButtons, bool showCancelButton, eSysIcons mainIcon,
-                              eSysIcons footerIcon)
+        public DialogResult CommandBox(string title, string mainInstruction, string content, string expandedInfo, string help, string verificationText, string commandButtons, bool showCancelButton, SysIcons mainIcon, SysIcons footerIcon, DialogResponseHandler handler)
         {
-            return -1;
+            return DialogResult.None;
         }
 
         public event VoidHandler ViewShownEvent = delegate { };

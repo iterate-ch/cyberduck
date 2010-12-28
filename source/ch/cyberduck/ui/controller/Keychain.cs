@@ -17,6 +17,7 @@
 // 
 using System;
 using System.Security.Cryptography.X509Certificates;
+using System.Windows.Forms;
 using ch.cyberduck.core;
 using Ch.Cyberduck.Core;
 using ch.cyberduck.core.i18n;
@@ -100,43 +101,46 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 while (true)
                 {
-                    cTaskDialog.ForceEmulationMode = true;
-                    int r =
-                        cTaskDialog.ShowCommandBox(Locale.localizedString("This certificate is not valid", "Keychain"),
-                                                   null,
-                                                   errorFromChainStatus,
-                                                   null,
-                                                   null,
-                                                   Locale.localizedString("Always Trust", "Keychain"),
-                                                   Locale.localizedString("Continue", "Credentials") + "|" +
-                                                   Locale.localizedString("Disconnect") + "|" +
-                                                   Locale.localizedString("Show Certificate", "Keychain"),
-                                                   false,
-                                                   eSysIcons.Warning, eSysIcons.Information);
-                    if (r == 0)
+                    TaskDialog d = new TaskDialog();
+                    DialogResult r =
+                        d.ShowCommandBox(Locale.localizedString("This certificate is not valid", "Keychain"),
+                                         Locale.localizedString("This certificate is not valid", "Keychain"),
+                                         errorFromChainStatus,
+                                         null,
+                                         null,
+                                         Locale.localizedString("Always Trust", "Keychain"),
+                                         String.Format("{0}|{1}|{2}",
+                                                       Locale.localizedString("Continue", "Credentials"),
+                                                       Locale.localizedString("Disconnect"),
+                                                       Locale.localizedString("Show Certificate", "Keychain")),
+                                         false,
+                                         SysIcons.Warning, SysIcons.Information);
+                    if (r == DialogResult.OK)
                     {
-                        if (cTaskDialog.VerificationChecked)
+                        if (d.CommandButtonResult == 0)
                         {
-                            if (certError)
+                            if (d.VerificationChecked)
                             {
-                                //todo can we use the Trusted People and Third Party Certificate Authority Store? Currently X509Chain is the problem.
-                                AddCertificate(serverCert, StoreName.Root);
+                                if (certError)
+                                {
+                                    //todo can we use the Trusted People and Third Party Certificate Authority Store? Currently X509Chain is the problem.
+                                    AddCertificate(serverCert, StoreName.Root);
+                                }
+                                if (hostnameMismatch)
+                                {
+                                    Preferences.instance().setProperty(hostName + ".certificate.accept", serverCert.SubjectName.Name);
+                                }
                             }
-                            if (hostnameMismatch)
-                            {
-                                Preferences.instance().setProperty(hostName + ".certificate.accept",
-                                                                   serverCert.SubjectName.Name);
-                            }
+                            return true;
                         }
-                        return true;
-                    }
-                    if (r == 1)
-                    {
-                        return false;
-                    }
-                    if (r == 2)
-                    {
-                        X509Certificate2UI.DisplayCertificate(serverCert);
+                        if (d.CommandButtonResult == 1)
+                        {
+                            return false;
+                        }
+                        if (d.CommandButtonResult == 2)
+                        {
+                            X509Certificate2UI.DisplayCertificate(serverCert);
+                        }
                     }
                 }
             }
@@ -226,7 +230,6 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             //todo did not find a way to show the chain in the case of self signed certs
             X509Certificate2 cert = ConvertCertificate(certificates[0]);
-            //todo: dialog does not have the focus, means we have to click twice to close the form. Pass parent handle?
             X509Certificate2UI.DisplayCertificate(cert);
             return true;
         }

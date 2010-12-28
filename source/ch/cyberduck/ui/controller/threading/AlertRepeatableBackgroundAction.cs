@@ -63,23 +63,21 @@ namespace Ch.Cyberduck.Ui.Controller.Threading
                                        {
                                            BackgroundException failure =
                                                this.getExceptions().get(0) as BackgroundException;
-                                           int r =
-                                               cTaskDialog.ShowCommandBox(_controller.View as Form,
-                                                                          failure.getReadableTitle(),
-                                                                          failure.getMessage(),
-                                                                          failure.getDetailedCauseMessage(),
-                                                                          null, 
-                                                                          null,
-                                                                          null,
-                                                                          String.Format("{0}", Locale.localizedString("Try Again", "Alert")),
-                                                                          true, // Cancel
-                                                                          eSysIcons.Warning, eSysIcons.Information);
-                                           switch (r)
+                                           string footer = Preferences.instance().getProperty("website.help");
+                                           if (null != failure.getPath())
                                            {
-                                               case 0:
-                                                   Callback(DialogResult.OK);
-                                                   break;
+                                               footer = Preferences.instance().getProperty("website.help") + "/" +
+                                                        failure.getPath().getSession().getHost().getProtocol().
+                                                            getIdentifier();
                                            }
+                                           DialogResult result =
+                                               _controller.WarningBox(failure.getReadableTitle(),
+                                                                      failure.getMessage(),
+                                                                      failure.getDetailedCauseMessage(),
+                                                                      hasTranscript() ? this.getTranscript() : null,
+                                                                      String.Format("{0}", Locale.localizedString("Try Again", "Alert")),
+                                                                      true, footer);
+                                           Callback(result);
                                        }
                                        else
                                        {

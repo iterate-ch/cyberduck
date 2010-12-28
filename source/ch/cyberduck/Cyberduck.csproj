@@ -63,8 +63,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>
-    </StartupObject>
+    <StartupObject>Ch.Cyberduck.Ui.Controller.MainController</StartupObject>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <DebugSymbols>true</DebugSymbols>
@@ -290,8 +289,8 @@
       <DependentUpon>PromptForm.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="ui\winforms\taskdialog\frmTaskDialog.resx">
-      <DependentUpon>frmTaskDialog.cs</DependentUpon>
+    <EmbeddedResource Include="ui\winforms\taskdialog\TaskDialogForm.resx">
+      <DependentUpon>TaskDialogForm.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="ui\winforms\TransferForm.resx">
@@ -530,12 +529,12 @@
     <Compile Include="ui\winforms\taskdialog\CommandButton.Designer.cs">
       <DependentUpon>CommandButton.cs</DependentUpon>
     </Compile>
-    <Compile Include="ui\winforms\taskdialog\cTaskDialog.cs" />
-    <Compile Include="ui\winforms\taskdialog\frmTaskDialog.cs">
+    <Compile Include="ui\winforms\taskdialog\TaskDialog.cs" />
+    <Compile Include="ui\winforms\taskdialog\TaskDialogForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ui\winforms\taskdialog\frmTaskDialog.designer.cs">
-      <DependentUpon>frmTaskDialog.cs</DependentUpon>
+    <Compile Include="ui\winforms\taskdialog\TaskDialogForm.designer.cs">
+      <DependentUpon>TaskDialogForm.cs</DependentUpon>
     </Compile>
     <Compile Include="ui\winforms\taskdialog\VistaActiveTaskDialog.cs" />
     <Compile Include="ui\winforms\taskdialog\VistaTaskDialog.cs" />
@@ -605,9 +604,7 @@
       <EmbedInteropTypes>False</EmbedInteropTypes>
     </COMReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Resources\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.-->

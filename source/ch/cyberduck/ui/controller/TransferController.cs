@@ -134,27 +134,25 @@ namespace Ch.Cyberduck.Ui.Controller
                 Preferences.instance().setProperty("queue.openByDefault", _instance.Visible);
                 if (TransferCollection.defaultCollection().numberOfRunningTransfers() > 0)
                 {
-                    int result = _instance.CommandBox(Locale.localizedString("Transfer in progress"),
-                                                               null,
-                                                               Locale.localizedString(
-                                                                   "There are files currently being transferred. Quit anyway?"),
-                                                               null, null, null,
-                                                               String.Format("{0}", Locale.localizedString("Exit")),
-                                                               true, //Cancel
-                                                               eSysIcons.Question, eSysIcons.Information);
-                    switch(result)
+                    DialogResult result = _instance.QuestionBox(Locale.localizedString("Transfer in progress"),
+                                                                Locale.localizedString(
+                                                                    "There are files currently being transferred. Quit anyway?"),
+                                                                null,
+                                                                String.Format("{0}", Locale.localizedString("Exit")),
+                                                                true //Cancel
+                        );
+                    if (DialogResult.OK == result)
                     {
-                        case 0:
-                            // Quit
-                            for (int i = 0; i < TransferCollection.defaultCollection().size(); i++)
+                        // Quit
+                        for (int i = 0; i < TransferCollection.defaultCollection().size(); i++)
+                        {
+                            Transfer transfer = (Transfer) TransferCollection.defaultCollection().get(i);
+                            if (transfer.isRunning())
                             {
-                                Transfer transfer = (Transfer) TransferCollection.defaultCollection().get(i);
-                                if (transfer.isRunning())
-                                {
-                                    transfer.interrupt();
-                                }
+                                transfer.interrupt();
                             }
-                            return true;
+                        }
+                        return true;
                     }
                     // Cancel
                     return false;

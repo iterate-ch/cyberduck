@@ -15,7 +15,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Taskdialog
   using System.Diagnostics.CodeAnalysis;
 
   /// <summary>
-  /// The signature of the callback that recieves notificaitons from the Task Dialog.
+  /// The signature of the callback that recieves notifications from the Task Dialog.
   /// </summary>
   /// <param name="taskDialog">The active task dialog which has methods that can be performed on an active Task Dialog.</param>
   /// <param name="args">The notification arguments including the type of notification and information for the notification.</param>

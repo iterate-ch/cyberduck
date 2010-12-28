@@ -1,6 +1,6 @@
 namespace Ch.Cyberduck.Ui.Winforms.Taskdialog
 {
-  partial class frmTaskDialog
+  partial class TaskDialogForm
   {
     /// <summary>
     /// Required designer variable.
@@ -29,7 +29,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Taskdialog
     private void InitializeComponent()
     {
       this.components = new System.ComponentModel.Container();
-      System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmTaskDialog));
+      System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TaskDialogForm));
       this.imgMain = new System.Windows.Forms.PictureBox();
       this.lbContent = new System.Windows.Forms.Label();
       this.pnlButtons = new System.Windows.Forms.Panel();
@@ -290,7 +290,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Taskdialog
       this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
       this.MaximizeBox = false;
       this.MinimizeBox = false;
-      this.Name = "frmTaskDialog";
+      this.Name = "TaskDialogForm";
       this.ShowInTaskbar = false;
       this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
       this.Text = "frmTaskDialog";

@@ -1130,13 +1130,12 @@ namespace Ch.Cyberduck.Ui.Controller
                     break;
                 }
             }
-            DialogResult result = MessageBox(Locale.localizedString("Delete Bookmark"),
-                                             Locale.localizedString(
-                                                 "Do you want to delete the selected bookmark?"),
-                                             alertText.ToString(),
-                                             eTaskDialogButtons.OKCancel,
-                                             eSysIcons.Question
-                );
+            DialogResult result = QuestionBox(Locale.localizedString("Delete Bookmark"),
+                                              Locale.localizedString(
+                                                  "Do you want to delete the selected bookmark?"),
+                                              alertText.ToString(),
+                                              String.Format("{0}", Locale.localizedString("Delete")),
+                                              true);
             if (result == DialogResult.OK)
             {
                 _bookmarkModel.Source.removeAll(Utils.ConvertToJavaList(selected));
@@ -2528,28 +2527,26 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 if (Preferences.instance().getBoolean("browser.confirmDisconnect"))
                 {
-                    //-1=Cancel, 0=Review, 1=Quit
-                    int result = CommandBox(String.Format(Locale.localizedString("Disconnect from {0}"), _session.getHost().getHostname()),
-                                                    Locale.localizedString("The connection will be closed."),
-                                                    null,
-                                                    null,
-                                                    null,
-                                                    Locale.localizedString("Don't ask again", "Configuration"),
-                                                    String.Format("{0}", Locale.localizedString("Disconnect")),
-                                                    true,
-                                                    eSysIcons.Question,
-                                                    eSysIcons.Information);
-                    if (cTaskDialog.VerificationChecked)
-                    {
-                        // Never show again.
-                        Preferences.instance().setProperty("browser.confirmDisconnect", false);
-                    }
-                    switch (result)
-                    {
-                        case 0: // Disconnect
-                            return unmountImpl(DialogResult.OK);
-                    }
-                    return false;
+                    DialogResult result = CommandBox(Locale.localizedString("Disconnect"),
+                                                     String.Format(Locale.localizedString("Disconnect from {0}"), _session.getHost().getHostname()),
+                                                     Locale.localizedString("The connection will be closed."),
+                                                     String.Format("{0}", Locale.localizedString("Disconnect")),
+                                                     true,
+                                                     Locale.localizedString("Don't ask again", "Configuration"), SysIcons.Question, delegate(int option, bool verificationChecked)
+                                                                                                                                        {
+                                                                                                                                            if (verificationChecked)
+                                                                                                                                            {
+                                                                                                                                                // Never show again.
+                                                                                                                                                Preferences.instance().setProperty("browser.confirmDisconnect", false);
+                                                                                                                                            }
+                                                                                                                                            switch (option)
+                                                                                                                                            {
+                                                                                                                                                case 0: // Disconnect
+                                                                                                                                                    unmountImpl(DialogResult.OK);
+                                                                                                                                                    break;
+                                                                                                                                            }
+                                                                                                                                        });
+                    return DialogResult.OK == result;
                 }
                 UnmountImpl(disconnected);
                 // Unmount in progress
@@ -2609,18 +2606,21 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 case BrowserView.File:
                     BackgroundAction current = BackgroundActionRegistry.instance().getCurrent();
-                    if(null == current) {
+                    if (null == current)
+                    {
                         if (IsConnected())
                         {
                             label = String.Format(Locale.localizedString("{0} Files"), View.NumberOfFiles);
                         }
                     }
-                    else {
+                    else
+                    {
                         if (StringUtils.isNotBlank(_progress.Laststatus))
                         {
                             label = _progress.Laststatus;
                         }
-                        else {
+                        else
+                        {
                             label = current.getActivity();
                         }
                     }
@@ -2753,11 +2753,11 @@ namespace Ch.Cyberduck.Ui.Controller
                     {
                         content.Append("\n" + Character.toString('\u2022') + " ...)");
                     }
-                    DialogResult r = MessageBox(Locale.localizedString("Move"),
-                                                alertText.ToString(),
-                                                content.ToString(),
-                                                eTaskDialogButtons.OKCancel,
-                                                eSysIcons.Question);
+                    DialogResult r = QuestionBox(Locale.localizedString("Move"),
+                                                 alertText.ToString(),
+                                                 content.ToString(),
+                                                 String.Format("{0}", Locale.localizedString("Move")),
+                                                 true);
                     if (r == DialogResult.OK)
                     {
                         CheckOverwrite(selected, action);
@@ -2834,11 +2834,11 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 content.Append("\n" + Character.toString('\u2022') + " ...)");
             }
-            DialogResult r = MessageBox(Locale.localizedString("Delete"),
-                                        alertText.ToString(),
-                                        content.ToString(),
-                                        eTaskDialogButtons.OKCancel,
-                                        eSysIcons.Question);
+            DialogResult r = QuestionBox(Locale.localizedString("Delete"),
+                                         alertText.ToString(),
+                                         content.ToString(),
+                                         String.Format("{0}", Locale.localizedString("Delete")),
+                                         true);
             if (r == DialogResult.OK)
             {
                 DeletePathsImpl(normalized);
@@ -2911,11 +2911,11 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
                 if (shouldWarn)
                 {
-                    DialogResult r = MessageBox(Locale.localizedString("Overwrite"),
-                                                alertText.ToString(),
-                                                content.ToString(),
-                                                eTaskDialogButtons.OKCancel,
-                                                eSysIcons.Question);
+                    DialogResult r = QuestionBox(Locale.localizedString("Overwrite"),
+                                                 alertText.ToString(),
+                                                 content.ToString(),
+                                                 String.Format("{0}", Locale.localizedString("Overwrite")),
+                                                 true);
                     if (r == DialogResult.OK)
                     {
                         background(action);

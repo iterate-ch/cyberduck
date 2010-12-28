@@ -222,28 +222,34 @@ namespace Ch.Cyberduck.Ui.Controller
                         License license = LicenseFactory.create(f);
                         if (license.verify())
                         {
-                            //see http://stackoverflow.com/questions/719251/unable-to-find-an-entry-point-named-taskdialogindirect-in-dll-comctl32
-                            if (DialogResult.OK == cTaskDialog.MessageBox(
+                            f.copy(
+                                LocalFactory.createLocal(
+                                    Preferences.instance().getProperty("application.support.path"), f.getName()));
+                            if (DialogResult.OK == _bc.InfoBox(
                                 license.ToString(),
                                 Locale.localizedString(
                                     "Thanks for your support! Your contribution helps to further advance development to make Cyberduck even better.",
                                     "License"),
                                 Locale.localizedString(
                                     "Your donation key has been copied to the Application Support folder.", "License"),
-                                eTaskDialogButtons.OK, eSysIcons.Information))
+                                String.Format("{0}", Locale.localizedString("Continue", "License")),
+                                null, false))
                             {
-                                f.copy(
-                                    LocalFactory.createLocal(
-                                        Preferences.instance().getProperty("application.support.path"), f.getName()));
+                                ;
                             }
                         }
                         else
                         {
-                            cTaskDialog.MessageBox(
+                            if (DialogResult.OK == _bc.WarningBox(
+                                Locale.localizedString("Not a valid donation key", "License"),
                                 Locale.localizedString("Not a valid donation key", "License"),
                                 Locale.localizedString("This donation key does not appear to be valid.", "License"),
                                 null,
-                                eTaskDialogButtons.OK, eSysIcons.Warning);
+                                String.Format("{0}", Locale.localizedString("Continue", "License")),
+                                false, Preferences.instance().getProperty("website.help") + "/faq"))
+                            {
+                                ;
+                            }
                         }
                     }
                 }
@@ -337,33 +343,32 @@ namespace Ch.Cyberduck.Ui.Controller
                 if (!URLSchemeHandlerConfiguration.Instance.IsDefaultApplicationForFtp()
                     || !URLSchemeHandlerConfiguration.Instance.IsDefaultApplicationForSftp())
                 {
-                    int r =
-                        cTaskDialog.ShowCommandBox(
-                            Locale.localizedString("Set Cyberduck as default application for FTP and SFTP locations?",
-                                                   "Configuration"),
-                            Locale.localizedString("Set Cyberduck as default application for FTP and SFTP locations?",
-                                                   "Configuration"),
-                            Locale.localizedString(
-                                "As the default application, Cyberduck will open when you click on FTP or SFTP links in other applications, such as your web browser. You can change this setting in the Preferences later.",
-                                "Configuration"),
-                            null, null,
-                            Locale.localizedString("Don't ask again", "Configuration"),
-                            String.Format("{0}|{1}",
-                                          Locale.localizedString("Change", "Configuration"),
-                                          Locale.localizedString("Cancel", "Configuration")),
-                            false, eSysIcons.Question, eSysIcons.Information);
-                    if (cTaskDialog.VerificationChecked)
-                    {
-                        // Never show again.
-                        Preferences.instance().setProperty("defaulthandler.reminder", false);
-                    }
-                    switch (r)
-                    {
-                        case 0:
-                            URLSchemeHandlerConfiguration.Instance.RegisterFtpProtocol();
-                            URLSchemeHandlerConfiguration.Instance.RegisterSftpProtocol();
-                            break;
-                    }
+                    _bc.CommandBox(
+                        Locale.localizedString("Default Protocol Handler", "Preferences"),
+                        Locale.localizedString("Set Cyberduck as default application for FTP and SFTP locations?", "Configuration"),
+                        Locale.localizedString("As the default application, Cyberduck will open when you click on FTP or SFTP links in other applications, such as your web browser. You can change this setting in the Preferences later.",
+                                               "Configuration"),
+                        String.Format("{0}|{1}",
+                                      Locale.localizedString("Change", "Configuration"),
+                                      Locale.localizedString("Cancel", "Configuration")),
+                        false, Locale.localizedString("Don't ask again", "Configuration"), SysIcons.Question, delegate(int option, bool verificationChecked)
+                                                                                                                  {
+                                                                                                                      if (verificationChecked)
+                                                                                                                      {
+                                                                                                                          // Never show again.
+                                                                                                                          Preferences.instance().setProperty(
+                                                                                                                              "defaulthandler.reminder", false);
+                                                                                                                      }
+                                                                                                                      switch (option)
+                                                                                                                      {
+                                                                                                                          case 0:
+                                                                                                                              URLSchemeHandlerConfiguration.Instance.
+                                                                                                                                  RegisterFtpProtocol();
+                                                                                                                              URLSchemeHandlerConfiguration.Instance.
+                                                                                                                                  RegisterSftpProtocol();
+                                                                                                                              break;
+                                                                                                                      }
+                                                                                                                  });
                 }
             }
             // Import thirdparty bookmarks.
@@ -396,40 +401,29 @@ namespace Ch.Cyberduck.Ui.Controller
                                        {
                                            if (!c.isEmpty())
                                            {
-                                               int r = _bc.CommandBox(String.Format(Locale.localizedString(
-                                                                                      "Import {0} Bookmarks",
-                                                                                      "Configuration"), c.getName()),
-                                                                              null,
-                                                                              String.Format(
-                                                                                  Locale.localizedString(
-                                                                                      "{0} bookmarks found. Do you want to add these to your bookmarks?",
-                                                                                      "Configuration"), c.size()),
-                                                                              null,
-                                                                              null,
-                                                                              Locale.localizedString("Don't ask again",
-                                                                                                     "Configuration"),
-                                                                              String.Format("{0}|{1}",
-                                                                                            Locale.localizedString(
-                                                                                                "Import",
-                                                                                                "Configuration"),
-                                                                                            Locale.localizedString(
-                                                                                                "Cancel",
-                                                                                                "Configuration")),
-                                                                              false,
-                                                                              eSysIcons.Question, eSysIcons.Information);
-                                               if (cTaskDialog.VerificationChecked)
-                                               {
-                                                   // Flag as imported
-                                                   Preferences.instance().setProperty(c.getConfiguration(), true);
-                                               }
-                                               switch (r)
-                                               {
-                                                   case 0:
-                                                       BookmarkCollection.defaultCollection().addAll(c);
-                                                       // Flag as imported
-                                                       Preferences.instance().setProperty(c.getConfiguration(), true);
-                                                       break;
-                                               }
+                                               DialogResult r = _bc.CommandBox(Locale.localizedString("Import", "Configuration"),
+                                                                               String.Format(Locale.localizedString("Import {0} Bookmarks", "Configuration"), c.getName()),
+                                                                               String.Format(Locale.localizedString("{0} bookmarks found. Do you want to add these to your bookmarks?",
+                                                                                                                    "Configuration"), c.size()),
+                                                                               String.Format("{0}", Locale.localizedString("Import", "Configuration")),
+                                                                               true,
+                                                                               Locale.localizedString("Don't ask again", "Configuration"),
+                                                                               SysIcons.Question, delegate(int option, bool verificationChecked)
+                                                                                                      {
+                                                                                                          if (verificationChecked)
+                                                                                                          {
+                                                                                                              // Flag as imported
+                                                                                                              Preferences.instance().setProperty(c.getConfiguration(), true);
+                                                                                                          }
+                                                                                                          switch (option)
+                                                                                                          {
+                                                                                                              case 0:
+                                                                                                                  BookmarkCollection.defaultCollection().addAll(c);
+                                                                                                                  // Flag as imported
+                                                                                                                  Preferences.instance().setProperty(c.getConfiguration(), true);
+                                                                                                                  break;
+                                                                                                          }
+                                                                                                      });
                                            }
                                        }
                                    }
@@ -600,44 +594,46 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     if (Preferences.instance().getBoolean("browser.confirmDisconnect"))
                     {
-                        //-1=Cancel, 0=Review, 1=Quit
-                        int result = controller.CommandBox(Locale.localizedString("Quit"),
-                                                                Locale.localizedString(
-                                                                    "You are connected to at least one remote site. Do you want to review open browsers?"),
-                                                                null,
-                                                                null,
-                                                                null,
-                                                                Locale.localizedString("Don't ask again",
-                                                                                       "Configuration"),
-                                                                Locale.localizedString("Review…") + "|" +
-                                                                Locale.localizedString("Quit Anyway"),
-                                                                true,
-                                                                eSysIcons.Warning,
-                                                                eSysIcons.Information);
-                        if (cTaskDialog.VerificationChecked)
-                        {
-                            // Never show again.
-                            Preferences.instance().setProperty("browser.confirmDisconnect", false);
-                        }
-                        switch (result)
-                        {
-                            case -1: // Cancel
-                                // Quit has been interrupted. Delete any saved sessions so far.
-                                Application._sessions.clear();
-                                return;
-                            case 0: // Review
-                                if (BrowserController.ApplicationShouldTerminate())
-                                {
-                                    break;
-                                }
-                                return;
-                            case 1: // Quit
-                                foreach (BrowserController c in new List<BrowserController>(Browsers))
-                                {
-                                    c.View.Dispose();
-                                }
-                                break;
-                        }
+                        DialogResult result = controller.CommandBox(Locale.localizedString("Quit"),
+                                                                    Locale.localizedString(
+                                                                        "You are connected to at least one remote site. Do you want to review open browsers?"),
+                                                                    null,
+                                                                    String.Format("{0}|{1}",
+                                                                                  Locale.localizedString("Review…"),
+                                                                                  Locale.localizedString("Quit Anyway")),
+                                                                    true,
+                                                                    Locale.localizedString("Don't ask again", "Configuration"),
+                                                                    SysIcons.Warning, delegate(int option, bool verificationChecked)
+                                                                                          {
+                                                                                              if (verificationChecked)
+                                                                                              {
+                                                                                                  // Never show again.
+                                                                                                  Preferences.instance().setProperty(
+                                                                                                      "browser.confirmDisconnect", false);
+                                                                                              }
+                                                                                              switch (option)
+                                                                                              {
+                                                                                                  case -1: // Cancel
+                                                                                                      // Quit has been interrupted. Delete any saved sessions so far.
+                                                                                                      Application._sessions.clear();
+                                                                                                      return;
+                                                                                                  case 0: // Review
+                                                                                                      if (
+                                                                                                          BrowserController.
+                                                                                                              ApplicationShouldTerminate())
+                                                                                                      {
+                                                                                                          break;
+                                                                                                      }
+                                                                                                      return;
+                                                                                                  case 1: // Quit
+                                                                                                      foreach (
+                                                                                                          BrowserController c in new List<BrowserController>(Browsers))
+                                                                                                      {
+                                                                                                          c.View.Dispose();
+                                                                                                      }
+                                                                                                      break;
+                                                                                              }
+                                                                                          });
                     }
                     else
                     {

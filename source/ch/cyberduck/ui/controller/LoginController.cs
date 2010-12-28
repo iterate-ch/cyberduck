@@ -123,25 +123,33 @@ namespace Ch.Cyberduck.Ui.Controller
         public override void warn(String title, String message, String continueButton, String disconnectButton,
                                   String preference)
         {
-            int r = cTaskDialog.ShowCommandBox(title,
-                                               title,
-                                               message,
-                                               null, null,
-                                               Locale.localizedString("Don't show again", "Credentials"),
-                                               String.Format("{0}|{1}",
-                                                             continueButton,
-                                                             disconnectButton),
-                                               false, eSysIcons.Warning, eSysIcons.Information);
-            if (cTaskDialog.VerificationChecked)
-            {
-                // Never show again.
-                Preferences.instance().setProperty(preference, true);
-            }
-            switch (r)
-            {
-                case 1:
-                    throw new LoginCanceledException();
-            }
+            AsyncController.AsyncDelegate d = delegate
+                                                  {
+                                                      _browser.CommandBox(title,
+                                                                          title,
+                                                                          message,
+                                                                          String.Format("{0}|{1}",
+                                                                                        continueButton,
+                                                                                        disconnectButton),
+                                                                          false, 
+                                                                          Locale.localizedString("Don't show again", "Credentials"),
+                                                                          SysIcons.Question,
+                                                                          Preferences.instance().getProperty("website.help") + "/" + Protocol.FTP.getIdentifier(),
+                                                                          delegate(int option, Boolean verificationChecked)
+                                                                              {
+                                                                                  if (verificationChecked)
+                                                                                  {
+                                                                                      // Never show again.
+                                                                                      Preferences.instance().setProperty(preference, true);
+                                                                                  }
+                                                                                  switch (option)
+                                                                                  {
+                                                                                      case 1:
+                                                                                          throw new LoginCanceledException();
+                                                                                  }
+                                                                              });
+                                                  };
+            _browser.Invoke(d);
             //Proceed nevertheless.
         }
 
@@ -251,7 +259,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 return new LoginController(TransferController.Instance);
             }
 
-            public override ch.cyberduck.core.LoginController create(Session s)
+            protected override ch.cyberduck.core.LoginController create(Session s)
             {
                 foreach (BrowserController c in MainController.Browsers)
                 {
@@ -263,7 +271,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 return (ch.cyberduck.core.LoginController) create();
             }
 
-            public override ch.cyberduck.core.LoginController create(ch.cyberduck.ui.Controller c)
+            protected override ch.cyberduck.core.LoginController create(ch.cyberduck.ui.Controller c)
             {
                 return new LoginController((WindowController) c);
             }

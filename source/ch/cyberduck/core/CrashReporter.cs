@@ -20,6 +20,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Text;
+using System.Windows.Forms;
 using ch.cyberduck.core;
 using ch.cyberduck.core.i18n;
 using Ch.Cyberduck.Ui.Winforms.Taskdialog;
@@ -48,7 +49,7 @@ namespace Ch.Cyberduck.Core
         /// <returns>Crash report as string</returns>
         public void Write(Exception e)
         {
-            ExceptionReportInfo info = new ExceptionReportInfo { MainException = e };
+            ExceptionReportInfo info = new ExceptionReportInfo {MainException = e};
             ExceptionReportGenerator reportGenerator = new ExceptionReportGenerator(info);
             ExceptionReport report = reportGenerator.CreateExceptionReport();
 
@@ -59,23 +60,27 @@ namespace Ch.Cyberduck.Core
             {
                 outfile.Write(report.ToString());
             }
-            int result = cTaskDialog.ShowCommandBox("Crash",
-                                                    Locale.localizedString("Do you want to report the last crash?", "Crash"),
-                                                    Locale.localizedString(
-                                                        "The application %@ has recently crashed. To help improve it, you can send the crash log to the author.",
-                                                        "Crash").Replace("%@", Preferences.instance().getProperty("application.name")),
-                                                    null, null, null, 
-                                                    Locale.localizedString("Send", "Crash") + "|" + Locale.localizedString("Don't Send", "Crash"),
-                                                    false, eSysIcons.Error, eSysIcons.Information);
-            if (0 == result)
+            TaskDialog prompt = new TaskDialog();
+            DialogResult result = prompt.ShowCommandBox(Locale.localizedString("Do you want to report the last crash?", "Crash"),
+                                                        Locale.localizedString("Do you want to report the last crash?", "Crash"),
+                                                        Locale.localizedString(
+                                                            "The application %@ has recently crashed. To help improve it, you can send the crash log to the author.", "Crash").Replace("%@", Preferences.instance().getProperty("application.name")),
+                                                        String.Format("{0}|{1}",
+                                                                      Locale.localizedString("Send", "Crash"),
+                                                                      Locale.localizedString("Don't Send", "Crash")),
+                                                        false, SysIcons.Error);
+            if (DialogResult.OK == result)
             {
-                CrashReporter.Instance.Post(report.ToString());
+                if (0 == prompt.CommandButtonResult)
+                {
+                    Post(report.ToString());
+                }
             }
         }
 
         public void Post(string report)
         {
-            Dictionary<string, object> postParameters = new Dictionary<string, object> { { "crashlog", report } };
+            Dictionary<string, object> postParameters = new Dictionary<string, object> {{"crashlog", report}};
             string revision = Preferences.instance().getProperty("application.revision");
 
             //this might take some time as the WebRequest tries to detect the proxy settings first
@@ -92,7 +97,7 @@ namespace Ch.Cyberduck.Core
         /// passed as a name/value pair.
         /// </summary>
         private HttpWebResponse MultipartFormDataPost(string postUrl, string userAgent,
-                                                            Dictionary<string, object> postParameters)
+                                                      Dictionary<string, object> postParameters)
         {
             string formDataBoundary = "-----------------------------0xKhTmLbOuNdArY";
             string contentType = "multipart/form-data; boundary=" + formDataBoundary;

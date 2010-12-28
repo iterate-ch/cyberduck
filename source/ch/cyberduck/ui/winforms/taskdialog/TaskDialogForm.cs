@@ -1,20 +1,17 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 
 namespace Ch.Cyberduck.Ui.Winforms.Taskdialog
 {
-  public partial class frmTaskDialog : Form
+  public partial class TaskDialogForm : Form
   {
     //--------------------------------------------------------------------------------
     #region PRIVATE members
     //--------------------------------------------------------------------------------
-    eSysIcons m_mainIcon = eSysIcons.Question;
-    eSysIcons m_footerIcon = eSysIcons.Warning;
+    SysIcons m_mainIcon = SysIcons.Question;
+    SysIcons m_footerIcon = SysIcons.Warning;
 
     string m_mainInstruction = "Main Instruction Text";
     int m_mainInstructionHeight = 0;
@@ -31,17 +28,18 @@ namespace Ch.Cyberduck.Ui.Winforms.Taskdialog
     int m_defaultButtonIndex = 0;
     Control m_focusControl = null;
 
-    eTaskDialogButtons m_Buttons = eTaskDialogButtons.YesNoCancel;
+    TaskDialogButtons m_Buttons = TaskDialogButtons.YesNoCancel;
 
     bool m_Expanded = false;
     bool m_isVista = false;
+
     #endregion
 
     //--------------------------------------------------------------------------------
     #region PROPERTIES
     //--------------------------------------------------------------------------------
-    public eSysIcons MainIcon { get { return m_mainIcon; } set { m_mainIcon = value; } }
-    public eSysIcons FooterIcon { get { return m_footerIcon; } set { m_footerIcon = value; } }
+    public SysIcons MainIcon { get { return m_mainIcon; } set { m_mainIcon = value; } }
+    public SysIcons FooterIcon { get { return m_footerIcon; } set { m_footerIcon = value; } }
 
     public string Title { get { return this.Text; } set { this.Text = value; } }
     public string MainInstruction { get { return m_mainInstruction; } set { m_mainInstruction = value; this.Invalidate(); } }
@@ -66,25 +64,24 @@ namespace Ch.Cyberduck.Ui.Winforms.Taskdialog
     public string CommandButtons { get { return m_commandButtons; } set { m_commandButtons = value; } }
     public int CommandButtonClickedIndex { get { return m_commandButtonClicked; } }
 
-    public eTaskDialogButtons Buttons { get { return m_Buttons; } set { m_Buttons = value; } }
+    public TaskDialogButtons Buttons { get { return m_Buttons; } set { m_Buttons = value; } }
 
     public string VerificationText { get { return cbVerify.Text; } set { cbVerify.Text = value; } }
     public bool VerificationCheckBoxChecked { get { return cbVerify.Checked; } set { cbVerify.Checked = value; } }
 
     public bool Expanded { get { return m_Expanded; } set { m_Expanded = value; } }
+
+    public bool PlaySystemSounds { get; set; }
     #endregion
 
     //--------------------------------------------------------------------------------
     #region CONSTRUCTOR
     //--------------------------------------------------------------------------------
-    public frmTaskDialog()
+    public TaskDialogForm()
     {
       InitializeComponent();
 
       m_isVista = VistaTaskDialog.IsAvailableOnThisOS;
-      if (!m_isVista && cTaskDialog.UseToolWindowOnXP) // <- shall we use the smaller toolbar?
-          this.FormBorderStyle = FormBorderStyle.FixedToolWindow;
-
       MainInstruction = "Main Instruction";
       Content = "";
       ExpandedInfo = "";
@@ -105,10 +102,10 @@ namespace Ch.Cyberduck.Ui.Winforms.Taskdialog
       // Setup Main Instruction
       switch (m_mainIcon)
       {
-        case eSysIcons.Information: imgMain.Image = SystemIcons.Information.ToBitmap(); break;
-        case eSysIcons.Question: imgMain.Image = SystemIcons.Question.ToBitmap(); break;
-        case eSysIcons.Warning: imgMain.Image = SystemIcons.Warning.ToBitmap(); break;
-        case eSysIcons.Error: imgMain.Image = SystemIcons.Error.ToBitmap(); break;
+        case SysIcons.Information: imgMain.Image = SystemIcons.Information.ToBitmap(); break;
+        case SysIcons.Question: imgMain.Image = SystemIcons.Question.ToBitmap(); break;
+        case SysIcons.Warning: imgMain.Image = SystemIcons.Warning.ToBitmap(); break;
+        case SysIcons.Error: imgMain.Image = SystemIcons.Error.ToBitmap(); break;
       }
 
       //AdjustLabelHeight(lbMainInstruction);
@@ -204,7 +201,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Taskdialog
       // Setup Buttons
       switch (m_Buttons)
       {
-        case eTaskDialogButtons.YesNo:
+        case TaskDialogButtons.YesNo:
           bt1.Visible = false;
           bt2.Text = "&Yes";
           bt2.DialogResult = DialogResult.Yes;
@@ -213,7 +210,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Taskdialog
           this.AcceptButton = bt2;
           this.CancelButton = bt3;
           break;
-        case eTaskDialogButtons.YesNoCancel:
+        case TaskDialogButtons.YesNoCancel:
           bt1.Text = "&Yes";
           bt1.DialogResult = DialogResult.Yes;
           bt2.Text = "&No";
@@ -223,7 +220,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Taskdialog
           this.AcceptButton = bt1;
           this.CancelButton = bt3;
           break;
-        case eTaskDialogButtons.OKCancel:
+        case TaskDialogButtons.OKCancel:
           bt1.Visible = false;
           bt2.Text = "&OK";
           bt2.DialogResult = DialogResult.OK;
@@ -232,7 +229,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Taskdialog
           this.AcceptButton = bt2;
           this.CancelButton = bt3;
           break;
-        case eTaskDialogButtons.OK:
+        case TaskDialogButtons.OK:
           bt1.Visible = false;
           bt2.Visible = false;
           bt3.Text = "&OK";
@@ -240,33 +237,33 @@ namespace Ch.Cyberduck.Ui.Winforms.Taskdialog
           this.AcceptButton = bt3;
           this.CancelButton = bt3;
           break;
-        case eTaskDialogButtons.Close:
+        case TaskDialogButtons.Close:
           bt1.Visible = false;
           bt2.Visible = false;
           bt3.Text = "&Close";
           bt3.DialogResult = DialogResult.Cancel;
           this.CancelButton = bt3;
           break;
-        case eTaskDialogButtons.Cancel:
+        case TaskDialogButtons.Cancel:
           bt1.Visible = false;
           bt2.Visible = false;
           bt3.Text = "&Cancel";
           bt3.DialogResult = DialogResult.Cancel;
           this.CancelButton = bt3;
           break;
-        case eTaskDialogButtons.None:
+        case TaskDialogButtons.None:
           bt1.Visible = false;
           bt2.Visible = false;
           bt3.Visible = false;
           break;
       }
 
-      this.ControlBox = (Buttons == eTaskDialogButtons.Cancel ||
-                         Buttons == eTaskDialogButtons.Close ||
-                         Buttons == eTaskDialogButtons.OKCancel ||
-                         Buttons == eTaskDialogButtons.YesNoCancel);
+      this.ControlBox = (Buttons == TaskDialogButtons.Cancel ||
+                         Buttons == TaskDialogButtons.Close ||
+                         Buttons == TaskDialogButtons.OKCancel ||
+                         Buttons == TaskDialogButtons.YesNoCancel);
 
-      if (!show_verify_checkbox && ExpandedInfo == "" && m_Buttons == eTaskDialogButtons.None)
+      if (!show_verify_checkbox && ExpandedInfo == "" && m_Buttons == TaskDialogButtons.None)
         pnlButtons.Visible = false;
       else
         form_height += pnlButtons.Height;
@@ -278,19 +275,19 @@ namespace Ch.Cyberduck.Ui.Winforms.Taskdialog
         pnlFooter.Height = Math.Max(28, lbFooter.Height + 16);
         switch (m_footerIcon)
         {
-          case eSysIcons.Information:
+          case SysIcons.Information:
             // SystemIcons.Information.ToBitmap().GetThumbnailImage(16, 16, null, IntPtr.Zero);
             imgFooter.Image = ResizeBitmap(SystemIcons.Information.ToBitmap(), 16, 16);
             break;
-          case eSysIcons.Question:
+          case SysIcons.Question:
             // SystemIcons.Question.ToBitmap().GetThumbnailImage(16, 16, null, IntPtr.Zero);
             imgFooter.Image = ResizeBitmap(SystemIcons.Question.ToBitmap(), 16, 16);
             break;
-          case eSysIcons.Warning:
+          case SysIcons.Warning:
             // SystemIcons.Warning.ToBitmap().GetThumbnailImage(16, 16, null, IntPtr.Zero);
             imgFooter.Image = ResizeBitmap(SystemIcons.Warning.ToBitmap(), 16, 16);
             break;
-          case eSysIcons.Error:
+          case SysIcons.Error:
             // SystemIcons.Error.ToBitmap().GetThumbnailImage(16, 16, null, IntPtr.Zero);
             imgFooter.Image = ResizeBitmap(SystemIcons.Error.ToBitmap(), 16, 16);
             break;
@@ -419,14 +416,14 @@ namespace Ch.Cyberduck.Ui.Winforms.Taskdialog
     //--------------------------------------------------------------------------------
     private void frmTaskDialog_Shown(object sender, EventArgs e)
     {
-      if (cTaskDialog.PlaySystemSounds)
+      if (PlaySystemSounds)
       {
         switch (m_mainIcon)
         {
-          case eSysIcons.Error: System.Media.SystemSounds.Hand.Play(); break;
-          case eSysIcons.Information: System.Media.SystemSounds.Asterisk.Play(); break;
-          case eSysIcons.Question: System.Media.SystemSounds.Asterisk.Play(); break;
-          case eSysIcons.Warning: System.Media.SystemSounds.Exclamation.Play(); break;
+          case SysIcons.Error: System.Media.SystemSounds.Hand.Play(); break;
+          case SysIcons.Information: System.Media.SystemSounds.Asterisk.Play(); break;
+          case SysIcons.Question: System.Media.SystemSounds.Asterisk.Play(); break;
+          case SysIcons.Warning: System.Media.SystemSounds.Exclamation.Play(); break;
         }
       }
       if (m_focusControl != null)
