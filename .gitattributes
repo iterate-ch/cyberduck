@@ -2026,6 +2026,7 @@ source/ch/cyberduck/core/OSVersion.cs -text
 source/ch/cyberduck/core/Protocol.java -text
 source/ch/cyberduck/core/RFC2253.cs -text
 source/ch/cyberduck/core/Rendezvous.cs -text
+source/ch/cyberduck/core/Rendezvous.java -text
 source/ch/cyberduck/core/RendezvousCollection.java -text
 source/ch/cyberduck/core/RendezvousFactory.java -text
 source/ch/cyberduck/core/Serializable.java -text

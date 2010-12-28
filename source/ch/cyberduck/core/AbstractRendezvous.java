@@ -28,7 +28,7 @@ import org.apache.log4j.Logger;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-public abstract class AbstractRendezvous {
+public abstract class AbstractRendezvous implements Rendezvous {
     private static Logger log = Logger.getLogger(AbstractRendezvous.class);
 
     /**
@@ -99,16 +99,6 @@ public abstract class AbstractRendezvous {
             }
         }
     };
-
-    /**
-     * Start browsing for rendezvous servcices for all registered service types
-     */
-    public abstract void init();
-
-    /**
-     * Halt all service discvery browsers
-     */
-    public abstract void quit();
 
     /**
      * Register a listener to be notified

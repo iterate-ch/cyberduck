@@ -19,13 +19,18 @@ package ch.cyberduck.core;
  * dkocher@cyberduck.ch
  */
 
+import org.apache.log4j.Logger;
+
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 /**
  * @version $Id:$
  */
-public abstract class RendezvousFactory extends Factory<AbstractRendezvous> {
+public abstract class RendezvousFactory extends Factory<Rendezvous> {
+    private static Logger log = Logger.getLogger(RendezvousFactory.class);
 
     /**
      * Registered factories
@@ -41,15 +46,52 @@ public abstract class RendezvousFactory extends Factory<AbstractRendezvous> {
         factories.put(platform, f);
     }
 
-    private static AbstractRendezvous rendezvous;
+    private static Rendezvous rendezvous;
 
     /**
      * @return
      */
-    public static AbstractRendezvous instance() {
+    public static Rendezvous instance() {
         if(null == rendezvous) {
             if(!factories.containsKey(NATIVE_PLATFORM)) {
-                throw new RuntimeException("No implementation for " + NATIVE_PLATFORM);
+                log.warn("No implementation for " + NATIVE_PLATFORM);
+                return new Rendezvous() {
+                    public void init() {
+                        ;
+                    }
+
+                    public void quit() {
+                        ;
+                    }
+
+                    public void addListener(RendezvousListener listener) {
+                        ;
+                    }
+
+                    public void removeListener(RendezvousListener listener) {
+                        ;
+                    }
+
+                    public int numberOfServices() {
+                        return 0;
+                    }
+
+                    public Host getService(int index) {
+                        return null;
+                    }
+
+                    public Iterator<Host> iterator() {
+                        return Collections.<Host>emptyList().iterator();
+                    }
+
+                    public String getDisplayedName(int index) {
+                        return null;
+                    }
+
+                    public String getDisplayedName(String identifier) {
+                        return null;
+                    }
+                };
             }
             rendezvous = factories.get(NATIVE_PLATFORM).create();
         }
