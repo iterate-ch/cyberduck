@@ -8,6 +8,7 @@ Changelog. Last modified: $Date$
 - [Feature] Version for Microsoft Windows XP, Windows Vista & Windows 7.
 - [Feature] Replaced protocol implementation (FTP)
 - [Feature] Connecting to Windows Azure Blob Storage (Azure) (#3938)
+- [Feature] Copy and paste files using menu item to duplicate
 - [Bugfix] Limit number of concurrent transfers (#5539)
 - [Bugfix] Dragging into topmost folder in browser (#1945)
 - [Bugfix] ACLs getting dropped when updating metadata (S3) (#5571)
