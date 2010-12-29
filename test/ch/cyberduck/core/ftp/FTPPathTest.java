@@ -275,7 +275,7 @@ public class FTPPathTest extends AbstractTestCase {
         }
     }
 
-    public void testParseUNIXPermissions() throws Exception {
+    public void testParseMlsdMode() throws Exception {
         FTPPath path = (FTPPath) PathFactory.createPath(SessionFactory.createSession(new Host(Protocol.FTP, "localhost")),
                 "/www", Path.DIRECTORY_TYPE);
 
@@ -303,6 +303,23 @@ public class FTPPathTest extends AbstractTestCase {
         }
     }
 
+    public void testParseMlsdSymbolic() throws Exception {
+        FTPPath path = (FTPPath) PathFactory.createPath(SessionFactory.createSession(new Host(Protocol.FTP, "localhost")),
+                "/www", Path.DIRECTORY_TYPE);
+
+        {
+            final AttributedList<Path> children = new AttributedList<Path>();
+            String[] replies = new String[]{
+                    "Type=OS.unix=slink:/foobar;Perm=;Unique=keVO1+4G4; foobar"
+            };
+
+            boolean success = path.parseMlsdResponse(children, Arrays.asList(replies));
+            assertTrue(success);
+            assertEquals(1, children.size());
+            assertEquals("/foobar", children.get(0).getSymlinkTarget());
+        }
+    }
+
     public void testParseAbsolutePaths() throws Exception {
         FTPPath path = (FTPPath) PathFactory.createPath(SessionFactory.createSession(new Host(Protocol.FTP, "localhost")),
                 "/data/FTP_pub", Path.DIRECTORY_TYPE);
@@ -319,6 +336,25 @@ public class FTPPathTest extends AbstractTestCase {
             assertEquals(1, children.size());
             assertEquals("WelcomeTo_PeakFTP", children.get(0).getName());
             assertEquals("/data/FTP_pub", children.get(0).getParent().getAbsolute());
+        }
+    }
+
+    public void testParseHardlinkCountBadFormat() throws Exception {
+        FTPPath path = (FTPPath) PathFactory.createPath(SessionFactory.createSession(new Host(Protocol.FTP, "localhost")),
+                "/store/public/brain", Path.DIRECTORY_TYPE);
+
+        {
+            final AttributedList<Path> children = new AttributedList<Path>();
+            String[] replies = new String[]{
+                    "drwx------+111 mi       public       198 Dec 17 12:29 unsorted"
+            };
+
+            boolean success = path.parseListResponse(children, new FTPParserFactory().createFileEntryParser("UNIX"),
+                    Arrays.asList(replies));
+            assertTrue(success);
+            assertEquals(1, children.size());
+            assertEquals("unsorted", children.get(0).getName());
+            assertEquals("/store/public/brain", children.get(0).getParent().getAbsolute());
         }
     }
 
