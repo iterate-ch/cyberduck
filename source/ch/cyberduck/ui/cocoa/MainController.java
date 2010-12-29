@@ -165,11 +165,14 @@ public class MainController extends BundleController implements NSApplication.De
                 NSArray.arrayWithObjects(NSFont.userFontOfSize(NSFont.smallSystemFontSize()), NSColor.darkGrayColor()),
                 NSArray.arrayWithObjects(NSAttributedString.FontAttributeName, NSAttributedString.ForegroundColorAttributeName)
         );
-        this.applicationMenu.itemAtIndex(new NSInteger(5)).setAttributedTitle(
-                NSAttributedString.attributedStringWithAttributes(name, KEY_FONT_ATTRIBUTES)
-        );
         if(key.isReceipt()) {
+            this.applicationMenu.removeItemAtIndex(new NSInteger(5));
             this.applicationMenu.removeItemAtIndex(new NSInteger(4));
+        }
+        else {
+            this.applicationMenu.itemAtIndex(new NSInteger(5)).setAttributedTitle(
+                    NSAttributedString.attributedStringWithAttributes(name, KEY_FONT_ATTRIBUTES)
+            );
         }
     }
 
