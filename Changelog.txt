@@ -8,6 +8,12 @@ Changelog. Last modified: $Date$
 - [Feature] Version for Microsoft Windows XP, Windows Vista & Windows 7.
 - [Feature] Replaced protocol implementation (FTP)
 - [Feature] Connecting to Windows Azure Blob Storage (Azure) (#3938)
+- [Bugfix] Limit number of concurrent transfers (#5539)
+- [Bugfix] Dragging into topmost folder in browser (#1945)
+- [Bugfix] ACLs getting dropped when updating metadata (S3) (#5571)
+- [Bugfix] Unicode normalization for filenames in upload (#5162)
+- [Bugfix] Duplicate file breaks editing (#5524)
+- [Bugfix] Large transfer history causes slowdown (#2889)
 
 3.8.1 [http://trac.cyberduck.ch/milestone/3.8.1]
 - [Bugfix] Fails to display custom language preference (#5500)
