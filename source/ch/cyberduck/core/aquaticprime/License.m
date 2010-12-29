@@ -63,7 +63,7 @@ JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_aquaticprime_NativeLicense_ver
 
 /*
  * Class:     ch_cyberduck_core_aquaticprime_NativeLicense
- * Method:    getName
+ * Method:    getValue
  * Signature: (Ljava/lang/String;)Z
  */
 JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_aquaticprime_NativeLicense_getValue(JNIEnv *env, jobject this, jstring license, jstring property)

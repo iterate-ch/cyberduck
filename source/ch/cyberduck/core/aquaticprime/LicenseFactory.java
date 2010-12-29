@@ -21,18 +21,10 @@ package ch.cyberduck.core.aquaticprime;
 
 import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LocalFactory;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.i18n.Locale;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.filefilter.FalseFileFilter;
-import org.apache.commons.io.filefilter.NameFileFilter;
-import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.apache.log4j.Logger;
 
-import java.io.File;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -77,26 +69,10 @@ public abstract class LicenseFactory extends Factory<License> {
      * @see #EMPTY_LICENSE
      */
     public static License find() {
-        Local support = LocalFactory.createLocal(Preferences.instance().getProperty("application.support.path"));
-        if(support.exists()) {
-            final Collection<File> keys = FileUtils.listFiles(
-                    new File(support.getAbsolute()),
-                    new SuffixFileFilter(".cyberducklicense"), FalseFileFilter.FALSE);
-            for(File key : keys) {
-                return LicenseFactory.create(LocalFactory.createLocal(key));
-            }
+        if(!factories.containsKey(NATIVE_PLATFORM)) {
+            throw new RuntimeException("No implementation for " + NATIVE_PLATFORM);
         }
-        Local receipt = LocalFactory.createLocal(Preferences.instance().getProperty("application.receipt.path"));
-        if(receipt.exists()) {
-            final Collection<File> receipts = FileUtils.listFiles(
-                    new File(receipt.getAbsolute()),
-                    new NameFileFilter("receipt"), FalseFileFilter.FALSE);
-            for(File key : receipts) {
-                return LicenseFactory.create(LocalFactory.createLocal(key));
-            }
-        }
-        log.info("No license found");
-        return EMPTY_LICENSE;
+        return factories.get(NATIVE_PLATFORM).create();
     }
 
     public static final License EMPTY_LICENSE = new License() {

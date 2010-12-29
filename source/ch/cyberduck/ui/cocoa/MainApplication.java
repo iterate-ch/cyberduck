@@ -19,7 +19,8 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.*;
-import ch.cyberduck.core.aquaticprime.NativeLicense;
+import ch.cyberduck.core.aquaticprime.Donation;
+import ch.cyberduck.core.aquaticprime.Receipt;
 import ch.cyberduck.ui.cocoa.application.NSApplication;
 import ch.cyberduck.ui.cocoa.foundation.NSAutoreleasePool;
 import ch.cyberduck.ui.cocoa.foundation.NSGarbageCollector;
@@ -63,7 +64,12 @@ public class MainApplication {
                 BundleLocale.register();
                 Protocol.register();
                 GrowlNative.registerImpl();
-                NativeLicense.register();
+                if(LocalFactory.createLocal(Preferences.instance().getProperty("application.receipt.path")).exists()) {
+                    Receipt.register();
+                }
+                else {
+                    Donation.register();
+                }
 
                 PlistDeserializer.register();
                 PlistSerializer.register();
