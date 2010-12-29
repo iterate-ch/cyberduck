@@ -30,6 +30,7 @@
     <property name="app.macos" location="${app.contents}/MacOS"/>
     <property name="app.executable" location="${app.macos}/${ant.project.name}"/>
     <property name="app.library" value="${app.contents}/Library"/>
+    <property name="app.frameworks" value="${app.contents}/Frameworks"/>
     <property name="app.resources" value="${app.contents}/Resources"/>
     <property name="app.java" value="${app.resources}/Java"/>
     <property name="app.spotlight" value="${app.library}/Spotlight"/>
@@ -271,12 +272,14 @@
         <antcall target="zip"/>
     </target>
 
-    <target name="package-appstore" depends="revision">
+    <target name="package-appstore" depends="clean, revision">
         <antcall target="package">
             <param name="url.archive" value="/dev/null"/>
             <param name="url.changelog" value="/dev/null"/>
             <param name="sparkle.feed" value="/dev/null"/>
         </antcall>
+        <echo message="Remove Sparkle.framework"/>
+        <delete dir="${app.frameworks}/Sparkle.framework"/>
         <echo message="Remove PPC slice from ${app.executable}"/>
         <exec dir="${home}" executable="/usr/bin/lipo" spawn="false" failonerror="false">
             <arg line="-remove ppc7400 -output ${app.executable} ${app.executable}"/>
