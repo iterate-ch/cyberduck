@@ -3763,7 +3763,8 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     public boolean validateMenuItem(NSMenuItem item) {
         final Selector action = item.action();
         if(action.equals(Foundation.selector("paste:"))) {
-            item.setTitle(MessageFormat.format(Locale.localizedString("Paste {0}"), StringUtils.EMPTY));
+            final String title = "Paste {0}";
+            item.setTitle(MessageFormat.format(Locale.localizedString(title), StringUtils.EMPTY).trim());
             if(this.isMounted()) {
                 final PathPasteboard pasteboard = PathPasteboard.getPasteboard(this.getSession());
                 if(pasteboard.isEmpty()) {
@@ -3772,43 +3773,53 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                         if(o != null) {
                             final NSArray elements = Rococoa.cast(o, NSArray.class);
                             if(elements.count().intValue() == 1) {
-                                item.setTitle(MessageFormat.format(Locale.localizedString("Paste {0}"), elements.objectAtIndex(new NSUInteger(0))));
+                                item.setTitle(MessageFormat.format(Locale.localizedString(title),
+                                        "\"" + elements.objectAtIndex(new NSUInteger(0)) + "\"").trim());
                             }
                             else {
-                                item.setTitle(MessageFormat.format(Locale.localizedString("Paste {0}"),
-                                        MessageFormat.format(Locale.localizedString("{0} Files"), elements.count().intValue())));
+                                item.setTitle(MessageFormat.format(Locale.localizedString(title),
+                                        MessageFormat.format(Locale.localizedString("{0} Files"),
+                                                elements.count().intValue())).trim());
                             }
                         }
                     }
                 }
                 else {
                     if(pasteboard.size() == 1) {
-                        item.setTitle(MessageFormat.format(Locale.localizedString("Paste {0}"), pasteboard.get(0).getName()));
+                        item.setTitle(MessageFormat.format(Locale.localizedString(title),
+                                "\"" + pasteboard.get(0).getName() + "\"").trim());
                     }
                     else {
-                        item.setTitle(MessageFormat.format(Locale.localizedString("Paste {0}"),
-                                MessageFormat.format(Locale.localizedString("{0} Files"), pasteboard.size())));
+                        item.setTitle(MessageFormat.format(Locale.localizedString(title),
+                                MessageFormat.format(Locale.localizedString("{0} Files"), pasteboard.size())).trim());
                     }
                 }
             }
         }
-        else if(action.equals(Foundation.selector("cut:"))) {
+        else if(action.equals(Foundation.selector("cut:")) || action.equals(Foundation.selector("copy:"))) {
+            String title = null;
+            if(action.equals(Foundation.selector("cut:"))) {
+                title = "Cut {0}";
+            }
+            else if(action.equals(Foundation.selector("copy:"))) {
+                title = "Copy {0}";
+            }
             if(this.isMounted()) {
                 int count = this.getSelectionCount();
                 if(0 == count) {
-                    item.setTitle(MessageFormat.format(Locale.localizedString("Cut {0}"), StringUtils.EMPTY));
+                    item.setTitle(MessageFormat.format(Locale.localizedString(title), StringUtils.EMPTY).trim());
                 }
                 else if(1 == count) {
-                    item.setTitle(MessageFormat.format(Locale.localizedString("Cut {0}"),
-                            this.getSelectedPath().getName()));
+                    item.setTitle(MessageFormat.format(Locale.localizedString(title),
+                            "\"" + this.getSelectedPath().getName() + "\"").trim());
                 }
                 else {
-                    item.setTitle(MessageFormat.format(Locale.localizedString("Cut {0}"),
-                            MessageFormat.format(Locale.localizedString("{0} Files"), this.getSelectionCount())));
+                    item.setTitle(MessageFormat.format(Locale.localizedString(title),
+                            MessageFormat.format(Locale.localizedString("{0} Files"), this.getSelectionCount())).trim());
                 }
             }
             else {
-                item.setTitle(MessageFormat.format(Locale.localizedString("Cut {0}"), StringUtils.EMPTY));
+                item.setTitle(MessageFormat.format(Locale.localizedString(title), StringUtils.EMPTY).trim());
             }
         }
         else if(action.equals(Foundation.selector("showHiddenFilesClicked:"))) {
