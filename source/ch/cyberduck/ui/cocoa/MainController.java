@@ -109,8 +109,7 @@ public class MainController extends BundleController implements NSApplication.De
             return;
         }
         if("x-cyberduck-action:update".equals(url)) {
-            Updater sparkle = Updater.create();
-            sparkle.checkForUpdates(null);
+            this.updateMenuClicked(null);
         }
         else {
             final Host h = Host.parse(url);
@@ -136,6 +135,15 @@ public class MainController extends BundleController implements NSApplication.De
             BrowserController doc = newDocument();
             doc.mount(h);
         }
+    }
+
+    /**
+     *
+     */
+    @Action
+    public void updateMenuClicked(ID sender) {
+        Updater sparkle = Updater.create();
+        sparkle.checkForUpdates(null);
     }
 
     @Outlet
