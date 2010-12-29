@@ -27,7 +27,7 @@ import com.sun.jna.Library;
 import com.sun.jna.Native;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public interface FoundationKitFunctions extends Library {
     public static final FoundationKitFunctions instance = (FoundationKitFunctions) Native.loadLibrary("Foundation", FoundationKitFunctions.class);
@@ -169,5 +169,31 @@ public interface FoundationKitFunctions extends Library {
      * <i>native declaration : /System/Library/Frameworks/ApplicationServices.framework/Headers/../Frameworks/framework/Headers/CGGeometry.h:467</i>
      */
     NSSize NSSizeFromString(String aString);
+
+    /**
+     * Original signature : <code>NSString* NSUserName()</code><br>
+     * <i>native declaration : /System/Library/Frameworks/Foundation.framework/Headers/NSPathUtilities.h:46</i>
+     */
+    String NSUserName();
+    /**
+     * Original signature : <code>NSString* NSFullUserName()</code><br>
+     * <i>native declaration : /System/Library/Frameworks/Foundation.framework/Headers/NSPathUtilities.h:47</i>
+     */
+    String NSFullUserName();
+    /**
+     * Original signature : <code>NSString* NSHomeDirectory()</code><br>
+     * <i>native declaration : /System/Library/Frameworks/Foundation.framework/Headers/NSPathUtilities.h:49</i>
+     */
+    String NSHomeDirectory();
+    /**
+     * Original signature : <code>NSString* NSHomeDirectoryForUser(String*)</code><br>
+     * <i>native declaration : /System/Library/Frameworks/Foundation.framework/Headers/NSPathUtilities.h:50</i>
+     */
+    String NSHomeDirectoryForUser(String userName);
+    /**
+     * Original signature : <code>NSString* NSTemporaryDirectory()</code><br>
+     * <i>native declaration : /System/Library/Frameworks/Foundation.framework/Headers/NSPathUtilities.h:52</i>
+     */
+    String NSTemporaryDirectory();
 }
 

@@ -19,7 +19,7 @@ package ch.cyberduck.ui.cocoa.foundation;
  * dkocher@cyberduck.ch
  */
 
-import org.rococoa.cocoa.foundation.NSRect;
+import org.rococoa.cocoa.foundation.*;
 
 /**
  * @version $Id$
@@ -28,5 +28,37 @@ public class FoundationKitFunctionsLibrary {
 
     public static NSRect NSUnionRect(NSRect aRect, NSRect bRect) {
         return FoundationKitFunctions.instance.NSUnionRect(aRect, bRect);
+    }
+
+    /**
+     * Original signature : <code>NSString* NSUserName()</code><br>
+     * <i>native declaration : /System/Library/Frameworks/Foundation.framework/Headers/NSPathUtilities.h:46</i>
+     */
+    public static String NSUserName() {
+        return FoundationKitFunctions.instance.NSUserName();
+    }
+
+    /**
+     * Original signature : <code>public static NSString* NSFullUserName()</code><br>
+     * <i>native declaration : /System/Library/Frameworks/Foundation.framework/Headers/NSPathUtilities.h:47</i>
+     */
+    public static String NSFullUserName() {
+        return FoundationKitFunctions.instance.NSFullUserName();
+    }
+
+    /**
+     * Original signature : <code>public static NSString* NSHomeDirectory()</code><br>
+     * <i>native declaration : /System/Library/Frameworks/Foundation.framework/Headers/NSPathUtilities.h:49</i>
+     */
+    public static String NSHomeDirectory() {
+        return FoundationKitFunctions.instance.NSHomeDirectory();
+    }
+
+    /**
+     * Original signature : <code>public static NSString* NSTemporaryDirectory()</code><br>
+     * <i>native declaration : /System/Library/Frameworks/Foundation.framework/Headers/NSPathUtilities.h:52</i>
+     */
+    public static String NSTemporaryDirectory() {
+        return FoundationKitFunctions.instance.NSTemporaryDirectory();
     }
 }
