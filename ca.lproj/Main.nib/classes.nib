@@ -12,6 +12,7 @@
         newBrowserMenuClicked = id;
         newDownloadMenuClicked = id;
         preferencesMenuClicked = id;
+        updateMenuClicked = id;
     };
     CLASS = CDMainController;
     LANGUAGE = ObjC;
@@ -74,14 +75,6 @@
         uploadButtonClicked = id;
     };
     CLASS = FirstResponder;
-    LANGUAGE = ObjC;
-    SUPERCLASS = NSObject;
-},
-        {
-    ACTIONS =     {
-        checkForUpdates = id;
-    };
-    CLASS = SUUpdater;
     LANGUAGE = ObjC;
     SUPERCLASS = NSObject;
 },
