@@ -821,14 +821,14 @@ public class InfoController extends ToolbarWindowController {
                     final String identifier = tableColumn.identifier();
                     if(identifier.equals(HEADER_METADATA_NAME_COLUMN)) {
                         final String name = metadata.get(row.intValue()).getName();
-                        return NSString.stringWithString(StringUtils.isNotEmpty(name) ? name : "");
+                        return NSAttributedString.attributedString(StringUtils.isNotEmpty(name) ? name : "");
                     }
                     if(identifier.equals(HEADER_METADATA_VALUE_COLUMN)) {
                         final String value = metadata.get(row.intValue()).getValue();
                         if(StringUtils.isEmpty(value)) {
                             return null;
                         }
-                        return NSString.stringWithString(StringUtils.isNotEmpty(value) ? value : "");
+                        return NSAttributedString.attributedString(StringUtils.isNotEmpty(value) ? value : "");
                     }
                 }
                 return null;
