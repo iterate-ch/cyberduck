@@ -21,10 +21,17 @@ package ch.cyberduck.core.aquaticprime;
 
 import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.i18n.Locale;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.FalseFileFilter;
+import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.apache.log4j.Logger;
 
+import java.io.File;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -53,6 +60,21 @@ public abstract class LicenseFactory extends Factory<License> {
      * @return
      */
     protected abstract License open(Local file);
+
+    @Override
+    protected License create() {
+        Local support = LocalFactory.createLocal(Preferences.instance().getProperty("application.support.path"));
+        if(support.exists()) {
+            final Collection<File> keys = FileUtils.listFiles(
+                    new File(support.getAbsolute()),
+                    new SuffixFileFilter(".cyberducklicense"), FalseFileFilter.FALSE);
+            for(File key : keys) {
+                return open(LocalFactory.createLocal(key));
+            }
+        }
+        log.info("No donation key found");
+        return LicenseFactory.EMPTY_LICENSE;
+    }
 
     /**
      * @return
