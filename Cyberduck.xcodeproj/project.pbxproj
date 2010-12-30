@@ -154,6 +154,7 @@
 		476901D9120FEF4300A43B25 /* permissions.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 476901D8120FEF4300A43B25 /* permissions.tiff */; };
 		476901DD120FEF4D00A43B25 /* newfolder.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 476901DC120FEF4D00A43B25 /* newfolder.tiff */; };
 		476C7C1907F5A2A700CF6032 /* File.nib in Resources */ = {isa = PBXBuildFile; fileRef = 476C7C1707F5A2A700CF6032 /* File.nib */; };
+		476F5EA812CCDD34004E8BC1 /* advanced.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 476F5EA712CCDD34004E8BC1 /* advanced.tiff */; };
 		477839340BA1BE8E0037E145 /* statusGreen.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 477839310BA1BE8E0037E145 /* statusGreen.tiff */; };
 		477839350BA1BE8E0037E145 /* statusRed.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 477839320BA1BE8E0037E145 /* statusRed.tiff */; };
 		477839360BA1BE8E0037E145 /* statusYellow.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 477839330BA1BE8E0037E145 /* statusYellow.tiff */; };
@@ -1042,6 +1043,7 @@
 		476C7C2D07F5A31800CF6032 /* sv */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = sv; path = sv.lproj/Localizable.strings; sourceTree = "<group>"; };
 		476C7C2E07F5A32200CF6032 /* sv */ = {isa = PBXFileReference; lastKnownFileType = text; name = sv; path = sv.lproj/License.txt; sourceTree = "<group>"; };
 		476DEBE10629C6FB005EF4B1 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = /System/Library/Frameworks/CoreFoundation.framework; sourceTree = "<absolute>"; };
+		476F5EA712CCDD34004E8BC1 /* advanced.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = advanced.tiff; sourceTree = "<group>"; };
 		4773D6B00F9C86A7004658BD /* libAquaticPrime.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libAquaticPrime.a; path = lib/libAquaticPrime.a; sourceTree = "<group>"; };
 		477839310BA1BE8E0037E145 /* statusGreen.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = statusGreen.tiff; sourceTree = "<group>"; };
 		477839320BA1BE8E0037E145 /* statusRed.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = statusRed.tiff; sourceTree = "<group>"; };
@@ -1764,6 +1766,7 @@
 		4741653C06C4FC3F00AC0BD2 /* img */ = {
 			isa = PBXGroup;
 			children = (
+				476F5EA712CCDD34004E8BC1 /* advanced.tiff */,
 				4783C6F611EC62C4006D9FAD /* connection-secure.tiff */,
 				4783C6F711EC62C4006D9FAD /* connection.tiff */,
 				4717BE100F3096FD00BB4496 /* s3.icns */,
@@ -2585,6 +2588,7 @@
 				47124259129AA0F200BC957C /* swift-icon.png in Resources */,
 				4712425A129AA0F200BC957C /* swift.icns in Resources */,
 				471F5C2E12AD1B6B0005D323 /* Alert.strings in Resources */,
+				476F5EA812CCDD34004E8BC1 /* advanced.tiff in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
