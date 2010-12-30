@@ -4205,27 +4205,28 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         else if(itemIdentifier.equals(TOOLBAR_TOOLS)) {
             item.setLabel(Locale.localizedString("Action"));
             item.setPaletteLabel(Locale.localizedString("Action"));
-            if(inserted) {
+            if(inserted || !Factory.VERSION_PLATFORM.matches("10\\.5.*")) {
                 item.setView(this.actionPopupButton);
-                item.setImage(null);
+                // Add a menu representation for text mode of toolbar
+                NSMenuItem toolMenu = NSMenuItem.itemWithTitle(Locale.localizedString("Action"), null, "");
+                NSMenu toolSubmenu = NSMenu.menu();
+                for(int i = 1; i < this.actionPopupButton.menu().numberOfItems().intValue(); i++) {
+                    NSMenuItem template = this.actionPopupButton.menu().itemAtIndex(new NSInteger(i));
+                    toolSubmenu.addItem(NSMenuItem.itemWithTitle(template.title(),
+                            template.action(),
+                            template.keyEquivalent()));
+                }
+                toolMenu.setSubmenu(toolSubmenu);
+                item.setMenuFormRepresentation(toolMenu);
+                item.setMinSize(this.actionPopupButton.frame().size);
+                item.setMaxSize(this.actionPopupButton.frame().size);
             }
             else {
-                item.setView(null);
-                item.setImage(IconCache.iconNamed("gear.tiff"));
+                NSToolbarItem temporary = NSToolbarItem.itemWithIdentifier(itemIdentifier);
+                temporary.setPaletteLabel(Locale.localizedString("Action"));
+                temporary.setImage(IconCache.iconNamed("advanced.tiff", 32));
+                return temporary;
             }
-            // Add a menu representation for text mode of toolbar
-            NSMenuItem toolMenu = NSMenuItem.itemWithTitle(Locale.localizedString("Action"), null, "");
-            NSMenu toolSubmenu = NSMenu.menu();
-            for(int i = 1; i < this.actionPopupButton.menu().numberOfItems().intValue(); i++) {
-                NSMenuItem template = this.actionPopupButton.menu().itemAtIndex(new NSInteger(i));
-                toolSubmenu.addItem(NSMenuItem.itemWithTitle(template.title(),
-                        template.action(),
-                        template.keyEquivalent()));
-            }
-            toolMenu.setSubmenu(toolSubmenu);
-            item.setMenuFormRepresentation(toolMenu);
-            item.setMinSize(this.actionPopupButton.frame().size);
-            item.setMaxSize(this.actionPopupButton.frame().size);
             return item;
         }
         else if(itemIdentifier.equals(TOOLBAR_QUICK_CONNECT)) {
