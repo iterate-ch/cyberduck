@@ -3110,7 +3110,8 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
     @Action
     public void openTerminalButtonClicked(final ID sender) {
-        final boolean identity = this.getSession().getHost().getCredentials().isPublicKeyAuthentication();
+        final Host host = this.getSession().getHost();
+        final boolean identity = host.getCredentials().isPublicKeyAuthentication();
         String workdir = null;
         if(this.getSelectionCount() == 1) {
             Path selected = this.getSelectedPath();
@@ -3128,10 +3129,10 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             return;
         }
         String ssh = MessageFormat.format(Preferences.instance().getProperty("terminal.command.ssh"),
-                identity ? "-i " + this.getSession().getHost().getCredentials().getIdentity().getAbsolute() : "",
-                this.getSession().getHost().getCredentials().getUsername(),
-                this.getSession().getHost().getHostname(),
-                String.valueOf(this.getSession().getHost().getPort()), workdir);
+                identity ? "-i " + host.getCredentials().getIdentity().getAbsolute() : "",
+                host.getCredentials().getUsername(),
+                host.getHostname(),
+                String.valueOf(host.getPort()), workdir);
         log.info("SSH Command:" + ssh);
         // Escape 
         ssh = StringUtils.replace(ssh, "\\", "\\\\");
