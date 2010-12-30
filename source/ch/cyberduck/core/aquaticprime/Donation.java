@@ -41,6 +41,11 @@ public class Donation extends AbstractLicense {
             }
             return LicenseFactory.EMPTY_LICENSE;
         }
+
+        @Override
+        protected License create() {
+            return this.open();
+        }
     }
 
     private static boolean JNI_LOADED = false;

@@ -61,8 +61,7 @@ public abstract class LicenseFactory extends Factory<License> {
      */
     protected abstract License open(Local file);
 
-    @Override
-    protected License create() {
+    protected License open() {
         Local support = LocalFactory.createLocal(Preferences.instance().getProperty("application.support.path"));
         if(support.exists()) {
             final Collection<File> keys = FileUtils.listFiles(
@@ -94,7 +93,7 @@ public abstract class LicenseFactory extends Factory<License> {
         if(!factories.containsKey(NATIVE_PLATFORM)) {
             throw new RuntimeException("No implementation for " + NATIVE_PLATFORM);
         }
-        return factories.get(NATIVE_PLATFORM).create();
+        return factories.get(NATIVE_PLATFORM).open();
     }
 
     public static final License EMPTY_LICENSE = new License() {

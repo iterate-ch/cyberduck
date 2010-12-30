@@ -63,7 +63,7 @@ public class Receipt extends AbstractLicense {
         }
 
         @Override
-        protected License create() {
+        protected License open() {
             Local receipt = LocalFactory.createLocal(Preferences.instance().getProperty("application.receipt.path"));
             if(receipt.exists()) {
                 final Collection<File> receipts = FileUtils.listFiles(
@@ -76,6 +76,11 @@ public class Receipt extends AbstractLicense {
             log.info("No receipt found");
             System.exit(APPSTORE_VALIDATION_FAILURE);
             return LicenseFactory.EMPTY_LICENSE;
+        }
+
+        @Override
+        protected License create() {
+            return this.open();
         }
     }
 
