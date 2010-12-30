@@ -47,11 +47,11 @@ jstring convertToJString(JNIEnv *env, NSString *nsString)
 }
 
 /*
- * Class:     ch_cyberduck_core_aquaticprime_NativeLicense
+ * Class:     ch_cyberduck_core_aquaticprime_Donation
  * Method:    verify
  * Signature: (Ljava/lang/String;)Z
  */
-JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_aquaticprime_NativeLicense_verify(JNIEnv *env, jobject this, jstring license)
+JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_aquaticprime_Donation_verify(JNIEnv *env, jobject this, jstring license)
 {
 	// Paste obfuscated public key here
     NSString *key = [NSString stringWithString:@"0xAF026CFCF552C3D09A051124A596CEF7BBB26B15629504CD163B09675BE507C9C526ED3DBFCB91B78F718E0886A18400B56BC00E9213228CD6D6E9C84D8B6099AA3DE6E6F46F6CC7970982DE93A2A7318351FDFA25AE75B403996E50BB40643384214234E84EDA3E518772A4FF57FE29DD7C77A5EEB14C9023CA18FEC63236EF"];
@@ -62,11 +62,11 @@ JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_aquaticprime_NativeLicense_ver
 }
 
 /*
- * Class:     ch_cyberduck_core_aquaticprime_NativeLicense
+ * Class:     ch_cyberduck_core_aquaticprime_Donation
  * Method:    getValue
  * Signature: (Ljava/lang/String;)Z
  */
-JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_aquaticprime_NativeLicense_getValue(JNIEnv *env, jobject this, jstring license, jstring property)
+JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_aquaticprime_Donation_getValue(JNIEnv *env, jobject this, jstring license, jstring property)
 {
 	// Paste obfuscated public key here
     NSString *key = [NSString stringWithString:@"0xAF026CFCF552C3D09A051124A596CEF7BBB26B15629504CD163B09675BE507C9C526ED3DBFCB91B78F718E0886A18400B56BC00E9213228CD6D6E9C84D8B6099AA3DE6E6F46F6CC7970982DE93A2A7318351FDFA25AE75B403996E50BB40643384214234E84EDA3E518772A4FF57FE29DD7C77A5EEB14C9023CA18FEC63236EF"];
