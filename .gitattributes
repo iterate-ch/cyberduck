@@ -1307,7 +1307,7 @@ lib/cloudfiles.properties -text
 lib/commons-codec-1.4.jar -text
 lib/commons-collections-3.2.1.jar -text
 lib/commons-httpclient-3.1.jar -text
-lib/commons-io-1.4.jar -text
+lib/commons-io-2.0.1.jar -text
 lib/commons-lang-2.4.jar -text
 lib/commons-logging-1.1.1.jar -text
 lib/commons-net-ftp-2.2.jar -text
