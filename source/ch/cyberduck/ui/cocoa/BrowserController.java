@@ -4157,9 +4157,9 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     private Map<String, NSToolbarItem> toolbarItems
             = new HashMap<String, NSToolbarItem>();
 
-    public NSToolbarItem toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar(NSToolbar toolbar, final String itemIdentifier, boolean flag) {
+    public NSToolbarItem toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar(NSToolbar toolbar, final String itemIdentifier, boolean inserted) {
         if(log.isDebugEnabled()) {
-            log.debug("toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar:" + toolbar);
+            log.debug("toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar:" + itemIdentifier);
         }
         if(!toolbarItems.containsKey(itemIdentifier)) {
             toolbarItems.put(itemIdentifier, NSToolbarItem.itemWithIdentifier(itemIdentifier));
@@ -4205,7 +4205,14 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         else if(itemIdentifier.equals(TOOLBAR_TOOLS)) {
             item.setLabel(Locale.localizedString("Action"));
             item.setPaletteLabel(Locale.localizedString("Action"));
-            item.setView(this.actionPopupButton);
+            if(inserted) {
+                item.setView(this.actionPopupButton);
+                item.setImage(null);
+            }
+            else {
+                item.setView(null);
+                item.setImage(IconCache.iconNamed("gear.tiff"));
+            }
             // Add a menu representation for text mode of toolbar
             NSMenuItem toolMenu = NSMenuItem.itemWithTitle(Locale.localizedString("Action"), null, "");
             NSMenu toolSubmenu = NSMenu.menu();
