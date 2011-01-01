@@ -230,7 +230,12 @@ public abstract class Path extends AbstractPath implements Serializable {
     }
 
     public void setParent(Path parent) {
-        this.parent = parent;
+        if(this.isChild(parent)) {
+            this.parent = parent;
+        }
+        else {
+            log.warn("Attempt to set invalid parent directory:" + parent);
+        }
     }
 
     /**
