@@ -432,7 +432,20 @@ public abstract class Path extends AbstractPath implements Serializable {
     }
 
     @Override
-    public abstract AttributedList<Path> list();
+    public AttributedList<Path> list() {
+        return this.list(new AttributedList<Path>() {
+            @Override
+            public boolean add(Path path) {
+                if(!path.isChild(Path.this)) {
+                    log.warn("Skip adding child to directory listing:" + path);
+                    return false;
+                }
+                return super.add(path);
+            }
+        });
+    }
+
+    protected abstract AttributedList<Path> list(AttributedList<Path> children);
 
     /**
      * Accessability for #getSession.cache()

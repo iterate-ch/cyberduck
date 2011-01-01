@@ -636,8 +636,7 @@ public class S3Path extends CloudPath {
     }
 
     @Override
-    public AttributedList<Path> list() {
-        final AttributedList<Path> children = new AttributedList<Path>();
+    public AttributedList<Path> list(final AttributedList<Path> children) {
         if(this.attributes().isDirectory()) {
             try {
                 this.getSession().check();
@@ -732,11 +731,6 @@ public class S3Path extends CloudPath {
             for(StorageObject object : objects) {
                 final S3Path p = (S3Path) PathFactory.createPath(this.getSession(), bucket,
                         object.getKey(), Path.FILE_TYPE);
-                if(!p.isChild(this)) {
-                    // #Workaround for key that end with /. Refer to #3347.
-                    log.warn("Skipping object " + object.getKey());
-                    continue;
-                }
                 p.setParent(this);
                 p.attributes().setSize(object.getContentLength());
                 p.attributes().setModificationDate(object.getLastModifiedDate().getTime());

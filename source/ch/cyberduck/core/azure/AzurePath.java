@@ -301,10 +301,8 @@ public class AzurePath extends CloudPath {
         }
     }
 
-
     @Override
-    public AttributedList<Path> list() {
-        final AttributedList<Path> children = new AttributedList<Path>();
+    public AttributedList<Path> list(final AttributedList<Path> children) {
         if(this.attributes().isDirectory()) {
             try {
                 this.getSession().check();

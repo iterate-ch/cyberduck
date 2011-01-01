@@ -153,8 +153,7 @@ public class DAVPath extends Path {
 
 
     @Override
-    public AttributedList<Path> list() {
-        final AttributedList<Path> children = new AttributedList<Path>();
+    public AttributedList<Path> list(final AttributedList<Path> children) {
         if(this.attributes().isDirectory()) {
             try {
                 this.getSession().check();
@@ -176,10 +175,6 @@ public class DAVPath extends Path {
                         Path p = PathFactory.createPath(this.getSession(), uri.getPath(),
                                 resource.getResourceType().isCollection() ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
                         p.setParent(this);
-                        if(!p.isChild(this)) {
-                            log.warn("Skipping invalid resource:" + resource);
-                            continue;
-                        }
                         p.attributes().setOwner(resource.getOwner());
                         if(resource.getGetLastModified() > 0) {
                             p.attributes().setModificationDate(resource.getGetLastModified());

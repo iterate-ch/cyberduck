@@ -18,7 +18,6 @@ package ch.cyberduck.core.cloud;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
@@ -139,9 +138,6 @@ public abstract class CloudPath extends Path {
     public void readUnixPermission() {
         throw new UnsupportedOperationException();
     }
-
-    @Override
-    public abstract AttributedList<Path> list();
 
     @Override
     public Set<DescriptiveUrl> getHttpURLs() {
