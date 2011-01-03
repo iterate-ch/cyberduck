@@ -37,6 +37,7 @@ import org.w3c.util.DateParser;
 import org.w3c.util.InvalidDateException;
 
 import com.rackspacecloud.client.cloudfiles.FilesContainerInfo;
+import com.rackspacecloud.client.cloudfiles.FilesNotFoundException;
 import com.rackspacecloud.client.cloudfiles.FilesObject;
 import com.rackspacecloud.client.cloudfiles.FilesObjectMetaData;
 
@@ -230,26 +231,29 @@ public class CFPath extends CloudPath {
                     this.getSession().cdn().clear();
                 }
                 else {
-                    for(FilesObject object : this.getSession().getClient().listObjects(this.getContainerName(),
-                            this.isContainer() ? StringUtils.EMPTY : this.getKey(), Character.valueOf(Path.DELIMITER))) {
+                    for(FilesObject object : this.getSession().getClient().listObjectsStartingWith(this.getContainerName(),
+                            this.isContainer() ? StringUtils.EMPTY : this.getKey() + Path.DELIMITER, null, -1, null, Path.DELIMITER)) {
                         final Path file = PathFactory.createPath(this.getSession(), this.getContainerName(), object.getName(),
                                 "application/directory".equals(object.getMimeType()) ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
                         file.setParent(this);
                         if(file.attributes().getType() == Path.FILE_TYPE) {
                             file.attributes().setSize(object.getSize());
                             file.attributes().setChecksum(object.getMd5sum());
+                            try {
+                                final Date modified = DateParser.parse(object.getLastModified());
+                                if(null != modified) {
+                                    file.attributes().setModificationDate(modified.getTime());
+                                }
+                            }
+                            catch(InvalidDateException e) {
+                                log.warn("Not ISO 8601 format:" + e.getMessage());
+                            }
                         }
                         if(file.attributes().getType() == Path.DIRECTORY_TYPE) {
                             file.attributes().setPlaceholder(true);
-                        }
-                        try {
-                            final Date modified = DateParser.parse(object.getLastModified());
-                            if(null != modified) {
-                                file.attributes().setModificationDate(modified.getTime());
+                            if(children.contains(file.getReference())) {
+                                continue;
                             }
-                        }
-                        catch(InvalidDateException e) {
-                            log.warn("Not ISO 8601 format:" + e.getMessage());
                         }
                         file.attributes().setOwner(this.attributes().getOwner());
 
@@ -498,7 +502,13 @@ public class CFPath extends CloudPath {
                     this.getSession().getClient().deleteContainer(container);
                 }
                 else {
-                    this.getSession().getClient().deleteObject(container, this.getKey());
+                    try {
+                        this.getSession().getClient().deleteObject(container, this.getKey());
+                    }
+                    catch(FilesNotFoundException e) {
+                        // No real placeholder but just a delmiter returned in the object listing.
+                        log.warn(e.getMessage());
+                    }
                 }
             }
             // The directory listing is no more current
@@ -517,7 +527,7 @@ public class CFPath extends CloudPath {
      */
     @Override
     public void readMetadata() {
-        if(attributes().isFile() || attributes().isPlaceholder()) {
+        if(attributes().isFile()) {
             try {
                 this.getSession().check();
                 this.getSession().message(MessageFormat.format(Locale.localizedString("Reading metadata of {0}", "Status"),
@@ -538,7 +548,7 @@ public class CFPath extends CloudPath {
 
     @Override
     public void writeMetadata(Map<String, String> meta) {
-        if(attributes().isFile() || attributes().isPlaceholder()) {
+        if(attributes().isFile()) {
             try {
                 this.getSession().check();
                 this.getSession().message(MessageFormat.format(Locale.localizedString("Writing metadata of {0}", "Status"),
