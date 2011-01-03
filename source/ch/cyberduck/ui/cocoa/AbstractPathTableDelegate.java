@@ -50,6 +50,9 @@ public abstract class AbstractPathTableDelegate extends AbstractTableDelegate<Pa
                 || identifier.equals(BrowserTableDataSource.KIND_COLUMN)) {
             return new FileTypeComparator(ascending);
         }
+        else if(identifier.equals(BrowserTableDataSource.EXTENSION_COLUMN)) {
+            return new ExtensionComparator(ascending);
+        }
         else if(identifier.equals(BrowserTableDataSource.FILENAME_COLUMN)) {
             return new FilenameComparator(ascending);
         }

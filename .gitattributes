@@ -2095,6 +2095,7 @@ source/ch/cyberduck/properties/Settings.cs -text
 source/ch/cyberduck/properties/Settings.settings -text
 source/ch/cyberduck/properties/app.manifest -text
 source/ch/cyberduck/ui/AbstractDateFormatter.java -text
+source/ch/cyberduck/ui/ExtensionComparator.java -text
 source/ch/cyberduck/ui/FileTypeComparator.java -text
 source/ch/cyberduck/ui/FilenameComparator.java -text
 source/ch/cyberduck/ui/GroupComparator.java -text

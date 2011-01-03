@@ -202,6 +202,7 @@ public class MainController extends BundleController implements NSApplication.De
         this.columnMenu = columnMenu;
         Map<String, String> columns = new HashMap<String, String>();
         columns.put("browser.columnKind", Locale.localizedString("Kind"));
+        columns.put("browser.columnExtension", Locale.localizedString("Extension"));
         columns.put("browser.columnSize", Locale.localizedString("Size"));
         columns.put("browser.columnModification", Locale.localizedString("Modified"));
         columns.put("browser.columnOwner", Locale.localizedString("Owner"));

@@ -59,6 +59,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
     public static final String GROUP_COLUMN = "GROUP";
     public static final String PERMISSIONS_COLUMN = "PERMISSIONS";
     public static final String KIND_COLUMN = "KIND";
+    public static final String EXTENSION_COLUMN = "EXTENSION";
     // virtual column to implement quick look
     protected static final String LOCAL_COLUMN = "LOCAL";
 
@@ -207,6 +208,11 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
             if(identifier.equals(KIND_COLUMN)) {
                 return tableViewCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(
                         item.kind(),
+                        TableCellAttributes.browserFontLeftAlignment()));
+            }
+            if(identifier.equals(EXTENSION_COLUMN)) {
+                return tableViewCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(
+                        item.attributes().isFile() ? StringUtils.isNotBlank(item.getExtension()) ? item.getExtension() : Locale.localizedString("None") : Locale.localizedString("None"),
                         TableCellAttributes.browserFontLeftAlignment()));
             }
             if(identifier.equals(LOCAL_COLUMN)) {

@@ -1369,6 +1369,17 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             c.setDataCell(textCellPrototype);
             table.addTableColumn(c);
         }
+        table.removeTableColumn(table.tableColumnWithIdentifier(BrowserTableDataSource.EXTENSION_COLUMN));
+        if(Preferences.instance().getBoolean("browser.columnExtension")) {
+            NSTableColumn c = browserListColumnsFactory.create(BrowserTableDataSource.EXTENSION_COLUMN);
+            c.headerCell().setStringValue(Locale.localizedString("Extension"));
+            c.setMinWidth(50);
+            c.setWidth(80);
+            c.setMaxWidth(500);
+            c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask | NSTableColumn.NSTableColumnUserResizingMask);
+            c.setDataCell(textCellPrototype);
+            table.addTableColumn(c);
+        }
         table.setIndicatorImage_inTableColumn((browserListViewDelegate).isSortedAscending() ?
                 IconCache.iconNamed("NSAscendingSortIndicator") :
                 IconCache.iconNamed("NSDescendingSortIndicator"),

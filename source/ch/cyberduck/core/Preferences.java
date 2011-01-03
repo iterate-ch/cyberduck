@@ -262,6 +262,7 @@ public abstract class Preferences {
         defaults.put("browser.info.isInspector", String.valueOf(true));
 
         defaults.put("browser.columnKind", String.valueOf(false));
+        defaults.put("browser.columnExtension", String.valueOf(false));
         defaults.put("browser.columnSize", String.valueOf(true));
         defaults.put("browser.columnModification", String.valueOf(true));
         defaults.put("browser.columnOwner", String.valueOf(false));
