@@ -531,13 +531,12 @@ public class GDPath extends Path {
                         feed = ((GDPath) this.getParent()).getFolderFeed();
                     }
                     StringBuilder url = new StringBuilder(feed);
+                    // Convertible to Google Docs file type
+                    url.append("?convert=").append(this.isConversionSupported()
+                            && Preferences.instance().getBoolean("google.docs.upload.convert"));
                     if(this.isOcrSupported()) {
                         // Image file type
-                        url.append("?ocr=").append(Preferences.instance().getProperty("google.docs.upload.ocr"));
-                    }
-                    else if(this.isConversionSupported()) {
-                        // Convertible to Google Docs file type
-                        url.append("?convert=").append(Preferences.instance().getProperty("google.docs.upload.convert"));
+                        url.append("&ocr=").append(Preferences.instance().getProperty("google.docs.upload.ocr"));
                     }
                     Service.GDataRequest request = null;
                     try {
@@ -625,11 +624,15 @@ public class GDPath extends Path {
     }
 
     /**
+     * Supported file formats: application/pdf, image/jpeg, image/png, image/gif
+     *
      * @return True for image formats supported by OCR
      */
     protected boolean isOcrSupported() {
-        return this.getMimeType().endsWith("png") || this.getMimeType().endsWith("jpeg")
-                || this.getMimeType().endsWith("gif");
+        return this.getMimeType().equals("application/pdf")
+                || this.getMimeType().equals("image/png")
+                || this.getMimeType().equals("image/jpeg")
+                || this.getMimeType().endsWith("image/gif");
     }
 
     /**
