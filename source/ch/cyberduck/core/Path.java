@@ -444,13 +444,10 @@ public abstract class Path extends AbstractPath implements Serializable {
 
             @Override
             public boolean addAll(Collection<? extends Path> c) {
-                for(Iterator<? extends Path> iter = c.iterator(); iter.hasNext();) {
-                    if(!iter.next().isChild(Path.this)) {
-                        log.warn("Skip adding child to directory listing:" + path);
-                        iter.remove();
-                    }
+                for(Path path: c) {
+                    this.add(path);
                 }
-                return super.addAll(c);
+                return true;
             }
         });
     }
