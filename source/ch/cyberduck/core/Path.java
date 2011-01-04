@@ -43,9 +43,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.text.MessageFormat;
-import java.util.LinkedHashSet;
-import java.util.Set;
-import java.util.StringTokenizer;
+import java.util.Collection;
+import java.util.*;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
@@ -441,6 +440,17 @@ public abstract class Path extends AbstractPath implements Serializable {
                     return false;
                 }
                 return super.add(path);
+            }
+
+            @Override
+            public boolean addAll(Collection<? extends Path> c) {
+                for(Iterator<? extends Path> iter = c.iterator(); iter.hasNext();) {
+                    if(!iter.next().isChild(Path.this)) {
+                        log.warn("Skip adding child to directory listing:" + path);
+                        iter.remove();
+                    }
+                }
+                return super.addAll(c);
             }
         });
     }
