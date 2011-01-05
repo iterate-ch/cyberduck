@@ -21,6 +21,7 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.aquaticprime.Donation;
 import ch.cyberduck.core.aquaticprime.Receipt;
+import ch.cyberduck.core.sparkle.Updater;
 import ch.cyberduck.ui.cocoa.application.NSApplication;
 import ch.cyberduck.ui.cocoa.foundation.NSAutoreleasePool;
 import ch.cyberduck.ui.cocoa.foundation.NSGarbageCollector;
@@ -64,7 +65,7 @@ public class MainApplication {
                 BundleLocale.register();
                 Protocol.register();
                 GrowlNative.registerImpl();
-                if(LocalFactory.createLocal(Preferences.instance().getProperty("application.receipt.path")).exists()) {
+                if(null == Updater.getFeed()) {
                     Receipt.register();
                 }
                 else {
