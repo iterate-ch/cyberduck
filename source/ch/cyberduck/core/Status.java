@@ -200,6 +200,10 @@ public class Status {
         this.current = current;
     }
 
+    public void addCurrent(long transferred) {
+        this.current += transferred;
+    }
+
     /**
      * A state variable to mark this path if the path is explicitly selected
      * for inclusion in the transfer prompt

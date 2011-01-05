@@ -9,6 +9,8 @@ Changelog. Last modified: $Date$
 - [Feature] Replaced protocol implementation (FTP)
 - [Feature] Connecting to Windows Azure Blob Storage (Azure) (#3938)
 - [Feature] Copy and paste files using menu item to duplicate
+- [Feature] Multipart Uploads with parallelism (S3) (#5487)
+- [Feature] Support new 5TB Object Size Limit (S3)
 - [Bugfix] Limit number of concurrent transfers (#5539)
 - [Bugfix] Dragging into topmost folder in browser (#1945)
 - [Bugfix] ACLs getting dropped when updating metadata (S3) (#5571)

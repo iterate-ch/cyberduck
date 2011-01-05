@@ -44,7 +44,9 @@ import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.text.MessageFormat;
 import java.util.Collection;
-import java.util.*;
+import java.util.LinkedHashSet;
+import java.util.Set;
+import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
@@ -444,7 +446,7 @@ public abstract class Path extends AbstractPath implements Serializable {
 
             @Override
             public boolean addAll(Collection<? extends Path> c) {
-                for(Path path: c) {
+                for(Path path : c) {
                     this.add(path);
                 }
                 return true;
@@ -742,37 +744,42 @@ public abstract class Path extends AbstractPath implements Serializable {
      */
     protected abstract void upload(BandwidthThrottle throttle, StreamListener listener, boolean check);
 
+    protected void upload(OutputStream out, InputStream in, BandwidthThrottle throttle, final StreamListener l) throws IOException {
+        this.upload(out, in, throttle, l, status().getCurrent(), -1);
+    }
+
     /**
      * Will copy from in to out. Will attempt to skip Status#getCurrent
      * from the inputstream but not from the outputstream. The outputstream
      * is asssumed to append to a already existing file if
      * Status#getCurrent > 0
      *
-     * @param in       The stream to read from
      * @param out      The stream to write to
+     * @param in       The stream to read from
      * @param throttle The bandwidth limit
      * @param l        The stream listener to notify about bytes received and sent
+     * @param offset
      * @throws IOResumeException           If the input stream fails to skip the appropriate
      *                                     number of bytes
      * @throws IOException                 Write not completed due to a I/O problem
      * @throws ConnectionCanceledException When transfer is interrupted by user setting the
      *                                     status flag to cancel.
      */
-    protected void upload(OutputStream out, InputStream in, BandwidthThrottle throttle, final StreamListener l) throws IOException {
+    protected void upload(OutputStream out, InputStream in, BandwidthThrottle throttle, final StreamListener l, long offset, final long limit) throws IOException {
         if(log.isDebugEnabled()) {
             log.debug("upload(" + out.toString() + ", " + in.toString());
         }
         this.getSession().message(MessageFormat.format(Locale.localizedString("Uploading {0}", "Status"),
                 this.getName()));
 
-        if(status().isResume()) {
-            long skipped = in.skip(status().getCurrent());
+        if(offset > 0) {
+            long skipped = in.skip(offset);
             log.info("Skipping " + skipped + " bytes");
             if(skipped < status().getCurrent()) {
                 throw new IOResumeException("Skipped " + skipped + " bytes instead of " + status().getCurrent());
             }
         }
-        this.transfer(in, new ThrottledOutputStream(out, throttle), l);
+        this.transfer(in, new ThrottledOutputStream(out, throttle), l, limit);
     }
 
     /**
@@ -836,7 +843,7 @@ public abstract class Path extends AbstractPath implements Serializable {
                 }
             }
         };
-        this.transfer(new ThrottledInputStream(in, throttle), out, listener);
+        this.transfer(new ThrottledInputStream(in, throttle), out, listener, -1);
     }
 
     /**
@@ -845,25 +852,36 @@ public abstract class Path extends AbstractPath implements Serializable {
      * @param in       The stream to read from
      * @param out      The stream to write to
      * @param listener The stream listener to notify about bytes received and sent
+     * @param limit
      * @throws IOException                 Write not completed due to a I/O problem
      * @throws ConnectionCanceledException When transfer is interrupted by user setting the
      *                                     status flag to cancel.
      */
-    private void transfer(InputStream in, OutputStream out, StreamListener listener) throws IOException {
+    private void transfer(InputStream in, OutputStream out, StreamListener listener, final long limit) throws IOException {
         byte[] chunk = new byte[CHUNKSIZE];
-        long bytesTransferred = status().getCurrent();
+        long bytesTransferred = 0;
         while(!status().isCanceled()) {
             int read = in.read(chunk, 0, CHUNKSIZE);
             listener.bytesReceived(read);
             if(-1 == read) {
+                log.debug("End of file reached");
                 // End of file
                 status().setComplete(true);
                 break;
             }
             out.write(chunk, 0, read);
             listener.bytesSent(read);
+            status().addCurrent(read);
             bytesTransferred += read;
-            status().setCurrent(bytesTransferred);
+            if(limit == bytesTransferred) {
+                log.debug("Limit reached reading from stream:" + limit);
+                // Part reached
+                if(0 == in.available()) {
+                    // End of file
+                    status().setComplete(true);
+                }
+                break;
+            }
         }
         out.flush();
         if(status().isCanceled()) {

@@ -37,6 +37,7 @@ import org.jets3t.service.acl.*;
 import org.jets3t.service.model.*;
 import org.jets3t.service.utils.ServiceUtils;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -46,6 +47,7 @@ import java.security.NoSuchAlgorithmException;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.*;
 
 /**
  * @version $Id$
@@ -436,9 +438,6 @@ public class S3Path extends CloudPath {
                 if(check) {
                     this.getSession().check();
                 }
-                this.getSession().message(MessageFormat.format(Locale.localizedString("Downloading {0}", "Status"),
-                        this.getName()));
-
                 if(this.attributes().isDuplicate()) {
                     in = this.getSession().getClient().getVersionedObject(attributes().getVersionId(),
                             this.getContainerName(), this.getKey(),
@@ -472,6 +471,21 @@ public class S3Path extends CloudPath {
         }
     }
 
+    /**
+     * Default size threshold for when to use multipart uploads.
+     */
+    private static final long DEFAULT_MULTIPART_UPLOAD_THRESHOLD = 16 * 1024 * 1024;
+
+    /**
+     * Default minimum part size for upload parts.
+     */
+    private static final int DEFAULT_MINIMUM_UPLOAD_PART_SIZE = 5 * 1024 * 1024;
+
+    /**
+     * The maximum allowed parts in a multipart upload.
+     */
+    public static final int MAXIMUM_UPLOAD_PARTS = 10000;
+
     @Override
     protected void upload(final BandwidthThrottle throttle, final StreamListener listener, boolean check) {
         try {
@@ -481,7 +495,6 @@ public class S3Path extends CloudPath {
                 }
                 S3Object object = new S3Object(this.getKey());
                 object.setContentType(this.getLocal().getMimeType());
-                object.setContentLength(this.getLocal().attributes().getSize());
                 if(Preferences.instance().getBoolean("s3.upload.metadata.md5")) {
                     try {
                         this.getSession().message(MessageFormat.format(
@@ -579,59 +592,213 @@ public class S3Path extends CloudPath {
 
                 final Status status = this.status();
                 // No Content-Range support
-                status.setResume(false);
+                status().setResume(false);
 
-                final InputStream in;
-                MessageDigest digest = null;
-                if(!Preferences.instance().getBoolean("s3.upload.metadata.md5")) {
-                    // Content-MD5 not set. Need to verify ourselves instad of S3
-                    try {
-                        digest = MessageDigest.getInstance("MD5");
-                    }
-                    catch(NoSuchAlgorithmException e) {
-                        log.error(e.getMessage());
-                    }
-                }
-                if(null == digest) {
-                    log.warn("MD5 calculation disabled");
-                    in = this.getLocal().getInputStream();
+                if(this.getLocal().attributes().getSize() > DEFAULT_MULTIPART_UPLOAD_THRESHOLD) {
+                    this.uploadMultipart(throttle, listener, object);
                 }
                 else {
-                    in = new DigestInputStream(this.getLocal().getInputStream(), digest);
-                }
-                try {
-                    this.getSession().getClient().putObjectWithRequestEntityImpl(
-                            this.getContainerName(), object, new InputStreamRequestEntity(in,
-                                    this.getLocal().attributes().getSize() - status.getCurrent(),
-                                    this.getLocal().getMimeType()) {
-
-                                @Override
-                                public void writeRequest(OutputStream out) throws IOException {
-                                    S3Path.this.upload(out, in, throttle, listener);
-                                }
-                            }, Collections.<String, String>emptyMap());
-                }
-                catch(ServiceException e) {
-                    this.status().setComplete(false);
-                    throw e;
-                }
-                finally {
-                    IOUtils.closeQuietly(in);
-                }
-                if(null != digest) {
-                    this.getSession().message(MessageFormat.format(
-                            Locale.localizedString("Compute MD5 hash of {0}", "Status"), this.getName()));
-                    // Obtain locally-calculated MD5 hash.
-                    String hexMD5 = ServiceUtils.toHex(digest.digest());
-                    this.getSession().getClient().verifyExpectedAndActualETagValues(hexMD5, object);
+                    this.uploadSingle(throttle, listener, object);
                 }
             }
         }
         catch(ServiceException e) {
+            this.status().setComplete(false);
             this.error("Upload failed", e);
         }
         catch(IOException e) {
             this.error("Upload failed", e);
+        }
+    }
+
+    /**
+     * @param throttle
+     * @param listener
+     * @param object
+     * @throws IOException
+     * @throws ServiceException
+     */
+    private void uploadSingle(final BandwidthThrottle throttle, final StreamListener listener, S3Object object)
+            throws IOException, ServiceException {
+        final InputStream in;
+        MessageDigest digest = null;
+        if(!Preferences.instance().getBoolean("s3.upload.metadata.md5")) {
+            // Content-MD5 not set. Need to verify ourselves instad of S3
+            try {
+                digest = MessageDigest.getInstance("MD5");
+            }
+            catch(NoSuchAlgorithmException e) {
+                log.error(e.getMessage());
+            }
+        }
+        if(null == digest) {
+            log.warn("MD5 calculation disabled");
+            in = this.getLocal().getInputStream();
+        }
+        else {
+            in = new DigestInputStream(this.getLocal().getInputStream(), digest);
+        }
+        try {
+            this.getSession().getClient().putObjectWithRequestEntityImpl(
+                    this.getContainerName(), object, new InputStreamRequestEntity(in,
+                            this.getLocal().attributes().getSize() - status().getCurrent(),
+                            this.getLocal().getMimeType()) {
+
+                        @Override
+                        public void writeRequest(OutputStream out) throws IOException {
+                            S3Path.this.upload(out, in, throttle, listener);
+                        }
+                    }, Collections.<String, String>emptyMap());
+        }
+        finally {
+            IOUtils.closeQuietly(in);
+        }
+        if(null != digest) {
+            this.getSession().message(MessageFormat.format(
+                    Locale.localizedString("Compute MD5 hash of {0}", "Status"), this.getName()));
+            // Obtain locally-calculated MD5 hash.
+            String hexMD5 = ServiceUtils.toHex(digest.digest());
+            this.getSession().getClient().verifyExpectedAndActualETagValues(hexMD5, object);
+        }
+    }
+
+    /**
+     * @param throttle
+     * @param listener
+     * @param object
+     * @throws ConnectionCanceledException
+     * @throws FileNotFoundException
+     * @throws ServiceException
+     */
+    private void uploadMultipart(final BandwidthThrottle throttle, final StreamListener listener, S3Object object)
+            throws IOException, ServiceException {
+        // Initiate multipart upload with metadata
+        Map<String, Object> metadata = object.getModifiableMetadata();
+        metadata.put(this.getSession().getClient().getRestHeaderPrefix() + "storage-class",
+                Preferences.instance().getProperty("s3.storage.class"));
+
+        final MultipartUpload multipart = this.getSession().getClient().multipartStartUpload(
+                this.getContainerName(), this.getKey(), metadata);
+
+        ThreadFactory threadFactory = new ThreadFactory() {
+            private int threadCount = 1;
+
+            public Thread newThread(Runnable r) {
+                Thread thread = new Thread(r);
+                thread.setName("multipart-" + threadCount++);
+                return thread;
+            }
+        };
+
+        /**
+         * At any point, at most
+         * <tt>nThreads</tt> threads will be active processing tasks.
+         */
+        final ExecutorService pool = Executors.newFixedThreadPool(
+                Preferences.instance().getInteger("s3.upload.concurency"), threadFactory);
+
+        try {
+            List<Future<MultipartPart>> parts = new ArrayList<Future<MultipartPart>>();
+
+            final long defaultPartSize = Math.max((this.getLocal().attributes().getSize() / MAXIMUM_UPLOAD_PARTS),
+                    DEFAULT_MINIMUM_UPLOAD_PART_SIZE);
+
+            long remaining = this.getLocal().attributes().getSize();
+            long marker = 0;
+
+            for(int request = 1; remaining > 0; request++) {
+                final int partNumber = request;
+                if(pool.isShutdown()) {
+                    throw new ConnectionCanceledException();
+                }
+                // Last part can be less than 5 MB. Adjust part size.
+                final long length = Math.min(defaultPartSize, remaining);
+                final long offset = marker;
+                parts.add(pool.submit(new Callable<MultipartPart>() {
+                    public MultipartPart call() throws IOException, ServiceException {
+                        Map<String, String> requestParameters = new HashMap<String, String>();
+                        requestParameters.put("uploadId", multipart.getUploadId());
+                        requestParameters.put("partNumber", String.valueOf(partNumber));
+
+                        final InputStream in;
+                        MessageDigest digest = null;
+                        if(!Preferences.instance().getBoolean("s3.upload.metadata.md5")) {
+                            // Content-MD5 not set. Need to verify ourselves instad of S3
+                            try {
+                                digest = MessageDigest.getInstance("MD5");
+                            }
+                            catch(NoSuchAlgorithmException e) {
+                                log.error(e.getMessage());
+                            }
+                        }
+                        if(null == digest) {
+                            log.warn("MD5 calculation disabled");
+                            in = getLocal().getInputStream();
+                        }
+                        else {
+                            in = new DigestInputStream(getLocal().getInputStream(), digest);
+                        }
+                        final S3Object part = new S3Object(getKey());
+                        try {
+                            getSession().getClient().putObjectWithRequestEntityImpl(
+                                    getContainerName(), part, new InputStreamRequestEntity(in,
+                                            length,
+                                            getLocal().getMimeType()) {
+
+                                        @Override
+                                        public void writeRequest(OutputStream out) throws IOException {
+                                            S3Path.this.upload(out, in, throttle, listener, offset, length);
+                                        }
+                                    }, requestParameters);
+                        }
+                        finally {
+                            IOUtils.closeQuietly(in);
+                        }
+                        if(null != digest) {
+                            // Obtain locally-calculated MD5 hash.
+                            String hexMD5 = ServiceUtils.toHex(digest.digest());
+                            getSession().getClient().verifyExpectedAndActualETagValues(hexMD5, part);
+                        }
+                        // Populate part with response data that is accessible via the object's metadata
+                        return new MultipartPart(partNumber, part.getLastModifiedDate(),
+                                part.getETag(), part.getContentLength());
+                    }
+                }));
+                remaining -= length;
+                marker += length;
+            }
+            List<MultipartPart> completed = new ArrayList<MultipartPart>();
+            for(Future<MultipartPart> future : parts) {
+                try {
+                    completed.add(future.get());
+                }
+                catch(InterruptedException e) {
+                    log.error("Part upload failed:" + e.getMessage());
+                    throw new ConnectionCanceledException(e.getMessage());
+                }
+                catch(ExecutionException e) {
+                    log.warn("Part upload failed:" + e.getMessage());
+                    if(e.getCause() instanceof ServiceException) {
+                        throw (ServiceException) e.getCause();
+                    }
+                    if(e.getCause() instanceof IOException) {
+                        throw (IOException) e.getCause();
+                    }
+                    throw new ConnectionCanceledException(e.getMessage());
+                }
+            }
+            if(status().isComplete()) {
+                this.getSession().getClient().multipartCompleteUpload(multipart.getUploadId(),
+                        this.getContainerName(), this.getKey(), completed);
+            }
+        }
+        finally {
+            if(!status().isComplete()) {
+                // Cancel all previous parts
+                log.info("Cancel multipart upload:" + multipart.getUploadId());
+                this.getSession().getClient().multipartAbortUpload(multipart.getUploadId(),
+                        this.getContainerName(), this.getKey());
+            }
         }
     }
 

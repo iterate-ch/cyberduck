@@ -523,7 +523,7 @@ public abstract class Preferences {
          * If set calculate MD5 sum of uploaded file and set metadata header Content-MD5
          */
         defaults.put("s3.upload.metadata.md5", String.valueOf(false));
-        defaults.put("cf.upload.metadata.md5", String.valueOf(false));
+        defaults.put("s3.upload.concurency", String.valueOf(10));
         /**
          * A prefix to apply to log file names
          */
@@ -537,13 +537,14 @@ public abstract class Preferences {
          * Default metadata for uploads. Format must be "key1=value1 key2=value2"
          */
         defaults.put("s3.metadata.default", "");
-        defaults.put("cf.metadata.default", "");
-        defaults.put("azure.metadata.default", "");
 
-        defaults.put("webdav.followRedirects", String.valueOf(true));
+        defaults.put("azure.metadata.default", "");
 
         defaults.put("cf.authentication.host", "auth.api.rackspacecloud.com");
         defaults.put("cf.authentication.context", "/v1.0");
+
+        defaults.put("cf.upload.metadata.md5", String.valueOf(false));
+        defaults.put("cf.metadata.default", "");
 
         //doc	Microsoft Word
         //html	HTML Format
@@ -589,6 +590,7 @@ public abstract class Preferences {
          * NTLM Windows Domain
          */
         defaults.put("webdav.ntlm.domain", StringUtils.EMPTY);
+        defaults.put("webdav.followRedirects", String.valueOf(true));
 
         /**
          * Maximum concurrent connections to the same host
