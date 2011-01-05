@@ -184,9 +184,6 @@ public class DropboxPath extends Path {
                 if(check) {
                     this.getSession().check();
                 }
-                this.getSession().message(MessageFormat.format(Locale.localizedString("Downloading {0}", "Status"),
-                        this.getName()));
-
                 in = this.getSession().getClient().get(this.getAbsolute(), this.attributes().getChecksum());
                 out = this.getLocal().getOutputStream(this.status().isResume());
 

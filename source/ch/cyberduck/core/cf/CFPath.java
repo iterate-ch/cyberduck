@@ -289,9 +289,6 @@ public class CFPath extends CloudPath {
                 if(check) {
                     this.getSession().check();
                 }
-                this.getSession().message(MessageFormat.format(Locale.localizedString("Downloading {0}", "Status"),
-                        this.getName()));
-
                 in = this.getSession().getClient().getObjectAsStream(this.getContainerName(), this.getKey());
                 if(null == in) {
                     throw new IOException("Unable opening data stream");
@@ -330,9 +327,6 @@ public class CFPath extends CloudPath {
                             this.getName()));
                     md5sum = this.getLocal().attributes().getChecksum();
                 }
-                this.getSession().message(MessageFormat.format(Locale.localizedString("Uploading {0}", "Status"),
-                        this.getName()));
-
                 final InputStream in;
                 MessageDigest digest = null;
                 if(!Preferences.instance().getBoolean("cf.upload.metadata.md5")) {

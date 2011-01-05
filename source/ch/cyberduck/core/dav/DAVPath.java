@@ -333,9 +333,6 @@ public class DAVPath extends Path {
                 if(check) {
                     this.getSession().check();
                 }
-                this.getSession().message(MessageFormat.format(Locale.localizedString("Uploading {0}", "Status"),
-                        this.getName()));
-
                 final InputStream in = this.getLocal().getInputStream();
                 try {
                     final Status status = this.status();

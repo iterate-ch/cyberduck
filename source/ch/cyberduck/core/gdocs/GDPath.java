@@ -418,9 +418,6 @@ public class GDPath extends Path {
                 if(check) {
                     this.getSession().check();
                 }
-                this.getSession().message(MessageFormat.format(Locale.localizedString("Downloading {0}", "Status"),
-                        this.getName()));
-
                 MediaContent mc = new MediaContent();
                 StringBuilder uri = new StringBuilder(this.getExportUri());
                 final String type = this.getDocumentType();
@@ -491,9 +488,6 @@ public class GDPath extends Path {
                 if(check) {
                     this.getSession().check();
                 }
-                this.getSession().message(MessageFormat.format(Locale.localizedString("Uploading {0}", "Status"),
-                        this.getName()));
-
                 InputStream in = null;
                 OutputStream out = null;
                 try {
@@ -519,8 +513,6 @@ public class GDPath extends Path {
                     }
                     document.setContent(content);
 
-                    this.getSession().message(MessageFormat.format(Locale.localizedString("Uploading {0}", "Status"),
-                            this.getName()));
                     status().setResume(false);
 
                     String feed;

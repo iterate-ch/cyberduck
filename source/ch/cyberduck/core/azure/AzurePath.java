@@ -431,8 +431,6 @@ public class AzurePath extends CloudPath {
                 if(check) {
                     this.getSession().check();
                 }
-                this.getSession().message(MessageFormat.format(Locale.localizedString("Downloading {0}", "Status"),
-                        this.getName()));
 
                 AzureSession.AzureContainer container = this.getSession().getContainer(this.getContainerName());
                 in = container.getBlob(this.getKey());
