@@ -137,13 +137,17 @@ public class MainController extends BundleController implements NSApplication.De
         }
     }
 
+    private Updater updater;
+
     /**
      *
      */
     @Action
     public void updateMenuClicked(ID sender) {
-        Updater sparkle = Updater.create();
-        sparkle.checkForUpdates(null);
+        if(null == updater) {
+            updater = Updater.create();
+        }
+        updater.checkForUpdates(null);
     }
 
     @Outlet
