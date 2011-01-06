@@ -25,7 +25,7 @@ import ch.cyberduck.core.ssl.SSLSession;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpHost;
-import org.apache.http.client.HttpClient;
+import org.apache.http.auth.params.AuthPNames;
 import org.apache.http.client.params.ClientPNames;
 import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.conn.params.ConnRoutePNames;
@@ -33,6 +33,7 @@ import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
 import org.apache.http.conn.ssl.SSLSocketFactory;
+import org.apache.http.impl.client.AbstractHttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.SingleClientConnManager;
 import org.apache.http.params.BasicHttpParams;
@@ -80,19 +81,20 @@ public abstract class HTTP4Session extends SSLSession {
         super(h);
     }
 
-    private HttpClient http;
+    private AbstractHttpClient http;
 
     /**
      * Create new HTTP client with default configuration and custom trust manager.
      *
      * @return A new instance of a default HTTP client.
      */
-    protected HttpClient http() {
+    protected AbstractHttpClient http() {
         if(null == http) {
             final HttpParams params = new BasicHttpParams();
             HttpProtocolParams.setVersion(params, org.apache.http.HttpVersion.HTTP_1_1);
             HttpProtocolParams.setContentCharset(params, getEncoding());
             HttpProtocolParams.setUseExpectContinue(params, true);
+            params.setParameter(AuthPNames.CREDENTIAL_CHARSET, "ISO-8859-1");
             org.apache.http.params.HttpConnectionParams.setTcpNoDelay(params, true);
             org.apache.http.params.HttpConnectionParams.setSoTimeout(params, timeout());
             org.apache.http.params.HttpConnectionParams.setSocketBufferSize(params, 8192);
