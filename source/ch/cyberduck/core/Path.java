@@ -230,6 +230,11 @@ public abstract class Path extends AbstractPath implements Serializable {
         this.reference = null;
     }
 
+    /**
+     * Set reference to parent path.
+     *
+     * @param parent The parent directory with attributes already populated.
+     */
     public void setParent(Path parent) {
         if(this.isChild(parent)) {
             this.parent = parent;
@@ -373,7 +378,9 @@ public abstract class Path extends AbstractPath implements Serializable {
     private Path parent;
 
     /**
-     * @return My parent directory
+     * Create a parent path with default attributes if it is not referenced yet.
+     *
+     * @return The parent directory
      */
     @Override
     public Path getParent() {
