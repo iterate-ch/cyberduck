@@ -142,7 +142,7 @@
 
     <target name="codesign">
         <echo message="Code signing application bundle..."/>
-        <exec dir="${home}" executable="/usr/bin/codesign" spawn="false">
+        <exec dir="${home}" executable="/usr/bin/codesign" spawn="false" failonerror="true">
             <arg line="--force --sign '${codesign.certificate}' --keychain ${codesign.keychain} -v ${app.bundle}"/>
         </exec>
     </target>
@@ -281,11 +281,11 @@
         <echo message="Remove Sparkle.framework"/>
         <delete dir="${app.frameworks}/Sparkle.framework"/>
         <echo message="Remove PPC slice from ${app.executable}"/>
-        <exec dir="${home}" executable="/usr/bin/lipo" spawn="false" failonerror="false">
+        <exec dir="${home}" executable="/usr/bin/lipo" spawn="false" failonerror="true">
             <arg line="-remove ppc7400 -output ${app.executable} ${app.executable}"/>
         </exec>
         <echo message="Remove PPC slice from ${app.spotlight.executable}"/>
-        <exec dir="${home}" executable="/usr/bin/lipo" spawn="false" failonerror="false">
+        <exec dir="${home}" executable="/usr/bin/lipo" spawn="false" failonerror="true">
             <arg line="-remove ppc7400 -output '${app.spotlight.executable}' '${app.spotlight.executable}'"/>
         </exec>
         <antcall target="codesign">
