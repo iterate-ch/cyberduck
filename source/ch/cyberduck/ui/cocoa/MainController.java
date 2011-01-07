@@ -968,7 +968,7 @@ public class MainController extends BundleController implements NSApplication.De
             return NSApplication.NSTerminateNow;
         }
         final License l = LicenseFactory.find();
-        if(!l.verify()) {
+        if(!l.isReceipt() && !l.verify()) {
             final String lastversion = Preferences.instance().getProperty("donate.reminder");
             if(NSBundle.mainBundle().infoDictionary().objectForKey("Version").toString().equals(lastversion)) {
                 // Do not display if same version is installed
