@@ -93,7 +93,6 @@ public abstract class HTTP4Session extends SSLSession {
             final HttpParams params = new BasicHttpParams();
             HttpProtocolParams.setVersion(params, org.apache.http.HttpVersion.HTTP_1_1);
             HttpProtocolParams.setContentCharset(params, getEncoding());
-            HttpProtocolParams.setUseExpectContinue(params, true);
             params.setParameter(AuthPNames.CREDENTIAL_CHARSET, "ISO-8859-1");
             org.apache.http.params.HttpConnectionParams.setTcpNoDelay(params, true);
             org.apache.http.params.HttpConnectionParams.setSoTimeout(params, timeout());
