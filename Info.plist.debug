@@ -173,6 +173,8 @@
         <false/>
         <key>SUPublicDSAKeyFile</key>
         <string>update.pem</string>
+        <key>SUExpectsDSASignature</key>
+        <true/>
         <key>UTExportedTypeDeclarations</key>
         <array>
             <dict>
