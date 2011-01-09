@@ -147,6 +147,7 @@
 		475D17C10805D54C00166B8A /* download1.icns in Resources */ = {isa = PBXBuildFile; fileRef = 475D17B70805D54C00166B8A /* download1.icns */; };
 		475D17C20805D54C00166B8A /* download4.icns in Resources */ = {isa = PBXBuildFile; fileRef = 475D17B80805D54C00166B8A /* download4.icns */; };
 		475D461D0D9953CD009450C4 /* SecurityInterface.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 475D461C0D9953CD009450C4 /* SecurityInterface.framework */; };
+		475EBE9412DA462C00E5C3A2 /* ServicesMenu.strings in Resources */ = {isa = PBXBuildFile; fileRef = 475EBE7212DA462C00E5C3A2 /* ServicesMenu.strings */; };
 		4762DABE09FC42EC0034C662 /* JavaVM.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4725BE0A05D2E27000C7CCBD /* JavaVM.framework */; };
 		4762DAC109FC42EC0034C662 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47C761EA06A88D7600B464FF /* SystemConfiguration.framework */; };
 		47652D0B1202BED200745031 /* Azure.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47652CE91202BED200745031 /* Azure.strings */; };
@@ -995,6 +996,39 @@
 		475D17B70805D54C00166B8A /* download1.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = download1.icns; sourceTree = "<group>"; };
 		475D17B80805D54C00166B8A /* download4.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = download4.icns; sourceTree = "<group>"; };
 		475D461C0D9953CD009450C4 /* SecurityInterface.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SecurityInterface.framework; path = System/Library/Frameworks/SecurityInterface.framework; sourceTree = SDKROOT; };
+		475EBE7312DA462C00E5C3A2 /* lv */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = lv; path = lv.lproj/ServicesMenu.strings; sourceTree = "<group>"; };
+		475EBE7412DA462C00E5C3A2 /* pt_BR */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = pt_BR; path = pt_BR.lproj/ServicesMenu.strings; sourceTree = "<group>"; };
+		475EBE7512DA462C00E5C3A2 /* ca */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = ca; path = ca.lproj/ServicesMenu.strings; sourceTree = "<group>"; };
+		475EBE7612DA462C00E5C3A2 /* no */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = no; path = no.lproj/ServicesMenu.strings; sourceTree = "<group>"; };
+		475EBE7712DA462C00E5C3A2 /* es */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = es; path = es.lproj/ServicesMenu.strings; sourceTree = "<group>"; };
+		475EBE7812DA462C00E5C3A2 /* id */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = id; path = id.lproj/ServicesMenu.strings; sourceTree = "<group>"; };
+		475EBE7912DA462C00E5C3A2 /* zh_TW */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = zh_TW; path = zh_TW.lproj/ServicesMenu.strings; sourceTree = "<group>"; };
+		475EBE7A12DA462C00E5C3A2 /* he */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = he; path = he.lproj/ServicesMenu.strings; sourceTree = "<group>"; };
+		475EBE7B12DA462C00E5C3A2 /* zh_CN */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = zh_CN; path = zh_CN.lproj/ServicesMenu.strings; sourceTree = "<group>"; };
+		475EBE7C12DA462C00E5C3A2 /* tr */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = tr; path = tr.lproj/ServicesMenu.strings; sourceTree = "<group>"; };
+		475EBE7D12DA462C00E5C3A2 /* sv */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = sv; path = sv.lproj/ServicesMenu.strings; sourceTree = "<group>"; };
+		475EBE7E12DA462C00E5C3A2 /* pl */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = pl; path = pl.lproj/ServicesMenu.strings; sourceTree = "<group>"; };
+		475EBE7F12DA462C00E5C3A2 /* cy */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = cy; path = cy.lproj/ServicesMenu.strings; sourceTree = "<group>"; };
+		475EBE8012DA462C00E5C3A2 /* fr */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/ServicesMenu.strings; sourceTree = "<group>"; };
+		475EBE8112DA462C00E5C3A2 /* hu */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = hu; path = hu.lproj/ServicesMenu.strings; sourceTree = "<group>"; };
+		475EBE8212DA462C00E5C3A2 /* ro */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = ro; path = ro.lproj/ServicesMenu.strings; sourceTree = "<group>"; };
+		475EBE8312DA462C00E5C3A2 /* sr */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = sr; path = sr.lproj/ServicesMenu.strings; sourceTree = "<group>"; };
+		475EBE8412DA462C00E5C3A2 /* ru */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/ServicesMenu.strings; sourceTree = "<group>"; };
+		475EBE8512DA462C00E5C3A2 /* de */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = de; path = de.lproj/ServicesMenu.strings; sourceTree = "<group>"; };
+		475EBE8612DA462C00E5C3A2 /* cs */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = cs; path = cs.lproj/ServicesMenu.strings; sourceTree = "<group>"; };
+		475EBE8712DA462C00E5C3A2 /* ka */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = ka; path = ka.lproj/ServicesMenu.strings; sourceTree = "<group>"; };
+		475EBE8812DA462C00E5C3A2 /* th */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = th; path = th.lproj/ServicesMenu.strings; sourceTree = "<group>"; };
+		475EBE8912DA462C00E5C3A2 /* sl */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = sl; path = sl.lproj/ServicesMenu.strings; sourceTree = "<group>"; };
+		475EBE8A12DA462C00E5C3A2 /* ja */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/ServicesMenu.strings; sourceTree = "<group>"; };
+		475EBE8B12DA462C00E5C3A2 /* fi */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = fi; path = fi.lproj/ServicesMenu.strings; sourceTree = "<group>"; };
+		475EBE8C12DA462C00E5C3A2 /* el */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = el; path = el.lproj/ServicesMenu.strings; sourceTree = "<group>"; };
+		475EBE8D12DA462C00E5C3A2 /* pt_PT */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = pt_PT; path = pt_PT.lproj/ServicesMenu.strings; sourceTree = "<group>"; };
+		475EBE8E12DA462C00E5C3A2 /* sk */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = sk; path = sk.lproj/ServicesMenu.strings; sourceTree = "<group>"; };
+		475EBE8F12DA462C00E5C3A2 /* ko */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = ko; path = ko.lproj/ServicesMenu.strings; sourceTree = "<group>"; };
+		475EBE9012DA462C00E5C3A2 /* it */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = it; path = it.lproj/ServicesMenu.strings; sourceTree = "<group>"; };
+		475EBE9112DA462C00E5C3A2 /* en */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/ServicesMenu.strings; sourceTree = "<group>"; };
+		475EBE9212DA462C00E5C3A2 /* nl */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/ServicesMenu.strings; sourceTree = "<group>"; };
+		475EBE9312DA462C00E5C3A2 /* da */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = da; path = da.lproj/ServicesMenu.strings; sourceTree = "<group>"; };
 		4762DAC509FC42EC0034C662 /* libDiagnostics.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libDiagnostics.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		47652CEA1202BED200745031 /* ko */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = ko; path = ko.lproj/Azure.strings; sourceTree = "<group>"; };
 		47652CEB1202BED200745031 /* ka */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; name = ka; path = ka.lproj/Azure.strings; sourceTree = "<group>"; };
@@ -1721,6 +1755,7 @@
 				4786CB690E253B800029848F /* Progress.nib */,
 				4786CB6A0E253B800029848F /* Task.nib */,
 				47993F7B11699F40000271A8 /* Transfer.nib */,
+				475EBE7212DA462C00E5C3A2 /* ServicesMenu.strings */,
 				47911A170B84C4E8001A29AE /* Acknowledgments.rtf */,
 				471F5C0C12AD1B6B0005D323 /* Alert.strings */,
 				47652CE91202BED200745031 /* Azure.strings */,
@@ -2589,6 +2624,7 @@
 				4712425A129AA0F200BC957C /* swift.icns in Resources */,
 				471F5C2E12AD1B6B0005D323 /* Alert.strings in Resources */,
 				476F5EA812CCDD34004E8BC1 /* advanced.tiff in Resources */,
+				475EBE9412DA462C00E5C3A2 /* ServicesMenu.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3615,6 +3651,46 @@
 				470DECB9125F2CBD00952823 /* ru */,
 			);
 			name = Credentials.strings;
+			sourceTree = "<group>";
+		};
+		475EBE7212DA462C00E5C3A2 /* ServicesMenu.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				475EBE7312DA462C00E5C3A2 /* lv */,
+				475EBE7412DA462C00E5C3A2 /* pt_BR */,
+				475EBE7512DA462C00E5C3A2 /* ca */,
+				475EBE7612DA462C00E5C3A2 /* no */,
+				475EBE7712DA462C00E5C3A2 /* es */,
+				475EBE7812DA462C00E5C3A2 /* id */,
+				475EBE7912DA462C00E5C3A2 /* zh_TW */,
+				475EBE7A12DA462C00E5C3A2 /* he */,
+				475EBE7B12DA462C00E5C3A2 /* zh_CN */,
+				475EBE7C12DA462C00E5C3A2 /* tr */,
+				475EBE7D12DA462C00E5C3A2 /* sv */,
+				475EBE7E12DA462C00E5C3A2 /* pl */,
+				475EBE7F12DA462C00E5C3A2 /* cy */,
+				475EBE8012DA462C00E5C3A2 /* fr */,
+				475EBE8112DA462C00E5C3A2 /* hu */,
+				475EBE8212DA462C00E5C3A2 /* ro */,
+				475EBE8312DA462C00E5C3A2 /* sr */,
+				475EBE8412DA462C00E5C3A2 /* ru */,
+				475EBE8512DA462C00E5C3A2 /* de */,
+				475EBE8612DA462C00E5C3A2 /* cs */,
+				475EBE8712DA462C00E5C3A2 /* ka */,
+				475EBE8812DA462C00E5C3A2 /* th */,
+				475EBE8912DA462C00E5C3A2 /* sl */,
+				475EBE8A12DA462C00E5C3A2 /* ja */,
+				475EBE8B12DA462C00E5C3A2 /* fi */,
+				475EBE8C12DA462C00E5C3A2 /* el */,
+				475EBE8D12DA462C00E5C3A2 /* pt_PT */,
+				475EBE8E12DA462C00E5C3A2 /* sk */,
+				475EBE8F12DA462C00E5C3A2 /* ko */,
+				475EBE9012DA462C00E5C3A2 /* it */,
+				475EBE9112DA462C00E5C3A2 /* en */,
+				475EBE9212DA462C00E5C3A2 /* nl */,
+				475EBE9312DA462C00E5C3A2 /* da */,
+			);
+			name = ServicesMenu.strings;
 			sourceTree = "<group>";
 		};
 		47652CE91202BED200745031 /* Azure.strings */ = {
