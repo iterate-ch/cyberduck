@@ -136,11 +136,6 @@ public abstract class SheetController extends WindowController implements SheetC
     public void beginSheet() {
         // Synchronize on parent controller. Only display one sheet at once.
         synchronized(parent) {
-            if(isMainThread()) {
-                // No need to call invoke on main thread
-                this.beginSheetImpl();
-                return;
-            }
             invoke(new ControllerMainAction(this) {
                 public void run() {
                     //Invoke again on main thread
