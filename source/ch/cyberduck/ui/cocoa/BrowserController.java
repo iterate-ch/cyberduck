@@ -3029,6 +3029,60 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         return false;
     }
 
+    /**
+     * NSService
+     * <p/>
+     * Indicates whether the receiver can send and receive the specified pasteboard types.
+     * <p/>
+     * Either sendType or returnType—but not both—may be empty. If sendType is empty,
+     * the service doesn’t require input from the application requesting the service.
+     * If returnType is empty, the service doesn’t return data.
+     *
+     * @param sendType   The pasteboard type the application needs to send.
+     * @param returnType The pasteboard type the application needs to receive.
+     * @return The object that can send and receive the specified types or nil
+     *         if the receiver knows of no object that can send and receive data of that type.
+     */
+    public ID validRequestorForSendType_returnType(String sendType, String returnType) {
+        log.debug("validRequestorForSendType_returnType:" + sendType + "," + returnType);
+        if(StringUtils.isNotEmpty(sendType)) {
+            // Cannot send any data type
+            return null;
+        }
+        if(StringUtils.isNotEmpty(returnType)) {
+            // Can receive filenames
+            if(NSPasteboard.FilenamesPboardType.equals(sendType)) {
+                return this.id();
+            }
+        }
+        return null;
+    }
+
+    /**
+     * NSService
+     * <p/>
+     * Reads data from the pasteboard and uses it to replace the current selection.
+     *
+     * @param pboard
+     * @return YES if your implementation was able to read the pasteboard data successfully; otherwise, NO.
+     */
+    public boolean readSelectionFromPasteboard(NSPasteboard pboard) {
+        return this.paste(pboard);
+    }
+
+    /**
+     * NSService
+     * <p/>
+     * Writes the current selection to the pasteboard.
+     *
+     * @param pboard
+     * @param types
+     * @return YES if your implementation was able to write one or more types to the pasteboard; otherwise, NO.
+     */
+    public boolean writeSelectionToPasteboard_types(NSPasteboard pboard, NSArray types) {
+        return this.copy(pboard);
+    }
+
     @Action
     public void copy(final ID sender) {
         PathPasteboard pasteboard = PathPasteboard.getPasteboard(this.getSession());
@@ -3039,14 +3093,30 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             pasteboard.add(selected);
         }
         final NSPasteboard clipboard = NSPasteboard.generalPasteboard();
-        clipboard.declareTypes(NSArray.arrayWithObject(NSString.stringWithString(NSPasteboard.StringPboardType)), null);
+        this.copy(clipboard);
+    }
+
+    /**
+     * @param clipboard
+     */
+    public boolean copy(NSPasteboard clipboard) {
+        if(!this.isMounted()) {
+            return false;
+        }
+        List<Path> selected = this.getSelectedPaths();
+        if(selected.size() == 0) {
+            selected = Collections.singletonList(this.workdir());
+        }
+        clipboard.declareTypes(NSArray.arrayWithObject(
+                NSString.stringWithString(NSPasteboard.StringPboardType)), null);
         StringBuilder copy = new StringBuilder();
-        for(Path selected : this.getSelectedPaths()) {
-            copy.append(selected.getAbsolute()).append("\n");
+        for(Path p : selected) {
+            copy.append(p.getAbsolute()).append("\n");
         }
         if(!clipboard.setStringForType(copy.toString(), NSPasteboard.StringPboardType)) {
-            log.error("Error writing absolute path of selected item to NSPasteboard.StringPboardType.");
+            log.error("Error writing to NSPasteboard.StringPboardType.");
         }
+        return true;
     }
 
     @Action
@@ -3061,7 +3131,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         final NSPasteboard clipboard = NSPasteboard.generalPasteboard();
         clipboard.declareTypes(NSArray.arrayWithObject(NSString.stringWithString(NSPasteboard.StringPboardType)), null);
         if(!clipboard.setStringForType(this.getSelectedPath().getAbsolute(), NSPasteboard.StringPboardType)) {
-            log.error("Error writing absolute path of selected item to NSPasteboard.StringPboardType.");
+            log.error("Error writing to NSPasteboard.StringPboardType.");
         }
     }
 
@@ -3070,25 +3140,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         final PathPasteboard pasteboard = PathPasteboard.getPasteboard(this.getSession());
         if(pasteboard.isEmpty()) {
             NSPasteboard pboard = NSPasteboard.generalPasteboard();
-            if(pboard.availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.FilenamesPboardType)) != null) {
-                NSObject o = pboard.propertyListForType(NSPasteboard.FilenamesPboardType);
-                if(o != null) {
-                    final NSArray elements = Rococoa.cast(o, NSArray.class);
-                    final Path workdir = this.workdir();
-                    final Session session = this.getTransferSession();
-                    final List<Path> roots = new Collection<Path>();
-                    for(int i = 0; i < elements.count().intValue(); i++) {
-                        Path p = PathFactory.createPath(session,
-                                workdir.getAbsolute(),
-                                LocalFactory.createLocal(elements.objectAtIndex(new NSUInteger(i)).toString()));
-                        roots.add(p);
-                    }
-                    final Transfer q = new UploadTransfer(roots);
-                    if(q.numberOfRoots() > 0) {
-                        this.transfer(q, workdir);
-                    }
-                }
-            }
+            this.paste(pboard);
         }
         else {
             final Map<Path, Path> files = new HashMap<Path, Path>();
@@ -3117,6 +3169,36 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 this.duplicatePaths(files, false);
             }
         }
+    }
+
+    /**
+     * @param pboard
+     */
+    public boolean paste(NSPasteboard pboard) {
+        if(!this.isMounted()) {
+            return false;
+        }
+        if(pboard.availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.FilenamesPboardType)) != null) {
+            NSObject o = pboard.propertyListForType(NSPasteboard.FilenamesPboardType);
+            if(o != null) {
+                final NSArray elements = Rococoa.cast(o, NSArray.class);
+                final Path workdir = this.workdir();
+                final Session session = this.getTransferSession();
+                final List<Path> roots = new Collection<Path>();
+                for(int i = 0; i < elements.count().intValue(); i++) {
+                    Path p = PathFactory.createPath(session,
+                            workdir.getAbsolute(),
+                            LocalFactory.createLocal(elements.objectAtIndex(new NSUInteger(i)).toString()));
+                    roots.add(p);
+                }
+                final Transfer q = new UploadTransfer(roots);
+                if(q.numberOfRoots() > 0) {
+                    this.transfer(q, workdir);
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     @Action

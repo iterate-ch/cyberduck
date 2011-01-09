@@ -175,6 +175,30 @@
         <string>update.pem</string>
         <key>SUExpectsDSASignature</key>
         <true/>
+        <key>NSServices</key>
+        <array>
+            <dict>
+                <key>NSMenuItem</key>
+                <dict>
+                    <key>default</key>
+                    <string>Cyberduck/Upload</string>
+                </dict>
+                <key>NSMessage</key>
+                <string>serviceUploadFileUrl</string>
+                <key>NSPortName</key>
+                <string>Cyberduck</string>
+                <key>NSSendTypes</key>
+                <array>
+                    <string>public.file-url</string>
+                </array>
+                <key>NSSendFileTypes</key>
+                <array>
+                    <string>public.item</string>
+                </array>
+                <key>NSServiceDescription</key>
+                <string>Upload file with Cyberduck</string>
+            </dict>
+        </array>
         <key>UTExportedTypeDeclarations</key>
         <array>
             <dict>

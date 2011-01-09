@@ -21,13 +21,27 @@ package ch.cyberduck.ui.cocoa.application;
 
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
 
+import org.rococoa.ObjCClass;
 import org.rococoa.cocoa.foundation.NSInteger;
+import org.rococoa.cocoa.foundation.NSRect;
 
 /// <i>native declaration : :10</i>
 
 public abstract class NSPopUpButton extends NSButton {
 
     public static final String PopUpButtonWillPopUpNotification = "NSPopUpButtonWillPopUpNotification";
+
+    private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSPopUpButton", _Class.class);
+
+    public static NSPopUpButton buttonWithFrame(NSRect frameRect) {
+        return CLASS.alloc().initWithFrame_pullsDown(frameRect, false);
+    }
+
+    public interface _Class extends ObjCClass {
+        NSPopUpButton alloc();
+    }
+
+    public abstract NSPopUpButton initWithFrame_pullsDown(NSRect frameRect, boolean flag);
 
     /**
      * Behavior settings<br>

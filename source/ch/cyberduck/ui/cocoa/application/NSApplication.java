@@ -426,7 +426,7 @@ public abstract class NSApplication extends NSObject {
      * Original signature : <code>id validRequestorForSendType(NSString*, NSString*)</code><br>
      * <i>native declaration : :190</i>
      */
-    public abstract com.sun.jna.Pointer validRequestorForSendType_returnType(String sendType, String returnType);
+    public abstract ID validRequestorForSendType_returnType(String sendType, String returnType);
 
     /**
      * Original signature : <code>void reportException(NSException*)</code><br>
@@ -526,7 +526,7 @@ public abstract class NSApplication extends NSObject {
      * Original signature : <code>void setServicesProvider(id)</code><br>
      * <i>from NSServicesHandling native declaration : :286</i>
      */
-    public abstract void setServicesProvider(NSObject provider);
+    public abstract void setServicesProvider(final ID provider);
 
     /**
      * Original signature : <code>id servicesProvider()</code><br>

@@ -36,7 +36,9 @@ import ch.cyberduck.ui.growl.Growl;
 
 import org.rococoa.Foundation;
 import org.rococoa.ID;
+import org.rococoa.Rococoa;
 import org.rococoa.cocoa.foundation.NSInteger;
+import org.rococoa.cocoa.foundation.NSRect;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
 import org.apache.commons.lang.StringUtils;
@@ -481,7 +483,7 @@ public class MainController extends BundleController implements NSApplication.De
                 MainController.newDocument().mount(host);
                 return true;
             }
-            if("cyberducklicense".equals(f.getExtension())) {
+            else if("cyberducklicense".equals(f.getExtension())) {
                 final License l = LicenseFactory.create(f);
                 if(l.verify()) {
                     final NSAlert alert = NSAlert.alert(
@@ -523,19 +525,105 @@ public class MainController extends BundleController implements NSApplication.De
                 }
                 return true;
             }
-            for(BrowserController controller : MainController.getBrowsers()) {
-                if(controller.isMounted()) {
-                    final Path workdir = controller.workdir();
-                    final Session session = controller.getTransferSession();
-                    final Transfer q = new UploadTransfer(
-                            PathFactory.createPath(session, workdir.getAbsolute(), f)
-                    );
-                    controller.transfer(q, workdir);
-                    break;
-                }
+            else {
+                // Upload file
+                return this.upload(f);
             }
         }
         return false;
+    }
+
+    /**
+     * @param f
+     * @return
+     */
+    private boolean upload(Local f) {
+        return this.upload(Collections.singletonList(f));
+    }
+
+    /**
+     * @param files
+     * @return
+     */
+    private boolean upload(final List<Local> files) {
+        // Selected bookmark
+        Host open = null;
+        String workdir = String.valueOf(Path.DELIMITER);
+        for(BrowserController controller : MainController.getBrowsers()) {
+            if(controller.isMounted()) {
+                open = controller.getSession().getHost();
+                workdir = controller.workdir().getAbsolute();
+            }
+        }
+        final NSPopUpButton bookmarksPopup = NSPopUpButton.buttonWithFrame(new NSRect(0, 26));
+        bookmarksPopup.setToolTip(Locale.localizedString("Bookmarks"));
+        for(Host b : BookmarkCollection.defaultCollection()) {
+            bookmarksPopup.addItemWithTitle(b.getNickname());
+            bookmarksPopup.lastItem().setImage(IconCache.iconNamed(b.getProtocol().icon(), 16));
+            bookmarksPopup.lastItem().setRepresentedObject(b.getUuid());
+            if(b.equals(open)) {
+                bookmarksPopup.selectItemAtIndex(bookmarksPopup.indexOfItem(bookmarksPopup.lastItem()));
+            }
+        }
+        if(null == open) {
+            int i = 0;
+            for(Host bookmark : BookmarkCollection.defaultCollection()) {
+                for(Local file : files) {
+                    if(file.getParent().equals(bookmark.getDownloadFolder())) {
+                        bookmarksPopup.selectItemAtIndex(new NSInteger(i));
+                    }
+                    i++;
+                }
+            }
+        }
+        if(-1 == bookmarksPopup.indexOfSelectedItem().intValue()) {
+            bookmarksPopup.selectItemAtIndex(new NSInteger(0));
+        }
+        final TransferController t = TransferController.instance();
+        final Host mount = open;
+        final String destination = workdir;
+        AlertController alert = new AlertController(t, NSAlert.alert("Select Bookmark",
+                MessageFormat.format("Upload {0} to the selected bookmark.",
+                        files.size() == 1 ? files.iterator().next().getName() : MessageFormat.format(Locale.localizedString("{0} Files"), files.size())),
+                Locale.localizedString("Upload"),
+                Locale.localizedString("Cancel"),
+                null)) {
+            public void callback(int returncode) {
+                if(DEFAULT_OPTION == returncode) {
+                    final String selected = bookmarksPopup.selectedItem().representedObject();
+                    for(Host bookmark : BookmarkCollection.defaultCollection()) {
+                        // Determine selected bookmark
+                        if(bookmark.getUuid().equals(selected)) {
+                            String parent = destination;
+                            if(bookmark.equals(mount)) {
+                                ; // Use current working directory of browser for destination
+                            }
+                            else {
+                                // No mounted browser
+                                if(StringUtils.isNotBlank(bookmark.getDefaultPath())) {
+                                    parent = bookmark.getDefaultPath();
+                                }
+                            }
+                            final Session session = SessionFactory.createSession(bookmark);
+                            List<Path> roots = new ArrayList<Path>();
+                            for(Local file : files) {
+                                roots.add(PathFactory.createPath(session, parent, file));
+                            }
+                            t.startTransfer(new UploadTransfer(roots));
+                            break;
+                        }
+                    }
+                }
+            }
+
+            @Override
+            protected boolean validateInput() {
+                return StringUtils.isNotEmpty(bookmarksPopup.selectedItem().representedObject());
+            }
+        };
+        alert.setAccessoryView(bookmarksPopup);
+        alert.beginSheet();
+        return true;
     }
 
     /**
@@ -700,6 +788,8 @@ public class MainController extends BundleController implements NSApplication.De
                         openDefaultBookmark(MainController.newDocument());
                     }
                 }
+                // Set delegate for NSService
+                NSApplication.sharedApplication().setServicesProvider(MainController.this.id());
             }
 
             @Override
@@ -878,6 +968,24 @@ public class MainController extends BundleController implements NSApplication.De
                         new FlowBookmarkCollection(), new InterarchyBookmarkCollection(), new CrossFtpBookmarkCollection(), new FireFtpBookmarkCollection());
             }
         });
+    }
+
+    /**
+     * NSService
+     */
+    public void serviceUploadFileUrl_(final NSPasteboard pboard, String userData) {
+        log.debug("serviceUploadFileUrl_:" + userData);
+        if(pboard.availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.FilenamesPboardType)) != null) {
+            NSObject o = pboard.propertyListForType(NSPasteboard.FilenamesPboardType);
+            if(o != null) {
+                final NSArray elements = Rococoa.cast(o, NSArray.class);
+                List<Local> files = new ArrayList<Local>();
+                for(int i = 0; i < elements.count().intValue(); i++) {
+                    files.add(LocalFactory.createLocal(elements.objectAtIndex(new NSUInteger(i)).toString()));
+                }
+                this.upload(files);
+            }
+        }
     }
 
     /**
