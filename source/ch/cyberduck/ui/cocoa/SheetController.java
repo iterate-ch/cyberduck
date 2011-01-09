@@ -166,7 +166,6 @@ public abstract class SheetController extends WindowController implements SheetC
      * Keep a reference to the sheet to protect it from being
      * deallocated as a weak reference before the callback from the runtime
      */
-    @SuppressWarnings({"MismatchedQueryAndUpdateOfCollection"})
     protected static final List<SheetController> sheetRegistry
             = new ArrayList<SheetController>();
 
