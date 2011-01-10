@@ -142,7 +142,7 @@
 
     <target name="codesign">
         <echo message="Code signing application bundle..."/>
-        <exec dir="${home}" executable="/usr/bin/codesign" spawn="false" failonerror="true">
+        <exec dir="${home}" executable="/usr/bin/codesign" spawn="false" failonerror="false">
             <arg line="--force --sign '${codesign.certificate}' --keychain ${codesign.keychain} -v ${app.bundle}"/>
         </exec>
     </target>
