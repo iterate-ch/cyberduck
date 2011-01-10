@@ -204,7 +204,9 @@ public abstract class Transfer implements Serializable {
     }
 
     protected void fireTransferWillStart() {
-        log.debug("fireTransferWillStart");
+        if(log.isDebugEnabled()) {
+            log.debug("fireTransferWillStart:" + this);
+        }
         canceled = false;
         running = true;
         queued = false;
@@ -214,7 +216,9 @@ public abstract class Transfer implements Serializable {
     }
 
     public void fireTransferQueued() {
-        log.debug("fireTransferQueued");
+        if(log.isDebugEnabled()) {
+            log.debug("fireTransferQueued:" + this);
+        }
         final Session session = this.getSession();
         Growl.instance().notify("Transfer queued", session.getHost().getHostname());
         session.message(Locale.localizedString("Maximum allowed connections exceeded. Waiting", "Status"));
@@ -225,7 +229,9 @@ public abstract class Transfer implements Serializable {
     }
 
     public void fireTransferResumed() {
-        log.debug("fireTransferResumed");
+        if(log.isDebugEnabled()) {
+            log.debug("fireTransferResumed:" + this);
+        }
         queued = false;
         for(TransferListener listener : listeners.toArray(new TransferListener[listeners.size()])) {
             listener.transferResumed();
@@ -233,7 +239,9 @@ public abstract class Transfer implements Serializable {
     }
 
     protected void fireTransferDidEnd() {
-        log.debug("fireTransferDidEnd");
+        if(log.isDebugEnabled()) {
+            log.debug("fireTransferDidEnd:" + this);
+        }
         running = false;
         queued = false;
         timestamp = new Date();
@@ -599,17 +607,19 @@ public abstract class Transfer implements Serializable {
      *         no longer connected
      */
     protected boolean check() {
-        log.debug("check");
+        if(log.isDebugEnabled()) {
+            log.debug("check:" + this);
+        }
         boolean connected = this.getSession().isConnected();
         if(!connected) {
             // Bail out if no more connected
-            log.warn("Disconnected transfer in progress:" + this.toString());
+            log.warn("Disconnected transfer in progress:" + this);
             return false;
         }
         // Bail out if canceled
         boolean canceled = this.isCanceled();
         if(canceled) {
-            log.warn("Canceled transfer in progress:" + this.toString());
+            log.warn("Canceled transfer in progress:" + this);
         }
         return !canceled;
     }
@@ -652,7 +662,9 @@ public abstract class Transfer implements Serializable {
      * @param options
      */
     public void start(TransferPrompt prompt, final TransferOptions options) {
-        log.debug("start:" + prompt);
+        if(log.isDebugEnabled()) {
+            log.debug("start:" + prompt);
+        }
         this.prompt = prompt;
         try {
             this.fireTransferWillStart();
@@ -670,7 +682,9 @@ public abstract class Transfer implements Serializable {
     }
 
     private synchronized void queue() {
-        log.debug("queue");
+        if(log.isDebugEnabled()) {
+            log.debug("queue:" + this);
+        }
         Queue.instance().add(this);
     }
 
@@ -678,7 +692,9 @@ public abstract class Transfer implements Serializable {
      * @see Session#interrupt()
      */
     public void interrupt() {
-        log.debug("interrupt");
+        if(log.isDebugEnabled()) {
+            log.debug("interrupt:" + this);
+        }
         this.getSession().interrupt();
     }
 
@@ -688,7 +704,9 @@ public abstract class Transfer implements Serializable {
      * state, the underlying session's socket is interrupted to force exit.
      */
     public void cancel() {
-        log.debug("cancel");
+        if(log.isDebugEnabled()) {
+            log.debug("cancel:" + this);
+        }
         if(_current != null) {
             _current.status().setCanceled();
         }
@@ -704,7 +722,9 @@ public abstract class Transfer implements Serializable {
      * Recalculate the size of the <code>queue</code>
      */
     protected void reset() {
-        log.debug("reset");
+        if(log.isDebugEnabled()) {
+            log.debug("reset:" + this);
+        }
         this.transferred = 0;
         this.size = 0;
         this.reset = true;
