@@ -18,12 +18,10 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFactory;
-import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.i18n.Locale;
-import ch.cyberduck.ui.cocoa.application.NSImageView;
+import ch.cyberduck.ui.cocoa.application.NSAlert;
 import ch.cyberduck.ui.cocoa.odb.Editor;
 import ch.cyberduck.ui.cocoa.odb.EditorFactory;
 import ch.cyberduck.ui.cocoa.threading.BrowserBackgroundAction;
@@ -37,25 +35,21 @@ import java.util.Collections;
 public class CreateFileController extends FileController {
 
     public CreateFileController(final WindowController parent) {
-        super(parent);
-    }
-
-    @Override
-    public void setIconView(NSImageView iconView) {
-        iconView.setImage(IconCache.documentIcon(null, 128));
-        super.setIconView(iconView);
-    }
-
-    @Override
-    protected String getBundleName() {
-        return "File";
+        super(parent, NSAlert.alert(
+                Locale.localizedString("Create new file", "File"),
+                Locale.localizedString("Enter the name for the new file:", "File"),
+                Locale.localizedString("Create", "File"),
+                EditorFactory.defaultEditor() != null ? Locale.localizedString("Edit", "File") : null,
+                Locale.localizedString("Cancel", "File")
+        ));
+        alert.setIcon(IconCache.documentIcon(null, 128));
     }
 
     public void callback(final int returncode) {
         if(returncode == DEFAULT_OPTION) {
             this.createFile(this.getWorkdir(), filenameField.stringValue(), false);
         }
-        if(returncode == OTHER_OPTION) {
+        else if(returncode == ALTERNATE_OPTION) {
             this.createFile(this.getWorkdir(), filenameField.stringValue(), true);
         }
     }

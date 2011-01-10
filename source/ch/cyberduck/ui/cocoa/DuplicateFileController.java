@@ -21,9 +21,10 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.ui.DateFormatterFactory;
-import ch.cyberduck.ui.cocoa.application.NSImageView;
-import ch.cyberduck.ui.cocoa.application.NSTextField;
+import ch.cyberduck.ui.cocoa.application.NSAlert;
+import ch.cyberduck.ui.cocoa.odb.EditorFactory;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
@@ -36,25 +37,16 @@ import java.text.MessageFormat;
 public class DuplicateFileController extends FileController {
 
     public DuplicateFileController(final WindowController parent) {
-        super(parent);
-    }
-
-    @Override
-    public void setIconView(NSImageView iconView) {
-        iconView.setImage(
-                IconCache.instance().iconForExtension(((BrowserController) parent).getSelectedPath().getExtension(), 64)
+        super(parent, NSAlert.alert(
+                Locale.localizedString("Duplicate File", "Duplicate"),
+                Locale.localizedString("Enter the name for the new file:", "Duplicate"),
+                Locale.localizedString("Duplicate", "Duplicate"),
+                EditorFactory.defaultEditor() != null ? Locale.localizedString("Edit", "Duplicate") : null,
+                Locale.localizedString("Cancel", "Duplicate")
+        ));
+        alert.setIcon(IconCache.instance().iconForExtension(
+                ((BrowserController) parent).getSelectedPath().getExtension(), 64)
         );
-        super.setIconView(iconView);
-    }
-
-    @Override
-    protected String getBundleName() {
-        return "Duplicate";
-    }
-
-    @Override
-    public void setFilenameField(NSTextField field) {
-        super.setFilenameField(field);
         final Path selected = ((BrowserController) parent).getSelectedPath();
         String proposal = MessageFormat.format(Preferences.instance().getProperty("browser.duplicate.format"),
                 FilenameUtils.getBaseName(selected.getName()),
@@ -68,7 +60,7 @@ public class DuplicateFileController extends FileController {
         if(returncode == DEFAULT_OPTION) {
             this.duplicateFile(selected, filenameField.stringValue(), false);
         }
-        if(returncode == OTHER_OPTION) {
+        else if(returncode == ALTERNATE_OPTION) {
             this.duplicateFile(selected, filenameField.stringValue(), true);
         }
     }

@@ -22,8 +22,10 @@ package ch.cyberduck.ui.cocoa.application;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
+import org.rococoa.ObjCClass;
 import org.rococoa.cocoa.CGFloat;
 import org.rococoa.cocoa.foundation.NSInteger;
+import org.rococoa.cocoa.foundation.NSRect;
 
 /// <i>native declaration : :16</i>
 public abstract class NSComboBox extends NSTextField {
@@ -33,6 +35,19 @@ public abstract class NSComboBox extends NSTextField {
 
         NSObject comboBox_objectValueForItemAtIndex(final NSComboBox sender, final NSInteger row);
     }
+
+    private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSComboBox", _Class.class);
+
+    public static NSComboBox textfieldWithFrame(NSRect frameRect) {
+        return CLASS.alloc().initWithFrame(frameRect);
+    }
+
+    public interface _Class extends ObjCClass {
+        NSComboBox alloc();
+    }
+
+    @Override
+    public abstract NSComboBox initWithFrame(NSRect frameRect);
 
     /**
      * Original signature : <code>BOOL hasVerticalScroller()</code><br>

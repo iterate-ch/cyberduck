@@ -19,11 +19,13 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.ui.cocoa.application.NSAlert;
 import ch.cyberduck.ui.cocoa.application.NSComboBox;
-import ch.cyberduck.ui.cocoa.application.NSImageView;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
 import org.rococoa.cocoa.foundation.NSInteger;
+import org.rococoa.cocoa.foundation.NSRect;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -33,28 +35,11 @@ import java.util.Comparator;
 /**
  * @version $Id$
  */
-public class GotoController extends SheetController {
+public class GotoController extends AlertController {
     private static Logger log = Logger.getLogger(GotoController.class);
 
-    @Outlet
-    protected NSImageView iconView;
-
-    public void setIconView(NSImageView iconView) {
-        this.iconView = iconView;
-        this.iconView.setImage(IconCache.folderIcon(64));
-    }
-
-    @Outlet
     private NSComboBox folderCombobox;
     private ProxyController folderComboboxModel = new FolderComboboxModel();
-
-    public void setFolderCombobox(NSComboBox folderCombobox) {
-        this.folderCombobox = folderCombobox;
-        this.folderCombobox.setCompletes(true);
-        this.folderCombobox.setUsesDataSource(true);
-        this.folderCombobox.setDataSource(folderComboboxModel.id());
-        this.folderCombobox.setStringValue(((BrowserController) this.parent).workdir().getAbsolute());
-    }
 
     private class FolderComboboxModel extends ProxyController implements NSComboBox.DataSource {
 
@@ -79,7 +64,20 @@ public class GotoController extends SheetController {
     }
 
     public GotoController(final WindowController parent) {
-        super(parent);
+        super(parent, NSAlert.alert(
+                Locale.localizedString("Go to folder", "Goto"),
+                Locale.localizedString("Enter the pathname to list:", "Goto"),
+                Locale.localizedString("Go", "Goto"),
+                null,
+                Locale.localizedString("Cancel", "Goto")
+        ));
+        alert.setIcon(IconCache.folderIcon(64));
+        folderCombobox = NSComboBox.textfieldWithFrame(new NSRect(0, 26));
+        folderCombobox.setCompletes(true);
+        folderCombobox.setUsesDataSource(true);
+        folderCombobox.setDataSource(folderComboboxModel.id());
+        folderCombobox.setStringValue(((BrowserController) this.parent).workdir().getAbsolute());
+        this.setAccessoryView(folderCombobox);
     }
 
     @Override
@@ -87,16 +85,6 @@ public class GotoController extends SheetController {
         folderCombobox.setDelegate(null);
         folderCombobox.setDataSource(null);
         super.invalidate();
-    }
-
-    @Override
-    public String getBundleName() {
-        return "Goto";
-    }
-
-    @Override
-    protected double getMaxWindowHeight() {
-        return this.window().frame().size.height.doubleValue();
     }
 
     public void callback(final int returncode) {

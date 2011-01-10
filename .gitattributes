@@ -30,14 +30,10 @@ ca.lproj/Donate.nib/keyedobjects.nib -text
 ca.lproj/Donate.strings -text svneol=unset#text/utf-16
 ca.lproj/Download.nib/keyedobjects.nib -text
 ca.lproj/Download.strings -text svneol=unset#text/utf-16
-ca.lproj/Duplicate.nib/keyedobjects.nib -text
 ca.lproj/Duplicate.strings -text svneol=unset#text/utf-16
 ca.lproj/Error.strings -text svneol=unset#text/utf-16
-ca.lproj/File.nib/keyedobjects.nib -text
 ca.lproj/File.strings -text svneol=unset#text/utf-16
-ca.lproj/Folder.nib/keyedobjects.nib -text
 ca.lproj/Folder.strings -text svneol=unset#text/utf-16
-ca.lproj/Goto.nib/keyedobjects.nib -text
 ca.lproj/Goto.strings -text svneol=unset#text/utf-16
 ca.lproj/Growl.strings -text svneol=unset#text/utf-16
 ca.lproj/IDisk.strings -text svneol=unset#text/utf-16
@@ -81,14 +77,10 @@ cs.lproj/Donate.nib/keyedobjects.nib -text
 cs.lproj/Donate.strings -text svneol=unset#text/utf-16
 cs.lproj/Download.nib/keyedobjects.nib -text
 cs.lproj/Download.strings -text svneol=unset#text/utf-16
-cs.lproj/Duplicate.nib/keyedobjects.nib -text
 cs.lproj/Duplicate.strings -text svneol=unset#text/utf-16
 cs.lproj/Error.strings -text svneol=unset#text/utf-16
-cs.lproj/File.nib/keyedobjects.nib -text
 cs.lproj/File.strings -text svneol=unset#text/utf-16
-cs.lproj/Folder.nib/keyedobjects.nib -text
 cs.lproj/Folder.strings -text svneol=unset#text/utf-16
-cs.lproj/Goto.nib/keyedobjects.nib -text
 cs.lproj/Goto.strings -text svneol=unset#text/utf-16
 cs.lproj/Growl.strings -text svneol=unset#text/utf-16
 cs.lproj/IDisk.strings -text svneol=unset#text/utf-16
@@ -132,14 +124,10 @@ cy.lproj/Donate.nib/keyedobjects.nib -text
 cy.lproj/Donate.strings -text svneol=unset#text/utf-16
 cy.lproj/Download.nib/keyedobjects.nib -text
 cy.lproj/Download.strings -text svneol=unset#text/utf-16
-cy.lproj/Duplicate.nib/keyedobjects.nib -text
 cy.lproj/Duplicate.strings -text svneol=unset#text/utf-16
 cy.lproj/Error.strings -text svneol=unset#text/utf-16
-cy.lproj/File.nib/keyedobjects.nib -text
 cy.lproj/File.strings -text svneol=unset#text/utf-16
-cy.lproj/Folder.nib/keyedobjects.nib -text
 cy.lproj/Folder.strings -text svneol=unset#text/utf-16
-cy.lproj/Goto.nib/keyedobjects.nib -text
 cy.lproj/Goto.strings -text svneol=unset#text/utf-16
 cy.lproj/Growl.strings -text svneol=unset#text/utf-16
 cy.lproj/IDisk.strings -text svneol=unset#text/utf-16
@@ -188,14 +176,10 @@ da.lproj/Donate.nib/keyedobjects.nib -text
 da.lproj/Donate.strings -text svneol=unset#text/utf-16
 da.lproj/Download.nib/keyedobjects.nib -text
 da.lproj/Download.strings -text svneol=unset#text/utf-16
-da.lproj/Duplicate.nib/keyedobjects.nib -text
 da.lproj/Duplicate.strings -text svneol=unset#text/utf-16
 da.lproj/Error.strings -text svneol=unset#text/utf-16
-da.lproj/File.nib/keyedobjects.nib -text
 da.lproj/File.strings -text svneol=unset#text/utf-16
-da.lproj/Folder.nib/keyedobjects.nib -text
 da.lproj/Folder.strings -text svneol=unset#text/utf-16
-da.lproj/Goto.nib/keyedobjects.nib -text
 da.lproj/Goto.strings -text svneol=unset#text/utf-16
 da.lproj/Growl.strings -text svneol=unset#text/utf-16
 da.lproj/IDisk.strings -text svneol=unset#text/utf-16
@@ -239,14 +223,10 @@ de.lproj/Donate.nib/keyedobjects.nib -text
 de.lproj/Donate.strings -text svneol=unset#text/utf-16
 de.lproj/Download.nib/keyedobjects.nib -text
 de.lproj/Download.strings -text svneol=unset#text/utf-16
-de.lproj/Duplicate.nib/keyedobjects.nib -text
 de.lproj/Duplicate.strings -text svneol=unset#text/utf-16
 de.lproj/Error.strings -text svneol=unset#text/utf-16
-de.lproj/File.nib/keyedobjects.nib -text
 de.lproj/File.strings -text svneol=unset#text/utf-16
-de.lproj/Folder.nib/keyedobjects.nib -text
 de.lproj/Folder.strings -text svneol=unset#text/utf-16
-de.lproj/Goto.nib/keyedobjects.nib -text
 de.lproj/Goto.strings -text svneol=unset#text/utf-16
 de.lproj/Growl.strings -text svneol=unset#text/utf-16
 de.lproj/IDisk.strings -text svneol=unset#text/utf-16
@@ -302,22 +282,10 @@ el.lproj/Download.nib/classes.nib -text
 el.lproj/Download.nib/info.nib -text
 el.lproj/Download.nib/keyedobjects.nib -text
 el.lproj/Download.strings -text svneol=unset#text/utf-16
-el.lproj/Duplicate.nib/classes.nib -text
-el.lproj/Duplicate.nib/info.nib -text
-el.lproj/Duplicate.nib/keyedobjects.nib -text
 el.lproj/Duplicate.strings -text svneol=unset#text/utf-16
 el.lproj/Error.strings -text svneol=unset#text/utf-16
-el.lproj/File.nib/classes.nib -text
-el.lproj/File.nib/info.nib -text
-el.lproj/File.nib/keyedobjects.nib -text
 el.lproj/File.strings -text svneol=unset#text/utf-16
-el.lproj/Folder.nib/classes.nib -text
-el.lproj/Folder.nib/info.nib -text
-el.lproj/Folder.nib/keyedobjects.nib -text
 el.lproj/Folder.strings -text svneol=unset#text/utf-16
-el.lproj/Goto.nib/classes.nib -text
-el.lproj/Goto.nib/info.nib -text
-el.lproj/Goto.nib/keyedobjects.nib -text
 el.lproj/Goto.strings -text svneol=unset#text/utf-16
 el.lproj/Growl.strings -text svneol=unset#text/utf-16
 el.lproj/IDisk.strings -text svneol=unset#text/utf-16
@@ -372,14 +340,10 @@ en.lproj/Donate.nib/keyedobjects.nib -text
 en.lproj/Donate.strings -text svneol=unset#text/utf-16
 en.lproj/Download.nib/keyedobjects.nib -text
 en.lproj/Download.strings -text svneol=unset#text/utf-16
-en.lproj/Duplicate.nib/keyedobjects.nib -text
 en.lproj/Duplicate.strings -text svneol=unset#text/utf-16
 en.lproj/Error.strings -text svneol=unset#text/utf-16
-en.lproj/File.nib/keyedobjects.nib -text
 en.lproj/File.strings -text svneol=unset#text/utf-16
-en.lproj/Folder.nib/keyedobjects.nib -text
 en.lproj/Folder.strings -text svneol=unset#text/utf-16
-en.lproj/Goto.nib/keyedobjects.nib -text
 en.lproj/Goto.strings -text svneol=unset#text/utf-16
 en.lproj/Growl.strings -text svneol=unset#text/utf-16
 en.lproj/IDisk.strings -text svneol=unset#text/utf-16
@@ -423,14 +387,10 @@ es.lproj/Donate.nib/keyedobjects.nib -text
 es.lproj/Donate.strings -text svneol=unset#text/utf-16
 es.lproj/Download.nib/keyedobjects.nib -text
 es.lproj/Download.strings -text svneol=unset#text/utf-16
-es.lproj/Duplicate.nib/keyedobjects.nib -text
 es.lproj/Duplicate.strings -text svneol=unset#text/utf-16
 es.lproj/Error.strings -text svneol=unset#text/utf-16
-es.lproj/File.nib/keyedobjects.nib -text
 es.lproj/File.strings -text svneol=unset#text/utf-16
-es.lproj/Folder.nib/keyedobjects.nib -text
 es.lproj/Folder.strings -text svneol=unset#text/utf-16
-es.lproj/Goto.nib/keyedobjects.nib -text
 es.lproj/Goto.strings -text svneol=unset#text/utf-16
 es.lproj/Growl.strings -text svneol=unset#text/utf-16
 es.lproj/IDisk.strings -text svneol=unset#text/utf-16
@@ -474,14 +434,10 @@ fi.lproj/Donate.nib/keyedobjects.nib -text
 fi.lproj/Donate.strings -text svneol=unset#text/utf-16
 fi.lproj/Download.nib/keyedobjects.nib -text
 fi.lproj/Download.strings -text svneol=unset#text/utf-16
-fi.lproj/Duplicate.nib/keyedobjects.nib -text
 fi.lproj/Duplicate.strings -text svneol=unset#text/utf-16
 fi.lproj/Error.strings -text svneol=unset#text/utf-16
-fi.lproj/File.nib/keyedobjects.nib -text
 fi.lproj/File.strings -text svneol=unset#text/utf-16
-fi.lproj/Folder.nib/keyedobjects.nib -text
 fi.lproj/Folder.strings -text svneol=unset#text/utf-16
-fi.lproj/Goto.nib/keyedobjects.nib -text
 fi.lproj/Goto.strings -text svneol=unset#text/utf-16
 fi.lproj/Growl.strings -text svneol=unset#text/utf-16
 fi.lproj/IDisk.strings -text svneol=unset#text/utf-16
@@ -525,14 +481,10 @@ fr.lproj/Donate.nib/keyedobjects.nib -text
 fr.lproj/Donate.strings -text svneol=unset#text/utf-16
 fr.lproj/Download.nib/keyedobjects.nib -text
 fr.lproj/Download.strings -text svneol=unset#text/utf-16
-fr.lproj/Duplicate.nib/keyedobjects.nib -text
 fr.lproj/Duplicate.strings -text svneol=unset#text/utf-16
 fr.lproj/Error.strings -text svneol=unset#text/utf-16
-fr.lproj/File.nib/keyedobjects.nib -text
 fr.lproj/File.strings -text svneol=unset#text/utf-16
-fr.lproj/Folder.nib/keyedobjects.nib -text
 fr.lproj/Folder.strings -text svneol=unset#text/utf-16
-fr.lproj/Goto.nib/keyedobjects.nib -text
 fr.lproj/Goto.strings -text svneol=unset#text/utf-16
 fr.lproj/Growl.strings -text svneol=unset#text/utf-16
 fr.lproj/IDisk.strings -text svneol=unset#text/utf-16
@@ -588,22 +540,10 @@ he.lproj/Download.nib/classes.nib -text
 he.lproj/Download.nib/info.nib -text
 he.lproj/Download.nib/keyedobjects.nib -text
 he.lproj/Download.strings -text svneol=unset#text/utf-16
-he.lproj/Duplicate.nib/classes.nib -text
-he.lproj/Duplicate.nib/info.nib -text
-he.lproj/Duplicate.nib/keyedobjects.nib -text
 he.lproj/Duplicate.strings -text svneol=unset#text/utf-16
 he.lproj/Error.strings -text svneol=unset#text/utf-16
-he.lproj/File.nib/classes.nib -text
-he.lproj/File.nib/info.nib -text
-he.lproj/File.nib/keyedobjects.nib -text
 he.lproj/File.strings -text svneol=unset#text/utf-16
-he.lproj/Folder.nib/classes.nib -text
-he.lproj/Folder.nib/info.nib -text
-he.lproj/Folder.nib/keyedobjects.nib -text
 he.lproj/Folder.strings -text svneol=unset#text/utf-16
-he.lproj/Goto.nib/classes.nib -text
-he.lproj/Goto.nib/info.nib -text
-he.lproj/Goto.nib/keyedobjects.nib -text
 he.lproj/Goto.strings -text svneol=unset#text/utf-16
 he.lproj/Growl.strings -text svneol=unset#text/utf-16
 he.lproj/IDisk.strings -text svneol=unset#text/utf-16
@@ -657,14 +597,10 @@ hu.lproj/Donate.nib/keyedobjects.nib -text
 hu.lproj/Donate.strings -text svneol=unset#text/utf-16
 hu.lproj/Download.nib/keyedobjects.nib -text
 hu.lproj/Download.strings -text svneol=unset#text/utf-16
-hu.lproj/Duplicate.nib/keyedobjects.nib -text
 hu.lproj/Duplicate.strings -text svneol=unset#text/utf-16
 hu.lproj/Error.strings -text svneol=unset#text/utf-16
-hu.lproj/File.nib/keyedobjects.nib -text
 hu.lproj/File.strings -text svneol=unset#text/utf-16
-hu.lproj/Folder.nib/keyedobjects.nib -text
 hu.lproj/Folder.strings -text svneol=unset#text/utf-16
-hu.lproj/Goto.nib/keyedobjects.nib -text
 hu.lproj/Goto.strings -text svneol=unset#text/utf-16
 hu.lproj/Growl.strings -text svneol=unset#text/utf-16
 hu.lproj/IDisk.strings -text svneol=unset#text/utf-16
@@ -708,14 +644,10 @@ id.lproj/Donate.nib/keyedobjects.nib -text
 id.lproj/Donate.strings -text svneol=unset#text/utf-16
 id.lproj/Download.nib/keyedobjects.nib -text
 id.lproj/Download.strings -text svneol=unset#text/utf-16
-id.lproj/Duplicate.nib/keyedobjects.nib -text
 id.lproj/Duplicate.strings -text svneol=unset#text/utf-16
 id.lproj/Error.strings -text svneol=unset#text/utf-16
-id.lproj/File.nib/keyedobjects.nib -text
 id.lproj/File.strings -text svneol=unset#text/utf-16
-id.lproj/Folder.nib/keyedobjects.nib -text
 id.lproj/Folder.strings -text svneol=unset#text/utf-16
-id.lproj/Goto.nib/keyedobjects.nib -text
 id.lproj/Goto.strings -text svneol=unset#text/utf-16
 id.lproj/Growl.strings -text svneol=unset#text/utf-16
 id.lproj/IDisk.strings -text svneol=unset#text/utf-16
@@ -875,14 +807,10 @@ it.lproj/Donate.nib/keyedobjects.nib -text
 it.lproj/Donate.strings -text svneol=unset#text/utf-16
 it.lproj/Download.nib/keyedobjects.nib -text
 it.lproj/Download.strings -text svneol=unset#text/utf-16
-it.lproj/Duplicate.nib/keyedobjects.nib -text
 it.lproj/Duplicate.strings -text svneol=unset#text/utf-16
 it.lproj/Error.strings -text svneol=unset#text/utf-16
-it.lproj/File.nib/keyedobjects.nib -text
 it.lproj/File.strings -text svneol=unset#text/utf-16
-it.lproj/Folder.nib/keyedobjects.nib -text
 it.lproj/Folder.strings -text svneol=unset#text/utf-16
-it.lproj/Goto.nib/keyedobjects.nib -text
 it.lproj/Goto.strings -text svneol=unset#text/utf-16
 it.lproj/Growl.strings -text svneol=unset#text/utf-16
 it.lproj/IDisk.strings -text svneol=unset#text/utf-16
@@ -926,14 +854,10 @@ ja.lproj/Donate.nib/keyedobjects.nib -text
 ja.lproj/Donate.strings -text svneol=unset#text/utf-16
 ja.lproj/Download.nib/keyedobjects.nib -text
 ja.lproj/Download.strings -text svneol=unset#text/utf-16
-ja.lproj/Duplicate.nib/keyedobjects.nib -text
 ja.lproj/Duplicate.strings -text svneol=unset#text/utf-16
 ja.lproj/Error.strings -text svneol=unset#text/utf-16
-ja.lproj/File.nib/keyedobjects.nib -text
 ja.lproj/File.strings -text svneol=unset#text/utf-16
-ja.lproj/Folder.nib/keyedobjects.nib -text
 ja.lproj/Folder.strings -text svneol=unset#text/utf-16
-ja.lproj/Goto.nib/keyedobjects.nib -text
 ja.lproj/Goto.strings -text svneol=unset#text/utf-16
 ja.lproj/Growl.strings -text svneol=unset#text/utf-16
 ja.lproj/IDisk.strings -text svneol=unset#text/utf-16
@@ -990,22 +914,10 @@ ka.lproj/Download.nib/classes.nib -text
 ka.lproj/Download.nib/info.nib -text
 ka.lproj/Download.nib/keyedobjects.nib -text
 ka.lproj/Download.strings -text svneol=unset#text/utf-16
-ka.lproj/Duplicate.nib/classes.nib -text
-ka.lproj/Duplicate.nib/info.nib -text
-ka.lproj/Duplicate.nib/keyedobjects.nib -text
 ka.lproj/Duplicate.strings -text svneol=unset#text/utf-16
 ka.lproj/Error.strings -text svneol=unset#text/utf-16
-ka.lproj/File.nib/classes.nib -text
-ka.lproj/File.nib/info.nib -text
-ka.lproj/File.nib/keyedobjects.nib -text
 ka.lproj/File.strings -text svneol=unset#text/utf-16
-ka.lproj/Folder.nib/classes.nib -text
-ka.lproj/Folder.nib/info.nib -text
-ka.lproj/Folder.nib/keyedobjects.nib -text
 ka.lproj/Folder.strings -text svneol=unset#text/utf-16
-ka.lproj/Goto.nib/classes.nib -text
-ka.lproj/Goto.nib/info.nib -text
-ka.lproj/Goto.nib/keyedobjects.nib -text
 ka.lproj/Goto.strings -text svneol=unset#text/utf-16
 ka.lproj/Growl.strings -text svneol=unset#text/utf-16
 ka.lproj/IDisk.strings -text svneol=unset#text/utf-16
@@ -1059,14 +971,10 @@ ko.lproj/Donate.nib/keyedobjects.nib -text
 ko.lproj/Donate.strings -text svneol=unset#text/utf-16
 ko.lproj/Download.nib/keyedobjects.nib -text
 ko.lproj/Download.strings -text svneol=unset#text/utf-16
-ko.lproj/Duplicate.nib/keyedobjects.nib -text
 ko.lproj/Duplicate.strings -text svneol=unset#text/utf-16
 ko.lproj/Error.strings -text svneol=unset#text/utf-16
-ko.lproj/File.nib/keyedobjects.nib -text
 ko.lproj/File.strings -text svneol=unset#text/utf-16
-ko.lproj/Folder.nib/keyedobjects.nib -text
 ko.lproj/Folder.strings -text svneol=unset#text/utf-16
-ko.lproj/Goto.nib/keyedobjects.nib -text
 ko.lproj/Goto.strings -text svneol=unset#text/utf-16
 ko.lproj/Growl.strings -text svneol=unset#text/utf-16
 ko.lproj/IDisk.strings -text svneol=unset#text/utf-16
@@ -1400,22 +1308,10 @@ lv.lproj/Download.nib/classes.nib -text
 lv.lproj/Download.nib/info.nib -text
 lv.lproj/Download.nib/keyedobjects.nib -text
 lv.lproj/Download.strings -text svneol=unset#text/utf-16
-lv.lproj/Duplicate.nib/classes.nib -text
-lv.lproj/Duplicate.nib/info.nib -text
-lv.lproj/Duplicate.nib/keyedobjects.nib -text
 lv.lproj/Duplicate.strings -text svneol=unset#text/utf-16
 lv.lproj/Error.strings -text svneol=unset#text/utf-16
-lv.lproj/File.nib/classes.nib -text
-lv.lproj/File.nib/info.nib -text
-lv.lproj/File.nib/keyedobjects.nib -text
 lv.lproj/File.strings -text svneol=unset#text/utf-16
-lv.lproj/Folder.nib/classes.nib -text
-lv.lproj/Folder.nib/info.nib -text
-lv.lproj/Folder.nib/keyedobjects.nib -text
 lv.lproj/Folder.strings -text svneol=unset#text/utf-16
-lv.lproj/Goto.nib/classes.nib -text
-lv.lproj/Goto.nib/info.nib -text
-lv.lproj/Goto.nib/keyedobjects.nib -text
 lv.lproj/Goto.strings -text svneol=unset#text/utf-16
 lv.lproj/Growl.strings -text svneol=unset#text/utf-16
 lv.lproj/IDisk.strings -text svneol=unset#text/utf-16
@@ -1470,14 +1366,10 @@ nl.lproj/Donate.nib/keyedobjects.nib -text
 nl.lproj/Donate.strings -text svneol=unset#text/utf-16
 nl.lproj/Download.nib/keyedobjects.nib -text
 nl.lproj/Download.strings -text svneol=unset#text/utf-16
-nl.lproj/Duplicate.nib/keyedobjects.nib -text
 nl.lproj/Duplicate.strings -text svneol=unset#text/utf-16
 nl.lproj/Error.strings -text svneol=unset#text/utf-16
-nl.lproj/File.nib/keyedobjects.nib -text
 nl.lproj/File.strings -text svneol=unset#text/utf-16
-nl.lproj/Folder.nib/keyedobjects.nib -text
 nl.lproj/Folder.strings -text svneol=unset#text/utf-16
-nl.lproj/Goto.nib/keyedobjects.nib -text
 nl.lproj/Goto.strings -text svneol=unset#text/utf-16
 nl.lproj/Growl.strings -text svneol=unset#text/utf-16
 nl.lproj/IDisk.strings -text svneol=unset#text/utf-16
@@ -1521,14 +1413,10 @@ no.lproj/Donate.nib/keyedobjects.nib -text
 no.lproj/Donate.strings -text svneol=unset#text/utf-16
 no.lproj/Download.nib/keyedobjects.nib -text
 no.lproj/Download.strings -text svneol=unset#text/utf-16
-no.lproj/Duplicate.nib/keyedobjects.nib -text
 no.lproj/Duplicate.strings -text svneol=unset#text/utf-16
 no.lproj/Error.strings -text svneol=unset#text/utf-16
-no.lproj/File.nib/keyedobjects.nib -text
 no.lproj/File.strings -text svneol=unset#text/utf-16
-no.lproj/Folder.nib/keyedobjects.nib -text
 no.lproj/Folder.strings -text svneol=unset#text/utf-16
-no.lproj/Goto.nib/keyedobjects.nib -text
 no.lproj/Goto.strings -text svneol=unset#text/utf-16
 no.lproj/Growl.strings -text svneol=unset#text/utf-16
 no.lproj/IDisk.strings -text svneol=unset#text/utf-16
@@ -1572,14 +1460,10 @@ pl.lproj/Donate.nib/keyedobjects.nib -text
 pl.lproj/Donate.strings -text svneol=unset#text/utf-16
 pl.lproj/Download.nib/keyedobjects.nib -text
 pl.lproj/Download.strings -text svneol=unset#text/utf-16
-pl.lproj/Duplicate.nib/keyedobjects.nib -text
 pl.lproj/Duplicate.strings -text svneol=unset#text/utf-16
 pl.lproj/Error.strings -text svneol=unset#text/utf-16
-pl.lproj/File.nib/keyedobjects.nib -text
 pl.lproj/File.strings -text svneol=unset#text/utf-16
-pl.lproj/Folder.nib/keyedobjects.nib -text
 pl.lproj/Folder.strings -text svneol=unset#text/utf-16
-pl.lproj/Goto.nib/keyedobjects.nib -text
 pl.lproj/Goto.strings -text svneol=unset#text/utf-16
 pl.lproj/Growl.strings -text svneol=unset#text/utf-16
 pl.lproj/IDisk.strings -text svneol=unset#text/utf-16
@@ -1636,22 +1520,10 @@ pt_BR.lproj/Download.nib/classes.nib -text
 pt_BR.lproj/Download.nib/info.nib -text
 pt_BR.lproj/Download.nib/keyedobjects.nib -text
 pt_BR.lproj/Download.strings -text svneol=unset#text/utf-16
-pt_BR.lproj/Duplicate.nib/classes.nib -text
-pt_BR.lproj/Duplicate.nib/info.nib -text
-pt_BR.lproj/Duplicate.nib/keyedobjects.nib -text
 pt_BR.lproj/Duplicate.strings -text svneol=unset#text/utf-16
 pt_BR.lproj/Error.strings -text svneol=unset#text/utf-16
-pt_BR.lproj/File.nib/classes.nib -text
-pt_BR.lproj/File.nib/info.nib -text
-pt_BR.lproj/File.nib/keyedobjects.nib -text
 pt_BR.lproj/File.strings -text svneol=unset#text/utf-16
-pt_BR.lproj/Folder.nib/classes.nib -text
-pt_BR.lproj/Folder.nib/info.nib -text
-pt_BR.lproj/Folder.nib/keyedobjects.nib -text
 pt_BR.lproj/Folder.strings -text svneol=unset#text/utf-16
-pt_BR.lproj/Goto.nib/classes.nib -text
-pt_BR.lproj/Goto.nib/info.nib -text
-pt_BR.lproj/Goto.nib/keyedobjects.nib -text
 pt_BR.lproj/Goto.strings -text svneol=unset#text/utf-16
 pt_BR.lproj/Growl.strings -text svneol=unset#text/utf-16
 pt_BR.lproj/IDisk.strings -text svneol=unset#text/utf-16
@@ -1706,14 +1578,10 @@ pt_PT.lproj/Donate.nib/keyedobjects.nib -text
 pt_PT.lproj/Donate.strings -text svneol=unset#text/utf-16
 pt_PT.lproj/Download.nib/keyedobjects.nib -text
 pt_PT.lproj/Download.strings -text svneol=unset#text/utf-16
-pt_PT.lproj/Duplicate.nib/keyedobjects.nib -text
 pt_PT.lproj/Duplicate.strings -text svneol=unset#text/utf-16
 pt_PT.lproj/Error.strings -text svneol=unset#text/utf-16
-pt_PT.lproj/File.nib/keyedobjects.nib -text
 pt_PT.lproj/File.strings -text svneol=unset#text/utf-16
-pt_PT.lproj/Folder.nib/keyedobjects.nib -text
 pt_PT.lproj/Folder.strings -text svneol=unset#text/utf-16
-pt_PT.lproj/Goto.nib/keyedobjects.nib -text
 pt_PT.lproj/Goto.strings -text svneol=unset#text/utf-16
 pt_PT.lproj/Growl.strings -text svneol=unset#text/utf-16
 pt_PT.lproj/IDisk.strings -text svneol=unset#text/utf-16
@@ -1787,22 +1655,10 @@ ro.lproj/Download.nib/classes.nib -text
 ro.lproj/Download.nib/info.nib -text
 ro.lproj/Download.nib/keyedobjects.nib -text
 ro.lproj/Download.strings -text svneol=unset#text/utf-16
-ro.lproj/Duplicate.nib/classes.nib -text
-ro.lproj/Duplicate.nib/info.nib -text
-ro.lproj/Duplicate.nib/keyedobjects.nib -text
 ro.lproj/Duplicate.strings -text svneol=unset#text/utf-16
 ro.lproj/Error.strings -text svneol=unset#text/utf-16
-ro.lproj/File.nib/classes.nib -text
-ro.lproj/File.nib/info.nib -text
-ro.lproj/File.nib/keyedobjects.nib -text
 ro.lproj/File.strings -text svneol=unset#text/utf-16
-ro.lproj/Folder.nib/classes.nib -text
-ro.lproj/Folder.nib/info.nib -text
-ro.lproj/Folder.nib/keyedobjects.nib -text
 ro.lproj/Folder.strings -text svneol=unset#text/utf-16
-ro.lproj/Goto.nib/classes.nib -text
-ro.lproj/Goto.nib/info.nib -text
-ro.lproj/Goto.nib/keyedobjects.nib -text
 ro.lproj/Goto.strings -text svneol=unset#text/utf-16
 ro.lproj/Growl.strings -text svneol=unset#text/utf-16
 ro.lproj/IDisk.strings -text svneol=unset#text/utf-16
@@ -1856,14 +1712,10 @@ ru.lproj/Donate.nib/keyedobjects.nib -text
 ru.lproj/Donate.strings -text svneol=unset#text/utf-16
 ru.lproj/Download.nib/keyedobjects.nib -text
 ru.lproj/Download.strings -text svneol=unset#text/utf-16
-ru.lproj/Duplicate.nib/keyedobjects.nib -text
 ru.lproj/Duplicate.strings -text svneol=unset#text/utf-16
 ru.lproj/Error.strings -text svneol=unset#text/utf-16
-ru.lproj/File.nib/keyedobjects.nib -text
 ru.lproj/File.strings -text svneol=unset#text/utf-16
-ru.lproj/Folder.nib/keyedobjects.nib -text
 ru.lproj/Folder.strings -text svneol=unset#text/utf-16
-ru.lproj/Goto.nib/keyedobjects.nib -text
 ru.lproj/Goto.strings -text svneol=unset#text/utf-16
 ru.lproj/Growl.strings -text svneol=unset#text/utf-16
 ru.lproj/IDisk.strings -text svneol=unset#text/utf-16
@@ -1914,14 +1766,10 @@ sk.lproj/Donate.nib/keyedobjects.nib -text
 sk.lproj/Donate.strings -text svneol=unset#text/utf-16
 sk.lproj/Download.nib/keyedobjects.nib -text
 sk.lproj/Download.strings -text svneol=unset#text/utf-16
-sk.lproj/Duplicate.nib/keyedobjects.nib -text
 sk.lproj/Duplicate.strings -text svneol=unset#text/utf-16
 sk.lproj/Error.strings -text svneol=unset#text/utf-16
-sk.lproj/File.nib/keyedobjects.nib -text
 sk.lproj/File.strings -text svneol=unset#text/utf-16
-sk.lproj/Folder.nib/keyedobjects.nib -text
 sk.lproj/Folder.strings -text svneol=unset#text/utf-16
-sk.lproj/Goto.nib/keyedobjects.nib -text
 sk.lproj/Goto.strings -text svneol=unset#text/utf-16
 sk.lproj/Growl.strings -text svneol=unset#text/utf-16
 sk.lproj/IDisk.strings -text svneol=unset#text/utf-16
@@ -1977,22 +1825,10 @@ sl.lproj/Download.nib/classes.nib -text
 sl.lproj/Download.nib/info.nib -text
 sl.lproj/Download.nib/keyedobjects.nib -text
 sl.lproj/Download.strings -text svneol=unset#text/utf-16
-sl.lproj/Duplicate.nib/classes.nib -text
-sl.lproj/Duplicate.nib/info.nib -text
-sl.lproj/Duplicate.nib/keyedobjects.nib -text
 sl.lproj/Duplicate.strings -text svneol=unset#text/utf-16
 sl.lproj/Error.strings -text svneol=unset#text/utf-16
-sl.lproj/File.nib/classes.nib -text
-sl.lproj/File.nib/info.nib -text
-sl.lproj/File.nib/keyedobjects.nib -text
 sl.lproj/File.strings -text svneol=unset#text/utf-16
-sl.lproj/Folder.nib/classes.nib -text
-sl.lproj/Folder.nib/info.nib -text
-sl.lproj/Folder.nib/keyedobjects.nib -text
 sl.lproj/Folder.strings -text svneol=unset#text/utf-16
-sl.lproj/Goto.nib/classes.nib -text
-sl.lproj/Goto.nib/info.nib -text
-sl.lproj/Goto.nib/keyedobjects.nib -text
 sl.lproj/Goto.strings -text svneol=unset#text/utf-16
 sl.lproj/Growl.strings -text svneol=unset#text/utf-16
 sl.lproj/IDisk.strings -text svneol=unset#text/utf-16
@@ -2377,22 +2213,10 @@ sr.lproj/Download.nib/classes.nib -text
 sr.lproj/Download.nib/info.nib -text
 sr.lproj/Download.nib/keyedobjects.nib -text
 sr.lproj/Download.strings -text svneol=unset#text/utf-16
-sr.lproj/Duplicate.nib/classes.nib -text
-sr.lproj/Duplicate.nib/info.nib -text
-sr.lproj/Duplicate.nib/keyedobjects.nib -text
 sr.lproj/Duplicate.strings -text svneol=unset#text/utf-16
 sr.lproj/Error.strings -text svneol=unset#text/utf-16
-sr.lproj/File.nib/classes.nib -text
-sr.lproj/File.nib/info.nib -text
-sr.lproj/File.nib/keyedobjects.nib -text
 sr.lproj/File.strings -text svneol=unset#text/utf-16
-sr.lproj/Folder.nib/classes.nib -text
-sr.lproj/Folder.nib/info.nib -text
-sr.lproj/Folder.nib/keyedobjects.nib -text
 sr.lproj/Folder.strings -text svneol=unset#text/utf-16
-sr.lproj/Goto.nib/classes.nib -text
-sr.lproj/Goto.nib/info.nib -text
-sr.lproj/Goto.nib/keyedobjects.nib -text
 sr.lproj/Goto.strings -text svneol=unset#text/utf-16
 sr.lproj/Growl.strings -text svneol=unset#text/utf-16
 sr.lproj/IDisk.strings -text svneol=unset#text/utf-16
@@ -2446,14 +2270,10 @@ sv.lproj/Donate.nib/keyedobjects.nib -text
 sv.lproj/Donate.strings -text svneol=unset#text/utf-16
 sv.lproj/Download.nib/keyedobjects.nib -text
 sv.lproj/Download.strings -text svneol=unset#text/utf-16
-sv.lproj/Duplicate.nib/keyedobjects.nib -text
 sv.lproj/Duplicate.strings -text svneol=unset#text/utf-16
 sv.lproj/Error.strings -text svneol=unset#text/utf-16
-sv.lproj/File.nib/keyedobjects.nib -text
 sv.lproj/File.strings -text svneol=unset#text/utf-16
-sv.lproj/Folder.nib/keyedobjects.nib -text
 sv.lproj/Folder.strings -text svneol=unset#text/utf-16
-sv.lproj/Goto.nib/keyedobjects.nib -text
 sv.lproj/Goto.strings -text svneol=unset#text/utf-16
 sv.lproj/Growl.strings -text svneol=unset#text/utf-16
 sv.lproj/IDisk.strings -text svneol=unset#text/utf-16
@@ -2514,22 +2334,10 @@ th.lproj/Download.nib/classes.nib -text
 th.lproj/Download.nib/info.nib -text
 th.lproj/Download.nib/keyedobjects.nib -text
 th.lproj/Download.strings -text svneol=unset#text/utf-16
-th.lproj/Duplicate.nib/classes.nib -text
-th.lproj/Duplicate.nib/info.nib -text
-th.lproj/Duplicate.nib/keyedobjects.nib -text
 th.lproj/Duplicate.strings -text svneol=unset#text/utf-16
 th.lproj/Error.strings -text svneol=unset#text/utf-16
-th.lproj/File.nib/classes.nib -text
-th.lproj/File.nib/info.nib -text
-th.lproj/File.nib/keyedobjects.nib -text
 th.lproj/File.strings -text svneol=unset#text/utf-16
-th.lproj/Folder.nib/classes.nib -text
-th.lproj/Folder.nib/info.nib -text
-th.lproj/Folder.nib/keyedobjects.nib -text
 th.lproj/Folder.strings -text svneol=unset#text/utf-16
-th.lproj/Goto.nib/classes.nib -text
-th.lproj/Goto.nib/info.nib -text
-th.lproj/Goto.nib/keyedobjects.nib -text
 th.lproj/Goto.strings -text svneol=unset#text/utf-16
 th.lproj/Growl.strings -text svneol=unset#text/utf-16
 th.lproj/IDisk.strings -text svneol=unset#text/utf-16
@@ -2595,22 +2403,10 @@ tr.lproj/Download.nib/classes.nib -text
 tr.lproj/Download.nib/info.nib -text
 tr.lproj/Download.nib/keyedobjects.nib -text
 tr.lproj/Download.strings -text svneol=unset#text/utf-16
-tr.lproj/Duplicate.nib/classes.nib -text
-tr.lproj/Duplicate.nib/info.nib -text
-tr.lproj/Duplicate.nib/keyedobjects.nib -text
 tr.lproj/Duplicate.strings -text svneol=unset#text/utf-16
 tr.lproj/Error.strings -text svneol=unset#text/utf-16
-tr.lproj/File.nib/classes.nib -text
-tr.lproj/File.nib/info.nib -text
-tr.lproj/File.nib/keyedobjects.nib -text
 tr.lproj/File.strings -text svneol=unset#text/utf-16
-tr.lproj/Folder.nib/classes.nib -text
-tr.lproj/Folder.nib/info.nib -text
-tr.lproj/Folder.nib/keyedobjects.nib -text
 tr.lproj/Folder.strings -text svneol=unset#text/utf-16
-tr.lproj/Goto.nib/classes.nib -text
-tr.lproj/Goto.nib/info.nib -text
-tr.lproj/Goto.nib/keyedobjects.nib -text
 tr.lproj/Goto.strings -text svneol=unset#text/utf-16
 tr.lproj/Growl.strings -text svneol=unset#text/utf-16
 tr.lproj/IDisk.strings -text svneol=unset#text/utf-16
@@ -2705,14 +2501,10 @@ zh_CN.lproj/Donate.nib/keyedobjects.nib -text
 zh_CN.lproj/Donate.strings -text svneol=unset#text/utf-16
 zh_CN.lproj/Download.nib/keyedobjects.nib -text
 zh_CN.lproj/Download.strings -text svneol=unset#text/utf-16
-zh_CN.lproj/Duplicate.nib/keyedobjects.nib -text
 zh_CN.lproj/Duplicate.strings -text svneol=unset#text/utf-16
 zh_CN.lproj/Error.strings -text svneol=unset#text/utf-16
-zh_CN.lproj/File.nib/keyedobjects.nib -text
 zh_CN.lproj/File.strings -text svneol=unset#text/utf-16
-zh_CN.lproj/Folder.nib/keyedobjects.nib -text
 zh_CN.lproj/Folder.strings -text svneol=unset#text/utf-16
-zh_CN.lproj/Goto.nib/keyedobjects.nib -text
 zh_CN.lproj/Goto.strings -text svneol=unset#text/utf-16
 zh_CN.lproj/Growl.strings -text svneol=unset#text/utf-16
 zh_CN.lproj/IDisk.strings -text svneol=unset#text/utf-16
@@ -2756,14 +2548,10 @@ zh_TW.lproj/Donate.nib/keyedobjects.nib -text
 zh_TW.lproj/Donate.strings -text svneol=unset#text/utf-16
 zh_TW.lproj/Download.nib/keyedobjects.nib -text
 zh_TW.lproj/Download.strings -text svneol=unset#text/utf-16
-zh_TW.lproj/Duplicate.nib/keyedobjects.nib -text
 zh_TW.lproj/Duplicate.strings -text svneol=unset#text/utf-16
 zh_TW.lproj/Error.strings -text svneol=unset#text/utf-16
-zh_TW.lproj/File.nib/keyedobjects.nib -text
 zh_TW.lproj/File.strings -text svneol=unset#text/utf-16
-zh_TW.lproj/Folder.nib/keyedobjects.nib -text
 zh_TW.lproj/Folder.strings -text svneol=unset#text/utf-16
-zh_TW.lproj/Goto.nib/keyedobjects.nib -text
 zh_TW.lproj/Goto.strings -text svneol=unset#text/utf-16
 zh_TW.lproj/Growl.strings -text svneol=unset#text/utf-16
 zh_TW.lproj/IDisk.strings -text svneol=unset#text/utf-16

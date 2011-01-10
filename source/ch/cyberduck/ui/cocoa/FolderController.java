@@ -21,7 +21,7 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.core.i18n.Locale;
-import ch.cyberduck.ui.cocoa.application.NSImageView;
+import ch.cyberduck.ui.cocoa.application.NSAlert;
 import ch.cyberduck.ui.cocoa.threading.BrowserBackgroundAction;
 
 import org.apache.log4j.Logger;
@@ -36,18 +36,14 @@ public class FolderController extends FileController {
     private static Logger log = Logger.getLogger(FolderController.class);
 
     public FolderController(final WindowController parent) {
-        super(parent);
-    }
-
-    @Override
-    public void setIconView(NSImageView iconView) {
-        iconView.setImage(IconCache.iconNamed("newfolder.tiff", 128));
-        super.setIconView(iconView);
-    }
-
-    @Override
-    protected String getBundleName() {
-        return "Folder";
+        super(parent, NSAlert.alert(
+                Locale.localizedString("Create new folder", "Folder"),
+                Locale.localizedString("Enter the name for the new folder:", "Folder"),
+                Locale.localizedString("Create", "Folder"),
+                null,
+                Locale.localizedString("Cancel", "Folder")
+        ));
+        alert.setIcon(IconCache.iconNamed("newfolder.tiff", 64));
     }
 
     public void callback(int returncode) {
@@ -59,8 +55,7 @@ public class FolderController extends FileController {
     protected void createFolder(final Path workdir, final String filename) {
         final BrowserController c = (BrowserController) parent;
         c.background(new BrowserBackgroundAction(c) {
-            final Path folder
-                    = PathFactory.createPath(this.getSession(), workdir.getAbsolute(),
+            final Path folder = PathFactory.createPath(this.getSession(), workdir.getAbsolute(),
                     filename, Path.DIRECTORY_TYPE);
 
             public void run() {

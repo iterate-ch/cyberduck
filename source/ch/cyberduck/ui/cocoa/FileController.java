@@ -20,64 +20,40 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFactory;
+import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Session;
-import ch.cyberduck.ui.cocoa.application.NSButton;
-import ch.cyberduck.ui.cocoa.application.NSImageView;
+import ch.cyberduck.ui.cocoa.application.NSAlert;
 import ch.cyberduck.ui.cocoa.application.NSTextField;
 import ch.cyberduck.ui.cocoa.foundation.NSRange;
-import ch.cyberduck.ui.cocoa.odb.EditorFactory;
+
+import org.rococoa.cocoa.foundation.NSRect;
+import org.rococoa.cocoa.foundation.NSUInteger;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import org.rococoa.cocoa.foundation.NSUInteger;
-
 /**
  * @version $Id$
  */
-public abstract class FileController extends SheetController {
+public abstract class FileController extends AlertController {
     protected static Logger log = Logger.getLogger(FileController.class);
 
-    @Outlet
-    protected NSImageView iconView;
+    /**
+     *
+     */
+    protected NSTextField filenameField
+            = NSTextField.textfieldWithFrame(new NSRect(0, 22));
 
-    public void setIconView(NSImageView iconView) {
-        this.iconView = iconView;
-    }
-
-    @Outlet
-    protected NSTextField filenameField;
-
-    public void setFilenameField(NSTextField filenameField) {
-        this.filenameField = filenameField;
-    }
-
-    @Outlet
-    private NSButton editButton;
-
-    public void setEditButton(NSButton editButton) {
-        this.editButton = editButton;
-        this.editButton.setEnabled(EditorFactory.defaultEditor() != null);
+    public FileController(final WindowController parent, NSAlert alert) {
+        super(parent, alert);
     }
 
     @Override
-    protected double getMaxWindowWidth() {
-        return 500;
-    }
-
-    @Override
-    protected double getMaxWindowHeight() {
-        return this.window().frame().size.height.doubleValue();
-    }
-
-    public FileController(final WindowController parent) {
-        super(parent);
-    }
-
-    @Override
-    public void awakeFromNib() {
-        super.awakeFromNib();
+    public void beginSheet() {
+        this.setAccessoryView(filenameField);
+        alert.setShowsHelp(true);
+        super.beginSheet();
         filenameField.selectText(null);
         this.window().fieldEditor_forObject(true, filenameField).setSelectedRange(NSRange.NSMakeRange(
                 new NSUInteger(0), new NSUInteger(FilenameUtils.getBaseName(filenameField.stringValue()).length())
@@ -112,5 +88,12 @@ public abstract class FileController extends SheetController {
             return !file.exists();
         }
         return false;
+    }
+
+    @Override
+    protected void help() {
+        StringBuilder site = new StringBuilder(Preferences.instance().getProperty("website.help"));
+        site.append("/howto/browser");
+        openUrl(site.toString());
     }
 }

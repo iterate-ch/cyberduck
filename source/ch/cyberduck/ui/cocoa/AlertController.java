@@ -22,6 +22,7 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.ui.cocoa.application.NSAlert;
 import ch.cyberduck.ui.cocoa.application.NSView;
+import ch.cyberduck.ui.cocoa.application.NSWindow;
 
 import org.rococoa.Foundation;
 import org.rococoa.ID;
@@ -94,5 +95,10 @@ public abstract class AlertController extends SheetController {
     public boolean alertShowHelp(NSAlert alert) {
         this.help();
         return true;
+    }
+
+    @Override
+    public NSWindow window() {
+        return alert.window();
     }
 }
