@@ -2000,7 +2000,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
      *
      */
     public void updateStatusLabel() {
-        String label = null;
+        String label;
         if(this.getSelectedTabView() == TAB_BOOKMARKS) {
             label = this.bookmarkTable.numberOfRows() + " " + Locale.localizedString("Bookmarks");
         }
