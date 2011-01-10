@@ -97,6 +97,7 @@ public abstract class HTTP4Session extends SSLSession {
             org.apache.http.params.HttpConnectionParams.setTcpNoDelay(params, true);
             org.apache.http.params.HttpConnectionParams.setSoTimeout(params, timeout());
             org.apache.http.params.HttpConnectionParams.setSocketBufferSize(params, 8192);
+            params.setParameter(ClientPNames.HANDLE_REDIRECTS, true);
             params.setParameter(ClientPNames.MAX_REDIRECTS, 10);
             HttpProtocolParams.setUserAgent(params, getUserAgent());
             SchemeRegistry registry = new SchemeRegistry();
@@ -132,8 +133,13 @@ public abstract class HTTP4Session extends SSLSession {
             }
             ClientConnectionManager manager = new SingleClientConnManager(params, registry);
             http = new DefaultHttpClient(manager, params);
+            this.configure(http);
         }
         return http;
+    }
+
+    protected void configure(AbstractHttpClient client) {
+        ;
     }
 
     @Override
