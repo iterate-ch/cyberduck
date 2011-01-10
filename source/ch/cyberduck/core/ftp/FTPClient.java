@@ -198,6 +198,16 @@ public class FTPClient extends FTPSClient {
     }
 
     /**
+     * No argument to command
+     * @param command
+     * @return
+     * @throws IOException
+     */
+    public List<String> list(int command) throws IOException {
+        return this.list(command, null);
+    }
+
+    /**
      * Read from the data socket
      *
      * @param command

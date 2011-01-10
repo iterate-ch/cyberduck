@@ -111,6 +111,12 @@ public class FTPPath extends Path {
         public abstract boolean run() throws IOException;
     }
 
+    /**
+     *
+     * @param action
+     * @return
+     * @throws IOException
+     */
     private boolean data(DataConnectionAction action) throws IOException {
         try {
             return action.run();
@@ -150,14 +156,20 @@ public class FTPPath extends Path {
         return false;
     }
 
+    /**
+     *
+     * @param action
+     * @return
+     * @throws IOException
+     */
     private boolean fallback(DataConnectionAction action) throws IOException {
         // Fallback to other connect mode
         if(getSession().getClient().getDataConnectionMode() == FTPClient.PASSIVE_LOCAL_DATA_CONNECTION_MODE) {
-            log.info("Fallback to active data connection");
+            log.warn("Fallback to active data connection");
             this.getSession().getClient().enterLocalActiveMode();
         }
         else if(this.getSession().getClient().getDataConnectionMode() == FTPClient.ACTIVE_LOCAL_DATA_CONNECTION_MODE) {
-            log.info("Fallback to passive data connection");
+            log.warn("Fallback to passive data connection");
             this.getSession().getClient().enterLocalPassiveMode();
         }
         return action.run();
@@ -211,35 +223,34 @@ public class FTPPath extends Path {
                     success = this.data(new DataConnectionAction() {
                         @Override
                         public boolean run() throws IOException {
+                            if(!getSession().getClient().changeWorkingDirectory(getAbsolute())) {
+                                throw new FTPException(getSession().getClient().getReplyString());
+                            }
+                            if(!getSession().getClient().setFileType(FTPClient.ASCII_FILE_TYPE)) {
+                                // Set transfer type for traditional data socket file listings. The data transfer is over the
+                                // data connection in type ASCII or type EBCDIC.
+                                throw new FTPException(getSession().getClient().getReplyString());
+                            }
                             boolean success = false;
                             // STAT listing failed or empty
                             if(getSession().isMlsdListSupportedEnabled()
                                     // Note that there is no distinct FEAT output for MLSD.
                                     // The presence of the MLST feature indicates that both MLST and MLSD are supported.
                                     && getSession().getClient().isFeatureSupported(FTPClient.MLST)) {
-                                success = parseMlsdResponse(children, getSession().getClient().list(FTPClient.MLSD, getAbsolute()));
+                                success = parseMlsdResponse(children, getSession().getClient().list(FTPClient.MLSD));
                                 if(!success) {
                                     getSession().setMlsdListSupportedEnabled(false);
                                 }
                             }
                             if(!success) {
                                 // MLSD listing failed or not enabled
-                                if(!getSession().getClient().changeWorkingDirectory(getAbsolute())) {
-                                    throw new FTPException(getSession().getClient().getReplyString());
-                                }
-                                if(!getSession().getClient().setFileType(FTPClient.ASCII_FILE_TYPE)) {
-                                    throw new FTPException(getSession().getClient().getReplyString());
-                                }
-                                // Set transfer type for traditional data socket file listings. The data transfer is over the
-                                // data connection in type ASCII or type EBCDIC. (The user must ensure that
-                                // the TYPE is appropriately ASCII or EBCDIC)
                                 if(getSession().isExtendedListEnabled()) {
                                     success = parseListResponse(children, parser, getSession().getClient().list(FTPCommand.LIST, "-a"));
                                 }
                                 if(!success) {
                                     // LIST -a listing failed or not enabled
                                     getSession().setExtendedListEnabled(false);
-                                    success = parseListResponse(children, parser, getSession().getClient().list(FTPCommand.LIST, getAbsolute()));
+                                    success = parseListResponse(children, parser, getSession().getClient().list(FTPCommand.LIST));
                                 }
                             }
                             return success;
