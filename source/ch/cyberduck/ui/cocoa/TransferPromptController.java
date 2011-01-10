@@ -149,7 +149,7 @@ public abstract class TransferPromptController extends SheetController implement
         browserView.reloadData();
         statusIndicator.stopAnimation(null);
         statusLabel.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
-                MessageFormat.format(Locale.localizedString("{0} Files"), browserView.numberOfRows()),
+                MessageFormat.format(Locale.localizedString("{0} Files"), String.valueOf(browserView.numberOfRows())),
                 TRUNCATE_MIDDLE_ATTRIBUTES));
     }
 

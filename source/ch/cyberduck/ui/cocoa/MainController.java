@@ -584,7 +584,8 @@ public class MainController extends BundleController implements NSApplication.De
         final String destination = workdir;
         AlertController alert = new AlertController(t, NSAlert.alert("Select Bookmark",
                 MessageFormat.format("Upload {0} to the selected bookmark.",
-                        files.size() == 1 ? files.iterator().next().getName() : MessageFormat.format(Locale.localizedString("{0} Files"), files.size())),
+                        files.size() == 1 ? files.iterator().next().getName()
+                                : MessageFormat.format(Locale.localizedString("{0} Files"), String.valueOf(files.size()))),
                 Locale.localizedString("Upload"),
                 Locale.localizedString("Cancel"),
                 null)) {

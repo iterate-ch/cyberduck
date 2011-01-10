@@ -2008,7 +2008,8 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             final BackgroundAction current = this.getActions().getCurrent();
             if(null == current) {
                 if(this.isConnected()) {
-                    label = MessageFormat.format(Locale.localizedString("{0} Files"), this.getSelectedBrowserView().numberOfRows());
+                    label = MessageFormat.format(Locale.localizedString("{0} Files"),
+                            String.valueOf(this.getSelectedBrowserView().numberOfRows()));
                 }
                 else {
                     label = Locale.localizedString("Disconnected", "Status");
@@ -3873,7 +3874,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                             else {
                                 item.setTitle(MessageFormat.format(Locale.localizedString(title),
                                         MessageFormat.format(Locale.localizedString("{0} Files"),
-                                                elements.count().intValue())).trim());
+                                                String.valueOf(elements.count().intValue()))).trim());
                             }
                         }
                     }
@@ -3885,7 +3886,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                     }
                     else {
                         item.setTitle(MessageFormat.format(Locale.localizedString(title),
-                                MessageFormat.format(Locale.localizedString("{0} Files"), pasteboard.size())).trim());
+                                MessageFormat.format(Locale.localizedString("{0} Files"), String.valueOf(pasteboard.size()))).trim());
                     }
                 }
             }
@@ -3909,7 +3910,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 }
                 else {
                     item.setTitle(MessageFormat.format(Locale.localizedString(title),
-                            MessageFormat.format(Locale.localizedString("{0} Files"), this.getSelectionCount())).trim());
+                            MessageFormat.format(Locale.localizedString("{0} Files"), String.valueOf(this.getSelectionCount()))).trim());
                 }
             }
             else {

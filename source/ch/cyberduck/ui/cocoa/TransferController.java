@@ -1114,7 +1114,7 @@ public class TransferController extends WindowController implements NSToolbar.De
                     }
                     else {
                         item.setTitle(MessageFormat.format(Locale.localizedString("Paste {0}"),
-                                MessageFormat.format(Locale.localizedString("{0} Files"), pasteboard.size()) + ")"));
+                                MessageFormat.format(Locale.localizedString("{0} Files"), String.valueOf(pasteboard.size())) + ")"));
                     }
                 }
             }
