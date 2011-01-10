@@ -591,8 +591,9 @@ public class ConnectionController extends SheetController {
 
     public void helpButtonClicked(final ID sender) {
         final Protocol protocol = Protocol.forName(protocolPopup.selectedItem().representedObject());
-        openUrl(Preferences.instance().getProperty("website.help")
-                + "/" + protocol.getIdentifier());
+        StringBuilder site = new StringBuilder(Preferences.instance().getProperty("website.help"));
+        site.append("/").append(protocol.getIdentifier());
+        openUrl(site.toString());
     }
 
     @Override
