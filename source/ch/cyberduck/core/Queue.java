@@ -77,8 +77,12 @@ public class Queue {
             // The maximum number of transfers is already reached
             try {
                 boolean offer = false;
-                while(!offer && !t.isCanceled()) {
-                    // Wait for transfer slot.
+                while(!offer || running.size() >= Preferences.instance().getInteger("queue.maxtransfers")) {
+                    if(t.isCanceled()) {
+                        break;
+                    }
+                    // Wait for transfer slot. We don't use ArrayBlockingQueue#put because the
+                    // transer can be canceled while waiting for a slot.
                     offer = overflow.offer(t, 1, TimeUnit.SECONDS);
                 }
             }
@@ -86,7 +90,7 @@ public class Queue {
                 log.error(e.getMessage());
             }
             if(log.isInfoEnabled()) {
-                log.info("released from queue:" + t);
+                log.info("Released from queue:" + t);
             }
             t.fireTransferResumed();
         }
