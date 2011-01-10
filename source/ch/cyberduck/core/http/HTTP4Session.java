@@ -25,10 +25,10 @@ import ch.cyberduck.core.ssl.SSLSession;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpHost;
-import org.apache.http.auth.params.AuthPNames;
-import org.apache.http.client.params.ClientPNames;
+import org.apache.http.auth.params.AuthParams;
+import org.apache.http.client.params.HttpClientParams;
 import org.apache.http.conn.ClientConnectionManager;
-import org.apache.http.conn.params.ConnRoutePNames;
+import org.apache.http.conn.params.ConnRouteParams;
 import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
@@ -37,6 +37,7 @@ import org.apache.http.impl.client.AbstractHttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.SingleClientConnManager;
 import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
 import org.apache.log4j.Appender;
@@ -91,15 +92,20 @@ public abstract class HTTP4Session extends SSLSession {
     protected AbstractHttpClient http() {
         if(null == http) {
             final HttpParams params = new BasicHttpParams();
+
             HttpProtocolParams.setVersion(params, org.apache.http.HttpVersion.HTTP_1_1);
             HttpProtocolParams.setContentCharset(params, getEncoding());
-            params.setParameter(AuthPNames.CREDENTIAL_CHARSET, "ISO-8859-1");
-            org.apache.http.params.HttpConnectionParams.setTcpNoDelay(params, true);
-            org.apache.http.params.HttpConnectionParams.setSoTimeout(params, timeout());
-            org.apache.http.params.HttpConnectionParams.setSocketBufferSize(params, 8192);
-            params.setParameter(ClientPNames.HANDLE_REDIRECTS, true);
-            params.setParameter(ClientPNames.MAX_REDIRECTS, 10);
             HttpProtocolParams.setUserAgent(params, getUserAgent());
+
+            AuthParams.setCredentialCharset(params, "ISO-8859-1");
+
+            HttpConnectionParams.setTcpNoDelay(params, true);
+            HttpConnectionParams.setSoTimeout(params, timeout());
+            HttpConnectionParams.setSocketBufferSize(params, 8192);
+
+            HttpClientParams.setRedirecting(params, true);
+            HttpClientParams.setAuthenticating(params, true);
+
             SchemeRegistry registry = new SchemeRegistry();
             if(host.getProtocol().isSecure()) {
                 org.apache.http.conn.ssl.SSLSocketFactory factory = new SSLSocketFactory(
@@ -117,8 +123,7 @@ public abstract class HTTP4Session extends SSLSession {
                 if(Preferences.instance().getBoolean("connection.proxy.enable")) {
                     final Proxy proxy = ProxyFactory.instance();
                     if(proxy.isHTTPSProxyEnabled(host)) {
-                        params.setParameter(ConnRoutePNames.DEFAULT_PROXY,
-                                new HttpHost(proxy.getHTTPSProxyHost(), proxy.getHTTPSProxyPort()));
+                        ConnRouteParams.setDefaultProxy(params, new HttpHost(proxy.getHTTPSProxyHost(), proxy.getHTTPSProxyPort()));
                     }
                 }
             }
@@ -126,8 +131,7 @@ public abstract class HTTP4Session extends SSLSession {
                 if(Preferences.instance().getBoolean("connection.proxy.enable")) {
                     final Proxy proxy = ProxyFactory.instance();
                     if(proxy.isHTTPProxyEnabled(host)) {
-                        params.setParameter(ConnRoutePNames.DEFAULT_PROXY,
-                                new HttpHost(proxy.getHTTPProxyHost(), proxy.getHTTPProxyPort()));
+                        ConnRouteParams.setDefaultProxy(params, new HttpHost(proxy.getHTTPProxyHost(), proxy.getHTTPProxyPort()));
                     }
                 }
             }
