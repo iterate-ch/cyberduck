@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @version $Id$
@@ -47,10 +46,11 @@ public class Queue {
     }
 
     /**
-     * One transfer at least is always allowed to run.
+     * One transfer at least is always allowed to run. Queued accesses for threads blocked
+     * on insertion or removal, are processed in FIFO order
      */
     private ArrayBlockingQueue<Transfer> overflow
-            = new ArrayBlockingQueue<Transfer>(1);
+            = new ArrayBlockingQueue<Transfer>(1, true);
 
 
     /**
@@ -74,20 +74,14 @@ public class Queue {
             if(log.isInfoEnabled()) {
                 log.info("Queuing:" + t);
             }
+            boolean offer = false;
+            while(!offer || running.size() >= Preferences.instance().getInteger("queue.maxtransfers")) {
             // The maximum number of transfers is already reached
-            try {
-                boolean offer = false;
-                while(!offer || running.size() >= Preferences.instance().getInteger("queue.maxtransfers")) {
-                    if(t.isCanceled()) {
-                        break;
-                    }
-                    // Wait for transfer slot. We don't use ArrayBlockingQueue#put because the
-                    // transer can be canceled while waiting for a slot.
-                    offer = overflow.offer(t, 1, TimeUnit.SECONDS);
+                if(t.isCanceled()) {
+                    break;
                 }
-            }
-            catch(InterruptedException e) {
-                log.error(e.getMessage());
+                // Wait for transfer slot.
+                offer = overflow.offer(t);
             }
             if(log.isInfoEnabled()) {
                 log.info("Released from queue:" + t);
