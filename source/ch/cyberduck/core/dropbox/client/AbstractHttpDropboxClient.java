@@ -196,7 +196,6 @@ public abstract class AbstractHttpDropboxClient {
         while((inputLine = in.readLine()) != null) {
             result += inputLine;
         }
-        EntityUtils.consume(response.getEntity());
         return result;
     }
 
