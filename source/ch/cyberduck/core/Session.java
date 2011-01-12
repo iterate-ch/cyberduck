@@ -307,8 +307,10 @@ public abstract class Session implements TranscriptListener {
                 home = PathFactory.createPath(this,
                         this.workdir().getAbsolute(), directory, Path.DIRECTORY_TYPE);
             }
+            // Retrieve direcotry listing of default path
             if(!home.children().attributes().isReadable()) {
-                // the default path does not exist or is not readable due to permission issues
+                // The default path does not exist or is not readable due to possible permission issues
+                // Fallback to default working directory
                 home = this.workdir();
             }
         }
