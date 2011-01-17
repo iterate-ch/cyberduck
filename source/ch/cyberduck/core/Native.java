@@ -52,7 +52,7 @@ public class Native {
                 return true;
             }
             catch(UnsatisfiedLinkError e) {
-                log.error("Faied to load " + path + ":" + e.getMessage(), e);
+                log.error("Failed to load " + path + ":" + e.getMessage(), e);
                 return false;
             }
         }
