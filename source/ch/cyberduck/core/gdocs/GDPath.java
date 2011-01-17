@@ -680,7 +680,7 @@ public class GDPath extends Path {
                 boolean include = false;
                 for(Person person : entry.getAuthors()) {
                     log.debug("Author of document " + entry.getResourceId() + ":" + person.getEmail());
-                    if(person.getEmail().equals(this.getSession().getHost().getCredentials().getUsername())) {
+                    if(person.getEmail().equalsIgnoreCase(this.getSession().getHost().getCredentials().getUsername())) {
                         include = true;
                         break;
                     }
