@@ -46,7 +46,7 @@ public class ODBEditor extends Editor {
         SUPPORTED_ODB_EDITORS.put("TextMate", "com.macromates.textmate");
         SUPPORTED_ODB_EDITORS.put("Tex-Edit Plus", "com.transtex.texeditplus");
         SUPPORTED_ODB_EDITORS.put("Jedit X", "jp.co.artman21.JeditX");
-        SUPPORTED_ODB_EDITORS.put("mi", "mi");
+        SUPPORTED_ODB_EDITORS.put("mi", "net.mimikaki.mi");
         SUPPORTED_ODB_EDITORS.put("Smultron", "org.smultron.Smultron");
         SUPPORTED_ODB_EDITORS.put("Fraise", "org.fraise.Fraise");
         SUPPORTED_ODB_EDITORS.put("CotEditor", "com.aynimac.CotEditor");
