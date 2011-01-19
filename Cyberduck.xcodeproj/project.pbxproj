@@ -4271,6 +4271,7 @@
 					"$(SRCROOT)/lib",
 					"$(SRCROOT)/build",
 				);
+				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_DEBUGGING_SYMBOLS = default;
 				GCC_ENABLE_OBJC_GC = unsupported;
 				GCC_VERSION = 4.2;
@@ -4580,6 +4581,7 @@
 					"$(SRCROOT)/lib",
 					"$(SRCROOT)/build",
 				);
+				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_DEBUGGING_SYMBOLS = default;
 				GCC_ENABLE_OBJC_GC = unsupported;
 				GCC_VERSION = 4.2;
