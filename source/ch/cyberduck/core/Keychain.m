@@ -260,7 +260,7 @@ JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_Keychain_isTrustedNative(JNIEn
 	}
 	NSString *hostname = convertToNSString(env, jHostname);
 	// Returns NULL if the receiver cannot be losslessly converted to encoding.
-	char *cHostname = [hostname cStringUsingEncoding:NSASCIIStringEncoding];
+	const char *cHostname = [hostname cStringUsingEncoding:NSASCIIStringEncoding];
 	if(!cHostname) {
         NSLog(@"Error adding hostname to SSL options");
 	    return FALSE;
