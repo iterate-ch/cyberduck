@@ -138,6 +138,8 @@ public abstract class HTTP4Session extends SSLSession {
 
     protected void configure(AbstractHttpClient client) {
         ;
+//        client.addRequestInterceptor(new GzipRequestInterceptor());
+//        client.addResponseInterceptor(new GzipResponseInterceptor());
     }
 
     @Override
