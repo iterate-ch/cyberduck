@@ -107,29 +107,23 @@ public abstract class HTTP4Session extends SSLSession {
             HttpClientParams.setAuthenticating(params, true);
 
             SchemeRegistry registry = new SchemeRegistry();
-            if(host.getProtocol().isSecure()) {
+            // Always register HTTP for possible use with proxy
+            registry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), host.getPort()));
+            if("https".equals(this.getHost().getProtocol().getScheme())) {
                 org.apache.http.conn.ssl.SSLSocketFactory factory = new SSLSocketFactory(
                         new CustomTrustSSLProtocolSocketFactory(this.getTrustManager()).getSSLContext());
                 // We make sure to verify the hostname later using the trust manager
                 factory.setHostnameVerifier(org.apache.http.conn.ssl.SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
-                registry.register(
-                        new Scheme(host.getProtocol().getScheme(), factory, host.getPort()));
+                registry.register(new Scheme(host.getProtocol().getScheme(), factory, host.getPort()));
             }
-            else {
-                registry.register(
-                        new Scheme(host.getProtocol().getScheme(), PlainSocketFactory.getSocketFactory(), host.getPort()));
-            }
-            if("https".equals(this.getHost().getProtocol().getScheme())) {
-                if(Preferences.instance().getBoolean("connection.proxy.enable")) {
-                    final Proxy proxy = ProxyFactory.instance();
+            if(Preferences.instance().getBoolean("connection.proxy.enable")) {
+                final Proxy proxy = ProxyFactory.instance();
+                if("https".equals(this.getHost().getProtocol().getScheme())) {
                     if(proxy.isHTTPSProxyEnabled(host)) {
                         ConnRouteParams.setDefaultProxy(params, new HttpHost(proxy.getHTTPSProxyHost(), proxy.getHTTPSProxyPort()));
                     }
                 }
-            }
-            else if("http".equals(this.getHost().getProtocol().getScheme())) {
-                if(Preferences.instance().getBoolean("connection.proxy.enable")) {
-                    final Proxy proxy = ProxyFactory.instance();
+                if("http".equals(this.getHost().getProtocol().getScheme())) {
                     if(proxy.isHTTPProxyEnabled(host)) {
                         ConnRouteParams.setDefaultProxy(params, new HttpHost(proxy.getHTTPProxyHost(), proxy.getHTTPProxyPort()));
                     }
