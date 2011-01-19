@@ -51,7 +51,6 @@
 		4739D39E0F8268D600D2782A /* delete.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 4739D39D0F8268D600D2782A /* delete.tiff */; };
 		4739EF690856981300405FD3 /* Keychain.h in Headers */ = {isa = PBXBuildFile; fileRef = 47983749072AD67800FA3CDB /* Keychain.h */; };
 		4739EF6B0856981300405FD3 /* Keychain.m in Sources */ = {isa = PBXBuildFile; fileRef = 4798373F072AD66D00FA3CDB /* Keychain.m */; };
-		4739EF6D0856981300405FD3 /* JavaVM.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4725BE0A05D2E27000C7CCBD /* JavaVM.framework */; };
 		4739EF6E0856981300405FD3 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 29B97325FDCFA39411CA2CEA /* Foundation.framework */; };
 		4739EF85085698F600405FD3 /* Editor.h in Headers */ = {isa = PBXBuildFile; fileRef = 4741532006C4F08A00AC0BD2 /* Editor.h */; };
 		4739EF86085698F600405FD3 /* NSAppleEventDescriptor-Extensions.h in Headers */ = {isa = PBXBuildFile; fileRef = 4741532306C4F08A00AC0BD2 /* NSAppleEventDescriptor-Extensions.h */; };
@@ -60,12 +59,9 @@
 		4739EF8A085698F600405FD3 /* Editor.m in Sources */ = {isa = PBXBuildFile; fileRef = 4741532206C4F08A00AC0BD2 /* Editor.m */; };
 		4739EF8B085698F600405FD3 /* NSAppleEventDescriptor-Extensions.m in Sources */ = {isa = PBXBuildFile; fileRef = 4741532406C4F08A00AC0BD2 /* NSAppleEventDescriptor-Extensions.m */; };
 		4739EF8C085698F600405FD3 /* ODBEditor.m in Sources */ = {isa = PBXBuildFile; fileRef = 4741532606C4F08A00AC0BD2 /* ODBEditor.m */; };
-		4739EF8E085698F600405FD3 /* JavaVM.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4725BE0A05D2E27000C7CCBD /* JavaVM.framework */; };
 		4739EF8F085698F600405FD3 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 		4739EF9C0856990000405FD3 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 29B97325FDCFA39411CA2CEA /* Foundation.framework */; };
-		4739EF9D0856990000405FD3 /* JavaVM.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4725BE0A05D2E27000C7CCBD /* JavaVM.framework */; };
 		4739EF9E0856990000405FD3 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
-		4739EFA90856990900405FD3 /* JavaVM.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4725BE0A05D2E27000C7CCBD /* JavaVM.framework */; };
 		4739EFAC0856990900405FD3 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47C761EA06A88D7600B464FF /* SystemConfiguration.framework */; };
 		4739EFBB0856991200405FD3 /* JavaVM.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4725BE0A05D2E27000C7CCBD /* JavaVM.framework */; };
 		473CEECB127EE6EC003BB028 /* dropbox-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 473CEEC9127EE6EC003BB028 /* dropbox-icon.png */; };
@@ -145,7 +141,6 @@
 		475D17C20805D54C00166B8A /* download4.icns in Resources */ = {isa = PBXBuildFile; fileRef = 475D17B80805D54C00166B8A /* download4.icns */; };
 		475D461D0D9953CD009450C4 /* SecurityInterface.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 475D461C0D9953CD009450C4 /* SecurityInterface.framework */; };
 		475EBE9412DA462C00E5C3A2 /* ServicesMenu.strings in Resources */ = {isa = PBXBuildFile; fileRef = 475EBE7212DA462C00E5C3A2 /* ServicesMenu.strings */; };
-		4762DABE09FC42EC0034C662 /* JavaVM.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4725BE0A05D2E27000C7CCBD /* JavaVM.framework */; };
 		4762DAC109FC42EC0034C662 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47C761EA06A88D7600B464FF /* SystemConfiguration.framework */; };
 		47652D0B1202BED200745031 /* Azure.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47652CE91202BED200745031 /* Azure.strings */; };
 		476774DE0B74CE750025093E /* trash.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 476774DD0B74CE750025093E /* trash.tiff */; };
@@ -155,7 +150,6 @@
 		477839340BA1BE8E0037E145 /* statusGreen.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 477839310BA1BE8E0037E145 /* statusGreen.tiff */; };
 		477839350BA1BE8E0037E145 /* statusRed.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 477839320BA1BE8E0037E145 /* statusRed.tiff */; };
 		477839360BA1BE8E0037E145 /* statusYellow.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 477839330BA1BE8E0037E145 /* statusYellow.tiff */; };
-		477A10470FD08DBA00BAD4AD /* JavaVM.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4725BE0A05D2E27000C7CCBD /* JavaVM.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		477A10480FD08DBA00BAD4AD /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 		477A10E00FD08DE900BAD4AD /* ProxyForJava.h in Headers */ = {isa = PBXBuildFile; fileRef = 477A108A0FD08DE800BAD4AD /* ProxyForJava.h */; };
 		477A10E10FD08DE900BAD4AD /* ProxyForJava.m in Sources */ = {isa = PBXBuildFile; fileRef = 477A108B0FD08DE800BAD4AD /* ProxyForJava.m */; };
@@ -185,11 +179,9 @@
 		4786CB700E253B800029848F /* Task.nib in Resources */ = {isa = PBXBuildFile; fileRef = 4786CB6A0E253B800029848F /* Task.nib */; };
 		478B71F0089FEB4E003B512A /* arrowRightBlack16.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 478B71EF089FEB4E003B512A /* arrowRightBlack16.tiff */; };
 		478B871E0BDE013D0040E559 /* turtle.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 478B871D0BDE013D0040E559 /* turtle.tiff */; };
-		478CFE7D0F9932B3000560EF /* JavaVM.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4725BE0A05D2E27000C7CCBD /* JavaVM.framework */; };
 		478ECD090DAD5743008A5B1F /* QLPreviewPanel.h in Headers */ = {isa = PBXBuildFile; fileRef = 473240070DABC00800BF67D2 /* QLPreviewPanel.h */; };
 		478ECD0A0DAD5743008A5B1F /* QuickLook.h in Headers */ = {isa = PBXBuildFile; fileRef = 478ECC9A0DAD1B0C008A5B1F /* QuickLook.h */; };
 		478ECD100DAD5743008A5B1F /* QuickLook.m in Sources */ = {isa = PBXBuildFile; fileRef = 478ECC9B0DAD1B0C008A5B1F /* QuickLook.m */; };
-		478ECD120DAD5743008A5B1F /* JavaVM.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4725BE0A05D2E27000C7CCBD /* JavaVM.framework */; };
 		478ECD130DAD5743008A5B1F /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 		47905BE30AE3D6FF00F9E193 /* unlocked.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47905BE10AE3D6FF00F9E193 /* unlocked.tiff */; };
 		47905BE40AE3D6FF00F9E193 /* locked.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47905BE20AE3D6FF00F9E193 /* locked.tiff */; };
@@ -208,7 +200,6 @@
 		47BCB890119ADF960099C448 /* google.icns in Resources */ = {isa = PBXBuildFile; fileRef = 47BCB88F119ADF960099C448 /* google.icns */; };
 		47BE1F8B12369DF100E758FE /* CDTransmitImporter.h in Headers */ = {isa = PBXBuildFile; fileRef = 47BE1F8912369DF100E758FE /* CDTransmitImporter.h */; };
 		47BE1F8C12369DF100E758FE /* CDTransmitImporter.m in Sources */ = {isa = PBXBuildFile; fileRef = 47BE1F8A12369DF100E758FE /* CDTransmitImporter.m */; };
-		47BEDAFC0B92960400141EB4 /* JavaVM.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4725BE0A05D2E27000C7CCBD /* JavaVM.framework */; };
 		47BEDBD30B9296C800141EB4 /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47BEDBD20B9296C800141EB4 /* ApplicationServices.framework */; };
 		47C4E87710584D710001F618 /* bookmark.png in Resources */ = {isa = PBXBuildFile; fileRef = 47C4E87610584D710001F618 /* bookmark.png */; };
 		47C577EB121BF89C0005FDCC /* azure.icns in Resources */ = {isa = PBXBuildFile; fileRef = 47C577EA121BF89C0005FDCC /* azure.icns */; };
@@ -1494,7 +1485,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4739EF6D0856981300405FD3 /* JavaVM.framework in Frameworks */,
 				4739EF6E0856981300405FD3 /* Foundation.framework in Frameworks */,
 				475D461D0D9953CD009450C4 /* SecurityInterface.framework in Frameworks */,
 				47D414950F0ECFF300BAF184 /* Security.framework in Frameworks */,
@@ -1507,7 +1497,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				474523921076B6A900823467 /* Foundation.framework in Frameworks */,
-				4739EF8E085698F600405FD3 /* JavaVM.framework in Frameworks */,
 				4739EF8F085698F600405FD3 /* Cocoa.framework in Frameworks */,
 				474522C61076B68E00823467 /* ApplicationServices.framework in Frameworks */,
 				474523981076B6D800823467 /* Carbon.framework in Frameworks */,
@@ -1519,7 +1508,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				4739EF9C0856990000405FD3 /* Foundation.framework in Frameworks */,
-				4739EF9D0856990000405FD3 /* JavaVM.framework in Frameworks */,
 				4739EF9E0856990000405FD3 /* Cocoa.framework in Frameworks */,
 				4726277F0FD5743C001D5BA5 /* Growl.framework in Frameworks */,
 			);
@@ -1530,7 +1518,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				474523E21076B70000823467 /* Foundation.framework in Frameworks */,
-				4739EFA90856990900405FD3 /* JavaVM.framework in Frameworks */,
 				4739EFAC0856990900405FD3 /* SystemConfiguration.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1550,7 +1537,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				474524B71076B7FC00823467 /* Foundation.framework in Frameworks */,
-				4762DABE09FC42EC0034C662 /* JavaVM.framework in Frameworks */,
 				4762DAC109FC42EC0034C662 /* SystemConfiguration.framework in Frameworks */,
 				474520F21076B60600823467 /* CoreServices.framework in Frameworks */,
 			);
@@ -1560,7 +1546,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				477A10470FD08DBA00BAD4AD /* JavaVM.framework in Frameworks */,
 				477A10480FD08DBA00BAD4AD /* Cocoa.framework in Frameworks */,
 				470671160FD8896D00EE3291 /* Sparkle.framework in Frameworks */,
 				4734425B102DEABD00C04C43 /* Quartz.framework in Frameworks */,
@@ -1573,7 +1558,6 @@
 			files = (
 				474524DD1076B89700823467 /* Foundation.framework in Frameworks */,
 				47FF75730FD545150068F30C /* libAquaticPrime.a in Frameworks */,
-				478CFE7D0F9932B3000560EF /* JavaVM.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1581,7 +1565,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				478ECD120DAD5743008A5B1F /* JavaVM.framework in Frameworks */,
 				478ECD130DAD5743008A5B1F /* Cocoa.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1591,7 +1574,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				474524B11076B7DA00823467 /* Foundation.framework in Frameworks */,
-				47BEDAFC0B92960400141EB4 /* JavaVM.framework in Frameworks */,
 				47BEDBD30B9296C800141EB4 /* ApplicationServices.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -4121,6 +4103,7 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				HEADER_SEARCH_PATHS = "$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Headers";
+				LD_DYLIB_INSTALL_NAME = "";
 				MACH_O_TYPE = mh_dylib;
 				PRODUCT_NAME = libKeychain;
 			};
@@ -4132,6 +4115,7 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				HEADER_SEARCH_PATHS = "$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Headers";
+				LD_DYLIB_INSTALL_NAME = "";
 				MACH_O_TYPE = mh_dylib;
 				PRODUCT_NAME = libODBEdit;
 			};
@@ -4143,6 +4127,7 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				HEADER_SEARCH_PATHS = "$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Headers";
+				LD_DYLIB_INSTALL_NAME = "";
 				MACH_O_TYPE = mh_dylib;
 				PRODUCT_NAME = libGrowl;
 			};
@@ -4154,6 +4139,7 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				HEADER_SEARCH_PATHS = "$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Headers";
+				LD_DYLIB_INSTALL_NAME = "";
 				MACH_O_TYPE = mh_dylib;
 				PRODUCT_NAME = libProxy;
 			};
@@ -4165,6 +4151,7 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				HEADER_SEARCH_PATHS = "$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Headers";
+				LD_DYLIB_INSTALL_NAME = "";
 				MACH_O_TYPE = mh_dylib;
 				PRODUCT_NAME = libLocal;
 			};
@@ -4177,6 +4164,7 @@
 				DYLIB_CURRENT_VERSION = 1;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				HEADER_SEARCH_PATHS = "$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Headers";
+				LD_DYLIB_INSTALL_NAME = "";
 				MACH_O_TYPE = mh_dylib;
 				PRODUCT_NAME = libDiagnostics;
 			};
@@ -4189,6 +4177,7 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				HEADER_SEARCH_PATHS = "$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Headers";
+				LD_DYLIB_INSTALL_NAME = "";
 				MACH_O_TYPE = mh_dylib;
 				PRODUCT_NAME = librococoa;
 			};
@@ -4200,6 +4189,7 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				HEADER_SEARCH_PATHS = "$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Headers";
+				LD_DYLIB_INSTALL_NAME = "";
 				LIBRARY_SEARCH_PATHS = "\"$(SRCROOT)/lib\"";
 				MACH_O_TYPE = mh_dylib;
 				OTHER_LDFLAGS = "-lcrypto";
@@ -4233,6 +4223,7 @@
 				DYLIB_CURRENT_VERSION = 1;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				HEADER_SEARCH_PATHS = "$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Headers";
+				LD_DYLIB_INSTALL_NAME = "";
 				MACH_O_TYPE = mh_dylib;
 				PRODUCT_NAME = libQuickLook;
 			};
@@ -4271,7 +4262,7 @@
 					"$(SRCROOT)/lib",
 					"$(SRCROOT)/build",
 				);
-				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DEBUGGING_SYMBOLS = default;
 				GCC_ENABLE_OBJC_GC = unsupported;
 				GCC_VERSION = 4.2;
@@ -4388,6 +4379,7 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				HEADER_SEARCH_PATHS = "$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Headers";
+				LD_DYLIB_INSTALL_NAME = "";
 				MACH_O_TYPE = mh_dylib;
 				PRODUCT_NAME = libKeychain;
 			};
@@ -4399,6 +4391,7 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				HEADER_SEARCH_PATHS = "$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Headers";
+				LD_DYLIB_INSTALL_NAME = "";
 				MACH_O_TYPE = mh_dylib;
 				PRODUCT_NAME = libODBEdit;
 			};
@@ -4410,6 +4403,7 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				HEADER_SEARCH_PATHS = "$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Headers";
+				LD_DYLIB_INSTALL_NAME = "";
 				MACH_O_TYPE = mh_dylib;
 				PRODUCT_NAME = libGrowl;
 			};
@@ -4421,6 +4415,7 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				HEADER_SEARCH_PATHS = "$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Headers";
+				LD_DYLIB_INSTALL_NAME = "";
 				MACH_O_TYPE = mh_dylib;
 				PRODUCT_NAME = libProxy;
 			};
@@ -4432,6 +4427,7 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				HEADER_SEARCH_PATHS = "$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Headers";
+				LD_DYLIB_INSTALL_NAME = "";
 				MACH_O_TYPE = mh_dylib;
 				PRODUCT_NAME = libLocal;
 			};
@@ -4444,6 +4440,7 @@
 				DYLIB_CURRENT_VERSION = 1;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				HEADER_SEARCH_PATHS = "$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Headers";
+				LD_DYLIB_INSTALL_NAME = "";
 				MACH_O_TYPE = mh_dylib;
 				PRODUCT_NAME = libDiagnostics;
 			};
@@ -4456,6 +4453,7 @@
 				DYLIB_CURRENT_VERSION = 1;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				HEADER_SEARCH_PATHS = "$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Headers";
+				LD_DYLIB_INSTALL_NAME = "";
 				MACH_O_TYPE = mh_dylib;
 				PRODUCT_NAME = libURLSchemeHandlerConfiguration;
 			};
@@ -4468,6 +4466,7 @@
 				DYLIB_CURRENT_VERSION = 1;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				HEADER_SEARCH_PATHS = "$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Headers";
+				LD_DYLIB_INSTALL_NAME = "";
 				MACH_O_TYPE = mh_dylib;
 				PRODUCT_NAME = libQuickLook;
 			};
@@ -4479,6 +4478,7 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				HEADER_SEARCH_PATHS = "$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Headers";
+				LD_DYLIB_INSTALL_NAME = "";
 				LIBRARY_SEARCH_PATHS = "$(SRCROOT)/lib";
 				MACH_O_TYPE = mh_dylib;
 				OTHER_LDFLAGS = "-lcrypto";
@@ -4493,6 +4493,7 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				HEADER_SEARCH_PATHS = "$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Headers";
+				LD_DYLIB_INSTALL_NAME = "";
 				MACH_O_TYPE = mh_dylib;
 				PRODUCT_NAME = librococoa;
 			};
@@ -4505,6 +4506,7 @@
 				DYLIB_CURRENT_VERSION = 1;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				HEADER_SEARCH_PATHS = "$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Headers";
+				LD_DYLIB_INSTALL_NAME = "";
 				MACH_O_TYPE = mh_dylib;
 				PRODUCT_NAME = libURLSchemeHandlerConfiguration;
 			};
@@ -4581,7 +4583,7 @@
 					"$(SRCROOT)/lib",
 					"$(SRCROOT)/build",
 				);
-				GCC_C_LANGUAGE_STANDARD = c99;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DEBUGGING_SYMBOLS = default;
 				GCC_ENABLE_OBJC_GC = unsupported;
 				GCC_VERSION = 4.2;
