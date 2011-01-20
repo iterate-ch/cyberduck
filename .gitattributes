@@ -2443,34 +2443,6 @@ tr.lproj/ServicesMenu.strings -text svneol=unset#text/utf-16
 tr.lproj/Status.strings -text svneol=unset#text/utf-16
 tr.lproj/Transfer.strings -text svneol=unset#text/utf-16
 www/crash/crash.py -text
-www/help/images/bonjour.png -text svneol=unset#image/png
-www/help/images/bookmark_add.png -text svneol=unset#image/png
-www/help/images/bookmark_drag.png -text svneol=unset#image/png
-www/help/images/bookmark_edit.png -text svneol=unset#image/png
-www/help/images/bookmark_export.png -text svneol=unset#image/png
-www/help/images/bookmark_file.png -text svneol=unset#image/png
-www/help/images/bookmark_import.png -text svneol=unset#image/png
-www/help/images/bookmarks.png -text svneol=unset#image/png
-www/help/images/configure_me.png -text
-www/help/images/connection.png -text svneol=unset#image/png
-www/help/images/connection_configuration.png -text
-www/help/images/dashboard_widget_bar.png -text
-www/help/images/download.png -text svneol=unset#image/png
-www/help/images/drop.png -text svneol=unset#image/png
-www/help/images/drop_file.png -text
-www/help/images/edit.png -text svneol=unset#image/png
-www/help/images/history.png -text svneol=unset#image/png
-www/help/images/inetloc.png -text svneol=unset#image/png
-www/help/images/move.png -text svneol=unset#image/png
-www/help/images/paste.png -text svneol=unset#image/png
-www/help/images/permissions.png -text svneol=unset#image/png
-www/help/images/quick.png -text svneol=unset#image/png
-www/help/images/quicksilver.png -text svneol=unset#image/png
-www/help/images/rename.png -text svneol=unset#image/png
-www/help/images/synchronize.png -text svneol=unset#image/png
-www/help/images/toolbar.png -text svneol=unset#image/png
-www/help/images/transfer.png -text svneol=unset#image/png
-www/help/images/upload.png -text svneol=unset#image/png
 www/update/Updater.exe -text
 www/update/changelog-beta.wyp -text
 www/update/changelog-dev.wyp -text
