@@ -388,7 +388,7 @@ public class CFSession extends CloudHTTP4Session {
                     }
 
                     public String toString() {
-                        return Locale.localizedString("Limelight Content", "Mosso");
+                        return Locale.localizedString("Akamai", "Mosso");
                     }
 
                     public void clear() {
