@@ -38,6 +38,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Commondialog
 
         public const int BN_CLICKED = 0;
         public const uint CDM_FIRST = WM_USER + 100;
+        public const uint CDM_GETFILEPATH = CDM_FIRST + 0x0001;
         public const uint CDM_GETFOLDERPATH = CDM_FIRST + 0x0002;
         public const uint CDM_HIDECONTROL = CDM_FIRST + 0x0005;
         public const uint CDN_FILEOK = (CDN_FIRST - 5);
@@ -120,7 +121,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Commondialog
         [DllImport("kernel32.dll", EntryPoint = "GetLastError")]
         public static extern uint GetLastError();
 
-        [DllImport("user32.dll", EntryPoint = "SendMessageW")]
+        [DllImport("user32.dll", EntryPoint = "SendMessageW", CharSet=CharSet.Unicode)]
         public static extern uint SendMessage
             (
             [In] IntPtr hWnd,

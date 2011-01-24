@@ -466,7 +466,8 @@ namespace Ch.Cyberduck.Ui.Winforms.Commondialog
 
             //find our button controls            
             var hSelectButton = InteropUtil.AssumeNonZero(InteropUtil.GetDlgItem(hWnd, InteropUtil.ID_SELECT));
-            var hCustomCancelButton = InteropUtil.AssumeNonZero(InteropUtil.GetDlgItem(hWnd, InteropUtil.ID_CUSTOM_CANCEL));
+            var hCustomCancelButton =
+                InteropUtil.AssumeNonZero(InteropUtil.GetDlgItem(hWnd, InteropUtil.ID_CUSTOM_CANCEL));
 
             if (!String.IsNullOrEmpty(SelectLabel))
             {
@@ -519,9 +520,11 @@ namespace Ch.Cyberduck.Ui.Winforms.Commondialog
             if (hWnd == m_hWnd)
             {
                 var hSelectButton =
-                    InteropUtil.AssumeNonZero(InteropUtil.GetDlgItem(InteropUtil.AssumeNonZero(hWnd), InteropUtil.ID_SELECT));
+                    InteropUtil.AssumeNonZero(InteropUtil.GetDlgItem(InteropUtil.AssumeNonZero(hWnd),
+                                                                     InteropUtil.ID_SELECT));
                 var hOkButton =
-                    InteropUtil.AssumeNonZero(InteropUtil.GetDlgItem(InteropUtil.AssumeNonZero(hWnd), InteropUtil.ID_CUSTOM_CANCEL));
+                    InteropUtil.AssumeNonZero(InteropUtil.GetDlgItem(InteropUtil.AssumeNonZero(hWnd),
+                                                                     InteropUtil.ID_CUSTOM_CANCEL));
 
                 var hParent = InteropUtil.AssumeNonZero(InteropUtil.GetParent(hWnd));
                 var fileName = InteropUtil.AssumeNonZero(InteropUtil.GetDlgItem(hParent, InteropUtil.ID_FileNameCombo));
@@ -622,8 +625,11 @@ namespace Ch.Cyberduck.Ui.Winforms.Commondialog
             {
                 case InteropUtil.CDN_FOLDERCHANGE:
                     {
+                        //CDM_GETFOLDERPATH returns garbage for some standard folders like 'Libraries'
+                        //var newFolder = GetTextFromCommonDialog(InteropUtil.AssumeNonZero(InteropUtil.GetParent(hWnd)),
+                        //                  InteropUtil.CDM_GETFOLDERPATH);
                         var newFolder = GetTextFromCommonDialog(InteropUtil.AssumeNonZero(InteropUtil.GetParent(hWnd)),
-                                                                InteropUtil.CDM_GETFOLDERPATH);
+                                                                InteropUtil.CDM_GETFILEPATH);
                         /*
                         if (m_currentFolder != null && newFolder != null &&
                             Util.PathContains(newFolder, m_currentFolder))
@@ -631,10 +637,12 @@ namespace Ch.Cyberduck.Ui.Winforms.Commondialog
                             m_suppressSelectionChange = true;
                         }
                         */
+
                         m_currentFolder = newFolder;
                         var fileNameCombo =
-                            InteropUtil.AssumeNonZero(InteropUtil.GetDlgItem(InteropUtil.AssumeNonZero(InteropUtil.GetParent(hWnd)),
-                                                                      InteropUtil.ID_FileNameCombo));
+                            InteropUtil.AssumeNonZero(
+                                InteropUtil.GetDlgItem(InteropUtil.AssumeNonZero(InteropUtil.GetParent(hWnd)),
+                                                       InteropUtil.ID_FileNameCombo));
                         if (m_hasDirChangeFired)
                         {
                             InteropUtil.SetWindowTextW(fileNameCombo, "");
@@ -659,7 +667,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Commondialog
                         var hParent = InteropUtil.GetParent(hWnd);
                         var hFile =
                             InteropUtil.AssumeNonZero(InteropUtil.GetDlgItem(InteropUtil.AssumeNonZero(hParent),
-                                                                      InteropUtil.ID_FileNameCombo));
+                                                                             InteropUtil.ID_FileNameCombo));
                         InteropUtil.SetFocus(hFile);
                         break;
                     }
@@ -873,6 +881,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Commondialog
             return (x & 0xFFFF0000) >> 16;
         }
 
-        private delegate void CalcPosDelegate(SelectFileAndFolderDialog @this, int baseRight, out int right, out int width);
+        private delegate void CalcPosDelegate(
+            SelectFileAndFolderDialog @this, int baseRight, out int right, out int width);
     }
 }
