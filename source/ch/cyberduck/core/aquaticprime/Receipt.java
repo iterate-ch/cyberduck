@@ -143,13 +143,13 @@ public class Receipt extends AbstractLicense {
                             if(((DERInteger) type).getValue().intValue() == 2) {
                                 DEREncodable value = sequence.getObjectAt(2);
                                 if(value instanceof DEROctetString) {
-                                    bundleIdentifier = new String(((DEROctetString) value).getOctets(), Charset.forName("utf-8"));
+                                    bundleIdentifier = new String(((DEROctetString) value).getOctets(), "utf-8");
                                 }
                             }
                             else if(((DERInteger) type).getValue().intValue() == 3) {
                                 DEREncodable value = sequence.getObjectAt(2);
                                 if(value instanceof DEROctetString) {
-                                    bundleVersion = new String(((DEROctetString) value).getOctets(), Charset.forName("utf-8"));
+                                    bundleVersion = new String(((DEROctetString) value).getOctets(), "utf-8");
                                 }
                             }
                             else if(((DERInteger) type).getValue().intValue() == 4) {
