@@ -15,7 +15,6 @@
 // Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
 // 
-using System.Drawing;
 using System.Windows.Forms;
 using ch.cyberduck.core.i18n;
 using Ch.Cyberduck.Ui.Controller;
@@ -31,11 +30,12 @@ namespace Ch.Cyberduck.Ui.Winforms
             Text = Locale.localizedString("Duplicate File", "Duplicate");
             Button cancelBtn = new Button
                                    {
-                                       Size = new Size(75, 23),
+                                       AutoSize = true,
+                                       Size = cancelButton.Size,
                                        TabIndex = 5,
                                        Text = Locale.localizedString("Cancel", "Duplicate"),
                                        UseVisualStyleBackColor = true,
-                                       Anchor = AnchorStyles.Bottom | AnchorStyles.Left
+                                       Anchor = cancelButton.Anchor
                                    };
             tableLayoutPanel.Controls.Add(cancelBtn, 1, 2);
             tableLayoutPanel.RowStyles[0].Height = 20F;
