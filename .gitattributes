@@ -1257,6 +1257,7 @@ lib/httpclient-4.0.3.jar -text
 lib/httpcore-4.1.jar -text
 lib/httpmime-4.0.3.jar -text
 lib/icu4j-module-4.4.1.1.jar -text
+lib/ikvm-native.dll.config -text
 lib/jakarta-oro-2.0.8.jar -text
 lib/jakarta-slide-webdavlib-2.2-dev.jar -text
 lib/java-xmlbuilder-0.4.jar -text
