@@ -546,6 +546,8 @@ public abstract class Preferences {
         defaults.put("cf.upload.metadata.md5", String.valueOf(false));
         defaults.put("cf.metadata.default", "");
 
+        defaults.put("cf.list.limit", String.valueOf(10000));
+
         //doc	Microsoft Word
         //html	HTML Format
         //odt	Open Document Format
