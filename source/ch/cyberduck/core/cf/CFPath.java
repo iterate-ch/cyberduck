@@ -51,6 +51,7 @@ import java.text.MessageFormat;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -231,34 +232,43 @@ public class CFPath extends CloudPath {
                     this.getSession().cdn().clear();
                 }
                 else {
-                    for(FilesObject object : this.getSession().getClient().listObjectsStartingWith(this.getContainerName(),
-                            this.isContainer() ? StringUtils.EMPTY : this.getKey() + Path.DELIMITER, null, -1, null, Path.DELIMITER)) {
-                        final Path file = PathFactory.createPath(this.getSession(), this.getContainerName(), object.getName(),
-                                "application/directory".equals(object.getMimeType()) ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
-                        file.setParent(this);
-                        if(file.attributes().getType() == Path.FILE_TYPE) {
-                            file.attributes().setSize(object.getSize());
-                            file.attributes().setChecksum(object.getMd5sum());
-                            try {
-                                final Date modified = DateParser.parse(object.getLastModified());
-                                if(null != modified) {
-                                    file.attributes().setModificationDate(modified.getTime());
+                    final int limit = Preferences.instance().getInteger("cf.list.limit");
+                    String marker = null;
+                    List<FilesObject> list;
+                    do {
+                        list = this.getSession().getClient().listObjectsStartingWith(this.getContainerName(),
+                                this.isContainer() ? StringUtils.EMPTY : this.getKey() + Path.DELIMITER, null, -1, marker, Path.DELIMITER);
+                        for(FilesObject object : list) {
+                            final Path file = PathFactory.createPath(this.getSession(), this.getContainerName(), object.getName(),
+                                    "application/directory".equals(object.getMimeType()) ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
+                            file.setParent(this);
+                            if(file.attributes().getType() == Path.FILE_TYPE) {
+                                file.attributes().setSize(object.getSize());
+                                file.attributes().setChecksum(object.getMd5sum());
+                                try {
+                                    final Date modified = DateParser.parse(object.getLastModified());
+                                    if(null != modified) {
+                                        file.attributes().setModificationDate(modified.getTime());
+                                    }
+                                }
+                                catch(InvalidDateException e) {
+                                    log.warn("Not ISO 8601 format:" + e.getMessage());
                                 }
                             }
-                            catch(InvalidDateException e) {
-                                log.warn("Not ISO 8601 format:" + e.getMessage());
+                            if(file.attributes().getType() == Path.DIRECTORY_TYPE) {
+                                file.attributes().setPlaceholder(true);
+                                if(children.contains(file.getReference())) {
+                                    continue;
+                                }
                             }
-                        }
-                        if(file.attributes().getType() == Path.DIRECTORY_TYPE) {
-                            file.attributes().setPlaceholder(true);
-                            if(children.contains(file.getReference())) {
-                                continue;
-                            }
-                        }
-                        file.attributes().setOwner(this.attributes().getOwner());
+                            file.attributes().setOwner(this.attributes().getOwner());
 
-                        children.add(file);
+                            children.add(file);
+
+                            marker = object.getName();
+                        }
                     }
+                    while(list.size() == limit);
                 }
                 this.getSession().setWorkdir(this);
             }
