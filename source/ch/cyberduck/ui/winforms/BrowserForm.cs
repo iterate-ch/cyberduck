@@ -345,7 +345,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public bool HiddenFilesVisible
         {
-            set { showHiddenFilesToolStripMenuItem.Checked = value; }
+            set { showHiddenFilesMainMenuItem.Checked = value; }
         }
 
         public string SearchString

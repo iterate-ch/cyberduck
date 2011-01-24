@@ -890,7 +890,8 @@ namespace Ch.Cyberduck.Ui.Controller
                     foreach (TreePathReference reference in dropargs.SourceModels)
                     {
                         Path next = reference.Unique;
-                        Path copy = PathFactory.createPath(getSession(), destination.getAbsolute(), next.getName(), next.attributes().getType());
+                        Path copy = PathFactory.createPath(getSession(), destination.getAbsolute(), next.getName(),
+                                                           next.attributes().getType());
                         files.Add(next, copy);
                     }
                     DuplicatePaths(files, false);
@@ -1269,8 +1270,8 @@ namespace Ch.Cyberduck.Ui.Controller
         private void View_Stop()
         {
             // Remove all pending actions)
-            foreach (BackgroundAction action in this.getActions().toArray(
-                new BackgroundAction[this.getActions().size()]))
+            foreach (BackgroundAction action in getActions().toArray(
+                new BackgroundAction[getActions().size()]))
             {
                 action.cancel();
             }
@@ -1377,7 +1378,9 @@ namespace Ch.Cyberduck.Ui.Controller
         private void View_ShowHiddenFiles()
         {
             ShowHiddenFiles = !ShowHiddenFiles;
-            ReloadData(true);
+            if (IsMounted()){
+                ReloadData(true);
+            }
         }
 
         private void View_ToggleToolbar()
@@ -2175,7 +2178,7 @@ namespace Ch.Cyberduck.Ui.Controller
         /// <returns>The session to be used for file transfers. Null if not mounted</returns>
         protected Session getTransferSession()
         {
-            return this.getTransferSession(false);
+            return getTransferSession(false);
         }
 
         protected Session getTransferSession(bool force)
@@ -2462,7 +2465,7 @@ namespace Ch.Cyberduck.Ui.Controller
         /// <returns>true if there is any network activity running in the background</returns>
         public bool IsActivityRunning()
         {
-            BackgroundAction current = this.getActions().getCurrent();
+            BackgroundAction current = getActions().getCurrent();
             if (null == current)
             {
                 return false;
@@ -2528,24 +2531,28 @@ namespace Ch.Cyberduck.Ui.Controller
                 if (Preferences.instance().getBoolean("browser.confirmDisconnect"))
                 {
                     DialogResult result = CommandBox(Locale.localizedString("Disconnect"),
-                                                     String.Format(Locale.localizedString("Disconnect from {0}"), _session.getHost().getHostname()),
+                                                     String.Format(Locale.localizedString("Disconnect from {0}"),
+                                                                   _session.getHost().getHostname()),
                                                      Locale.localizedString("The connection will be closed."),
                                                      String.Format("{0}", Locale.localizedString("Disconnect")),
                                                      true,
-                                                     Locale.localizedString("Don't ask again", "Configuration"), SysIcons.Question, delegate(int option, bool verificationChecked)
-                                                                                                                                        {
-                                                                                                                                            if (verificationChecked)
-                                                                                                                                            {
-                                                                                                                                                // Never show again.
-                                                                                                                                                Preferences.instance().setProperty("browser.confirmDisconnect", false);
-                                                                                                                                            }
-                                                                                                                                            switch (option)
-                                                                                                                                            {
-                                                                                                                                                case 0: // Disconnect
-                                                                                                                                                    unmountImpl(DialogResult.OK);
-                                                                                                                                                    break;
-                                                                                                                                            }
-                                                                                                                                        });
+                                                     Locale.localizedString("Don't ask again", "Configuration"),
+                                                     SysIcons.Question, delegate(int option, bool verificationChecked)
+                                                                            {
+                                                                                if (verificationChecked)
+                                                                                {
+                                                                                    // Never show again.
+                                                                                    Preferences.instance().setProperty(
+                                                                                        "browser.confirmDisconnect",
+                                                                                        false);
+                                                                                }
+                                                                                switch (option)
+                                                                                {
+                                                                                    case 0: // Disconnect
+                                                                                        unmountImpl(DialogResult.OK);
+                                                                                        break;
+                                                                                }
+                                                                            });
                     return DialogResult.OK == result;
                 }
                 UnmountImpl(disconnected);
@@ -2572,7 +2579,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 if (IsActivityRunning())
                 {
-                    BackgroundAction current = this.getActions().getCurrent();
+                    BackgroundAction current = getActions().getCurrent();
                     if (null != current)
                     {
                         current.cancel();
@@ -2605,7 +2612,7 @@ namespace Ch.Cyberduck.Ui.Controller
             switch (View.CurrentView)
             {
                 case BrowserView.File:
-                    BackgroundAction current = this.getActions().getCurrent();
+                    BackgroundAction current = getActions().getCurrent();
                     if (null == current)
                     {
                         if (IsConnected())
@@ -3450,16 +3457,16 @@ namespace Ch.Cyberduck.Ui.Controller
                 _controller = controller;
             }
 
+            public string Laststatus
+            {
+                get { return _laststatus; }
+            }
+
             public void message(string msg)
             {
                 _laststatus = msg;
                 AsyncDelegate updateLabel = delegate { _controller.View.StatusLabel = msg; };
                 _controller.Invoke(updateLabel);
-            }
-
-            public string Laststatus
-            {
-                get { return _laststatus; }
             }
         }
 
