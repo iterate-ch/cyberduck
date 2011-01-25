@@ -92,6 +92,11 @@
             </fileset>
         </copy>
 
+        <echo message="Change dynamic shared library install names..."/>
+        <exec dir="${build}" executable="/usr/bin/install_name_tool" spawn="false" failonerror="false">
+            <arg line="-change @rpath/libjvm.dylib @executable_path/../Resources/Java/Runtime.jdk/Contents/Home/jre/lib/server/libjvm.dylib ${app.executable}"/>
+        </exec>
+
         <antcall target="spotlight"/>
 
         <echo message="_VERSION_=${cyberduck.version.major}.${cyberduck.version.minor}"/>
@@ -289,8 +294,6 @@
             <param name="post" value="copy-runtime"/>
         </antcall>
 
-        <antcall target="install-name"/>
-
         <echo message="Remove Sparkle.framework"/>
         <delete dir="${app.frameworks}/Sparkle.framework"/>
         <echo message="Remove PPC slice from ${app.executable}"/>
@@ -332,13 +335,6 @@
                 <exclude name="Contents/Home/jre/lib/client/**"/>
             </fileset>
         </copy>
-    </target>
-
-    <target name="install-name">
-        <echo message="Change dynamic shared library install names..."/>
-        <exec dir="${build}" executable="/usr/bin/install_name_tool" spawn="false" failonerror="false">
-            <arg line="-change @rpath/libjvm.dylib @executable_path/../Resources/Java/Runtime.jdk/Contents/Home/jre/lib/server/libjvm.dylib ${app.executable}"/>
-        </exec>
     </target>
 
     <target name="package-beta" depends="clean, revision">
