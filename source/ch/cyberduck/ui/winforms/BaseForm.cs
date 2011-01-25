@@ -22,10 +22,12 @@ using System.Drawing;
 using System.Reflection;
 using System.Windows.Forms;
 using BrightIdeasSoftware;
+using ch.cyberduck.core;
 using Ch.Cyberduck.Core;
 using ch.cyberduck.core.i18n;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Winforms.Taskdialog;
+using Queue = System.Collections.Queue;
 
 namespace Ch.Cyberduck.Ui.Winforms
 {
@@ -145,10 +147,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                                                     FormatHelp(help),
                                                     verificationText,
                                                     TaskDialogButtons.OK, SysIcons.Information, SysIcons.Information);
-            if (DialogResult.OK == result)
-            {
-                handler(-1, dialog.VerificationChecked);
-            }
+            handler(-1, dialog.VerificationChecked);
             return result;
         }
 
@@ -172,10 +171,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                                                         showCancelButton,
                                                         mainIcon,
                                                         footerIcon);
-            if (DialogResult.OK == result)
-            {
-                handler(dialog.CommandButtonResult, dialog.VerificationChecked);
-            }
+            handler(dialog.CommandButtonResult, dialog.VerificationChecked);
             return result;
         }
 
@@ -344,9 +340,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             var handler = StoringValues;
             if (handler != null)
                 handler(this, EventArgs.Empty);
-
-            // Save values
-            PersistenceHandler.Save();
         }
 
         public event EventHandler LocalizationCompleted;
