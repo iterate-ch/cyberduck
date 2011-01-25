@@ -4241,7 +4241,7 @@
 				INFOPLIST_FILE = Info.plist;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)/../../Library/Java/JavaVirtualMachines/1.7.0.jdk/Contents/Home/jre/lib/server\"",
+					"\"$(USER_LIBRARY_DIR)/Java/JavaVirtualMachines/1.7.0.jdk/Contents/Home/jre/lib/server\"",
 				);
 				OTHER_LDFLAGS = (
 					"-lz",
@@ -4398,7 +4398,7 @@
 				INFOPLIST_FILE = Info.plist;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)/../../Library/Java/JavaVirtualMachines/1.7.0.jdk/Contents/Home/jre/lib/server\"",
+					"\"$(USER_LIBRARY_DIR)/Java/JavaVirtualMachines/1.7.0.jdk/Contents/Home/jre/lib/server\"",
 				);
 				OTHER_LDFLAGS = (
 					"-lz",
