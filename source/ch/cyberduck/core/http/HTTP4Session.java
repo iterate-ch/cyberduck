@@ -120,12 +120,12 @@ public abstract class HTTP4Session extends SSLSession {
                 final Proxy proxy = ProxyFactory.instance();
                 if("https".equals(this.getHost().getProtocol().getScheme())) {
                     if(proxy.isHTTPSProxyEnabled(host)) {
-                        ConnRouteParams.setDefaultProxy(params, new HttpHost(proxy.getHTTPSProxyHost(), proxy.getHTTPSProxyPort()));
+                        ConnRouteParams.setDefaultProxy(params, new HttpHost(proxy.getHTTPSProxyHost(host), proxy.getHTTPSProxyPort(host)));
                     }
                 }
                 if("http".equals(this.getHost().getProtocol().getScheme())) {
                     if(proxy.isHTTPProxyEnabled(host)) {
-                        ConnRouteParams.setDefaultProxy(params, new HttpHost(proxy.getHTTPProxyHost(), proxy.getHTTPProxyPort()));
+                        ConnRouteParams.setDefaultProxy(params, new HttpHost(proxy.getHTTPProxyHost(host), proxy.getHTTPProxyPort(host)));
                     }
                 }
             }

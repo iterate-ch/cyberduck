@@ -38,19 +38,19 @@ public interface Proxy {
 
     boolean isSOCKSProxyEnabled(Host host);
 
-    String getSOCKSProxyHost();
+    String getSOCKSProxyHost(Host host);
 
-    int getSOCKSProxyPort();
+    int getSOCKSProxyPort(Host host);
 
     boolean isHTTPProxyEnabled(Host host);
 
-    String getHTTPProxyHost();
+    String getHTTPProxyHost(Host host);
 
-    int getHTTPProxyPort();
+    int getHTTPProxyPort(Host host);
 
     boolean isHTTPSProxyEnabled(Host host);
 
-    String getHTTPSProxyHost();
+    String getHTTPSProxyHost(Host host);
 
-    int getHTTPSProxyPort();
+    int getHTTPSProxyPort(Host host);
 }

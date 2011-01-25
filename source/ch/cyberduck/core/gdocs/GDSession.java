@@ -27,17 +27,6 @@ import ch.cyberduck.core.ssl.SSLSession;
 
 import org.apache.commons.lang.StringUtils;
 
-import com.google.gdata.client.ClientLoginAccountType;
-import com.google.gdata.client.GoogleAuthTokenFactory;
-import com.google.gdata.client.GoogleService;
-import com.google.gdata.client.docs.DocsService;
-import com.google.gdata.client.http.GoogleGDataRequest;
-import com.google.gdata.client.http.HttpUrlConnectionSource;
-import com.google.gdata.data.acl.AclRole;
-import com.google.gdata.util.AuthenticationException;
-import com.google.gdata.util.common.base.CharEscapers;
-import com.google.gdata.util.common.base.StringUtil;
-
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import java.io.*;
@@ -50,6 +39,17 @@ import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
+
+import com.google.gdata.client.ClientLoginAccountType;
+import com.google.gdata.client.GoogleAuthTokenFactory;
+import com.google.gdata.client.GoogleService;
+import com.google.gdata.client.docs.DocsService;
+import com.google.gdata.client.http.GoogleGDataRequest;
+import com.google.gdata.client.http.HttpUrlConnectionSource;
+import com.google.gdata.data.acl.AclRole;
+import com.google.gdata.util.AuthenticationException;
+import com.google.gdata.util.common.base.CharEscapers;
+import com.google.gdata.util.common.base.StringUtil;
 
 /**
  *
@@ -327,7 +327,7 @@ public class GDSession extends SSLSession {
             final Proxy proxy = ProxyFactory.instance();
             if(proxy.isHTTPSProxyEnabled(new Host(Protocol.GDOCS_SSL, url.getHost(), url.getPort()))) {
                 c = url.openConnection(new java.net.Proxy(java.net.Proxy.Type.HTTP,
-                        new InetSocketAddress(proxy.getHTTPSProxyHost(), proxy.getHTTPSProxyPort())));
+                        new InetSocketAddress(proxy.getHTTPSProxyHost(host), proxy.getHTTPSProxyPort(host))));
             }
         }
         if(null == c) {

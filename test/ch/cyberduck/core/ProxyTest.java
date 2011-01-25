@@ -38,11 +38,11 @@ public class ProxyTest extends AbstractTestCase {
                 throw new UnsupportedOperationException();
             }
 
-            public String getSOCKSProxyHost() {
+            public String getSOCKSProxyHost(Host host) {
                 throw new UnsupportedOperationException();
             }
 
-            public int getSOCKSProxyPort() {
+            public int getSOCKSProxyPort(Host host) {
                 throw new UnsupportedOperationException();
             }
 
@@ -50,11 +50,11 @@ public class ProxyTest extends AbstractTestCase {
                 throw new UnsupportedOperationException();
             }
 
-            public String getHTTPProxyHost() {
+            public String getHTTPProxyHost(Host host) {
                 throw new UnsupportedOperationException();
             }
 
-            public int getHTTPProxyPort() {
+            public int getHTTPProxyPort(Host host) {
                 throw new UnsupportedOperationException();
             }
 
@@ -62,11 +62,11 @@ public class ProxyTest extends AbstractTestCase {
                 throw new UnsupportedOperationException();
             }
 
-            public String getHTTPSProxyHost() {
+            public String getHTTPSProxyHost(Host host) {
                 throw new UnsupportedOperationException();
             }
 
-            public int getHTTPSProxyPort() {
+            public int getHTTPSProxyPort(Host host) {
                 throw new UnsupportedOperationException();
             }
 

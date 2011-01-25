@@ -94,7 +94,7 @@ public class DAVSession extends HTTP3Session {
             final Proxy proxy = ProxyFactory.instance();
             if(host.getProtocol().isSecure()) {
                 if(proxy.isHTTPSProxyEnabled(host)) {
-                    this.getClient().setProxy(proxy.getHTTPSProxyHost(), proxy.getHTTPSProxyPort());
+                    this.getClient().setProxy(proxy.getHTTPSProxyHost(host), proxy.getHTTPSProxyPort(host));
                     //this.DAV.setProxyCredentials(new UsernamePasswordCredentials(null, null));
                 }
                 else {
@@ -104,7 +104,7 @@ public class DAVSession extends HTTP3Session {
             }
             else {
                 if(proxy.isHTTPProxyEnabled(host)) {
-                    this.getClient().setProxy(proxy.getHTTPProxyHost(), proxy.getHTTPProxyPort());
+                    this.getClient().setProxy(proxy.getHTTPProxyHost(host), proxy.getHTTPProxyPort(host));
                     //this.getClient().setProxyCredentials(new UsernamePasswordCredentials(null, null));
                 }
                 else {

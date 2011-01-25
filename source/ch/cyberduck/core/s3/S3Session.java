@@ -155,8 +155,8 @@ public class S3Session extends CloudHTTP3Session {
             final Proxy proxy = ProxyFactory.instance();
             if(host.getProtocol().isSecure()) {
                 if(proxy.isHTTPSProxyEnabled(host)) {
-                    configuration.setProperty("httpclient.proxy-host", proxy.getHTTPSProxyHost());
-                    configuration.setProperty("httpclient.proxy-port", String.valueOf(proxy.getHTTPSProxyPort()));
+                    configuration.setProperty("httpclient.proxy-host", proxy.getHTTPSProxyHost(host));
+                    configuration.setProperty("httpclient.proxy-port", String.valueOf(proxy.getHTTPSProxyPort(host)));
                     configuration.setProperty("httpclient.proxy-user", null);
                     configuration.setProperty("httpclient.proxy-password", null);
                     if(StringUtils.isNotEmpty(Preferences.instance().getProperty("connection.proxy.ntlm.domain"))) {
@@ -167,8 +167,8 @@ public class S3Session extends CloudHTTP3Session {
             }
             else {
                 if(proxy.isHTTPProxyEnabled(host)) {
-                    configuration.setProperty("httpclient.proxy-host", proxy.getHTTPProxyHost());
-                    configuration.setProperty("httpclient.proxy-port", String.valueOf(proxy.getHTTPProxyPort()));
+                    configuration.setProperty("httpclient.proxy-host", proxy.getHTTPProxyHost(host));
+                    configuration.setProperty("httpclient.proxy-port", String.valueOf(proxy.getHTTPProxyPort(host)));
                     configuration.setProperty("httpclient.proxy-user", null);
                     configuration.setProperty("httpclient.proxy-password", null);
                     if(StringUtils.isNotEmpty(Preferences.instance().getProperty("connection.proxy.ntlm.domain"))) {

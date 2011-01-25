@@ -75,7 +75,6 @@ public class SystemConfigurationProxy extends AbstractProxy implements Proxy {
     }
 
     /**
-     *
      * @param hostname
      * @return
      */
@@ -138,14 +137,14 @@ public class SystemConfigurationProxy extends AbstractProxy implements Proxy {
         return this.isSOCKSProxyEnabledNative();
     }
 
-    public String getSOCKSProxyHost() {
+    public String getSOCKSProxyHost(Host host) {
         if(!loadNative()) {
             return null;
         }
         return this.getSOCKSProxyHostNative();
     }
 
-    public int getSOCKSProxyPort() {
+    public int getSOCKSProxyPort(Host host) {
         if(!loadNative()) {
             return -1;
         }
@@ -162,14 +161,14 @@ public class SystemConfigurationProxy extends AbstractProxy implements Proxy {
         return this.isHTTPProxyEnabledNative();
     }
 
-    public String getHTTPProxyHost() {
+    public String getHTTPProxyHost(Host host) {
         if(!loadNative()) {
             return null;
         }
         return this.getHTTPProxyHostNative();
     }
 
-    public int getHTTPProxyPort() {
+    public int getHTTPProxyPort(Host host) {
         if(!loadNative()) {
             return -1;
         }
@@ -186,14 +185,14 @@ public class SystemConfigurationProxy extends AbstractProxy implements Proxy {
         return this.isHTTPSProxyEnabledNative();
     }
 
-    public String getHTTPSProxyHost() {
+    public String getHTTPSProxyHost(Host host) {
         if(!loadNative()) {
             return null;
         }
         return this.getHTTPSProxyHostNative();
     }
 
-    public int getHTTPSProxyPort() {
+    public int getHTTPSProxyPort(Host host) {
         if(!loadNative()) {
             return -1;
         }
