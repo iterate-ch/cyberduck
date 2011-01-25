@@ -65,7 +65,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                                                                      case 0:
                                                                                          allow(hostname, serverHostKeyAlgorithm, serverHostKey, verificationChecked);
                                                                                          break;
-                                                                                     default:
+                                                                                     case 1:
                                                                                          Log.warn("Cannot continue without a valid host key");
                                                                                          throw new ConnectionCanceledException();
                                                                                  }
