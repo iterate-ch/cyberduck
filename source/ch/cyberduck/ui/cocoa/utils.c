@@ -82,18 +82,20 @@ VMLaunchOptions *NewVMLaunchOptions(int argc, const char **currentArg)
 	CFStringAppend(classpathStringRef, CFSTR("-Djava.class.path="));
 	
 	for(int index = 0; index < CFArrayGetCount(jarsArrayRef); index++) {
-		CFStringRef jarRef = (CFStringRef)CFArrayGetValueAtIndex(jarsArrayRef, index);
+		CFStringRef jarStringRef = (CFStringRef)CFArrayGetValueAtIndex(jarsArrayRef, index);
 		// Make absolute path to bundle resource
-		CFURLRef url = CFBundleCopyResourceURL(mainBundleRef, jarRef, NULL, CFSTR("Java"));
-		if(NULL == url) {
-			fprintf(stdout, "Resource not found for: %s\n", CFStringGetCStringPtr(jarRef, CFStringGetFastestEncoding(jarRef)));
+		CFURLRef urlRef = CFBundleCopyResourceURL(mainBundleRef, jarStringRef, NULL, CFSTR("Java"));
+		if(NULL == urlRef) {
+			fprintf(stdout, "Resource not found for: %s\n", CFStringGetCStringPtr(jarStringRef, CFStringGetFastestEncoding(jarStringRef)));
 			continue;
 		}
-		CFStringAppend(classpathStringRef, CFURLCopyFileSystemPath(url, kCFURLPOSIXPathStyle));
+		CFStringRef urlPathRef = CFURLCopyFileSystemPath(urlRef, kCFURLPOSIXPathStyle);
+		CFRelease(urlRef);
+		CFStringAppend(classpathStringRef, urlPathRef);
+		CFRelease(urlPathRef);
 		if(index < CFArrayGetCount(jarsArrayRef)-1) {
 			CFStringAppend(classpathStringRef, CFSTR(":"));
 		}
-		CFRelease(url);
 	}
 	CFRelease(jarsArrayRef);
 	
