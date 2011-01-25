@@ -1266,7 +1266,7 @@ lib/jets3t-0.8.1.jar -text
 lib/jna-3.2.7.jar -text
 lib/json-simple-1.1.jar -text
 lib/libAquaticPrime.a -text
-lib/libjdns_sd.jnilib -text
+lib/libjdns_sd.dylib -text
 lib/log4j-1.2.15.jar -text
 lib/log4j.xml -text
 lib/mail-1.4.3.jar -text
