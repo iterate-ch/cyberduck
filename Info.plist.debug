@@ -157,7 +157,7 @@
             <string>-Djava.library.path=$APP_PACKAGE/Contents/Resources/Java -Djna.library.path=$APP_PACKAGE/Contents/Resources/Java -Djava.awt.headless=true -Dfile.encoding=utf-8 -Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005</string>
         </dict>
         <key>NSAppleScriptEnabled</key>
-        <string>NO</string>
+        <false/>
         <key>SUFeedURL</key>
         <string>_SPARKLEFEED_</string>
         <key>SUCheckAtStartup</key>
