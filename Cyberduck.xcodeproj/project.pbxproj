@@ -11,7 +11,11 @@
 		470168500EED9EB7005E2CCF /* Mosso.strings in Resources */ = {isa = PBXBuildFile; fileRef = 470168320EED9EB7005E2CCF /* Mosso.strings */; };
 		47022C231018663600488C19 /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47022C221018663600488C19 /* CoreServices.framework */; };
 		47026428087DC91C008837FD /* IDisk.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47026426087DC91C008837FD /* IDisk.strings */; };
-		470671160FD8896D00EE3291 /* Sparkle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 470671150FD8896D00EE3291 /* Sparkle.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		4704226212EEBFE8004658C0 /* libAquaticPrime.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4773D6B00F9C86A7004658BD /* libAquaticPrime.a */; };
+		4704227312EEC0DB004658C0 /* Growl.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4726277E0FD5743C001D5BA5 /* Growl.framework */; };
+		4704228512EEC0EF004658C0 /* Sparkle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 470671150FD8896D00EE3291 /* Sparkle.framework */; };
+		4704238712EEC56F004658C0 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
+		470423D712EEC5EC004658C0 /* Growl.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4726277E0FD5743C001D5BA5 /* Growl.framework */; };
 		470912ED0C36FCE00049FBCE /* Prompt.nib in Resources */ = {isa = PBXBuildFile; fileRef = 470912EB0C36FCE00049FBCE /* Prompt.nib */; };
 		4709E81B0F864B16005A06CE /* sync.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 4709E81A0F864B16005A06CE /* sync.tiff */; };
 		47124259129AA0F200BC957C /* swift-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 47124257129AA0F200BC957C /* swift-icon.png */; };
@@ -38,12 +42,13 @@
 		4725794D11DD7FD6009DD748 /* dropfolderbadge.png in Resources */ = {isa = PBXBuildFile; fileRef = 4725794911DD7FD6009DD748 /* dropfolderbadge.png */; };
 		4725794E11DD7FD6009DD748 /* aliasbadge.png in Resources */ = {isa = PBXBuildFile; fileRef = 4725794A11DD7FD6009DD748 /* aliasbadge.png */; };
 		4725794F11DD7FD6009DD748 /* privatefolderbadge.png in Resources */ = {isa = PBXBuildFile; fileRef = 4725794B11DD7FD6009DD748 /* privatefolderbadge.png */; };
-		4726277F0FD5743C001D5BA5 /* Growl.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4726277E0FD5743C001D5BA5 /* Growl.framework */; };
-		472627B50FD574D9001D5BA5 /* Growl.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4726277E0FD5743C001D5BA5 /* Growl.framework */; };
 		472759650AF3BE6000EBE267 /* update.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 472759640AF3BE6000EBE267 /* update.tiff */; };
 		472938A00F9DBC420086605D /* AquaticPrime.h in Headers */ = {isa = PBXBuildFile; fileRef = 4729389C0F9DBC420086605D /* AquaticPrime.h */; };
 		472938A10F9DBC420086605D /* License.h in Headers */ = {isa = PBXBuildFile; fileRef = 4729389D0F9DBC420086605D /* License.h */; };
 		472938A30F9DBC420086605D /* License.m in Sources */ = {isa = PBXBuildFile; fileRef = 4729389F0F9DBC420086605D /* License.m */; };
+		472DF80112EED43E006DB02C /* libjvm.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 472DF80012EED43E006DB02C /* libjvm.dylib */; };
+		472DF81312EED464006DB02C /* jni_md.h in Headers */ = {isa = PBXBuildFile; fileRef = 472DF80B12EED464006DB02C /* jni_md.h */; };
+		472DF81612EED464006DB02C /* jni.h in Headers */ = {isa = PBXBuildFile; fileRef = 472DF80E12EED464006DB02C /* jni.h */; };
 		4734425B102DEABD00C04C43 /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4734425A102DEABD00C04C43 /* Quartz.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		4739D3970F82681100D2782A /* reload.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 4739D3960F82681100D2782A /* reload.tiff */; };
 		4739D39B0F8268B700D2782A /* upload.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 4739D3990F8268B700D2782A /* upload.tiff */; };
@@ -59,11 +64,9 @@
 		4739EF8A085698F600405FD3 /* Editor.m in Sources */ = {isa = PBXBuildFile; fileRef = 4741532206C4F08A00AC0BD2 /* Editor.m */; };
 		4739EF8B085698F600405FD3 /* NSAppleEventDescriptor-Extensions.m in Sources */ = {isa = PBXBuildFile; fileRef = 4741532406C4F08A00AC0BD2 /* NSAppleEventDescriptor-Extensions.m */; };
 		4739EF8C085698F600405FD3 /* ODBEditor.m in Sources */ = {isa = PBXBuildFile; fileRef = 4741532606C4F08A00AC0BD2 /* ODBEditor.m */; };
-		4739EF8F085698F600405FD3 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 		4739EF9C0856990000405FD3 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 29B97325FDCFA39411CA2CEA /* Foundation.framework */; };
 		4739EF9E0856990000405FD3 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 		4739EFAC0856990900405FD3 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47C761EA06A88D7600B464FF /* SystemConfiguration.framework */; };
-		4739EFBB0856991200405FD3 /* JavaVM.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4725BE0A05D2E27000C7CCBD /* JavaVM.framework */; };
 		473CEECB127EE6EC003BB028 /* dropbox-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 473CEEC9127EE6EC003BB028 /* dropbox-icon.png */; };
 		473CEECC127EE6EC003BB028 /* dropbox.icns in Resources */ = {isa = PBXBuildFile; fileRef = 473CEECA127EE6EC003BB028 /* dropbox.icns */; };
 		474163C106C4F64100AC0BD2 /* Info.nib in Resources */ = {isa = PBXBuildFile; fileRef = 474163A306C4F64000AC0BD2 /* Info.nib */; };
@@ -201,6 +204,9 @@
 		47BE1F8B12369DF100E758FE /* CDTransmitImporter.h in Headers */ = {isa = PBXBuildFile; fileRef = 47BE1F8912369DF100E758FE /* CDTransmitImporter.h */; };
 		47BE1F8C12369DF100E758FE /* CDTransmitImporter.m in Sources */ = {isa = PBXBuildFile; fileRef = 47BE1F8A12369DF100E758FE /* CDTransmitImporter.m */; };
 		47BEDBD30B9296C800141EB4 /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47BEDBD20B9296C800141EB4 /* ApplicationServices.framework */; };
+		47C2723F12E99D6100A13758 /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 47C2722F12E99D2B00A13758 /* main.c */; };
+		47C2724012E99D6100A13758 /* utils.c in Sources */ = {isa = PBXBuildFile; fileRef = 47C2723012E99D2B00A13758 /* utils.c */; };
+		47C2724512E99DA200A13758 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 29B97325FDCFA39411CA2CEA /* Foundation.framework */; };
 		47C4E87710584D710001F618 /* bookmark.png in Resources */ = {isa = PBXBuildFile; fileRef = 47C4E87610584D710001F618 /* bookmark.png */; };
 		47C577EB121BF89C0005FDCC /* azure.icns in Resources */ = {isa = PBXBuildFile; fileRef = 47C577EA121BF89C0005FDCC /* azure.icns */; };
 		47C5F1C3121C39A60037247D /* refresh.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47C5F1C2121C39A60037247D /* refresh.tiff */; };
@@ -229,7 +235,6 @@
 		47FD45720801ED1D00716715 /* browser.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47FD456E0801ED1C00716715 /* browser.tiff */; };
 		47FD45740801ED1D00716715 /* general.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47FD45700801ED1C00716715 /* general.tiff */; };
 		47FF630407F34E6100C0BDB9 /* gear.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47FF630307F34E6100C0BDB9 /* gear.tiff */; };
-		47FF75730FD545150068F30C /* libAquaticPrime.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4773D6B00F9C86A7004658BD /* libAquaticPrime.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -313,7 +318,7 @@
 			dstSubfolderSpec = 10;
 			files = (
 				47B21F080FD8931000521C0D /* Sparkle.framework in CopyFiles */,
-				472627B50FD574D9001D5BA5 /* Growl.framework in CopyFiles */,
+				470423D712EEC5EC004658C0 /* Growl.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -605,6 +610,9 @@
 		4729389C0F9DBC420086605D /* AquaticPrime.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AquaticPrime.h; sourceTree = "<group>"; };
 		4729389D0F9DBC420086605D /* License.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = License.h; sourceTree = "<group>"; };
 		4729389F0F9DBC420086605D /* License.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = License.m; sourceTree = "<group>"; };
+		472DF80012EED43E006DB02C /* libjvm.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libjvm.dylib; path = ../../Library/Java/JavaVirtualMachines/1.7.0.jdk/Contents/Home/jre/lib/server/libjvm.dylib; sourceTree = SOURCE_ROOT; };
+		472DF80B12EED464006DB02C /* jni_md.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = jni_md.h; sourceTree = "<group>"; };
+		472DF80E12EED464006DB02C /* jni.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = jni.h; sourceTree = "<group>"; };
 		473240070DABC00800BF67D2 /* QLPreviewPanel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QLPreviewPanel.h; sourceTree = "<group>"; };
 		47341D6C099FF7740065FF57 /* ca */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = ca; path = ca.lproj/Crash.strings; sourceTree = "<group>"; };
 		47341D83099FF7B20065FF57 /* sk */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = sk; path = sk.lproj/Crash.strings; sourceTree = "<group>"; };
@@ -1189,6 +1197,9 @@
 		47BE1F8A12369DF100E758FE /* CDTransmitImporter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CDTransmitImporter.m; path = importer/CDTransmitImporter.m; sourceTree = "<group>"; };
 		47BEDB030B92960400141EB4 /* libURLSchemeHandlerConfiguration.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libURLSchemeHandlerConfiguration.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		47BEDBD20B9296C800141EB4 /* ApplicationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ApplicationServices.framework; path = /System/Library/Frameworks/ApplicationServices.framework; sourceTree = "<absolute>"; };
+		47C2722F12E99D2B00A13758 /* main.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
+		47C2723012E99D2B00A13758 /* utils.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = utils.c; sourceTree = "<group>"; };
+		47C2723D12E99D5900A13758 /* utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = utils.h; sourceTree = "<group>"; };
 		47C4D6CB08798D0C007A1D39 /* cs */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = cs; path = cs.lproj/Command.nib; sourceTree = "<group>"; };
 		47C4D6CC08798D10007A1D39 /* nl */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = nl; path = nl.lproj/Command.nib; sourceTree = "<group>"; };
 		47C4D6CD08798D14007A1D39 /* fi */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = fi; path = fi.lproj/Command.nib; sourceTree = "<group>"; };
@@ -1496,8 +1507,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4704238712EEC56F004658C0 /* Cocoa.framework in Frameworks */,
 				474523921076B6A900823467 /* Foundation.framework in Frameworks */,
-				4739EF8F085698F600405FD3 /* Cocoa.framework in Frameworks */,
 				474522C61076B68E00823467 /* ApplicationServices.framework in Frameworks */,
 				474523981076B6D800823467 /* Carbon.framework in Frameworks */,
 			);
@@ -1507,9 +1518,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4704227312EEC0DB004658C0 /* Growl.framework in Frameworks */,
 				4739EF9C0856990000405FD3 /* Foundation.framework in Frameworks */,
 				4739EF9E0856990000405FD3 /* Cocoa.framework in Frameworks */,
-				4726277F0FD5743C001D5BA5 /* Growl.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1528,7 +1539,6 @@
 			files = (
 				474524D61076B86200823467 /* Foundation.framework in Frameworks */,
 				474524CE1076B85500823467 /* ApplicationServices.framework in Frameworks */,
-				4739EFBB0856991200405FD3 /* JavaVM.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1546,8 +1556,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4704228512EEC0EF004658C0 /* Sparkle.framework in Frameworks */,
 				477A10480FD08DBA00BAD4AD /* Cocoa.framework in Frameworks */,
-				470671160FD8896D00EE3291 /* Sparkle.framework in Frameworks */,
 				4734425B102DEABD00C04C43 /* Quartz.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1556,8 +1566,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4704226212EEBFE8004658C0 /* libAquaticPrime.a in Frameworks */,
 				474524DD1076B89700823467 /* Foundation.framework in Frameworks */,
-				47FF75730FD545150068F30C /* libAquaticPrime.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1575,6 +1585,15 @@
 			files = (
 				474524B11076B7DA00823467 /* Foundation.framework in Frameworks */,
 				47BEDBD30B9296C800141EB4 /* ApplicationServices.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		47C2724412E99D8600A13758 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				47C2724512E99DA200A13758 /* Foundation.framework in Frameworks */,
+				472DF80112EED43E006DB02C /* libjvm.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1614,6 +1633,8 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				472DF80012EED43E006DB02C /* libjvm.dylib */,
+				472DF80712EED464006DB02C /* include */,
 				474523971076B6D800823467 /* Carbon.framework */,
 				474522C51076B68E00823467 /* ApplicationServices.framework */,
 				47022C221018663600488C19 /* CoreServices.framework */,
@@ -1662,6 +1683,24 @@
 				4729389F0F9DBC420086605D /* License.m */,
 			);
 			path = aquaticprime;
+			sourceTree = "<group>";
+		};
+		472DF80712EED464006DB02C /* include */ = {
+			isa = PBXGroup;
+			children = (
+				472DF80912EED464006DB02C /* darwin */,
+				472DF80E12EED464006DB02C /* jni.h */,
+			);
+			name = include;
+			path = ../../Library/Java/JavaVirtualMachines/1.7.0.jdk/Contents/Home/include;
+			sourceTree = SOURCE_ROOT;
+		};
+		472DF80912EED464006DB02C /* darwin */ = {
+			isa = PBXGroup;
+			children = (
+				472DF80B12EED464006DB02C /* jni_md.h */,
+			);
+			path = darwin;
 			sourceTree = "<group>";
 		};
 		474152D706C4F08A00AC0BD2 /* source */ = {
@@ -1720,6 +1759,9 @@
 		4741530206C4F08A00AC0BD2 /* cocoa */ = {
 			isa = PBXGroup;
 			children = (
+				47C2722F12E99D2B00A13758 /* main.c */,
+				47C2723012E99D2B00A13758 /* utils.c */,
+				47C2723D12E99D5900A13758 /* utils.h */,
 				4718C1FE107AA41F006FDEFA /* urlhandler */,
 				47DF9A21102CE43B00DCAD41 /* model */,
 				4798434E072B0DAA00FA3CDB /* view */,
@@ -2138,70 +2180,27 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		47C2723B12E99D4F00A13758 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				472DF81312EED464006DB02C /* jni_md.h in Headers */,
+				472DF81612EED464006DB02C /* jni.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXHeadersBuildPhase section */
-
-/* Begin PBXLegacyTarget section */
-		4734485D04575C6D00A801C6 /* build */ = {
-			isa = PBXLegacyTarget;
-			buildArgumentsString = "-emacs build";
-			buildConfigurationList = 47D286DD0855740C008142CF /* Build configuration list for PBXLegacyTarget "build" */;
-			buildPhases = (
-			);
-			buildToolPath = /usr/bin/ant;
-			dependencies = (
-			);
-			name = build;
-			passBuildSettingsInEnvironment = 1;
-			productName = "all-modules";
-		};
-		474432380736A1DB00BA512B /* release */ = {
-			isa = PBXLegacyTarget;
-			buildArgumentsString = "-emacs release";
-			buildConfigurationList = 47D286E50855740C008142CF /* Build configuration list for PBXLegacyTarget "release" */;
-			buildPhases = (
-			);
-			buildToolPath = /usr/bin/ant;
-			dependencies = (
-			);
-			name = release;
-			passBuildSettingsInEnvironment = 1;
-			productName = "all-modules";
-		};
-		478D627A0B74849300096EC7 /* nightly */ = {
-			isa = PBXLegacyTarget;
-			buildArgumentsString = "-emacs nightly";
-			buildConfigurationList = 478D627D0B74849300096EC7 /* Build configuration list for PBXLegacyTarget "nightly" */;
-			buildPhases = (
-			);
-			buildToolPath = /usr/bin/ant;
-			dependencies = (
-			);
-			name = nightly;
-			passBuildSettingsInEnvironment = 1;
-			productName = "all-modules";
-		};
-		479B79C8100A42C7006656FA /* beta */ = {
-			isa = PBXLegacyTarget;
-			buildArgumentsString = "-emacs beta";
-			buildConfigurationList = 479B79CB100A42C7006656FA /* Build configuration list for PBXLegacyTarget "beta" */;
-			buildPhases = (
-			);
-			buildToolPath = /usr/bin/ant;
-			dependencies = (
-			);
-			name = beta;
-			passBuildSettingsInEnvironment = 1;
-			productName = "all-modules";
-		};
-/* End PBXLegacyTarget section */
 
 /* Begin PBXNativeTarget section */
 		471D2C0B05A2505500675163 /* app */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 47D286C50855740C008142CF /* Build configuration list for PBXNativeTarget "app" */;
 			buildPhases = (
+				47C2723B12E99D4F00A13758 /* Headers */,
+				47C2723C12E99D4F00A13758 /* Sources */,
 				471D2C0E05A2505500675163 /* Resources */,
 				4735940F0CE76EE50085DEAC /* Prune NIBs */,
+				47C2724412E99D8600A13758 /* Frameworks */,
 				4749573207EDEC4E00B34D53 /* CopyFiles */,
 			);
 			buildRules = (
@@ -2470,10 +2469,6 @@
 			projectRoot = "";
 			targets = (
 				471D2C0B05A2505500675163 /* app */,
-				4734485D04575C6D00A801C6 /* build */,
-				474432380736A1DB00BA512B /* release */,
-				478D627A0B74849300096EC7 /* nightly */,
-				479B79C8100A42C7006656FA /* beta */,
 				4739EF670856981300405FD3 /* libKeychain */,
 				4739EF83085698F600405FD3 /* libODBEdit */,
 				4739EF950856990000405FD3 /* libGrowl */,
@@ -2820,6 +2815,15 @@
 			buildActionMask = 2147483647;
 			files = (
 				4718C204107AA41F006FDEFA /* URLSchemeHandlerConfiguration.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		47C2723C12E99D4F00A13758 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				47C2723F12E99D6100A13758 /* main.c in Sources */,
+				47C2724012E99D6100A13758 /* utils.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4102,7 +4106,6 @@
 			buildSettings = {
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
-				HEADER_SEARCH_PATHS = "$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Headers";
 				MACH_O_TYPE = mh_dylib;
 				PRODUCT_NAME = libKeychain;
 			};
@@ -4113,7 +4116,6 @@
 			buildSettings = {
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
-				HEADER_SEARCH_PATHS = "$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Headers";
 				MACH_O_TYPE = mh_dylib;
 				PRODUCT_NAME = libODBEdit;
 			};
@@ -4124,7 +4126,10 @@
 			buildSettings = {
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
-				HEADER_SEARCH_PATHS = "$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Headers";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/lib\"",
+				);
 				MACH_O_TYPE = mh_dylib;
 				PRODUCT_NAME = libGrowl;
 			};
@@ -4135,7 +4140,6 @@
 			buildSettings = {
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
-				HEADER_SEARCH_PATHS = "$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Headers";
 				MACH_O_TYPE = mh_dylib;
 				PRODUCT_NAME = libProxy;
 			};
@@ -4146,7 +4150,6 @@
 			buildSettings = {
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
-				HEADER_SEARCH_PATHS = "$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Headers";
 				MACH_O_TYPE = mh_dylib;
 				PRODUCT_NAME = libLocal;
 			};
@@ -4158,7 +4161,6 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				HEADER_SEARCH_PATHS = "$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Headers";
 				MACH_O_TYPE = mh_dylib;
 				PRODUCT_NAME = libDiagnostics;
 			};
@@ -4169,7 +4171,10 @@
 			buildSettings = {
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
-				HEADER_SEARCH_PATHS = "$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Headers";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/lib\"",
+				);
 				MACH_O_TYPE = mh_dylib;
 				PRODUCT_NAME = librococoa;
 			};
@@ -4180,30 +4185,13 @@
 			buildSettings = {
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
-				HEADER_SEARCH_PATHS = "$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Headers";
-				LIBRARY_SEARCH_PATHS = "\"$(SRCROOT)/lib\"";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/lib\"",
+				);
 				MACH_O_TYPE = mh_dylib;
 				OTHER_LDFLAGS = "-lcrypto";
 				PRODUCT_NAME = libPrime;
-			};
-			name = Release;
-		};
-		478D627E0B74849300096EC7 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COPY_PHASE_STRIP = YES;
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				OTHER_CFLAGS = "";
-				OTHER_LDFLAGS = "";
-				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = Cyberduck;
-				SECTORDER_FLAGS = "";
-				WARNING_CFLAGS = (
-					"-Wmost",
-					"-Wno-four-char-constants",
-					"-Wno-unknown-pragmas",
-				);
-				ZERO_LINK = NO;
 			};
 			name = Release;
 		};
@@ -4213,28 +4201,8 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				HEADER_SEARCH_PATHS = "$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Headers";
 				MACH_O_TYPE = mh_dylib;
 				PRODUCT_NAME = libQuickLook;
-			};
-			name = Release;
-		};
-		479B79CC100A42C7006656FA /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COPY_PHASE_STRIP = YES;
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				OTHER_CFLAGS = "";
-				OTHER_LDFLAGS = "";
-				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = Cyberduck;
-				SECTORDER_FLAGS = "";
-				WARNING_CFLAGS = (
-					"-Wmost",
-					"-Wno-four-char-constants",
-					"-Wno-unknown-pragmas",
-				);
-				ZERO_LINK = NO;
 			};
 			name = Release;
 		};
@@ -4249,10 +4217,6 @@
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEPLOYMENT_POSTPROCESSING = NO;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(SRCROOT)/lib",
-					"$(SRCROOT)/build",
-				);
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DEBUGGING_SYMBOLS = default;
 				GCC_ENABLE_OBJC_GC = unsupported;
@@ -4275,6 +4239,10 @@
 			buildSettings = {
 				COPY_PHASE_STRIP = YES;
 				INFOPLIST_FILE = Info.plist;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../Library/Java/JavaVirtualMachines/1.7.0.jdk/Contents/Home/jre/lib/server\"",
+				);
 				OTHER_LDFLAGS = (
 					"-lz",
 					"-sectcreate",
@@ -4288,88 +4256,11 @@
 			};
 			name = Debug;
 		};
-		47A8AD60100A6A9E00DC800C /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COPY_PHASE_STRIP = YES;
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				OTHER_CFLAGS = "";
-				OTHER_LDFLAGS = "";
-				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = Cyberduck;
-				SECTORDER_FLAGS = "";
-				WARNING_CFLAGS = (
-					"-Wmost",
-					"-Wno-four-char-constants",
-					"-Wno-unknown-pragmas",
-				);
-				ZERO_LINK = NO;
-			};
-			name = Debug;
-		};
-		47A8AD61100A6A9E00DC800C /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COPY_PHASE_STRIP = YES;
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				OTHER_CFLAGS = "";
-				OTHER_LDFLAGS = "";
-				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = Cyberduck;
-				SECTORDER_FLAGS = "";
-				WARNING_CFLAGS = (
-					"-Wmost",
-					"-Wno-four-char-constants",
-					"-Wno-unknown-pragmas",
-				);
-				ZERO_LINK = NO;
-			};
-			name = Debug;
-		};
-		47A8AD62100A6A9E00DC800C /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COPY_PHASE_STRIP = YES;
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				OTHER_CFLAGS = "";
-				OTHER_LDFLAGS = "";
-				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = Cyberduck;
-				SECTORDER_FLAGS = "";
-				WARNING_CFLAGS = (
-					"-Wmost",
-					"-Wno-four-char-constants",
-					"-Wno-unknown-pragmas",
-				);
-				ZERO_LINK = NO;
-			};
-			name = Debug;
-		};
-		47A8AD63100A6A9E00DC800C /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COPY_PHASE_STRIP = YES;
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				OTHER_CFLAGS = "";
-				OTHER_LDFLAGS = "";
-				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = Cyberduck;
-				SECTORDER_FLAGS = "";
-				WARNING_CFLAGS = (
-					"-Wmost",
-					"-Wno-four-char-constants",
-					"-Wno-unknown-pragmas",
-				);
-				ZERO_LINK = NO;
-			};
-			name = Debug;
-		};
 		47A8AD64100A6A9E00DC800C /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
-				HEADER_SEARCH_PATHS = "$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Headers";
 				LD_DYLIB_INSTALL_NAME = "";
 				MACH_O_TYPE = mh_dylib;
 				PRODUCT_NAME = libKeychain;
@@ -4381,7 +4272,6 @@
 			buildSettings = {
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
-				HEADER_SEARCH_PATHS = "$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Headers";
 				LD_DYLIB_INSTALL_NAME = "";
 				MACH_O_TYPE = mh_dylib;
 				PRODUCT_NAME = libODBEdit;
@@ -4393,7 +4283,10 @@
 			buildSettings = {
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
-				HEADER_SEARCH_PATHS = "$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Headers";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/lib\"",
+				);
 				LD_DYLIB_INSTALL_NAME = "";
 				MACH_O_TYPE = mh_dylib;
 				PRODUCT_NAME = libGrowl;
@@ -4405,7 +4298,6 @@
 			buildSettings = {
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
-				HEADER_SEARCH_PATHS = "$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Headers";
 				LD_DYLIB_INSTALL_NAME = "";
 				MACH_O_TYPE = mh_dylib;
 				PRODUCT_NAME = libProxy;
@@ -4417,7 +4309,6 @@
 			buildSettings = {
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
-				HEADER_SEARCH_PATHS = "$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Headers";
 				LD_DYLIB_INSTALL_NAME = "";
 				MACH_O_TYPE = mh_dylib;
 				PRODUCT_NAME = libLocal;
@@ -4430,7 +4321,6 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				HEADER_SEARCH_PATHS = "$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Headers";
 				LD_DYLIB_INSTALL_NAME = "";
 				MACH_O_TYPE = mh_dylib;
 				PRODUCT_NAME = libDiagnostics;
@@ -4443,7 +4333,6 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				HEADER_SEARCH_PATHS = "$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Headers";
 				LD_DYLIB_INSTALL_NAME = "";
 				MACH_O_TYPE = mh_dylib;
 				PRODUCT_NAME = libURLSchemeHandlerConfiguration;
@@ -4456,7 +4345,6 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				HEADER_SEARCH_PATHS = "$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Headers";
 				LD_DYLIB_INSTALL_NAME = "";
 				MACH_O_TYPE = mh_dylib;
 				PRODUCT_NAME = libQuickLook;
@@ -4468,7 +4356,6 @@
 			buildSettings = {
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
-				HEADER_SEARCH_PATHS = "$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Headers";
 				LD_DYLIB_INSTALL_NAME = "";
 				LIBRARY_SEARCH_PATHS = "$(SRCROOT)/lib";
 				MACH_O_TYPE = mh_dylib;
@@ -4482,7 +4369,10 @@
 			buildSettings = {
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
-				HEADER_SEARCH_PATHS = "$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Headers";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/lib\"",
+				);
 				LD_DYLIB_INSTALL_NAME = "";
 				MACH_O_TYPE = mh_dylib;
 				PRODUCT_NAME = librococoa;
@@ -4495,7 +4385,6 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				HEADER_SEARCH_PATHS = "$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Headers";
 				MACH_O_TYPE = mh_dylib;
 				PRODUCT_NAME = libURLSchemeHandlerConfiguration;
 			};
@@ -4504,8 +4393,13 @@
 		47D286C70855740C008142CF /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ARCHS = i386;
 				COPY_PHASE_STRIP = YES;
 				INFOPLIST_FILE = Info.plist;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../Library/Java/JavaVirtualMachines/1.7.0.jdk/Contents/Home/jre/lib/server\"",
+				);
 				OTHER_LDFLAGS = (
 					"-lz",
 					"-sectcreate",
@@ -4514,46 +4408,7 @@
 					Info.plist,
 				);
 				PRODUCT_NAME = Cyberduck;
-				SECTORDER_FLAGS = "";
 				WRAPPER_EXTENSION = app;
-			};
-			name = Release;
-		};
-		47D286DF0855740C008142CF /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COPY_PHASE_STRIP = YES;
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				OTHER_CFLAGS = "";
-				OTHER_LDFLAGS = "";
-				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = Cyberduck;
-				SECTORDER_FLAGS = "";
-				WARNING_CFLAGS = (
-					"-Wmost",
-					"-Wno-four-char-constants",
-					"-Wno-unknown-pragmas",
-				);
-				ZERO_LINK = NO;
-			};
-			name = Release;
-		};
-		47D286E70855740C008142CF /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				COPY_PHASE_STRIP = YES;
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
-				OTHER_CFLAGS = "";
-				OTHER_LDFLAGS = "";
-				OTHER_REZFLAGS = "";
-				PRODUCT_NAME = Cyberduck;
-				SECTORDER_FLAGS = "";
-				WARNING_CFLAGS = (
-					"-Wmost",
-					"-Wno-four-char-constants",
-					"-Wno-unknown-pragmas",
-				);
-				ZERO_LINK = NO;
 			};
 			name = Release;
 		};
@@ -4567,15 +4422,9 @@
 				);
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEPLOYMENT_POSTPROCESSING = NO;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(SRCROOT)/lib",
-					"$(SRCROOT)/build",
-				);
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DEBUGGING_SYMBOLS = default;
 				GCC_ENABLE_OBJC_GC = unsupported;
-				GCC_VERSION = 4.2;
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				PREBINDING = NO;
 				SDKROOT = macosx10.5;
@@ -4664,29 +4513,11 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		478D627D0B74849300096EC7 /* Build configuration list for PBXLegacyTarget "nightly" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				478D627E0B74849300096EC7 /* Release */,
-				47A8AD62100A6A9E00DC800C /* Debug */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
 		478ECD160DAD5743008A5B1F /* Build configuration list for PBXNativeTarget "libQuickLook" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				478ECD170DAD5743008A5B1F /* Release */,
 				47A8AD6C100A6A9E00DC800C /* Debug */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		479B79CB100A42C7006656FA /* Build configuration list for PBXLegacyTarget "beta" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				479B79CC100A42C7006656FA /* Release */,
-				47A8AD63100A6A9E00DC800C /* Debug */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -4705,24 +4536,6 @@
 			buildConfigurations = (
 				47D286C70855740C008142CF /* Release */,
 				47A8AD5F100A6A9E00DC800C /* Debug */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		47D286DD0855740C008142CF /* Build configuration list for PBXLegacyTarget "build" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				47D286DF0855740C008142CF /* Release */,
-				47A8AD60100A6A9E00DC800C /* Debug */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		47D286E50855740C008142CF /* Build configuration list for PBXLegacyTarget "release" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				47D286E70855740C008142CF /* Release */,
-				47A8AD61100A6A9E00DC800C /* Debug */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

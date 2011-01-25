@@ -33,6 +33,7 @@
     <property name="app.frameworks" value="${app.contents}/Frameworks"/>
     <property name="app.resources" value="${app.contents}/Resources"/>
     <property name="app.java" value="${app.resources}/Java"/>
+    <property name="app.runtime" value="${app.java}/Runtime.jdk"/>
     <property name="app.spotlight" value="${app.library}/Spotlight"/>
     <property name="app.spotlight.executable"
               value="${app.spotlight}/Cyberduck Spotlight Importer.mdimporter/Contents/MacOS/Cyberduck Spotlight Importer"/>
@@ -54,30 +55,10 @@
         <pathelement location="${jdk.home}/Classes/jsse.jar"/>
     </path>
 
-    <target name="build" depends="archive, stub" description="Compile, jar and copy to application bundle">
-        <copy todir="${app.java}">
-            <fileset dir="${build}">
-                <include name="*.jar"/>
-            </fileset>
-        </copy>
-        <copy todir="${app.java}">
-            <fileset dir="${lib}">
-                <include name="*.jar"/>
-                <include name="*.dylib"/>
-                <include name="*.jnilib"/>
-            </fileset>
-        </copy>
-        <exec dir="${home}" executable="/usr/bin/xcodebuild" spawn="false" failonerror="true">
-            <arg line="-project ${app.name}.xcodeproj -configuration ${configuration} -target app"/>
-        </exec>
+    <target name="spotlight">
         <exec dir="${spotlight}" executable="/usr/bin/xcodebuild" spawn="false" failonerror="true">
             <arg line="-project 'Spotlight Importer.xcodeproj' -configuration ${configuration}"/>
         </exec>
-        <copy todir="${app.java}">
-            <fileset dir="${build.deploy}">
-                <include name="*.dylib"/>
-            </fileset>
-        </copy>
         <copy todir="${app.spotlight}">
             <fileset dir="${build.spotlight}">
                 <include name="*.mdimporter/**"/>
@@ -88,6 +69,31 @@
                 <include name="**/MacOS/*"/>
             </fileset>
         </chmod>
+    </target>
+
+    <target name="build" depends="archive" description="Compile, jar and copy to application bundle">
+        <copy todir="${app.java}">
+            <fileset dir="${build}">
+                <include name="*.jar"/>
+            </fileset>
+        </copy>
+        <copy todir="${app.java}">
+            <fileset dir="${lib}">
+                <include name="*.jar"/>
+                <include name="*.dylib"/>
+            </fileset>
+        </copy>
+        <exec dir="${home}" executable="/usr/bin/xcodebuild" spawn="false" failonerror="true">
+            <arg line="-project ${app.name}.xcodeproj -configuration ${configuration} -target app"/>
+        </exec>
+        <copy todir="${app.java}">
+            <fileset dir="${build.deploy}">
+                <include name="*.dylib"/>
+            </fileset>
+        </copy>
+
+        <antcall target="spotlight"/>
+
         <echo message="_VERSION_=${cyberduck.version.major}.${cyberduck.version.minor}"/>
         <echo message="_REVISION_=${svn.revision}"/>
         <replace dir="${app.bundle}" summary="true" encoding="UTF-8">
@@ -98,6 +104,8 @@
     </target>
 
     <target name="package" depends="build, timestamp">
+        <antcall target="${post}"/>
+
         <echo message="_REVISION_=${svn.revision}"/>
         <echo message="_SPARKLEFEED_=${sparkle.feed}"/>
         <replace dir="${app.bundle}" summary="true" encoding="UTF-8">
@@ -267,17 +275,22 @@
             <param name="url.archive" value="http://update.cyberduck.ch/Cyberduck-_REVISION_.tar.gz"/>
             <param name="url.changelog" value="http://version.cyberduck.ch/changelog.html"/>
             <param name="sparkle.feed" value="https://version.cyberduck.ch/changelog.rss"/>
+            <param name="post" value="stub"/>
         </antcall>
         <!-- Releases include ZIP -->
         <antcall target="zip"/>
     </target>
 
-    <target name="package-appstore" depends="clean, revision">
+    <target name="package-mas" depends="clean, revision">
         <antcall target="package">
             <param name="url.archive" value="/dev/null"/>
             <param name="url.changelog" value="/dev/null"/>
             <param name="sparkle.feed" value="/dev/null"/>
+            <param name="post" value="copy-runtime"/>
         </antcall>
+
+        <antcall target="install-name"/>
+
         <echo message="Remove Sparkle.framework"/>
         <delete dir="${app.frameworks}/Sparkle.framework"/>
         <echo message="Remove PPC slice from ${app.executable}"/>
@@ -289,8 +302,8 @@
             <arg line="-remove ppc7400 -output '${app.spotlight.executable}' '${app.spotlight.executable}'"/>
         </exec>
         <antcall target="codesign">
-	            <param name="codesign.certificate" value="3rd Party Mac Developer Application: David Kocher"/>
-	        </antcall>
+            <param name="codesign.certificate" value="3rd Party Mac Developer Application: David Kocher"/>
+        </antcall>
         <echo message="Building ${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.pkg"/>
         <property name="build.absolute" location="${build}"/>
         <exec dir="${build.deploy}" executable="/usr/bin/productbuild" spawn="false" failonerror="true">
@@ -300,11 +313,40 @@
                   algorithm="md5"/>
     </target>
 
+    <target name="copy-runtime">
+        <copy todir="${app.runtime}" preservelastmodified="true">
+            <fileset followsymlinks="false" dir="${user.home}/Library/Java/JavaVirtualMachines/1.7.0.jdk">
+                <exclude name="Contents/MacOS/**"/>
+                <exclude name="Contents/Home/bin/**"/>
+                <exclude name="Contents/Home/jre/bin/**"/>
+                <exclude name="Contents/Home/include/**"/>
+                <exclude name="Contents/Home/demo/**"/>
+                <exclude name="Contents/Home/sample/**"/>
+                <exclude name="Contents/Home/lib/**"/>
+                <exclude name="Contents/Home/man/**"/>
+                <exclude name="Contents/Home/src.zip"/>
+                <exclude name="Contents/Home/jre/lib/applet/**"/>
+                <exclude name="Contents/Home/jre/lib/servicetag/**"/>
+                <exclude name="Contents/Home/jre/lib/images/**"/>
+                <exclude name="Contents/Home/jre/lib/xawt/**"/>
+                <exclude name="Contents/Home/jre/lib/client/**"/>
+            </fileset>
+        </copy>
+    </target>
+
+    <target name="install-name">
+        <echo message="Change dynamic shared library install names..."/>
+        <exec dir="${build}" executable="/usr/bin/install_name_tool" spawn="false" failonerror="false">
+            <arg line="-change @rpath/libjvm.dylib @executable_path/../Resources/Java/Runtime.jdk/Contents/Home/jre/lib/server/libjvm.dylib ${app.executable}"/>
+        </exec>
+    </target>
+
     <target name="package-beta" depends="clean, revision">
         <antcall target="package">
             <param name="url.archive" value="http://update.cyberduck.ch/beta/Cyberduck-_REVISION_.tar.gz"/>
             <param name="url.changelog" value="http://version.cyberduck.ch/beta/changelog.html"/>
             <param name="sparkle.feed" value="https://version.cyberduck.ch/beta/changelog.rss"/>
+            <param name="post" value="stub"/>
         </antcall>
     </target>
 
@@ -313,6 +355,7 @@
             <param name="url.archive" value="http://update.cyberduck.ch/nightly/Cyberduck-_REVISION_.tar.gz"/>
             <param name="url.changelog" value="http://version.cyberduck.ch/nightly/changelog.html"/>
             <param name="sparkle.feed" value="https://version.cyberduck.ch/nightly/changelog.rss"/>
+            <param name="post" value="stub"/>
         </antcall>
     </target>
 </project>
