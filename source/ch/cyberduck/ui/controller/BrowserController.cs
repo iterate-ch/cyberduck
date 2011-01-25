@@ -29,6 +29,7 @@ using ch.cyberduck.core.io;
 using ch.cyberduck.core.serializer;
 using ch.cyberduck.core.ssl;
 using ch.cyberduck.core.threading;
+using ch.cyberduck.ui;
 using Ch.Cyberduck.Ui.Controller.Threading;
 using Ch.Cyberduck.Ui.Winforms.Taskdialog;
 using java.lang;
@@ -64,7 +65,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private readonly BookmarkCollection _bookmarkCollection = BookmarkCollection.defaultCollection();
         private readonly BookmarkModel _bookmarkModel;
         private readonly TreeBrowserModel _browserModel;
-        private readonly Comparator _comparator = new NullComparator();
+        private Comparator _comparator = new NullComparator();
         private readonly List<Path> _forwardHistory = new List<Path>();
         private InfoController _inspector;
         private BrowserView _lastBookmarkView = BrowserView.Bookmark;
@@ -74,7 +75,6 @@ namespace Ch.Cyberduck.Ui.Controller
         /*
          * No file filter.
          */
-
         private Session _session;
         private bool _sessionShouldBeConnected;
         private bool _showHiddenFiles;
@@ -94,6 +94,7 @@ namespace Ch.Cyberduck.Ui.Controller
             ToggleView(BrowserView.Bookmark);
             View.StopActivityAnimation();
 
+            View.SetComparator += View_SetComparator;
             View.ChangeBrowserView += View_ChangeBrowserView;
 
             View.QuickConnect += View_QuickConnect;
@@ -289,6 +290,15 @@ namespace Ch.Cyberduck.Ui.Controller
             View.SetBookmarkModel(bookmarkCollection, null);
         }
 
+        private void View_SetComparator(BrowserComparator comparator)
+        {
+            if (!comparator.equals(_comparator))
+            {
+                _comparator = comparator;
+                ReloadData(true);            
+            }
+        }
+
         public BrowserController()
             : this(ObjectFactory.GetInstance<IBrowserView>())
         {
@@ -365,6 +375,7 @@ namespace Ch.Cyberduck.Ui.Controller
         public Comparator FilenameComparator
         {
             get { return _comparator; }
+            set { _comparator = value; }
         }
 
         public bool SessionShouldBeConnected

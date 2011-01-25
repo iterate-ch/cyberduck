@@ -92,6 +92,8 @@ namespace Ch.Cyberduck.Ui.Controller
         void StopActivityAnimation();
         event ValidateCommand ValidateSearchField;
 
+        event SetComparatorHandler SetComparator; 
+
         void StartRenaming(Path path);
         void PopulateQuickConnect(List<string> nicknames);
         void PopulatePaths(List<string> paths);
@@ -106,7 +108,6 @@ namespace Ch.Cyberduck.Ui.Controller
 
         // Menu - File
         event EventHandler<NewBrowserEventArgs> NewBrowser;
-        //event VoidHandler NewBrowser;
         event ValidateCommand ValidateNewBrowser;
         event VoidHandler OpenConnection;
         event ValidateCommand ValidateOpenConnection;

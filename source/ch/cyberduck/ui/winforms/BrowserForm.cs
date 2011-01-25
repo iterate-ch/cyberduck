@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2011 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -29,6 +29,7 @@ using ch.cyberduck.core;
 using Ch.Cyberduck.Core;
 using ch.cyberduck.core.aquaticprime;
 using ch.cyberduck.core.i18n;
+using ch.cyberduck.ui;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Winforms.Commondialog;
 using Ch.Cyberduck.Ui.Winforms.Controls;
@@ -55,6 +56,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         private BrowserView _currentView;
         private bool _lastActivityRunning;
         private ToolStripMenuItem _lastMenuItemClicked;
+        private bool _sorting;
 
         public BrowserForm()
         {
@@ -112,6 +114,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             browser.TreeColumnRenderer = new BrowserRenderer();
             browser.SelectedRowDecoration = new ExplorerRowBorderDecoration();
             browser.ItemsChanged += (sender, args) => ItemsChanged();
+
+            browser.BeforeSorting += BeforeSorting;
+            SetupComparators();
 
             searchTextBox.PlaceHolderText = Locale.localizedString("Search…", "Main");
 
@@ -191,7 +196,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                             Size preferredSize = disconnectStripButton.GetPreferredSize(Size.Empty);
                             disconnectStripButton.AutoSize = false;
                             disconnectStripButton.Width = preferredSize.Width;
-                            splitContainer.SplitterDistance = PersistenceHandler.Get("Splitter.Distance", 400);
+                            splitContainer.SplitterDistance = PersistenceHandler.Get("splitter.distance", 400);
 
                             Menu = mainMenu;
 
@@ -339,6 +344,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         public event VoidHandler ItemsChanged;
         public event ValidateCommand ValidatePathsCombobox;
         public event ValidateCommand ValidateSearchField;
+        public event SetComparatorHandler SetComparator;
         public event VoidHandler ToggleBookmarks;
         public event VoidHandler RevertFile;
         public event ValidateCommand ValidateRevertFile;
@@ -529,7 +535,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             //only restore the state for the first time
             if (null != model && !_browserStateRestored)
             {
-                byte[] state = PersistenceHandler.Get<byte[]>("Tree.State", null);
+                byte[] state = PersistenceHandler.Get<byte[]>("tree.state", null);
                 if (null != state)
                 {
                     browser.RestoreState(state);
@@ -898,6 +904,39 @@ namespace Ch.Cyberduck.Ui.Winforms
         public bool SecureConnection
         {
             set { securityToolStripStatusLabel.Image = IconCache.Instance.IconForName(value ? "locked" : "unlocked"); }
+        }
+
+        private void SetupComparators()
+        {
+            treeColumnName.ComparatorGetter =
+                (SortOrder order) => new FilenameComparator(order == SortOrder.Ascending);
+            treeColumnSize.ComparatorGetter =
+                (SortOrder order) => new SizeComparator(order == SortOrder.Ascending);
+            treeColumnModified.ComparatorGetter =
+                (SortOrder order) => new TimestampComparator(order == SortOrder.Ascending);
+            treeColumnOwner.ComparatorGetter =
+                (SortOrder order) => new OwnerComparator(order == SortOrder.Ascending);
+            treeColumnGroup.ComparatorGetter =
+                (SortOrder order) => new GroupComparator(order == SortOrder.Ascending);
+            treeColumnPermissions.ComparatorGetter =
+                (SortOrder order) => new PermissionsComparator(order == SortOrder.Ascending);
+            treeColumnKind.ComparatorGetter =
+                (SortOrder order) => new FileTypeComparator(order == SortOrder.Ascending);
+        }
+
+        private void BeforeSorting(object sender, BeforeSortingEventArgs args)
+        {
+            args.Handled = true;
+            if (_sorting || null == args.ColumnToSort) return;
+            try
+            {
+                _sorting = true;
+                SetComparator(((SortComparatorOLVColumn) args.ColumnToSort).ComparatorGetter(args.SortOrder));
+            }
+            finally
+            {
+                _sorting = false;
+            }
         }
 
         private void OnEditMenuItemPopup(object sender, EventArgs e)
@@ -1968,9 +2007,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             if (browser.Objects != null)
             {
                 Log.debug("Saving browser state");
-                PersistenceHandler.Set("Tree.State", browser.SaveState());
+                PersistenceHandler.Set("tree.state", browser.SaveState());
             }
-            PersistenceHandler.Set("Splitter.Distance", splitContainer.SplitterDistance);
+            PersistenceHandler.Set("splitter.distance", splitContainer.SplitterDistance);
         }
 
         private void browser_DoubleClick(object sender, EventArgs e)

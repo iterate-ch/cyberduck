@@ -19,6 +19,8 @@ using System;
 using System.Collections.Generic;
 using BrightIdeasSoftware;
 using ch.cyberduck.core;
+using ch.cyberduck.ui;
+using java.util;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -39,6 +41,8 @@ namespace Ch.Cyberduck.Ui.Controller
     public delegate List<KeyValuePair<String, List<String>>> CopyUrlHandler();
     public delegate List<KeyValuePair<String, List<String>>> OpenUrlHandler();
     public delegate List<Host> BookmarksHandler();
+
+    public delegate void SetComparatorHandler(BrowserComparator comparator);
 
     /// <summary>
     /// This event is triggered by the new browser shortcut (main menu) and the context menu item.

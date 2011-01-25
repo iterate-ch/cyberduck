@@ -155,6 +155,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.toolStripSeparator11 = new System.Windows.Forms.ToolStripSeparator();
             this.createArchiveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.archiveMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.createArchiveContextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.expandArchiveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator12 = new System.Windows.Forms.ToolStripSeparator();
             this.printToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -239,12 +240,11 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.checkToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator28 = new System.Windows.Forms.ToolStripSeparator();
             this.aboutCyberduckToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.createArchiveContextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editorMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.editor1ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editor2ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.editToolStripSplitButton = new System.Windows.Forms.ToolStripSplitButton();
             this.editContextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.editToolStripSplitButton = new System.Windows.Forms.ToolStripSplitButton();
             this.toolBar = new Ch.Cyberduck.Ui.Winforms.Controls.ClickThroughToolStrip();
             this.openConnectionToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparatorAfterOpenConnection = new System.Windows.Forms.ToolStripSeparator();
@@ -294,13 +294,13 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.managedBrowserPanel1 = new Ch.Cyberduck.Ui.Winforms.Controls.ManagedPanel();
             this.splitContainer = new System.Windows.Forms.SplitContainer();
             this.browser = new Ch.Cyberduck.Ui.Winforms.Controls.MulticolorTreeListView();
-            this.treeColumnName = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
-            this.treeColumnSize = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
-            this.treeColumnModified = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
-            this.treeColumnOwner = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
-            this.treeColumnGroup = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
-            this.treeColumnPermissions = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
-            this.treeColumnKind = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+            this.treeColumnName = new SortComparatorOLVColumn();
+            this.treeColumnSize = new SortComparatorOLVColumn();
+            this.treeColumnModified = new SortComparatorOLVColumn();
+            this.treeColumnOwner = new SortComparatorOLVColumn();
+            this.treeColumnGroup = new SortComparatorOLVColumn();
+            this.treeColumnPermissions = new SortComparatorOLVColumn();
+            this.treeColumnKind = new SortComparatorOLVColumn();
             this.transcriptBox = new System.Windows.Forms.RichTextBox();
             this.managedBookmarkPanel2 = new Ch.Cyberduck.Ui.Winforms.Controls.ManagedPanel();
             this.bookmarkListView = new Ch.Cyberduck.Ui.Winforms.Controls.LineSeparatedObjectListView();
@@ -1215,8 +1215,15 @@ namespace Ch.Cyberduck.Ui.Winforms
             // archiveMenuStrip
             // 
             this.archiveMenuStrip.Name = "archiveMenuStrip";
-            this.archiveMenuStrip.OwnerItem = this.createArchiveContextToolStripMenuItem;
+            this.archiveMenuStrip.OwnerItem = this.createArchiveToolStripMenuItem;
             this.archiveMenuStrip.Size = new System.Drawing.Size(61, 4);
+            // 
+            // createArchiveContextToolStripMenuItem
+            // 
+            this.createArchiveContextToolStripMenuItem.DropDown = this.archiveMenuStrip;
+            this.createArchiveContextToolStripMenuItem.Name = "createArchiveContextToolStripMenuItem";
+            this.createArchiveContextToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+            this.createArchiveContextToolStripMenuItem.Text = "Create Archive";
             // 
             // expandArchiveToolStripMenuItem
             // 
@@ -1801,20 +1808,13 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.aboutCyberduckToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
             this.aboutCyberduckToolStripMenuItem.Text = "&About Cyberduck";
             // 
-            // createArchiveContextToolStripMenuItem
-            // 
-            this.createArchiveContextToolStripMenuItem.DropDown = this.archiveMenuStrip;
-            this.createArchiveContextToolStripMenuItem.Name = "createArchiveContextToolStripMenuItem";
-            this.createArchiveContextToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
-            this.createArchiveContextToolStripMenuItem.Text = "Create Archive";
-            // 
             // editorMenuStrip
             // 
             this.editorMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.editor1ToolStripMenuItem,
             this.editor2ToolStripMenuItem});
             this.editorMenuStrip.Name = "editorMenuStrip";
-            this.editorMenuStrip.OwnerItem = this.editContextToolStripMenuItem;
+            this.editorMenuStrip.OwnerItem = this.editToolStripSplitButton;
             this.editorMenuStrip.Size = new System.Drawing.Size(115, 48);
             // 
             // editor1ToolStripMenuItem
@@ -1829,6 +1829,13 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.editor2ToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
             this.editor2ToolStripMenuItem.Text = "Editor 2";
             // 
+            // editContextToolStripMenuItem
+            // 
+            this.editContextToolStripMenuItem.DropDown = this.editorMenuStrip;
+            this.editContextToolStripMenuItem.Name = "editContextToolStripMenuItem";
+            this.editContextToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+            this.editContextToolStripMenuItem.Text = "Edit With";
+            // 
             // editToolStripSplitButton
             // 
             this.editToolStripSplitButton.DropDown = this.editorMenuStrip;
@@ -1839,13 +1846,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.editToolStripSplitButton.Size = new System.Drawing.Size(48, 53);
             this.editToolStripSplitButton.Text = "Edit";
             this.editToolStripSplitButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
-            // 
-            // editContextToolStripMenuItem
-            // 
-            this.editContextToolStripMenuItem.DropDown = this.editorMenuStrip;
-            this.editContextToolStripMenuItem.Name = "editContextToolStripMenuItem";
-            this.editContextToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
-            this.editContextToolStripMenuItem.Text = "Edit With";
             // 
             // toolBar
             // 
@@ -2254,8 +2254,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.panelManager1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panelManager1.Location = new System.Drawing.Point(0, 31);
             this.panelManager1.Name = "panelManager1";
-            this.panelManager1.SelectedIndex = 1;
-            this.panelManager1.SelectedPanel = this.managedBookmarkPanel2;
+            this.panelManager1.SelectedIndex = 0;
+            this.panelManager1.SelectedPanel = this.managedBrowserPanel1;
             this.panelManager1.Size = new System.Drawing.Size(1028, 497);
             this.panelManager1.TabIndex = 3;
             // 
@@ -2264,7 +2264,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.managedBrowserPanel1.Controls.Add(this.splitContainer);
             this.managedBrowserPanel1.Location = new System.Drawing.Point(0, 0);
             this.managedBrowserPanel1.Name = "managedBrowserPanel1";
-            this.managedBrowserPanel1.Size = new System.Drawing.Size(0, 0);
+            this.managedBrowserPanel1.Size = new System.Drawing.Size(1028, 497);
             this.managedBrowserPanel1.Text = "managedBrowserPanel1";
             // 
             // splitContainer
@@ -3118,13 +3118,13 @@ namespace Ch.Cyberduck.Ui.Winforms
         private System.Windows.Forms.SplitContainer splitContainer;
         private System.Windows.Forms.RichTextBox transcriptBox;
         private MulticolorTreeListView browser;
-        private BrightIdeasSoftware.OLVColumn treeColumnName;
-        private BrightIdeasSoftware.OLVColumn treeColumnSize;
-        private BrightIdeasSoftware.OLVColumn treeColumnModified;
-        private BrightIdeasSoftware.OLVColumn treeColumnOwner;
-        private BrightIdeasSoftware.OLVColumn treeColumnGroup;
-        private BrightIdeasSoftware.OLVColumn treeColumnPermissions;
-        private BrightIdeasSoftware.OLVColumn treeColumnKind;
+        private SortComparatorOLVColumn treeColumnName;
+        private SortComparatorOLVColumn treeColumnSize;
+        private SortComparatorOLVColumn treeColumnModified;
+        private SortComparatorOLVColumn treeColumnOwner;
+        private SortComparatorOLVColumn treeColumnGroup;
+        private SortComparatorOLVColumn treeColumnPermissions;
+        private SortComparatorOLVColumn treeColumnKind;
         private System.Windows.Forms.ToolStripMenuItem infoToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem activitiyToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem transfersToolStripMenuItem;
