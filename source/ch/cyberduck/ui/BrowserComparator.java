@@ -30,14 +30,17 @@ import java.util.Comparator;
 public abstract class BrowserComparator implements Comparator<Path> {
 
     protected boolean ascending;
+    private BrowserComparator second;
 
     /**
      * @param ascending The items should be sorted in a ascending manner.
      *                  Usually this means lower numbers first or natural language sorting
      *                  for alphabetic comparators
+     * @param second
      */
-    public BrowserComparator(boolean ascending) {
+    public BrowserComparator(boolean ascending, BrowserComparator second) {
         this.ascending = ascending;
+        this.second = second;
     }
 
     public boolean isAscending() {
@@ -61,10 +64,18 @@ public abstract class BrowserComparator implements Comparator<Path> {
         return false;
     }
 
-    public abstract int compare(Path p1, Path p2);
+    public int compare(Path p1, Path p2) {
+        int result = compareFirst(p1, p2);
+        if(0 == result && null != second) {
+            return second.compareFirst(p1, p2);
+        }
+        return result;
+    }
+
+    protected abstract int compareFirst(Path p1, Path p2);
 
     /**
-     * @return An unique identifer for this comparator
+     * @return An unique identifier for this comparator
      */
     public abstract String getIdentifier();
 }

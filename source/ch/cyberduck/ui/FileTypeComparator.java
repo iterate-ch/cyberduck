@@ -25,17 +25,17 @@ import java.text.Collator;
 import java.util.Locale;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class FileTypeComparator extends BrowserComparator {
     private Collator impl = Collator.getInstance(Locale.getDefault());
 
     public FileTypeComparator(boolean ascending) {
-        super(ascending);
+        super(ascending, new FilenameComparator(ascending));
     }
 
     @Override
-    public int compare(Path p1, Path p2) {
+    protected int compareFirst(Path p1, Path p2) {
         if((p1.attributes().isDirectory() && p2.attributes().isDirectory())
                 || p1.attributes().isFile() && p2.attributes().isFile()) {
             if(ascending) {

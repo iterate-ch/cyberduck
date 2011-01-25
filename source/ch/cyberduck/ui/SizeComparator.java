@@ -22,16 +22,16 @@ package ch.cyberduck.ui;
 import ch.cyberduck.core.Path;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class SizeComparator extends BrowserComparator {
 
     public SizeComparator(boolean ascending) {
-        super(ascending);
+        super(ascending, new FilenameComparator(ascending));
     }
 
     @Override
-    public int compare(Path p1, Path p2) {
+    protected int compareFirst(Path p1, Path p2) {
         if(p1.attributes().getSize() > p2.attributes().getSize()) {
             return ascending ? 1 : -1;
         }

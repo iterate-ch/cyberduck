@@ -33,11 +33,11 @@ public class ExtensionComparator extends BrowserComparator {
     private Collator impl = Collator.getInstance(Locale.getDefault());
 
     public ExtensionComparator(boolean ascending) {
-        super(ascending);
+        super(ascending, new FilenameComparator(ascending));
     }
 
     @Override
-    public int compare(Path p1, Path p2) {
+    protected int compareFirst(Path p1, Path p2) {
         if(p1.attributes().isDirectory() && p2.attributes().isDirectory()) {
             return 0;
         }

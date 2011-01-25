@@ -25,17 +25,17 @@ import ch.cyberduck.core.Path;
 import java.util.Comparator;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class FilenameComparator extends BrowserComparator {
     private Comparator<String> impl = new NaturalOrderComparator();
 
     public FilenameComparator(boolean ascending) {
-        super(ascending);
+        super(ascending, null);
     }
 
     @Override
-    public int compare(Path p1, Path p2) {
+    protected int compareFirst(Path p1, Path p2) {
         if(ascending) {
             return impl.compare(p1.getName(), p2.getName());
         }

@@ -22,16 +22,16 @@ package ch.cyberduck.ui;
 import ch.cyberduck.core.Path;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class TimestampComparator extends BrowserComparator {
 
     public TimestampComparator(boolean ascending) {
-        super(ascending);
+        super(ascending, new FilenameComparator(ascending));
     }
 
     @Override
-    public int compare(Path p1, Path p2) {
+    protected int compareFirst(Path p1, Path p2) {
         long d1 = p1.attributes().getModificationDate();
         if(-1 == d1) {
             return 0;

@@ -23,16 +23,16 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.ui.cocoa.BrowserTableDataSource;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class GroupComparator extends BrowserComparator {
 
     public GroupComparator(boolean ascending) {
-        super(ascending);
+        super(ascending, new FilenameComparator(ascending));
     }
 
     @Override
-    public int compare(Path p1, Path p2) {
+    protected int compareFirst(Path p1, Path p2) {
         if(ascending) {
             return p1.attributes().getGroup().compareToIgnoreCase(p2.attributes().getGroup());
         }

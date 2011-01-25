@@ -22,16 +22,16 @@ package ch.cyberduck.ui;
 import ch.cyberduck.core.Path;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class PermissionsComparator extends BrowserComparator {
 
     public PermissionsComparator(boolean ascending) {
-        super(ascending);
+        super(ascending, new FilenameComparator(ascending));
     }
 
     @Override
-    public int compare(Path p1, Path p2) {
+    protected int compareFirst(Path p1, Path p2) {
         Integer perm1 = Integer.valueOf(p1.attributes().getPermission().getOctalString());
         Integer perm2 = Integer.valueOf(p2.attributes().getPermission().getOctalString());
         if(perm1 > perm2) {
