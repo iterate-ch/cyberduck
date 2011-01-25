@@ -21,6 +21,10 @@ using System.Drawing;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Text;
+using System.Xml;
+using System.Xml.Serialization;
+using ch.cyberduck.core;
 using Ch.Cyberduck.Properties;
 
 namespace Ch.Cyberduck.Ui.Controller
@@ -31,21 +35,6 @@ namespace Ch.Cyberduck.Ui.Controller
     /// <see cref="http://stackoverflow.com/questions/495380/c-how-to-make-a-form-remember-its-bounds-and-windowstate-taking-dual-monitor-s"/>
     public sealed class PersistentFormHandler
     {
-        private static Dictionary<string, byte[]> _otherValues;
-
-        static PersistentFormHandler()
-        {
-            String uiSettings = Settings.Default.UiSettings;
-            if (String.IsNullOrEmpty(uiSettings))
-            {
-                _otherValues = new Dictionary<string, byte[]>();
-            }
-            else
-            {
-                Load(uiSettings);
-            }
-        }
-
         /// <summary>
         /// Instantiates new persistent form handler.
         /// </summary>
@@ -67,8 +56,8 @@ namespace Ch.Cyberduck.Ui.Controller
         public PersistentFormHandler(Type windowType, string id, int defaultWindowState, Rectangle defaultWindowBounds)
         {
             Name = string.IsNullOrEmpty(id)
-                       ? windowType.FullName + "."
-                       : windowType.FullName + ":" + id + ".";
+                       ? windowType.Name + "."
+                       : windowType.Name + ":" + id + ".";
 
             DefaultWindowState = defaultWindowState;
             DefaultWindowBounds = defaultWindowBounds;
@@ -84,62 +73,65 @@ namespace Ch.Cyberduck.Ui.Controller
         /// <summary>Gets and sets the window state. (int instead of enum so that it can be in a BI layer, and not require a reference to WinForms)</summary>
         public int WindowState
         {
-            get
-            {
-                return Get("WindowState", DefaultWindowState);
-            }
+            get { return Get("WindowState", DefaultWindowState); }
             set { Set("WindowState", value); }
         }
 
         /// <summary>Gets and sets the window bounds. (X, Y, Width and Height)</summary>
         public Rectangle WindowBounds
         {
-            get
-            {
-                return Get("WindowBounds", DefaultWindowBounds);
-            }
+            get { return Get("WindowBounds", DefaultWindowBounds); }
             set { Set("WindowBounds", value); }
         }
 
-        private static void Load(String base64)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="pObject"></param>
+        /// <returns></returns>
+        public String SerializeObject<T>(T pObject)
         {
-            // Create memory stream and fill with binary version of value)
-            using (var s = new MemoryStream(Convert.FromBase64String(base64)))
+            try
             {
-                try
+                XmlSerializer xs = new XmlSerializer(typeof (T));
+                XmlWriterSettings writerSettings = new XmlWriterSettings
+                                                       {OmitXmlDeclaration = true, Encoding = Encoding.UTF8};
+                StringBuilder sb = new StringBuilder();
+                using (XmlWriter xmlWriter = XmlWriter.Create(new StringWriter(sb),
+                                                              writerSettings))
                 {
-                    // Deserialize, cast and return.
-                    var b = new BinaryFormatter();
-                    _otherValues = (Dictionary<string, byte[]>) b.Deserialize(s);
+                    xs.Serialize(xmlWriter, pObject);
                 }
-                catch (InvalidCastException)
-                {
-                    // T is not what it should have been
-                    // (Code changed perhaps?)
-                }
-                catch (SerializationException)
-                {
-                    // Something went wrong during Deserialization
-                }
+                return sb.ToString();
+            }
+            catch (Exception)
+            {
+                return null;
             }
         }
 
         /// <summary>
-        /// Stores the settings
+        /// 
         /// </summary>
-        public void Save()
+        /// <typeparam name="T"></typeparam>
+        /// <param name="xml"></param>
+        /// <param name="fallback"></param>
+        /// <returns></returns>
+        public T DeserializeObject<T>(String xml, T fallback)
         {
-            // Create memory stream
-            using (var s = new MemoryStream())
+            try
             {
-                // Serialize value into binary form
-                var b = new BinaryFormatter();
-                b.Serialize(s, _otherValues);
-
-                // Store in dictionary
-                Settings.Default.UiSettings = Convert.ToBase64String(s.ToArray());
-                // Since all settings are stored while application shutdown save is not necessary here
-                Settings.Default.Save();
+                XmlSerializer xs = new XmlSerializer(typeof (T));
+                using (XmlReader reader = XmlReader.Create(new StringReader(xml)))
+                {
+                    T obj = (T) xs.Deserialize(reader);
+                    return obj;
+                }
+            }
+            catch (Exception)
+            {
+                return fallback;
             }
         }
 
@@ -152,17 +144,9 @@ namespace Ch.Cyberduck.Ui.Controller
         /// <param name="value">The value to store.</param>
         public void Set<T>(string key, T value)
         {
-            // Create memory stream
-            using (var s = new MemoryStream())
-            {
-                // Serialize value into binary form
-                var b = new BinaryFormatter();
-                b.Serialize(s, value);
-
-                // Store in dictionary
-                //otherValues[key] = new Binary(s.ToArray());
-                _otherValues[Name + key] = s.ToArray();
-            }
+            string xmlString = SerializeObject(value);
+            string base64String = Convert.ToBase64String(Encoding.UTF8.GetBytes(xmlString));
+            Preferences.instance().setProperty("ui." + Name + key, base64String);
         }
 
         /// <summary>
@@ -186,31 +170,13 @@ namespace Ch.Cyberduck.Ui.Controller
         /// <returns>The stored object, or the <paramref name="fallback"/> object if something went wrong.</returns>
         public T Get<T>(string key, T fallback)
         {
-            // If we have a value with this key
-            if (_otherValues.ContainsKey(Name + key))
+            String val = Preferences.instance().getProperty("ui." + Name + key);
+            if (null == val)
             {
-                // Create memory stream and fill with binary version of value
-                using (var s = new MemoryStream(_otherValues[Name + key]))
-                {
-                    try
-                    {
-                        // Deserialize, cast and return.
-                        var b = new BinaryFormatter();
-                        return (T) b.Deserialize(s);
-                    }
-                    catch (InvalidCastException)
-                    {
-                        // T is not what it should have been
-                        // (Code changed perhaps?)
-                    }
-                    catch (SerializationException)
-                    {
-                        // Something went wrong during Deserialization
-                    }
-                }
+                return fallback;
             }
-            // Else return fallback
-            return fallback;
+            String xml = Encoding.UTF8.GetString(Convert.FromBase64String(val));
+            return DeserializeObject(xml, fallback);
         }
     }
 }
