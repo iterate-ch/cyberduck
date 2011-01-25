@@ -296,6 +296,7 @@
 
         <echo message="Remove Sparkle.framework"/>
         <delete dir="${app.frameworks}/Sparkle.framework"/>
+<!--
         <echo message="Remove PPC slice from ${app.executable}"/>
         <exec dir="${home}" executable="/usr/bin/lipo" spawn="false" failonerror="true">
             <arg line="-remove ppc7400 -output ${app.executable} ${app.executable}"/>
@@ -304,6 +305,7 @@
         <exec dir="${home}" executable="/usr/bin/lipo" spawn="false" failonerror="true">
             <arg line="-remove ppc7400 -output '${app.spotlight.executable}' '${app.spotlight.executable}'"/>
         </exec>
+-->
         <antcall target="codesign">
             <param name="codesign.certificate" value="3rd Party Mac Developer Application: David Kocher"/>
         </antcall>
