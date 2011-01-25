@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2011 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -26,6 +26,9 @@ namespace Ch.Cyberduck.Ui.Controller
         [SetUp]
         public void Init()
         {
+            UserPreferences.Register();
+            LocaleImpl.Register();
+            LocalImpl.Register();
         }
 
         [Test]
@@ -33,7 +36,6 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             PersistentFormHandler handler = new PersistentFormHandler(GetType(), 0, Rectangle.Empty);
             handler.Set("key", 189);
-            handler.Save();
             handler = new PersistentFormHandler(GetType(), 0, Rectangle.Empty);
             Assert.AreEqual(189, handler.Get<int>("key"));
         }
@@ -43,9 +45,8 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             PersistentFormHandler handler = new PersistentFormHandler(GetType(), 0, Rectangle.Empty);
             handler.Set("keyDefault", 111);
-            handler.Save();
             handler = new PersistentFormHandler(GetType(), 0, Rectangle.Empty);
-            Assert.AreEqual(500, handler.Get<int>("keyNotAvailable", 500));
+            Assert.AreEqual(500, handler.Get("keyNotAvailable", 500));
         }
     }
 }
