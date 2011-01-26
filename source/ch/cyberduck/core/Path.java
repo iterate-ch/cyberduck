@@ -1137,4 +1137,19 @@ public abstract class Path extends AbstractPath implements Serializable {
     protected void error(String message, Throwable throwable) {
         this.getSession().error(this, message, throwable);
     }
+
+    /**
+     *
+     * @return True if the file exists and can be appended to
+     */
+    public boolean isUploadResumable() {
+        if(this.exists()) {
+            // Do not trust cached value which is from last directory listing
+            // and possibly outdated. Fix #3284.
+            this.readSize();
+            // Append to file if size is not zero
+            return this.attributes().getSize() > 0;
+        }
+        return false;
+    }
 }

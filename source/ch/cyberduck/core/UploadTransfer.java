@@ -268,14 +268,7 @@ public class UploadTransfer extends Transfer {
                 }
             }
             if(file.attributes().isFile()) {
-                boolean resume = false;
-                if(file.exists()) {
-                    // Do not trust cached value which is from last directory listing
-                    // and possibly outdated. Fix #3284.
-                    file.readSize();
-                    // Append to file if size is not zero
-                    resume = file.attributes().getSize() > 0;
-                }
+                boolean resume = file.isUploadResumable();
                 file.status().setResume(resume);
                 if(resume) {
                     file.status().setCurrent(file.attributes().getSize());
