@@ -474,7 +474,7 @@ public class S3Path extends CloudPath {
     /**
      * Default size threshold for when to use multipart uploads.
      */
-    private static final long DEFAULT_MULTIPART_UPLOAD_THRESHOLD = 16 * 1024 * 1024;
+    private static final long DEFAULT_MULTIPART_UPLOAD_THRESHOLD = 5 * 1024 * 1024;
 
     /**
      * Default minimum part size for upload parts.
@@ -590,14 +590,12 @@ public class S3Path extends CloudPath {
                 this.getSession().message(MessageFormat.format(Locale.localizedString("Uploading {0}", "Status"),
                         this.getName()));
 
-                final Status status = this.status();
-                // No Content-Range support
-                status().setResume(false);
-
                 if(this.getLocal().attributes().getSize() > DEFAULT_MULTIPART_UPLOAD_THRESHOLD) {
                     this.uploadMultipart(throttle, listener, object);
                 }
                 else {
+                    // No Content-Range support
+                    status().setResume(false);
                     this.uploadSingle(throttle, listener, object);
                 }
             }
@@ -672,15 +670,8 @@ public class S3Path extends CloudPath {
      */
     private void uploadMultipart(final BandwidthThrottle throttle, final StreamListener listener, S3Object object)
             throws IOException, ServiceException {
-        // Initiate multipart upload with metadata
-        Map<String, Object> metadata = object.getModifiableMetadata();
-        metadata.put(this.getSession().getClient().getRestHeaderPrefix() + "storage-class",
-                Preferences.instance().getProperty("s3.storage.class"));
 
-        final MultipartUpload multipart = this.getSession().getClient().multipartStartUpload(
-                this.getContainerName(), this.getKey(), metadata);
-
-        ThreadFactory threadFactory = new ThreadFactory() {
+        final ThreadFactory threadFactory = new ThreadFactory() {
             private int threadCount = 1;
 
             public Thread newThread(Runnable r) {
@@ -689,6 +680,49 @@ public class S3Path extends CloudPath {
                 return thread;
             }
         };
+
+        MultipartUpload multipart = null;
+        if(status().isResume()) {
+            // This operation lists in-progress multipart uploads. An in-progress multipart upload is a
+            // multipart upload that has been initiated, using the Initiate Multipart Upload request, but has
+            // not yet been completed or aborted.
+            List<MultipartUpload> uploads = this.getSession().getClient().multipartListUploads(this.getContainerName());
+            for(MultipartUpload upload : uploads) {
+                if(!upload.getBucketName().equals(this.getContainerName())) {
+                    continue;
+                }
+                if(!upload.getObjectKey().equals(this.getKey())) {
+                    continue;
+                }
+                if(log.isInfoEnabled()) {
+                    log.info("Resume multipart upload:" + upload);
+                }
+                multipart = upload;
+                break;
+            }
+        }
+        if(null == multipart) {
+            log.info("No pending multipart upload found");
+            status().setResume(false);
+
+            // Initiate multipart upload with metadata
+            Map<String, Object> metadata = object.getModifiableMetadata();
+            metadata.put(this.getSession().getClient().getRestHeaderPrefix() + "storage-class",
+                    Preferences.instance().getProperty("s3.storage.class"));
+
+            multipart = this.getSession().getClient().multipartStartUpload(
+                    this.getContainerName(), this.getKey(), metadata);
+        }
+
+        List<MultipartPart> completed;
+        if(status().isResume()) {
+            log.info("List completed parts of " + multipart.getUploadId());
+            // This operation lists the parts that have been uploaded for a specific multipart upload.
+            completed = this.getSession().getClient().multipartListParts(multipart);
+        }
+        else {
+            completed = new ArrayList<MultipartPart>();
+        }
 
         /**
          * At any point, at most
@@ -706,78 +740,45 @@ public class S3Path extends CloudPath {
             long remaining = this.getLocal().attributes().getSize();
             long marker = 0;
 
-            for(int request = 1; remaining > 0; request++) {
-                final int partNumber = request;
-                if(pool.isShutdown()) {
-                    throw new ConnectionCanceledException();
+            for(int partNumber = 1; remaining > 0; partNumber++) {
+                boolean skip = false;
+                if(status().isResume()) {
+                    log.info("Determine if part " + partNumber + " can be skipped");
+                    for(MultipartPart c : completed) {
+                        if(c.getPartNumber().equals(partNumber)) {
+                            log.info("Skip completed part number " + partNumber);
+                            listener.bytesSent(c.getSize());
+                            skip = true;
+                            break;
+                        }
+                    }
                 }
+
                 // Last part can be less than 5 MB. Adjust part size.
                 final long length = Math.min(defaultPartSize, remaining);
-                final long offset = marker;
-                parts.add(pool.submit(new Callable<MultipartPart>() {
-                    public MultipartPart call() throws IOException, ServiceException {
-                        Map<String, String> requestParameters = new HashMap<String, String>();
-                        requestParameters.put("uploadId", multipart.getUploadId());
-                        requestParameters.put("partNumber", String.valueOf(partNumber));
 
-                        final InputStream in;
-                        MessageDigest digest = null;
-                        if(!Preferences.instance().getBoolean("s3.upload.metadata.md5")) {
-                            // Content-MD5 not set. Need to verify ourselves instad of S3
-                            try {
-                                digest = MessageDigest.getInstance("MD5");
-                            }
-                            catch(NoSuchAlgorithmException e) {
-                                log.error(e.getMessage());
-                            }
-                        }
-                        if(null == digest) {
-                            log.warn("MD5 calculation disabled");
-                            in = getLocal().getInputStream();
-                        }
-                        else {
-                            in = new DigestInputStream(getLocal().getInputStream(), digest);
-                        }
-                        final S3Object part = new S3Object(getKey());
-                        try {
-                            getSession().getClient().putObjectWithRequestEntityImpl(
-                                    getContainerName(), part, new InputStreamRequestEntity(in,
-                                            length,
-                                            getLocal().getMimeType()) {
+                if(!skip) {
+                    // Submit to queue
+                    parts.add(this.submitPart(throttle, listener, multipart, pool, partNumber, marker, length));
+                }
 
-                                        @Override
-                                        public void writeRequest(OutputStream out) throws IOException {
-                                            S3Path.this.upload(out, in, throttle, listener, offset, length);
-                                        }
-                                    }, requestParameters);
-                        }
-                        finally {
-                            IOUtils.closeQuietly(in);
-                        }
-                        if(null != digest) {
-                            // Obtain locally-calculated MD5 hash.
-                            String hexMD5 = ServiceUtils.toHex(digest.digest());
-                            getSession().getClient().verifyExpectedAndActualETagValues(hexMD5, part);
-                        }
-                        // Populate part with response data that is accessible via the object's metadata
-                        return new MultipartPart(partNumber, part.getLastModifiedDate(),
-                                part.getETag(), part.getContentLength());
-                    }
-                }));
                 remaining -= length;
                 marker += length;
             }
-            List<MultipartPart> completed = new ArrayList<MultipartPart>();
             for(Future<MultipartPart> future : parts) {
                 try {
                     completed.add(future.get());
                 }
                 catch(InterruptedException e) {
                     log.error("Part upload failed:" + e.getMessage());
+                    // Cancel future tasks
+                    pool.shutdown();
                     throw new ConnectionCanceledException(e.getMessage());
                 }
                 catch(ExecutionException e) {
                     log.warn("Part upload failed:" + e.getMessage());
+                    // Cancel future tasks
+                    pool.shutdown();
                     if(e.getCause() instanceof ServiceException) {
                         throw (ServiceException) e.getCause();
                     }
@@ -800,6 +801,67 @@ public class S3Path extends CloudPath {
                         this.getContainerName(), this.getKey());
             }
         }
+    }
+
+    private Future<MultipartPart> submitPart(final BandwidthThrottle throttle, final StreamListener listener,
+                                             final MultipartUpload multipart,
+                                             final ExecutorService pool,
+                                             final int partNumber,
+                                             final long offset, final long length) throws ConnectionCanceledException {
+        if(pool.isShutdown()) {
+            throw new ConnectionCanceledException();
+        }
+        log.info("Submit part to queue:" + partNumber);
+        return pool.submit(new Callable<MultipartPart>() {
+            public MultipartPart call() throws IOException, ServiceException {
+                Map<String, String> requestParameters = new HashMap<String, String>();
+                requestParameters.put("uploadId", multipart.getUploadId());
+                requestParameters.put("partNumber", String.valueOf(partNumber));
+
+                final InputStream in;
+                MessageDigest digest = null;
+                if(!Preferences.instance().getBoolean("s3.upload.metadata.md5")) {
+                    // Content-MD5 not set. Need to verify ourselves instad of S3
+                    try {
+                        digest = MessageDigest.getInstance("MD5");
+                    }
+                    catch(NoSuchAlgorithmException e) {
+                        log.error(e.getMessage());
+                    }
+                }
+                if(null == digest) {
+                    log.warn("MD5 calculation disabled");
+                    in = getLocal().getInputStream();
+                }
+                else {
+                    in = new DigestInputStream(getLocal().getInputStream(), digest);
+                }
+                final S3Object part = new S3Object(getKey());
+                try {
+                    getSession().getClient().putObjectWithRequestEntityImpl(
+                            getContainerName(), part, new InputStreamRequestEntity(in,
+                                    length,
+                                    getLocal().getMimeType()) {
+
+                                @Override
+                                public void writeRequest(OutputStream out) throws IOException {
+                                    S3Path.this.upload(out, in, throttle, listener, offset, length);
+                                }
+                            }, requestParameters);
+                }
+                finally {
+                    IOUtils.closeQuietly(in);
+                }
+                if(null != digest) {
+                    // Obtain locally-calculated MD5 hash.
+                    String hexMD5 = ServiceUtils.toHex(digest.digest());
+                    getSession().getClient().verifyExpectedAndActualETagValues(hexMD5, part);
+                }
+                // Populate part with response data that is accessible via the object's metadata
+                return new MultipartPart(partNumber, part.getLastModifiedDate(),
+                        part.getETag(), part.getContentLength());
+            }
+        });
     }
 
     @Override
@@ -1468,5 +1530,10 @@ public class S3Path extends CloudPath {
         }
         return urls;
 
+    }
+
+    @Override
+    public boolean isUploadResumable() {
+        return true;
     }
 }
