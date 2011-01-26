@@ -331,7 +331,7 @@
                   algorithm="md5"/>
     </target>
 
-    <target name="install" depends="mas">
+    <target name="install" depends="package-mas">
         <exec dir="${home}" executable="/usr/bin/sudo" spawn="false" failonerror="true">
             <arg line="installer -store -pkg ${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.pkg -target /"/>
         </exec>
