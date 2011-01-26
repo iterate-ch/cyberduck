@@ -462,7 +462,7 @@ namespace Ch.Cyberduck.Ui.Controller
             else
             {
                 View.UsernameEnabled = true;
-                if(Preferences.instance().getProperty("connection.login.name").equals(
+                if(Preferences.instance().getProperty("connection.login.name").Equals(
                        Preferences.instance().getProperty("connection.login.anon.name"))) {
                     View.Username = StringUtils.EMPTY;
                 }
