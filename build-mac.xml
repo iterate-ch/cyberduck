@@ -331,6 +331,12 @@
                   algorithm="md5"/>
     </target>
 
+    <target name="install" depends="mas">
+        <exec dir="${home}" executable="/usr/bin/sudo" spawn="false" failonerror="true">
+            <arg line="installer -store -pkg ${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.pkg -target /"/>
+        </exec>
+    </target>
+
     <target name="copy-runtime">
         <copy todir="${app.runtime}" preservelastmodified="true">
             <fileset followsymlinks="false" dir="${jvm.runtime}">
