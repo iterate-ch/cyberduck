@@ -738,7 +738,13 @@ public class BookmarkController extends WindowController {
             host.getCredentials().setUsername(Preferences.instance().getProperty("connection.login.anon.name"));
         }
         if(sender.state() == NSCell.NSOffState) {
-            host.getCredentials().setUsername(Preferences.instance().getProperty("connection.login.name"));
+            if(Preferences.instance().getProperty("connection.login.name").equals(
+                   Preferences.instance().getProperty("connection.login.anon.name"))) {
+                host.getCredentials().setUsername(StringUtils.EMPTY);
+            }
+            else {
+                host.getCredentials().setUsername(Preferences.instance().getProperty("connection.login.name"));
+            }
         }
         this.itemChanged();
         this.init();
