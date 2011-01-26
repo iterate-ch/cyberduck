@@ -24,6 +24,7 @@ import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.i18n.Locale;
 
+import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.filefilter.FalseFileFilter;
@@ -38,8 +39,11 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.net.NetworkInterface;
 import java.nio.charset.Charset;
+import java.security.MessageDigest;
 import java.security.Security;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Enumeration;
 
@@ -172,58 +176,48 @@ public class Receipt extends AbstractLicense {
                 log.error("Expected set of attributes for:" + asn);
                 System.exit(APPSTORE_VALIDATION_FAILURE);
             }
-            if(!StringUtils.equals(Preferences.instance().getDefault("CFBundleIdentifier"),
-                    StringUtils.trim(bundleIdentifier))) {
+            if(!StringUtils.equals("ch.sudo.cyberduck", StringUtils.trim(bundleIdentifier))) {
                 log.error("Bundle identifier in ASN set does not match");
                 System.exit(APPSTORE_VALIDATION_FAILURE);
             }
             if(!StringUtils.equals(Preferences.instance().getDefault("CFBundleShortVersionString"),
                     StringUtils.trim(bundleVersion))) {
-                log.error("Bundle version in ASN set does not match");
+                log.warn("Bundle version in ASN set does not match");
                 System.exit(APPSTORE_VALIDATION_FAILURE);
             }
 
-//            NetworkInterface en0 = NetworkInterface.getByName("en0");
-//            if(null == en0) {
-//                // Interface is not found when link is down #fail
-//                log.error("No network interface en0");
-//                Enumeration<NetworkInterface> list = NetworkInterface.getNetworkInterfaces();
-//                while(list.hasMoreElements()) {
-//                    en0 = list.nextElement();
-//                    log.warn("Using network interface:" + en0);
-//                    break;
-//                }
-//            }
-//            if(null == en0) {
-//                log.error("Cannot determine network interface");
-//                // Shutdown if receipt is not valid
-//                System.exit(APPSTORE_VALIDATION_FAILURE);
-//            }
-//            byte[] mac = en0.getHardwareAddress();
-//            if(null == mac) {
-//                log.error("Cannot determine MAC address");
-//                // Shutdown if receipt is not valid
-//                System.exit(APPSTORE_VALIDATION_FAILURE);
-//            }
-//            if(log.isDebugEnabled()) {
-//                log.debug("Interface en0:" + Hex.encodeHexString(mac));
-//            }
-//            // Compute the hash of the GUID
-//            MessageDigest digest = MessageDigest.getInstance("SHA-1");
-//            digest.update(mac);
-//            digest.update(opaque);
-//            digest.update(bundleIdentifier.getBytes(Charset.forName("utf-8")));
-//            byte[] result = digest.digest();
-//            if(Arrays.equals(result, hash)) {
-//                if(log.isInfoEnabled()) {
-//                    log.info("Valid receipt for Computer GUID:" + Hex.encodeHexString(mac));
-//                }
-//            }
-//            else {
-//                log.error("Failed verfification. Hash with GUID "
-//                        + Hex.encodeHexString(mac) + " does not match hash in receipt");
-//                System.exit(APPSTORE_VALIDATION_FAILURE);
-//            }
+            NetworkInterface en0 = NetworkInterface.getByName("en0");
+            if(null == en0) {
+                // Interface is not found when link is down #fail
+                log.warn("No network interface en0");
+            }
+            else {
+                byte[] mac = en0.getHardwareAddress();
+                if(null == mac) {
+                    log.error("Cannot determine MAC address");
+                    // Shutdown if receipt is not valid
+                    System.exit(APPSTORE_VALIDATION_FAILURE);
+                }
+                if(log.isDebugEnabled()) {
+                    log.debug("Interface en0:" + Hex.encodeHexString(mac));
+                }
+                // Compute the hash of the GUID
+                MessageDigest digest = MessageDigest.getInstance("SHA-1");
+                digest.update(mac);
+                digest.update(opaque);
+                digest.update(bundleIdentifier.getBytes(Charset.forName("utf-8")));
+                byte[] result = digest.digest();
+                if(Arrays.equals(result, hash)) {
+                    if(log.isInfoEnabled()) {
+                        log.info("Valid receipt for Computer GUID:" + Hex.encodeHexString(mac));
+                    }
+                }
+                else {
+                    log.error("Failed verfification. Hash with GUID "
+                            + Hex.encodeHexString(mac) + " does not match hash in receipt");
+                    System.exit(APPSTORE_VALIDATION_FAILURE);
+                }
+            }
         }
         catch(Throwable e) {
             log.error("Unknown receipt validation error:" + e.getMessage());
@@ -243,13 +237,8 @@ public class Receipt extends AbstractLicense {
         return StringUtils.EMPTY;
     }
 
-
     @Override
     public String getName() {
-        String id = Preferences.instance().getProperty("AppleID");
-        if(StringUtils.isNotBlank(id)) {
-            return id;
-        }
         return Locale.localizedString("Unknown");
     }
 }
