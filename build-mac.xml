@@ -127,6 +127,7 @@
         <echo message="_SPARKLEFEED_=${sparkle.feed}"/>
         <replace dir="${app.bundle}" summary="true" encoding="UTF-8">
             <include name="**/Info.plist"/>
+            <replacefilter token="_MINIMUM_SYSTEM_" value="${system.min}"/>
             <replacefilter token="_SPARKLEFEED_" value="${sparkle.feed}"/>
         </replace>
 
@@ -289,6 +290,7 @@
 
     <target name="package-release" depends="clean, revision">
         <antcall target="package">
+            <param name="system.min" value="10.5"/>
             <param name="url.archive" value="http://update.cyberduck.ch/Cyberduck-_REVISION_.tar.gz"/>
             <param name="url.changelog" value="http://version.cyberduck.ch/changelog.html"/>
             <param name="sparkle.feed" value="https://version.cyberduck.ch/changelog.rss"/>
@@ -300,6 +302,7 @@
 
     <target name="package-mas" depends="clean, revision">
         <antcall target="package">
+            <param name="system.min" value="10.6.6"/>
             <param name="url.archive" value="/dev/null"/>
             <param name="url.changelog" value="/dev/null"/>
             <param name="sparkle.feed" value="/dev/null"/>
@@ -353,6 +356,7 @@
 
     <target name="package-beta" depends="clean, revision">
         <antcall target="package">
+            <param name="system.min" value="10.5"/>
             <param name="url.archive" value="http://update.cyberduck.ch/beta/Cyberduck-_REVISION_.tar.gz"/>
             <param name="url.changelog" value="http://version.cyberduck.ch/beta/changelog.html"/>
             <param name="sparkle.feed" value="https://version.cyberduck.ch/beta/changelog.rss"/>
@@ -362,6 +366,7 @@
 
     <target name="package-nightly" depends="clean, revision">
         <antcall target="package">
+            <param name="system.min" value="10.5"/>
             <param name="url.archive" value="http://update.cyberduck.ch/nightly/Cyberduck-_REVISION_.tar.gz"/>
             <param name="url.changelog" value="http://version.cyberduck.ch/nightly/changelog.html"/>
             <param name="sparkle.feed" value="https://version.cyberduck.ch/nightly/changelog.rss"/>

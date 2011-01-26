@@ -238,6 +238,6 @@
             </dict>
         </array>
         <key>LSMinimumSystemVersion</key>
-        <string>10.5</string>
+        <string>_MINIMUM_SYSTEM_</string>
     </dict>
 </plist>
