@@ -1,6 +1,12 @@
 4.0b9 [http://trac.cyberduck.ch/milestone/4.0b9]
 - [Feature] Multipart Uploads with parallelism (S3) (#5487)
 - [Feature] Support new 5TB Object Size Limit (S3)
+- [Feature] Improved proxy support
+- [Bugfix] Sorting by file type lexicographically (#5401)
+- [Bugfix] Show hidden files (#5534)
+- [Bugfix] Google Docs: Files not shown (#5570)
+- [Bugfix] Google Docs: Images always converted to documents (#5601)
+- [Bugfix] Interoperability (#5553, #5569, #5572, #5581) (FTP)
 
 4.0b8 [http://trac.cyberduck.ch/milestone/4.0b8]
 - [Feature] Rename existing files on upload or download (#5117)
