@@ -36,7 +36,7 @@
 
     <property name="architecture" value="x86"/>
     <property name="build.deploy" value="${build}/${configuration}/${architecture}"/>
-    <property name="jdk.home" value="${env.ProgramFiles}/Java/jdk1.5.0_22"/>
+    <property name="jdk.home" value="${env.ProgramFiles}/Java/jdk1.6.0_17"/>
     <property name="setup" value="${home}/setup"/>
     <property name="nsis.home" value="${programFiles}/NSIS"/>
     <property name="winsdk.home" value="${programFiles}/Microsoft SDKs/Windows/v7.0A/Bin"/>
