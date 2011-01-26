@@ -46,7 +46,6 @@
 		472938A00F9DBC420086605D /* AquaticPrime.h in Headers */ = {isa = PBXBuildFile; fileRef = 4729389C0F9DBC420086605D /* AquaticPrime.h */; };
 		472938A10F9DBC420086605D /* License.h in Headers */ = {isa = PBXBuildFile; fileRef = 4729389D0F9DBC420086605D /* License.h */; };
 		472938A30F9DBC420086605D /* License.m in Sources */ = {isa = PBXBuildFile; fileRef = 4729389F0F9DBC420086605D /* License.m */; };
-		472DF80112EED43E006DB02C /* libjvm.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 472DF80012EED43E006DB02C /* libjvm.dylib */; };
 		472DF81312EED464006DB02C /* jni_md.h in Headers */ = {isa = PBXBuildFile; fileRef = 472DF80B12EED464006DB02C /* jni_md.h */; };
 		472DF81612EED464006DB02C /* jni.h in Headers */ = {isa = PBXBuildFile; fileRef = 472DF80E12EED464006DB02C /* jni.h */; };
 		4734425B102DEABD00C04C43 /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4734425A102DEABD00C04C43 /* Quartz.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
@@ -198,6 +197,7 @@
 		479D64A70752257400FE6086 /* arrowUpBlack16.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 479D64A50752257400FE6086 /* arrowUpBlack16.tiff */; };
 		47A88FBB0B931D9C00DB9D87 /* Configuration.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47A88FB90B931D9C00DB9D87 /* Configuration.strings */; };
 		47AA19690AF09F810059C736 /* Error.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47AA19670AF09F810059C736 /* Error.strings */; };
+		47AB3B0512EF1D020080E36D /* libjvm.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 47AB3B0412EF1D020080E36D /* libjvm.dylib */; };
 		47B21F080FD8931000521C0D /* Sparkle.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 470671150FD8896D00EE3291 /* Sparkle.framework */; };
 		47B6074A0DA420880068282C /* Keychain.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47B6072E0DA420880068282C /* Keychain.strings */; };
 		47BCB890119ADF960099C448 /* google.icns in Resources */ = {isa = PBXBuildFile; fileRef = 47BCB88F119ADF960099C448 /* google.icns */; };
@@ -610,7 +610,6 @@
 		4729389C0F9DBC420086605D /* AquaticPrime.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AquaticPrime.h; sourceTree = "<group>"; };
 		4729389D0F9DBC420086605D /* License.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = License.h; sourceTree = "<group>"; };
 		4729389F0F9DBC420086605D /* License.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = License.m; sourceTree = "<group>"; };
-		472DF80012EED43E006DB02C /* libjvm.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libjvm.dylib; path = ../../Library/Java/JavaVirtualMachines/1.7.0.jdk/Contents/Home/jre/lib/server/libjvm.dylib; sourceTree = SOURCE_ROOT; };
 		472DF80B12EED464006DB02C /* jni_md.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = jni_md.h; sourceTree = "<group>"; };
 		472DF80E12EED464006DB02C /* jni.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = jni.h; sourceTree = "<group>"; };
 		473240070DABC00800BF67D2 /* QLPreviewPanel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QLPreviewPanel.h; sourceTree = "<group>"; };
@@ -1146,6 +1145,7 @@
 		47AA197F0AF0ABA80059C736 /* tr */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = tr; path = tr.lproj/Error.strings; sourceTree = "<group>"; };
 		47AA19800AF0ABA80059C736 /* zh_CN */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = zh_CN; path = zh_CN.lproj/Error.strings; sourceTree = "<group>"; };
 		47AA19820AF0ABA80059C736 /* ca */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = ca; path = ca.lproj/Error.strings; sourceTree = "<group>"; };
+		47AB3B0412EF1D020080E36D /* libjvm.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libjvm.dylib; path = "../../Library/Java/JavaVirtualMachines/openjdk-1.7-i586/Contents/Home/jre/lib/i386/server/libjvm.dylib"; sourceTree = SOURCE_ROOT; };
 		47AC356B0DA1025000CC1426 /* CTGradient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CTGradient.h; sourceTree = "<group>"; };
 		47AC356C0DA1025000CC1426 /* CTGradient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CTGradient.m; sourceTree = "<group>"; };
 		47AC356D0DA1025000CC1426 /* CTGradientView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CTGradientView.h; sourceTree = "<group>"; };
@@ -1593,7 +1593,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				47C2724512E99DA200A13758 /* Foundation.framework in Frameworks */,
-				472DF80112EED43E006DB02C /* libjvm.dylib in Frameworks */,
+				47AB3B0512EF1D020080E36D /* libjvm.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1633,7 +1633,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				472DF80012EED43E006DB02C /* libjvm.dylib */,
+				47AB3B0412EF1D020080E36D /* libjvm.dylib */,
 				472DF80712EED464006DB02C /* include */,
 				474523971076B6D800823467 /* Carbon.framework */,
 				474522C51076B68E00823467 /* ApplicationServices.framework */,
@@ -4241,7 +4241,7 @@
 				INFOPLIST_FILE = Info.plist;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(USER_LIBRARY_DIR)/Java/JavaVirtualMachines/1.7.0.jdk/Contents/Home/jre/lib/server\"",
+					"\"$(USER_LIBRARY_DIR)/Java/JavaVirtualMachines/openjdk-1.7-i586/Contents/Home/jre/lib/i386/server\"",
 				);
 				OTHER_LDFLAGS = (
 					"-lz",
@@ -4398,7 +4398,7 @@
 				INFOPLIST_FILE = Info.plist;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(USER_LIBRARY_DIR)/Java/JavaVirtualMachines/1.7.0.jdk/Contents/Home/jre/lib/server\"",
+					"\"$(USER_LIBRARY_DIR)/Java/JavaVirtualMachines/openjdk-1.7-i586/Contents/Home/jre/lib/i386/server\"",
 				);
 				OTHER_LDFLAGS = (
 					"-lz",
