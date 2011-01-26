@@ -38,6 +38,7 @@
     <property name="app.runtime" value="${app.java}/Runtime.jdk"/>
     <property name="app.runtime.lib" value="@executable_path/../Resources/Java/Runtime.jdk/Contents/Home/jre/lib/i386/server/libjvm.dylib"/>
     <!--<property name="app.runtime.lib" value="@executable_path/../Resources/Java/Runtime.jdk/Contents/Home/jre/lib/server/libjvm.dylib"/>-->
+    <!--<property name="app.runtime.lib" value="/System/Library/Frameworks/JavaVM.framework/Versions/A/JavaVM"/>-->
 
     <property name="app.spotlight" value="${app.library}/Spotlight"/>
     <property name="app.spotlight.executable"
@@ -103,10 +104,10 @@
 
         <echo message="Change dynamic shared library install names..."/>
         <exec dir="${build}" executable="/usr/bin/install_name_tool" spawn="false" failonerror="true">
-            <arg line="-change @rpath/libjvm.dylib ${app.runtime.lib} ${app.executable}"/>
+            <arg line="-change /System/Library/Frameworks/JavaVM.framework/Versions/A/JavaVM ${app.runtime.lib} ${app.executable}"/>
         </exec>
         <exec dir="${build}" executable="/usr/bin/install_name_tool" spawn="false" failonerror="true">
-            <arg line="-change @rpath/libjvm.dylib ${app.runtime.lib} ${app.java}/libjdns_sd.dylib"/>
+            <arg line="-change /System/Library/Frameworks/JavaVM.framework/Versions/A/JavaVM ${app.runtime.lib} ${app.java}/libjdns_sd.dylib"/>
         </exec>
 
         <antcall target="spotlight"/>
