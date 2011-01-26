@@ -14,12 +14,16 @@ Changelog. Last modified: $Date$
 - [Feature] Upload item in Finder context menu to upload selected file (Mac)
 - [Feature] Upload item in Services menu of thirdparty programs main menu supporting files and folders (Mac)
 - [Feature] Select bookmark to upload to when dragging files to application
-- [Bugfix] Limit number of concurrent transfers (#5539)
+- [Bugfix] Limit number of concurrent transfers (#5539, #5624)
+- [Bugfix] Qeued transfers start in random order (#5632)
 - [Bugfix] Dragging into topmost folder in browser (#1945)
 - [Bugfix] ACLs getting dropped when updating metadata (S3) (#5571)
+- [Bugfix] .CDN_ACCESS_LOGS folder listing is empty (Cloudfiles) (#5350)
 - [Bugfix] Unicode normalization for filenames in upload (#5162)
 - [Bugfix] Duplicate file breaks editing (#5524)
 - [Bugfix] Large transfer history causes slowdown (#2889)
+- [Bugfix] Files not shown (#5570) (Google Docs)
+- [Bugfix] Images always converted to documents (#5601) (Google Docs)
 
 3.8.1 [http://trac.cyberduck.ch/milestone/3.8.1]
 - [Bugfix] Fails to display custom language preference (#5500)

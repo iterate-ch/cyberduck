@@ -4,9 +4,14 @@
 - [Feature] Improved proxy support
 - [Bugfix] Sorting by file type lexicographically (#5401)
 - [Bugfix] Show hidden files (#5534)
-- [Bugfix] Google Docs: Files not shown (#5570)
-- [Bugfix] Google Docs: Images always converted to documents (#5601)
+- [Bugfix] Change localization to Chinese or Portuguese (#5587)
+- [Bugfix] Files not shown (#5570) (Google Docs)
+- [Bugfix] Images always converted to documents (#5601) (Google Docs)
 - [Bugfix] Interoperability (#5553, #5569, #5572, #5581) (FTP)
+- [Bugfix] .CDN_ACCESS_LOGS folder listing is empty (Cloudfiles) (#5350)
+- [Bugfix] Unicode normalization for filenames in upload (#5162)
+- [Bugfix] Limit number of concurrent transfers (#5539, #5624)
+- [Bugfix] Qeued transfers start in random order (#5632)
 
 4.0b8 [http://trac.cyberduck.ch/milestone/4.0b8]
 - [Feature] Rename existing files on upload or download (#5117)
