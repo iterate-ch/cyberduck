@@ -166,18 +166,17 @@ public class MainController extends BundleController implements NSApplication.De
      */
     private void updateLicenseMenu() {
         License key = LicenseFactory.find();
-        String name = key.toString();
-        NSDictionary KEY_FONT_ATTRIBUTES = NSDictionary.dictionaryWithObjectsForKeys(
-                NSArray.arrayWithObjects(NSFont.userFontOfSize(NSFont.smallSystemFontSize()), NSColor.darkGrayColor()),
-                NSArray.arrayWithObjects(NSAttributedString.FontAttributeName, NSAttributedString.ForegroundColorAttributeName)
-        );
         if(key.isReceipt()) {
             this.applicationMenu.removeItemAtIndex(new NSInteger(5));
             this.applicationMenu.removeItemAtIndex(new NSInteger(4));
         }
         else {
+            NSDictionary KEY_FONT_ATTRIBUTES = NSDictionary.dictionaryWithObjectsForKeys(
+                    NSArray.arrayWithObjects(NSFont.userFontOfSize(NSFont.smallSystemFontSize()), NSColor.darkGrayColor()),
+                    NSArray.arrayWithObjects(NSAttributedString.FontAttributeName, NSAttributedString.ForegroundColorAttributeName)
+            );
             this.applicationMenu.itemAtIndex(new NSInteger(5)).setAttributedTitle(
-                    NSAttributedString.attributedStringWithAttributes(name, KEY_FONT_ATTRIBUTES)
+                    NSAttributedString.attributedStringWithAttributes(key.toString(), KEY_FONT_ATTRIBUTES)
             );
         }
     }
