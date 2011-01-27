@@ -166,29 +166,17 @@ VMLaunchOptions *NewVMLaunchOptions(int argc, const char **currentArg)
 void FreeVMLaunchOptions(VMLaunchOptions *vmOptionsPtr) {
     int index = 0;
     if(vmOptionsPtr != NULL) { 
-        JavaVMOption * option = vmOptionsPtr->options;
-        char ** arg = vmOptionsPtr->args;
-    
-        /* Itterate through the JVM options, freeing the optionStrings, */
-        /* and extraInfo. */
-        if(option != NULL) {
-            for(index = 0; index < vmOptionsPtr->nOptions; index++,option++) {
-                if(option->optionString != NULL)
-                    free(option->optionString);
+        JavaVMOption *options = vmOptionsPtr->options;
+        /* Itterate through the JVM options, freeing the optionStrings and extraInfo. */
+        if(options != NULL) {
+            for(index = 0; index < vmOptionsPtr->nOptions; index++) {
+                if(options[index].optionString != NULL)
+                    free(options[index].optionString);
 
-                if(option->extraInfo != NULL)
-                    free(option->extraInfo);
+                if(options[index].extraInfo != NULL)
+                    free(options[index].extraInfo);
             }
             free(vmOptionsPtr->options);
-        }
-        
-        /* Itterate through the args for main, freeing each arg string. */
-        if(arg != NULL) {
-            for(index = 0; index < vmOptionsPtr->numberOfArgs; index++,option++,arg++) {
-                if(*arg != NULL)
-                    free(*arg);
-            }
-            free(vmOptionsPtr->args);
         }
         free(vmOptionsPtr);
     }

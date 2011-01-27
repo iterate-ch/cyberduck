@@ -27,8 +27,6 @@ typedef struct {
     void *		options;
     int			nOptions;
     char *	 	mainClass;
-    char **		args;
-    int			numberOfArgs;
 } VMLaunchOptions;
 
 /* Parses command line options for the VM options, properties,
