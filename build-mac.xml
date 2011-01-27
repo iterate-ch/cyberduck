@@ -301,7 +301,14 @@
         <antcall target="zip"/>
     </target>
 
-    <target name="package-mas" depends="clean, revision">
+    <target name="lipo">
+        <echo message="Remove ${arch} slice from ${app.executable}"/>
+        <exec dir="${home}" executable="/usr/bin/lipo" spawn="false" failonerror="false">
+            <arg line="-remove ${arch} -output ${binary} ${binary}"/>
+        </exec>
+    </target>
+
+    <target name="package-mas" depends="revision">
         <antcall target="package">
             <param name="system.min" value="10.6.6"/>
             <param name="url.archive" value="/dev/null"/>
@@ -310,19 +317,25 @@
             <param name="post" value="copy-runtime"/>
         </antcall>
 
-        <echo message="Remove Sparkle.framework"/>
         <delete dir="${app.frameworks}/Sparkle.framework"/>
-        <echo message="Remove PPC slice from ${app.executable}"/>
-        <exec dir="${home}" executable="/usr/bin/lipo" spawn="false" failonerror="false">
-            <arg line="-remove ppc7400 -output ${app.executable} ${app.executable}"/>
-        </exec>
-        <echo message="Remove PPC slice from ${app.spotlight.executable}"/>
-        <exec dir="${home}" executable="/usr/bin/lipo" spawn="false" failonerror="false">
-            <arg line="-remove ppc7400 -output '${app.spotlight.executable}' '${app.spotlight.executable}'"/>
-        </exec>
+
+        <antcall target="lipo">
+            <param name="arch" value="ppc7400"/>
+            <param name="binary" value="${app.executable}"/>
+        </antcall>
+        <antcall target="lipo">
+            <param name="arch" value="x86_64"/>
+            <param name="binary" value="${app.executable}"/>
+        </antcall>
+        <antcall target="lipo">
+            <param name="arch" value="ppc7400"/>
+            <param name="binary" value="'${app.spotlight.executable}'"/>
+        </antcall>
+
         <antcall target="codesign">
             <param name="codesign.certificate" value="3rd Party Mac Developer Application: David Kocher"/>
         </antcall>
+
         <echo message="Building ${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.pkg"/>
         <property name="build.absolute" location="${build}"/>
         <exec dir="${build.deploy}" executable="/usr/bin/productbuild" spawn="false" failonerror="true">
