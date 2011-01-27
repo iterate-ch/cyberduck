@@ -308,7 +308,7 @@
         </exec>
     </target>
 
-    <target name="package-mas" depends="revision">
+    <target name="package-mas" depends="clean, revision">
         <antcall target="package">
             <param name="system.min" value="10.6.6"/>
             <param name="url.archive" value="/dev/null"/>
