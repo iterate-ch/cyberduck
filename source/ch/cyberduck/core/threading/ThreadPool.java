@@ -19,14 +19,12 @@ package ch.cyberduck.core.threading;
  * dkocher@cyberduck.ch
  */
 
-import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
-public class ThreadPool implements Executor {
+public class ThreadPool {
 
     private static ThreadPool instance;
 
@@ -44,6 +42,16 @@ public class ThreadPool implements Executor {
         }
     }
 
+    private final ThreadFactory threadFactory = new ThreadFactory() {
+        private int threadCount = 1;
+
+        public Thread newThread(Runnable r) {
+            Thread thread = new Thread(r);
+            thread.setName("background-" + threadCount++);
+            return thread;
+        }
+    };
+
     /**
      * Thread pool
      */
@@ -51,12 +59,12 @@ public class ThreadPool implements Executor {
 
     private ExecutorService getExecutorService() {
         if(null == pool || pool.isShutdown()) {
-            pool = Executors.newCachedThreadPool();
+            pool = Executors.newCachedThreadPool(threadFactory);
         }
         return pool;
     }
 
-    private Executor getExecutor() {
+    private ExecutorService getExecutor() {
         return this.getExecutorService();
     }
 
@@ -64,7 +72,20 @@ public class ThreadPool implements Executor {
         this.getExecutorService().shutdownNow();
     }
 
-    public void execute(Runnable command) {
+    /**
+     * @param command
+     * @throws Exception
+     */
+    public void execute(final Runnable command) {
         this.getExecutor().execute(command);
+    }
+
+    /**
+     * @param command
+     * @throws Exception
+     */
+    public <T> T execute(final Callable<T> command) throws ExecutionException, InterruptedException {
+        Future<T> future = this.getExecutor().submit(command);
+        return future.get();
     }
 }
