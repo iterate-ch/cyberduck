@@ -47,8 +47,8 @@
     <property name="apple.appstub"
               location="/System/Library/Frameworks/JavaVM.framework/Resources/MacOS/JavaApplicationStub"/>
 
-    <property name="jvm.runtime" value="${user.home}/Library/Java/JavaVirtualMachines/openjdk-1.7-i586"/>
-    <!--<property name="jvm.runtime" value="${user.home}/Library/Java/JavaVirtualMachines/1.7.0.jdk"/>-->
+    <!--<property name="jvm.runtime" value="${user.home}/Library/Java/JavaVirtualMachines/openjdk-1.7-i586"/>-->
+    <property name="jvm.runtime" value="${user.home}/Library/Java/JavaVirtualMachines/1.7.0.jdk"/>
 
     <property name="codesign.certificate" value="Cyberduck Code Signing Certificate"/>
     <property name="codesign.keychain" value="${user.home}/Library/Keychains/codesign.keychain"/>
