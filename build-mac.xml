@@ -36,8 +36,8 @@
     <property name="app.resources" value="${app.contents}/Resources"/>
     <property name="app.java" value="${app.resources}/Java"/>
     <property name="app.runtime" value="${app.java}/Runtime.jdk"/>
-    <property name="app.runtime.lib" value="@executable_path/../Resources/Java/Runtime.jdk/Contents/Home/jre/lib/i386/server/libjvm.dylib"/>
-    <!--<property name="app.runtime.lib" value="@executable_path/../Resources/Java/Runtime.jdk/Contents/Home/jre/lib/server/libjvm.dylib"/>-->
+    <!--<property name="app.runtime.lib" value="@executable_path/../Resources/Java/Runtime.jdk/Contents/Home/jre/lib/i386/server/libjvm.dylib"/>-->
+    <property name="app.runtime.lib" value="@executable_path/../Resources/Java/Runtime.jdk/Contents/Home/jre/lib/server/libjvm.dylib"/>
     <!--<property name="app.runtime.lib" value="/System/Library/Frameworks/JavaVM.framework/Versions/A/JavaVM"/>-->
 
     <property name="app.spotlight" value="${app.library}/Spotlight"/>
