@@ -74,14 +74,18 @@ public class Queue {
             if(log.isInfoEnabled()) {
                 log.info("Queuing:" + t);
             }
-            boolean offer = false;
-            while(!offer || running.size() >= Preferences.instance().getInteger("queue.maxtransfers")) {
-            // The maximum number of transfers is already reached
+            while(running.size() >= Preferences.instance().getInteger("queue.maxtransfers")) {
+                // The maximum number of transfers is already reached
                 if(t.isCanceled()) {
                     break;
                 }
                 // Wait for transfer slot.
-                offer = overflow.offer(t);
+                try {
+                    overflow.put(t);
+                }
+                catch(InterruptedException e) {
+                    log.error(e.getMessage());
+                }
             }
             if(log.isInfoEnabled()) {
                 log.info("Released from queue:" + t);
