@@ -102,14 +102,6 @@
             </fileset>
         </copy>
 
-        <echo message="Change dynamic shared library install names..."/>
-        <exec dir="${build}" executable="/usr/bin/install_name_tool" spawn="false" failonerror="true">
-            <arg line="-change /System/Library/Frameworks/JavaVM.framework/Versions/A/JavaVM ${app.runtime.lib} ${app.executable}"/>
-        </exec>
-        <exec dir="${build}" executable="/usr/bin/install_name_tool" spawn="false" failonerror="true">
-            <arg line="-change /System/Library/Frameworks/JavaVM.framework/Versions/A/JavaVM ${app.runtime.lib} ${app.java}/libjdns_sd.dylib"/>
-        </exec>
-
         <antcall target="spotlight"/>
 
         <echo message="_VERSION_=${cyberduck.version.major}.${cyberduck.version.minor}"/>
@@ -372,6 +364,15 @@
                 <exclude name="Contents/Home/jre/lib/client/**"/>
             </fileset>
         </copy>
+        <echo message="Change dynamic shared library install names..."/>
+        <apply executable="/usr/bin/install_name_tool" failonerror="true" dir="${build}" parallel="false" spawn="false">
+            <arg line="-change /System/Library/Frameworks/JavaVM.framework/Versions/A/JavaVM ${app.runtime.lib}"/>
+            <fileset dir="${app.java}">
+                <include name="*.dylib"/>
+            </fileset>
+            <file file="${app.executable}"/>
+            <srcfile />
+        </apply>
     </target>
 
     <target name="package-beta" depends="clean, revision">
