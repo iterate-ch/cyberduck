@@ -19,7 +19,7 @@
  * Derived work based on sample code by Apple Computer Inc.
  */
 
-#include "jni.h"
+#include <jni.h>
 
 /* This structure will be used to store the options, args, */
 /* and main class needed to invoke this application */
