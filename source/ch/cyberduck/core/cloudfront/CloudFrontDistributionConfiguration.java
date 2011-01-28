@@ -186,16 +186,10 @@ public class CloudFrontDistributionConfiguration extends HTTP3Session implements
                         origin));
 
                 for(ch.cyberduck.core.cdn.Distribution d : this.listDistributions(origin, method)) {
-                    if(d.isDeployed()) {
-                        // Cache distributions that have been successfully deployed
-                        distributionStatus.get(method).put(origin, d);
-                    }
-                    if(!d.isEnabled()) {
-                        // Cache distributions not enabled
-                        distributionStatus.get(method).put(origin, d);
-                    }
+                    // Cache distributions
+                    distributionStatus.get(method).put(origin, d);
                     // We currently only support one distribution per bucket
-                    return d;
+                    break;
                 }
             }
             catch(CloudFrontServiceException e) {

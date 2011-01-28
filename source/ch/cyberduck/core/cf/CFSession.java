@@ -337,10 +337,7 @@ public class CFSession extends CloudHTTP4Session {
                                         method, info.isEnabled(), info.getCdnURL(),
                                         info.isEnabled() ? Locale.localizedString("CDN Enabled", "Mosso") : Locale.localizedString("CDN Disabled", "Mosso"),
                                         info.getRetainLogs());
-                                if(distribution.isDeployed()) {
-                                    distributionStatus.put(origin, distribution);
-                                }
-                                return distribution;
+                                distributionStatus.put(origin, distribution);
                             }
                             catch(HttpException e) {
                                 log.warn(e.getMessage());
