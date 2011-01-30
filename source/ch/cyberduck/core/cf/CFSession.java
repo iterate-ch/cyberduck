@@ -323,7 +323,8 @@ public class CFSession extends CloudHTTP4Session {
                     }
 
                     public Distribution read(String origin, Distribution.Method method) {
-                        if(!distributionStatus.containsKey(origin)) {
+                        if(!distributionStatus.containsKey(origin)
+                                || !distributionStatus.get(origin).isDeployed()) {
                             try {
                                 CFSession.this.check();
                                 CFSession.this.message(MessageFormat.format(Locale.localizedString("Reading CDN configuration of {0}", "Status"),

@@ -179,7 +179,8 @@ public class CloudFrontDistributionConfiguration extends HTTP3Session implements
     }
 
     public ch.cyberduck.core.cdn.Distribution read(String origin, ch.cyberduck.core.cdn.Distribution.Method method) {
-        if(!distributionStatus.get(method).containsKey(origin)) {
+        if(!distributionStatus.get(method).containsKey(origin)
+                || !distributionStatus.get(method).get(origin).isDeployed()) {
             try {
                 this.check();
                 this.message(MessageFormat.format(Locale.localizedString("Reading CDN configuration of {0}", "Status"),
