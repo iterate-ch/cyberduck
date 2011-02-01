@@ -125,11 +125,13 @@ public class ProxyController extends AbstractController {
         if(!runnable.isValid()) {
             return;
         }
-        if(log.isDebugEnabled()) {
-            log.debug("invoke:" + runnable);
+        if(log.isTraceEnabled()) {
+            log.trace("invoke:" + runnable);
         }
         if(this.isMainThread()) {
-            log.debug("Already on main thread. Invoke " + runnable + " directly.");
+            if(log.isDebugEnabled()) {
+                log.debug("Already on main thread. Invoke " + runnable + " directly.");
+            }
             runnable.run();
             return;
         }
