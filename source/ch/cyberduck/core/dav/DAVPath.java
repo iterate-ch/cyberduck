@@ -268,12 +268,13 @@ public class DAVPath extends Path {
                 this.getSession().message(MessageFormat.format(Locale.localizedString("Copying {0} to {1}", "Status"),
                         this.getName(), copy));
 
-                if(attributes().isFile()) {
+                if(this.attributes().isFile()) {
                     if(!this.getSession().getClient().copyMethod(this.getAbsolute(), copy.getAbsolute())) {
                         throw new IOException(this.getSession().getClient().getStatusMessage());
                     }
                 }
                 else if(this.attributes().isDirectory()) {
+                    copy.mkdir();
                     for(AbstractPath i : this.children()) {
                         if(!this.getSession().isConnected()) {
                             break;
