@@ -1517,8 +1517,8 @@ public class InfoController extends ToolbarWindowController {
             filenameField.setEnabled(1 == count && controller.getSession().isRenameSupported(file));
             // Where
             String path;
-            if(StringUtils.isNotEmpty(file.getSymlinkTarget())) {
-                path = file.getSymlinkTarget();
+            if(file.attributes().isSymbolicLink()) {
+                path = file.getSymlinkTarget().getAbsolute();
             }
             else {
                 path = file.getParent().getAbsolute();

@@ -960,9 +960,9 @@ namespace Ch.Cyberduck.Ui.Controller
                 View.Filename = Name;
                 View.FilenameEnabled = (1 == count && _controller.getSession().isRenameSupported(file));
                 string path;
-                if (!String.IsNullOrEmpty(file.getSymlinkTarget()))
+                if (file.attributes().isSymbolicLink())
                 {
-                    path = file.getSymlinkTarget();
+                    path = file.getSymlinkTarget().getAbsolute();
                 }
                 else
                 {
