@@ -49,7 +49,7 @@ public class HistoryCollection extends AbstractFolderHostCollection {
 
     @Override
     public Local getFile(Host bookmark) {
-        return LocalFactory.createLocal(folder, bookmark.getNickname() + ".duck");
+        return LocalFactory.createLocal(folder, bookmark.getNickname(true) + ".duck");
     }
 
     @Override
