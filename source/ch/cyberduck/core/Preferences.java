@@ -203,13 +203,14 @@ public abstract class Preferences {
         defaults.put("protocol.azure.tls.enable", String.valueOf(true));
         defaults.put("protocol.dropbox.tls.enable", String.valueOf(false));
 
+        defaults.put("path.symboliclink.resolve", String.valueOf(false));
         /**
          * Normalize path names
          */
         defaults.put("path.normalize", String.valueOf(true));
         defaults.put("path.normalize.unicode", String.valueOf(false));
 
-        defaults.put("local.symboliclink.resolve", String.valueOf(true));
+        defaults.put("local.symboliclink.resolve", String.valueOf(false));
         defaults.put("local.normalize.unicode", String.valueOf(true));
 
         /**

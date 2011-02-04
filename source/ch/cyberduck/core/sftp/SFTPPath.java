@@ -465,6 +465,23 @@ public class SFTPPath extends Path {
     }
 
     @Override
+    public void symlink(String target) {
+        if(log.isDebugEnabled()) {
+            log.debug("symlink:" + target);
+        }
+        try {
+            this.getSession().check();
+            this.getSession().message(MessageFormat.format(Locale.localizedString("Uploading {0}", "Status"),
+                    this.getName()));
+
+            this.getSession().sftp().createSymlink(this.getAbsolute(), target);
+        }
+        catch(IOException e) {
+            this.error("Cannot create file {0}", e);
+        }
+    }
+
+    @Override
     protected void upload(BandwidthThrottle throttle, StreamListener listener, final boolean check) {
         if(this.attributes().isFile()) {
             InputStream in = null;

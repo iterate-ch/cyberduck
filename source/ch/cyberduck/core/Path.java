@@ -155,8 +155,8 @@ public abstract class Path extends AbstractPath implements Serializable {
         if(local != null) {
             dict.setStringForKey(local.toString(), "Local");
         }
-        if(StringUtils.isNotBlank(this.getSymlinkTarget())) {
-            dict.setStringForKey(this.getSymlinkTarget(), "Symlink");
+        if(StringUtils.isNotBlank(symlink)) {
+            dict.setStringForKey(symlink, "Symlink");
         }
         dict.setObjectForKey(attributes, "Attributes");
         if(this.status().isComplete()) {
@@ -576,31 +576,12 @@ public abstract class Path extends AbstractPath implements Serializable {
     }
 
     /**
-     * @param parent Absolute path to the symbolic link
-     * @param name   Target of the symbolic link name. Absolute or relative pathname
-     */
-    public void setSymlinkTarget(String parent, String name) {
-        if(name.startsWith(String.valueOf(DELIMITER))) {
-            // Symbolic link target may be an absolute path
-            this.setSymlinkTarget(name);
-        }
-        else {
-            if(parent.endsWith(String.valueOf(DELIMITER))) {
-                this.setSymlinkTarget(parent + name);
-            }
-            else {
-                this.setSymlinkTarget(parent + DELIMITER + name);
-            }
-        }
-    }
-
-    /**
      * An absolute reference here the symbolic link is pointing to
      */
-    private String symbolic = null;
+    private String symlink;
 
-    public void setSymlinkTarget(String p) {
-        this.symbolic = Path.normalize(p);
+    public void setSymlinkTarget(String name) {
+        this.symlink = name;
     }
 
     /**
@@ -608,11 +589,28 @@ public abstract class Path extends AbstractPath implements Serializable {
      * @see ch.cyberduck.core.PathAttributes#isSymbolicLink
      */
     @Override
-    public String getSymlinkTarget() {
+    public AbstractPath getSymlinkTarget() {
         if(this.attributes().isSymbolicLink()) {
-            return this.symbolic;
+            // Symbolic link target may be an absolute or relative path
+            if(symlink.startsWith(String.valueOf(DELIMITER))) {
+                return PathFactory.createPath(this.getSession(), symlink,
+                        this.attributes().isDirectory() ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
+            }
+            else {
+                return PathFactory.createPath(this.getSession(), this.getParent().getAbsolute(), symlink,
+                        this.attributes().isDirectory() ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
+            }
         }
         return null;
+    }
+
+    /**
+     * @param target
+     */
+    @Override
+    public void symlink(String target) {
+        log.warn("Touching file instead of creating symbolic link:" + this);
+        this.touch();
     }
 
     /**
@@ -1139,7 +1137,6 @@ public abstract class Path extends AbstractPath implements Serializable {
     }
 
     /**
-     *
      * @return True if the file exists and can be appended to
      */
     public boolean isUploadResumable() {

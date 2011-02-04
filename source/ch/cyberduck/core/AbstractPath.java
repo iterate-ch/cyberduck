@@ -273,16 +273,21 @@ public abstract class AbstractPath {
     public abstract String kind();
 
     /**
-     * @return The target of the symbolic link if this path denotes a symbolic link
+     * @return The target of the symbolic link if this path denotes a symbolic link, null otherwise.
      * @see ch.cyberduck.core.PathAttributes#isSymbolicLink
      */
-    public abstract String getSymlinkTarget();
+    public abstract AbstractPath getSymlinkTarget();
 
 
     /**
      * Create a new empty file.
      */
     public abstract void touch();
+
+    /**
+     *
+     */
+    public abstract void symlink(String target);
 
     /**
      * Create a new empty file.

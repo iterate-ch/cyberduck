@@ -123,6 +123,21 @@ public class DownloadTransfer extends Transfer {
      *
      */
     private abstract class DownloadTransferFilter extends TransferFilter {
+        public boolean accept(Path file) {
+            if(file.attributes().isSymbolicLink()) {
+                if(!DownloadTransfer.this.isSymlinkSupported(file)) {
+                    final AbstractPath target = file.getSymlinkTarget();
+                    // Do not transfer files referenced from symlinks pointing to files also included
+                    for(Path root : roots) {
+                        if(target.isChild(root)) {
+                            return false;
+                        }
+                    }
+                }
+            }
+            return true;
+        }
+
         @Override
         public void prepare(Path file) {
             if(file.attributes().getSize() == -1) {
@@ -142,20 +157,22 @@ public class DownloadTransfer extends Transfer {
                     }
                 }
             }
-            // Read file size
             if(file.attributes().isFile()) {
                 if(file.attributes().isSymbolicLink()) {
-                    if(null != file.getSymlinkTarget()) {
+                    if(!DownloadTransfer.this.isSymlinkSupported(file)) {
                         // A server will resolve the symbolic link when the file is requested.
-                        Path symlink = PathFactory.createPath(file.getSession(), file.getSymlinkTarget(),
-                                Path.FILE_TYPE);
-                        if(symlink.attributes().getSize() == -1) {
-                            symlink.readSize();
+                        final Path target = (Path) file.getSymlinkTarget();
+                        if(target.attributes().getSize() == -1) {
+                            target.readSize();
                         }
-                        size += symlink.attributes().getSize();
+                        size += target.attributes().getSize();
+                    }
+                    else {
+                        // No file size increase for symbolic link to be created locally
                     }
                 }
                 else {
+                    // Read file size
                     size += file.attributes().getSize();
                 }
                 if(file.status().isResume()) {
@@ -192,7 +209,16 @@ public class DownloadTransfer extends Transfer {
 
     @Override
     public AttributedList<Path> children(final Path parent) {
-        log.debug("children:" + parent);
+        if(log.isDebugEnabled()) {
+            log.debug("children:" + parent);
+        }
+        if(parent.attributes().isSymbolicLink()
+                && this.isSymlinkSupported(parent)) {
+            if(log.isDebugEnabled()) {
+                log.debug("Do not list children for symbolic link:" + parent);
+            }
+            return AttributedList.emptyList();
+        }
         final AttributedList<Path> list = parent.children(exclusionRegexFilter);
         for(Path download : list) {
             // Change download path relative to parent local folder
@@ -202,11 +228,12 @@ public class DownloadTransfer extends Transfer {
     }
 
     private final TransferFilter ACTION_OVERWRITE = new DownloadTransferFilter() {
-        public boolean accept(final Path p) {
-            if(p.attributes().isDirectory()) {
-                return !p.getLocal().exists();
+        @Override
+        public boolean accept(final Path file) {
+            if(file.attributes().isDirectory()) {
+                return !file.getLocal().exists();
             }
-            return true;
+            return super.accept(file);
         }
 
         @Override
@@ -219,16 +246,17 @@ public class DownloadTransfer extends Transfer {
     };
 
     private final TransferFilter ACTION_RESUME = new DownloadTransferFilter() {
-        public boolean accept(final Path p) {
-            if(p.status().isComplete() || p.getLocal().attributes().getSize() == p.attributes().getSize()) {
+        @Override
+        public boolean accept(final Path file) {
+            if(file.status().isComplete() || file.getLocal().attributes().getSize() == file.attributes().getSize()) {
                 // No need to resume completed transfers
-                p.status().setComplete(true);
+                file.status().setComplete(true);
                 return false;
             }
-            if(p.attributes().isDirectory()) {
-                return !p.getLocal().exists();
+            if(file.attributes().isDirectory()) {
+                return !file.getLocal().exists();
             }
-            return true;
+            return super.accept(file);
         }
 
         @Override
@@ -245,10 +273,6 @@ public class DownloadTransfer extends Transfer {
     };
 
     private final TransferFilter ACTION_RENAME = new DownloadTransferFilter() {
-        public boolean accept(final Path p) {
-            return true;
-        }
-
         @Override
         public void prepare(final Path file) {
             if(file.attributes().isFile()) {
@@ -278,10 +302,6 @@ public class DownloadTransfer extends Transfer {
      * Rename existing file on disk if there is a conflict.
      */
     private final TransferFilter ACTION_RENAME_EXISTING = new DownloadTransferFilter() {
-        public boolean accept(final Path p) {
-            return true;
-        }
-
         @Override
         public void prepare(final Path file) {
             Local renamed = file.getLocal();
@@ -303,11 +323,12 @@ public class DownloadTransfer extends Transfer {
     };
 
     private final DownloadTransferFilter ACTION_SKIP = new DownloadTransferFilter() {
-        public boolean accept(final Path p) {
-            if(p.getLocal().exists()) {
-                return p.getLocal().attributes().getSize() == 0;
+        @Override
+        public boolean accept(final Path file) {
+            if(file.getLocal().exists()) {
+                return file.getLocal().attributes().getSize() == 0;
             }
-            return true;
+            return super.accept(file);
         }
     };
 
@@ -376,11 +397,36 @@ public class DownloadTransfer extends Transfer {
         );
     }
 
+    private boolean isSymlinkSupported(Path file) {
+        if(Preferences.instance().getBoolean("path.symboliclink.resolve")) {
+            return false;
+        }
+        // Create symbolic link only if choosen in the preferences. Otherwise download target file
+        final AbstractPath target = file.getSymlinkTarget();
+        // Only create symbolic link if target is included in the download
+        for(Path root : roots) {
+            if(target.isChild(root)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     @Override
     protected void transfer(final Path file) {
         log.debug("transfer:" + file);
         final Local local = file.getLocal();
-        if(file.attributes().isFile()) {
+        if(file.attributes().isSymbolicLink() && this.isSymlinkSupported(file)) {
+            // Make relative symbolic link
+            final String target = StringUtils.substringAfter(file.getSymlinkTarget().getAbsolute(),
+                    file.getParent().getAbsolute() + Path.DELIMITER);
+            if(log.isDebugEnabled()) {
+                log.debug("Symlink " + file.getLocal() + ":" + target);
+            }
+            file.getLocal().symlink(target);
+            file.status().setComplete(true);
+        }
+        else if(file.attributes().isFile()) {
             file.download(bandwidth, new AbstractStreamListener() {
                 @Override
                 public void bytesReceived(long bytes) {

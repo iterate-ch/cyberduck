@@ -514,6 +514,11 @@ public class SFTPSession extends Session {
         return this.isTransferResumable();
     }
 
+    @Override
+    public boolean isCreateSymlinkSupported() {
+        return true;
+    }
+
     /**
      * No resume supported for SCP transfers.
      *

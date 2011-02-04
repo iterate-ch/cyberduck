@@ -707,6 +707,14 @@ public abstract class Session implements TranscriptListener {
     }
 
     /**
+     *
+     * @return
+     */
+    public boolean isCreateSymlinkSupported() {
+        return false;
+    }
+
+    /**
      * @return
      */
     public List<Acl.User> getAvailableAclUsers() {

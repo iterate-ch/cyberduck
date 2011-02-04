@@ -127,16 +127,42 @@ public class UploadTransfer extends Transfer {
      */
     private abstract class UploadTransferFilter extends TransferFilter {
         public boolean accept(final Path file) {
-            return file.getLocal().exists();
+            if(!file.getLocal().exists()) {
+                return false;
+            }
+            if(file.getLocal().attributes().isSymbolicLink()) {
+                if(!UploadTransfer.this.isSymlinkSupported(file)) {
+                    final AbstractPath target = file.getLocal().getSymlinkTarget();
+                    // Do not transfer files referenced from symlinks pointing to files also included
+                    for(Path root : roots) {
+                        if(target.isChild(root.getLocal())) {
+                            return false;
+                        }
+                    }
+                }
+            }
+            return true;
         }
 
         @Override
         public void prepare(Path file) {
             if(file.attributes().isFile()) {
-                // Read file size
-                size += file.getLocal().attributes().getSize();
-                if(file.status().isResume()) {
-                    transferred += file.attributes().getSize();
+                if(file.getLocal().attributes().isSymbolicLink()) {
+                    if(!UploadTransfer.this.isSymlinkSupported(file)) {
+                        // A server will resolve the symbolic link when the file is requested.
+                        final AbstractPath target = file.getLocal().getSymlinkTarget();
+                        size += target.attributes().getSize();
+                    }
+                    else {
+                        // No file size increase for symbolic link to be created on the server
+                    }
+                }
+                else {
+                    // Read file size
+                    size += file.getLocal().attributes().getSize();
+                    if(file.status().isResume()) {
+                        transferred += file.attributes().getSize();
+                    }
                 }
             }
             if(file.attributes().isDirectory()) {
@@ -153,7 +179,6 @@ public class UploadTransfer extends Transfer {
         public void complete(Path p) {
             ;
         }
-
     }
 
     private final PathFilter<Local> exclusionRegexFilter = new PathFilter<Local>() {
@@ -191,7 +216,16 @@ public class UploadTransfer extends Transfer {
 
     @Override
     public AttributedList<Path> children(final Path parent) {
-        log.debug("children:" + parent);
+        if(log.isDebugEnabled()) {
+            log.debug("children:" + parent);
+        }
+        if(parent.getLocal().attributes().isSymbolicLink()
+                && this.isSymlinkSupported(parent)) {
+            if(log.isDebugEnabled()) {
+                log.debug("Do not list children for symbolic link:" + parent);
+            }
+            return AttributedList.emptyList();
+        }
         if(!this.cache().containsKey(parent.<Object>getReference())) {
             if(!parent.getLocal().exists()) {
                 // Cannot fetch file listing of non existant file
@@ -417,11 +451,39 @@ public class UploadTransfer extends Transfer {
         );
     }
 
+    private boolean isSymlinkSupported(Path file) {
+        if(Preferences.instance().getBoolean("local.symboliclink.resolve")) {
+            // Resolve links instead
+            return false;
+        }
+        // Create symbolic link only if supported by the host
+        if(this.getSession().isCreateSymlinkSupported()) {
+            final AbstractPath target = file.getLocal().getSymlinkTarget();
+            // Only create symbolic link if target is included in the upload
+            for(Path root : roots) {
+                if(target.isChild(root.getLocal())) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     @Override
     protected void transfer(Path file) {
         log.debug("transfer:" + file);
         Permission perm = Permission.EMPTY;
-        if(file.attributes().isFile()) {
+        if(file.getLocal().attributes().isSymbolicLink() && this.isSymlinkSupported(file)) {
+            // Make relative symbolic link
+            final String target = StringUtils.substringAfter(file.getLocal().getSymlinkTarget().getAbsolute(),
+                    file.getLocal().getParent().getAbsolute() + Path.DELIMITER);
+            if(log.isDebugEnabled()) {
+                log.debug("Symlink " + file + ":" + target);
+            }
+            file.symlink(target);
+            file.status().setComplete(true);
+        }
+        else if(file.attributes().isFile()) {
             if(this.getSession().isUnixPermissionsSupported()) {
                 if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
                     if(file.exists()) {

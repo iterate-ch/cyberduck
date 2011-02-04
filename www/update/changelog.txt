@@ -1,3 +1,6 @@
+4.0 [http://trac.cyberduck.ch/milestone/4.0]
+- [Bugfix] Preserve symbolic links in transfers (#1860) (SFTP)
+
 4.0b9 [http://trac.cyberduck.ch/milestone/4.0b9]
 - [Feature] Multipart Uploads with parallelism (S3) (#5487)
 - [Feature] Support new 5TB Object Size Limit (S3)

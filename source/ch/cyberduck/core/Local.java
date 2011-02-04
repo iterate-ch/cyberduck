@@ -248,6 +248,12 @@ public abstract class Local extends AbstractPath {
     }
 
     @Override
+    public void symlink(String target) {
+        log.warn("Touching file instead of creating symbolic link:" + this);
+        this.touch();
+    }
+
+    @Override
     public void mkdir(boolean recursive) {
         if(recursive) {
             if(_impl.mkdirs()) {
@@ -371,14 +377,14 @@ public abstract class Local extends AbstractPath {
     }
 
     @Override
-    public String getSymlinkTarget() {
+    public AbstractPath getSymlinkTarget() {
         try {
-            return _impl.getCanonicalPath();
+            return LocalFactory.createLocal(this, _impl.getCanonicalPath());
         }
         catch(IOException e) {
             log.error(e.getMessage());
-            return this.getAbsolute();
         }
+        return null;
     }
 
     /**

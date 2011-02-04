@@ -258,20 +258,15 @@ public class FTPPath extends Path {
                     });
                 }
                 for(Path child : children) {
-                    if(child.attributes().getType() == Path.SYMBOLIC_LINK_TYPE) {
+                    if(child.attributes().isSymbolicLink()) {
                         if(this.getSession().getClient().changeWorkingDirectory(child.getAbsolute())) {
                             child.attributes().setType(Path.SYMBOLIC_LINK_TYPE | Path.DIRECTORY_TYPE);
                         }
                         else {
-                            if(StringUtils.isNotBlank(child.getSymlinkTarget())) {
-                                // Try if CWD to symbolic link target succeeds
-                                if(this.getSession().getClient().changeWorkingDirectory(child.getSymlinkTarget())) {
-                                    // Workdir change succeeded
-                                    child.attributes().setType(Path.SYMBOLIC_LINK_TYPE | Path.DIRECTORY_TYPE);
-                                }
-                                else {
-                                    child.attributes().setType(Path.SYMBOLIC_LINK_TYPE | Path.FILE_TYPE);
-                                }
+                            // Try if CWD to symbolic link target succeeds
+                            if(this.getSession().getClient().changeWorkingDirectory(child.getSymlinkTarget().getAbsolute())) {
+                                // Workdir change succeeded
+                                child.attributes().setType(Path.SYMBOLIC_LINK_TYPE | Path.DIRECTORY_TYPE);
                             }
                             else {
                                 child.attributes().setType(Path.SYMBOLIC_LINK_TYPE | Path.FILE_TYPE);
@@ -520,8 +515,8 @@ public class FTPPath extends Path {
             parsed.setParent(this);
             switch(f.getType()) {
                 case FTPFile.SYMBOLIC_LINK_TYPE:
-                    parsed.setSymlinkTarget(this.getAbsolute(), f.getLink());
-                    parsed.attributes().setType(Path.SYMBOLIC_LINK_TYPE);
+                    parsed.setSymlinkTarget(f.getLink());
+                    parsed.attributes().setType(Path.SYMBOLIC_LINK_TYPE | Path.FILE_TYPE);
                     break;
             }
             parsed.attributes().setSize(f.getSize());
