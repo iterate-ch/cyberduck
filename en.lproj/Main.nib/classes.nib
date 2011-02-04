@@ -7,6 +7,62 @@
 		<dict>
 			<key>ACTIONS</key>
 			<dict>
+				<key>aboutMenuClicked</key>
+				<string>id</string>
+				<key>acknowledgmentsMenuClicked</key>
+				<string>id</string>
+				<key>bugreportMenuClicked</key>
+				<string>id</string>
+				<key>donateMenuClicked</key>
+				<string>id</string>
+				<key>helpMenuClicked</key>
+				<string>id</string>
+				<key>historyMenuClicked</key>
+				<string>id</string>
+				<key>licenseMenuClicked</key>
+				<string>id</string>
+				<key>newBrowserMenuClicked</key>
+				<string>id</string>
+				<key>newDownloadMenuClicked</key>
+				<string>id</string>
+				<key>preferencesMenuClicked</key>
+				<string>id</string>
+				<key>updateMenuClicked</key>
+				<string>id</string>
+			</dict>
+			<key>CLASS</key>
+			<string>CDMainController</string>
+			<key>LANGUAGE</key>
+			<string>ObjC</string>
+			<key>OUTLETS</key>
+			<dict>
+				<key>applicationMenu</key>
+				<string>NSMenu</string>
+				<key>archiveMenu</key>
+				<string>NSMenu</string>
+				<key>bookmarkMenu</key>
+				<string>NSMenu</string>
+				<key>columnMenu</key>
+				<string>NSMenu</string>
+				<key>editMenu</key>
+				<string>NSMenu</string>
+				<key>encodingMenu</key>
+				<string>NSMenu</string>
+				<key>historyMenu</key>
+				<string>NSMenu</string>
+				<key>openUrlMenu</key>
+				<string>NSMenu</string>
+				<key>rendezvousMenu</key>
+				<string>NSMenu</string>
+				<key>urlMenu</key>
+				<string>NSMenu</string>
+			</dict>
+			<key>SUPERCLASS</key>
+			<string>NSObject</string>
+		</dict>
+		<dict>
+			<key>ACTIONS</key>
+			<dict>
 				<key>addBookmarkButtonClicked</key>
 				<string>id</string>
 				<key>archiveButtonClicked</key>
@@ -24,6 +80,8 @@
 				<key>createFileButtonClicked</key>
 				<string>id</string>
 				<key>createFolderButtonClicked</key>
+				<string>id</string>
+				<key>createSymlinkButtonClicked</key>
 				<string>id</string>
 				<key>deleteBookmarkButtonClicked</key>
 				<string>id</string>
@@ -94,62 +152,6 @@
 			<string>FirstResponder</string>
 			<key>LANGUAGE</key>
 			<string>ObjC</string>
-			<key>SUPERCLASS</key>
-			<string>NSObject</string>
-		</dict>
-		<dict>
-			<key>ACTIONS</key>
-			<dict>
-				<key>aboutMenuClicked</key>
-				<string>id</string>
-				<key>acknowledgmentsMenuClicked</key>
-				<string>id</string>
-				<key>bugreportMenuClicked</key>
-				<string>id</string>
-				<key>donateMenuClicked</key>
-				<string>id</string>
-				<key>helpMenuClicked</key>
-				<string>id</string>
-				<key>historyMenuClicked</key>
-				<string>id</string>
-				<key>licenseMenuClicked</key>
-				<string>id</string>
-				<key>newBrowserMenuClicked</key>
-				<string>id</string>
-				<key>newDownloadMenuClicked</key>
-				<string>id</string>
-				<key>preferencesMenuClicked</key>
-				<string>id</string>
-				<key>updateMenuClicked</key>
-				<string>id</string>
-			</dict>
-			<key>CLASS</key>
-			<string>CDMainController</string>
-			<key>LANGUAGE</key>
-			<string>ObjC</string>
-			<key>OUTLETS</key>
-			<dict>
-				<key>applicationMenu</key>
-				<string>NSMenu</string>
-				<key>archiveMenu</key>
-				<string>NSMenu</string>
-				<key>bookmarkMenu</key>
-				<string>NSMenu</string>
-				<key>columnMenu</key>
-				<string>NSMenu</string>
-				<key>editMenu</key>
-				<string>NSMenu</string>
-				<key>encodingMenu</key>
-				<string>NSMenu</string>
-				<key>historyMenu</key>
-				<string>NSMenu</string>
-				<key>openUrlMenu</key>
-				<string>NSMenu</string>
-				<key>rendezvousMenu</key>
-				<string>NSMenu</string>
-				<key>urlMenu</key>
-				<string>NSMenu</string>
-			</dict>
 			<key>SUPERCLASS</key>
 			<string>NSObject</string>
 		</dict>

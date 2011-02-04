@@ -19,6 +19,8 @@
 				<string>id</string>
 				<key>createFolderButtonClicked</key>
 				<string>id</string>
+				<key>createSymlinkButtonClicked</key>
+				<string>id</string>
 				<key>deleteBookmarkButtonClicked</key>
 				<string>id</string>
 				<key>deleteFileButtonClicked</key>
@@ -42,6 +44,8 @@
 				<key>newBrowserButtonClicked</key>
 				<string>id</string>
 				<key>openBrowserButtonClicked</key>
+				<string>id</string>
+				<key>quicklookButtonClicked</key>
 				<string>id</string>
 				<key>reloadButtonClicked</key>
 				<string>id</string>

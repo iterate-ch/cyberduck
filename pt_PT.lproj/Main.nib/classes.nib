@@ -41,6 +41,7 @@
         copyURLButtonClicked = id;
         createFileButtonClicked = id;
         createFolderButtonClicked = id;
+        createSymlinkButtonClicked = id;
         deleteBookmarkButtonClicked = id;
         deleteFileButtonClicked = id;
         disconnectButtonClicked = id;

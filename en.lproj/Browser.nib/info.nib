@@ -8,10 +8,10 @@
 	<integer>5</integer>
 	<key>IBOpenObjects</key>
 	<array>
-		<integer>1995</integer>
+		<integer>953</integer>
 	</array>
 	<key>IBSystem Version</key>
-	<string>10H574</string>
+	<string>10J567</string>
 	<key>targetFramework</key>
 	<string>IBCocoaFramework</string>
 </dict>
