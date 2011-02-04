@@ -92,14 +92,6 @@ public class Queue {
             }
             t.fireTransferResumed();
         }
-        else {
-            try {
-                overflow.put(t);
-            }
-            catch(InterruptedException e) {
-                log.error(e.getMessage());
-            }
-        }
         running.add(t);
     }
 
