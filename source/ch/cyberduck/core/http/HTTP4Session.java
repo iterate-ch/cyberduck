@@ -121,7 +121,7 @@ public abstract class HTTP4Session extends SSLSession {
             public void process(final HttpResponse response, final HttpContext context) throws HttpException, IOException {
                 log(true, response.getStatusLine().toString());
                 for(Header header : response.getAllHeaders()) {
-                    log(true, header.toString());
+                    log(false, header.toString());
                 }
             }
         });
