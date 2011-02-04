@@ -42,7 +42,7 @@ public class CreateFileController extends FileController {
                 EditorFactory.defaultEditor() != null ? Locale.localizedString("Edit", "File") : null,
                 Locale.localizedString("Cancel", "File")
         ));
-        alert.setIcon(IconCache.documentIcon(null, 128));
+        alert.setIcon(IconCache.documentIcon(null, 64));
     }
 
     public void callback(final int returncode) {

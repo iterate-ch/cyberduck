@@ -44,10 +44,8 @@ public class DuplicateFileController extends FileController {
                 EditorFactory.defaultEditor() != null ? Locale.localizedString("Edit", "Duplicate") : null,
                 Locale.localizedString("Cancel", "Duplicate")
         ));
-        alert.setIcon(IconCache.instance().iconForExtension(
-                ((BrowserController) parent).getSelectedPath().getExtension(), 64)
-        );
-        final Path selected = ((BrowserController) parent).getSelectedPath();
+        alert.setIcon(IconCache.instance().iconForExtension(this.getSelected().getExtension(), 64));
+        final Path selected = this.getSelected();
         String proposal = MessageFormat.format(Preferences.instance().getProperty("browser.duplicate.format"),
                 FilenameUtils.getBaseName(selected.getName()),
                 DateFormatterFactory.instance().getShortFormat(System.currentTimeMillis(), false).replace(Path.DELIMITER, ':'),
@@ -56,18 +54,17 @@ public class DuplicateFileController extends FileController {
     }
 
     public void callback(final int returncode) {
-        final Path selected = ((BrowserController) parent).getSelectedPath();
         if(returncode == DEFAULT_OPTION) {
-            this.duplicateFile(selected, filenameField.stringValue(), false);
+            this.duplicateFile(this.getSelected(), filenameField.stringValue(), false);
         }
         else if(returncode == ALTERNATE_OPTION) {
-            this.duplicateFile(selected, filenameField.stringValue(), true);
+            this.duplicateFile(this.getSelected(), filenameField.stringValue(), true);
         }
     }
 
     @Override
     protected Path getWorkdir() {
-        return ((BrowserController) parent).getSelectedPath().getParent();
+        return this.getSelected().getParent();
     }
 
     private void duplicateFile(final Path selected, final String filename, final boolean edit) {
