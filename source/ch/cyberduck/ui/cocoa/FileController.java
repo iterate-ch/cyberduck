@@ -73,6 +73,10 @@ public abstract class FileController extends AlertController {
         return ((BrowserController) parent).workdir();
     }
 
+    protected Path getSelected() {
+        return ((BrowserController) parent).getSelectedPath();
+    }
+
     protected Session getSession() {
         return ((BrowserController) parent).getSession();
     }
