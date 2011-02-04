@@ -88,6 +88,12 @@ public class IconCache {
         return IconCache.instance().iconForExtension(extension, size);
     }
 
+    public static NSImage aliasIcon(String extension, Integer size) {
+        return IconCache.instance().badge(
+                IconCache.instance().iconForName("aliasbadge.png", size),
+                IconCache.instance().iconForExtension(extension, size));
+    }
+
     private static IconCache instance = null;
 
     private static final Object lock = new Object();
@@ -306,7 +312,7 @@ public class IconCache {
 
     public NSImage iconForPath(final Path item, Integer size, boolean overlay) {
         if(item.attributes().isSymbolicLink()) {
-            NSImage badge = this.convert(NSImage.imageNamed("aliasbadge.png"), size);
+            NSImage badge = this.iconForName("aliasbadge.png", size);
             if(item.attributes().isDirectory()) {
                 return this.iconForFolder(badge, size);
             }
@@ -327,17 +333,17 @@ public class IconCache {
             if(overlay) {
                 if(!item.attributes().getPermission().isExecutable()
                         || (item.isCached() && !item.cache().get(item.getReference()).attributes().isReadable())) {
-                    NSImage badge = this.convert(NSImage.imageNamed("privatefolderbadge.png"), size);
+                    NSImage badge = this.iconForName("privatefolderbadge.png", size);
                     return this.iconForFolder(badge, size);
                 }
                 if(!item.attributes().getPermission().isReadable()) {
                     if(item.attributes().getPermission().isWritable()) {
-                        NSImage badge = this.convert(NSImage.imageNamed("dropfolderbadge.png"), size);
+                        NSImage badge = this.iconForName("dropfolderbadge.png", size);
                         return this.iconForFolder(badge, size);
                     }
                 }
                 if(!item.attributes().getPermission().isWritable()) {
-                    NSImage badge = this.convert(NSImage.imageNamed("readonlyfolderbadge.png"), size);
+                    NSImage badge = this.iconForName("readonlyfolderbadge.png", size);
                     return this.iconForFolder(badge, size);
                 }
             }

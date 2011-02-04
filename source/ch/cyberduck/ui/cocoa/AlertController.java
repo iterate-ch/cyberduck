@@ -68,6 +68,14 @@ public abstract class AlertController extends SheetController {
         sheetRegistry.add(this);
     }
 
+    protected void setTitle(String title) {
+        alert.setMessageText(title);
+    }
+
+    protected void setMessage(String message) {
+        alert.setInformativeText(message);
+    }
+
     /**
      * Message the alert sends to modalDelegate after the user responds but before the sheet is dismissed.
      *
