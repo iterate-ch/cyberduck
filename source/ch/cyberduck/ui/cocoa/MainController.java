@@ -556,12 +556,19 @@ public class MainController extends BundleController implements NSApplication.De
             if(controller.isMounted()) {
                 open = controller.getSession().getHost();
                 workdir = controller.workdir().getAbsolute();
+                break;
             }
         }
         final NSPopUpButton bookmarksPopup = NSPopUpButton.buttonWithFrame(new NSRect(0, 26));
         bookmarksPopup.setToolTip(Locale.localizedString("Bookmarks"));
         for(Host b : BookmarkCollection.defaultCollection()) {
-            bookmarksPopup.addItemWithTitle(b.getNickname());
+            String title = b.getNickname();
+            int i = 1;
+            while(bookmarksPopup.itemWithTitle(title) != null) {
+                title = b.getNickname() + "-" + i;
+                i++;
+            }
+            bookmarksPopup.addItemWithTitle(title);
             bookmarksPopup.lastItem().setImage(IconCache.iconNamed(b.getProtocol().icon(), 16));
             bookmarksPopup.lastItem().setRepresentedObject(b.getUuid());
             if(b.equals(open)) {
@@ -571,15 +578,23 @@ public class MainController extends BundleController implements NSApplication.De
         if(null == open) {
             int i = 0;
             for(Host bookmark : BookmarkCollection.defaultCollection()) {
+                boolean found = false;
+                // Pick the bookmark with the same download location
                 for(Local file : files) {
-                    if(file.getParent().equals(bookmark.getDownloadFolder())) {
+                    if(file.isChild(bookmark.getDownloadFolder())) {
                         bookmarksPopup.selectItemAtIndex(new NSInteger(i));
+                        found = true;
+                        break;
                     }
-                    i++;
                 }
+                if(found) {
+                    break;
+                }
+                i++;
             }
         }
         if(-1 == bookmarksPopup.indexOfSelectedItem().intValue()) {
+            // No bookmark for current browser found
             bookmarksPopup.selectItemAtIndex(new NSInteger(0));
         }
         final TransferController t = TransferController.instance();
