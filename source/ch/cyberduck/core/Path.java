@@ -605,6 +605,9 @@ public abstract class Path extends AbstractPath implements Serializable {
     }
 
     /**
+     * Create a symbolic link on the server. Creates a link "src" that points
+     * to "target".
+     *
      * @param target
      */
     @Override

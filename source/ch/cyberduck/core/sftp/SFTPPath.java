@@ -475,6 +475,7 @@ public class SFTPPath extends Path {
                     this.getName()));
 
             this.getSession().sftp().createSymlink(this.getAbsolute(), target);
+            this.getParent().invalidate();
         }
         catch(IOException e) {
             this.error("Cannot create file {0}", e);

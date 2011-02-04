@@ -285,7 +285,8 @@ public abstract class AbstractPath {
     public abstract void touch();
 
     /**
-     *
+     * #getAbsolute -> target
+     * @param target Where this file should point to
      */
     public abstract void symlink(String target);
 
