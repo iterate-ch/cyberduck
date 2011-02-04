@@ -2493,6 +2493,12 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     }
 
     @Action
+    public void createSymlinkButtonClicked(final ID sender) {
+        SheetController sheet = new CreateSymlinkController(this);
+        sheet.beginSheet();
+    }
+
+    @Action
     public void duplicateFileButtonClicked(final ID sender) {
         SheetController sheet = new DuplicateFileController(this);
         sheet.beginSheet();
@@ -3228,7 +3234,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 host.getHostname(),
                 String.valueOf(host.getPort()), workdir);
         log.info("SSH Command:" + ssh);
-        // Escape 
+        // Escape
         ssh = StringUtils.replace(ssh, "\\", "\\\\");
         // Escape all " for do script command
         ssh = StringUtils.replace(ssh, "\"", "\\\"");
@@ -4025,7 +4031,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             return this.isMounted() || this.getSelectedTabView() == TAB_BOOKMARKS;
         }
         else if(action.equals(Foundation.selector("quicklookButtonClicked:"))) {
-            return QuickLookFactory.instance().isAvailable() && this.isMounted() && this.getSelectionCount() > 0;
+            return this.isMounted() && QuickLookFactory.instance().isAvailable() && this.getSelectionCount() > 0;
         }
         else if(action.equals(Foundation.selector("openBrowserButtonClicked:"))) {
             return this.isMounted();
@@ -4044,6 +4050,9 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         }
         else if(action.equals(Foundation.selector("createFileButtonClicked:"))) {
             return this.isMounted() && this.getSession().isCreateFileSupported(this.workdir());
+        }
+        else if(action.equals(Foundation.selector("createSymlinkButtonClicked:"))) {
+            return this.isMounted() && this.getSession().isCreateSymlinkSupported() && this.getSelectionCount() == 1;
         }
         else if(action.equals(Foundation.selector("duplicateFileButtonClicked:"))) {
             return this.isMounted() && this.getSelectionCount() == 1;
