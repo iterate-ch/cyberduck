@@ -19,12 +19,14 @@ package ch.cyberduck.core.http;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Proxy;
+import ch.cyberduck.core.ProxyFactory;
 import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
 import ch.cyberduck.core.ssl.SSLSession;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.http.HttpHost;
+import org.apache.http.*;
 import org.apache.http.auth.params.AuthParams;
 import org.apache.http.client.params.HttpClientParams;
 import org.apache.http.conn.ClientConnectionManager;
@@ -40,43 +42,14 @@ import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
-import org.apache.log4j.Appender;
-import org.apache.log4j.AppenderSkeleton;
-import org.apache.log4j.Logger;
-import org.apache.log4j.spi.LoggingEvent;
+import org.apache.http.protocol.HttpContext;
 
-import java.net.UnknownHostException;
+import java.io.IOException;
 
 /**
  * @version $Id: HTTPSession.java 7171 2010-10-02 15:06:28Z dkocher $
  */
 public abstract class HTTP4Session extends SSLSession {
-
-    private Appender appender = new AppenderSkeleton() {
-
-        private static final String IN = "<< ";
-
-        private static final String OUT = ">> ";
-
-        public void close() {
-            ;
-        }
-
-        public boolean requiresLayout() {
-            return false;
-        }
-
-        @Override
-        protected void append(LoggingEvent event) {
-            final String m = StringUtils.remove(StringUtils.remove(event.getMessage().toString(), "[\\r][\\n]"), "\"");
-            if(m.startsWith(IN)) {
-                HTTP4Session.this.log(false, StringUtils.remove(m, IN));
-            }
-            else if(m.startsWith(OUT)) {
-                HTTP4Session.this.log(true, StringUtils.remove(m, OUT));
-            }
-        }
-    };
 
     protected HTTP4Session(Host h) {
         super(h);
@@ -108,13 +81,12 @@ public abstract class HTTP4Session extends SSLSession {
 
             SchemeRegistry registry = new SchemeRegistry();
             // Always register HTTP for possible use with proxy
-            registry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), host.getPort()));
+            registry.register(new Scheme("http", host.getPort(), PlainSocketFactory.getSocketFactory()));
             if("https".equals(this.getHost().getProtocol().getScheme())) {
                 org.apache.http.conn.ssl.SSLSocketFactory factory = new SSLSocketFactory(
-                        new CustomTrustSSLProtocolSocketFactory(this.getTrustManager()).getSSLContext());
-                // We make sure to verify the hostname later using the trust manager
-                factory.setHostnameVerifier(org.apache.http.conn.ssl.SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
-                registry.register(new Scheme(host.getProtocol().getScheme(), factory, host.getPort()));
+                        new CustomTrustSSLProtocolSocketFactory(this.getTrustManager()).getSSLContext(),
+                        org.apache.http.conn.ssl.SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+                registry.register(new Scheme(host.getProtocol().getScheme(), host.getPort(), factory));
             }
             if(Preferences.instance().getBoolean("connection.proxy.enable")) {
                 final Proxy proxy = ProxyFactory.instance();
@@ -129,7 +101,7 @@ public abstract class HTTP4Session extends SSLSession {
                     }
                 }
             }
-            ClientConnectionManager manager = new SingleClientConnManager(params, registry);
+            ClientConnectionManager manager = new SingleClientConnManager(registry);
             http = new DefaultHttpClient(manager, params);
             this.configure(http);
         }
@@ -137,7 +109,22 @@ public abstract class HTTP4Session extends SSLSession {
     }
 
     protected void configure(AbstractHttpClient client) {
-        ;
+        http.addRequestInterceptor(new HttpRequestInterceptor() {
+            public void process(final HttpRequest request, final HttpContext context) throws HttpException, IOException {
+                log(true, request.getRequestLine().toString());
+                for(Header header : request.getAllHeaders()) {
+                    log(true, header.toString());
+                }
+            }
+        });
+        http.addResponseInterceptor(new HttpResponseInterceptor() {
+            public void process(final HttpResponse response, final HttpContext context) throws HttpException, IOException {
+                log(true, response.getStatusLine().toString());
+                for(Header header : response.getAllHeaders()) {
+                    log(true, header.toString());
+                }
+            }
+        });
 //        client.addRequestInterceptor(new GzipRequestInterceptor());
 //        client.addResponseInterceptor(new GzipResponseInterceptor());
     }
@@ -154,19 +141,5 @@ public abstract class HTTP4Session extends SSLSession {
         finally {
             http = null;
         }
-    }
-
-    @Override
-    protected void fireConnectionWillOpenEvent() throws ResolveCanceledException, UnknownHostException {
-        // For HTTP Components 4
-        Logger.getLogger("org.apache.http.headers").addAppender(appender);
-        super.fireConnectionWillOpenEvent();
-    }
-
-    @Override
-    protected void fireConnectionWillCloseEvent() {
-        // For HTTP Components 4
-        Logger.getLogger("org.apache.http.headers").removeAppender(appender);
-        super.fireConnectionWillCloseEvent();
     }
 }
