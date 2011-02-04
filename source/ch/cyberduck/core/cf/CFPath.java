@@ -242,7 +242,7 @@ public class CFPath extends CloudPath {
                             final Path file = PathFactory.createPath(this.getSession(), this.getContainerName(), object.getName(),
                                     "application/directory".equals(object.getMimeType()) ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
                             file.setParent(this);
-                            if(file.attributes().getType() == Path.FILE_TYPE) {
+                            if(file.attributes().isFile()) {
                                 file.attributes().setSize(object.getSize());
                                 file.attributes().setChecksum(object.getMd5sum());
                                 try {
@@ -255,7 +255,7 @@ public class CFPath extends CloudPath {
                                     log.warn("Not ISO 8601 format:" + e.getMessage());
                                 }
                             }
-                            if(file.attributes().getType() == Path.DIRECTORY_TYPE) {
+                            if(file.attributes().isDirectory()) {
                                 file.attributes().setPlaceholder(true);
                                 if(children.contains(file.getReference())) {
                                     continue;

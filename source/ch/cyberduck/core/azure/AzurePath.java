@@ -332,7 +332,7 @@ public class AzurePath extends CloudPath {
                             file.attributes().setChecksum(object.getETag());
                             file.attributes().setModificationDate(object.getLastModifiedTime().getTime());
                             file.attributes().setOwner(this.attributes().getOwner());
-                            if(file.attributes().getType() == Path.DIRECTORY_TYPE) {
+                            if(file.attributes().isDirectory()) {
                                 file.attributes().setPlaceholder(true);
                             }
                             children.add(file);
