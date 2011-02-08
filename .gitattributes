@@ -1116,7 +1116,7 @@ lib/backport-util-concurrent-3.1.jar -text
 lib/bcmail-jdk15-145.jar -text
 lib/bcprov-jdk15-145.jar -text
 lib/cglib-2.2.jar -text
-lib/cloudfiles-1.7.2.jar -text
+lib/cloudfiles-1.7.3.jar -text
 lib/cloudfiles.properties -text
 lib/commons-codec-1.4.jar -text
 lib/commons-collections-3.2.1.jar -text
