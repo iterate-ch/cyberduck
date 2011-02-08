@@ -61,18 +61,20 @@ public abstract class Preferences {
                 current = PreferencesFactory.createPreferences();
                 current.load();
                 current.setDefaults();
-                current.legacy();
+                current.post();
             }
             return current;
         }
     }
 
     /**
-     * Updates any legacy custom set preferences which are not longer
-     * valid as of this version
+     * Called after the defaults have been set.
      */
-    protected void legacy() {
-        ;
+    protected void post() {
+        // Ticket #2539
+        if(this.getBoolean("connection.dns.ipv6")) {
+            System.setProperty("java.net.preferIPv6Addresses", String.valueOf(true));
+        }
     }
 
     /**

@@ -64,13 +64,6 @@ public class Resolver implements Runnable {
         this.hostname = hostname;
     }
 
-    static {
-        // Ticket #2539
-        if(Preferences.instance().getBoolean("connection.dns.ipv6")) {
-            System.setProperty("java.net.preferIPv6Addresses", String.valueOf(true));
-        }
-    }
-
     /**
      * This method is blocking until the hostname has been resolved or the lookup
      * has been canceled using #cancel

@@ -133,7 +133,7 @@ public class UserDefaultsPreferences extends Preferences {
      * Properties that must be accessible in NSUserDefaults with default values
      */
     @Override
-    protected void legacy() {
+    protected void post() {
         _init("browser.view.autoexpand.useDelay");
         _init("browser.view.autoexpand.delay");
 
@@ -150,6 +150,8 @@ public class UserDefaultsPreferences extends Preferences {
             this.props.setInteger_forKey(new NSInteger(Long.parseLong(this.getProperty("update.check.interval"))),
                     "SUScheduledCheckInterval");
         }
+
+        super.post();
     }
 
     @Override
