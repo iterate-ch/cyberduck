@@ -21,11 +21,6 @@ package ch.cyberduck.core.sftp;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.i18n.Locale;
-import ch.ethz.ssh2.*;
-import ch.ethz.ssh2.channel.ChannelClosedException;
-import ch.ethz.ssh2.crypto.PEMDecoder;
-import ch.ethz.ssh2.crypto.PEMDecryptException;
-import ch.ethz.ssh2.sftp.SFTPv3Client;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -34,6 +29,12 @@ import org.kohsuke.putty.PuTTYKey;
 import org.spearce.jgit.transport.OpenSshConfig;
 
 import java.io.*;
+
+import ch.ethz.ssh2.*;
+import ch.ethz.ssh2.channel.ChannelClosedException;
+import ch.ethz.ssh2.crypto.PEMDecoder;
+import ch.ethz.ssh2.crypto.PEMDecryptException;
+import ch.ethz.ssh2.sftp.SFTPv3Client;
 
 /**
  * @version $Id$
@@ -131,6 +132,7 @@ public class SFTPSession extends Session {
         SSH.addConnectionMonitor(new ConnectionMonitor() {
             public void connectionLost(Throwable reason) {
                 log.warn("Connection lost:" + ((null == reason) ? "Unknown" : reason.getMessage()));
+                interrupt();
             }
         });
 
@@ -443,7 +445,12 @@ public class SFTPSession extends Session {
     @Override
     protected void noop() throws IOException {
         if(this.isConnected()) {
-            this.getClient().sendIgnorePacket();
+            try {
+                this.getClient().sendIgnorePacket();
+            }
+            catch(IllegalStateException e) {
+                throw new ConnectionCanceledException();
+            }
         }
     }
 

@@ -33,8 +33,8 @@ public class RendezvousCollection extends AbstractHostCollection {
 
     private RendezvousCollection() {
         RendezvousFactory.instance().addListener(new RendezvousListener() {
-            public void serviceResolved(String servicename, String hostname) {
-                RendezvousCollection.this.collectionItemAdded(null);
+            public void serviceResolved(String identifier, Host host) {
+                RendezvousCollection.this.collectionItemAdded(host);
             }
 
             public void serviceLost(String servicename) {

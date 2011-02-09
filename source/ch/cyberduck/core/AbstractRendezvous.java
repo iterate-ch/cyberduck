@@ -81,12 +81,12 @@ public abstract class AbstractRendezvous implements Rendezvous {
 
     private RendezvousListener notifier = new RendezvousListener() {
 
-        public void serviceResolved(final String servicename, final String hostname) {
-            log.info("Service resolved:" + servicename);
+        public void serviceResolved(final String identifier, final Host host) {
+            log.info("Service resolved:" + host);
             RendezvousListener[] l = listeners.toArray(
                     new RendezvousListener[listeners.size()]);
             for(RendezvousListener listener : l) {
-                listener.serviceResolved(servicename, hostname);
+                listener.serviceResolved(identifier, host);
             }
         }
 
@@ -204,7 +204,7 @@ public abstract class AbstractRendezvous implements Rendezvous {
     protected void add(String fullname, Host host) {
         log.debug("add:" + fullname);
         if(null == this.services.put(fullname, host)) {
-            this.notifier.serviceResolved(fullname, host.getHostname());
+            this.notifier.serviceResolved(fullname, host);
         }
     }
 
