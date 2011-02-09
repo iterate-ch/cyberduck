@@ -2896,6 +2896,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                             (o, args) => _form.ConnectBookmark(this, new ConnectBookmarkArgs(item.Tag as Host));
                         items.Add(item);
                     }
+                    //TODO
                     // separator and clear item
 //                    items.Add(new MenuItem("-"));
 //                    MenuItem clear = new MenuItem(Locale.localizedString("Clear Menu"));
