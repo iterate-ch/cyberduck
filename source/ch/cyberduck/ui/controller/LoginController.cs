@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2011 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -131,21 +131,27 @@ namespace Ch.Cyberduck.Ui.Controller
                                                                           String.Format("{0}|{1}",
                                                                                         continueButton,
                                                                                         disconnectButton),
-                                                                          false, 
-                                                                          Locale.localizedString("Don't show again", "Credentials"),
+                                                                          false,
+                                                                          Locale.localizedString("Don't show again",
+                                                                                                 "Credentials"),
                                                                           SysIcons.Question,
-                                                                          Preferences.instance().getProperty("website.help") + "/" + Protocol.FTP.getIdentifier(),
-                                                                          delegate(int option, Boolean verificationChecked)
+                                                                          Preferences.instance().getProperty(
+                                                                              "website.help") + "/" +
+                                                                          Protocol.FTP.getIdentifier(),
+                                                                          delegate(int option,
+                                                                                   Boolean verificationChecked)
                                                                               {
                                                                                   if (verificationChecked)
                                                                                   {
                                                                                       // Never show again.
-                                                                                      Preferences.instance().setProperty(preference, true);
+                                                                                      Preferences.instance().setProperty
+                                                                                          (preference, true);
                                                                                   }
                                                                                   switch (option)
                                                                                   {
                                                                                       case 1:
-                                                                                          throw new LoginCanceledException();
+                                                                                          throw new LoginCanceledException
+                                                                                              ();
                                                                                   }
                                                                               });
                                                   };
