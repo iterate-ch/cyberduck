@@ -1,5 +1,5 @@
 // 
-// Copyright (c) 2010 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2011 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -65,8 +65,8 @@ namespace Ch.Cyberduck.Ui.Controller
         private readonly BookmarkCollection _bookmarkCollection = BookmarkCollection.defaultCollection();
         private readonly BookmarkModel _bookmarkModel;
         private readonly TreeBrowserModel _browserModel;
-        private Comparator _comparator = new NullComparator();
         private readonly List<Path> _forwardHistory = new List<Path>();
+        private Comparator _comparator = new NullComparator();
         private InfoController _inspector;
         private BrowserView _lastBookmarkView = BrowserView.Bookmark;
         private ConnectionListener _listener;
@@ -290,15 +290,6 @@ namespace Ch.Cyberduck.Ui.Controller
             View.SetBookmarkModel(bookmarkCollection, null);
         }
 
-        private void View_SetComparator(BrowserComparator comparator)
-        {
-            if (!comparator.equals(_comparator))
-            {
-                _comparator = comparator;
-                ReloadData(true);            
-            }
-        }
-
         public BrowserController()
             : this(ObjectFactory.GetInstance<IBrowserView>())
         {
@@ -413,6 +404,15 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 AsyncDelegate mainAction = delegate { View.AddTranscriptEntry(request, transcript); };
                 Invoke(mainAction);
+            }
+        }
+
+        private void View_SetComparator(BrowserComparator comparator)
+        {
+            if (!comparator.equals(_comparator))
+            {
+                _comparator = comparator;
+                ReloadData(true);
             }
         }
 
@@ -1389,7 +1389,8 @@ namespace Ch.Cyberduck.Ui.Controller
         private void View_ShowHiddenFiles()
         {
             ShowHiddenFiles = !ShowHiddenFiles;
-            if (IsMounted()){
+            if (IsMounted())
+            {
                 ReloadData(true);
             }
         }
@@ -3569,8 +3570,8 @@ namespace Ch.Cyberduck.Ui.Controller
                     selected.Add(new TreePathReference(pair.Value));
                 }
                 List<Path> paths = new List<Path>();
-                paths.AddRange(_normalized.Keys);                
-                paths.AddRange(_normalized.Values);                
+                paths.AddRange(_normalized.Keys);
+                paths.AddRange(_normalized.Values);
                 BrowserController.RefreshParentPaths(paths, selected);
             }
 
