@@ -212,11 +212,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 lock (_isLoadingListingInBackground)
                 {
                     _isLoadingListingInBackground.Remove(_path);
-
-                    if (_isLoadingListingInBackground.Count == 0)
-                    {
-                        _controller.RefreshObject(_path as Path, true);
-                    }
+                    _controller.RefreshObject(_path as Path, true);
                 }
                 base.cleanup();
             }

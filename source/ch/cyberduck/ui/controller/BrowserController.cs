@@ -3564,11 +3564,14 @@ namespace Ch.Cyberduck.Ui.Controller
             public override void cleanup()
             {
                 List<TreePathReference> selected = new List<TreePathReference>();
-                foreach (Path p in _normalized.Values)
+                foreach (KeyValuePair<Path, Path> pair in _normalized)
                 {
-                    selected.Add(new TreePathReference(p));
+                    selected.Add(new TreePathReference(pair.Value));
                 }
-                BrowserController.RefreshParentPaths(_normalized.Values, selected);
+                List<Path> paths = new List<Path>();
+                paths.AddRange(_normalized.Keys);                
+                paths.AddRange(_normalized.Values);                
+                BrowserController.RefreshParentPaths(paths, selected);
             }
 
             public override string getActivity()
