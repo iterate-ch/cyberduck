@@ -272,7 +272,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
             base.setDefaults();
 
-            defaults.put("logging", "error");
+            defaults.put("logging", "debug");
 
             //disable reminder for procotol handler registration
             defaults.put("defaulthandler.reminder", false.ToString());
@@ -314,9 +314,9 @@ namespace Ch.Cyberduck.Ui.Controller
             defaults.put("transfer.toolbar.show", true.ToString());
 
             // Resolve symbolic links downloading target file instead
-            defaults.put("path.symboliclink.resolve", String.valueOf(true));
+            defaults.put("path.symboliclink.resolve", true.ToString());
             // Resolve local links uploading target file instead. Currently not supporting shortcuts on Windows.
-            defaults.put("local.symboliclink.resolve", String.valueOf(true));
+            defaults.put("local.symboliclink.resolve", true.ToString());
         }
 
         public string GetDefaultLanguage()
