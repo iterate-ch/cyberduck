@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2011 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -16,16 +16,12 @@
 // yves@cyberduck.ch
 // 
 using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
 using ch.cyberduck.core;
-using Ch.Cyberduck.Properties;
 
 namespace Ch.Cyberduck.Ui.Controller
 {

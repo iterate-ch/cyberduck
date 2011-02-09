@@ -171,9 +171,6 @@ namespace Ch.Cyberduck.Ui.Controller
             _view.Title = Locale.localizedString(title, "Credentials");
             _view.Message = Locale.localizedString(reason, "Credentials");
             _view.Username = credentials.getUsername();
-            _view.SavePasswordState = Preferences.instance().getBoolean("connection.login.useKeychain")
-                                      && Preferences.instance().getBoolean("connection.login.addKeychain");
-
             _view.UsernameLabel = protocol.getUsernamePlaceholder();
             _view.PasswordLabel = protocol.getPasswordPlaceholder();
             _view.SavePasswordState =
