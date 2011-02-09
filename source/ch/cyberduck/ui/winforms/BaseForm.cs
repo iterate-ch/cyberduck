@@ -96,8 +96,20 @@ namespace Ch.Cyberduck.Ui.Winforms
 
             Application.Idle += OnApplicationIdle;
 
-            Load += persistentFormLoad;
-            FormClosing += persistentFormFormClosing;
+            if (!DesignMode)
+            {
+                Load += persistentFormLoad;
+                FormClosing += persistentFormFormClosing;
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <see cref="http://stackoverflow.com/questions/34664/designmode-with-controls"/>
+        protected Boolean DesignMode
+        {
+            get { return (LicenseManager.UsageMode == LicenseUsageMode.Designtime); }
         }
 
         protected Font DefaultFontBold
