@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2011 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -624,7 +624,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public string UpdateFeed
         {
-            get { return (string)updateFeedComboBox.SelectedValue; }
+            get { return (string) updateFeedComboBox.SelectedValue; }
             set { updateFeedComboBox.SelectedValue = value; }
         }
 
@@ -692,12 +692,6 @@ namespace Ch.Cyberduck.Ui.Winforms
         public event VoidHandler UploadSkipChangedEvent = delegate { };
         public event VoidHandler UploadSkipRegexChangedEvent = delegate { };
         public event VoidHandler UploadSkipRegexDefaultEvent = delegate { };
-        public event VoidHandler AnonymousPasswordChangedEvent = delegate { };
-        public event VoidHandler DefaultTransferModeChangedEvent = delegate { };
-        public event VoidHandler LineEndingChangedEvent = delegate { };
-        public event VoidHandler TextFileTypeRegexChangedEvent = delegate { };
-        public event VoidHandler SecureDataChannelChangedEvent = delegate { };
-        public event VoidHandler FailInsecureDataChannelChangedEvent = delegate { };
         public event VoidHandler SshTransferChangedEvent = delegate { };
         public event VoidHandler DefaultBucketLocationChangedEvent = delegate { };
         public event VoidHandler DefaultDownloadThrottleChangedEvent = delegate { };
@@ -758,8 +752,8 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public string DefaultStorageClass
         {
-            get { return defaultStorageClassComboBox.Text; }
-            set { defaultStorageClassComboBox.Text = value; }
+            get { return (string) defaultStorageClassComboBox.SelectedValue; }
+            set { defaultStorageClassComboBox.SelectedValue = value; }
         }
 
         public void PopulateBookmarks(List<KeyValueIconTriple<Host, string>> bookmarks)
@@ -887,6 +881,13 @@ namespace Ch.Cyberduck.Ui.Winforms
             languageComboBox.ValueMember = "Key";
             languageComboBox.DisplayMember = "Value";
         }
+
+        public event VoidHandler AnonymousPasswordChangedEvent = delegate { };
+        public event VoidHandler DefaultTransferModeChangedEvent = delegate { };
+        public event VoidHandler LineEndingChangedEvent = delegate { };
+        public event VoidHandler TextFileTypeRegexChangedEvent = delegate { };
+        public event VoidHandler SecureDataChannelChangedEvent = delegate { };
+        public event VoidHandler FailInsecureDataChannelChangedEvent = delegate { };
 
         private void generalButton_Click(object sender, EventArgs e)
         {
