@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2011 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -33,7 +33,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public override string getPassword(String protocol, int port, String hostName, String user)
         {
-            Host host = new Host(Protocol.forScheme(protocol), hostName);
+            Host host = new Host(Protocol.forScheme(protocol), hostName, port);
             host.getCredentials().setUsername(user);
             return getPassword(host);
         }
@@ -128,7 +128,8 @@ namespace Ch.Cyberduck.Ui.Controller
                                 }
                                 if (hostnameMismatch)
                                 {
-                                    Preferences.instance().setProperty(hostName + ".certificate.accept", serverCert.SubjectName.Name);
+                                    Preferences.instance().setProperty(hostName + ".certificate.accept",
+                                                                       serverCert.SubjectName.Name);
                                 }
                             }
                             return true;
