@@ -309,6 +309,10 @@
             <param name="post" value="copy-runtime"/>
         </antcall>
 
+        <replace dir="${app.bundle}" summary="true" encoding="UTF-8">
+            <include name="**/Info.plist"/>
+            <replacefilter token="SU" value="None"/>
+        </replace>
         <delete dir="${app.frameworks}/Sparkle.framework"/>
 
         <antcall target="lipo">
