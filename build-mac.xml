@@ -362,6 +362,13 @@
                 <exclude name="Contents/Home/jre/lib/i386/client/**"/>
                 <exclude name="Contents/Home/jre/lib/xawt/**"/>
                 <exclude name="Contents/Home/jre/lib/client/**"/>
+                <exclude name="Contents/Home/jre/lib/libsplashscreen.dylib"/>
+                <exclude name="Contents/Home/jre/lib/libfontmanager.dylib"/>
+                <exclude name="Contents/Home/jre/lib/libawt.dylib"/>
+                <exclude name="Contents/Home/jre/lib/libjawt.dylib"/>
+                <exclude name="Contents/Home/jre/lib/libhprof.dylib"/>
+                <exclude name="Contents/Home/jre/lib/libinstrument.dylib"/>
+                <exclude name="Contents/Home/jre/lib/libjsound.dylib"/>
             </fileset>
         </copy>
         <echo message="Change dynamic shared library install names..."/>
