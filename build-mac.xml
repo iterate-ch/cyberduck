@@ -114,8 +114,6 @@
     </target>
 
     <target name="package" depends="build, timestamp">
-        <antcall target="${post}"/>
-
         <echo message="_REVISION_=${svn.revision}"/>
         <echo message="_SPARKLEFEED_=${sparkle.feed}"/>
         <replace dir="${app.bundle}" summary="true" encoding="UTF-8">
@@ -123,9 +121,13 @@
             <replacefilter token="_MINIMUM_SYSTEM_" value="${system.min}"/>
             <replacefilter token="_SPARKLEFEED_" value="${sparkle.feed}"/>
         </replace>
+    </target>
 
+    <target name="distribution-sparkle" description="Create and sign bundle">
+        <antcall target="stub"/>
         <antcall target="codesign"/>
         <antcall target="tar"/>
+        <antcall target="zip"/>
 
         <copy todir="${build}" overwrite="true">
             <fileset dir="${www.update}">
@@ -157,6 +159,86 @@
             <replacefilter token="_VERSION_" value="${cyberduck.version.major}.${cyberduck.version.minor}"/>
             <replacefilter token="_DSASIGNATURE_" value="${signature.dsa}"/>
         </replace>
+    </target>
+
+    <target name="distribution-mas" description="Create and sign bundle">
+        <antcall target="copy-runtime"/>
+
+        <replace dir="${app.bundle}" summary="true" encoding="UTF-8">
+            <include name="**/Info.plist"/>
+            <replacefilter token="SU" value="None"/>
+        </replace>
+        <delete dir="${app.frameworks}/Sparkle.framework"/>
+
+        <antcall target="lipo">
+            <param name="arch" value="ppc7400"/>
+            <param name="binary" value="${app.executable}"/>
+        </antcall>
+        <antcall target="lipo">
+            <param name="arch" value="x86_64"/>
+            <param name="binary" value="${app.executable}"/>
+        </antcall>
+        <antcall target="lipo">
+            <param name="arch" value="ppc7400"/>
+            <param name="binary" value="'${app.spotlight.executable}'"/>
+        </antcall>
+
+        <antcall target="codesign">
+            <param name="codesign.certificate" value="3rd Party Mac Developer Application: David Kocher"/>
+        </antcall>
+
+        <echo message="Building ${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.pkg"/>
+        <property name="build.absolute" location="${build}"/>
+        <exec dir="${build.deploy}" executable="/usr/bin/productbuild" spawn="false" failonerror="true">
+            <arg line="--component ${app.bundle} /Applications --version ${cyberduck.version.major}.${cyberduck.version.minor} --sign '${installer.certificate}' --keychain ${installer.keychain} ${build.absolute}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.pkg"/>
+        </exec>
+        <checksum file="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.pkg"
+                  algorithm="md5"/>
+    </target>
+
+    <target name="install" depends="package-mas">
+        <exec dir="${home}" executable="/usr/bin/sudo" spawn="false" failonerror="true">
+            <arg line="installer -store -pkg ${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.pkg -target /"/>
+        </exec>
+    </target>
+
+    <target name="copy-runtime">
+        <copy todir="${app.runtime}" preservelastmodified="true">
+            <fileset followsymlinks="false" dir="${jvm.runtime}">
+                <exclude name="Contents/MacOS/**"/>
+                <exclude name="Contents/Home/bin/**"/>
+                <exclude name="Contents/Home/jre/bin/**"/>
+                <exclude name="Contents/Home/include/**"/>
+                <exclude name="Contents/Home/demo/**"/>
+                <exclude name="Contents/Home/sample/**"/>
+                <exclude name="Contents/Home/lib/**"/>
+                <exclude name="Contents/Home/man/**"/>
+                <exclude name="Contents/Home/src.zip"/>
+                <exclude name="Contents/Home/jre/lib/applet/**"/>
+                <exclude name="Contents/Home/jre/lib/servicetag/**"/>
+                <exclude name="Contents/Home/jre/lib/images/**"/>
+                <exclude name="Contents/Home/jre/lib/i386/xawt/**"/>
+                <exclude name="Contents/Home/jre/lib/i386/client/**"/>
+                <exclude name="Contents/Home/jre/lib/xawt/**"/>
+                <exclude name="Contents/Home/jre/lib/client/**"/>
+                <exclude name="Contents/Home/jre/lib/libsplashscreen.dylib"/>
+                <exclude name="Contents/Home/jre/lib/libfontmanager.dylib"/>
+                <exclude name="Contents/Home/jre/lib/libawt.dylib"/>
+                <exclude name="Contents/Home/jre/lib/libjawt.dylib"/>
+                <exclude name="Contents/Home/jre/lib/libhprof.dylib"/>
+                <exclude name="Contents/Home/jre/lib/libinstrument.dylib"/>
+                <exclude name="Contents/Home/jre/lib/libjsound.dylib"/>
+            </fileset>
+        </copy>
+        <echo message="Change dynamic shared library install names..."/>
+        <apply executable="/usr/bin/install_name_tool" failonerror="true" dir="${build}" parallel="false" spawn="false">
+            <arg line="-change /System/Library/Frameworks/JavaVM.framework/Versions/A/JavaVM ${app.runtime.lib}"/>
+            <fileset dir="${app.java}">
+                <include name="*.dylib"/>
+            </fileset>
+            <file file="${app.executable}"/>
+            <srcfile />
+        </apply>
     </target>
 
     <target name="codesign">
@@ -281,18 +363,6 @@
         </scp>
     </target>
 
-    <target name="package-release" depends="clean, revision">
-        <antcall target="package">
-            <param name="system.min" value="10.5"/>
-            <param name="url.archive" value="http://update.cyberduck.ch/Cyberduck-_REVISION_.tar.gz"/>
-            <param name="url.changelog" value="http://version.cyberduck.ch/changelog.html"/>
-            <param name="sparkle.feed" value="https://version.cyberduck.ch/changelog.rss"/>
-            <param name="post" value="stub"/>
-        </antcall>
-        <!-- Releases include ZIP -->
-        <antcall target="zip"/>
-    </target>
-
     <target name="lipo">
         <echo message="Remove ${arch} slice from ${app.executable}"/>
         <exec dir="${home}" executable="/usr/bin/lipo" spawn="false" failonerror="false">
@@ -306,84 +376,18 @@
             <param name="url.archive" value="/dev/null"/>
             <param name="url.changelog" value="/dev/null"/>
             <param name="sparkle.feed" value="/dev/null"/>
-            <param name="post" value="copy-runtime"/>
         </antcall>
-
-        <replace dir="${app.bundle}" summary="true" encoding="UTF-8">
-            <include name="**/Info.plist"/>
-            <replacefilter token="SU" value="None"/>
-        </replace>
-        <delete dir="${app.frameworks}/Sparkle.framework"/>
-
-        <antcall target="lipo">
-            <param name="arch" value="ppc7400"/>
-            <param name="binary" value="${app.executable}"/>
-        </antcall>
-        <antcall target="lipo">
-            <param name="arch" value="x86_64"/>
-            <param name="binary" value="${app.executable}"/>
-        </antcall>
-        <antcall target="lipo">
-            <param name="arch" value="ppc7400"/>
-            <param name="binary" value="'${app.spotlight.executable}'"/>
-        </antcall>
-
-        <antcall target="codesign">
-            <param name="codesign.certificate" value="3rd Party Mac Developer Application: David Kocher"/>
-        </antcall>
-
-        <echo message="Building ${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.pkg"/>
-        <property name="build.absolute" location="${build}"/>
-        <exec dir="${build.deploy}" executable="/usr/bin/productbuild" spawn="false" failonerror="true">
-            <arg line="--component ${app.bundle} /Applications --version ${cyberduck.version.major}.${cyberduck.version.minor} --sign '${installer.certificate}' --keychain ${installer.keychain} ${build.absolute}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.pkg"/>
-        </exec>
-        <checksum file="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.pkg"
-                  algorithm="md5"/>
+        <antcall target="distribution-mas"/>
     </target>
 
-    <target name="install" depends="package-mas">
-        <exec dir="${home}" executable="/usr/bin/sudo" spawn="false" failonerror="true">
-            <arg line="installer -store -pkg ${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.pkg -target /"/>
-        </exec>
-    </target>
-
-    <target name="copy-runtime">
-        <copy todir="${app.runtime}" preservelastmodified="true">
-            <fileset followsymlinks="false" dir="${jvm.runtime}">
-                <exclude name="Contents/MacOS/**"/>
-                <exclude name="Contents/Home/bin/**"/>
-                <exclude name="Contents/Home/jre/bin/**"/>
-                <exclude name="Contents/Home/include/**"/>
-                <exclude name="Contents/Home/demo/**"/>
-                <exclude name="Contents/Home/sample/**"/>
-                <exclude name="Contents/Home/lib/**"/>
-                <exclude name="Contents/Home/man/**"/>
-                <exclude name="Contents/Home/src.zip"/>
-                <exclude name="Contents/Home/jre/lib/applet/**"/>
-                <exclude name="Contents/Home/jre/lib/servicetag/**"/>
-                <exclude name="Contents/Home/jre/lib/images/**"/>
-                <exclude name="Contents/Home/jre/lib/i386/xawt/**"/>
-                <exclude name="Contents/Home/jre/lib/i386/client/**"/>
-                <exclude name="Contents/Home/jre/lib/xawt/**"/>
-                <exclude name="Contents/Home/jre/lib/client/**"/>
-                <exclude name="Contents/Home/jre/lib/libsplashscreen.dylib"/>
-                <exclude name="Contents/Home/jre/lib/libfontmanager.dylib"/>
-                <exclude name="Contents/Home/jre/lib/libawt.dylib"/>
-                <exclude name="Contents/Home/jre/lib/libjawt.dylib"/>
-                <exclude name="Contents/Home/jre/lib/libhprof.dylib"/>
-                <exclude name="Contents/Home/jre/lib/libinstrument.dylib"/>
-                <exclude name="Contents/Home/jre/lib/libjsound.dylib"/>
-            </fileset>
-        </copy>
-        <echo message="Change dynamic shared library install names..."/>
-        <apply executable="/usr/bin/install_name_tool" failonerror="true" dir="${build}" parallel="false" spawn="false">
-            <arg line="-change /System/Library/Frameworks/JavaVM.framework/Versions/A/JavaVM ${app.runtime.lib}"/>
-            <fileset dir="${app.java}">
-                <include name="*.dylib"/>
-            </fileset>
-            <file file="${app.executable}"/>
-            <srcfile />
-        </apply>
+    <target name="package-release" depends="clean, revision">
+        <antcall target="package">
+            <param name="system.min" value="10.5"/>
+            <param name="url.archive" value="http://update.cyberduck.ch/Cyberduck-_REVISION_.tar.gz"/>
+            <param name="url.changelog" value="http://version.cyberduck.ch/changelog.html"/>
+            <param name="sparkle.feed" value="https://version.cyberduck.ch/changelog.rss"/>
+        </antcall>
+        <antcall target="distribution-sparkle"/>
     </target>
 
     <target name="package-beta" depends="clean, revision">
@@ -392,8 +396,8 @@
             <param name="url.archive" value="http://update.cyberduck.ch/beta/Cyberduck-_REVISION_.tar.gz"/>
             <param name="url.changelog" value="http://version.cyberduck.ch/beta/changelog.html"/>
             <param name="sparkle.feed" value="https://version.cyberduck.ch/beta/changelog.rss"/>
-            <param name="post" value="stub"/>
         </antcall>
+        <antcall target="distribution-sparkle"/>
     </target>
 
     <target name="package-nightly" depends="clean, revision">
@@ -402,7 +406,7 @@
             <param name="url.archive" value="http://update.cyberduck.ch/nightly/Cyberduck-_REVISION_.tar.gz"/>
             <param name="url.changelog" value="http://version.cyberduck.ch/nightly/changelog.html"/>
             <param name="sparkle.feed" value="https://version.cyberduck.ch/nightly/changelog.rss"/>
-            <param name="post" value="stub"/>
         </antcall>
+        <antcall target="distribution-sparkle"/>
     </target>
 </project>
