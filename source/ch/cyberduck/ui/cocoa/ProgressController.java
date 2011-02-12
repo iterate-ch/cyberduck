@@ -159,12 +159,11 @@ public class ProgressController extends BundleController {
 
             @Override
             public void didTransferPath(final Path path) {
-                if(null != progressTimer) {
-                    progressTimer.cancel(false);
+                boolean canceled = false;
+                while(!canceled) {
+                    canceled = progressTimer.cancel(false);
                 }
-                if(null != meter) {
-                    meter.reset();
-                }
+                meter.reset();
             }
 
             @Override

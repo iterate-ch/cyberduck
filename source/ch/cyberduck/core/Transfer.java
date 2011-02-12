@@ -460,6 +460,8 @@ public abstract class Transfer implements Serializable {
             // Post process of file
             filter.complete(p);
             _current = null;
+            // Notification
+            this.fireDidTransferPath(p);
         }
 
         if(!this.check()) {
@@ -484,9 +486,6 @@ public abstract class Transfer implements Serializable {
             }
             this.cache().remove(p.getReference());
         }
-
-        // Notification
-        this.fireDidTransferPath(p);
     }
 
     /**
