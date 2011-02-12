@@ -224,24 +224,26 @@ public class UploadTransfer extends Transfer {
             if(log.isDebugEnabled()) {
                 log.debug("Do not list children for symbolic link:" + parent);
             }
-            return AttributedList.emptyList();
+            this.cache().put(parent.<Object>getReference(), AttributedList.<Path>emptyList());
         }
-        if(!this.cache().containsKey(parent.<Object>getReference())) {
+        else if(!this.cache().containsKey(parent.<Object>getReference())) {
             if(!parent.getLocal().exists()) {
                 // Cannot fetch file listing of non existant file
-                return AttributedList.emptyList();
+                this.cache().put(parent.<Object>getReference(), AttributedList.<Path>emptyList());
             }
-            final AttributedList<Path> children = new AttributedList<Path>();
-            for(AbstractPath child : parent.getLocal().children(exclusionRegexFilter)) {
-                final Local local = LocalFactory.createLocal(child.getAbsolute());
-                Path upload = PathFactory.createPath(getSession(), parent.getAbsolute(), local);
-                if(upload.exists()) {
-                    upload = this.getSession().cache().lookup(upload.getReference());
-                    upload.setLocal(local);
+            else {
+                final AttributedList<Path> children = new AttributedList<Path>();
+                for(AbstractPath child : parent.getLocal().children(exclusionRegexFilter)) {
+                    final Local local = LocalFactory.createLocal(child.getAbsolute());
+                    Path upload = PathFactory.createPath(getSession(), parent.getAbsolute(), local);
+                    if(upload.exists()) {
+                        upload = this.getSession().cache().lookup(upload.getReference());
+                        upload.setLocal(local);
+                    }
+                    children.add(upload);
                 }
-                children.add(upload);
+                this.cache().put(parent.<Object>getReference(), children);
             }
-            this.cache().put(parent.<Object>getReference(), children);
         }
         return this.cache().get(parent.<Object>getReference());
     }
