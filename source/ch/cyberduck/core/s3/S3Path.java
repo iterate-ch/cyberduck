@@ -789,16 +789,14 @@ public class S3Path extends CloudPath {
                 }
             }
             if(status().isComplete()) {
-                this.getSession().getClient().multipartCompleteUpload(multipart.getUploadId(),
-                        this.getContainerName(), this.getKey(), completed);
+                this.getSession().getClient().multipartCompleteUpload(multipart, completed);
             }
         }
         finally {
             if(!status().isComplete()) {
                 // Cancel all previous parts
                 log.info("Cancel multipart upload:" + multipart.getUploadId());
-                this.getSession().getClient().multipartAbortUpload(multipart.getUploadId(),
-                        this.getContainerName(), this.getKey());
+                this.getSession().getClient().multipartAbortUpload(multipart);
             }
         }
     }
