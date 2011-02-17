@@ -1561,9 +1561,8 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 selection = Workdir;
             }
-            string folder = View.SynchronizeDialog(Locale.localizedString("Synchronize")
-                                                   + " " + selection.getName() + " "
-                                                   + Locale.localizedString("with"), Environment.SpecialFolder.Desktop,
+            string folder = View.SynchronizeDialog(String.Format(Locale.localizedString("Synchronize {0} with"),
+                                                   selection.getName()), Environment.SpecialFolder.Desktop,
                                                    null);
             if (null != folder)
             {

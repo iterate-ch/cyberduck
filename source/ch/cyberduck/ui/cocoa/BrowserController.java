@@ -2644,9 +2644,8 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         syncPanel.setCanChooseFiles(selection.attributes().isFile());
         syncPanel.setCanCreateDirectories(true);
         syncPanel.setAllowsMultipleSelection(false);
-        syncPanel.setMessage(Locale.localizedString("Synchronize")
-                + " " + selection.getName() + " "
-                + Locale.localizedString("with"));
+        syncPanel.setMessage(MessageFormat.format(Locale.localizedString("Synchronize {0} with"),
+                selection.getName()));
         syncPanel.setPrompt(Locale.localizedString("Choose"));
         syncPanel.beginSheetForDirectory(this.getSession().getHost().getDownloadFolder().getAbsolute(), null, this.window, this.id(),
                 Foundation.selector("syncPanelDidEnd:returnCode:contextInfo:"), null //context info
