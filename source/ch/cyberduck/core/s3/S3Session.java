@@ -233,8 +233,8 @@ public class S3Session extends CloudHTTP3Session {
                     }
                 }
                 if(StringUtils.isEmpty(bucketname)) {
-                    log.error("No bucket name given in hostname or default path");
-                    return Collections.emptyList();
+                    // Should do a lookup if a CNAME is pointing to s3.amazonaws.com
+                    throw new ConnectionCanceledException("No bucket name given in hostname " + host.getHostname());
                 }
                 if(!this.getClient().isBucketAccessible(bucketname)) {
                     throw new IOException("Bucket not accessible: " + bucketname);
