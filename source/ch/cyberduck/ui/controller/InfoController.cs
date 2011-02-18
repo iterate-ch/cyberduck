@@ -1158,22 +1158,20 @@ namespace Ch.Cyberduck.Ui.Controller
             View.PopulateDistributionDeliveryMethod(methods);
             View.PopulateDefaultRoot(new List<string> {Locale.localizedString("None")});
 
-            if (ToggleDistributionSettings(false))
+            Session session = _controller.getSession();
+            View.DistributionTitle = String.Format(Locale.localizedString("Enable {0} Distribution", "Status"),
+                                                   session.cdn().toString());
+            methods = new List<KeyValuePair<string, Distribution.Method>>();
+            List list = session.cdn().getMethods();
+            for (int i = 0; i < list.size(); i++)
             {
-                Session session = _controller.getSession();
-                View.DistributionTitle = String.Format(Locale.localizedString("Enable {0} Distribution", "Status"),
-                                                       session.cdn().toString());
-                methods = new List<KeyValuePair<string, Distribution.Method>>();
-                List list = session.cdn().getMethods();
-                for (int i = 0; i < list.size(); i++)
-                {
-                    Distribution.Method method = (Distribution.Method) list.get(i);
-                    methods.Add(new KeyValuePair<string, Distribution.Method>(method.ToString(), method));
-                }
-                View.PopulateDistributionDeliveryMethod(methods);
-                View.DistributionDeliveryMethod = (Distribution.Method) session.cdn().getMethods().iterator().next();
-                DistributionDeliveryMethodChanged();
+                Distribution.Method method = (Distribution.Method) list.get(i);
+                methods.Add(new KeyValuePair<string, Distribution.Method>(method.ToString(), method));
             }
+            View.PopulateDistributionDeliveryMethod(methods);
+            View.DistributionDeliveryMethod = (Distribution.Method) session.cdn().getMethods().iterator().next();
+            DistributionDeliveryMethodChanged();
+
             AttachDistributionHandlers();
         }
 
@@ -1737,13 +1735,14 @@ namespace Ch.Cyberduck.Ui.Controller
                     }
                     _infoController.DetachDistributionHandlers();
 
+                    Path file = _infoController.SelectedPath;
+
                     _view.Distribution = _distribution.isEnabled();
                     _view.DistributionStatus = _distribution.getStatus();
                     _view.DistributionLoggingEnabled = _distribution.isEnabled();
                     _view.DistributionLogging = _distribution.isLogging();
-                    _view.DistributionOrigin = _distribution.getOrigin(_infoController.SelectedPath);
+                    _view.DistributionOrigin = _distribution.getOrigin(file);
 
-                    Path file = _infoController.SelectedPath;
                     // Concatenate URLs
                     if (_infoController.NumberOfFiles > 1)
                     {

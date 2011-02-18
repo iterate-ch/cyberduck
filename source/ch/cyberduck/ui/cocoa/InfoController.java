@@ -1676,22 +1676,20 @@ public class InfoController extends ToolbarWindowController {
         distributionDefaultRootPopup.removeAllItems();
         distributionDefaultRootPopup.addItemWithTitle(Locale.localizedString("None"));
         distributionDefaultRootPopup.menu().addItem(NSMenuItem.separatorItem());
-        if(this.toggleDistributionSettings(false)) {
-            Session session = controller.getSession();
-            distributionEnableButton.setTitle(MessageFormat.format(Locale.localizedString("Enable {0} Distribution", "Status"),
-                    session.cdn().toString()));
-            distributionDeliveryPopup.removeItemWithTitle(Locale.localizedString("None"));
-            for(Distribution.Method method : session.cdn().getMethods()) {
-                distributionDeliveryPopup.addItemWithTitle(method.toString());
-                distributionDeliveryPopup.itemWithTitle(method.toString()).setRepresentedObject(method.toString());
-            }
-            // Select first distribution option
-            Distribution.Method method = session.cdn().getMethods().iterator().next();
-            distributionDeliveryPopup.selectItemWithTitle(
-                    method.toString());
 
-            this.distributionStatusButtonClicked(null);
+        Session session = controller.getSession();
+        distributionEnableButton.setTitle(MessageFormat.format(Locale.localizedString("Enable {0} Distribution", "Status"),
+                session.cdn().toString()));
+        distributionDeliveryPopup.removeItemWithTitle(Locale.localizedString("None"));
+        for(Distribution.Method method : session.cdn().getMethods()) {
+            distributionDeliveryPopup.addItemWithTitle(method.toString());
+            distributionDeliveryPopup.itemWithTitle(method.toString()).setRepresentedObject(method.toString());
         }
+        // Select first distribution option
+        Distribution.Method method = session.cdn().getMethods().iterator().next();
+        distributionDeliveryPopup.selectItemWithTitle(method.toString());
+
+        this.distributionStatusButtonClicked(null);
     }
 
     /**
@@ -1846,6 +1844,7 @@ public class InfoController extends ToolbarWindowController {
 
                 @Override
                 public void cleanup() {
+                    try {
                     bucketLoggingButton.setState(logging ? NSCell.NSOnState : NSCell.NSOffState);
                     if(StringUtils.isNotBlank(location)) {
                         bucketLocationField.setStringValue(Locale.localizedString(location, "S3"));
@@ -1853,7 +1852,10 @@ public class InfoController extends ToolbarWindowController {
                     bucketVersioningButton.setState(versioning ? NSCell.NSOnState : NSCell.NSOffState);
                     bucketMfaButton.setEnabled(versioning);
                     bucketMfaButton.setState(mfa ? NSCell.NSOnState : NSCell.NSOffState);
+                    }
+                    finally {
                     toggleS3Settings(true);
+                    }
                 }
 
                 @Override
@@ -2276,18 +2278,19 @@ public class InfoController extends ToolbarWindowController {
                     else if(distributionDeliveryPopup.selectedItem().representedObject().equals(Distribution.CUSTOM.toString())) {
                         distribution = session.cdn().read(session.cdn().getOrigin(Distribution.CUSTOM, getSelected().getContainerName()), Distribution.CUSTOM);
                     }
+                    else if(distributionDeliveryPopup.selectedItem().representedObject().equals(Distribution.WEBSITE.toString())) {
+                        distribution = session.cdn().read(session.cdn().getOrigin(Distribution.WEBSITE, getSelected().getContainerName()), Distribution.WEBSITE);
+                    }
                     // Make sure container items are cached for default root object.
                     getSelected().getContainer().children();
                 }
 
                 @Override
                 public void cleanup() {
-                    if(null == distribution) {
-                        return;
-                    }
+                    try {
                     final Session session = controller.getSession();
                     distributionEnableButton.setState(distribution.isEnabled() ? NSCell.NSOnState : NSCell.NSOffState);
-                    distributionStatusField.setStringValue(distribution.getStatus());
+                    distributionStatusField.setAttributedStringValue(NSMutableAttributedString.create(distribution.getStatus(), TRUNCATE_MIDDLE_ATTRIBUTES));
                     distributionLoggingButton.setEnabled(distribution.isEnabled());
                     distributionLoggingButton.setState(distribution.isLogging() ? NSCell.NSOnState : NSCell.NSOffState);
                     String origin = distribution.getOrigin(getSelected());
@@ -2357,7 +2360,10 @@ public class InfoController extends ToolbarWindowController {
                     }
                     distributionInvalidateObjectsButton.setToolTip(tooltip.toString());
                     distributionInvalidationStatusField.setStringValue(distribution.getInvalidationStatus());
+                    }
+                    finally {
                     toggleDistributionSettings(true);
+                    }
                 }
 
                 @Override
