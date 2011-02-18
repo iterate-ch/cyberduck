@@ -72,9 +72,15 @@ public class Distribution {
     private Method method;
 
     /**
-     * Key of the default root object.
+     * Key of the default root object or index document
      */
     private String defaultRootObject;
+
+    /**
+     * Custom Error Document Support. Amazon S3 returns your custom error document
+     * for only the HTTP 4XX class of error codes.
+     */
+    private String errorDocument;
 
     private String invalidationStatus;
 
@@ -100,13 +106,37 @@ public class Distribution {
             if(CUSTOM.toString().equals(name)) {
                 return CUSTOM;
             }
-            return null;
+            if(WEBSITE.toString().equals(name)) {
+                return WEBSITE;
+            }
+            throw new RuntimeException();
         }
     }
 
+    public static final Method WEBSITE = new Method() {
+        public String toString() {
+            return Locale.localizedString("Website Configuration (HTTP)", "S3");
+        }
+
+        @Override
+        public String getProtocol() {
+            return "http://";
+        }
+
+        @Override
+        public int getDefaultPort() {
+            return 80;
+        }
+
+        @Override
+        public String getContext() {
+            return "";
+        }
+    };
+
     public static final Method DOWNLOAD = new Method() {
         public String toString() {
-            return Locale.localizedString("Download (HTTP)", "S3");
+            return Locale.localizedString("Download (HTTP) CDN", "S3");
         }
 
         @Override
@@ -127,7 +157,7 @@ public class Distribution {
 
     public static final Method CUSTOM = new Method() {
         public String toString() {
-            return Locale.localizedString("Custom Origin Server (HTTP/HTTPS)", "S3");
+            return Locale.localizedString("Custom Origin Server (HTTP/HTTPS) CDN", "S3");
         }
 
         @Override
@@ -148,7 +178,7 @@ public class Distribution {
 
     public static final Method STREAMING = new Method() {
         public String toString() {
-            return Locale.localizedString("Streaming (RTMP)", "S3");
+            return Locale.localizedString("Streaming (RTMP) CDN", "S3");
         }
 
         @Override
@@ -156,6 +186,7 @@ public class Distribution {
             return "rtmp://";
         }
 
+        @Override
         public int getDefaultPort() {
             return 1935;
         }
@@ -238,7 +269,7 @@ public class Distribution {
      * @param logging  Logging status
      */
     public Distribution(String id, String origin, Method method, boolean enabled, boolean deployed, String url, String status, String[] cnames, boolean logging) {
-        this(id, origin, DOWNLOAD, enabled, deployed, url, status, cnames, logging, null);
+        this(id, origin, method, enabled, deployed, url, status, cnames, logging, null);
     }
 
     /**
@@ -439,6 +470,14 @@ public class Distribution {
 
     public void setDefaultRootObject(String defaultRootObject) {
         this.defaultRootObject = defaultRootObject;
+    }
+
+    public String getErrorDocument() {
+        return errorDocument;
+    }
+
+    public void setErrorDocument(String errorDocument) {
+        this.errorDocument = errorDocument;
     }
 
     /**
