@@ -1,4 +1,4 @@
-﻿﻿﻿﻿//
+﻿﻿﻿﻿﻿//
 // Copyright (c) 2010 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
@@ -1729,10 +1729,6 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 try
                 {
-                    if (null == _distribution)
-                    {
-                        return;
-                    }
                     _infoController.DetachDistributionHandlers();
 
                     Path file = _infoController.SelectedPath;
@@ -1789,6 +1785,9 @@ namespace Ch.Cyberduck.Ui.Controller
                         }
                     }
                     Session session = BrowserController.getSession();
+                    _view.DistributionTitle = String.Format(Locale.localizedString("Enable {0} Distribution", "Status"),
+                                                           session.cdn().toString(_deliveryMethod));
+
                     if (session.cdn().isDefaultRootSupported(_view.DistributionDeliveryMethod))
                     {
                         List<String> defaultRoots = new List<string> {Locale.localizedString("None")};
