@@ -1845,16 +1845,16 @@ public class InfoController extends ToolbarWindowController {
                 @Override
                 public void cleanup() {
                     try {
-                    bucketLoggingButton.setState(logging ? NSCell.NSOnState : NSCell.NSOffState);
-                    if(StringUtils.isNotBlank(location)) {
-                        bucketLocationField.setStringValue(Locale.localizedString(location, "S3"));
-                    }
-                    bucketVersioningButton.setState(versioning ? NSCell.NSOnState : NSCell.NSOffState);
-                    bucketMfaButton.setEnabled(versioning);
-                    bucketMfaButton.setState(mfa ? NSCell.NSOnState : NSCell.NSOffState);
+                        bucketLoggingButton.setState(logging ? NSCell.NSOnState : NSCell.NSOffState);
+                        if(StringUtils.isNotBlank(location)) {
+                            bucketLocationField.setStringValue(Locale.localizedString(location, "S3"));
+                        }
+                        bucketVersioningButton.setState(versioning ? NSCell.NSOnState : NSCell.NSOffState);
+                        bucketMfaButton.setEnabled(versioning);
+                        bucketMfaButton.setState(mfa ? NSCell.NSOnState : NSCell.NSOffState);
                     }
                     finally {
-                    toggleS3Settings(true);
+                        toggleS3Settings(true);
                     }
                 }
 
@@ -2192,12 +2192,18 @@ public class InfoController extends ToolbarWindowController {
             controller.background(new BrowserBackgroundAction(controller) {
                 public void run() {
                     final Session session = controller.getSession();
-                    Distribution.Method method = Distribution.CUSTOM;
+                    Distribution.Method method;
                     if(Distribution.Method.forName(distributionDeliveryPopup.selectedItem().representedObject()).equals(Distribution.STREAMING)) {
                         method = Distribution.STREAMING;
                     }
                     else if(Distribution.Method.forName(distributionDeliveryPopup.selectedItem().representedObject()).equals(Distribution.DOWNLOAD)) {
                         method = Distribution.DOWNLOAD;
+                    }
+                    else if(Distribution.Method.forName(distributionDeliveryPopup.selectedItem().representedObject()).equals(Distribution.CUSTOM)) {
+                        method = Distribution.CUSTOM;
+                    }
+                    else {
+                        throw new RuntimeException();
                     }
                     session.cdn().invalidate(session.cdn().getOrigin(method, getSelected().getContainerName()), method, files, false);
                 }
@@ -2223,12 +2229,21 @@ public class InfoController extends ToolbarWindowController {
             controller.background(new BrowserBackgroundAction(controller) {
                 public void run() {
                     final Session session = controller.getSession();
-                    Distribution.Method method = Distribution.CUSTOM;
+                    Distribution.Method method;
                     if(Distribution.Method.forName(distributionDeliveryPopup.selectedItem().representedObject()).equals(Distribution.STREAMING)) {
                         method = Distribution.STREAMING;
                     }
                     else if(Distribution.Method.forName(distributionDeliveryPopup.selectedItem().representedObject()).equals(Distribution.DOWNLOAD)) {
                         method = Distribution.DOWNLOAD;
+                    }
+                    else if(Distribution.Method.forName(distributionDeliveryPopup.selectedItem().representedObject()).equals(Distribution.CUSTOM)) {
+                        method = Distribution.CUSTOM;
+                    }
+                    else if(Distribution.Method.forName(distributionDeliveryPopup.selectedItem().representedObject()).equals(Distribution.WEBSITE)) {
+                        method = Distribution.WEBSITE;
+                    }
+                    else {
+                        throw new RuntimeException();
                     }
                     if(StringUtils.isNotBlank(distributionCnameField.stringValue())) {
                         session.cdn().write(distributionEnableButton.state() == NSCell.NSOnState,
@@ -2281,6 +2296,9 @@ public class InfoController extends ToolbarWindowController {
                     else if(distributionDeliveryPopup.selectedItem().representedObject().equals(Distribution.WEBSITE.toString())) {
                         distribution = session.cdn().read(session.cdn().getOrigin(Distribution.WEBSITE, getSelected().getContainerName()), Distribution.WEBSITE);
                     }
+                    else {
+                        throw new RuntimeException();
+                    }
                     // Make sure container items are cached for default root object.
                     getSelected().getContainer().children();
                 }
@@ -2288,81 +2306,86 @@ public class InfoController extends ToolbarWindowController {
                 @Override
                 public void cleanup() {
                     try {
-                    final Session session = controller.getSession();
-                    distributionEnableButton.setState(distribution.isEnabled() ? NSCell.NSOnState : NSCell.NSOffState);
-                    distributionStatusField.setAttributedStringValue(NSMutableAttributedString.create(distribution.getStatus(), TRUNCATE_MIDDLE_ATTRIBUTES));
-                    distributionLoggingButton.setEnabled(distribution.isEnabled());
-                    distributionLoggingButton.setState(distribution.isLogging() ? NSCell.NSOnState : NSCell.NSOffState);
-                    String origin = distribution.getOrigin(getSelected());
-                    distributionOriginField.setAttributedStringValue(
-                            HyperlinkAttributedStringFactory.create(
-                                    NSMutableAttributedString.create(origin, TRUNCATE_MIDDLE_ATTRIBUTES),
-                                    origin));
+                        final Session session = controller.getSession();
+                        distributionEnableButton.setTitle(MessageFormat.format(Locale.localizedString("Enable {0} Distribution", "Status"),
+                                session.cdn().toString(distribution.getMethod())));
+                        distributionEnableButton.setState(distribution.isEnabled() ? NSCell.NSOnState : NSCell.NSOffState);
+                        distributionStatusField.setAttributedStringValue(NSMutableAttributedString.create(distribution.getStatus(), TRUNCATE_MIDDLE_ATTRIBUTES));
+                        distributionLoggingButton.setEnabled(distribution.isEnabled());
+                        distributionLoggingButton.setState(distribution.isLogging() ? NSCell.NSOnState : NSCell.NSOffState);
+                        String origin = distribution.getOrigin(getSelected());
+                        distributionOriginField.setAttributedStringValue(
+                                HyperlinkAttributedStringFactory.create(
+                                        NSMutableAttributedString.create(origin, TRUNCATE_MIDDLE_ATTRIBUTES),
+                                        origin));
 
-                    final Path file = getSelected();
-                    // Concatenate URLs
-                    if(numberOfFiles() > 1) {
-                        distributionUrlField.setStringValue("(" + Locale.localizedString("Multiple files") + ")");
-                        distributionUrlField.setToolTip("");
-                        distributionCnameUrlField.setStringValue("(" + Locale.localizedString("Multiple files") + ")");
-                    }
-                    else {
-                        String url = distribution.getURL(file);
-                        if(StringUtils.isNotBlank(url)) {
-                            distributionUrlField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(
-                                    NSMutableAttributedString.create(url, TRUNCATE_MIDDLE_ATTRIBUTES), url));
-                            distributionUrlField.setToolTip(Locale.localizedString("Open in Web Browser"));
+                        final Path file = getSelected();
+                        // Concatenate URLs
+                        if(numberOfFiles() > 1) {
+                            distributionUrlField.setStringValue("(" + Locale.localizedString("Multiple files") + ")");
+                            distributionUrlField.setToolTip("");
+                            distributionCnameUrlField.setStringValue("(" + Locale.localizedString("Multiple files") + ")");
                         }
                         else {
-                            distributionUrlField.setStringValue(Locale.localizedString("None"));
-                            distributionUrlField.setToolTip("");
-                        }
-                    }
-                    final String[] cnames = distribution.getCNAMEs();
-                    if(0 == cnames.length) {
-                        distributionCnameField.setStringValue("");
-                        distributionCnameUrlField.setStringValue("");
-                        distributionCnameUrlField.setToolTip("");
-                    }
-                    else {
-                        distributionCnameField.setStringValue(StringUtils.join(cnames, ' '));
-                        for(AbstractPath.DescriptiveUrl url : distribution.getCnameURL(file)) {
-                            distributionCnameUrlField.setAttributedStringValue(
-                                    HyperlinkAttributedStringFactory.create(
-                                            NSMutableAttributedString.create(url.getUrl(), TRUNCATE_MIDDLE_ATTRIBUTES), url.getUrl())
-                            );
-                            distributionCnameUrlField.setToolTip(Locale.localizedString("Open in Web Browser"));
-                            // We only support one CNAME URL to be displayed
-                            break;
-                        }
-                    }
-                    if(session.cdn().isDefaultRootSupported(distribution.getMethod())) {
-                        for(AbstractPath next : getSelected().getContainer().children()) {
-                            if(next.attributes().isFile()) {
-                                distributionDefaultRootPopup.addItemWithTitle(next.getName());
-                                distributionDefaultRootPopup.lastItem().setRepresentedObject(next.getName());
+                            String url = distribution.getURL(file);
+                            if(StringUtils.isNotBlank(url)) {
+                                distributionUrlField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(
+                                        NSMutableAttributedString.create(url, TRUNCATE_MIDDLE_ATTRIBUTES), url));
+                                distributionUrlField.setToolTip(Locale.localizedString("Open in Web Browser"));
+                            }
+                            else {
+                                distributionUrlField.setStringValue(Locale.localizedString("None"));
+                                distributionUrlField.setToolTip("");
                             }
                         }
-                    }
-                    if(StringUtils.isNotBlank(distribution.getDefaultRootObject())) {
-                        distributionDefaultRootPopup.selectItemWithTitle(distribution.getDefaultRootObject());
-                    }
-                    else {
-                        distributionDefaultRootPopup.selectItemWithTitle(Locale.localizedString("None"));
-                    }
-                    StringBuilder tooltip = new StringBuilder();
-                    for(Iterator<Path> iter = files.iterator(); iter.hasNext();) {
-                        Path f = iter.next();
-                        tooltip.append(f.getAbsolute());
-                        if(iter.hasNext()) {
-                            tooltip.append("\n");
+                        final String[] cnames = distribution.getCNAMEs();
+                        if(0 == cnames.length) {
+                            distributionCnameField.setStringValue("");
+                            distributionCnameUrlField.setStringValue("");
+                            distributionCnameUrlField.setToolTip("");
                         }
-                    }
-                    distributionInvalidateObjectsButton.setToolTip(tooltip.toString());
-                    distributionInvalidationStatusField.setStringValue(distribution.getInvalidationStatus());
+                        else {
+                            distributionCnameField.setStringValue(StringUtils.join(cnames, ' '));
+                            for(AbstractPath.DescriptiveUrl url : distribution.getCnameURL(file)) {
+                                distributionCnameUrlField.setAttributedStringValue(
+                                        HyperlinkAttributedStringFactory.create(
+                                                NSMutableAttributedString.create(url.getUrl(), TRUNCATE_MIDDLE_ATTRIBUTES), url.getUrl())
+                                );
+                                distributionCnameUrlField.setToolTip(Locale.localizedString("Open in Web Browser"));
+                                // We only support one CNAME URL to be displayed
+                                break;
+                            }
+                        }
+                        if(session.cdn().isDefaultRootSupported(distribution.getMethod())) {
+                            for(AbstractPath next : getSelected().getContainer().children()) {
+                                if(next.attributes().isFile()) {
+                                    distributionDefaultRootPopup.addItemWithTitle(next.getName());
+                                    distributionDefaultRootPopup.lastItem().setRepresentedObject(next.getName());
+                                }
+                            }
+                        }
+                        if(StringUtils.isNotBlank(distribution.getDefaultRootObject())) {
+                            if(null == distributionDefaultRootPopup.itemWithTitle(distribution.getDefaultRootObject())) {
+                                distributionDefaultRootPopup.addItemWithTitle(distribution.getDefaultRootObject());
+                            }
+                            distributionDefaultRootPopup.selectItemWithTitle(distribution.getDefaultRootObject());
+                        }
+                        else {
+                            distributionDefaultRootPopup.selectItemWithTitle(Locale.localizedString("None"));
+                        }
+                        StringBuilder tooltip = new StringBuilder();
+                        for(Iterator<Path> iter = files.iterator(); iter.hasNext();) {
+                            Path f = iter.next();
+                            tooltip.append(f.getAbsolute());
+                            if(iter.hasNext()) {
+                                tooltip.append("\n");
+                            }
+                        }
+                        distributionInvalidateObjectsButton.setToolTip(tooltip.toString());
+                        distributionInvalidationStatusField.setStringValue(distribution.getInvalidationStatus());
                     }
                     finally {
-                    toggleDistributionSettings(true);
+                        toggleDistributionSettings(true);
                     }
                 }
 
