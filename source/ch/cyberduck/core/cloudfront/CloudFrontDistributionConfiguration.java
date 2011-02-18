@@ -59,7 +59,7 @@ public class CloudFrontDistributionConfiguration extends HTTP3Session implements
     /**
      * Cache distribution status result.
      */
-    private Map<ch.cyberduck.core.cdn.Distribution.Method, Map<String, ch.cyberduck.core.cdn.Distribution>> distributionStatus
+    protected Map<ch.cyberduck.core.cdn.Distribution.Method, Map<String, ch.cyberduck.core.cdn.Distribution>> distributionStatus
             = new HashMap<ch.cyberduck.core.cdn.Distribution.Method, Map<String, ch.cyberduck.core.cdn.Distribution>>();
 
     public CloudFrontDistributionConfiguration(LoginController parent, Credentials credentials, ErrorListener listener) {
@@ -166,6 +166,10 @@ public class CloudFrontDistributionConfiguration extends HTTP3Session implements
         return Locale.localizedString("Amazon CloudFront", "S3");
     }
 
+    public String toString(ch.cyberduck.core.cdn.Distribution.Method method) {
+        return this.toString();
+    }
+
     public boolean isConfigured(ch.cyberduck.core.cdn.Distribution.Method method) {
         return !distributionStatus.get(method).isEmpty();
     }
@@ -179,30 +183,34 @@ public class CloudFrontDistributionConfiguration extends HTTP3Session implements
     }
 
     public ch.cyberduck.core.cdn.Distribution read(String origin, ch.cyberduck.core.cdn.Distribution.Method method) {
-        if(!distributionStatus.get(method).containsKey(origin)
-                || !distributionStatus.get(method).get(origin).isDeployed()) {
-            try {
-                this.check();
-                this.message(MessageFormat.format(Locale.localizedString("Reading CDN configuration of {0}", "Status"),
-                        origin));
+        if(method.equals(ch.cyberduck.core.cdn.Distribution.DOWNLOAD)
+                || method.equals(ch.cyberduck.core.cdn.Distribution.STREAMING)
+                || method.equals(ch.cyberduck.core.cdn.Distribution.CUSTOM)) {
+            if(!distributionStatus.get(method).containsKey(origin)
+                    || !distributionStatus.get(method).get(origin).isDeployed()) {
+                try {
+                    this.check();
+                    this.message(MessageFormat.format(Locale.localizedString("Reading CDN configuration of {0}", "Status"),
+                            origin));
 
-                for(ch.cyberduck.core.cdn.Distribution d : this.listDistributions(origin, method)) {
-                    // Cache distributions
-                    distributionStatus.get(method).put(origin, d);
-                    // We currently only support one distribution per bucket
-                    break;
+                    for(ch.cyberduck.core.cdn.Distribution d : this.listDistributions(origin, method)) {
+                        // Cache distributions
+                        distributionStatus.get(method).put(origin, d);
+                        // We currently only support one distribution per bucket
+                        break;
+                    }
                 }
-            }
-            catch(CloudFrontServiceException e) {
-                this.error("Cannot read CDN configuration", e);
-            }
-            catch(LoginCanceledException canceled) {
-                // User canceled Cloudfront login. Possibly not enabled in Amazon configuration.
-                distributionStatus.get(method).put(origin, new ch.cyberduck.core.cdn.Distribution(null,
-                        origin, method, false, null, canceled.getMessage()));
-            }
-            catch(IOException e) {
-                this.error("Cannot read CDN configuration", e);
+                catch(CloudFrontServiceException e) {
+                    this.error("Cannot read CDN configuration", e);
+                }
+                catch(LoginCanceledException canceled) {
+                    // User canceled Cloudfront login. Possibly not enabled in Amazon configuration.
+                    distributionStatus.get(method).put(origin, new ch.cyberduck.core.cdn.Distribution(null,
+                            origin, method, false, null, canceled.getMessage()));
+                }
+                catch(IOException e) {
+                    this.error("Cannot read CDN configuration", e);
+                }
             }
         }
         if(distributionStatus.get(method).containsKey(origin)) {
@@ -468,7 +476,7 @@ public class CloudFrontDistributionConfiguration extends HTTP3Session implements
                     defaultRootObject
             );
         }
-        return null;
+        throw new RuntimeException("Invalid distribution method:" + method);
     }
 
     /**
@@ -522,6 +530,9 @@ public class CloudFrontDistributionConfiguration extends HTTP3Session implements
                     null,
                     null,
                     defaultRootObject);
+        }
+        else {
+            throw new RuntimeException("Invalid distribution method:" + method);
         }
     }
 
@@ -580,6 +591,9 @@ public class CloudFrontDistributionConfiguration extends HTTP3Session implements
                 }
             }
         }
+        else {
+            throw new RuntimeException("Invalid distribution method:" + method);
+        }
         return list;
     }
 
@@ -637,6 +651,9 @@ public class CloudFrontDistributionConfiguration extends HTTP3Session implements
         }
         else if(distribution.getMethod().equals(ch.cyberduck.core.cdn.Distribution.CUSTOM)) {
             cf.deleteDistribution(distribution.getId());
+        }
+        else {
+            throw new RuntimeException("Invalid distribution method:" + distribution.getMethod());
         }
     }
 }
