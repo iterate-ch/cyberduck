@@ -22,6 +22,9 @@
 "Streaming (RTMP)" = "Pretočne vsebine (RTMP) CDN";
 "Custom Origin Server (HTTP/HTTPS)" = "Custom Origin Server (HTTP/HTTPS) CDN";
 
+/* S3 Website Configuration with index document */
+"Website Configuration" = "Website Configuration";
+
 /* Storage class */
 "STANDARD" = "Navadno Amazon S3 shranjevanje podatkov";
 "REDUCED_REDUNDANCY" = "»Reduced Redundancy Storage« (RSS)";

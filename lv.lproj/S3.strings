@@ -22,6 +22,9 @@
 "Streaming (RTMP)" = "Straumēšana (RTMP) CDN";
 "Custom Origin Server (HTTP/HTTPS)" = "Custom Origin Server (HTTP/HTTPS) CDN";
 
+/* S3 Website Configuration with index document */
+"Website Configuration" = "Website Configuration";
+
 /* Storage class */
 "STANDARD" = "Pastāvīgā Amazon S3 glabātuve";
 "REDUCED_REDUNDANCY" = "Samazināta līdzīgo datu glabātuve (RRS)";
