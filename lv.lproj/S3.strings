@@ -18,9 +18,9 @@
 "ap-southeast-1" = "Āzija un Klusais okeāns (Singapore)";
 
 /* Delivery methods including streaming protocols. */ 
-"Download (HTTP)" = "Lejuplāde (HTTP)";
-"Streaming (RTMP)" = "Straumēšana (RTMP)";
-"Custom Origin Server (HTTP/HTTPS)" = "Custom Origin Server (HTTP/HTTPS)";
+"Download (HTTP)" = "Lejuplāde (HTTP) CDN";
+"Streaming (RTMP)" = "Straumēšana (RTMP) CDN";
+"Custom Origin Server (HTTP/HTTPS)" = "Custom Origin Server (HTTP/HTTPS) CDN";
 
 /* Storage class */
 "STANDARD" = "Pastāvīgā Amazon S3 glabātuve";
