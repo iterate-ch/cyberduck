@@ -113,6 +113,13 @@ public interface DistributionConfiguration {
     String toString();
 
     /**
+     *
+     * @param method
+     * @return
+     */
+    String toString(Distribution.Method method);
+
+    /**
      * Clear any cached distribution information.
      *
      * @see #isConfigured(ch.cyberduck.core.cdn.Distribution.Method)

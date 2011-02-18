@@ -388,6 +388,10 @@ public class CFSession extends CloudHTTP4Session {
                         return Locale.localizedString("Akamai", "Mosso");
                     }
 
+                    public String toString(Distribution.Method method) {
+                        return this.toString();
+                    }
+
                     public void clear() {
                         distributionStatus.clear();
                     }
