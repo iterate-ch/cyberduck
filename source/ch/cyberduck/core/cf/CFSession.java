@@ -331,7 +331,6 @@ public class CFSession extends CloudHTTP4Session {
                                         origin));
 
                                 cdnRequest = true;
-                                URI url = new URI(CFSession.this.getClient().getCdnManagementURL());
                                 final FilesCDNContainer info = CFSession.this.getClient().getCDNContainerInfo(origin);
                                 final Distribution distribution = new Distribution(info.getName(),
                                         new URI(CFSession.this.getClient().getStorageURL()).getHost(),
