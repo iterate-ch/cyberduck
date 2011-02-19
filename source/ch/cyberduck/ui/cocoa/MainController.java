@@ -1097,7 +1097,7 @@ public class MainController extends BundleController implements NSApplication.De
         final License l = LicenseFactory.find();
         if(!l.isReceipt() && !l.verify()) {
             final String lastversion = Preferences.instance().getProperty("donate.reminder");
-            if(NSBundle.mainBundle().infoDictionary().objectForKey("Version").toString().equals(lastversion)) {
+            if(NSBundle.mainBundle().infoDictionary().objectForKey("CFBundleShortVersionString").toString().equals(lastversion)) {
                 // Do not display if same version is installed
                 return NSApplication.NSTerminateNow;
             }
@@ -1126,7 +1126,7 @@ public class MainController extends BundleController implements NSApplication.De
                     this.neverShowDonationCheckbox.setTarget(this.id());
                     this.neverShowDonationCheckbox.setState(
                             Preferences.instance().getProperty("donate.reminder").equals(
-                                    NSBundle.mainBundle().infoDictionary().objectForKey("Version").toString())
+                                    NSBundle.mainBundle().infoDictionary().objectForKey("CFBundleShortVersionString").toString())
                                     ? NSCell.NSOnState : NSCell.NSOffState);
                 }
 
@@ -1155,7 +1155,7 @@ public class MainController extends BundleController implements NSApplication.De
                 private void terminate() {
                     if(neverShowDonationCheckbox.state() == NSCell.NSOnState) {
                         Preferences.instance().setProperty("donate.reminder",
-                                NSBundle.mainBundle().infoDictionary().objectForKey("Version").toString());
+                                NSBundle.mainBundle().infoDictionary().objectForKey("CFBundleShortVersionString").toString());
                     }
                     // Remeber this reminder date
                     Preferences.instance().setProperty("donate.reminder.date", System.currentTimeMillis());
