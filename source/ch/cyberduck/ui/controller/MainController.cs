@@ -210,6 +210,10 @@ namespace Ch.Cyberduck.Ui.Controller
         /// </summary>
         public virtual void Run()
         {
+            // set up the main form.
+            _bc = NewBrowser(true, true);
+            MainForm = _bc.View as Form;
+            
             if (CommandLineArgs.Count > 0)
             {
                 string filename = CommandLineArgs[0];
@@ -254,10 +258,6 @@ namespace Ch.Cyberduck.Ui.Controller
                     }
                 }
             }
-
-            // set up the main form.
-            _bc = NewBrowser(true, true);
-            MainForm = _bc.View as Form;
 
             if (CommandLineArgs.Count > 0)
             {
