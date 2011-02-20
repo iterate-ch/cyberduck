@@ -381,7 +381,7 @@
     <target name="package-release" depends="clean, revision">
         <antcall target="package">
             <param name="system.min" value="10.5"/>
-            <param name="sparkle.feed" value="https://version.cyberduck.ch/changelog.rss"/>
+            <param name="sparkle.feed" value="http://version.cyberduck.ch/changelog.rss"/>
         </antcall>
         <antcall target="distribution-sparkle">
             <param name="url.archive" value="http://update.cyberduck.ch/Cyberduck-_REVISION_.tar.gz"/>
@@ -392,7 +392,7 @@
     <target name="package-beta" depends="clean, revision">
         <antcall target="package">
             <param name="system.min" value="10.5"/>
-            <param name="sparkle.feed" value="https://version.cyberduck.ch/beta/changelog.rss"/>
+            <param name="sparkle.feed" value="http://version.cyberduck.ch/beta/changelog.rss"/>
         </antcall>
         <antcall target="distribution-sparkle">
             <param name="url.archive" value="http://update.cyberduck.ch/beta/Cyberduck-_REVISION_.tar.gz"/>
@@ -403,7 +403,7 @@
     <target name="package-nightly" depends="clean, revision">
         <antcall target="package">
             <param name="system.min" value="10.5"/>
-            <param name="sparkle.feed" value="https://version.cyberduck.ch/nightly/changelog.rss"/>
+            <param name="sparkle.feed" value="http://version.cyberduck.ch/nightly/changelog.rss"/>
         </antcall>
         <antcall target="distribution-sparkle">
             <param name="url.archive" value="http://update.cyberduck.ch/nightly/Cyberduck-_REVISION_.tar.gz"/>
