@@ -24,6 +24,7 @@ import ch.cyberduck.core.sftp.HostKeyController;
 import ch.cyberduck.core.sftp.MemoryHostKeyVerifier;
 import ch.cyberduck.ui.Controller;
 import ch.cyberduck.ui.cocoa.application.NSAlert;
+import ch.cyberduck.ui.cocoa.application.NSCell;
 import ch.cyberduck.ui.cocoa.foundation.NSAutoreleasePool;
 import ch.ethz.ssh2.KnownHosts;
 
@@ -111,18 +112,20 @@ public class AlertHostKeyController extends MemoryHostKeyVerifier {
                         KnownHosts.createHexFingerprint(serverHostKeyAlgorithm, serverHostKey)),
                 Locale.localizedString("Allow"), // default button
                 Locale.localizedString("Deny"), // alternate button
-                isHostKeyDatabaseWritable() ? Locale.localizedString("Always") : null //other button
+                null //other button
         );
+        if(this.isHostKeyDatabaseWritable()) {
+            alert.setShowsSuppressionButton(true);
+            alert.suppressionButton().setTitle(Locale.localizedString("Always"));
+        }
         alert.setShowsHelp(true);
         SheetController c = new AlertController(parent, alert) {
             public void callback(final int returncode) {
                 if(returncode == DEFAULT_OPTION) {// allow host (once)
-                    allow(hostname, serverHostKeyAlgorithm, serverHostKey, false);
+                    allow(hostname, serverHostKeyAlgorithm, serverHostKey,
+                            alert.suppressionButton().state() == NSCell.NSOnState);
                 }
-                if(returncode == OTHER_OPTION) {// allow host (always)
-                    allow(hostname, serverHostKeyAlgorithm, serverHostKey, true);
-                }
-                if(returncode == ALTERNATE_OPTION) {
+                else {
                     log.warn("Cannot continue without a valid host key");
                 }
             }
@@ -151,19 +154,29 @@ public class AlertHostKeyController extends MemoryHostKeyVerifier {
                         KnownHosts.createHexFingerprint(serverHostKeyAlgorithm, serverHostKey)),
                 Locale.localizedString("Allow"), // defaultbutton
                 Locale.localizedString("Deny"), //alternative button
-                isHostKeyDatabaseWritable() ? Locale.localizedString("Always") : null //other button
+                null //other button
         );
+        if(this.isHostKeyDatabaseWritable()) {
+            alert.setShowsSuppressionButton(true);
+            alert.suppressionButton().setTitle(Locale.localizedString("Always"));
+        }
+        alert.setShowsHelp(true);
         SheetController c = new AlertController(parent, alert) {
             public void callback(final int returncode) {
                 if(returncode == DEFAULT_OPTION) {
-                    allow(hostname, serverHostKeyAlgorithm, serverHostKey, false);
+                    allow(hostname, serverHostKeyAlgorithm, serverHostKey,
+                            alert.suppressionButton().state() == NSCell.NSOnState);
                 }
-                if(returncode == OTHER_OPTION) {
-                    allow(hostname, serverHostKeyAlgorithm, serverHostKey, true);
-                }
-                if(returncode == ALTERNATE_OPTION) {
+                else {
                     log.warn("Cannot continue without a valid host key");
                 }
+            }
+
+            @Override
+            protected void help() {
+                StringBuilder site = new StringBuilder(Preferences.instance().getProperty("website.help"));
+                site.append("/").append(Protocol.SFTP.getIdentifier());
+                openUrl(site.toString());
             }
         };
         c.beginSheet();
