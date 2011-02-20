@@ -956,7 +956,12 @@ public class S3Session extends CloudHTTP3Session {
                                     }
                                     catch(ServiceException e) {
                                         // Not found.
-                                        distributionStatus.get(method).put(origin, new Distribution(null, origin, method, false, url, e.getErrorMessage()));
+                                        String status = Locale.localizedString(e.getErrorCode());
+                                        if(status.equals(e.getErrorCode())) {
+                                            // No localization found. Use english text
+                                            status = e.getErrorMessage();
+                                        }
+                                        distributionStatus.get(method).put(origin, new Distribution(null, origin, method, false, url, status));
                                     }
                                 }
                                 catch(IOException e) {

@@ -24,6 +24,7 @@
 
 /* S3 Website Configuration with index document */
 "Website Configuration" = "Website Configuration";
+"NoSuchWebsiteConfiguration" = "The specified bucket does not have a website configuration";
 
 /* Storage class */
 "STANDARD" = "Navadno Amazon S3 shranjevanje podatkov";
