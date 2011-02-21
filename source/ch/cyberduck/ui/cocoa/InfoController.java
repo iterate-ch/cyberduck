@@ -1059,8 +1059,12 @@ public class InfoController extends ToolbarWindowController {
                     new WriteMetadataWorker(files, update) {
                         @Override
                         public void cleanup(Map<String, String> metadata) {
-                            toggleMetadataSettings(true);
-                            initMetadata();
+                            try {
+                                initMetadata();
+                            }
+                            finally {
+                                toggleMetadataSettings(true);
+                            }
                         }
                     })
             );
@@ -1605,8 +1609,12 @@ public class InfoController extends ToolbarWindowController {
             controller.background(new WorkerBackgroundAction<List<Permission>>(controller, new ReadPermissionWorker(files) {
                 @Override
                 public void cleanup(List<Permission> permissions) {
-                    initPermissions(permissions);
-                    togglePermissionSettings(true);
+                    try {
+                        initPermissions(permissions);
+                    }
+                    finally {
+                        togglePermissionSettings(true);
+                    }
                 }
             }));
         }
@@ -1701,8 +1709,12 @@ public class InfoController extends ToolbarWindowController {
             controller.background(new WorkerBackgroundAction<Long>(controller, new ReadSizeWorker(files) {
                 @Override
                 public void cleanup(Long size) {
-                    updateSize(size);
-                    toggleSizeSettings(true);
+                    try {
+                        updateSize(size);
+                    }
+                    finally {
+                        toggleSizeSettings(true);
+                    }
                 }
             }));
         }
@@ -1724,12 +1736,16 @@ public class InfoController extends ToolbarWindowController {
                 controller.background(new WorkerBackgroundAction<List<String>>(controller, new ChecksumWorker(files) {
                     @Override
                     public void cleanup(List<String> checksums) {
-                        for(String checksum : checksums) {
-                            if(StringUtils.isNotBlank(checksum)) {
-                                updateField(checksumField, checksum);
+                        try {
+                            for(String checksum : checksums) {
+                                if(StringUtils.isNotBlank(checksum)) {
+                                    updateField(checksumField, checksum);
+                                }
                             }
                         }
-                        toggleSizeSettings(true);
+                        finally {
+                            toggleSizeSettings(true);
+                        }
                     }
                 }));
             }
@@ -1929,12 +1945,16 @@ public class InfoController extends ToolbarWindowController {
             controller.background(new WorkerBackgroundAction<Map<String, String>>(controller, new ReadMetadataWorker(files) {
                 @Override
                 public void cleanup(Map<String, String> updated) {
-                    List<Header> m = new ArrayList<Header>();
-                    for(String key : updated.keySet()) {
-                        m.add(new Header(key, updated.get(key)));
+                    try {
+                        List<Header> m = new ArrayList<Header>();
+                        for(String key : updated.keySet()) {
+                            m.add(new Header(key, updated.get(key)));
+                        }
+                        setMetadata(m);
                     }
-                    setMetadata(m);
-                    toggleMetadataSettings(true);
+                    finally {
+                        toggleMetadataSettings(true);
+                    }
                 }
             }));
         }
@@ -1973,8 +1993,12 @@ public class InfoController extends ToolbarWindowController {
             controller.background(new WorkerBackgroundAction<List<Acl.UserAndRole>>(controller, new ReadAclWorker(files) {
                 @Override
                 public void cleanup(List<Acl.UserAndRole> updated) {
-                    setAcl(updated);
-                    toggleAclSettings(true);
+                    try {
+                        setAcl(updated);
+                    }
+                    finally {
+                        toggleAclSettings(true);
+                    }
                 }
             }));
         }
@@ -2103,8 +2127,12 @@ public class InfoController extends ToolbarWindowController {
                     new WritePermissionWorker(files, permission, recursive) {
                         @Override
                         public void cleanup(Permission permission) {
-                            togglePermissionSettings(true);
-                            initPermissions();
+                            try {
+                                initPermissions(Collections.singletonList(permission));
+                            }
+                            finally {
+                                togglePermissionSettings(true);
+                            }
                         }
                     })
             );
@@ -2404,8 +2432,12 @@ public class InfoController extends ToolbarWindowController {
             controller.background(new WorkerBackgroundAction<Long>(controller, new CalculateSizeWorker(files) {
                 @Override
                 public void cleanup(Long size) {
-                    updateSize(size);
-                    toggleSizeSettings(true);
+                    try {
+                        updateSize(size);
+                    }
+                    finally {
+                        toggleSizeSettings(true);
+                    }
                 }
 
                 @Override
