@@ -58,8 +58,8 @@ public class ECSession extends S3Session {
     }
 
     @Override
-    protected void configure() {
-        super.configure();
+    protected void configure(String hostname) {
+        super.configure(hostname);
         Jets3tProperties configuration = this.getProperties();
         configuration.setProperty("s3service.s3-endpoint-virtual-path", Path.normalize("/services/Walrus"));
         configuration.setProperty("s3service.disable-dns-buckets", String.valueOf(true));

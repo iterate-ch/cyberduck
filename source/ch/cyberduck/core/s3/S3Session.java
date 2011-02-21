@@ -133,15 +133,16 @@ public class S3Session extends CloudHTTP3Session {
         return configuration;
     }
 
-    protected void configure() {
+    protected void configure(String hostname) {
+        log.debug("configure:" + hostname);
         if(StringUtils.isNotBlank(host.getProtocol().getDefaultHostname())
-                && host.getHostname().endsWith(host.getProtocol().getDefaultHostname())) {
+                && hostname.endsWith(host.getProtocol().getDefaultHostname())) {
             // The user specified a DNS bucket endpoint. Connect to the default hostname instead.
             configuration.setProperty("s3service.s3-endpoint", host.getProtocol().getDefaultHostname());
         }
         else {
             // Standard configuration
-            configuration.setProperty("s3service.s3-endpoint", host.getHostname());
+            configuration.setProperty("s3service.s3-endpoint", hostname);
             configuration.setProperty("s3service.disable-dns-buckets", String.valueOf(true));
         }
         configuration.setProperty("s3service.enable-storage-classes", String.valueOf(true));
@@ -225,7 +226,7 @@ public class S3Session extends CloudHTTP3Session {
             if(host.getCredentials().isAnonymousLogin()) {
                 log.info("Anonymous cannot list buckets");
                 // Listing buckets not supported for thirdparty buckets
-                String bucketname = this.getContainerForHostname(host.getHostname());
+                String bucketname = this.getContainerForHostname(host.getHostname(true));
                 if(StringUtils.isEmpty(bucketname)) {
                     if(StringUtils.isNotBlank(host.getDefaultPath())) {
                         Path d = PathFactory.createPath(this, host.getDefaultPath(), AbstractPath.DIRECTORY_TYPE);
@@ -234,10 +235,13 @@ public class S3Session extends CloudHTTP3Session {
                         }
                         bucketname = d.getName();
                     }
+                    log.info("Using default path to determine bucket name:" + bucketname);
                 }
                 if(StringUtils.isEmpty(bucketname)) {
-                    // Should do a lookup if a CNAME is pointing to s3.amazonaws.com
-                    throw new ConnectionCanceledException("No bucket name given in hostname " + host.getHostname());
+                    log.warn("No bucket name given in hostname " + host.getHostname());
+                    // Rewrite endpoint to default S3 endpoint
+                    this.configure(host.getProtocol().getDefaultHostname());
+                    bucketname = host.getHostname(true);
                 }
                 if(!this.getClient().isBucketAccessible(bucketname)) {
                     throw new IOException("Bucket not accessible: " + bucketname);
@@ -255,10 +259,10 @@ public class S3Session extends CloudHTTP3Session {
             }
             else {
                 // If bucketname is specified in hostname, try to connect to this particular bucket only.
-                String bucketname = this.getContainerForHostname(host.getHostname());
+                String bucketname = this.getContainerForHostname(host.getHostname(true));
                 if(StringUtils.isNotEmpty(bucketname)) {
                     if(!this.getClient().isBucketAccessible(bucketname)) {
-                        throw new IOException("Bucket not accessible: " + bucketname);
+                        throw new IOException(Locale.localizedString("Cannot read container configuration", "Error"));
                     }
                     S3Bucket bucket = new S3Bucket(bucketname);
                     try {
@@ -371,7 +375,7 @@ public class S3Session extends CloudHTTP3Session {
         this.fireConnectionWillOpenEvent();
 
         // Configure connection options
-        this.configure();
+        this.configure(host.getHostname());
 
         // Prompt the login credentials first
         this.login();

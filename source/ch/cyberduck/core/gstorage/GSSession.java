@@ -56,8 +56,8 @@ public class GSSession extends S3Session {
     }
 
     @Override
-    protected void configure() {
-        super.configure();
+    protected void configure(String hostname) {
+        super.configure(hostname);
         Jets3tProperties configuration = super.getProperties();
         configuration.setProperty("s3service.enable-storage-classes", String.valueOf(false));
     }
