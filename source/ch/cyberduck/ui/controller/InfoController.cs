@@ -1442,11 +1442,12 @@ namespace Ch.Cyberduck.Ui.Controller
                     {
                         lock (SyncRoot)
                         {
-                            return Open[controller];
+                            InfoController ic = Open[controller];
+                            ic.Files = files;
+                            return ic;
                         }
                     }
                 }
-
                 InfoController c = new InfoController(controller, files);
                 controller.View.ViewClosedEvent += delegate
                                                        {
