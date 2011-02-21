@@ -872,7 +872,9 @@ public class S3Path extends CloudPath {
 
                 if(this.isRoot()) {
                     // List all buckets
-                    for(S3Bucket bucket : this.getSession().getBuckets(false)) {
+                    for(S3Bucket bucket : this.getSession().getBuckets(
+                            this.cache().get(this.getReference()).attributes().isInvalid()
+                    )) {
                         Path p = PathFactory.createPath(this.getSession(), this.getAbsolute(), bucket.getName(),
                                 Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
                         if(null != bucket.getOwner()) {
