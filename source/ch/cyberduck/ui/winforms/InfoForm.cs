@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2011 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -23,7 +23,6 @@ using System.Windows.Forms;
 using Ch.Cyberduck.Core;
 using ch.cyberduck.core.cdn;
 using ch.cyberduck.core.i18n;
-using ch.cyberduck.ui.controller;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Winforms.Controls;
 using java.lang;
@@ -512,8 +511,8 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public string DistributionDefaultRoot
         {
-            get { return defaultRootComboBox.Text; }
-            set { defaultRootComboBox.Text = value; }
+            get { return (String) defaultRootComboBox.SelectedValue; }
+            set { defaultRootComboBox.SelectedValue = value; }
         }
 
         public event VoidHandler CalculateSize = delegate { };
@@ -606,9 +605,12 @@ namespace Ch.Cyberduck.Ui.Winforms
             deliveryMethodComboBox.ValueMember = "Value";
         }
 
-        public void PopulateDefaultRoot(IList<string> roots)
+        public void PopulateDefaultRoot(IList<KeyValuePair<string, string>> roots)
         {
+            defaultRootComboBox.DataSource = null;
             defaultRootComboBox.DataSource = roots;
+            defaultRootComboBox.DisplayMember = "Key";
+            defaultRootComboBox.ValueMember = "Value";
         }
 
         public bool DistributionDeliveryMethodEnabled

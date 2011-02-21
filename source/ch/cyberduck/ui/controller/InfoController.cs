@@ -1,5 +1,5 @@
-﻿﻿﻿﻿﻿//
-// Copyright (c) 2010 Yves Langisch. All rights reserved.
+﻿// 
+// Copyright (c) 2010-2011 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -23,18 +23,17 @@ using System.Media;
 using System.Windows.Forms;
 using ch.cyberduck.core;
 using Ch.Cyberduck.Core;
+using ch.cyberduck.core.cdn;
 using ch.cyberduck.core.cloud;
 using ch.cyberduck.core.s3;
 using ch.cyberduck.ui;
 using ch.cyberduck.ui.action;
-using ch.cyberduck.ui.controller;
 using ch.cyberduck.ui.controller.threading;
 using Ch.Cyberduck.Ui.Controller.Threading;
 using java.lang;
 using java.util;
 using org.apache.log4j;
 using StructureMap;
-using Distribution = ch.cyberduck.core.cdn.Distribution;
 using Locale = ch.cyberduck.core.i18n.Locale;
 using Object = System.Object;
 using String = System.String;
@@ -646,10 +645,15 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             View.DistributionEnabled = stop && enable;
             View.DistributionDeliveryMethodEnabled = stop && enable;
-            View.DistributionLoggingEnabled = stop && enable && session.cdn().isLoggingSupported(View.DistributionDeliveryMethod);
-            View.DistributionCnameEnabled = stop && enable && session.cdn().isCnameSupported(View.DistributionDeliveryMethod);
-            View.DistributionInvalidateObjectsEnabled = stop && enable && session.cdn().isInvalidationSupported(View.DistributionDeliveryMethod);
-            View.DistributionDefaultRootEnabled = stop && enable && session.cdn().isDefaultRootSupported(View.DistributionDeliveryMethod);
+            View.DistributionLoggingEnabled = stop && enable &&
+                                              session.cdn().isLoggingSupported(View.DistributionDeliveryMethod);
+            View.DistributionCnameEnabled = stop && enable &&
+                                            session.cdn().isCnameSupported(View.DistributionDeliveryMethod);
+            View.DistributionInvalidateObjectsEnabled = stop && enable &&
+                                                        session.cdn().isInvalidationSupported(
+                                                            View.DistributionDeliveryMethod);
+            View.DistributionDefaultRootEnabled = stop && enable &&
+                                                  session.cdn().isDefaultRootSupported(View.DistributionDeliveryMethod);
             if (stop)
             {
                 View.DistributionAnimationActive = false;
@@ -1156,7 +1160,8 @@ namespace Ch.Cyberduck.Ui.Controller
                                                                                    Locale.localizedString("None"), null)
                                                                            };
             View.PopulateDistributionDeliveryMethod(methods);
-            View.PopulateDefaultRoot(new List<string> {Locale.localizedString("None")});
+            View.PopulateDefaultRoot(new List<KeyValuePair<string, string>>
+                                         {new KeyValuePair<string, string>(Locale.localizedString("None"), null)});
 
             Session session = _controller.getSession();
             View.DistributionTitle = String.Format(Locale.localizedString("Enable {0} Distribution", "Status"),
@@ -1786,17 +1791,30 @@ namespace Ch.Cyberduck.Ui.Controller
                     }
                     Session session = BrowserController.getSession();
                     _view.DistributionTitle = String.Format(Locale.localizedString("Enable {0} Distribution", "Status"),
-                                                           session.cdn().toString(_deliveryMethod));
+                                                            session.cdn().toString(_deliveryMethod));
+
+                    KeyValuePair<string, string> noneEntry =
+                        new KeyValuePair<string, string>(Locale.localizedString("None"), String.Empty);
 
                     if (session.cdn().isDefaultRootSupported(_view.DistributionDeliveryMethod))
                     {
-                        List<String> defaultRoots = new List<string> {Locale.localizedString("None")};
+                        List<KeyValuePair<string, string>> defaultRoots = new List<KeyValuePair<string, string>>
+                                                                              {noneEntry};
                         foreach (AbstractPath next in _infoController._files[0].getContainer().children())
                         {
                             if (next.attributes().isFile())
                             {
-                                defaultRoots.Add(next.getName());
+                                defaultRoots.Add(new KeyValuePair<string, string>(next.getName(), next.getName()));
                             }
+                        }
+
+                        KeyValuePair<string, string> defaultEntry =
+                            new KeyValuePair<string, string>(_distribution.getDefaultRootObject(),
+                                                             _distribution.getDefaultRootObject());
+
+                        if (!defaultRoots.Contains(defaultEntry))
+                        {
+                            defaultRoots.Add(defaultEntry);
                         }
                         _view.PopulateDefaultRoot(defaultRoots);
                     }
@@ -1807,7 +1825,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     }
                     else
                     {
-                        _view.DistributionDefaultRoot = Locale.localizedString("None");
+                        _view.DistributionDefaultRoot = String.Empty;
                     }
                     StringBuilder tooltip = new StringBuilder();
                     int i = 0;
@@ -2134,7 +2152,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 _logging = _view.DistributionLogging;
                 _cname = _view.DistributionCname;
                 _distribution = _view.Distribution;
-                _defaultRoot = _view.DistributionDefaultRoot;
+                _defaultRoot = Utils.IsBlank(_view.DistributionDefaultRoot) ? null : _view.DistributionDefaultRoot;
             }
 
             public override void run()
