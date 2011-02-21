@@ -146,7 +146,14 @@ public class GDPath extends Path {
     private static final String DOCUMENT_FILE_TYPE = "file";
 
     /**
-     * Kind of document or folder.
+     * Kind of document or folder. Type is currently one of:
+     * document
+     * drawing
+     * folder
+     * pdf
+     * presentation
+     * spreadsheet
+     * form
      */
     private String documentType;
 
@@ -677,18 +684,6 @@ public class GDPath extends Path {
         do {
             for(final DocumentListEntry entry : pager.getEntries()) {
                 log.debug("Resource:" + entry.getResourceId());
-                boolean include = false;
-                for(Person person : entry.getAuthors()) {
-                    log.debug("Author of document " + entry.getResourceId() + ":" + person.getEmail());
-                    if(person.getEmail().equalsIgnoreCase(this.getSession().getHost().getCredentials().getUsername())) {
-                        include = true;
-                        break;
-                    }
-                }
-                if(!include) {
-                    log.warn("Skip document with different owner:" + entry);
-                    continue;
-                }
                 final String type = entry.getType();
                 GDPath path = new GDPath(this.getSession(), this.getAbsolute(), entry.getTitle().getPlainText(),
                         FolderEntry.LABEL.equals(type) ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
