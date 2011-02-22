@@ -46,12 +46,12 @@ public abstract class Local extends AbstractPath {
     public class LocalPermission extends Permission {
         @Override
         public boolean isReadable() {
-            return _impl.canRead();
+            return new File(path).canRead();
         }
 
         @Override
         public boolean isWritable() {
-            return _impl.canWrite();
+            return new File(path).canWrite();
         }
 
         @Override
@@ -71,7 +71,7 @@ public abstract class Local extends AbstractPath {
     public class LocalAttributes extends Attributes {
         @Override
         public long getModificationDate() {
-            return _impl.lastModified();
+            return new File(path).lastModified();
         }
 
         /**
@@ -110,7 +110,7 @@ public abstract class Local extends AbstractPath {
             if(this.isDirectory()) {
                 return -1;
             }
-            return _impl.length();
+            return new File(path).length();
         }
 
         @Override
@@ -120,7 +120,7 @@ public abstract class Local extends AbstractPath {
 
         @Override
         public boolean isVolume() {
-            return null == _impl.getParent();
+            return null == new File(path).getParent();
         }
 
         /**
@@ -131,7 +131,7 @@ public abstract class Local extends AbstractPath {
          */
         @Override
         public boolean isDirectory() {
-            return _impl.isDirectory();
+            return new File(path).isDirectory();
         }
 
         /**
@@ -142,7 +142,7 @@ public abstract class Local extends AbstractPath {
          */
         @Override
         public boolean isFile() {
-            return _impl.isFile();
+            return new File(path).isFile();
         }
 
         /**
@@ -163,7 +163,7 @@ public abstract class Local extends AbstractPath {
             // the absolute path is the path through the link, whereas the canonical path
             // is the path the link references.
             try {
-                return !_impl.getAbsolutePath().equals(_impl.getCanonicalPath());
+                return !new File(path).getAbsolutePath().equals(new File(path).getCanonicalPath());
             }
             catch(IOException e) {
                 return false;
@@ -190,7 +190,8 @@ public abstract class Local extends AbstractPath {
         }
     }
 
-    protected File _impl;
+    private String path;
+
 
     /**
      * @param parent
@@ -238,7 +239,7 @@ public abstract class Local extends AbstractPath {
     @Override
     public void touch() {
         try {
-            if(_impl.createNewFile()) {
+            if(new File(path).createNewFile()) {
                 this.setIcon(0);
             }
         }
@@ -256,7 +257,7 @@ public abstract class Local extends AbstractPath {
     @Override
     public void mkdir(boolean recursive) {
         if(recursive) {
-            if(_impl.mkdirs()) {
+            if(new File(path).mkdirs()) {
                 if(log.isInfoEnabled()) {
                     log.info("Created directory " + this.getAbsolute());
                 }
@@ -269,7 +270,7 @@ public abstract class Local extends AbstractPath {
 
     @Override
     public void mkdir() {
-        if(_impl.mkdir()) {
+        if(new File(path).mkdir()) {
             if(log.isInfoEnabled()) {
                 log.info("Created directory " + this.getAbsolute());
             }
@@ -294,7 +295,7 @@ public abstract class Local extends AbstractPath {
             this.trash();
         }
         else {
-            if(!_impl.delete()) {
+            if(!new File(path).delete()) {
                 log.warn("Delete failed:" + this.getAbsolute());
             }
         }
@@ -338,9 +339,9 @@ public abstract class Local extends AbstractPath {
     @Override
     public AttributedList<Local> list() {
         final AttributedList<Local> children = new AttributedList<Local>();
-        File[] files = _impl.listFiles();
+        File[] files = new File(path).listFiles();
         if(null == files) {
-            log.error("_impl.listFiles == null");
+            log.error("new File(path).listFiles == null");
             return children;
         }
         for(File file : files) {
@@ -366,7 +367,7 @@ public abstract class Local extends AbstractPath {
 
     @Override
     public String getAbsolute() {
-        return _impl.getAbsolutePath();
+        return new File(path).getAbsolutePath();
     }
 
     /**
@@ -379,7 +380,7 @@ public abstract class Local extends AbstractPath {
     @Override
     public AbstractPath getSymlinkTarget() {
         try {
-            return LocalFactory.createLocal(this, _impl.getCanonicalPath());
+            return LocalFactory.createLocal(this, new File(path).getCanonicalPath());
         }
         catch(IOException e) {
             log.error(e.getMessage());
@@ -392,12 +393,12 @@ public abstract class Local extends AbstractPath {
      */
     @Override
     public String getName() {
-        return _impl.getName();
+        return new File(path).getName();
     }
 
     @Override
     public AbstractPath getParent() {
-        return LocalFactory.createLocal(_impl.getParentFile());
+        return LocalFactory.createLocal(new File(path).getParentFile());
     }
 
     /**
@@ -405,7 +406,7 @@ public abstract class Local extends AbstractPath {
      */
     @Override
     public boolean exists() {
-        return _impl.exists();
+        return new File(path).exists();
     }
 
     @Override
@@ -420,12 +421,12 @@ public abstract class Local extends AbstractPath {
                 }
             }
         }
-        _impl = new File(normalized);
+        path = normalized;
     }
 
     @Override
     public void writeTimestamp(long created, long modified, long accessed) {
-        if(!_impl.setLastModified(modified)) {
+        if(!new File(path).setLastModified(modified)) {
             log.warn("Write modification date failed:" + this.getAbsolute());
         }
     }
@@ -435,7 +436,7 @@ public abstract class Local extends AbstractPath {
 
     @Override
     public void rename(AbstractPath renamed) {
-        if(_impl.renameTo(new File(renamed.getAbsolute()))) {
+        if(new File(path).renameTo(new File(renamed.getAbsolute()))) {
             this.setPath(renamed.getAbsolute());
         }
         else {
@@ -452,7 +453,7 @@ public abstract class Local extends AbstractPath {
         FileInputStream in = null;
         FileOutputStream out = null;
         try {
-            in = new FileInputStream(_impl);
+            in = new FileInputStream(new File(path));
             out = new FileOutputStream(copy.getAbsolute());
             IOUtils.copy(in, out);
         }
@@ -467,7 +468,7 @@ public abstract class Local extends AbstractPath {
 
     @Override
     public int hashCode() {
-        return _impl.getAbsolutePath().hashCode();
+        return new File(path).getAbsolutePath().hashCode();
     }
 
     /**
@@ -497,7 +498,7 @@ public abstract class Local extends AbstractPath {
     @Override
     public String toURL() {
         try {
-            return _impl.toURI().toURL().toString();
+            return new File(path).toURI().toURL().toString();
         }
         catch(MalformedURLException e) {
             log.error(e.getMessage());
@@ -533,10 +534,10 @@ public abstract class Local extends AbstractPath {
     public abstract void setWhereFrom(final String dataUrl);
 
     public java.io.InputStream getInputStream() throws FileNotFoundException {
-        return new RepeatableFileInputStream(_impl);
+        return new RepeatableFileInputStream(new File(path));
     }
 
     public java.io.OutputStream getOutputStream(boolean resume) throws FileNotFoundException {
-        return new FileOutputStream(_impl, resume);
+        return new FileOutputStream(new File(path), resume);
     }
 }
