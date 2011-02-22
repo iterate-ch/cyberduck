@@ -198,7 +198,7 @@ public class FinderLocal extends Local {
             // if the link points to a nonexistent file, this method returns null. If flag is false,
             // the attributes of the symbolic link are returned.
             return NSFileManager.defaultManager().attributesOfItemAtPath_error(
-                    _impl.getAbsolutePath(), null);
+                    getAbsolute(), null);
         }
 
         /**
@@ -367,7 +367,7 @@ public class FinderLocal extends Local {
                         NSDictionary.dictionaryWithObjectsForKeys(
                                 NSArray.arrayWithObject(NSNumber.numberWithInt(Integer.valueOf(perm.getOctalString(), 8))),
                                 NSArray.arrayWithObject(NSFileManager.NSFilePosixPermissions)),
-                        _impl.getAbsolutePath(), null);
+                        getAbsolute(), null);
                 if(!success) {
                     log.error("File attribute changed failed:" + getAbsolute());
                 }
@@ -395,7 +395,7 @@ public class FinderLocal extends Local {
                         NSDictionary.dictionaryWithObjectsForKeys(
                                 NSArray.arrayWithObject(NSDate.dateWithTimeIntervalSince1970(modified / 1000)),
                                 NSArray.arrayWithObject(NSFileManager.NSFileModificationDate)),
-                        _impl.getAbsolutePath(), null);
+                        getAbsolute(), null);
                 if(!success) {
                     log.error("File attribute changed failed:" + getAbsolute());
                 }
