@@ -1,5 +1,5 @@
-﻿﻿//
-// Copyright (c) 2010 Yves Langisch. All rights reserved.
+﻿// 
+// Copyright (c) 2010-2011 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -349,7 +349,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     return l;
                 }
                 //remove region
-                int m = sysLocale.IndexOf('-');
+                int m = sysLocale.IndexOf('_');
                 if (m > 0)
                 {
                     string country = sysLocale.Substring(0, m);
