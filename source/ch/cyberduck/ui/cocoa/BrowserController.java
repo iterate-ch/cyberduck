@@ -3072,7 +3072,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
      * @return YES if your implementation was able to read the pasteboard data successfully; otherwise, NO.
      */
     public boolean readSelectionFromPasteboard(NSPasteboard pboard) {
-        return this.paste(pboard);
+        return this.upload(pboard);
     }
 
     /**
@@ -3145,7 +3145,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         final PathPasteboard pasteboard = PathPasteboard.getPasteboard(this.getSession());
         if(pasteboard.isEmpty()) {
             NSPasteboard pboard = NSPasteboard.generalPasteboard();
-            this.paste(pboard);
+            this.upload(pboard);
         }
         else {
             final Map<Path, Path> files = new HashMap<Path, Path>();
@@ -3179,7 +3179,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     /**
      * @param pboard
      */
-    public boolean paste(NSPasteboard pboard) {
+    private boolean upload(NSPasteboard pboard) {
         if(!this.isMounted()) {
             return false;
         }
