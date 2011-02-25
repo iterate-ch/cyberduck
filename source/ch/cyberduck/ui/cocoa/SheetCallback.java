@@ -34,7 +34,7 @@ public interface SheetCallback {
      */
     public final int OTHER_OPTION = NSAlert.NSAlertOtherReturn;
     /**
-     * Cancel proposed operation
+     * Non default option
      */
     public final int ALTERNATE_OPTION = NSAlert.NSAlertAlternateReturn;
 

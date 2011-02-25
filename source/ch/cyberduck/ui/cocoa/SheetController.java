@@ -29,8 +29,8 @@ import org.rococoa.ID;
 
 import org.apache.log4j.Logger;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @version $Id$
@@ -87,8 +87,7 @@ public abstract class SheetController extends WindowController implements SheetC
     @Action
     public void closeSheet(final NSButton sender) {
         log.debug("closeSheet:" + sender);
-        if(sender.tag() == DEFAULT_OPTION
-                || sender.tag() == OTHER_OPTION) {
+        if(sender.tag() == DEFAULT_OPTION || sender.tag() == OTHER_OPTION) {
             if(!this.validateInput()) {
                 AppKitFunctionsLibrary.beep();
                 return;
@@ -166,8 +165,8 @@ public abstract class SheetController extends WindowController implements SheetC
      * Keep a reference to the sheet to protect it from being
      * deallocated as a weak reference before the callback from the runtime
      */
-    protected static final List<SheetController> sheetRegistry
-            = new ArrayList<SheetController>();
+    protected static final Set<SheetController> sheetRegistry
+            = new HashSet<SheetController>();
 
     protected void beginSheetImpl() {
         this.loadBundle();
