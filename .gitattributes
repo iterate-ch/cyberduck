@@ -28,7 +28,6 @@ ca.lproj/Crash.strings -text svneol=unset#text/utf-16
 ca.lproj/Credentials.strings -text svneol=unset#text/utf-16
 ca.lproj/Donate.nib/keyedobjects.nib -text
 ca.lproj/Donate.strings -text svneol=unset#text/utf-16
-ca.lproj/Download.nib/keyedobjects.nib -text
 ca.lproj/Download.strings -text svneol=unset#text/utf-16
 ca.lproj/Duplicate.strings -text svneol=unset#text/utf-16
 ca.lproj/Error.strings -text svneol=unset#text/utf-16
@@ -75,7 +74,6 @@ cs.lproj/Crash.strings -text svneol=unset#text/utf-16
 cs.lproj/Credentials.strings -text svneol=unset#text/utf-16
 cs.lproj/Donate.nib/keyedobjects.nib -text
 cs.lproj/Donate.strings -text svneol=unset#text/utf-16
-cs.lproj/Download.nib/keyedobjects.nib -text
 cs.lproj/Download.strings -text svneol=unset#text/utf-16
 cs.lproj/Duplicate.strings -text svneol=unset#text/utf-16
 cs.lproj/Error.strings -text svneol=unset#text/utf-16
@@ -122,7 +120,6 @@ cy.lproj/Crash.strings -text svneol=unset#text/utf-16
 cy.lproj/Credentials.strings -text svneol=unset#text/utf-16
 cy.lproj/Donate.nib/keyedobjects.nib -text
 cy.lproj/Donate.strings -text svneol=unset#text/utf-16
-cy.lproj/Download.nib/keyedobjects.nib -text
 cy.lproj/Download.strings -text svneol=unset#text/utf-16
 cy.lproj/Duplicate.strings -text svneol=unset#text/utf-16
 cy.lproj/Error.strings -text svneol=unset#text/utf-16
@@ -174,7 +171,6 @@ da.lproj/Crash.strings -text svneol=unset#text/utf-16
 da.lproj/Credentials.strings -text svneol=unset#text/utf-16
 da.lproj/Donate.nib/keyedobjects.nib -text
 da.lproj/Donate.strings -text svneol=unset#text/utf-16
-da.lproj/Download.nib/keyedobjects.nib -text
 da.lproj/Download.strings -text svneol=unset#text/utf-16
 da.lproj/Duplicate.strings -text svneol=unset#text/utf-16
 da.lproj/Error.strings -text svneol=unset#text/utf-16
@@ -221,7 +217,6 @@ de.lproj/Crash.strings -text svneol=unset#text/utf-16
 de.lproj/Credentials.strings -text svneol=unset#text/utf-16
 de.lproj/Donate.nib/keyedobjects.nib -text
 de.lproj/Donate.strings -text svneol=unset#text/utf-16
-de.lproj/Download.nib/keyedobjects.nib -text
 de.lproj/Download.strings -text svneol=unset#text/utf-16
 de.lproj/Duplicate.strings -text svneol=unset#text/utf-16
 de.lproj/Error.strings -text svneol=unset#text/utf-16
@@ -278,9 +273,6 @@ el.lproj/Donate.nib/classes.nib -text
 el.lproj/Donate.nib/info.nib -text
 el.lproj/Donate.nib/keyedobjects.nib -text
 el.lproj/Donate.strings -text svneol=unset#text/utf-16
-el.lproj/Download.nib/classes.nib -text
-el.lproj/Download.nib/info.nib -text
-el.lproj/Download.nib/keyedobjects.nib -text
 el.lproj/Download.strings -text svneol=unset#text/utf-16
 el.lproj/Duplicate.strings -text svneol=unset#text/utf-16
 el.lproj/Error.strings -text svneol=unset#text/utf-16
@@ -338,7 +330,6 @@ en.lproj/Crash.strings -text svneol=unset#text/utf-16
 en.lproj/Credentials.strings -text svneol=unset#text/utf-16
 en.lproj/Donate.nib/keyedobjects.nib -text
 en.lproj/Donate.strings -text svneol=unset#text/utf-16
-en.lproj/Download.nib/keyedobjects.nib -text
 en.lproj/Download.strings -text svneol=unset#text/utf-16
 en.lproj/Duplicate.strings -text svneol=unset#text/utf-16
 en.lproj/Error.strings -text svneol=unset#text/utf-16
@@ -385,7 +376,6 @@ es.lproj/Crash.strings -text svneol=unset#text/utf-16
 es.lproj/Credentials.strings -text svneol=unset#text/utf-16
 es.lproj/Donate.nib/keyedobjects.nib -text
 es.lproj/Donate.strings -text svneol=unset#text/utf-16
-es.lproj/Download.nib/keyedobjects.nib -text
 es.lproj/Download.strings -text svneol=unset#text/utf-16
 es.lproj/Duplicate.strings -text svneol=unset#text/utf-16
 es.lproj/Error.strings -text svneol=unset#text/utf-16
@@ -432,7 +422,6 @@ fi.lproj/Crash.strings -text svneol=unset#text/utf-16
 fi.lproj/Credentials.strings -text svneol=unset#text/utf-16
 fi.lproj/Donate.nib/keyedobjects.nib -text
 fi.lproj/Donate.strings -text svneol=unset#text/utf-16
-fi.lproj/Download.nib/keyedobjects.nib -text
 fi.lproj/Download.strings -text svneol=unset#text/utf-16
 fi.lproj/Duplicate.strings -text svneol=unset#text/utf-16
 fi.lproj/Error.strings -text svneol=unset#text/utf-16
@@ -479,7 +468,6 @@ fr.lproj/Crash.strings -text svneol=unset#text/utf-16
 fr.lproj/Credentials.strings -text svneol=unset#text/utf-16
 fr.lproj/Donate.nib/keyedobjects.nib -text
 fr.lproj/Donate.strings -text svneol=unset#text/utf-16
-fr.lproj/Download.nib/keyedobjects.nib -text
 fr.lproj/Download.strings -text svneol=unset#text/utf-16
 fr.lproj/Duplicate.strings -text svneol=unset#text/utf-16
 fr.lproj/Error.strings -text svneol=unset#text/utf-16
@@ -536,9 +524,6 @@ he.lproj/Donate.nib/classes.nib -text
 he.lproj/Donate.nib/info.nib -text
 he.lproj/Donate.nib/keyedobjects.nib -text
 he.lproj/Donate.strings -text svneol=unset#text/utf-16
-he.lproj/Download.nib/classes.nib -text
-he.lproj/Download.nib/info.nib -text
-he.lproj/Download.nib/keyedobjects.nib -text
 he.lproj/Download.strings -text svneol=unset#text/utf-16
 he.lproj/Duplicate.strings -text svneol=unset#text/utf-16
 he.lproj/Error.strings -text svneol=unset#text/utf-16
@@ -595,7 +580,6 @@ hu.lproj/Crash.strings -text svneol=unset#text/utf-16
 hu.lproj/Credentials.strings -text svneol=unset#text/utf-16
 hu.lproj/Donate.nib/keyedobjects.nib -text
 hu.lproj/Donate.strings -text svneol=unset#text/utf-16
-hu.lproj/Download.nib/keyedobjects.nib -text
 hu.lproj/Download.strings -text svneol=unset#text/utf-16
 hu.lproj/Duplicate.strings -text svneol=unset#text/utf-16
 hu.lproj/Error.strings -text svneol=unset#text/utf-16
@@ -642,7 +626,6 @@ id.lproj/Crash.strings -text svneol=unset#text/utf-16
 id.lproj/Credentials.strings -text svneol=unset#text/utf-16
 id.lproj/Donate.nib/keyedobjects.nib -text
 id.lproj/Donate.strings -text svneol=unset#text/utf-16
-id.lproj/Download.nib/keyedobjects.nib -text
 id.lproj/Download.strings -text svneol=unset#text/utf-16
 id.lproj/Duplicate.strings -text svneol=unset#text/utf-16
 id.lproj/Error.strings -text svneol=unset#text/utf-16
@@ -805,7 +788,6 @@ it.lproj/Crash.strings -text svneol=unset#text/utf-16
 it.lproj/Credentials.strings -text svneol=unset#text/utf-16
 it.lproj/Donate.nib/keyedobjects.nib -text
 it.lproj/Donate.strings -text svneol=unset#text/utf-16
-it.lproj/Download.nib/keyedobjects.nib -text
 it.lproj/Download.strings -text svneol=unset#text/utf-16
 it.lproj/Duplicate.strings -text svneol=unset#text/utf-16
 it.lproj/Error.strings -text svneol=unset#text/utf-16
@@ -852,7 +834,6 @@ ja.lproj/Crash.strings -text svneol=unset#text/utf-16
 ja.lproj/Credentials.strings -text svneol=unset#text/utf-16
 ja.lproj/Donate.nib/keyedobjects.nib -text
 ja.lproj/Donate.strings -text svneol=unset#text/utf-16
-ja.lproj/Download.nib/keyedobjects.nib -text
 ja.lproj/Download.strings -text svneol=unset#text/utf-16
 ja.lproj/Duplicate.strings -text svneol=unset#text/utf-16
 ja.lproj/Error.strings -text svneol=unset#text/utf-16
@@ -910,9 +891,6 @@ ka.lproj/Donate.nib/classes.nib -text
 ka.lproj/Donate.nib/info.nib -text
 ka.lproj/Donate.nib/keyedobjects.nib -text
 ka.lproj/Donate.strings -text svneol=unset#text/utf-16
-ka.lproj/Download.nib/classes.nib -text
-ka.lproj/Download.nib/info.nib -text
-ka.lproj/Download.nib/keyedobjects.nib -text
 ka.lproj/Download.strings -text svneol=unset#text/utf-16
 ka.lproj/Duplicate.strings -text svneol=unset#text/utf-16
 ka.lproj/Error.strings -text svneol=unset#text/utf-16
@@ -969,7 +947,6 @@ ko.lproj/Crash.strings -text svneol=unset#text/utf-16
 ko.lproj/Credentials.strings -text svneol=unset#text/utf-16
 ko.lproj/Donate.nib/keyedobjects.nib -text
 ko.lproj/Donate.strings -text svneol=unset#text/utf-16
-ko.lproj/Download.nib/keyedobjects.nib -text
 ko.lproj/Download.strings -text svneol=unset#text/utf-16
 ko.lproj/Duplicate.strings -text svneol=unset#text/utf-16
 ko.lproj/Error.strings -text svneol=unset#text/utf-16
@@ -1192,9 +1169,6 @@ lv.lproj/Donate.nib/classes.nib -text
 lv.lproj/Donate.nib/info.nib -text
 lv.lproj/Donate.nib/keyedobjects.nib -text
 lv.lproj/Donate.strings -text svneol=unset#text/utf-16
-lv.lproj/Download.nib/classes.nib -text
-lv.lproj/Download.nib/info.nib -text
-lv.lproj/Download.nib/keyedobjects.nib -text
 lv.lproj/Download.strings -text svneol=unset#text/utf-16
 lv.lproj/Duplicate.strings -text svneol=unset#text/utf-16
 lv.lproj/Error.strings -text svneol=unset#text/utf-16
@@ -1252,7 +1226,6 @@ nl.lproj/Crash.strings -text svneol=unset#text/utf-16
 nl.lproj/Credentials.strings -text svneol=unset#text/utf-16
 nl.lproj/Donate.nib/keyedobjects.nib -text
 nl.lproj/Donate.strings -text svneol=unset#text/utf-16
-nl.lproj/Download.nib/keyedobjects.nib -text
 nl.lproj/Download.strings -text svneol=unset#text/utf-16
 nl.lproj/Duplicate.strings -text svneol=unset#text/utf-16
 nl.lproj/Error.strings -text svneol=unset#text/utf-16
@@ -1299,7 +1272,6 @@ no.lproj/Crash.strings -text svneol=unset#text/utf-16
 no.lproj/Credentials.strings -text svneol=unset#text/utf-16
 no.lproj/Donate.nib/keyedobjects.nib -text
 no.lproj/Donate.strings -text svneol=unset#text/utf-16
-no.lproj/Download.nib/keyedobjects.nib -text
 no.lproj/Download.strings -text svneol=unset#text/utf-16
 no.lproj/Duplicate.strings -text svneol=unset#text/utf-16
 no.lproj/Error.strings -text svneol=unset#text/utf-16
@@ -1346,7 +1318,6 @@ pl.lproj/Crash.strings -text svneol=unset#text/utf-16
 pl.lproj/Credentials.strings -text svneol=unset#text/utf-16
 pl.lproj/Donate.nib/keyedobjects.nib -text
 pl.lproj/Donate.strings -text svneol=unset#text/utf-16
-pl.lproj/Download.nib/keyedobjects.nib -text
 pl.lproj/Download.strings -text svneol=unset#text/utf-16
 pl.lproj/Duplicate.strings -text svneol=unset#text/utf-16
 pl.lproj/Error.strings -text svneol=unset#text/utf-16
@@ -1404,9 +1375,6 @@ pt_BR.lproj/Donate.nib/classes.nib -text
 pt_BR.lproj/Donate.nib/info.nib -text
 pt_BR.lproj/Donate.nib/keyedobjects.nib -text
 pt_BR.lproj/Donate.strings -text svneol=unset#text/utf-16
-pt_BR.lproj/Download.nib/classes.nib -text
-pt_BR.lproj/Download.nib/info.nib -text
-pt_BR.lproj/Download.nib/keyedobjects.nib -text
 pt_BR.lproj/Download.strings -text svneol=unset#text/utf-16
 pt_BR.lproj/Duplicate.strings -text svneol=unset#text/utf-16
 pt_BR.lproj/Error.strings -text svneol=unset#text/utf-16
@@ -1464,7 +1432,6 @@ pt_PT.lproj/Crash.strings -text svneol=unset#text/utf-16
 pt_PT.lproj/Credentials.strings -text svneol=unset#text/utf-16
 pt_PT.lproj/Donate.nib/keyedobjects.nib -text
 pt_PT.lproj/Donate.strings -text svneol=unset#text/utf-16
-pt_PT.lproj/Download.nib/keyedobjects.nib -text
 pt_PT.lproj/Download.strings -text svneol=unset#text/utf-16
 pt_PT.lproj/Duplicate.strings -text svneol=unset#text/utf-16
 pt_PT.lproj/Error.strings -text svneol=unset#text/utf-16
@@ -1539,9 +1506,6 @@ ro.lproj/Donate.nib/classes.nib -text
 ro.lproj/Donate.nib/info.nib -text
 ro.lproj/Donate.nib/keyedobjects.nib -text
 ro.lproj/Donate.strings -text svneol=unset#text/utf-16
-ro.lproj/Download.nib/classes.nib -text
-ro.lproj/Download.nib/info.nib -text
-ro.lproj/Download.nib/keyedobjects.nib -text
 ro.lproj/Download.strings -text svneol=unset#text/utf-16
 ro.lproj/Duplicate.strings -text svneol=unset#text/utf-16
 ro.lproj/Error.strings -text svneol=unset#text/utf-16
@@ -1598,7 +1562,6 @@ ru.lproj/Crash.strings -text svneol=unset#text/utf-16
 ru.lproj/Credentials.strings -text svneol=unset#text/utf-16
 ru.lproj/Donate.nib/keyedobjects.nib -text
 ru.lproj/Donate.strings -text svneol=unset#text/utf-16
-ru.lproj/Download.nib/keyedobjects.nib -text
 ru.lproj/Download.strings -text svneol=unset#text/utf-16
 ru.lproj/Duplicate.strings -text svneol=unset#text/utf-16
 ru.lproj/Error.strings -text svneol=unset#text/utf-16
@@ -1652,7 +1615,6 @@ sk.lproj/Crash.strings -text svneol=unset#text/utf-16
 sk.lproj/Credentials.strings -text svneol=unset#text/utf-16
 sk.lproj/Donate.nib/keyedobjects.nib -text
 sk.lproj/Donate.strings -text svneol=unset#text/utf-16
-sk.lproj/Download.nib/keyedobjects.nib -text
 sk.lproj/Download.strings -text svneol=unset#text/utf-16
 sk.lproj/Duplicate.strings -text svneol=unset#text/utf-16
 sk.lproj/Error.strings -text svneol=unset#text/utf-16
@@ -1709,9 +1671,6 @@ sl.lproj/Donate.nib/classes.nib -text
 sl.lproj/Donate.nib/info.nib -text
 sl.lproj/Donate.nib/keyedobjects.nib -text
 sl.lproj/Donate.strings -text svneol=unset#text/utf-16
-sl.lproj/Download.nib/classes.nib -text
-sl.lproj/Download.nib/info.nib -text
-sl.lproj/Download.nib/keyedobjects.nib -text
 sl.lproj/Download.strings -text svneol=unset#text/utf-16
 sl.lproj/Duplicate.strings -text svneol=unset#text/utf-16
 sl.lproj/Error.strings -text svneol=unset#text/utf-16
@@ -2103,9 +2062,6 @@ sr.lproj/Donate.nib/classes.nib -text
 sr.lproj/Donate.nib/info.nib -text
 sr.lproj/Donate.nib/keyedobjects.nib -text
 sr.lproj/Donate.strings -text svneol=unset#text/utf-16
-sr.lproj/Download.nib/classes.nib -text
-sr.lproj/Download.nib/info.nib -text
-sr.lproj/Download.nib/keyedobjects.nib -text
 sr.lproj/Download.strings -text svneol=unset#text/utf-16
 sr.lproj/Duplicate.strings -text svneol=unset#text/utf-16
 sr.lproj/Error.strings -text svneol=unset#text/utf-16
@@ -2162,7 +2118,6 @@ sv.lproj/Crash.strings -text svneol=unset#text/utf-16
 sv.lproj/Credentials.strings -text svneol=unset#text/utf-16
 sv.lproj/Donate.nib/keyedobjects.nib -text
 sv.lproj/Donate.strings -text svneol=unset#text/utf-16
-sv.lproj/Download.nib/keyedobjects.nib -text
 sv.lproj/Download.strings -text svneol=unset#text/utf-16
 sv.lproj/Duplicate.strings -text svneol=unset#text/utf-16
 sv.lproj/Error.strings -text svneol=unset#text/utf-16
@@ -2224,9 +2179,6 @@ th.lproj/Donate.nib/classes.nib -text
 th.lproj/Donate.nib/info.nib -text
 th.lproj/Donate.nib/keyedobjects.nib -text
 th.lproj/Donate.strings -text svneol=unset#text/utf-16
-th.lproj/Download.nib/classes.nib -text
-th.lproj/Download.nib/info.nib -text
-th.lproj/Download.nib/keyedobjects.nib -text
 th.lproj/Download.strings -text svneol=unset#text/utf-16
 th.lproj/Duplicate.strings -text svneol=unset#text/utf-16
 th.lproj/Error.strings -text svneol=unset#text/utf-16
@@ -2293,9 +2245,6 @@ tr.lproj/Donate.nib/classes.nib -text
 tr.lproj/Donate.nib/info.nib -text
 tr.lproj/Donate.nib/keyedobjects.nib -text
 tr.lproj/Donate.strings -text svneol=unset#text/utf-16
-tr.lproj/Download.nib/classes.nib -text
-tr.lproj/Download.nib/info.nib -text
-tr.lproj/Download.nib/keyedobjects.nib -text
 tr.lproj/Download.strings -text svneol=unset#text/utf-16
 tr.lproj/Duplicate.strings -text svneol=unset#text/utf-16
 tr.lproj/Error.strings -text svneol=unset#text/utf-16
@@ -2365,7 +2314,6 @@ zh_CN.lproj/Crash.strings -text svneol=unset#text/utf-16
 zh_CN.lproj/Credentials.strings -text svneol=unset#text/utf-16
 zh_CN.lproj/Donate.nib/keyedobjects.nib -text
 zh_CN.lproj/Donate.strings -text svneol=unset#text/utf-16
-zh_CN.lproj/Download.nib/keyedobjects.nib -text
 zh_CN.lproj/Download.strings -text svneol=unset#text/utf-16
 zh_CN.lproj/Duplicate.strings -text svneol=unset#text/utf-16
 zh_CN.lproj/Error.strings -text svneol=unset#text/utf-16
@@ -2412,7 +2360,6 @@ zh_TW.lproj/Crash.strings -text svneol=unset#text/utf-16
 zh_TW.lproj/Credentials.strings -text svneol=unset#text/utf-16
 zh_TW.lproj/Donate.nib/keyedobjects.nib -text
 zh_TW.lproj/Donate.strings -text svneol=unset#text/utf-16
-zh_TW.lproj/Download.nib/keyedobjects.nib -text
 zh_TW.lproj/Download.strings -text svneol=unset#text/utf-16
 zh_TW.lproj/Duplicate.strings -text svneol=unset#text/utf-16
 zh_TW.lproj/Error.strings -text svneol=unset#text/utf-16
