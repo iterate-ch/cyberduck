@@ -21,14 +21,12 @@ package ch.cyberduck.core.aquaticprime;
 
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.PathFilter;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.i18n.Locale;
 
 import org.apache.commons.codec.binary.Hex;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.filefilter.FalseFileFilter;
-import org.apache.commons.io.filefilter.NameFileFilter;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.bouncycastle.asn1.*;
@@ -37,14 +35,12 @@ import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.jce.PKCS7SignedData;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.net.NetworkInterface;
 import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.security.Security;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Enumeration;
 
 /**
@@ -75,11 +71,12 @@ public class Receipt extends AbstractLicense {
         protected License open() {
             Local receipt = LocalFactory.createLocal(Preferences.instance().getProperty("application.receipt.path"));
             if(receipt.exists()) {
-                final Collection<File> receipts = FileUtils.listFiles(
-                        new File(receipt.getAbsolute()),
-                        new NameFileFilter("receipt"), FalseFileFilter.FALSE);
-                for(File key : receipts) {
-                    return open(LocalFactory.createLocal(key));
+                for(Local key : receipt.children(new PathFilter<Local>() {
+                    public boolean accept(Local file) {
+                        return "receipt".equals(file.getName());
+                    }
+                })) {
+                    return open(key);
                 }
             }
             log.info("No receipt found");
