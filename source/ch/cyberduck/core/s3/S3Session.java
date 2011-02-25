@@ -997,7 +997,7 @@ public class S3Session extends CloudHTTP3Session {
                                     if(StringUtils.isNotBlank(defaultRootObject)) {
                                         suffix = FilenameUtils.getName(defaultRootObject);
                                     }
-                                    S3Session.this.getClient().setWebsiteConfig(bucket, suffix);
+                                    S3Session.this.getClient().setWebsiteConfig(bucket, new WebsiteConfig(suffix));
                                 }
                                 else {
                                     S3Session.this.getClient().deleteWebsiteConfig(bucket);
