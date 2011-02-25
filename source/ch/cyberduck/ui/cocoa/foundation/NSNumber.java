@@ -35,6 +35,10 @@ public abstract class NSNumber extends NSValue {
         return CLASS.numberWithDouble(value);
     }
 
+    public static NSNumber numberWithBoolean(boolean value) {
+        return CLASS.numberWithBool(value);
+    }
+
     public interface _Class extends ObjCClass {
         /**
          * Original signature : <code>NSNumber* numberWithChar(char)</code><br>
@@ -112,13 +116,13 @@ public abstract class NSNumber extends NSValue {
          * Original signature : <code>NSNumber* numberWithBool(BOOL)</code><br>
          * <i>from NSNumberCreation native declaration : /System/Library/Frameworks/Foundation.framework/Headers/NSValue.h:99</i>
          */
-        NSNumber numberWithBool(byte value);
+        NSNumber numberWithBool(boolean value);
 
         /**
          * Original signature : <code>NSNumber* numberWithInteger(NSInteger)</code><br>
          * <i>from NSNumberCreation native declaration : /System/Library/Frameworks/Foundation.framework/Headers/NSValue.h:101</i>
          */
-        NSNumber numberWithInteger(NSInteger value);
+        NSNumber numberWithInteger(NSNumber value);
 
         /**
          * Original signature : <code>NSNumber* numberWithUnsignedInteger(NSUInteger)</code><br>
@@ -209,7 +213,7 @@ public abstract class NSNumber extends NSValue {
      * Original signature : <code>NSString* stringValue()</code><br>
      * <i>native declaration : /System/Library/Frameworks/Foundation.framework/Headers/NSValue.h:57</i>
      */
-    public abstract com.sun.jna.Pointer stringValue();
+    public abstract String stringValue();
 
     /**
      * Original signature : <code>compare(NSNumber*)</code><br>
@@ -303,7 +307,7 @@ public abstract class NSNumber extends NSValue {
      * Original signature : <code>initWithBool(BOOL)</code><br>
      * <i>from NSNumberCreation native declaration : /System/Library/Frameworks/Foundation.framework/Headers/NSValue.h:81</i>
      */
-    public abstract NSNumber initWithBool(byte value);
+    public abstract NSNumber initWithBool(boolean value);
 
     /**
      * Original signature : <code>initWithInteger(NSInteger)</code><br>
