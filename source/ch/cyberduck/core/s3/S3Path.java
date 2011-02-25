@@ -590,7 +590,8 @@ public class S3Path extends CloudPath {
                 this.getSession().message(MessageFormat.format(Locale.localizedString("Uploading {0}", "Status"),
                         this.getName()));
 
-                if(this.getLocal().attributes().getSize() > DEFAULT_MULTIPART_UPLOAD_THRESHOLD) {
+                if(this.getSession().isMultipartUploadSupported()
+                        && this.getLocal().attributes().getSize() > DEFAULT_MULTIPART_UPLOAD_THRESHOLD) {
                     this.uploadMultipart(throttle, listener, object);
                 }
                 else {

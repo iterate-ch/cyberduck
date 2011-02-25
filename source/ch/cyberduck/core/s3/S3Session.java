@@ -484,6 +484,13 @@ public class S3Session extends CloudHTTP3Session {
         return true;
     }
 
+    public boolean isMultipartUploadSupported() {
+        if(host.getHostname().equals(Protocol.S3_SSL.getDefaultHostname())) {
+            return true;
+        }
+        return false;
+    }
+
     /**
      * Creating files is only possible inside a bucket.
      *
