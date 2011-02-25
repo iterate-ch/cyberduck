@@ -417,7 +417,7 @@ public class TransferController extends WindowController implements NSToolbar.De
                             }
                             app.replyToApplicationShouldTerminate(true);
                         }
-                        if(returncode == ALTERNATE_OPTION) { //Cancel
+                        if(returncode == CANCEL_OPTION) { //Cancel
                             app.replyToApplicationShouldTerminate(false);
                         }
                     }

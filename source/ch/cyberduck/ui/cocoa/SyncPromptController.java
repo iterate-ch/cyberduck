@@ -79,7 +79,7 @@ public class SyncPromptController extends TransferPromptController {
         if(returncode == DEFAULT_OPTION) { // Continue
             action = TransferAction.ACTION_OVERWRITE;
         }
-        else if(returncode == ALTERNATE_OPTION) { // Abort
+        else if(returncode == CANCEL_OPTION) { // Abort
             action = TransferAction.ACTION_CANCEL;
         }
     }

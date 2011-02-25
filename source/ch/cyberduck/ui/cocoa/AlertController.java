@@ -20,15 +20,19 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.Preferences;
-import ch.cyberduck.ui.cocoa.application.NSAlert;
-import ch.cyberduck.ui.cocoa.application.NSView;
-import ch.cyberduck.ui.cocoa.application.NSWindow;
+import ch.cyberduck.ui.cocoa.application.*;
+import ch.cyberduck.ui.cocoa.foundation.NSEnumerator;
+import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
 import org.rococoa.Foundation;
 import org.rococoa.ID;
+import org.rococoa.Rococoa;
 import org.rococoa.cocoa.foundation.NSRect;
 
+import org.apache.log4j.Logger;
+
 public abstract class AlertController extends SheetController {
+    protected static Logger log = Logger.getLogger(AlertController.class);
 
     /**
      * If using alert and no custom window
@@ -64,6 +68,13 @@ public abstract class AlertController extends SheetController {
     protected void beginSheetImpl() {
         parent.window().makeKeyAndOrderFront(null);
         alert.layout();
+        NSEnumerator buttons = alert.buttons().objectEnumerator();
+        NSObject button;
+        while(((button = buttons.nextObject()) != null)) {
+            final NSButton b = Rococoa.cast(button, NSButton.class);
+            b.setTarget(this.id());
+            b.setAction(Foundation.selector("closeSheet:"));
+        }
         alert.beginSheet(parent.window(), this.id(), Foundation.selector("alertDidEnd:returnCode:contextInfo:"), null);
         sheetRegistry.add(this);
     }
@@ -85,6 +96,20 @@ public abstract class AlertController extends SheetController {
      */
     public void alertDidEnd_returnCode_contextInfo(NSAlert alert, int returnCode, ID contextInfo) {
         this.sheetDidClose_returnCode_contextInfo(alert.window(), returnCode, contextInfo);
+    }
+
+    @Override
+    protected int getCallbackOption(NSButton selected) {
+        if(selected.tag() == NSPanel.NSAlertDefaultReturn) {
+            return SheetCallback.DEFAULT_OPTION;
+        }
+        if(selected.tag() == NSPanel.NSAlertAlternateReturn) {
+            return SheetCallback.ALTERNATE_OPTION;
+        }
+        if(selected.tag() == NSPanel.NSAlertOtherReturn) {
+            return SheetCallback.CANCEL_OPTION;
+        }
+        throw new RuntimeException("Unexpected tag:" + selected.tag());
     }
 
     /**

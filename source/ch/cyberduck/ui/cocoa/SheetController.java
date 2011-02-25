@@ -19,10 +19,7 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.threading.ControllerMainAction;
-import ch.cyberduck.ui.cocoa.application.AppKitFunctionsLibrary;
-import ch.cyberduck.ui.cocoa.application.NSApplication;
-import ch.cyberduck.ui.cocoa.application.NSButton;
-import ch.cyberduck.ui.cocoa.application.NSWindow;
+import ch.cyberduck.ui.cocoa.application.*;
 
 import org.rococoa.Foundation;
 import org.rococoa.ID;
@@ -79,6 +76,22 @@ public abstract class SheetController extends WindowController implements SheetC
     }
 
     /**
+     * Translate return codes from sheet selection
+     *
+     * @param selected
+     * @return
+     */
+    protected int getCallbackOption(NSButton selected) {
+        if(selected.tag() == NSPanel.NSOKButton) {
+            return SheetCallback.DEFAULT_OPTION;
+        }
+        if(selected.tag() == NSPanel.NSCancelButton) {
+            return SheetCallback.CANCEL_OPTION;
+        }
+        throw new RuntimeException("Unexpected tag:" + selected.tag());
+    }
+
+    /**
      * This must be the target action for any button in the sheet dialog. Will validate the input
      * and close the sheet; #sheetDidClose will be called afterwards
      *
@@ -87,13 +100,13 @@ public abstract class SheetController extends WindowController implements SheetC
     @Action
     public void closeSheet(final NSButton sender) {
         log.debug("closeSheet:" + sender);
-        if(sender.tag() == DEFAULT_OPTION || sender.tag() == OTHER_OPTION) {
+        if(this.getCallbackOption(sender) == DEFAULT_OPTION || this.getCallbackOption(sender) == ALTERNATE_OPTION) {
             if(!this.validateInput()) {
                 AppKitFunctionsLibrary.beep();
                 return;
             }
         }
-        NSApplication.sharedApplication().endSheet(this.window(), sender.tag());
+        NSApplication.sharedApplication().endSheet(this.window(), this.getCallbackOption(sender));
     }
 
     private int returncode;

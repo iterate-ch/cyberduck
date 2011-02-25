@@ -30,11 +30,6 @@ import org.rococoa.cocoa.foundation.NSError;
 public abstract class NSAlert extends NSObject {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSAlert", _Class.class);
 
-    public static final int NSAlertDefaultReturn = 1;
-    public static final int NSAlertAlternateReturn = 0;
-    public static final int NSAlertOtherReturn = -1;
-    public static final int NSAlertErrorReturn = -2;
-
     /// <i>native declaration : line 12</i>
     public static final int NSWarningAlertStyle = 0;
     /// <i>native declaration : line 13</i>

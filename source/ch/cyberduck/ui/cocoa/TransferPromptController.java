@@ -134,7 +134,7 @@ public abstract class TransferPromptController extends SheetController implement
 
     public void callback(final int returncode) {
         log.debug("callback:" + returncode);
-        if(returncode == ALTERNATE_OPTION) { // Abort
+        if(returncode == CANCEL_OPTION) { // Abort
             action = TransferAction.ACTION_CANCEL;
         }
         Preferences.instance().setProperty("transfer.toggle.details", this.toggleDetailsButton.state());

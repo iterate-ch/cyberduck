@@ -88,7 +88,7 @@ public class PromptLoginController extends AbstractLoginController {
             Preferences.instance().setProperty(preference, true);
         }
         switch(option) {
-            case SheetCallback.OTHER_OPTION:
+            case SheetCallback.CANCEL_OPTION:
                 throw new LoginCanceledException();
         }
         //Proceed nevertheless.
@@ -336,7 +336,7 @@ public class PromptLoginController extends AbstractLoginController {
         };
         c.beginSheet();
 
-        if(c.returnCode() == SheetCallback.ALTERNATE_OPTION) {
+        if(c.returnCode() == SheetCallback.CANCEL_OPTION) {
             throw new LoginCanceledException();
         }
     }

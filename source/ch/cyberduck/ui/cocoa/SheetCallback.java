@@ -18,7 +18,7 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.ui.cocoa.application.NSAlert;
+import ch.cyberduck.ui.cocoa.application.NSPanel;
 
 /**
  * @version $Id$
@@ -28,15 +28,15 @@ public interface SheetCallback {
     /**
      * Use default option; 'OK'
      */
-    public final int DEFAULT_OPTION = NSAlert.NSAlertDefaultReturn;
+    public final int DEFAULT_OPTION = NSPanel.NSAlertDefaultReturn;
     /**
-     * Usually cancel option
+     * Cancel option
      */
-    public final int OTHER_OPTION = NSAlert.NSAlertOtherReturn;
+    public final int CANCEL_OPTION = NSPanel.NSAlertOtherReturn;
     /**
-     * Non default option
+     * Alternate action
      */
-    public final int ALTERNATE_OPTION = NSAlert.NSAlertAlternateReturn;
+    public final int ALTERNATE_OPTION = NSPanel.NSAlertAlternateReturn;
 
     /**
      * Called after the sheet has been dismissed by the user. The return codes are defined in

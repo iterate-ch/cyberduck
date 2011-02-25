@@ -1061,7 +1061,12 @@ public class MainController extends BundleController implements NSApplication.De
                         // Never show again.
                         Preferences.instance().setProperty("browser.confirmDisconnect", false);
                     }
-                    if(choice == SheetCallback.OTHER_OPTION) {
+                    if(choice == SheetCallback.CANCEL_OPTION) {
+                        // Cancel. Quit has been interrupted. Delete any saved sessions so far.
+                        sessions.clear();
+                        return NSApplication.NSTerminateCancel;
+                    }
+                    if(choice == SheetCallback.ALTERNATE_OPTION) {
                         // Review if at least one window reqested to terminate later, we shall wait.
                         // This will iterate over all mounted browsers.
                         result = BrowserController.applicationShouldTerminate(app);
@@ -1069,11 +1074,6 @@ public class MainController extends BundleController implements NSApplication.De
                             return this.applicationShouldTerminateAfterDonationPrompt(app);
                         }
                         return result;
-                    }
-                    if(choice == SheetCallback.ALTERNATE_OPTION) {
-                        // Cancel. Quit has been interrupted. Delete any saved sessions so far.
-                        sessions.clear();
-                        return NSApplication.NSTerminateCancel;
                     }
                     if(choice == SheetCallback.DEFAULT_OPTION) {
                         // Quit immediatly

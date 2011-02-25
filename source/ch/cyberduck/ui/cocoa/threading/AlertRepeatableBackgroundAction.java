@@ -101,7 +101,7 @@ public abstract class AlertRepeatableBackgroundAction extends RepeatableBackgrou
                         if(returncode == SheetCallback.ALTERNATE_OPTION) {
                             AlertRepeatableBackgroundAction.this.diagnose();
                         }
-                        else {
+                        if(returncode == SheetCallback.DEFAULT_OPTION) {
                             AlertRepeatableBackgroundAction.this.callback(returncode);
                         }
                     }
