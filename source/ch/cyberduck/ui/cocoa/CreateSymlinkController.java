@@ -55,9 +55,6 @@ public class CreateSymlinkController extends FileController {
         if(returncode == DEFAULT_OPTION) {
             this.createSymlink(this.getSelected(), filenameField.stringValue(), false);
         }
-        else if(returncode == ALTERNATE_OPTION) {
-            this.createSymlink(this.getSelected(), filenameField.stringValue(), true);
-        }
     }
 
     protected void createSymlink(final Path selected, final String symlink, final boolean edit) {
