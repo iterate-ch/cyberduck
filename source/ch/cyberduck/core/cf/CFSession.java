@@ -361,11 +361,38 @@ public class CFSession extends CloudHTTP4Session {
                     }
 
                     public void invalidate(String origin, Distribution.Method method, List<Path> files, boolean recursive) {
-                        throw new UnsupportedOperationException();
+                        try {
+                            CFSession.this.check();
+                            CFSession.this.message(MessageFormat.format(Locale.localizedString("Writing CDN configuration of {0}", "Status"),
+                                    origin));
+                            cdnRequest = true;
+                            URI url = new URI(CFSession.this.getClient().getCdnManagementURL());
+                            for(Path file : files) {
+                                if(file.isContainer()) {
+                                    CFSession.this.getClient().purgeCDNContainer(origin, null);
+                                }
+                                else {
+                                    CFSession.this.getClient().purgeCDNObject(origin, file.getKey(), null);
+                                }
+                            }
+                        }
+                        catch(IOException e) {
+                            CFSession.this.error("Cannot write CDN configuration", e);
+                        }
+                        catch(URISyntaxException e) {
+                            CFSession.this.error("Cannot write CDN configuration", e);
+                        }
+                        catch(HttpException e) {
+                            CFSession.this.error("Cannot write CDN configuration", e);
+                        }
+                        finally {
+                            distributionStatus.clear();
+                            cdnRequest = false;
+                        }
                     }
 
                     public boolean isInvalidationSupported(Distribution.Method method) {
-                        return false;
+                        return true;
                     }
 
                     public boolean isDefaultRootSupported(Distribution.Method method) {

@@ -14,6 +14,7 @@ Changelog. Last modified: $Date$
 - [Feature] Upload item in Finder context menu to upload selected file (Mac)
 - [Feature] Upload item in Services menu of thirdparty programs main menu supporting files and folders (Mac)
 - [Feature] Select bookmark to upload to when dragging files to application
+- [Feature] Invalidation (Purge) of files in CDN (Cloudfiles/Akamai)
 - [Bugfix] Limit number of concurrent transfers (#5539, #5624)
 - [Bugfix] Qeued transfers start in random order (#5632)
 - [Bugfix] Dragging into topmost folder in browser (#1945)
