@@ -19,7 +19,11 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.ui.cocoa.application.NSAlert;
 import ch.cyberduck.ui.cocoa.application.NSTextField;
+
+import org.rococoa.cocoa.foundation.NSRect;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -27,31 +31,38 @@ import org.apache.log4j.Logger;
 /**
  * @version $Id$
  */
-public class DownloadController extends SheetController {
+public class DownloadController extends AlertController {
     private static Logger log = Logger.getLogger(DownloadController.class);
 
-    @Outlet
-    private NSTextField urlField;
+    /**
+     *
+     */
+    protected NSTextField urlField
+            = NSTextField.textfieldWithFrame(new NSRect(0, 22));
 
-    public void setUrlField(NSTextField urlField) {
-        this.urlField = urlField;
-        this.updateField(this.urlField, url);
+    @Override
+    public void beginSheet() {
+        this.setAccessoryView(urlField);
+        this.updateField(urlField, url);
+        alert.setShowsHelp(true);
+        super.beginSheet();
     }
 
     private String url;
 
     public DownloadController(final WindowController parent) {
-        super(parent);
+        this(parent, StringUtils.EMPTY);
     }
 
     public DownloadController(final WindowController parent, final String url) {
-        this(parent);
+        super(parent, NSAlert.alert(
+                Locale.localizedString("New Download", "Download"),
+                Locale.localizedString("URL", "Download"),
+                Locale.localizedString("Download", "Download"),
+                null,
+                Locale.localizedString("Cancel", "Download")
+        ), NSAlert.NSInformationalAlertStyle);
         this.url = url;
-    }
-
-    @Override
-    protected String getBundleName() {
-        return "Download";
     }
 
     public void callback(final int returncode) {
@@ -69,5 +80,12 @@ public class DownloadController extends SheetController {
     protected boolean validateInput() {
         Host host = Host.parse(urlField.stringValue());
         return StringUtils.isNotBlank(host.getDefaultPath());
+    }
+
+    @Override
+    protected void help() {
+        StringBuilder site = new StringBuilder(Preferences.instance().getProperty("website.help"));
+        site.append("/howto/download");
+        openUrl(site.toString());
     }
 }
