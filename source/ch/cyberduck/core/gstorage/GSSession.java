@@ -93,6 +93,11 @@ public class GSSession extends S3Session {
     }
 
     @Override
+    public boolean isMultipartUploadSupported() {
+        return false;
+    }
+
+    @Override
     public List<Acl.User> getAvailableAclUsers() {
         final List<Acl.User> users = super.getAvailableAclUsers();
         for(Iterator<Acl.User> iter = users.iterator(); iter.hasNext();) {
