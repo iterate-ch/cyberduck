@@ -3085,7 +3085,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
      * @return YES if your implementation was able to write one or more types to the pasteboard; otherwise, NO.
      */
     public boolean writeSelectionToPasteboard_types(NSPasteboard pboard, NSArray types) {
-        return this.copy(pboard);
+        return false;
     }
 
     @Action
@@ -3093,22 +3093,12 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         PathPasteboard pasteboard = PathPasteboard.getPasteboard(this.getSession());
         pasteboard.clear();
         pasteboard.setCopy(true);
-        for(Path selected : this.getSelectedPaths()) {
+        List<Path> selected = this.getSelectedPaths();
+        for(Path p : selected) {
             // Writing data for private use when the item gets dragged to the transfer queue.
-            pasteboard.add(selected);
+            pasteboard.add(p);
         }
         final NSPasteboard clipboard = NSPasteboard.generalPasteboard();
-        this.copy(clipboard);
-    }
-
-    /**
-     * @param clipboard
-     */
-    public boolean copy(NSPasteboard clipboard) {
-        if(!this.isMounted()) {
-            return false;
-        }
-        List<Path> selected = this.getSelectedPaths();
         if(selected.size() == 0) {
             selected = Collections.singletonList(this.workdir());
         }
@@ -3121,7 +3111,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         if(!clipboard.setStringForType(copy.toString(), NSPasteboard.StringPboardType)) {
             log.error("Error writing to NSPasteboard.StringPboardType.");
         }
-        return true;
     }
 
     @Action
