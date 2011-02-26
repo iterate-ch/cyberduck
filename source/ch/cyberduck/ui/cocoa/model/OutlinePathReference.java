@@ -28,6 +28,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSString;
 
 import org.apache.commons.collections.map.LRUMap;
 
+import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -42,9 +43,9 @@ public class OutlinePathReference extends PathReference<NSObject> {
 
     private int hashcode;
 
-    private static Map<String, NSString> cache = new LRUMap(
+    private static Map<String, NSString> cache = Collections.synchronizedMap(new LRUMap(
             Preferences.instance().getInteger("browser.model.cache.size")
-    );
+    ));
 
 
     /**
