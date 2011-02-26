@@ -5,6 +5,7 @@ http://cyberduck.ch/
 Changelog. Last modified: $Date$
 
 4.0 [http://trac.cyberduck.ch/milestone/4.0]
+- [Localize] Ukrainian Localization
 - [Feature] Version for Microsoft Windows XP, Windows Vista & Windows 7.
 - [Feature] Replaced protocol implementation (FTP)
 - [Feature] Connecting to Windows Azure Blob Storage (Azure) (#3938)
@@ -26,6 +27,7 @@ Changelog. Last modified: $Date$
 - [Bugfix] Files not shown (#5570) (Google Docs)
 - [Bugfix] Images always converted to documents (#5601) (Google Docs)
 - [Bugfix] Preserve symbolic links in transfers (#1860) (SFTP)
+- [Bugfix] Access for AWS Identity and Access Management (IAM) users (#5731) (S3)
 
 3.8.1 [http://trac.cyberduck.ch/milestone/3.8.1]
 - [Bugfix] Fails to display custom language preference (#5500)
