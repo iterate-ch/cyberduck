@@ -483,6 +483,7 @@ public abstract class TransferPromptController extends SheetController implement
                 transfer.isResumable() ? TransferAction.ACTION_RESUME : null,
                 TransferAction.ACTION_OVERWRITE,
                 TransferAction.ACTION_RENAME,
+                TransferAction.ACTION_SKIP,
                 transfer.getSession().isRenameSupported(transfer.getRoot()) ? TransferAction.ACTION_RENAME_EXISTING : null};
 
         for(TransferAction action : actions) {

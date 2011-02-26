@@ -227,6 +227,7 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             actions.Add(TransferAction.ACTION_OVERWRITE, TransferAction.ACTION_OVERWRITE.getLocalizableString());
             actions.Add(TransferAction.ACTION_RENAME, TransferAction.ACTION_RENAME.getLocalizableString());
+            actions.Add(TransferAction.ACTION_SKIP, TransferAction.ACTION_SKIP.getLocalizableString());
             if (Transfer.getSession().isRenameSupported(Transfer.getRoot()))
             {
                 actions.Add(TransferAction.ACTION_RENAME_EXISTING, TransferAction.ACTION_RENAME_EXISTING.getLocalizableString());

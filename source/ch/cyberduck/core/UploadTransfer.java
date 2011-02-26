@@ -253,17 +253,16 @@ public class UploadTransfer extends Transfer {
         return this.getSession().isUploadResumable();
     }
 
-    private final TransferFilter ACTION_OVERWRITE = new UploadTransferFilter() {
+    private final TransferFilter OVERWRITE_FILTER = new UploadTransferFilter() {
         @Override
-        public boolean accept(final Path p) {
-            if(super.accept(p)) {
-                if(p.attributes().isDirectory()) {
-                    // Do not attempt to create a directory that already exists
-                    return !p.exists();
+        public boolean accept(final Path file) {
+            if(file.attributes().isDirectory()) {
+                // Do not attempt to create a directory that already exists
+                if(file.exists()) {
+                    return false;
                 }
-                return true;
             }
-            return false;
+            return super.accept(file);
         }
 
         @Override
@@ -279,21 +278,21 @@ public class UploadTransfer extends Transfer {
     /**
      * Append to existing file.
      */
-    private final TransferFilter ACTION_RESUME = new UploadTransferFilter() {
+    private final TransferFilter RESUME_FILTER = new UploadTransferFilter() {
         @Override
-        public boolean accept(final Path p) {
-            if(super.accept(p)) {
-                if(p.attributes().isDirectory()) {
-                    return !p.exists();
-                }
-                if(p.status().isComplete() || p.getLocal().attributes().getSize() == p.attributes().getSize()) {
-                    // No need to resume completed transfers
-                    p.status().setComplete(true);
+        public boolean accept(final Path file) {
+            if(file.attributes().isDirectory()) {
+                if(file.exists()) {
                     return false;
                 }
-                return true;
             }
-            return false;
+            if(file.status().isComplete()
+                    || file.getLocal().attributes().getSize() == file.attributes().getSize()) {
+                // No need to resume completed transfers
+                file.status().setComplete(true);
+                return false;
+            }
+            return super.accept(file);
         }
 
         @Override
@@ -314,7 +313,7 @@ public class UploadTransfer extends Transfer {
         }
     };
 
-    private final TransferFilter ACTION_RENAME = new UploadTransferFilter() {
+    private final TransferFilter RENAME_FILTER = new UploadTransferFilter() {
         @Override
         public boolean accept(final Path p) {
             // Rename every file
@@ -349,7 +348,7 @@ public class UploadTransfer extends Transfer {
     /**
      * Rename existing file on server if there is a conflict.
      */
-    private final TransferFilter ACTION_RENAME_EXISTING = new UploadTransferFilter() {
+    private final TransferFilter RENAME_EXISTING_FILTER = new UploadTransferFilter() {
         @Override
         public boolean accept(final Path p) {
             if(p.getSession().isRenameSupported(p)) {
@@ -382,15 +381,15 @@ public class UploadTransfer extends Transfer {
     /**
      * Skip files that already exist on the server.
      */
-    private final TransferFilter ACTION_SKIP = new UploadTransferFilter() {
+    private final TransferFilter SKIP_FILTER = new UploadTransferFilter() {
         @Override
-        public boolean accept(final Path p) {
-            if(super.accept(p)) {
-                if(!p.exists()) {
-                    return true;
-                }
+        public boolean accept(final Path file) {
+            if(file.exists()) {
+                // Set completion status for skipped files
+                file.status().setComplete(true);
+                return false;
             }
-            return false;
+            return super.accept(file);
         }
     };
 
@@ -398,19 +397,19 @@ public class UploadTransfer extends Transfer {
     public TransferFilter filter(final TransferAction action) {
         log.debug("filter:" + action);
         if(action.equals(TransferAction.ACTION_OVERWRITE)) {
-            return ACTION_OVERWRITE;
+            return OVERWRITE_FILTER;
         }
         if(action.equals(TransferAction.ACTION_RESUME)) {
-            return ACTION_RESUME;
+            return RESUME_FILTER;
         }
         if(action.equals(TransferAction.ACTION_RENAME)) {
-            return ACTION_RENAME;
+            return RENAME_FILTER;
         }
         if(action.equals(TransferAction.ACTION_RENAME_EXISTING)) {
-            return ACTION_RENAME_EXISTING;
+            return RENAME_EXISTING_FILTER;
         }
         if(action.equals(TransferAction.ACTION_SKIP)) {
-            return ACTION_SKIP;
+            return SKIP_FILTER;
         }
         if(action.equals(TransferAction.ACTION_CALLBACK)) {
             for(Path upload : this.getRoots()) {

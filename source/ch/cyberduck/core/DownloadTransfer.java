@@ -227,11 +227,13 @@ public class DownloadTransfer extends Transfer {
         return list;
     }
 
-    private final TransferFilter ACTION_OVERWRITE = new DownloadTransferFilter() {
+    private final TransferFilter OVERWRITE_FILTER = new DownloadTransferFilter() {
         @Override
         public boolean accept(final Path file) {
             if(file.attributes().isDirectory()) {
-                return !file.getLocal().exists();
+                if(file.getLocal().exists()) {
+                    return false;
+                }
             }
             return super.accept(file);
         }
@@ -245,16 +247,19 @@ public class DownloadTransfer extends Transfer {
         }
     };
 
-    private final TransferFilter ACTION_RESUME = new DownloadTransferFilter() {
+    private final TransferFilter RESUME_FILTER = new DownloadTransferFilter() {
         @Override
         public boolean accept(final Path file) {
-            if(file.status().isComplete() || file.getLocal().attributes().getSize() == file.attributes().getSize()) {
+            if(file.attributes().isDirectory()) {
+                if(file.getLocal().exists()) {
+                    return false;
+                }
+            }
+            if(file.status().isComplete()
+                    || file.getLocal().attributes().getSize() == file.attributes().getSize()) {
                 // No need to resume completed transfers
                 file.status().setComplete(true);
                 return false;
-            }
-            if(file.attributes().isDirectory()) {
-                return !file.getLocal().exists();
             }
             return super.accept(file);
         }
@@ -272,7 +277,7 @@ public class DownloadTransfer extends Transfer {
         }
     };
 
-    private final TransferFilter ACTION_RENAME = new DownloadTransferFilter() {
+    private final TransferFilter RENAME_FILTER = new DownloadTransferFilter() {
         @Override
         public void prepare(final Path file) {
             if(file.attributes().isFile()) {
@@ -301,7 +306,7 @@ public class DownloadTransfer extends Transfer {
     /**
      * Rename existing file on disk if there is a conflict.
      */
-    private final TransferFilter ACTION_RENAME_EXISTING = new DownloadTransferFilter() {
+    private final TransferFilter RENAME_EXISTING_FILTER = new DownloadTransferFilter() {
         @Override
         public void prepare(final Path file) {
             Local renamed = file.getLocal();
@@ -322,11 +327,13 @@ public class DownloadTransfer extends Transfer {
         }
     };
 
-    private final DownloadTransferFilter ACTION_SKIP = new DownloadTransferFilter() {
+    private final DownloadTransferFilter SKIP_FILTER = new DownloadTransferFilter() {
         @Override
         public boolean accept(final Path file) {
             if(file.getLocal().exists()) {
-                return file.getLocal().attributes().getSize() == 0;
+                // Set completion status for skipped files
+                file.status().setComplete(true);
+                return false;
             }
             return super.accept(file);
         }
@@ -336,19 +343,19 @@ public class DownloadTransfer extends Transfer {
     public TransferFilter filter(final TransferAction action) {
         log.debug("filter:" + action);
         if(action.equals(TransferAction.ACTION_OVERWRITE)) {
-            return ACTION_OVERWRITE;
+            return OVERWRITE_FILTER;
         }
         if(action.equals(TransferAction.ACTION_RESUME)) {
-            return ACTION_RESUME;
+            return RESUME_FILTER;
         }
         if(action.equals(TransferAction.ACTION_RENAME)) {
-            return ACTION_RENAME;
+            return RENAME_FILTER;
         }
         if(action.equals(TransferAction.ACTION_RENAME_EXISTING)) {
-            return ACTION_RENAME_EXISTING;
+            return RENAME_EXISTING_FILTER;
         }
         if(action.equals(TransferAction.ACTION_SKIP)) {
-            return ACTION_SKIP;
+            return SKIP_FILTER;
         }
         if(action.equals(TransferAction.ACTION_CALLBACK)) {
             for(Path download : this.getRoots()) {
