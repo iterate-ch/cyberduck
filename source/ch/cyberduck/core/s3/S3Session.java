@@ -243,9 +243,6 @@ public class S3Session extends CloudHTTP3Session {
                     this.configure(host.getProtocol().getDefaultHostname());
                     bucketname = host.getHostname(true);
                 }
-                if(!this.getClient().isBucketAccessible(bucketname)) {
-                    throw new IOException("Bucket not accessible: " + bucketname);
-                }
                 S3Bucket bucket = new S3Bucket(bucketname);
                 try {
                     StorageOwner owner = this.getClient().getBucketAcl(bucketname).getOwner();
