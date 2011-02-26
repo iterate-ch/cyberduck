@@ -1,0 +1,89 @@
+{
+    IBClasses =     (
+        {
+    ACTIONS =     {
+        aboutMenuClicked = id;
+        acknowledgmentsMenuClicked = id;
+        bugreportMenuClicked = id;
+        donateMenuClicked = id;
+        helpMenuClicked = id;
+        historyMenuClicked = id;
+        licenseMenuClicked = id;
+        newBrowserMenuClicked = id;
+        newDownloadMenuClicked = id;
+        preferencesMenuClicked = id;
+        updateMenuClicked = id;
+    };
+    CLASS = CDMainController;
+    LANGUAGE = ObjC;
+    OUTLETS =     {
+        applicationMenu = NSMenu;
+        archiveMenu = NSMenu;
+        bookmarkMenu = NSMenu;
+        columnMenu = NSMenu;
+        editMenu = NSMenu;
+        encodingMenu = NSMenu;
+        historyMenu = NSMenu;
+        openUrlMenu = NSMenu;
+        rendezvousMenu = NSMenu;
+        urlMenu = NSMenu;
+    };
+    SUPERCLASS = NSObject;
+},
+        {
+    ACTIONS =     {
+        addBookmarkButtonClicked = id;
+        archiveButtonClicked = id;
+        backButtonClicked = id;
+        bookmarkSwitchClicked = id;
+        browserSwitchMenuClicked = id;
+        connectButtonClicked = id;
+        copyURLButtonClicked = id;
+        createFileButtonClicked = id;
+        createFolderButtonClicked = id;
+        createSymlinkButtonClicked = id;
+        deleteBookmarkButtonClicked = id;
+        deleteFileButtonClicked = id;
+        disconnectButtonClicked = id;
+        downloadAsButtonClicked = id;
+        downloadButtonClicked = id;
+        downloadToButtonClicked = id;
+        duplicateBookmarkButtonClicked = id;
+        duplicateFileButtonClicked = id;
+        editBookmarkButtonClicked = id;
+        editButtonClicked = id;
+        forwardButtonClicked = id;
+        gotoButtonClicked = id;
+        infoButtonClicked = id;
+        insideButtonClicked = id;
+        interruptButtonClicked = id;
+        openBrowserButtonClicked = id;
+        openTerminalButtonClicked = id;
+        pasteFromFinder = id;
+        quicklookButtonClicked = id;
+        reloadButtonClicked = id;
+        renameFileButtonClicked = id;
+        revertFileButtonClicked = id;
+        searchButtonClicked = id;
+        sendCustomCommandClicked = id;
+        showActivityWindowClicked = id;
+        showHiddenFilesClicked = id;
+        showTransferQueueClicked = id;
+        syncButtonClicked = id;
+        toggleLogDrawer = id;
+        unarchiveButtonClicked = id;
+        upButtonClicked = id;
+        uploadButtonClicked = id;
+    };
+    CLASS = FirstResponder;
+    LANGUAGE = ObjC;
+    SUPERCLASS = NSObject;
+},
+        {
+    CLASS = UKCrashReporter;
+    LANGUAGE = ObjC;
+    SUPERCLASS = NSObject;
+}
+    );
+    IBVersion = 1;
+}

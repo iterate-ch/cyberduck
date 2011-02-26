@@ -2282,6 +2282,67 @@ tr.lproj/S3.strings -text svneol=unset#text/utf-16
 tr.lproj/ServicesMenu.strings -text svneol=unset#text/utf-16
 tr.lproj/Status.strings -text svneol=unset#text/utf-16
 tr.lproj/Transfer.strings -text svneol=unset#text/utf-16
+uk.lproj/Alert.nib/classes.nib -text
+uk.lproj/Alert.nib/info.nib -text
+uk.lproj/Alert.nib/keyedobjects.nib -text
+uk.lproj/Alert.strings -text svneol=unset#text/utf-16
+uk.lproj/Archive.strings -text svneol=unset#text/utf-16
+uk.lproj/Bookmark.nib/classes.nib -text
+uk.lproj/Bookmark.nib/info.nib -text
+uk.lproj/Bookmark.nib/keyedobjects.nib -text
+uk.lproj/Bookmark.strings -text svneol=unset#text/utf-16
+uk.lproj/Browser.nib/classes.nib -text
+uk.lproj/Browser.nib/info.nib -text
+uk.lproj/Browser.nib/keyedobjects.nib -text
+uk.lproj/Browser.strings -text svneol=unset#text/utf-16
+uk.lproj/Command.nib/classes.nib -text
+uk.lproj/Command.nib/info.nib -text
+uk.lproj/Command.nib/keyedobjects.nib -text
+uk.lproj/Command.strings -text svneol=unset#text/utf-16
+uk.lproj/Configuration.strings -text svneol=unset#text/utf-16
+uk.lproj/Connection.nib/classes.nib -text
+uk.lproj/Connection.nib/info.nib -text
+uk.lproj/Connection.nib/keyedobjects.nib -text
+uk.lproj/Connection.strings -text svneol=unset#text/utf-16
+uk.lproj/Crash.strings -text svneol=unset#text/utf-16
+uk.lproj/Credentials.strings -text svneol=unset#text/utf-16
+uk.lproj/Donate.nib/classes.nib -text
+uk.lproj/Donate.nib/info.nib -text
+uk.lproj/Donate.nib/keyedobjects.nib -text
+uk.lproj/Donate.strings -text svneol=unset#text/utf-16
+uk.lproj/Download.strings -text svneol=unset#text/utf-16
+uk.lproj/Error.strings -text svneol=unset#text/utf-16
+uk.lproj/Growl.strings -text svneol=unset#text/utf-16
+uk.lproj/IDisk.strings -text svneol=unset#text/utf-16
+uk.lproj/Info.nib/classes.nib -text
+uk.lproj/Info.nib/info.nib -text
+uk.lproj/Info.nib/keyedobjects.nib -text
+uk.lproj/Info.strings -text svneol=unset#text/utf-16
+uk.lproj/InfoPlist.strings -text svneol=unset#text/utf-16
+uk.lproj/Keychain.strings -text svneol=unset#text/utf-16
+uk.lproj/License.strings -text svneol=unset#text/utf-16
+uk.lproj/Localizable.strings -text svneol=unset#text/utf-16
+uk.lproj/Login.nib/classes.nib -text
+uk.lproj/Login.nib/info.nib -text
+uk.lproj/Login.nib/keyedobjects.nib -text
+uk.lproj/Login.strings -text svneol=unset#text/utf-16
+uk.lproj/Main.nib/classes.nib -text
+uk.lproj/Main.nib/info.nib -text
+uk.lproj/Main.nib/keyedobjects.nib -text
+uk.lproj/Main.strings -text svneol=unset#text/utf-16
+uk.lproj/Mosso.strings -text svneol=unset#text/utf-16
+uk.lproj/Preferences.nib/classes.nib -text
+uk.lproj/Preferences.nib/info.nib -text
+uk.lproj/Preferences.nib/keyedobjects.nib -text
+uk.lproj/Preferences.strings -text svneol=unset#text/utf-16
+uk.lproj/Prompt.nib/classes.nib -text
+uk.lproj/Prompt.nib/info.nib -text
+uk.lproj/Prompt.nib/keyedobjects.nib -text
+uk.lproj/Prompt.strings -text svneol=unset#text/utf-16
+uk.lproj/S3.strings -text svneol=unset#text/utf-16
+uk.lproj/ServicesMenu.strings -text svneol=unset#text/utf-16
+uk.lproj/Status.strings -text svneol=unset#text/utf-16
+uk.lproj/Transfer.strings -text svneol=unset#text/utf-16
 www/crash/crash.py -text
 www/update/Updater.exe -text
 www/update/changelog-beta.wyp -text

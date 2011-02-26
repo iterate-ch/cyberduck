@@ -1,0 +1,88 @@
+{
+    IBClasses =     (
+        {
+    ACTIONS =     {
+        helpButtonClicked = id;
+    };
+    CLASS = CDInfoController;
+    LANGUAGE = ObjC;
+    OUTLETS =     {
+        aclAddButton = NSButton;
+        aclProgress = NSProgressIndicator;
+        aclRemoveButton = NSButton;
+        aclTable = NSTableView;
+        aclUrlField = NSTextField;
+        bucketLocationField = NSTextField;
+        bucketLoggingButton = NSButton;
+        bucketMfaButton = NSButton;
+        bucketVersioningButton = NSButton;
+        checksumField = NSTextField;
+        createdField = NSTextField;
+        distributionCnameField = NSTextField;
+        distributionCnameUrlField = NSTextField;
+        distributionDefaultRootPopup = id;
+        distributionDeliveryPopup = id;
+        distributionEnableButton = NSButton;
+        distributionInvalidateObjectsButton = NSButton;
+        distributionInvalidationStatusField = NSTextField;
+        distributionLoggingButton = NSButton;
+        distributionOriginField = NSTextField;
+        distributionProgress = NSProgressIndicator;
+        distributionStatusField = NSTextField;
+        distributionUrlField = NSTextField;
+        filenameField = NSTextField;
+        groupField = NSTextField;
+        groupr = NSButton;
+        groupw = NSButton;
+        groupx = NSButton;
+        iconImageView = id;
+        kindField = NSTextField;
+        metadataAddButton = NSButton;
+        metadataProgress = NSProgressIndicator;
+        metadataRemoveButton = NSButton;
+        metadataTable = NSTableView;
+        modifiedField = NSTextField;
+        octalField = NSTextField;
+        otherr = NSButton;
+        otherw = NSButton;
+        otherx = NSButton;
+        ownerField = NSTextField;
+        ownerr = NSButton;
+        ownerw = NSButton;
+        ownerx = NSButton;
+        panelAcl = NSView;
+        panelCloud = NSView;
+        panelDistribution = NSView;
+        panelGeneral = NSView;
+        panelMetadata = NSView;
+        panelPermissions = NSView;
+        pathField = NSTextField;
+        permissionProgress = NSProgressIndicator;
+        permissionsField = NSTextField;
+        recursiveButton = NSButton;
+        s3Progress = NSProgressIndicator;
+        s3PublicUrlField = NSTextField;
+        s3PublicUrlValidityField = NSTextField;
+        s3torrentUrlField = NSTextField;
+        sizeButton = NSButton;
+        sizeField = NSTextField;
+        sizeProgress = NSProgressIndicator;
+        storageClassPopup = NSPopUpButton;
+        tabView = NSTabView;
+        webUrlField = NSTextField;
+        window = NSWindow;
+    };
+    SUPERCLASS = "java.lang.Object";
+},
+        {
+    CLASS = FirstResponder;
+    LANGUAGE = ObjC;
+    SUPERCLASS = NSObject;
+},
+        {
+    CLASS = NSObject;
+    LANGUAGE = ObjC;
+}
+    );
+    IBVersion = 1;
+}

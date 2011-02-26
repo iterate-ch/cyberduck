@@ -1407,6 +1407,34 @@
 		47DF9A23102CE43B00DCAD41 /* Local.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Local.m; sourceTree = "<group>"; };
 		47E0BB450746B1FA00C4A68E /* arrowDown.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = arrowDown.tiff; sourceTree = "<group>"; };
 		47E0BB490746B1FA00C4A68E /* arrowUp.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = arrowUp.tiff; sourceTree = "<group>"; };
+		47E2848413191D0900D03060 /* uk */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = uk; path = uk.lproj/Alert.nib; sourceTree = "<group>"; };
+		47E2848513191D0900D03060 /* uk */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = uk; path = uk.lproj/Bookmark.nib; sourceTree = "<group>"; };
+		47E2848613191D0900D03060 /* uk */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = uk; path = uk.lproj/Browser.nib; sourceTree = "<group>"; };
+		47E2848713191D0900D03060 /* uk */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = uk; path = uk.lproj/Command.nib; sourceTree = "<group>"; };
+		47E2848813191D0900D03060 /* uk */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = uk; path = uk.lproj/Connection.nib; sourceTree = "<group>"; };
+		47E2848913191D0900D03060 /* uk */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = uk; path = uk.lproj/Donate.nib; sourceTree = "<group>"; };
+		47E2848A13191D0900D03060 /* uk */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = uk; path = uk.lproj/Info.nib; sourceTree = "<group>"; };
+		47E2848B13191D0900D03060 /* uk */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = uk; path = uk.lproj/Login.nib; sourceTree = "<group>"; };
+		47E2848C13191D0900D03060 /* uk */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = uk; path = uk.lproj/Main.nib; sourceTree = "<group>"; };
+		47E2848D13191D0900D03060 /* uk */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = uk; path = uk.lproj/Preferences.nib; sourceTree = "<group>"; };
+		47E2848E13191D0900D03060 /* uk */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = uk; path = uk.lproj/Prompt.nib; sourceTree = "<group>"; };
+		47E284BC1319333000D03060 /* uk */ = {isa = PBXFileReference; lastKnownFileType = text; name = uk; path = uk.lproj/License.txt; sourceTree = "<group>"; };
+		47E284BD1319333000D03060 /* uk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = uk; path = uk.lproj/Alert.strings; sourceTree = "<group>"; };
+		47E284BE1319333000D03060 /* uk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = uk; path = uk.lproj/Archive.strings; sourceTree = "<group>"; };
+		47E284C51319333000D03060 /* uk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = uk; path = uk.lproj/Configuration.strings; sourceTree = "<group>"; };
+		47E284C81319333000D03060 /* uk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = uk; path = uk.lproj/Crash.strings; sourceTree = "<group>"; };
+		47E284C91319333000D03060 /* uk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = uk; path = uk.lproj/Credentials.strings; sourceTree = "<group>"; };
+		47E284CE1319333000D03060 /* uk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = uk; path = uk.lproj/Error.strings; sourceTree = "<group>"; };
+		47E284CF1319333000D03060 /* uk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = uk; path = uk.lproj/Growl.strings; sourceTree = "<group>"; };
+		47E284D01319333000D03060 /* uk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = uk; path = uk.lproj/IDisk.strings; sourceTree = "<group>"; };
+		47E284D31319333000D03060 /* uk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = uk; path = uk.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		47E284D41319333000D03060 /* uk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = uk; path = uk.lproj/Keychain.strings; sourceTree = "<group>"; };
+		47E284D51319333000D03060 /* uk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = uk; path = uk.lproj/License.strings; sourceTree = "<group>"; };
+		47E284D61319333000D03060 /* uk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = uk; path = uk.lproj/Localizable.strings; sourceTree = "<group>"; };
+		47E284DB1319333000D03060 /* uk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = uk; path = uk.lproj/Mosso.strings; sourceTree = "<group>"; };
+		47E284E01319333000D03060 /* uk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = uk; path = uk.lproj/S3.strings; sourceTree = "<group>"; };
+		47E284E11319333000D03060 /* uk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = uk; path = uk.lproj/Status.strings; sourceTree = "<group>"; };
+		47E284E21319333000D03060 /* uk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = uk; path = uk.lproj/Transfer.strings; sourceTree = "<group>"; };
 		47E9875F0D689A280077733F /* en */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = en; path = en.lproj/S3.strings; sourceTree = "<group>"; };
 		47EC858E0AF0929E0057AC1F /* zh_CN */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = zh_CN; path = zh_CN.lproj/Alert.nib; sourceTree = "<group>"; };
 		47EC858F0AF0929E0057AC1F /* tr */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = tr; path = tr.lproj/Alert.nib; sourceTree = "<group>"; };
@@ -2447,6 +2475,7 @@
 				ka,
 				sl,
 				ro,
+				uk,
 			);
 			mainGroup = 29B97314FDCFA39411CA2CEA /* cyberduck-cocoa */;
 			projectDirPath = "";
@@ -2898,6 +2927,7 @@
 				47C92D8A1189B6CA00EDDD00 /* sl */,
 				470F148411B208470053670F /* ro */,
 				470DECC5125F2CBD00952823 /* ru */,
+				47E284BE1319333000D03060 /* uk */,
 			);
 			name = Archive.strings;
 			sourceTree = "<group>";
@@ -2932,6 +2962,7 @@
 				47C92DB11189B6CB00EDDD00 /* sl */,
 				470F14B711B208470053670F /* ro */,
 				470DEC9F125F2CBD00952823 /* ru */,
+				47E284DB1319333000D03060 /* uk */,
 			);
 			name = Mosso.strings;
 			sourceTree = "<group>";
@@ -2966,6 +2997,7 @@
 				47C92DA61189B6CB00EDDD00 /* sl */,
 				470F14A811B208470053670F /* ro */,
 				470DECAA125F2CBD00952823 /* ru */,
+				47E284D01319333000D03060 /* uk */,
 			);
 			name = IDisk.strings;
 			sourceTree = "<group>";
@@ -3000,6 +3032,7 @@
 				47C92D5C1189B6B300EDDD00 /* sl */,
 				470F14BB11B208470053670F /* ro */,
 				470DEC5E125F2CAF00952823 /* ru */,
+				47E2848E13191D0900D03060 /* uk */,
 			);
 			name = Prompt.nib;
 			sourceTree = "<group>";
@@ -3034,6 +3067,7 @@
 				47C92D501189B6B300EDDD00 /* sl */,
 				470F148B11B208470053670F /* ro */,
 				470DEC6A125F2CAF00952823 /* ru */,
+				47E2848713191D0900D03060 /* uk */,
 			);
 			name = Command.nib;
 			sourceTree = "<group>";
@@ -3067,6 +3101,7 @@
 				471F5C2912AD1B6B0005D323 /* ru */,
 				471F5C2C12AD1B6B0005D323 /* sl */,
 				471F5C2D12AD1B6B0005D323 /* sk */,
+				47E284BD1319333000D03060 /* uk */,
 			);
 			name = Alert.strings;
 			sourceTree = "<group>";
@@ -3141,6 +3176,7 @@
 				47C92D581189B6B300EDDD00 /* sl */,
 				470F14A911B208470053670F /* ro */,
 				470DEC62125F2CAF00952823 /* ru */,
+				47E2848A13191D0900D03060 /* uk */,
 			);
 			name = Info.nib;
 			sourceTree = "<group>";
@@ -3175,6 +3211,7 @@
 				47C92D4F1189B6B300EDDD00 /* sl */,
 				470F148811B208470053670F /* ro */,
 				470DEC6B125F2CAF00952823 /* ru */,
+				47E2848613191D0900D03060 /* uk */,
 			);
 			name = Browser.nib;
 			sourceTree = "<group>";
@@ -3209,6 +3246,7 @@
 				47C92D5A1189B6B300EDDD00 /* sl */,
 				470F14B411B208470053670F /* ro */,
 				470DEC60125F2CAF00952823 /* ru */,
+				47E2848C13191D0900D03060 /* uk */,
 			);
 			name = Main.nib;
 			sourceTree = "<group>";
@@ -3243,6 +3281,7 @@
 				47C92D5D1189B6B300EDDD00 /* sl */,
 				470F14AF11B208470053670F /* ro */,
 				470DECC8125F2CBD00952823 /* ru */,
+				47E284BC1319333000D03060 /* uk */,
 			);
 			name = License.txt;
 			sourceTree = "<group>";
@@ -3277,6 +3316,7 @@
 				47C92D511189B6B300EDDD00 /* sl */,
 				470F148F11B208470053670F /* ro */,
 				470DEC69125F2CAF00952823 /* ru */,
+				47E2848813191D0900D03060 /* uk */,
 			);
 			name = Connection.nib;
 			sourceTree = "<group>";
@@ -3311,6 +3351,7 @@
 				47C92D521189B6B300EDDD00 /* sl */,
 				470F149411B208470053670F /* ro */,
 				470DEC68125F2CAF00952823 /* ru */,
+				47E2848913191D0900D03060 /* uk */,
 			);
 			name = Donate.nib;
 			sourceTree = "<group>";
@@ -3345,6 +3386,7 @@
 				47C92D591189B6B300EDDD00 /* sl */,
 				470F14B111B208470053670F /* ro */,
 				470DEC61125F2CAF00952823 /* ru */,
+				47E2848B13191D0900D03060 /* uk */,
 			);
 			name = Login.nib;
 			sourceTree = "<group>";
@@ -3379,6 +3421,7 @@
 				47C92D5B1189B6B300EDDD00 /* sl */,
 				470F14B811B208470053670F /* ro */,
 				470DEC5F125F2CAF00952823 /* ru */,
+				47E2848D13191D0900D03060 /* uk */,
 			);
 			name = Preferences.nib;
 			sourceTree = "<group>";
@@ -3413,6 +3456,7 @@
 				47C92D4E1189B6B300EDDD00 /* sl */,
 				470F148511B208470053670F /* ro */,
 				470DEC6C125F2CAF00952823 /* ru */,
+				47E2848513191D0900D03060 /* uk */,
 			);
 			name = Bookmark.nib;
 			sourceTree = "<group>";
@@ -3447,6 +3491,7 @@
 				47C92DA91189B6CB00EDDD00 /* sl */,
 				470F14AC11B208470053670F /* ro */,
 				470DECA7125F2CBD00952823 /* ru */,
+				47E284D31319333000D03060 /* uk */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
@@ -3481,6 +3526,7 @@
 				47C92DAC1189B6CB00EDDD00 /* sl */,
 				470F14B011B208470053670F /* ro */,
 				470DECA4125F2CBD00952823 /* ru */,
+				47E284D61319333000D03060 /* uk */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
@@ -3515,6 +3561,7 @@
 				47C92D4D1189B6B300EDDD00 /* sl */,
 				470F148111B208470053670F /* ro */,
 				470DEC6D125F2CAF00952823 /* ru */,
+				47E2848413191D0900D03060 /* uk */,
 			);
 			name = Alert.nib;
 			sourceTree = "<group>";
@@ -3548,6 +3595,7 @@
 				47C92D971189B6CA00EDDD00 /* sl */,
 				470F149311B208470053670F /* ro */,
 				470DECB9125F2CBD00952823 /* ru */,
+				47E284C91319333000D03060 /* uk */,
 			);
 			name = Credentials.strings;
 			sourceTree = "<group>";
@@ -3655,6 +3703,7 @@
 				47C92DAB1189B6CB00EDDD00 /* sl */,
 				470F14AE11B208470053670F /* ro */,
 				470DECA5125F2CBD00952823 /* ru */,
+				47E284D51319333000D03060 /* uk */,
 			);
 			name = License.strings;
 			sourceTree = "<group>";
@@ -3689,6 +3738,7 @@
 				47C92DBA1189B6CB00EDDD00 /* sl */,
 				470F14D011B208C70053670F /* ro */,
 				470DEC98125F2CBD00952823 /* ru */,
+				47E284E21319333000D03060 /* uk */,
 			);
 			name = Transfer.strings;
 			sourceTree = "<group>";
@@ -3723,6 +3773,7 @@
 				47C92D911189B6CA00EDDD00 /* sl */,
 				470F148E11B208470053670F /* ro */,
 				470DECBD125F2CBD00952823 /* ru */,
+				47E284C51319333000D03060 /* uk */,
 			);
 			name = Configuration.strings;
 			sourceTree = "<group>";
@@ -3757,6 +3808,7 @@
 				47C92D9E1189B6CB00EDDD00 /* sl */,
 				470F149D11B208470053670F /* ro */,
 				470DECB2125F2CBD00952823 /* ru */,
+				47E284CE1319333000D03060 /* uk */,
 			);
 			name = Error.strings;
 			sourceTree = "<group>";
@@ -3790,6 +3842,7 @@
 				47C92DAA1189B6CB00EDDD00 /* sl */,
 				470F14AD11B208470053670F /* ro */,
 				470DECA6125F2CBD00952823 /* ru */,
+				47E284D41319333000D03060 /* uk */,
 			);
 			name = Keychain.strings;
 			sourceTree = "<group>";
@@ -3983,6 +4036,7 @@
 				47C92DB61189B6CB00EDDD00 /* sl */,
 				470F14BE11B208470053670F /* ro */,
 				470DEC9A125F2CBD00952823 /* ru */,
+				47E284E01319333000D03060 /* uk */,
 			);
 			name = S3.strings;
 			sourceTree = "<group>";
@@ -4017,6 +4071,7 @@
 				47C92DA51189B6CB00EDDD00 /* sl */,
 				470F14A711B208470053670F /* ro */,
 				470DECAB125F2CBD00952823 /* ru */,
+				47E284CF1319333000D03060 /* uk */,
 			);
 			name = Growl.strings;
 			sourceTree = "<group>";
@@ -4051,6 +4106,7 @@
 				47C92DB91189B6CB00EDDD00 /* sl */,
 				470F14BF11B208470053670F /* ro */,
 				470DEC99125F2CBD00952823 /* ru */,
+				47E284E11319333000D03060 /* uk */,
 			);
 			name = Status.strings;
 			sourceTree = "<group>";
@@ -4085,6 +4141,7 @@
 				47C92D961189B6CA00EDDD00 /* sl */,
 				470F149211B208470053670F /* ro */,
 				470DECBA125F2CBD00952823 /* ru */,
+				47E284C81319333000D03060 /* uk */,
 			);
 			name = Crash.strings;
 			sourceTree = "<group>";
