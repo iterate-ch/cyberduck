@@ -132,7 +132,7 @@ Function .onInit
         StrCmp $0 "1" +2
         StrCpy $InstallDotNET "Yes"
 
-        StrCpy $BonjourCheckbox_State ${BST_CHECKED}
+        ;StrCpy $BonjourCheckbox_State ${BST_CHECKED}
 FunctionEnd
 
 Function .onInstSuccess
@@ -310,6 +310,7 @@ Function InstallationOptions
 	${If} $BonjourCheckbox_State == ${BST_CHECKED}
 		${NSD_Check} $BonjourCheckbox
 	${EndIf}
+    ${NSD_OnClick} $BonjourCheckbox InstallationOptionsLeave
 
         ;TODO localization
         nsDialogs::CreateControl EDIT \
