@@ -239,7 +239,7 @@
         <!-- copy wyUpdate project over to the build directory -->
         <copy file="${changelog.wyp}" tofile="${build}/changelog.wyp" overwrite="true"/>
 
-        <exec executable="${wybuild.home}/wybuild.exe" failonerror="true">
+        <exec executable="${wybuild.home}/wybuild.cmd.exe" failonerror="true">
             <arg value="${build}/changelog.wyp"/>
             <arg value="/bwu"/>
             <arg value="/bu"/>
@@ -281,7 +281,7 @@
 
         <copy file="${www.update}/Updater.exe" todir="${build}/update" overwrite="true"/>
 
-        <exec executable="${wybuild.home}/wybuild.exe" failonerror="true">
+        <exec executable="${wybuild.home}/wybuild.cmd.exe" failonerror="true">
             <arg value="${build}/updater.wyp"/>
             <arg value="/bu"/>
             <arg value="-add=${absbuild}/updater.xml"/>
