@@ -154,7 +154,7 @@ public class HostTest extends AbstractTestCase {
             Host h = Host.parse(url);
             assertTrue(h.getHostname().equals("hostname"));
             assertTrue(h.getProtocol().equals(
-                    Protocol.forName(Preferences.instance().getProperty("connection.protocol.default"))));
+                    ProtocolFactory.forName(Preferences.instance().getProperty("connection.protocol.default"))));
             assertNotNull(h.getCredentials().getUsername());
             assertTrue(h.getCredentials().getUsername().equals("user"));
             assertNull(h.getCredentials().getPassword());
@@ -165,7 +165,7 @@ public class HostTest extends AbstractTestCase {
             Host h = Host.parse(url);
             assertTrue(h.getHostname().equals("hostname"));
             assertTrue(h.getProtocol().equals(
-                    Protocol.forName(Preferences.instance().getProperty("connection.protocol.default"))));
+                    ProtocolFactory.forName(Preferences.instance().getProperty("connection.protocol.default"))));
             assertNotNull(h.getCredentials().getUsername());
             assertTrue(h.getCredentials().getUsername().equals("user"));
             assertNull(h.getCredentials().getPassword());
@@ -178,7 +178,7 @@ public class HostTest extends AbstractTestCase {
             Host h = Host.parse(url);
             assertTrue(h.getHostname().equals("hostname"));
             assertTrue(h.getProtocol().equals(
-                    Protocol.forName(Preferences.instance().getProperty("connection.protocol.default"))));
+                    ProtocolFactory.forName(Preferences.instance().getProperty("connection.protocol.default"))));
             assertNotNull(h.getCredentials().getUsername());
             assertTrue(h.getCredentials().getUsername().equals("user@name"));
             assertNull(h.getCredentials().getPassword());
@@ -188,7 +188,7 @@ public class HostTest extends AbstractTestCase {
             Host h = Host.parse(url);
             assertTrue(h.getHostname().equals("hostname"));
             assertTrue(h.getProtocol().equals(
-                    Protocol.forName(Preferences.instance().getProperty("connection.protocol.default"))));
+                    ProtocolFactory.forName(Preferences.instance().getProperty("connection.protocol.default"))));
             assertNotNull(h.getCredentials().getUsername());
             assertTrue(h.getCredentials().getUsername().equals("user@name"));
             assertTrue(h.getCredentials().getPassword().equals("password"));
