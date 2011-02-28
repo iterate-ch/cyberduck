@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2011 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -38,6 +38,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                                        SystemSounds.Beep.Play();
                                    }
                                };
+            MinimumSize = new Size(400, 150);
         }
 
         public override string[] BundleNames
