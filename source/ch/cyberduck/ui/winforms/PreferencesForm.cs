@@ -635,6 +635,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         }
 
         public event VoidHandler UseSystemProxyChangedEvent = delegate { };
+        public event VoidHandler ChangeSystemProxyEvent = delegate { };
         public event VoidHandler SaveWorkspaceChangedEvent = delegate { };
         public event VoidHandler NewBrowserOnStartupChangedEvent = delegate { };
         public event VoidHandler DefaultBookmarkChangedEvent = delegate { };
@@ -1393,6 +1394,11 @@ namespace Ch.Cyberduck.Ui.Winforms
         private void updateFeedComboBox_SelectionChangeCommitted(object sender, EventArgs e)
         {
             UpdateFeedChangedEvent();
+        }
+
+        private void changeSystemProxyButton_Click(object sender, EventArgs e)
+        {
+            ChangeSystemProxyEvent();
         }
     }
 }

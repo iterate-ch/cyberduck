@@ -1,5 +1,5 @@
-﻿﻿//
-// Copyright (c) 2010 Yves Langisch. All rights reserved.
+﻿// 
+// Copyright (c) 2010-2011 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -17,13 +17,13 @@
 // 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using ch.cyberduck.core;
 using Ch.Cyberduck.Core;
 using ch.cyberduck.core.io;
 using ch.cyberduck.core.s3;
 using Ch.Cyberduck.Ui.Winforms;
 using Ch.Cyberduck.Ui.Winforms.Controls;
-using ch.cyberduck.core.ftp;
 using java.util;
 using java.util.regex;
 using org.apache.log4j;
@@ -134,6 +134,7 @@ namespace Ch.Cyberduck.Ui.Controller
             View.RetriesChangedEvent += View_RetriesChangedEvent;
 
             View.UseSystemProxyChangedEvent += View_UseSystemProxyChangedEvent;
+            View.ChangeSystemProxyEvent += View_ChangeSystemProxyEvent;
 
             #region S3
 
@@ -208,6 +209,20 @@ namespace Ch.Cyberduck.Ui.Controller
             Host selected = View.DefaultBookmark;
             PopulateBookmarks();
             SelectDefaultBookmark(selected);
+        }
+
+        private void View_ChangeSystemProxyEvent()
+        {
+            LaunchIEOptions(4);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="activeRegister">Register to select (connections settings=4)</param>
+        private void LaunchIEOptions(int activeRegister)
+        {
+            Process.Start("rundll32.exe", "shell32.dll,Control_RunDLL inetcpl.cpl,," + activeRegister);
         }
 
         private void View_UpdateFeedChangedEvent()
