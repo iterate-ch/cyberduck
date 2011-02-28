@@ -18,9 +18,8 @@
 using System.Xml;
 using ch.cyberduck.core;
 using ch.cyberduck.core.serializer;
-using Ch.Cyberduck.Ui.Winforms.Serializer;
 
-namespace Ch.Cyberduck.Ui.Controller
+namespace Ch.Cyberduck.Ui.Winforms.Serializer
 {
     public class HostPlistReader : PlistReader<Host>
     {

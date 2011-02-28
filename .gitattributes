@@ -1868,7 +1868,6 @@ source/ch/cyberduck/ui/controller/FirefoxStyleRenderer.cs -text
 source/ch/cyberduck/ui/controller/FolderController.cs -text
 source/ch/cyberduck/ui/controller/FolderItems.cs -text
 source/ch/cyberduck/ui/controller/HostKeyController.cs -text
-source/ch/cyberduck/ui/controller/HostPlistReader.cs -text
 source/ch/cyberduck/ui/controller/IActivityView.cs -text
 source/ch/cyberduck/ui/controller/IBookmarkManagerView.cs -text
 source/ch/cyberduck/ui/controller/IBookmarkView.cs -text
@@ -2006,6 +2005,7 @@ source/ch/cyberduck/ui/winforms/controls/TransferControl.resx -text svneol=unset
 source/ch/cyberduck/ui/winforms/controls/VistaMenu.cs -text
 source/ch/cyberduck/ui/winforms/controls/VistaMenuOwnerDrawn.cs -text
 source/ch/cyberduck/ui/winforms/controls/design/SearchTextBoxDesigner.cs -text
+source/ch/cyberduck/ui/winforms/serializer/HostPlistReader.cs -text
 source/ch/cyberduck/ui/winforms/serializer/PlistDeserializer.cs -text
 source/ch/cyberduck/ui/winforms/serializer/PlistReader.cs -text
 source/ch/cyberduck/ui/winforms/serializer/PlistSerializer.cs -text
