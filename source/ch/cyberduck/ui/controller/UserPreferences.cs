@@ -287,6 +287,7 @@ namespace Ch.Cyberduck.Ui.Controller
             defaults.put("queue.dock.badge", true.ToString());
 
             defaults.put("ssh.knownhosts", Path.Combine(RoamingApplicationDataPath, "known_hosts"));
+            defaults.put("browser.enterkey.rename", false.ToString());
 
             //default browser toolbar set
             defaults.put("browser.toolbar", true.ToString());

@@ -2278,7 +2278,17 @@ namespace Ch.Cyberduck.Ui.Winforms
         {
             if (e.KeyChar == (char) Keys.Enter)
             {
-                BrowserDoubleClicked();
+                if (Preferences.instance().getBoolean("browser.enterkey.rename"))
+                {
+                    if (ValidateRenameFile())
+                    {
+                        browser.SelectedItem.BeginEdit();
+                    }
+                }
+                else
+                {
+                    BrowserDoubleClicked();
+                }
                 e.Handled = true;
             }
         }
