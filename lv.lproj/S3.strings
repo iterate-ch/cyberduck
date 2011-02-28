@@ -22,8 +22,8 @@
 "Streaming (RTMP)" = "Straumēšana (RTMP) CDN";
 "Custom Origin Server (HTTP/HTTPS)" = "Custom Origin Server (HTTP/HTTPS) CDN";
 
-/* S3 Website Configuration with index document */
-"Website Configuration" = "Website Configuration";
+/* S3 Website Configuration (HTTP) with index document */
+"Website Configuration (HTTP)" = "Website Configuration (HTTP)";
 "NoSuchWebsiteConfiguration" = "The specified bucket does not have a website configuration";
 
 /* Storage class */
