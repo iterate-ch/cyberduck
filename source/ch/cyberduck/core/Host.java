@@ -52,7 +52,7 @@ public class Host implements Serializable {
      * @see Protocol#SFTP
      */
     private Protocol protocol
-            = Protocol.forName(Preferences.instance().getProperty("connection.protocol.default"));
+            = ProtocolFactory.forName(Preferences.instance().getProperty("connection.protocol.default"));
     /**
      * The port number to connect to
      *
@@ -167,7 +167,7 @@ public class Host implements Serializable {
      * @param hostname The hostname of the server
      */
     public Host(String hostname) {
-        this(Protocol.forName(Preferences.instance().getProperty("connection.protocol.default")),
+        this(ProtocolFactory.forName(Preferences.instance().getProperty("connection.protocol.default")),
                 hostname);
     }
 
@@ -178,7 +178,7 @@ public class Host implements Serializable {
      * @param port     The port number to connect to
      */
     public Host(String hostname, int port) {
-        this(Protocol.getDefaultProtocol(port), hostname, port);
+        this(ProtocolFactory.getDefaultProtocol(port), hostname, port);
     }
 
     /**
@@ -239,7 +239,7 @@ public class Host implements Serializable {
         }
         Object protocolObj = dict.stringForKey("Protocol");
         if(protocolObj != null) {
-            this.setProtocol(Protocol.forName(protocolObj.toString()));
+            this.setProtocol(ProtocolFactory.forName(protocolObj.toString()));
         }
         Object hostnameObj = dict.stringForKey("Hostname");
         if(hostnameObj != null) {
@@ -385,13 +385,13 @@ public class Host implements Serializable {
         Protocol protocol = null;
         if(input.indexOf("://", begin) != -1) {
             cut = input.indexOf("://", begin);
-            protocol = Protocol.forScheme(input.substring(begin, cut));
+            protocol = ProtocolFactory.forScheme(input.substring(begin, cut));
             if(null != protocol) {
                 begin += cut - begin + 3;
             }
         }
         if(null == protocol) {
-            protocol = Protocol.forName(
+            protocol = ProtocolFactory.forName(
                     Preferences.instance().getProperty("connection.protocol.default"));
         }
         String username = null;
@@ -528,7 +528,7 @@ public class Host implements Serializable {
     public void setProtocol(Protocol protocol) {
         log.debug("setProtocol:" + protocol);
         this.protocol = protocol != null ? protocol :
-                Protocol.forName(Preferences.instance().getProperty("connection.protocol.default"));
+                ProtocolFactory.forName(Preferences.instance().getProperty("connection.protocol.default"));
     }
 
     /**
