@@ -189,21 +189,21 @@ public abstract class Preferences {
         defaults.put("growl.enable", String.valueOf(true));
         defaults.put("growl.limit", String.valueOf(10));
 
-        defaults.put("protocol.ftp.enable", String.valueOf(true));
-        defaults.put("protocol.ftp.tls.enable", String.valueOf(true));
-        defaults.put("protocol.sftp.enable", String.valueOf(true));
-        defaults.put("protocol.webdav.enable", String.valueOf(true));
-        defaults.put("protocol.webdav.tls.enable", String.valueOf(true));
-        defaults.put("protocol.idisk.enable", String.valueOf(true));
-        defaults.put("protocol.s3.enable", String.valueOf(false));
-        defaults.put("protocol.s3.tls.enable", String.valueOf(true));
-        defaults.put("protocol.s3.eucalyptus.enable", String.valueOf(true));
-        defaults.put("protocol.cf.enable", String.valueOf(true));
-        defaults.put("protocol.cf.swift.enable", String.valueOf(true));
-        defaults.put("protocol.gdocs.enable", String.valueOf(true));
-        defaults.put("protocol.gstorage.tls.enable", String.valueOf(true));
-        defaults.put("protocol.azure.tls.enable", String.valueOf(true));
-        defaults.put("protocol.dropbox.tls.enable", String.valueOf(false));
+        defaults.put("protocol." + Protocol.FTP + ".enable", String.valueOf(true));
+        defaults.put("protocol." + Protocol.FTP_TLS + ".enable", String.valueOf(true));
+        defaults.put("protocol." + Protocol.SFTP + ".enable", String.valueOf(true));
+        defaults.put("protocol." + Protocol.WEBDAV + ".enable", String.valueOf(true));
+        defaults.put("protocol." + Protocol.WEBDAV_SSL + ".enable", String.valueOf(true));
+        defaults.put("protocol." + Protocol.IDISK + ".enable", String.valueOf(true));
+        defaults.put("protocol." + Protocol.S3_SSL + ".enable", String.valueOf(true));
+        defaults.put("protocol." + Protocol.S3 + ".enable", String.valueOf(true));
+        defaults.put("protocol." + Protocol.GOOGLESTORAGE_SSL + ".enable", String.valueOf(true));
+        defaults.put("protocol." + Protocol.EUCALYPTUS + ".enable", String.valueOf(true));
+        defaults.put("protocol." + Protocol.CLOUDFILES + ".enable", String.valueOf(true));
+        defaults.put("protocol." + Protocol.SWIFT + ".enable", String.valueOf(true));
+        defaults.put("protocol." + Protocol.GDOCS_SSL + ".enable", String.valueOf(true));
+        defaults.put("protocol." + Protocol.AZURE_SSL + ".enable", String.valueOf(true));
+        defaults.put("protocol." + Protocol.DROPBOX_SSL + ".enable", String.valueOf(true));
 
         defaults.put("path.symboliclink.resolve", String.valueOf(false));
         /**
