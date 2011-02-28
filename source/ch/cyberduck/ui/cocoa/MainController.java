@@ -532,7 +532,7 @@ public class MainController extends BundleController implements NSApplication.De
             else if("cyberduckprofile".equals(f.getExtension())) {
                 final Local profiles = LocalFactory.createLocal(Preferences.instance().getProperty("application.support.path"), "Profiles");
                 f.rename(LocalFactory.createLocal(profiles, f.getName()));
-                final Profile profile = ProtocolReaderFactory.instance().read(f);
+                final Protocol profile = ProtocolReaderFactory.instance().read(f);
                 profile.register();
                 final Host host = new Host(profile, profile.getDefaultHostname(), profile.getDefaultPort());
                 MainController.newDocument().mount(host);
