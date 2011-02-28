@@ -168,7 +168,7 @@ namespace Ch.Cyberduck.Ui.Controller
             PlistDeserializer.Register();
             HostPlistReader.Register();
             TransferPlistReader.Register();
-            ProtocolPlistReader.register();
+            ProtocolPlistReader.Register();
             TcpReachability.Register();
             GrowlImpl.Register();
             TreePathReference.Register();
@@ -259,13 +259,13 @@ namespace Ch.Cyberduck.Ui.Controller
                             }
                         }
                     }
-                    else if ("cyberduckprofile".equals(f.getExtension())) {
+                    else if ("cyberduckprofile".Equals(f.getExtension())) {
                         Local profiles = LocalFactory.createLocal(Preferences.instance().getProperty("application.support.path"), "Profiles");
                         f.rename(LocalFactory.createLocal(profiles, f.getName()));
-                        final Profile profile = ProtocolReaderFactory.instance().read(f);
+                        Protocol profile = (Protocol) ProtocolReaderFactory.instance().read(f);
                         profile.register();
                         Host host = new Host(profile, profile.getDefaultHostname(), profile.getDefaultPort());
-                        MainController.newDocument().mount(host);
+                        MainController.NewBrowser().Mount(host);
                     }
                 }
             }

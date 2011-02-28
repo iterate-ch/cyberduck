@@ -2031,6 +2031,7 @@ source/ch/cyberduck/ui/winforms/serializer/PlistDeserializer.cs -text
 source/ch/cyberduck/ui/winforms/serializer/PlistReader.cs -text
 source/ch/cyberduck/ui/winforms/serializer/PlistSerializer.cs -text
 source/ch/cyberduck/ui/winforms/serializer/PlistWriter.cs -text
+source/ch/cyberduck/ui/winforms/serializer/ProtocolPlistReader.cs -text
 source/ch/cyberduck/ui/winforms/serializer/TransferPlistReader.cs -text
 source/ch/cyberduck/ui/winforms/taskdialog/CommandButton.Designer.cs -text
 source/ch/cyberduck/ui/winforms/taskdialog/CommandButton.cs -text
