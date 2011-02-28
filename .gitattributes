@@ -1733,6 +1733,7 @@ source/ch/cyberduck/ResourcesBundle.Designer.cs -text
 source/ch/cyberduck/ResourcesBundle.resx -text
 source/ch/cyberduck/core/AbstractFolderHostCollection.java -text
 source/ch/cyberduck/core/AbstractLoginController.java -text
+source/ch/cyberduck/core/AbstractProtocol.java -text
 source/ch/cyberduck/core/AbstractRendezvous.java -text
 source/ch/cyberduck/core/CollectionListener.java -text
 source/ch/cyberduck/core/Commands.cs -text
@@ -1752,6 +1753,7 @@ source/ch/cyberduck/core/NativeListEnumerator.cs -text
 source/ch/cyberduck/core/NativeMethods.cs -text
 source/ch/cyberduck/core/NaturalOrderComparator.java -text
 source/ch/cyberduck/core/OSVersion.cs -text
+source/ch/cyberduck/core/Profile.java -text
 source/ch/cyberduck/core/Protocol.java -text
 source/ch/cyberduck/core/ProtocolFactory.java -text
 source/ch/cyberduck/core/RFC2253.cs -text

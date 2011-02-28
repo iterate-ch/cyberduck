@@ -20,6 +20,7 @@ package ch.cyberduck.ui.cocoa.serializer;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.serializer.HostWriterFactory;
+import ch.cyberduck.core.serializer.ProtocolWriterFactory;
 import ch.cyberduck.core.serializer.TransferWriterFactory;
 import ch.cyberduck.core.serializer.Writer;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
@@ -48,6 +49,13 @@ public class PlistWriter<S extends Serializable> implements Writer<S> {
         @Override
         public Writer<Transfer> create() {
             return new PlistWriter<Transfer>();
+        }
+    }
+
+    private static class ProtocolFactory extends ProtocolWriterFactory {
+        @Override
+        public Writer<Profile> create() {
+            return new PlistWriter<Profile>();
         }
     }
 

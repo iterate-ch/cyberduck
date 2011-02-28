@@ -33,6 +33,7 @@ import ch.cyberduck.ui.cocoa.quicklook.QuartzQuickLook;
 import ch.cyberduck.ui.cocoa.serializer.*;
 import ch.cyberduck.ui.growl.GrowlNative;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
@@ -63,7 +64,6 @@ public class MainApplication {
                 FinderLocal.register();
                 UserDefaultsPreferences.register();
                 BundleLocale.register();
-                Protocol.register();
                 GrowlNative.registerImpl();
                 if(null == Updater.getFeed()) {
                     Receipt.register();
@@ -77,6 +77,7 @@ public class MainApplication {
 
                 HostPlistReader.register();
                 TransferPlistReader.register();
+                ProtocolPlistReader.register();
                 OutlinePathReference.register();
 
                 PlistWriter.register();
@@ -95,6 +96,7 @@ public class MainApplication {
                 if(Preferences.instance().getBoolean("rendezvous.enable")) {
                     RendezvousResponder.register();
                 }
+                ProtocolFactory.register();
             }
 
             final Logger root = Logger.getRootLogger();

@@ -25,6 +25,7 @@ import ch.cyberduck.core.aquaticprime.LicenseFactory;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.importer.*;
 import ch.cyberduck.core.serializer.HostReaderFactory;
+import ch.cyberduck.core.serializer.ProtocolReaderFactory;
 import ch.cyberduck.core.sparkle.Updater;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.core.threading.DefaultMainAction;
@@ -527,6 +528,14 @@ public class MainController extends BundleController implements NSApplication.De
                     this.alert(alert);
                 }
                 return true;
+            }
+            else if("cyberduckprofile".equals(f.getExtension())) {
+                final Local profiles = LocalFactory.createLocal(Preferences.instance().getProperty("application.support.path"), "Profiles");
+                f.rename(LocalFactory.createLocal(profiles, f.getName()));
+                final Profile profile = ProtocolReaderFactory.instance().read(f);
+                profile.register();
+                final Host host = new Host(profile, profile.getDefaultHostname(), profile.getDefaultPort());
+                MainController.newDocument().mount(host);
             }
             else {
                 // Upload file
