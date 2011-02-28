@@ -27,6 +27,7 @@ using ch.cyberduck.core;
 using Ch.Cyberduck.Core;
 using ch.cyberduck.core.io;
 using ch.cyberduck.core.serializer;
+using ch.cyberduck.core.sftp;
 using ch.cyberduck.core.ssl;
 using ch.cyberduck.core.threading;
 using ch.cyberduck.ui;
@@ -208,6 +209,8 @@ namespace Ch.Cyberduck.Ui.Controller
             View.Search += View_Search;
             View.SendCustomCommand += View_SendCustomCommand;
             View.ValidateSendCustomCommand += View_ValidateSendCustomCommand;
+            View.OpenInTerminal += View_OpenInTerminal;
+            View.ValidateOpenInTerminal += View_ValidateOpenInTerminal;
             View.Stop += View_Stop;
             View.ValidateStop += View_ValidateStop;
             View.Disconnect += View_Disconnect;
@@ -404,6 +407,53 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 AsyncDelegate mainAction = delegate { View.AddTranscriptEntry(request, transcript); };
                 Invoke(mainAction);
+            }
+        }
+
+        private bool View_ValidateOpenInTerminal()
+        {
+            return IsMounted() && getSession() is SFTPSession &&
+                   File.Exists(Preferences.instance().getProperty("terminal.command.ssh"));
+        }
+
+        private void View_OpenInTerminal()
+        {
+            Host host = getSession().getHost();
+            bool identity = host.getCredentials().isPublicKeyAuthentication();
+
+            String workdir = null;
+            if (SelectedPaths.Count == 1)
+            {
+                Path selected = SelectedPath;
+                if (selected.attributes().isDirectory())
+                {
+                    workdir = selected.getAbsolute();
+                }
+            }
+            if (null == workdir)
+            {
+                workdir = Workdir.getAbsolute();
+            }
+
+            string tempFile = System.IO.Path.GetTempFileName();
+            try
+            {
+                TextWriter tw = new StreamWriter(tempFile);
+                tw.WriteLine(String.Format("cd {0} && exec $SHELL", workdir));
+                tw.Close();
+
+                String ssh = String.Format(Preferences.instance().getProperty("terminal.command.ssh.args"),
+                                           identity ? "-i " + host.getCredentials().getIdentity().getAbsolute() : "",
+                                           host.getCredentials().getUsername(),
+                                           host.getHostname(),
+                                           Convert.ToString(host.getPort()), tempFile);
+
+                Utils.StartProcess(Preferences.instance().getProperty("terminal.command.ssh"), ssh);
+            }
+            finally
+            {
+                //Utils.StartProcess is asynchronous means that the tempFile is already deleted most of time
+                //File.Delete(tempFile);
             }
         }
 
@@ -1562,7 +1612,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 selection = Workdir;
             }
             string folder = View.SynchronizeDialog(String.Format(Locale.localizedString("Synchronize {0} with"),
-                                                   selection.getName()), Environment.SpecialFolder.Desktop,
+                                                                 selection.getName()), Environment.SpecialFolder.Desktop,
                                                    null);
             if (null != folder)
             {

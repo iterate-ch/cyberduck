@@ -288,6 +288,8 @@ namespace Ch.Cyberduck.Ui.Controller
 
             defaults.put("ssh.knownhosts", Path.Combine(RoamingApplicationDataPath, "known_hosts"));
             defaults.put("browser.enterkey.rename", false.ToString());
+            defaults.put("terminal.command.ssh", Path.Combine(HomeFolder, "putty.exe"));
+            defaults.put("terminal.command.ssh.args", "-ssh {0} {1}@{2} -t -P {3} -m {4}");
 
             //default browser toolbar set
             defaults.put("browser.toolbar", true.ToString());
@@ -298,6 +300,7 @@ namespace Ch.Cyberduck.Ui.Controller
             defaults.put("browser.toolbar.refresh", true.ToString());
             defaults.put("browser.toolbar.edit", true.ToString());
             defaults.put("browser.toolbar.openinbrowser", false.ToString());
+            defaults.put("browser.toolbar.openinterminal", false.ToString());
             defaults.put("browser.toolbar.newfolder", false.ToString());
             defaults.put("browser.toolbar.delete", false.ToString());
             defaults.put("browser.toolbar.download", false.ToString());

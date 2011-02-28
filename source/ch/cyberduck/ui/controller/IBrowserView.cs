@@ -1,5 +1,5 @@
-﻿﻿//
-// Copyright (c) 2010 Yves Langisch. All rights reserved.
+﻿// 
+// Copyright (c) 2010-2011 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -92,7 +92,7 @@ namespace Ch.Cyberduck.Ui.Controller
         void StopActivityAnimation();
         event ValidateCommand ValidateSearchField;
 
-        event SetComparatorHandler SetComparator; 
+        event SetComparatorHandler SetComparator;
 
         void StartRenaming(Path path);
         void PopulateQuickConnect(List<string> nicknames);
@@ -184,6 +184,8 @@ namespace Ch.Cyberduck.Ui.Controller
         event VoidHandler Search;
         event VoidHandler SendCustomCommand;
         event ValidateCommand ValidateSendCustomCommand;
+        event VoidHandler OpenInTerminal;
+        event ValidateCommand ValidateOpenInTerminal;
         event VoidHandler Stop;
         event ValidateCommand ValidateStop;
         event VoidHandler Disconnect;

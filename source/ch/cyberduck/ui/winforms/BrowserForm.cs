@@ -179,6 +179,15 @@ namespace Ch.Cyberduck.Ui.Winforms
             keyMainMenuItem.Text = LicenseFactory.find().ToString();
             keyMainMenuItem.Enabled = false;
 
+            //Terminal app menu entries
+            String command = Preferences.instance().getProperty("terminal.command.ssh");
+            String file = System.IO.Path.GetFileName(command);
+            openInTerminalMainMenuItem.Text = String.Format(Locale.localizedString("Open in {0}"), file);
+            openInTerminalToolbarMenuItem.Text = openInTerminalMainMenuItem.Text;
+            openInTerminalToolStripButton.Image = IconCache.Instance.IconForFilename(command,
+                                                                                     IconCache.IconSize.
+                                                                                         Large);
+
             ConfigureToolbar();
             ConfigureFileCommands();
             ConfigureEditCommands();
@@ -318,6 +327,8 @@ namespace Ch.Cyberduck.Ui.Winforms
         public event VoidHandler Search;
         public event VoidHandler SendCustomCommand;
         public event ValidateCommand ValidateSendCustomCommand;
+        public event VoidHandler OpenInTerminal;
+        public event ValidateCommand ValidateOpenInTerminal;
         public event VoidHandler Stop;
         public event ValidateCommand ValidateStop;
         public event VoidHandler Disconnect;
@@ -1108,6 +1119,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             toolStripSeparatorAfterDelete.Visible = editToolStripMenuItem1.Checked ||
                                                     openInWebBrowserToolStripMenuItem.Checked ||
                                                     newFolderToolStripMenuItem1.Checked ||
+                                                    openInTerminalToolStripMenuItem.Checked ||
                                                     deleteToolStripMenuItem1.Checked;
 
             //new
@@ -1119,6 +1131,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             toolStripSeparatorAfterDelete.Visible = editToolbarMenuItem.Checked ||
                                                     openInWebBrowserToolbarMenuItem.Checked ||
                                                     newFolderToolbarMenuItem.Checked ||
+                                                    openInTerminalToolbarMenuItem.Checked ||
                                                     deleteToolbarMenuItem.Checked;
         }
 
@@ -1263,6 +1276,24 @@ namespace Ch.Cyberduck.Ui.Winforms
             m.Tag = openInWebBrowserToolbarMenuItem;
             customizeToolbarMainMenuItem.MenuItems.Add(m);
 
+            openInTerminalToolStripMenuItem.CheckOnClick = true;
+            h = delegate
+                    {
+                        openInTerminalToolbarMenuItem.Checked =
+                            !openInTerminalToolbarMenuItem.Checked;
+                        openInTerminalToolStripButton.Visible =
+                            !openInTerminalToolStripButton.Visible;
+                        UpdateSeparators();
+                        Preferences.instance().setProperty(
+                            "browser.toolbar.openinterminal",
+                            openInTerminalToolStripButton.Visible);
+                    };
+            openInTerminalToolStripMenuItem.Click += h;
+            openInTerminalToolbarMenuItem.Click += h;
+            m = new MenuItem(openInTerminalToolbarMenuItem.Text, h);
+            m.Tag = openInTerminalToolbarMenuItem;
+            customizeToolbarMainMenuItem.MenuItems.Add(m);
+
             newFolderToolStripMenuItem1.CheckOnClick = true;
             h = delegate
                     {
@@ -1361,11 +1392,14 @@ namespace Ch.Cyberduck.Ui.Winforms
             bool b7 =
                 openInBrowserToolStripButton.Visible =
                 Preferences.instance().getBoolean("browser.toolbar.openinbrowser");
-            bool b8 = newFolderToolStripButton.Visible = Preferences.instance().getBoolean("browser.toolbar.newfolder");
-            bool b9 = deleteToolStripButton.Visible = Preferences.instance().getBoolean("browser.toolbar.delete");
-            bool b10 = downloadToolStripButton.Visible = Preferences.instance().getBoolean("browser.toolbar.download");
-            bool b11 = uploadToolStripButton.Visible = Preferences.instance().getBoolean("browser.toolbar.upload");
-            bool b12 = transfersToolStripButton.Visible = Preferences.instance().getBoolean("browser.toolbar.transfers");
+            bool b8 =
+                openInTerminalToolStripButton.Visible =
+                Preferences.instance().getBoolean("browser.toolbar.openinterminal");
+            bool b9 = newFolderToolStripButton.Visible = Preferences.instance().getBoolean("browser.toolbar.newfolder");
+            bool b10 = deleteToolStripButton.Visible = Preferences.instance().getBoolean("browser.toolbar.delete");
+            bool b11 = downloadToolStripButton.Visible = Preferences.instance().getBoolean("browser.toolbar.download");
+            bool b12 = uploadToolStripButton.Visible = Preferences.instance().getBoolean("browser.toolbar.upload");
+            bool b13 = transfersToolStripButton.Visible = Preferences.instance().getBoolean("browser.toolbar.transfers");
 
             // update menu entries
             openConnectionToolStripMenuItem1.Checked = b1;
@@ -1375,11 +1409,12 @@ namespace Ch.Cyberduck.Ui.Winforms
             refreshToolStripMenuItem1.Checked = b5;
             editToolStripMenuItem1.Checked = b6;
             openInWebBrowserToolStripMenuItem.Checked = b7;
-            newFolderToolStripMenuItem1.Checked = b8;
-            deleteToolStripMenuItem1.Checked = b9;
-            downloadToolStripMenuItem1.Checked = b10;
-            uploadToolStripMenuItem1.Checked = b11;
-            transfersToolStripMenuItem1.Checked = b12;
+            openInTerminalToolStripMenuItem.Checked = b8;
+            newFolderToolStripMenuItem1.Checked = b9;
+            deleteToolStripMenuItem1.Checked = b10;
+            downloadToolStripMenuItem1.Checked = b11;
+            uploadToolStripMenuItem1.Checked = b12;
+            transfersToolStripMenuItem1.Checked = b13;
 
             openConnectionToolbarMenuItem.Checked = b1;
             quickConnectToolbarMenuItem.Checked = b2;
@@ -1388,11 +1423,12 @@ namespace Ch.Cyberduck.Ui.Winforms
             refreshToolbarMenuItem.Checked = b5;
             editToolbarMenuItem.Checked = b6;
             openInWebBrowserToolbarMenuItem.Checked = b7;
-            newFolderToolbarMenuItem.Checked = b8;
-            deleteToolbarMenuItem.Checked = b9;
-            downloadToolbarMenuItem.Checked = b10;
-            uploadToolbarMenuItem.Checked = b11;
-            transfersToolbarMenuItem.Checked = b12;
+            openInTerminalToolbarMenuItem.Checked = b8;
+            newFolderToolbarMenuItem.Checked = b9;
+            deleteToolbarMenuItem.Checked = b10;
+            downloadToolbarMenuItem.Checked = b11;
+            uploadToolbarMenuItem.Checked = b12;
+            transfersToolbarMenuItem.Checked = b13;
 
             UpdateSeparators();
         }
@@ -1561,6 +1597,11 @@ namespace Ch.Cyberduck.Ui.Winforms
                          (sender, args) => SendCustomCommand(), () => ValidateSendCustomCommand());
             Commands.Add(new ToolStripItem[]
                              {
+                                 openInTerminalToolStripButton
+                             }, new[] {openInTerminalMainMenuItem},
+                         (sender, args) => OpenInTerminal(), () => ValidateOpenInTerminal());
+            Commands.Add(new ToolStripItem[]
+                             {
                                  stopToolStripMenuItem
                              }, new[] {stopMainMenuItem},
                          (sender, args) => Stop(), () => ValidateStop());
@@ -1570,7 +1611,6 @@ namespace Ch.Cyberduck.Ui.Winforms
                                  disconnectStripButton
                              }, new[] {disconnectMainMenuItem},
                          (sender, args) => Disconnect(), () => ValidateDisconnect());
-
 
             vistaMenu1.SetImage(refreshMainMenuItem, IconCache.Instance.IconForName("reload", 16));
             vistaMenu1.SetImage(refreshBrowserContextMenuItem, IconCache.Instance.IconForName("reload", 16));
