@@ -871,30 +871,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             metadataDataGridView.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             metadataDataGridView.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
 
-            metadataDataGridView.CellFormatting += delegate(object sender, DataGridViewCellFormattingEventArgs args)
-                                                       {
-                                                           if (null != aclDataGridView.DataSource)
-                                                           {
-                                                               if (aclDataGridView.IsCurrentCellInEditMode ||
-                                                                   args.ColumnIndex != 0)
-                                                               {
-                                                                   return;
-                                                               }
-                                                               if (String.IsNullOrEmpty(args.Value as String))
-                                                               {
-                                                                   args.Value =
-                                                                       ((InfoController.UserAndRoleEntry)
-                                                                        aclDataGridView.Rows[args.RowIndex].
-                                                                            DataBoundItem).
-                                                                           getUser().getPlaceholder();
-                                                                   args.CellStyle.ForeColor = Color.Gray;
-                                                                   args.CellStyle.Font = new Font(args.CellStyle.Font,
-                                                                                                  FontStyle.Italic);
-                                                               }
-                                                           }
-                                                       };
-
-
             DataGridViewTextBoxColumn nameColumn = new DataGridViewTextBoxColumn();
             nameColumn.HeaderText = "Name";
             nameColumn.DataPropertyName = MetadataColumName.Name.ToString();
