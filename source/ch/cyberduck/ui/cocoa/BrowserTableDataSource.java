@@ -269,7 +269,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
             if(o != null) {
                 final NSArray elements = Rococoa.cast(o, NSArray.class);
                 for(int i = 0; i < elements.count().intValue(); i++) {
-                    if(Protocol.isURL(elements.objectAtIndex(new NSUInteger(i)).toString())) {
+                    if(ProtocolFactory.isURL(elements.objectAtIndex(new NSUInteger(i)).toString())) {
                         controller.mount(Host.parse(elements.objectAtIndex(new NSUInteger(i)).toString()));
                         return true;
                     }
@@ -352,7 +352,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                 NSArray elements = Rococoa.cast(o, NSArray.class);
                 for(int i = 0; i < elements.count().intValue(); i++) {
                     // Validate if .webloc URLs dragged to browser window have a known protocol
-                    if(Protocol.isURL(elements.objectAtIndex(new NSUInteger(i)).toString())) {
+                    if(ProtocolFactory.isURL(elements.objectAtIndex(new NSUInteger(i)).toString())) {
                         // Passing a value of –1 for row, and NSTableViewDropOn as the operation causes the
                         // entire table view to be highlighted rather than a specific row.
                         view.setDropRow(new NSInteger(-1), NSTableView.NSTableViewDropOn);

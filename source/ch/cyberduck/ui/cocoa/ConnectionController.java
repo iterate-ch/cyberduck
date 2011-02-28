@@ -118,7 +118,7 @@ public class ConnectionController extends SheetController {
         this.protocolPopup.setTarget(this.id());
         this.protocolPopup.setAction(Foundation.selector("protocolSelectionDidChange:"));
         this.protocolPopup.removeAllItems();
-        for(Protocol protocol : Protocol.getKnownProtocols()) {
+        for(Protocol protocol : ProtocolFactory.getKnownProtocols()) {
             final String title = protocol.getDescription();
             this.protocolPopup.addItemWithTitle(title);
             final NSMenuItem item = this.protocolPopup.itemWithTitle(title);
@@ -126,13 +126,13 @@ public class ConnectionController extends SheetController {
             item.setImage(IconCache.iconNamed(protocol.icon(), 16));
         }
         final Protocol defaultProtocol
-                = Protocol.forName(Preferences.instance().getProperty("connection.protocol.default"));
+                = ProtocolFactory.forName(Preferences.instance().getProperty("connection.protocol.default"));
         this.protocolPopup.selectItemWithTitle(defaultProtocol.getDescription());
     }
 
     public void protocolSelectionDidChange(final NSPopUpButton sender) {
         log.debug("protocolSelectionDidChange:" + sender);
-        final Protocol protocol = Protocol.forName(protocolPopup.selectedItem().representedObject());
+        final Protocol protocol = ProtocolFactory.forName(protocolPopup.selectedItem().representedObject());
         portField.setIntValue(protocol.getDefaultPort());
         if(!protocol.isHostnameConfigurable()) {
             hostField.setStringValue(protocol.getDefaultHostname());
@@ -190,7 +190,7 @@ public class ConnectionController extends SheetController {
      * Update Private Key selection
      */
     private void updateIdentity() {
-        final Protocol protocol = Protocol.forName(protocolPopup.selectedItem().representedObject());
+        final Protocol protocol = ProtocolFactory.forName(protocolPopup.selectedItem().representedObject());
         pkCheckbox.setEnabled(protocol.equals(Protocol.SFTP));
         if(protocol.equals(Protocol.SFTP)) {
             if(StringUtils.isNotEmpty(hostField.stringValue())) {
@@ -260,7 +260,7 @@ public class ConnectionController extends SheetController {
     }
 
     public void hostFieldTextDidChange(final NSNotification sender) {
-        if(Protocol.isURL(hostField.stringValue())) {
+        if(ProtocolFactory.isURL(hostField.stringValue())) {
             final Host parsed = Host.parse(hostField.stringValue());
             this.hostChanged(parsed);
         }
@@ -362,7 +362,7 @@ public class ConnectionController extends SheetController {
 
     public void portFieldTextDidChange(final NSNotification sender) {
         if(null == this.portField.stringValue() || this.portField.stringValue().equals("")) {
-            final Protocol protocol = Protocol.forName(protocolPopup.selectedItem().representedObject());
+            final Protocol protocol = ProtocolFactory.forName(protocolPopup.selectedItem().representedObject());
             this.portField.setStringValue(String.valueOf(protocol.getDefaultPort()));
         }
         this.updateURLLabel();
@@ -566,7 +566,7 @@ public class ConnectionController extends SheetController {
             if(StringUtils.isBlank(usernameField.stringValue())) {
                 return;
             }
-            final Protocol protocol = Protocol.forName(protocolPopup.selectedItem().representedObject());
+            final Protocol protocol = ProtocolFactory.forName(protocolPopup.selectedItem().representedObject());
             this.updateField(this.passField, KeychainFactory.instance().getPassword(protocol.getScheme(),
                     Integer.parseInt(portField.stringValue()),
                     hostField.stringValue(), usernameField.stringValue()));
@@ -577,7 +577,7 @@ public class ConnectionController extends SheetController {
      */
     private void updateURLLabel() {
         if(StringUtils.isNotBlank(hostField.stringValue())) {
-            final Protocol protocol = Protocol.forName(protocolPopup.selectedItem().representedObject());
+            final Protocol protocol = ProtocolFactory.forName(protocolPopup.selectedItem().representedObject());
             final String url = protocol.getScheme() + "://" + usernameField.stringValue()
                     + "@" + hostField.stringValue() + ":" + portField.stringValue()
                     + Path.normalize(pathField.stringValue());
@@ -590,7 +590,7 @@ public class ConnectionController extends SheetController {
     }
 
     public void helpButtonClicked(final ID sender) {
-        final Protocol protocol = Protocol.forName(protocolPopup.selectedItem().representedObject());
+        final Protocol protocol = ProtocolFactory.forName(protocolPopup.selectedItem().representedObject());
         StringBuilder site = new StringBuilder(Preferences.instance().getProperty("website.help"));
         site.append("/").append(protocol.getIdentifier());
         openUrl(site.toString());
@@ -610,7 +610,7 @@ public class ConnectionController extends SheetController {
     public void callback(final int returncode) {
         if(returncode == DEFAULT_OPTION) {
             this.window().endEditingFor(null);
-            final Protocol protocol = Protocol.forName(protocolPopup.selectedItem().representedObject());
+            final Protocol protocol = ProtocolFactory.forName(protocolPopup.selectedItem().representedObject());
             Host host = new Host(
                     protocol,
                     hostField.stringValue(),

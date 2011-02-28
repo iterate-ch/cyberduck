@@ -162,20 +162,23 @@ namespace Ch.Cyberduck.Ui.Controller
             LocalImpl.Register();
             LocaleImpl.Register();
             UserPreferences.Register();
-            Protocol.register();
             Keychain.Register();
             PlistWriter.Register();
             PlistSerializer.Register();
             PlistDeserializer.Register();
             HostPlistReader.Register();
             TransferPlistReader.Register();
+            ProtocolPlistReader.register();
             TcpReachability.Register();
             GrowlImpl.Register();
             TreePathReference.Register();
             LoginController.Register();
             HostKeyController.Register();
             UserDefaultsDateFormatter.Register();
-            Rendezvous.Register();
+            if (Preferences.instance().getBoolean("rendezvous.enable")) {
+                Rendezvous.Register();
+            }
+            ProtocolFactory.register();
         }
 
         private static void ConfigureLogging()
@@ -255,6 +258,14 @@ namespace Ch.Cyberduck.Ui.Controller
                                 ;
                             }
                         }
+                    }
+                    else if ("cyberduckprofile".equals(f.getExtension())) {
+                        Local profiles = LocalFactory.createLocal(Preferences.instance().getProperty("application.support.path"), "Profiles");
+                        f.rename(LocalFactory.createLocal(profiles, f.getName()));
+                        final Profile profile = ProtocolReaderFactory.instance().read(f);
+                        profile.register();
+                        Host host = new Host(profile, profile.getDefaultHostname(), profile.getDefaultPort());
+                        MainController.newDocument().mount(host);
                     }
                 }
             }

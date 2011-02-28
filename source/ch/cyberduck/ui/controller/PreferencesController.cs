@@ -843,7 +843,7 @@ namespace Ch.Cyberduck.Ui.Controller
             View.UseKeychain = Preferences.instance().getBoolean("connection.login.useKeychain");
             PopulateDefaultProtocols();
             View.DefaultProtocol =
-                Protocol.forName(Preferences.instance().getProperty("connection.protocol.default"));
+                ProtocolFactory.forName(Preferences.instance().getProperty("connection.protocol.default"));
             View.LoginName = Preferences.instance().getProperty("connection.login.name");
             View.InfoWindowShowsCurrentSelection =
                 Preferences.instance().getBoolean("browser.info.isInspector");
@@ -1254,7 +1254,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private void PopulateDefaultProtocols()
         {
             List<KeyValueIconTriple<Protocol, string>> protocols = new List<KeyValueIconTriple<Protocol, string>>();
-            foreach (Protocol p in Protocol.getKnownProtocols().toArray(new Protocol[] {}))
+            foreach (Protocol p in ProtocolFactory.getKnownProtocols().toArray(new Protocol[] {}))
             {
                 protocols.Add(new KeyValueIconTriple<Protocol, string>(p, p.getDescription(), p.getIdentifier()));
             }

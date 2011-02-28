@@ -52,7 +52,7 @@ public class BookmarkController extends WindowController {
         this.protocolPopup.setTarget(this.id());
         this.protocolPopup.setAction(Foundation.selector("protocolSelectionChanged:"));
         this.protocolPopup.removeAllItems();
-        for(Protocol protocol : Protocol.getKnownProtocols()) {
+        for(Protocol protocol : ProtocolFactory.getKnownProtocols()) {
             final String title = protocol.getDescription();
             this.protocolPopup.addItemWithTitle(title);
             final NSMenuItem item = this.protocolPopup.itemWithTitle(title);
@@ -64,7 +64,7 @@ public class BookmarkController extends WindowController {
     @Action
     public void protocolSelectionChanged(final NSPopUpButton sender) {
         log.debug("protocolSelectionChanged:" + sender);
-        final Protocol selected = Protocol.forName(protocolPopup.selectedItem().representedObject());
+        final Protocol selected = ProtocolFactory.forName(protocolPopup.selectedItem().representedObject());
         host.setPort(selected.getDefaultPort());
         if(!host.getProtocol().isHostnameConfigurable()) {
             // Previously selected protocol had a default hostname. Change to default
@@ -664,7 +664,7 @@ public class BookmarkController extends WindowController {
     @Action
     public void hostFieldDidChange(final NSNotification sender) {
         String input = hostField.stringValue();
-        if(Protocol.isURL(input)) {
+        if(ProtocolFactory.isURL(input)) {
             host.init(Host.parse(input).<NSDictionary>getAsDictionary());
         }
         else {

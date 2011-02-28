@@ -291,7 +291,7 @@ public class BookmarkTableDataSource extends ListDataSource {
         else if(draggingPasteboard.availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.StringPboardType)) != null) {
             String o = draggingPasteboard.stringForType(NSPasteboard.StringPboardType);
             if(o != null) {
-                if(Protocol.isURL(o)) {
+                if(ProtocolFactory.isURL(o)) {
                     view.setDropRow(row, NSTableView.NSTableViewDropAbove);
                     return NSDraggingInfo.NSDragOperationCopy;
                 }
@@ -321,7 +321,7 @@ public class BookmarkTableDataSource extends ListDataSource {
             if(o != null) {
                 NSArray elements = Rococoa.cast(o, NSArray.class);
                 for(int i = 0; i < elements.count().intValue(); i++) {
-                    if(Protocol.isURL(elements.objectAtIndex(new NSUInteger(i)).toString())) {
+                    if(ProtocolFactory.isURL(elements.objectAtIndex(new NSUInteger(i)).toString())) {
                         view.setDropRow(row, NSTableView.NSTableViewDropAbove);
                         return NSDraggingInfo.NSDragOperationCopy;
                     }

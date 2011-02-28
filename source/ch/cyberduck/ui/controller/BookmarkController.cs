@@ -263,7 +263,7 @@ namespace Ch.Cyberduck.Ui.Controller
         internal void View_ChangedServerEvent()
         {
             String input = View.Hostname;
-            if (Protocol.isURL(input))
+            if (ProtocolFactory.isURL(input))
             {
                 _host.init(Host.parse(input).getAsDictionary());
             }
@@ -515,7 +515,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private void InitProtocols()
         {
             List<KeyValueIconTriple<Protocol, string>> protocols = new List<KeyValueIconTriple<Protocol, string>>();
-            foreach (Protocol p in Protocol.getKnownProtocols().toArray(new Protocol[] {}))
+            foreach (Protocol p in ProtocolFactory.getKnownProtocols().toArray(new Protocol[] {}))
             {
                 protocols.Add(new KeyValueIconTriple<Protocol, string>(p, p.getDescription(), p.getIdentifier()));
             }

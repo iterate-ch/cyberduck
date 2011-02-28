@@ -43,7 +43,6 @@ import ch.cyberduck.core.sftp.SFTPPath;
 import ch.cyberduck.core.sftp.SFTPSession;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 import org.jets3t.service.Constants;
 import org.soyatec.windows.azure.authenticate.Base64;
 
@@ -54,109 +53,82 @@ import java.util.List;
 /**
  * @version $Id$
  */
-public abstract class Protocol {
-    private static Logger log = Logger.getLogger(Protocol.class);
+public interface Protocol {
 
     /**
      * Must be unique across all available protocols.
      *
      * @return The identifier for this protocol which is the scheme by default
      */
-    public String getIdentifier() {
-        return this.getScheme();
-    }
+    String getIdentifier();
 
-    public String getName() {
-        return this.getScheme().toUpperCase();
-    }
+    String getName();
 
-    public String favicon() {
-        return null;
-    }
+    String favicon();
+
+    boolean isEnabled();
+
+    /**
+     * Statically register protocol implementations.
+     */
+    void register();
 
     /**
      * @return
      */
-    public abstract String getDescription();
+    abstract String getDescription();
 
     /**
      * @return
      */
-    public abstract String getScheme();
+    abstract String getScheme();
 
-    public String[] getSchemes() {
-        return new String[]{this.getScheme()};
-    }
-
-    @Override
-    public boolean equals(Object other) {
-        if(other instanceof Protocol) {
-            return ((Protocol) other).getIdentifier().equals(this.getIdentifier());
-        }
-        return false;
-    }
-
-    @Override
-    public String toString() {
-        return this.getIdentifier();
-    }
+    String[] getSchemes();
 
     /**
      * @return A mounted disk icon to display
      */
-    public String disk() {
-        return this.getIdentifier();
-    }
+    String disk();
 
     /**
      * @return A small icon to display
      */
-    public String icon() {
-        return this.getIdentifier() + "-icon";
-    }
+    String icon();
 
     /**
      * @return
      */
-    public boolean isSecure() {
-        return false;
-    }
+    boolean isSecure();
 
-    public boolean isHostnameConfigurable() {
-        return true;
-    }
+    boolean isHostnameConfigurable();
 
-    public boolean isWebUrlConfigurable() {
-        return true;
-    }
+    boolean isPortConfigurable();
 
-    public boolean isEncodingConfigurable() {
-        return false;
-    }
+    boolean isWebUrlConfigurable();
 
-    public boolean isConnectModeConfigurable() {
-        return false;
-    }
+    boolean isEncodingConfigurable();
 
-    public boolean isAnonymousConfigurable() {
-        return true;
-    }
+    boolean isConnectModeConfigurable();
 
-    public boolean isUTCTimezone() {
-        return true;
-    }
+    boolean isAnonymousConfigurable();
 
-    public String getUsernamePlaceholder() {
-        return Locale.localizedString("Username", "Credentials");
-    }
+    boolean isUTCTimezone();
 
-    public String getPasswordPlaceholder() {
-        return Locale.localizedString("Password", "Credentials");
-    }
+    String getUsernamePlaceholder();
 
-    public String getDefaultHostname() {
-        return Preferences.instance().getProperty("connection.hostname.default");
-    }
+    String getPasswordPlaceholder();
+
+    String getDefaultHostname();
+
+    /**
+     * @return
+     */
+    abstract SessionFactory getSessionFactory();
+
+    /**
+     * @return
+     */
+    abstract PathFactory getPathFactory();
 
     /**
      * Check login credentials for validity for this protocol.
@@ -164,17 +136,14 @@ public abstract class Protocol {
      * @param credentials
      * @return True if username and password is not a blank string and password
      */
-    public boolean validate(Credentials credentials) {
-        return StringUtils.isNotBlank(credentials.getUsername())
-                && StringUtils.isNotEmpty(credentials.getPassword());
-    }
+    boolean validate(Credentials credentials);
 
     /**
      * @return The default port this protocol connects to
      */
-    public abstract int getDefaultPort();
+    abstract int getDefaultPort();
 
-    public static final Protocol SFTP = new Protocol() {
+    static final Protocol SFTP = new AbstractProtocol() {
         @Override
         public String getDescription() {
             return Locale.localizedString("SFTP (SSH File Transfer Protocol)");
@@ -207,9 +176,19 @@ public abstract class Protocol {
             }
             return FTP.validate(credentials);
         }
+
+        @Override
+        public SessionFactory getSessionFactory() {
+            return SFTPSession.factory();
+        }
+
+        @Override
+        public PathFactory getPathFactory() {
+            return SFTPPath.factory();
+        }
     };
 
-    public static final Protocol SCP = new Protocol() {
+    static final Protocol SCP = new AbstractProtocol() {
         @Override
         public String getDescription() {
             return Locale.localizedString("SCP (Secure Copy)");
@@ -229,9 +208,24 @@ public abstract class Protocol {
         public boolean isSecure() {
             return true;
         }
+
+        @Override
+        public SessionFactory getSessionFactory() {
+            throw new RuntimeException();
+        }
+
+        @Override
+        public PathFactory getPathFactory() {
+            throw new RuntimeException();
+        }
+
+        @Override
+        public boolean isEnabled() {
+            return false;
+        }
     };
 
-    public static final Protocol FTP = new Protocol() {
+    static final Protocol FTP = new AbstractProtocol() {
         @Override
         public String getDescription() {
             return Locale.localizedString("FTP (File Transfer Protocol)");
@@ -272,9 +266,19 @@ public abstract class Protocol {
             return StringUtils.isNotBlank(credentials.getUsername())
                     && null != credentials.getPassword();
         }
+
+        @Override
+        public SessionFactory getSessionFactory() {
+            return FTPSession.factory();
+        }
+
+        @Override
+        public PathFactory getPathFactory() {
+            return FTPPath.factory();
+        }
     };
 
-    public static final Protocol FTP_TLS = new Protocol() {
+    static final Protocol FTP_TLS = new AbstractProtocol() {
         @Override
         public String getName() {
             return "FTP-SSL";
@@ -324,9 +328,19 @@ public abstract class Protocol {
         public boolean isConnectModeConfigurable() {
             return true;
         }
+
+        @Override
+        public SessionFactory getSessionFactory() {
+            return FTPSession.factory();
+        }
+
+        @Override
+        public PathFactory getPathFactory() {
+            return FTPPath.factory();
+        }
     };
 
-    public static final Protocol S3_SSL = new Protocol() {
+    static final Protocol S3_SSL = new AbstractProtocol() {
         @Override
         public String getName() {
             return "S3";
@@ -345,6 +359,11 @@ public abstract class Protocol {
         @Override
         public int getDefaultPort() {
             return 443;
+        }
+
+        @Override
+        public boolean isPortConfigurable() {
+            return false;
         }
 
         @Override
@@ -386,9 +405,19 @@ public abstract class Protocol {
         public String favicon() {
             return this.icon();
         }
+
+        @Override
+        public SessionFactory getSessionFactory() {
+            return S3Session.factory();
+        }
+
+        @Override
+        public PathFactory getPathFactory() {
+            return S3Path.factory();
+        }
     };
 
-    public static final Protocol S3 = new Protocol() {
+    static final Protocol S3 = new AbstractProtocol() {
         @Override
         public String getName() {
             return "S3";
@@ -407,6 +436,11 @@ public abstract class Protocol {
         @Override
         public int getDefaultPort() {
             return 80;
+        }
+
+        @Override
+        public boolean isPortConfigurable() {
+            return false;
         }
 
         @Override
@@ -453,9 +487,19 @@ public abstract class Protocol {
         public String favicon() {
             return this.icon();
         }
+
+        @Override
+        public SessionFactory getSessionFactory() {
+            return S3Session.factory();
+        }
+
+        @Override
+        public PathFactory getPathFactory() {
+            return S3Path.factory();
+        }
     };
 
-    public static final Protocol EUCALYPTUS = new Protocol() {
+    static final Protocol EUCALYPTUS = new AbstractProtocol() {
         @Override
         public String getName() {
             return "S3";
@@ -510,9 +554,19 @@ public abstract class Protocol {
         public String icon() {
             return "eucalyptus-icon";
         }
+
+        @Override
+        public SessionFactory getSessionFactory() {
+            return ECSession.factory();
+        }
+
+        @Override
+        public PathFactory getPathFactory() {
+            return ECPath.factory();
+        }
     };
 
-    public static final Protocol WEBDAV = new Protocol() {
+    static final Protocol WEBDAV = new AbstractProtocol() {
         @Override
         public String getName() {
             return "WebDAV (HTTP)";
@@ -552,9 +606,19 @@ public abstract class Protocol {
         public String icon() {
             return FTP.icon();
         }
+
+        @Override
+        public SessionFactory getSessionFactory() {
+            return DAVSession.factory();
+        }
+
+        @Override
+        public PathFactory getPathFactory() {
+            return DAVPath.factory();
+        }
     };
 
-    public static final Protocol WEBDAV_SSL = new Protocol() {
+    static final Protocol WEBDAV_SSL = new AbstractProtocol() {
         @Override
         public String getName() {
             return "WebDAV (HTTPS)";
@@ -599,9 +663,19 @@ public abstract class Protocol {
         public String icon() {
             return FTP_TLS.icon();
         }
+
+        @Override
+        public SessionFactory getSessionFactory() {
+            return DAVSession.factory();
+        }
+
+        @Override
+        public PathFactory getPathFactory() {
+            return DAVPath.factory();
+        }
     };
 
-    public static final Protocol IDISK = new Protocol() {
+    static final Protocol IDISK = new AbstractProtocol() {
         @Override
         public String getName() {
             return "MobileMe";
@@ -620,6 +694,11 @@ public abstract class Protocol {
         @Override
         public int getDefaultPort() {
             return 443;
+        }
+
+        @Override
+        public boolean isPortConfigurable() {
+            return false;
         }
 
         @Override
@@ -671,9 +750,19 @@ public abstract class Protocol {
         public String getUsernamePlaceholder() {
             return Locale.localizedString("MobileMe Member Name", "IDisk");
         }
+
+        @Override
+        public SessionFactory getSessionFactory() {
+            return IDiskSession.factory();
+        }
+
+        @Override
+        public PathFactory getPathFactory() {
+            return IDiskPath.factory();
+        }
     };
 
-    public static final Protocol CLOUDFILES = new Protocol() {
+    static final Protocol CLOUDFILES = new AbstractProtocol() {
         @Override
         public String getName() {
             return Locale.localizedString("Cloud Files", "Mosso");
@@ -692,6 +781,11 @@ public abstract class Protocol {
         @Override
         public int getDefaultPort() {
             return 443;
+        }
+
+        @Override
+        public boolean isPortConfigurable() {
+            return false;
         }
 
         @Override
@@ -733,9 +827,19 @@ public abstract class Protocol {
         public String getPasswordPlaceholder() {
             return Locale.localizedString("API Access Key", "Mosso");
         }
+
+        @Override
+        public SessionFactory getSessionFactory() {
+            return CFSession.factory();
+        }
+
+        @Override
+        public PathFactory getPathFactory() {
+            return CFPath.factory();
+        }
     };
 
-    public static final Protocol SWIFT = new Protocol() {
+    static final Protocol SWIFT = new AbstractProtocol() {
         @Override
         public String getName() {
             return Locale.localizedString("Swift", "Mosso");
@@ -795,9 +899,19 @@ public abstract class Protocol {
         public String getPasswordPlaceholder() {
             return Locale.localizedString("API Access Key", "Mosso");
         }
+
+        @Override
+        public SessionFactory getSessionFactory() {
+            return CFSession.factory();
+        }
+
+        @Override
+        public PathFactory getPathFactory() {
+            return CFPath.factory();
+        }
     };
 
-    public static final Protocol GDOCS_SSL = new Protocol() {
+    static final Protocol GDOCS_SSL = new AbstractProtocol() {
         @Override
         public String getName() {
             return Locale.localizedString("Google Docs");
@@ -849,6 +963,11 @@ public abstract class Protocol {
         }
 
         @Override
+        public boolean isPortConfigurable() {
+            return false;
+        }
+
+        @Override
         public boolean isWebUrlConfigurable() {
             return false;
         }
@@ -886,9 +1005,19 @@ public abstract class Protocol {
             }
             return false;
         }
+
+        @Override
+        public SessionFactory getSessionFactory() {
+            return GDSession.factory();
+        }
+
+        @Override
+        public PathFactory getPathFactory() {
+            return GDPath.factory();
+        }
     };
 
-    public static final Protocol GOOGLESTORAGE_SSL = new Protocol() {
+    static final Protocol GOOGLESTORAGE_SSL = new AbstractProtocol() {
         @Override
         public String getName() {
             return "Google Storage";
@@ -940,6 +1069,11 @@ public abstract class Protocol {
         }
 
         @Override
+        public boolean isPortConfigurable() {
+            return false;
+        }
+
+        @Override
         public boolean isWebUrlConfigurable() {
             return false;
         }
@@ -963,9 +1097,19 @@ public abstract class Protocol {
         public String favicon() {
             return this.icon();
         }
+
+        @Override
+        public SessionFactory getSessionFactory() {
+            return GSSession.factory();
+        }
+
+        @Override
+        public PathFactory getPathFactory() {
+            return GSPath.factory();
+        }
     };
 
-    public static final Protocol AZURE_SSL = new Protocol() {
+    static final Protocol AZURE_SSL = new AbstractProtocol() {
         @Override
         public String getName() {
             return "Azure";
@@ -1007,6 +1151,11 @@ public abstract class Protocol {
         }
 
         @Override
+        public boolean isPortConfigurable() {
+            return false;
+        }
+
+        @Override
         public boolean isWebUrlConfigurable() {
             return false;
         }
@@ -1018,7 +1167,7 @@ public abstract class Protocol {
 
         @Override
         public String getUsernamePlaceholder() {
-            return Locale.localizedString("Public Storage Account Name", "Azure");
+            return Locale.localizedString(" Storage Account Name", "Azure");
         }
 
         @Override
@@ -1038,9 +1187,19 @@ public abstract class Protocol {
         public String favicon() {
             return this.icon();
         }
+
+        @Override
+        public SessionFactory getSessionFactory() {
+            return AzureSession.factory();
+        }
+
+        @Override
+        public PathFactory getPathFactory() {
+            return AzurePath.factory();
+        }
     };
 
-    public static final Protocol DROPBOX_SSL = new Protocol() {
+    static final Protocol DROPBOX_SSL = new AbstractProtocol() {
         @Override
         public String getName() {
             return "Dropbox";
@@ -1082,6 +1241,11 @@ public abstract class Protocol {
         }
 
         @Override
+        public boolean isPortConfigurable() {
+            return false;
+        }
+
+        @Override
         public boolean isWebUrlConfigurable() {
             return false;
         }
@@ -1100,175 +1264,15 @@ public abstract class Protocol {
         public String favicon() {
             return this.icon();
         }
+
+        @Override
+        public SessionFactory getSessionFactory() {
+            return DropboxSession.factory();
+        }
+
+        @Override
+        public PathFactory getPathFactory() {
+            return DropboxPath.factory();
+        }
     };
-
-    /**
-     * Statically register protocol implementations.
-     */
-    public static void register() {
-        if(Preferences.instance().getBoolean("protocol.ftp.enable")) {
-            SessionFactory.addFactory(
-                    Protocol.FTP, FTPSession.factory());
-            PathFactory.addFactory(
-                    Protocol.FTP, FTPPath.factory());
-        }
-        if(Preferences.instance().getBoolean("protocol.ftp.tls.enable")) {
-            SessionFactory.addFactory(
-                    Protocol.FTP_TLS, FTPSession.factory());
-            PathFactory.addFactory(
-                    Protocol.FTP_TLS, FTPPath.factory());
-        }
-        if(Preferences.instance().getBoolean("protocol.sftp.enable")) {
-            SessionFactory.addFactory(
-                    Protocol.SFTP, SFTPSession.factory());
-            PathFactory.addFactory(
-                    Protocol.SFTP,
-                    SFTPPath.factory());
-        }
-        if(Preferences.instance().getBoolean("protocol.webdav.enable")) {
-            SessionFactory.addFactory(
-                    Protocol.WEBDAV, DAVSession.factory());
-            PathFactory.addFactory(
-                    Protocol.WEBDAV, DAVPath.factory());
-        }
-        if(Preferences.instance().getBoolean("protocol.webdav.tls.enable")) {
-            SessionFactory.addFactory(
-                    Protocol.WEBDAV_SSL, DAVSession.factory());
-            PathFactory.addFactory(
-                    Protocol.WEBDAV_SSL, DAVPath.factory());
-        }
-        if(Preferences.instance().getBoolean("protocol.idisk.enable")) {
-            SessionFactory.addFactory(
-                    Protocol.IDISK, IDiskSession.factory());
-            PathFactory.addFactory(
-                    Protocol.IDISK, IDiskPath.factory());
-        }
-        if(Preferences.instance().getBoolean("protocol.s3.tls.enable")) {
-            SessionFactory.addFactory(
-                    Protocol.S3_SSL, S3Session.factory());
-            PathFactory.addFactory(
-                    Protocol.S3_SSL, S3Path.factory());
-        }
-        if(Preferences.instance().getBoolean("protocol.s3.enable")) {
-            SessionFactory.addFactory(
-                    Protocol.S3, S3Session.factory());
-            PathFactory.addFactory(
-                    Protocol.S3, S3Path.factory());
-        }
-        if(Preferences.instance().getBoolean("protocol.gstorage.tls.enable")) {
-            SessionFactory.addFactory(
-                    Protocol.GOOGLESTORAGE_SSL, GSSession.factory());
-            PathFactory.addFactory(
-                    Protocol.GOOGLESTORAGE_SSL, GSPath.factory());
-        }
-        if(Preferences.instance().getBoolean("protocol.s3.eucalyptus.enable")) {
-            SessionFactory.addFactory(
-                    Protocol.EUCALYPTUS, ECSession.factory());
-            PathFactory.addFactory(
-                    Protocol.EUCALYPTUS, ECPath.factory());
-        }
-        if(Preferences.instance().getBoolean("protocol.cf.enable")) {
-            SessionFactory.addFactory(
-                    Protocol.CLOUDFILES, CFSession.factory());
-            PathFactory.addFactory(
-                    Protocol.CLOUDFILES, CFPath.factory());
-        }
-        if(Preferences.instance().getBoolean("protocol.cf.swift.enable")) {
-            SessionFactory.addFactory(
-                    Protocol.SWIFT, CFSession.factory());
-            PathFactory.addFactory(
-                    Protocol.SWIFT, CFPath.factory());
-        }
-        if(Preferences.instance().getBoolean("protocol.gdocs.enable")) {
-            SessionFactory.addFactory(
-                    Protocol.GDOCS_SSL, GDSession.factory());
-            PathFactory.addFactory(
-                    Protocol.GDOCS_SSL, GDPath.factory());
-        }
-        if(Preferences.instance().getBoolean("protocol.azure.tls.enable")) {
-            SessionFactory.addFactory(
-                    Protocol.AZURE_SSL, AzureSession.factory());
-            PathFactory.addFactory(
-                    Protocol.AZURE_SSL, AzurePath.factory());
-        }
-        if(Preferences.instance().getBoolean("protocol.dropbox.tls.enable")) {
-            SessionFactory.addFactory(
-                    Protocol.DROPBOX_SSL, DropboxSession.factory());
-            PathFactory.addFactory(
-                    Protocol.DROPBOX_SSL, DropboxPath.factory());
-        }
-    }
-
-    public static List<Protocol> getKnownProtocols() {
-        List<Protocol> list = SessionFactory.getRegisteredProtocols();
-        if(list.isEmpty()) {
-            throw new RuntimeException("No protocols configured");
-        }
-        return list;
-    }
-
-    /**
-     * @param port
-     * @return The standard protocol for this port number
-     */
-    public static Protocol getDefaultProtocol(int port) {
-        for(Protocol protocol : Protocol.getKnownProtocols()) {
-            if(protocol.getDefaultPort() == port) {
-                return protocol;
-            }
-        }
-        log.warn("Cannot find default protocol for port:" + port);
-        return Protocol.forName(
-                Preferences.instance().getProperty("connection.protocol.default"));
-    }
-
-    /**
-     * @param identifier
-     * @return
-     */
-    public static Protocol forName(final String identifier) {
-        for(Protocol protocol : Protocol.getKnownProtocols()) {
-            if(protocol.getIdentifier().equals(identifier)) {
-                return protocol;
-            }
-        }
-        log.fatal("Unknown protocol:" + identifier);
-        return Protocol.forName(
-                Preferences.instance().getProperty("connection.protocol.default"));
-    }
-
-    /**
-     * @param scheme
-     * @return
-     */
-    public static Protocol forScheme(final String scheme) {
-        for(Protocol protocol : Protocol.getKnownProtocols()) {
-            for(int k = 0; k < protocol.getSchemes().length; k++) {
-                if(protocol.getSchemes()[k].equals(scheme)) {
-                    return protocol;
-                }
-            }
-        }
-        log.fatal("Unknown scheme:" + scheme);
-        return Protocol.forName(
-                Preferences.instance().getProperty("connection.protocol.default"));
-    }
-
-    /**
-     * @param str
-     * @return
-     */
-    public static boolean isURL(String str) {
-        if(StringUtils.isNotBlank(str)) {
-            for(Protocol protocol : Protocol.getKnownProtocols()) {
-                String[] schemes = protocol.getSchemes();
-                for(String scheme : schemes) {
-                    if(str.startsWith(scheme + "://")) {
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
-    }
 }

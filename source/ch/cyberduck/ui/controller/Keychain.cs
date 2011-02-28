@@ -33,7 +33,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public override string getPassword(String protocol, int port, String hostName, String user)
         {
-            Host host = new Host(Protocol.forScheme(protocol), hostName, port);
+            Host host = new Host(ProtocolFactory.forScheme(protocol), hostName, port);
             host.getCredentials().setUsername(user);
             return getPassword(host);
         }
@@ -64,7 +64,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public override void addPassword(String protocol, int port, String hostName, String user, String password)
         {
-            Host host = new Host(Protocol.forScheme(protocol), hostName, port);
+            Host host = new Host(ProtocolFactory.forScheme(protocol), hostName, port);
             host.getCredentials().setUsername(user);
             Preferences.instance().setProperty(host.toURL(), DataProtector.Encrypt(password));
         }
