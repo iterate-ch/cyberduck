@@ -1759,7 +1759,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         {
                             _view.DistributionUrl = url;
                             _view.DistributionUrlEnabled = true;
-                            _view.DistributionUrlTooltip = Locale.localizedString("Open in Web Browser");
+                            _view.DistributionUrlTooltip = Locale.localizedString("CDN URL");
                         }
                         else
                         {
@@ -1785,7 +1785,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         {
                             _view.DistributionCnameUrl = url.getUrl();
                             _view.DistributionCnameUrlEnabled = true;
-                            _view.DistributionCnameUrlTooltip = Locale.localizedString("Open in Web Browser");
+                            _view.DistributionCnameUrlTooltip = Locale.localizedString("CDN URL");
                             // We only support one CNAME URL to be displayed
                             break;
                         }

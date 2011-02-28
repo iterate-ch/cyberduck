@@ -2220,19 +2220,7 @@ public class InfoController extends ToolbarWindowController {
             controller.background(new BrowserBackgroundAction(controller) {
                 public void run() {
                     final Session session = controller.getSession();
-                    Distribution.Method method;
-                    if(Distribution.Method.forName(distributionDeliveryPopup.selectedItem().representedObject()).equals(Distribution.STREAMING)) {
-                        method = Distribution.STREAMING;
-                    }
-                    else if(Distribution.Method.forName(distributionDeliveryPopup.selectedItem().representedObject()).equals(Distribution.DOWNLOAD)) {
-                        method = Distribution.DOWNLOAD;
-                    }
-                    else if(Distribution.Method.forName(distributionDeliveryPopup.selectedItem().representedObject()).equals(Distribution.CUSTOM)) {
-                        method = Distribution.CUSTOM;
-                    }
-                    else {
-                        throw new RuntimeException();
-                    }
+                    Distribution.Method method = Distribution.Method.forName(distributionDeliveryPopup.selectedItem().representedObject());
                     session.cdn().invalidate(session.cdn().getOrigin(method, getSelected().getContainerName()), method, files, false);
                 }
 
@@ -2257,22 +2245,7 @@ public class InfoController extends ToolbarWindowController {
             controller.background(new BrowserBackgroundAction(controller) {
                 public void run() {
                     final Session session = controller.getSession();
-                    Distribution.Method method;
-                    if(Distribution.Method.forName(distributionDeliveryPopup.selectedItem().representedObject()).equals(Distribution.STREAMING)) {
-                        method = Distribution.STREAMING;
-                    }
-                    else if(Distribution.Method.forName(distributionDeliveryPopup.selectedItem().representedObject()).equals(Distribution.DOWNLOAD)) {
-                        method = Distribution.DOWNLOAD;
-                    }
-                    else if(Distribution.Method.forName(distributionDeliveryPopup.selectedItem().representedObject()).equals(Distribution.CUSTOM)) {
-                        method = Distribution.CUSTOM;
-                    }
-                    else if(Distribution.Method.forName(distributionDeliveryPopup.selectedItem().representedObject()).equals(Distribution.WEBSITE)) {
-                        method = Distribution.WEBSITE;
-                    }
-                    else {
-                        throw new RuntimeException();
-                    }
+                    Distribution.Method method = Distribution.Method.forName(distributionDeliveryPopup.selectedItem().representedObject());
                     if(StringUtils.isNotBlank(distributionCnameField.stringValue())) {
                         session.cdn().write(distributionEnableButton.state() == NSCell.NSOnState,
                                 session.cdn().getOrigin(method, getSelected().getContainerName()), method,
@@ -2311,22 +2284,12 @@ public class InfoController extends ToolbarWindowController {
 
                 public void run() {
                     final Session session = controller.getSession();
+                    final Distribution.Method method
+                            = Distribution.Method.forName(distributionDeliveryPopup.selectedItem().representedObject());
                     // We only support one distribution per bucket for the sake of simplicity
-                    if(distributionDeliveryPopup.selectedItem().representedObject().equals(Distribution.STREAMING.toString())) {
-                        distribution = session.cdn().read(session.cdn().getOrigin(Distribution.STREAMING, getSelected().getContainerName()), Distribution.STREAMING);
-                    }
-                    else if(distributionDeliveryPopup.selectedItem().representedObject().equals(Distribution.DOWNLOAD.toString())) {
-                        distribution = session.cdn().read(session.cdn().getOrigin(Distribution.DOWNLOAD, getSelected().getContainerName()), Distribution.DOWNLOAD);
-                    }
-                    else if(distributionDeliveryPopup.selectedItem().representedObject().equals(Distribution.CUSTOM.toString())) {
-                        distribution = session.cdn().read(session.cdn().getOrigin(Distribution.CUSTOM, getSelected().getContainerName()), Distribution.CUSTOM);
-                    }
-                    else if(distributionDeliveryPopup.selectedItem().representedObject().equals(Distribution.WEBSITE.toString())) {
-                        distribution = session.cdn().read(session.cdn().getOrigin(Distribution.WEBSITE, getSelected().getContainerName()), Distribution.WEBSITE);
-                    }
-                    else {
-                        throw new RuntimeException();
-                    }
+                    distribution = session.cdn().read(
+                            session.cdn().getOrigin(method, getSelected().getContainerName()),
+                            Distribution.STREAMING);
                     // Make sure container items are cached for default root object.
                     getSelected().getContainer().children();
                 }
@@ -2359,7 +2322,7 @@ public class InfoController extends ToolbarWindowController {
                             if(StringUtils.isNotBlank(url)) {
                                 distributionUrlField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(
                                         NSMutableAttributedString.create(url, TRUNCATE_MIDDLE_ATTRIBUTES), url));
-                                distributionUrlField.setToolTip(Locale.localizedString("Open in Web Browser"));
+                                distributionUrlField.setToolTip(Locale.localizedString("CDN URL"));
                             }
                             else {
                                 distributionUrlField.setStringValue(Locale.localizedString("None"));
@@ -2379,7 +2342,7 @@ public class InfoController extends ToolbarWindowController {
                                         HyperlinkAttributedStringFactory.create(
                                                 NSMutableAttributedString.create(url.getUrl(), TRUNCATE_MIDDLE_ATTRIBUTES), url.getUrl())
                                 );
-                                distributionCnameUrlField.setToolTip(Locale.localizedString("Open in Web Browser"));
+                                distributionCnameUrlField.setToolTip(Locale.localizedString("CDN URL"));
                                 // We only support one CNAME URL to be displayed
                                 break;
                             }
