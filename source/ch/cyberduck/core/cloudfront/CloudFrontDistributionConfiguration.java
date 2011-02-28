@@ -22,12 +22,10 @@ package ch.cyberduck.core.cloudfront;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.http.HTTP3Session;
-import ch.cyberduck.core.http.StickyHostConfiguration;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.threading.BackgroundException;
 
 import org.apache.commons.httpclient.HostConfiguration;
-import org.apache.commons.httpclient.HttpHost;
 import org.apache.commons.httpclient.URI;
 import org.apache.commons.httpclient.URIException;
 import org.apache.log4j.Logger;
@@ -106,19 +104,10 @@ public class CloudFrontDistributionConfiguration extends HTTP3Session implements
     @Override
     protected void login(LoginController controller, Credentials credentials) throws IOException {
         try {
+            final URI endpoint = new URI(CloudFrontService.ENDPOINT, false);
             // Construct a CloudFrontService object to interact with the service.
-            HostConfiguration hostconfig = null;
-            try {
-                hostconfig = new StickyHostConfiguration();
-                final HttpHost endpoint = new HttpHost(new URI(CloudFrontService.ENDPOINT, false));
-                hostconfig.setHost(endpoint.getHostName(), endpoint.getPort(),
-                        new org.apache.commons.httpclient.protocol.Protocol(endpoint.getProtocol().getScheme(),
-                                new SSLSocketFactory(this.getTrustManager(endpoint.getHostName())), endpoint.getPort())
-                );
-            }
-            catch(URIException e) {
-                log.error(e.getMessage(), e);
-            }
+            final HostConfiguration hostconfig = this.getHostConfiguration(
+                    new Host(Protocol.S3_SSL, endpoint.getHost(), endpoint.getPort()));
             client = new CloudFrontService(
                     new AWSCredentials(credentials.getUsername(), credentials.getPassword()),
                     this.getUserAgent(), // Invoking application description
@@ -133,6 +122,11 @@ public class CloudFrontDistributionConfiguration extends HTTP3Session implements
             this.message(Locale.localizedString("Login failed", "Credentials"));
             controller.fail(host.getProtocol(), credentials);
             this.login();
+        }
+        catch(URIException e) {
+            final IOException f = new IOException();
+            f.initCause(e);
+            throw f;
         }
     }
 
@@ -185,7 +179,8 @@ public class CloudFrontDistributionConfiguration extends HTTP3Session implements
     public ch.cyberduck.core.cdn.Distribution read(String origin, ch.cyberduck.core.cdn.Distribution.Method method) {
         if(method.equals(ch.cyberduck.core.cdn.Distribution.DOWNLOAD)
                 || method.equals(ch.cyberduck.core.cdn.Distribution.STREAMING)
-                || method.equals(ch.cyberduck.core.cdn.Distribution.CUSTOM)) {
+                || method.equals(ch.cyberduck.core.cdn.Distribution.CUSTOM)
+                || method.equals(ch.cyberduck.core.cdn.Distribution.WEBSITE_CDN)) {
             if(!distributionStatus.get(method).containsKey(origin)
                     || !distributionStatus.get(method).get(origin).isDeployed()) {
                 try {
@@ -287,11 +282,13 @@ public class CloudFrontDistributionConfiguration extends HTTP3Session implements
 
     public boolean isDefaultRootSupported(ch.cyberduck.core.cdn.Distribution.Method method) {
         return method.equals(ch.cyberduck.core.cdn.Distribution.DOWNLOAD)
+                || method.equals(ch.cyberduck.core.cdn.Distribution.WEBSITE_CDN)
                 || method.equals(ch.cyberduck.core.cdn.Distribution.CUSTOM);
     }
 
     public boolean isInvalidationSupported(ch.cyberduck.core.cdn.Distribution.Method method) {
         return method.equals(ch.cyberduck.core.cdn.Distribution.DOWNLOAD)
+                || method.equals(ch.cyberduck.core.cdn.Distribution.WEBSITE_CDN)
                 || method.equals(ch.cyberduck.core.cdn.Distribution.CUSTOM);
     }
 
@@ -462,7 +459,8 @@ public class CloudFrontDistributionConfiguration extends HTTP3Session implements
                     defaultRootObject
             );
         }
-        if(method.equals(ch.cyberduck.core.cdn.Distribution.CUSTOM)) {
+        if(method.equals(ch.cyberduck.core.cdn.Distribution.CUSTOM)
+                || method.equals(ch.cyberduck.core.cdn.Distribution.WEBSITE_CDN)) {
             return cf.createDistribution(
                     this.getCustomOriginConfiguration(method, origin),
                     String.valueOf(reference), // Caller reference - a unique string value
@@ -518,7 +516,8 @@ public class CloudFrontDistributionConfiguration extends HTTP3Session implements
                     null,
                     defaultRootObject);
         }
-        else if(method.equals(ch.cyberduck.core.cdn.Distribution.CUSTOM)) {
+        else if(method.equals(ch.cyberduck.core.cdn.Distribution.CUSTOM)
+                || method.equals(ch.cyberduck.core.cdn.Distribution.WEBSITE_CDN)) {
             cf.updateDistributionConfig(
                     id,
                     this.getCustomOriginConfiguration(method, origin),
@@ -582,7 +581,8 @@ public class CloudFrontDistributionConfiguration extends HTTP3Session implements
                 }
             }
         }
-        else if(method.equals(ch.cyberduck.core.cdn.Distribution.CUSTOM)) {
+        else if(method.equals(ch.cyberduck.core.cdn.Distribution.CUSTOM)
+                || method.equals(ch.cyberduck.core.cdn.Distribution.WEBSITE_CDN)) {
             for(org.jets3t.service.model.cloudfront.Distribution d : cf.listDistributions()) {
                 if(d.getOrigin() instanceof CustomOrigin) {
                     if(d.getOrigin().getDnsName().equals(origin)) {
@@ -649,7 +649,8 @@ public class CloudFrontDistributionConfiguration extends HTTP3Session implements
         else if(distribution.getMethod().equals(ch.cyberduck.core.cdn.Distribution.DOWNLOAD)) {
             cf.deleteDistribution(distribution.getId());
         }
-        else if(distribution.getMethod().equals(ch.cyberduck.core.cdn.Distribution.CUSTOM)) {
+        else if(distribution.getMethod().equals(ch.cyberduck.core.cdn.Distribution.CUSTOM)
+                || distribution.getMethod().equals(ch.cyberduck.core.cdn.Distribution.WEBSITE_CDN)) {
             cf.deleteDistribution(distribution.getId());
         }
         else {

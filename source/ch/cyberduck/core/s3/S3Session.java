@@ -40,6 +40,7 @@ import org.jets3t.service.ServiceException;
 import org.jets3t.service.acl.GroupGrantee;
 import org.jets3t.service.impl.rest.httpclient.RestS3Service;
 import org.jets3t.service.model.*;
+import org.jets3t.service.model.cloudfront.CustomOrigin;
 import org.jets3t.service.security.AWSCredentials;
 import org.jets3t.service.security.ProviderCredentials;
 import org.jets3t.service.utils.ServiceUtils;
@@ -882,12 +883,27 @@ public class S3Session extends CloudHTTP3Session {
     }
 
     /**
-     * Distribution methods supported by this S3 provider.
+     * The website endpoint given the location of the bucket.
      *
-     * @return Download and Streaming for AWS.
+     * @param bucket
+     * @param method
+     * @return
      */
-    public List<Distribution.Method> getDistributionMethods() {
-        return Arrays.asList(Distribution.DOWNLOAD, Distribution.STREAMING, Distribution.WEBSITE);
+    private String getWebsiteEndpoint(String bucket, Distribution.Method method) {
+        // Geographical location
+        final String location = this.getLocation(bucket);
+        // US Standard
+        String endpoint = "s3-website-us-east-1.amazonaws.com";
+        if("EU".equals(location)) {
+            endpoint = "s3-website-eu-west-1.amazonaws.com";
+        }
+        else if("us-west-1".equals(location)) {
+            endpoint = "s3-website-us-west-1.amazonaws.com";
+        }
+        else if("ap-southeast-1".equals(location)) {
+            endpoint = "s3-website-ap-southeast-1.amazonaws.com";
+        }
+        return bucket + "." + endpoint;
     }
 
     /**
@@ -899,171 +915,7 @@ public class S3Session extends CloudHTTP3Session {
     public DistributionConfiguration cdn() {
         if(host.getHostname().equals(Protocol.S3_SSL.getDefaultHostname())) {
             if(null == cf) {
-                cf = new CloudFrontDistributionConfiguration(LoginControllerFactory.instance(this),
-                        host.getCredentials(),
-                        new ErrorListener() {
-                            public void error(BackgroundException exception) {
-                                S3Session.this.error(exception);
-                            }
-                        }) {
-
-                    @Override
-                    public List<Distribution.Method> getMethods() {
-                        return S3Session.this.getDistributionMethods();
-                    }
-
-                    @Override
-                    public String toString(Distribution.Method method) {
-                        if(method.equals(Distribution.WEBSITE)) {
-                            return Locale.localizedString("Website Configuration", "S3");
-                        }
-                        return super.toString(method);
-                    }
-
-                    @Override
-                    public String getOrigin(ch.cyberduck.core.cdn.Distribution.Method method, String container) {
-                        if(method.equals(Distribution.WEBSITE)) {
-                            return S3Session.this.getHostnameForContainer(container);
-                        }
-                        return super.getOrigin(method, container);
-                    }
-
-                    @Override
-                    public Distribution read(String origin, Distribution.Method method) {
-                        if(method.equals(Distribution.WEBSITE)) {
-                            if(!distributionStatus.get(method).containsKey(origin)
-                                    || !distributionStatus.get(method).get(origin).isDeployed()) {
-                                try {
-                                    S3Session.this.check();
-                                    final String bucket = S3Session.this.getContainerForHostname(origin);
-                                    // Geographical location
-                                    final String location = S3Session.this.getLocation(bucket);
-                                    // US Standard	
-                                    String endpoint = "s3-website-us-east-1.amazonaws.com";
-                                    if("EU".equals(location)) {
-                                        endpoint = "s3-website-eu-west-1.amazonaws.com";
-                                    }
-                                    else if("us-west-1".equals(location)) {
-                                        endpoint = "s3-website-us-west-1.amazonaws.com";
-                                    }
-                                    else if("ap-southeast-1".equals(location)) {
-                                        endpoint = "s3-website-ap-southeast-1.amazonaws.com";
-                                    }
-                                    final String url = method.getProtocol() + getContainerForHostname(origin) + "." + endpoint;
-                                    try {
-                                        final WebsiteConfig configuration = S3Session.this.getClient().getWebsiteConfig(bucket);
-                                        final ch.cyberduck.core.cdn.Distribution distribution = new ch.cyberduck.core.cdn.Distribution(
-                                                null,
-                                                origin,
-                                                method,
-                                                configuration.isWebsiteConfigActive(),
-                                                configuration.isWebsiteConfigActive(),
-                                                // http://example-bucket.s3-website-us-east-1.amazonaws.com/
-                                                url,
-                                                Locale.localizedString("Deployed", "S3"),
-                                                null,
-                                                false,
-                                                configuration.getIndexDocumentSuffix());
-                                        // Cache distributions
-                                        distributionStatus.get(method).put(origin, distribution);
-                                    }
-                                    catch(ServiceException e) {
-                                        // Not found.
-                                        String status = Locale.localizedString(e.getErrorCode());
-                                        if(status.equals(e.getErrorCode())) {
-                                            // No localization found. Use english text
-                                            status = e.getErrorMessage();
-                                        }
-                                        distributionStatus.get(method).put(origin, new Distribution(null, origin, method, false, url, status));
-                                    }
-                                }
-                                catch(IOException e) {
-                                    this.error("Cannot read CDN configuration", e);
-                                }
-                            }
-                        }
-                        return super.read(origin, method);
-                    }
-
-                    @Override
-                    public void write(boolean enabled, String origin, Distribution.Method method, String[] cnames, boolean logging, String defaultRootObject) {
-                        if(method.equals(Distribution.WEBSITE)) {
-                            try {
-                                S3Session.this.check();
-
-                                // Configure Website Index Document
-                                StringBuilder name = new StringBuilder(Locale.localizedString("Website", "S3")).append(" ").append(method.toString());
-                                if(enabled) {
-                                    this.message(MessageFormat.format(Locale.localizedString("Enable {0} Distribution", "Status"), name));
-                                }
-                                else {
-                                    this.message(MessageFormat.format(Locale.localizedString("Disable {0} Distribution", "Status"), name));
-                                }
-                                ch.cyberduck.core.cdn.Distribution d = distributionStatus.get(method).get(origin);
-                                final String bucket = S3Session.this.getContainerForHostname(origin);
-                                if(enabled) {
-                                    String suffix = "index.html";
-                                    if(StringUtils.isNotBlank(defaultRootObject)) {
-                                        suffix = FilenameUtils.getName(defaultRootObject);
-                                    }
-                                    S3Session.this.getClient().setWebsiteConfig(bucket, new WebsiteConfig(suffix));
-                                }
-                                else {
-                                    S3Session.this.getClient().deleteWebsiteConfig(bucket);
-                                }
-                            }
-                            catch(IOException e) {
-                                this.error("Cannot write CDN configuration", e);
-                            }
-                            catch(S3ServiceException e) {
-                                this.error("Cannot write CDN configuration", e);
-                            }
-                            finally {
-                                distributionStatus.get(method).clear();
-                            }
-                        }
-                        else {
-                            super.write(enabled, origin, method, cnames, logging, defaultRootObject);
-                        }
-                    }
-
-                    @Override
-                    public boolean isConfigured(Distribution.Method method) {
-                        return super.isConfigured(method);
-                    }
-
-                    @Override
-                    public boolean isDefaultRootSupported(Distribution.Method method) {
-                        if(method.equals(ch.cyberduck.core.cdn.Distribution.WEBSITE)) {
-                            return true;
-                        }
-                        return super.isDefaultRootSupported(method);
-                    }
-
-                    @Override
-                    public boolean isCnameSupported(Distribution.Method method) {
-                        if(method.equals(ch.cyberduck.core.cdn.Distribution.WEBSITE)) {
-                            return false;
-                        }
-                        return super.isCnameSupported(method);
-                    }
-
-                    @Override
-                    public boolean isInvalidationSupported(Distribution.Method method) {
-                        if(method.equals(ch.cyberduck.core.cdn.Distribution.WEBSITE)) {
-                            return false;
-                        }
-                        return super.isInvalidationSupported(method);
-                    }
-
-                    @Override
-                    public boolean isLoggingSupported(Distribution.Method method) {
-                        if(method.equals(ch.cyberduck.core.cdn.Distribution.WEBSITE)) {
-                            return false;
-                        }
-                        return super.isLoggingSupported(method);
-                    }
-                };
+                cf = new WebsiteCloudFrontDistributionConfiguration();
             }
         }
         else {
@@ -1071,5 +923,164 @@ public class S3Session extends CloudHTTP3Session {
             return super.cdn();
         }
         return cf;
+    }
+
+    /**
+     *
+     */
+    private class WebsiteCloudFrontDistributionConfiguration extends CloudFrontDistributionConfiguration {
+
+        public WebsiteCloudFrontDistributionConfiguration() {
+            super(LoginControllerFactory.instance(S3Session.this), S3Session.this.host.getCredentials(), new ErrorListener() {
+                public void error(BackgroundException exception) {
+                    S3Session.this.error(exception);
+                }
+            });
+        }
+
+        /**
+         * Distribution methods supported by this S3 provider.
+         *
+         * @return Download and Streaming for AWS.
+         */
+        @Override
+        public List<Distribution.Method> getMethods() {
+            return Arrays.asList(Distribution.DOWNLOAD, Distribution.STREAMING, Distribution.WEBSITE, Distribution.WEBSITE_CDN);
+        }
+
+        @Override
+        public String toString(Distribution.Method method) {
+            if(method.equals(Distribution.WEBSITE)) {
+                return method.toString();
+            }
+            return super.toString(method);
+        }
+
+        @Override
+        public String getOrigin(Distribution.Method method, String container) {
+            if(method.equals(Distribution.WEBSITE)) {
+                return S3Session.this.getHostnameForContainer(container);
+            }
+            if(method.equals(Distribution.WEBSITE_CDN)) {
+                return S3Session.this.getWebsiteEndpoint(container, method);
+            }
+            return super.getOrigin(method, container);
+        }
+
+        @Override
+        public Distribution read(String origin, Distribution.Method method) {
+            if(method.equals(Distribution.WEBSITE)) {
+                final String bucket = S3Session.this.getContainerForHostname(origin);
+                // Website Endpoint URL
+                final String url = method.getProtocol() + S3Session.this.getWebsiteEndpoint(bucket, method);
+                if(!distributionStatus.get(method).containsKey(origin)
+                        || !distributionStatus.get(method).get(origin).isDeployed()) {
+                    try {
+                        S3Session.this.check();
+
+                        try {
+                            final WebsiteConfig configuration = S3Session.this.getClient().getWebsiteConfig(bucket);
+                            final Distribution distribution = new Distribution(
+                                    null,
+                                    origin,
+                                    method,
+                                    configuration.isWebsiteConfigActive(),
+                                    configuration.isWebsiteConfigActive(),
+                                    // http://example-bucket.s3-website-us-east-1.amazonaws.com/
+                                    url,
+                                    Locale.localizedString("Deployed", "S3"),
+                                    null,
+                                    false,
+                                    configuration.getIndexDocumentSuffix());
+                            // Cache website configuration
+                            distributionStatus.get(method).put(origin, distribution);
+                        }
+                        catch(ServiceException e) {
+                            // Not found. Website configuration not enbabled.
+                            String status = Locale.localizedString(e.getErrorCode());
+                            if(status.equals(e.getErrorCode())) {
+                                // No localization found. Use english text
+                                status = e.getErrorMessage();
+                            }
+                            final Distribution distribution = new Distribution(null, origin, method, false, url, status);
+                            distributionStatus.get(method).put(origin, distribution);
+                        }
+                    }
+                    catch(IOException e) {
+                        this.error("Cannot read CDN configuration", e);
+                    }
+                }
+            }
+            return super.read(origin, method);
+        }
+
+        @Override
+        public void write(boolean enabled, String origin, Distribution.Method method, String[] cnames, boolean logging, String defaultRootObject) {
+            if(method.equals(Distribution.WEBSITE)) {
+                try {
+                    S3Session.this.check();
+
+                    // Configure Website Index Document
+                    StringBuilder name = new StringBuilder(Locale.localizedString("Website", "S3")).append(" ").append(method.toString());
+                    if(enabled) {
+                        this.message(MessageFormat.format(Locale.localizedString("Enable {0} Distribution", "Status"), name));
+                    }
+                    else {
+                        this.message(MessageFormat.format(Locale.localizedString("Disable {0} Distribution", "Status"), name));
+                    }
+                    Distribution d = distributionStatus.get(method).get(origin);
+                    final String bucket = S3Session.this.getContainerForHostname(origin);
+
+                    if(enabled) {
+                        String suffix = "index.html";
+                        if(StringUtils.isNotBlank(defaultRootObject)) {
+                            suffix = FilenameUtils.getName(defaultRootObject);
+                        }
+                        // Enable website endpoint
+                        S3Session.this.getClient().setWebsiteConfig(bucket, new WebsiteConfig(suffix));
+                    }
+                    else {
+                        // Disable website endpoint
+                        S3Session.this.getClient().deleteWebsiteConfig(bucket);
+                    }
+                }
+                catch(IOException e) {
+                    this.error("Cannot write CDN configuration", e);
+                }
+                catch(S3ServiceException e) {
+                    this.error("Cannot write CDN configuration", e);
+                }
+                finally {
+                    distributionStatus.get(method).clear();
+                }
+            }
+            else {
+                super.write(enabled, origin, method, cnames, logging, defaultRootObject);
+            }
+        }
+
+        @Override
+        protected CustomOrigin getCustomOriginConfiguration(Distribution.Method method, String origin) {
+            if(method.equals(Distribution.WEBSITE_CDN)) {
+                return new CustomOrigin(origin, CustomOrigin.OriginProtocolPolicy.HTTP_ONLY);
+            }
+            return super.getCustomOriginConfiguration(method, origin);
+        }
+
+        @Override
+        public boolean isDefaultRootSupported(Distribution.Method method) {
+            if(method.equals(Distribution.WEBSITE)) {
+                return true;
+            }
+            return super.isDefaultRootSupported(method);
+        }
+
+        @Override
+        public boolean isLoggingSupported(Distribution.Method method) {
+            if(method.equals(Distribution.WEBSITE)) {
+                return false;
+            }
+            return super.isLoggingSupported(method);
+        }
     }
 }

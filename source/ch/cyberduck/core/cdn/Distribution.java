@@ -109,13 +109,43 @@ public class Distribution {
             if(WEBSITE.toString().equals(name)) {
                 return WEBSITE;
             }
+            if(WEBSITE_CDN.toString().equals(name)) {
+                return WEBSITE_CDN;
+            }
             throw new RuntimeException();
         }
     }
 
+    /**
+     * Website endpoint for S3
+     */
     public static final Method WEBSITE = new Method() {
         public String toString() {
             return Locale.localizedString("Website Configuration (HTTP)", "S3");
+        }
+
+        @Override
+        public String getProtocol() {
+            return "http://";
+        }
+
+        @Override
+        public int getDefaultPort() {
+            return 80;
+        }
+
+        @Override
+        public String getContext() {
+            return "";
+        }
+    };
+
+    /**
+     * Website configuration endpoint with custom origin CDN
+     */
+    public static final Method WEBSITE_CDN = new Method() {
+        public String toString() {
+            return Locale.localizedString("Website Configuration (HTTP) CDN", "S3");
         }
 
         @Override
