@@ -103,16 +103,20 @@ public abstract class HTTP3Session extends SSLSession {
      * @return A host configuration initialized with the hostname, port and socket factory.
      */
     protected HostConfiguration getHostConfiguration() {
-        int port = this.getHost().getPort();
+        return this.getHostConfiguration(this.getHost());
+    }
+
+    protected HostConfiguration getHostConfiguration(Host host) {
+        int port = host.getPort();
         final HostConfiguration configuration = new StickyHostConfiguration();
-        if("https".equals(this.getHost().getProtocol().getScheme())) {
+        if("https".equals(host.getProtocol().getScheme())) {
             if(-1 == port) {
                 port = 443;
             }
             // Configuration with custom socket factory using the trust manager
-            configuration.setHost(this.getHost().getHostname(), port,
-                    new org.apache.commons.httpclient.protocol.Protocol(this.getHost().getProtocol().getScheme(),
-                            new SSLSocketFactory(this.getTrustManager(this.getHost().getHostname())), port)
+            configuration.setHost(host.getHostname(), port,
+                    new org.apache.commons.httpclient.protocol.Protocol(host.getProtocol().getScheme(),
+                            new SSLSocketFactory(this.getTrustManager(host.getHostname())), port)
             );
             if(Preferences.instance().getBoolean("connection.proxy.enable")) {
                 final Proxy proxy = ProxyFactory.instance();
@@ -121,12 +125,12 @@ public abstract class HTTP3Session extends SSLSession {
                 }
             }
         }
-        else if("http".equals(this.getHost().getProtocol().getScheme())) {
+        else if("http".equals(host.getProtocol().getScheme())) {
             if(-1 == port) {
                 port = 80;
             }
-            configuration.setHost(this.getHost().getHostname(), port,
-                    new org.apache.commons.httpclient.protocol.Protocol(this.getHost().getProtocol().getScheme(),
+            configuration.setHost(host.getHostname(), port,
+                    new org.apache.commons.httpclient.protocol.Protocol(host.getProtocol().getScheme(),
                             new DefaultProtocolSocketFactory(), port)
             );
             if(Preferences.instance().getBoolean("connection.proxy.enable")) {
