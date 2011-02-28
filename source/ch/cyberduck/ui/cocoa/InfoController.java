@@ -2289,7 +2289,7 @@ public class InfoController extends ToolbarWindowController {
                     // We only support one distribution per bucket for the sake of simplicity
                     distribution = session.cdn().read(
                             session.cdn().getOrigin(method, getSelected().getContainerName()),
-                            Distribution.STREAMING);
+                            method);
                     // Make sure container items are cached for default root object.
                     getSelected().getContainer().children();
                 }
