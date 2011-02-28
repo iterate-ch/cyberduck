@@ -2,7 +2,6 @@
 - [Localize] Ukrainian Localization
 - [Feature] Invalidation (Purge) of files in CDN (Cloudfiles/Akamai)
 - [Feature] Skip option not available in transfer prompt [#1159]
-- [Feature] Access for AWS Identity and Access Management (IAM) users (#5731) (S3)
 - [Bugfix] Preserve symbolic links in transfers (#1860) (SFTP)
 
 4.0b9 [http://trac.cyberduck.ch/milestone/4.0b9]

@@ -17,7 +17,6 @@ Changelog. Last modified: $Date$
 - [Feature] Select bookmark to upload to when dragging files to application
 - [Feature] Invalidation (Purge) of files in CDN (Cloudfiles/Akamai)
 - [Feature] Skip option not available in transfer prompt [#1159]
-- [Feature] Access for AWS Identity and Access Management (IAM) users (#5731) (S3)
 - [Bugfix] Limit number of concurrent transfers (#5539, #5624)
 - [Bugfix] Qeued transfers start in random order (#5632)
 - [Bugfix] Dragging into topmost folder in browser (#1945)
