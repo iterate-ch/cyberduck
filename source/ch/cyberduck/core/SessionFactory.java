@@ -59,5 +59,4 @@ public abstract class SessionFactory {
     public static List<Protocol> getRegisteredProtocols() {
         return protocols;
     }
-
 }
