@@ -72,8 +72,8 @@ public class ECSession extends S3Session {
     }
 
     @Override
-    public List<Distribution.Method> getDistributionMethods() {
-        return Collections.emptyList();
+    public boolean isCDNSupported() {
+        return false;
     }
 
     @Override

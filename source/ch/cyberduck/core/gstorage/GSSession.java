@@ -68,11 +68,6 @@ public class GSSession extends S3Session {
     }
 
     @Override
-    public List<Distribution.Method> getDistributionMethods() {
-        return Collections.emptyList();
-    }
-
-    @Override
     public String getLocation(String container) {
         return Locale.localizedString("US", "S3");
     }
