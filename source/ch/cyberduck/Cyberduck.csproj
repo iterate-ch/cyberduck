@@ -217,6 +217,8 @@
     <Compile Include="ui\winforms\controls\VistaMenuOwnerDrawn.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="ui\winforms\serializer\HostPlistReader.cs" />
+    <Compile Include="ui\winforms\serializer\ProtocolPlistReader.cs" />
     <Compile Include="ui\winforms\UpdateForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -346,7 +348,6 @@
     <Compile Include="ui\controller\FolderItems.cs" />
     <Compile Include="ui\controller\growl\GrowlImpl.cs" />
     <Compile Include="ui\controller\HostKeyController.cs" />
-    <Compile Include="ui\controller\HostPlistReader.cs" />
     <Compile Include="ui\controller\IActivityView.cs" />
     <Compile Include="ui\controller\IBookmarkManagerView.cs" />
     <Compile Include="ui\controller\IBookmarkView.cs" />
