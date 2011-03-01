@@ -17,6 +17,7 @@ Changelog. Last modified: $Date$
 - [Feature] Select bookmark to upload to when dragging files to application
 - [Feature] Invalidation (Purge) of files in CDN (Cloudfiles/Akamai)
 - [Feature] Skip option not available in transfer prompt [#1159]
+- [Feature] User interface to create symbolic links (SFTP) [#1724]
 - [Bugfix] Limit number of concurrent transfers (#5539, #5624)
 - [Bugfix] Qeued transfers start in random order (#5632)
 - [Bugfix] Dragging into topmost folder in browser (#1945)
@@ -28,6 +29,8 @@ Changelog. Last modified: $Date$
 - [Bugfix] Files not shown (#5570) (Google Docs)
 - [Bugfix] Images always converted to documents (#5601) (Google Docs)
 - [Bugfix] Preserve symbolic links in transfers (#1860) (SFTP)
+- [Bugfix] High CPU usage after transfer has completed (#5640)
+- [Bugfix] Multiple distributions created (CloudFront) (#5675)
 
 3.8.1 [http://trac.cyberduck.ch/milestone/3.8.1]
 - [Bugfix] Fails to display custom language preference (#5500)
