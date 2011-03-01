@@ -188,13 +188,13 @@ public class Profile extends Protocol implements Serializable {
     }
 
     @Override
-    public String disk() {
-        return parent.disk();
+    public String favicon() {
+        return this.icon();
     }
 
     @Override
-    public String favicon() {
-        return parent.favicon();
+    public String disk() {
+        return parent.disk();
     }
 
     @Override
