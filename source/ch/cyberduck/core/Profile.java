@@ -30,6 +30,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.io.OutputStream;
 
 /**
  * @version $Id:$
@@ -171,7 +172,13 @@ public class Profile extends Protocol implements Serializable {
         final Local file = LocalFactory.createLocal(Preferences.instance().getProperty("tmp.dir"),
                 this.getIdentifier() + ".ico");
         try {
-            IOUtils.write(favicon, file.getOutputStream(false));
+            final OutputStream out = file.getOutputStream(false);
+            try {
+                IOUtils.write(favicon, out);
+            }
+            finally {
+                IOUtils.closeQuietly(out);
+            }
             return file.getAbsolute();
         }
         catch(IOException e) {
