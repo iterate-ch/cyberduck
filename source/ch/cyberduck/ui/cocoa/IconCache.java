@@ -234,7 +234,12 @@ public class IconCache {
     protected NSImage iconForName(final String name, Integer width, Integer height) {
         NSImage image = this.load(name, width);
         if(null == image) {
-            image = NSImage.imageNamed(name);
+            if(name.startsWith("/")) {
+                image = NSImage.imageWithContentsOfFile(name);
+            }
+            else {
+                image = NSImage.imageNamed(name);
+            }
             if(null == image) {
                 log.warn("No icon named " + name);
                 this.put(name, null, width);
@@ -260,7 +265,7 @@ public class IconCache {
     public NSImage iconForPath(final Local item, Integer size) {
         NSImage icon = null;
         if(item.exists()) {
-            icon = this.iconForName(item.getAbsolute(), size);
+            icon = this.load(item.getAbsolute(), size);
             if(null == icon) {
                 icon = NSWorkspace.sharedWorkspace().iconForFile(item.getAbsolute());
                 this.put(item.getAbsolute(), this.convert(icon, size), size);
@@ -282,7 +287,7 @@ public class IconCache {
      * @return
      */
     public NSImage iconForApplication(final String bundleIdentifier, Integer size) {
-        NSImage icon = this.iconForName(bundleIdentifier, size);
+        NSImage icon = this.load(bundleIdentifier, size);
         if(null == icon) {
             icon = NSWorkspace.sharedWorkspace().iconForFile(
                     NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(bundleIdentifier));

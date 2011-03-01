@@ -24,8 +24,12 @@ import ch.cyberduck.core.serializer.DeserializerFactory;
 import ch.cyberduck.core.serializer.Serializer;
 import ch.cyberduck.core.serializer.SerializerFactory;
 
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+
+import java.io.IOException;
 
 /**
  * @version $Id:$
@@ -158,7 +162,21 @@ public class Profile extends Protocol implements Serializable {
     }
 
     @Override
-    public String favicon() {
+    public String icon() {
+        final String v = this.getValue("Icon");
+        if(StringUtils.isBlank(v)) {
+            return parent.favicon();
+        }
+        final byte[] favicon = Base64.decodeBase64(v);
+        final Local file = LocalFactory.createLocal(Preferences.instance().getProperty("editor.tmp.directory"),
+                this.getIdentifier() + ".ico");
+        try {
+            IOUtils.write(favicon, file.getOutputStream(false));
+            return file.getAbsolute();
+        }
+        catch(IOException e) {
+            log.error("Error writing temporary file:" + e.getMessage());
+        }
         return parent.favicon();
     }
 
@@ -168,8 +186,8 @@ public class Profile extends Protocol implements Serializable {
     }
 
     @Override
-    public String icon() {
-        return parent.icon();
+    public String favicon() {
+        return parent.favicon();
     }
 
     @Override
