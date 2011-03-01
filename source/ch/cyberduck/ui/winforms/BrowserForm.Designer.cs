@@ -800,7 +800,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // openInTerminalMainMenuItem
             // 
             this.openInTerminalMainMenuItem.Index = 10;
-            this.openInTerminalMainMenuItem.Text = "Open in Terminal.app";
+            this.openInTerminalMainMenuItem.Text = "Open in Terminal";
             // 
             // menuItem61
             // 
