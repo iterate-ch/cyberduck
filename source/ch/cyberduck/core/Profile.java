@@ -168,7 +168,7 @@ public class Profile extends Protocol implements Serializable {
             return parent.favicon();
         }
         final byte[] favicon = Base64.decodeBase64(v);
-        final Local file = LocalFactory.createLocal(Preferences.instance().getProperty("editor.tmp.directory"),
+        final Local file = LocalFactory.createLocal(Preferences.instance().getProperty("tmp.dir"),
                 this.getIdentifier() + ".ico");
         try {
             IOUtils.write(favicon, file.getOutputStream(false));
