@@ -30,7 +30,7 @@ import org.apache.log4j.Logger;
 /**
  * @version $Id:$
  */
-public class Profile extends AbstractProtocol implements Serializable {
+public class Profile extends Protocol implements Serializable {
     private static Logger log = Logger.getLogger(Profile.class);
 
     private Deserializer dict;
@@ -65,12 +65,9 @@ public class Profile extends AbstractProtocol implements Serializable {
         return dict.<T>getSerialized();
     }
 
-    public boolean equals(Object other) {
-        return parent.equals(other);
-    }
-
-    public String toString() {
-        return parent.toString();
+    @Override
+    public void register() {
+        super.register();
     }
 
     public Protocol getProtocol() {

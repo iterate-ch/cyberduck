@@ -1733,7 +1733,6 @@ source/ch/cyberduck/ResourcesBundle.Designer.cs -text
 source/ch/cyberduck/ResourcesBundle.resx -text
 source/ch/cyberduck/core/AbstractFolderHostCollection.java -text
 source/ch/cyberduck/core/AbstractLoginController.java -text
-source/ch/cyberduck/core/AbstractProtocol.java -text
 source/ch/cyberduck/core/AbstractRendezvous.java -text
 source/ch/cyberduck/core/CollectionListener.java -text
 source/ch/cyberduck/core/Commands.cs -text

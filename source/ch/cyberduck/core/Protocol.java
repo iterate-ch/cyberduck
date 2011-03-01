@@ -43,92 +43,155 @@ import ch.cyberduck.core.sftp.SFTPPath;
 import ch.cyberduck.core.sftp.SFTPSession;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.jets3t.service.Constants;
 import org.soyatec.windows.azure.authenticate.Base64;
 
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
-import java.util.List;
 
 /**
  * @version $Id$
  */
-public interface Protocol {
+public abstract class Protocol {
+    protected static Logger log = Logger.getLogger(Protocol.class);
 
     /**
      * Must be unique across all available protocols.
      *
      * @return The identifier for this protocol which is the scheme by default
      */
-    String getIdentifier();
+    public String getIdentifier() {
+        return this.getScheme();
+    }
 
-    String getName();
+    public String getName() {
+        return this.getScheme().toUpperCase();
+    }
 
-    String favicon();
+    public String favicon() {
+        return null;
+    }
 
-    boolean isEnabled();
+    public boolean isEnabled() {
+        return Preferences.instance().getBoolean("protocol." + this.getIdentifier() + ".enable");
+    }
 
     /**
      * Statically register protocol implementations.
      */
-    void register();
+    public void register() {
+        if(this.isEnabled()) {
+            if(log.isDebugEnabled()) {
+                log.debug("Register protocol:" + this);
+            }
+            SessionFactory.addFactory(this, this.getSessionFactory());
+            PathFactory.addFactory(this, this.getPathFactory());
+        }
+        else {
+            if(log.isDebugEnabled()) {
+                log.debug("Skip disabled protocol:" + this);
+            }
+        }
+    }
 
     /**
      * @return
      */
-    abstract String getDescription();
+    public abstract String getDescription();
 
     /**
      * @return
      */
-    abstract String getScheme();
+    public abstract String getScheme();
 
-    String[] getSchemes();
+    public String[] getSchemes() {
+        return new String[]{this.getScheme()};
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if(other instanceof Protocol) {
+            return ((Protocol) other).getIdentifier().equals(this.getIdentifier());
+        }
+        return false;
+    }
+
+    @Override
+    public String toString() {
+        return this.getIdentifier();
+    }
 
     /**
      * @return A mounted disk icon to display
      */
-    String disk();
+    public String disk() {
+        return this.getIdentifier();
+    }
 
     /**
      * @return A small icon to display
      */
-    String icon();
+    public String icon() {
+        return this.getIdentifier() + "-icon";
+    }
 
     /**
      * @return
      */
-    boolean isSecure();
+    public boolean isSecure() {
+        return false;
+    }
 
-    boolean isHostnameConfigurable();
+    public boolean isHostnameConfigurable() {
+        return true;
+    }
 
-    boolean isPortConfigurable();
+    public boolean isPortConfigurable() {
+        return true;
+    }
 
-    boolean isWebUrlConfigurable();
+    public boolean isWebUrlConfigurable() {
+        return true;
+    }
 
-    boolean isEncodingConfigurable();
+    public boolean isEncodingConfigurable() {
+        return false;
+    }
 
-    boolean isConnectModeConfigurable();
+    public boolean isConnectModeConfigurable() {
+        return false;
+    }
 
-    boolean isAnonymousConfigurable();
+    public boolean isAnonymousConfigurable() {
+        return true;
+    }
 
-    boolean isUTCTimezone();
+    public boolean isUTCTimezone() {
+        return true;
+    }
 
-    String getUsernamePlaceholder();
+    public String getUsernamePlaceholder() {
+        return Locale.localizedString("Username", "Credentials");
+    }
 
-    String getPasswordPlaceholder();
+    public String getPasswordPlaceholder() {
+        return Locale.localizedString("Password", "Credentials");
+    }
 
-    String getDefaultHostname();
+    public String getDefaultHostname() {
+        return Preferences.instance().getProperty("connection.hostname.default");
+    }
 
     /**
      * @return
      */
-    abstract SessionFactory getSessionFactory();
+    public abstract SessionFactory getSessionFactory();
 
     /**
      * @return
      */
-    abstract PathFactory getPathFactory();
+    public abstract PathFactory getPathFactory();
 
     /**
      * Check login credentials for validity for this protocol.
@@ -136,14 +199,17 @@ public interface Protocol {
      * @param credentials
      * @return True if username and password is not a blank string and password
      */
-    boolean validate(Credentials credentials);
+    public boolean validate(Credentials credentials) {
+        return StringUtils.isNotBlank(credentials.getUsername())
+                && StringUtils.isNotEmpty(credentials.getPassword());
+    }
 
     /**
      * @return The default port this protocol connects to
      */
-    abstract int getDefaultPort();
+    public abstract int getDefaultPort();
 
-    static final Protocol SFTP = new AbstractProtocol() {
+    public static final Protocol SFTP = new Protocol() {
         @Override
         public String getDescription() {
             return Locale.localizedString("SFTP (SSH File Transfer Protocol)");
@@ -188,7 +254,7 @@ public interface Protocol {
         }
     };
 
-    static final Protocol SCP = new AbstractProtocol() {
+    public static final Protocol SCP = new Protocol() {
         @Override
         public String getDescription() {
             return Locale.localizedString("SCP (Secure Copy)");
@@ -225,7 +291,7 @@ public interface Protocol {
         }
     };
 
-    static final Protocol FTP = new AbstractProtocol() {
+    public static final Protocol FTP = new Protocol() {
         @Override
         public String getDescription() {
             return Locale.localizedString("FTP (File Transfer Protocol)");
@@ -278,7 +344,7 @@ public interface Protocol {
         }
     };
 
-    static final Protocol FTP_TLS = new AbstractProtocol() {
+    public static final Protocol FTP_TLS = new Protocol() {
         @Override
         public String getName() {
             return "FTP-SSL";
@@ -340,7 +406,7 @@ public interface Protocol {
         }
     };
 
-    static final Protocol S3_SSL = new AbstractProtocol() {
+    public static final Protocol S3_SSL = new Protocol() {
         @Override
         public String getName() {
             return "S3";
@@ -417,7 +483,7 @@ public interface Protocol {
         }
     };
 
-    static final Protocol S3 = new AbstractProtocol() {
+    public static final Protocol S3 = new Protocol() {
         @Override
         public String getName() {
             return "S3";
@@ -499,7 +565,7 @@ public interface Protocol {
         }
     };
 
-    static final Protocol EUCALYPTUS = new AbstractProtocol() {
+    public static final Protocol EUCALYPTUS = new Protocol() {
         @Override
         public String getName() {
             return "S3";
@@ -566,7 +632,7 @@ public interface Protocol {
         }
     };
 
-    static final Protocol WEBDAV = new AbstractProtocol() {
+    public static final Protocol WEBDAV = new Protocol() {
         @Override
         public String getName() {
             return "WebDAV (HTTP)";
@@ -618,7 +684,7 @@ public interface Protocol {
         }
     };
 
-    static final Protocol WEBDAV_SSL = new AbstractProtocol() {
+    public static final Protocol WEBDAV_SSL = new Protocol() {
         @Override
         public String getName() {
             return "WebDAV (HTTPS)";
@@ -675,7 +741,7 @@ public interface Protocol {
         }
     };
 
-    static final Protocol IDISK = new AbstractProtocol() {
+    public static final Protocol IDISK = new Protocol() {
         @Override
         public String getName() {
             return "MobileMe";
@@ -762,7 +828,7 @@ public interface Protocol {
         }
     };
 
-    static final Protocol CLOUDFILES = new AbstractProtocol() {
+    public static final Protocol CLOUDFILES = new Protocol() {
         @Override
         public String getName() {
             return Locale.localizedString("Cloud Files", "Mosso");
@@ -839,7 +905,7 @@ public interface Protocol {
         }
     };
 
-    static final Protocol SWIFT = new AbstractProtocol() {
+    public static final Protocol SWIFT = new Protocol() {
         @Override
         public String getName() {
             return Locale.localizedString("Swift", "Mosso");
@@ -911,7 +977,7 @@ public interface Protocol {
         }
     };
 
-    static final Protocol GDOCS_SSL = new AbstractProtocol() {
+    public static final Protocol GDOCS_SSL = new Protocol() {
         @Override
         public String getName() {
             return Locale.localizedString("Google Docs");
@@ -1017,7 +1083,7 @@ public interface Protocol {
         }
     };
 
-    static final Protocol GOOGLESTORAGE_SSL = new AbstractProtocol() {
+    public static final Protocol GOOGLESTORAGE_SSL = new Protocol() {
         @Override
         public String getName() {
             return "Google Storage";
@@ -1109,7 +1175,7 @@ public interface Protocol {
         }
     };
 
-    static final Protocol AZURE_SSL = new AbstractProtocol() {
+    public static final Protocol AZURE_SSL = new Protocol() {
         @Override
         public String getName() {
             return "Azure";
@@ -1199,7 +1265,7 @@ public interface Protocol {
         }
     };
 
-    static final Protocol DROPBOX_SSL = new AbstractProtocol() {
+    public static final Protocol DROPBOX_SSL = new Protocol() {
         @Override
         public String getName() {
             return "Dropbox";
