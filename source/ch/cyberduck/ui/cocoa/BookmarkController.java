@@ -272,8 +272,9 @@ public class BookmarkController extends WindowController {
 
                 public void run() {
                     NSImage img;
-                    if(StringUtils.isNotBlank(host.getProtocol().favicon())) {
-                        img = IconCache.iconNamed(host.getProtocol().favicon(), 16);
+                    final String f = host.getProtocol().favicon();
+                    if(StringUtils.isNotBlank(f)) {
+                        img = IconCache.iconNamed(f, 16);
                     }
                     else {
                         String url = host.getWebURL() + "/favicon.ico";
