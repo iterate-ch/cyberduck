@@ -242,6 +242,7 @@ Section "MainSection" SEC01
 
   ; creating file associations
   ${registerExtension} "$INSTDIR\Cyberduck.exe" ".cyberducklicense" "Cyberduck Donation Key" "$INSTDIR\cyberduck-document.ico"
+  ${registerExtension} "$INSTDIR\Cyberduck.exe" ".cyberduckprofile" "Cyberduck Connection Profile" "$INSTDIR\cyberduck-document.ico"
   ${registerExtension} "$INSTDIR\Cyberduck.exe" ".duck" "Cyberduck Bookmark" "$INSTDIR\cyberduck-document.ico"
   ; notify the system that file associations have been changed
   System::Call 'shell32.dll::SHChangeNotify(i, i, i, i) v (0x08000000, 0, 0, 0)'
