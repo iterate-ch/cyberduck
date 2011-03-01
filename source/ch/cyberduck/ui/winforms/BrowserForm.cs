@@ -183,7 +183,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             String command = Preferences.instance().getProperty("terminal.command.ssh");
             String file = System.IO.Path.GetFileName(command);
             openInTerminalMainMenuItem.Text = String.Format(Locale.localizedString("Open in {0}"), file);
-            openInTerminalToolbarMenuItem.Text = openInTerminalMainMenuItem.Text;
+            openInTerminalToolStripMenuItem.Text = String.Format(Locale.localizedString("Open in {0}"), file);;
+            openInTerminalToolbarMenuItem.Text = String.Format(Locale.localizedString("Open in {0}"), file);
             openInTerminalToolStripButton.Image = IconCache.Instance.IconForFilename(command,
                                                                                      IconCache.IconSize.
                                                                                          Large);
