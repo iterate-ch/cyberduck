@@ -531,6 +531,7 @@ public class MainController extends BundleController implements NSApplication.De
             }
             else if("cyberduckprofile".equals(f.getExtension())) {
                 final Local profiles = LocalFactory.createLocal(Preferences.instance().getProperty("application.support.path"), "Profiles");
+                profiles.mkdir(true);
                 f.rename(LocalFactory.createLocal(profiles, f.getName()));
                 final Protocol profile = ProtocolReaderFactory.instance().read(f);
                 profile.register();

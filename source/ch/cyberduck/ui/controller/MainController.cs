@@ -261,6 +261,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     }
                     else if ("cyberduckprofile".Equals(f.getExtension())) {
                         Local profiles = LocalFactory.createLocal(Preferences.instance().getProperty("application.support.path"), "Profiles");
+                        profiles.mkdir(true);
                         f.rename(LocalFactory.createLocal(profiles, f.getName()));
                         Protocol profile = (Protocol) ProtocolReaderFactory.instance().read(f);
                         profile.register();
