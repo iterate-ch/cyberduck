@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2011 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -65,16 +65,11 @@ namespace Ch.Cyberduck.Ui.Winforms.Controls
 
             // initialize colors
             Selected = false;
-        }
 
-        private void DelegateOnDoubleClick(object sender, EventArgs e)
-        {
-            OnDoubleClick(EventArgs.Empty);
-        }
-
-        private void DelegateOnClick(object sender, EventArgs e)
-        {
-            OnClick(EventArgs.Empty);
+            // force handle creation in case that the transfer form is hidden during the transfer.
+            // Otherwise the progress update fails due to an uninitialized control. Also refer to
+            // http://trac.cyberduck.ch/ticket/5691
+            IntPtr intPtr = Handle;
         }
 
         public bool FocusRemoveAllowed
@@ -238,7 +233,10 @@ namespace Ch.Cyberduck.Ui.Winforms.Controls
             return DialogResult.None;
         }
 
-        public DialogResult CommandBox(string title, string mainInstruction, string content, string expandedInfo, string help, string verificationText, string commandButtons, bool showCancelButton, SysIcons mainIcon, SysIcons footerIcon, DialogResponseHandler handler)
+        public DialogResult CommandBox(string title, string mainInstruction, string content, string expandedInfo,
+                                       string help, string verificationText, string commandButtons,
+                                       bool showCancelButton, SysIcons mainIcon, SysIcons footerIcon,
+                                       DialogResponseHandler handler)
         {
             return DialogResult.None;
         }
@@ -247,6 +245,16 @@ namespace Ch.Cyberduck.Ui.Winforms.Controls
         public event VoidHandler ViewClosedEvent = delegate { };
         public event FormClosingEventHandler ViewClosingEvent = delegate { };
         public event VoidHandler ViewDisposedEvent;
+
+        private void DelegateOnDoubleClick(object sender, EventArgs e)
+        {
+            OnDoubleClick(EventArgs.Empty);
+        }
+
+        private void DelegateOnClick(object sender, EventArgs e)
+        {
+            OnClick(EventArgs.Empty);
+        }
     }
 
     public enum TransferStatus

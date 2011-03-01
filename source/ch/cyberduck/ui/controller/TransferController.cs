@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2011 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -23,7 +23,6 @@ using Ch.Cyberduck.Core;
 using ch.cyberduck.core.i18n;
 using ch.cyberduck.core.io;
 using Ch.Cyberduck.Ui.Controller.Threading;
-using Ch.Cyberduck.Ui.Winforms.Taskdialog;
 using org.apache.log4j;
 using StructureMap;
 

@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2011 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -18,7 +18,6 @@
 using System.Collections.Generic;
 using System.Drawing;
 using Ch.Cyberduck.Core;
-using ch.cyberduck.ui.controller;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -30,9 +29,10 @@ namespace Ch.Cyberduck.Ui.Controller
         float Bandwidth { set; get; }
         bool BandwidthEnabled { set; }
         int QueueSize { set; get; }
-        
+
         bool TranscriptVisible { get; set; }
-        int TranscriptHeight { get; set; }        
+        int TranscriptHeight { get; set; }
+        IList<IProgressView> SelectedTransfers { get; }
 
         void SetModel(IList<IProgressView> model);
         void SelectTransfer(IProgressView view);
@@ -40,8 +40,6 @@ namespace Ch.Cyberduck.Ui.Controller
         void RemoveTransfer(IProgressView view);
         void AddTranscriptEntry(bool request, string entry);
 
-        IList<IProgressView> SelectedTransfers { get; }
-        
         event VoidHandler ResumeEvent;
         event ValidateCommand ValidateResumeEvent;
         event VoidHandler ReloadEvent;
@@ -56,12 +54,12 @@ namespace Ch.Cyberduck.Ui.Controller
         event ValidateCommand ValidateOpenEvent;
         event VoidHandler ShowEvent;
         event ValidateCommand ValidateShowEvent;
-        event VoidHandler ToggleTranscriptEvent;       
-        event VoidHandler TranscriptHeightChangedEvent;       
+        event VoidHandler ToggleTranscriptEvent;
+        event VoidHandler TranscriptHeightChangedEvent;
         event VoidHandler SelectionChangedEvent;
         event VoidHandler BandwidthChangedEvent;
         event VoidHandler QueueSizeChangedEvent;
-        
+
         void PopulateBandwidthList(IList<KeyValuePair<float, string>> throttles);
         void TaskbarBadge(string text);
         void UpdateOverallProgressState(double progress, double maximum);

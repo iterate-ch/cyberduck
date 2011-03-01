@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2011 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -22,12 +22,10 @@ using System.Drawing;
 using System.Reflection;
 using System.Windows.Forms;
 using BrightIdeasSoftware;
-using ch.cyberduck.core;
 using Ch.Cyberduck.Core;
 using ch.cyberduck.core.i18n;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Winforms.Taskdialog;
-using Queue = System.Collections.Queue;
 
 namespace Ch.Cyberduck.Ui.Winforms
 {
@@ -187,15 +185,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             return result;
         }
 
-        private string FormatHelp(string help)
-        {
-            if (String.IsNullOrEmpty(help))
-            {
-                return null;
-            }
-            return "<A HREF=\"" + help + "\">" + Locale.localizedString("Help", "Main") + "</A>";
-        }
-
         public event VoidHandler ViewShownEvent;
         public event VoidHandler ViewClosedEvent;
         public event FormClosingEventHandler ViewClosingEvent;
@@ -298,6 +287,15 @@ namespace Ch.Cyberduck.Ui.Winforms
             base.Dispose();
         }
 
+        private string FormatHelp(string help)
+        {
+            if (String.IsNullOrEmpty(help))
+            {
+                return null;
+            }
+            return "<A HREF=\"" + help + "\">" + Locale.localizedString("Help", "Main") + "</A>";
+        }
+
         private void OnApplicationIdle(object sender, EventArgs e)
         {
             Commands.Validate();
@@ -344,6 +342,12 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         private void persistentFormFormClosing(object sender, FormClosingEventArgs e)
         {
+            if (null == PersistenceHandler)
+            {
+                //not initialized
+                return;
+            }
+
             // Set common things
             PersistenceHandler.WindowState = (int) WindowState;
             PersistenceHandler.WindowBounds = WindowState == FormWindowState.Normal ? Bounds : RestoreBounds;
