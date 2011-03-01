@@ -26,6 +26,7 @@ using System.Windows.Forms;
 using ch.cyberduck.core;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Core.Collections;
+using org.apache.commons.io;
 using org.apache.log4j;
 using Path = ch.cyberduck.core.Path;
 
@@ -171,25 +172,30 @@ namespace Ch.Cyberduck.Ui.Controller
             Bitmap image = _bitmapCache.Get(name, size);
             if (null == image)
             {
-                object obj = ResourcesBundle.ResourceManager.GetObject(name, ResourcesBundle.Culture);
-                if (obj is Icon)
+                if (FilenameUtils.getPrefix(name) != string.Empty)
                 {
-                    image = (new Icon(obj as Icon, size, size)).ToBitmap();
-                    _bitmapCache.Put(name, image, size);
-                    return image;
+                    image = new Icon(name).ToBitmap();
                 }
-                if (obj is Bitmap)
+                else
                 {
-                    image = (Bitmap) obj;
-
-                    if (image.RawFormat == ImageFormat.Tiff)
+                    object obj = ResourcesBundle.ResourceManager.GetObject(name, ResourcesBundle.Culture);
+                    if (obj is Icon)
                     {
-                        // handle multi-page tiffs
-                        image = GetTiffImage(image, size);
+                        image = (new Icon(obj as Icon, size, size)).ToBitmap();
+                        return image;
                     }
-                    else if (size > 0)
+                    else if (obj is Bitmap)
                     {
-                        image = ResizeImage(image, new Size(size, size));
+                        image = (Bitmap)obj;
+                        if (image.RawFormat == ImageFormat.Tiff)
+                        {
+                            // handle multi-page tiffs
+                            image = GetTiffImage(image, size);
+                        }
+                        else if (size > 0)
+                        {
+                            image = ResizeImage(image, new Size(size, size));
+                        }
                     }
                 }
                 _bitmapCache.Put(name, image, size);
