@@ -266,7 +266,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         Protocol profile = (Protocol) ProtocolReaderFactory.instance().read(f);
                         profile.register();
                         Host host = new Host(profile, profile.getDefaultHostname(), profile.getDefaultPort());
-                        MainController.NewBrowser().Mount(host);
+                        NewBrowser().AddBookmark(host);
                     }
                 }
             }

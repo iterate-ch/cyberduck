@@ -1706,7 +1706,11 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         this.addBookmark(bookmark);
     }
 
-    private void addBookmark(Host item) {
+    /**
+     *
+     * @param item
+     */
+    public void addBookmark(Host item) {
         bookmarkModel.setFilter(null);
         bookmarkModel.getSource().add(item);
         final int row = bookmarkModel.getSource().lastIndexOf(item);

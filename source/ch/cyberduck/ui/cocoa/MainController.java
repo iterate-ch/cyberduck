@@ -536,7 +536,7 @@ public class MainController extends BundleController implements NSApplication.De
                 final Protocol profile = ProtocolReaderFactory.instance().read(f);
                 profile.register();
                 final Host host = new Host(profile, profile.getDefaultHostname(), profile.getDefaultPort());
-                MainController.newDocument().mount(host);
+                MainController.newDocument().addBookmark(host);
             }
             else {
                 // Upload file

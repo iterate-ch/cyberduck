@@ -1153,7 +1153,7 @@ namespace Ch.Cyberduck.Ui.Controller
             AddBookmark(bookmark);
         }
 
-        private void AddBookmark(Host item)
+        public void AddBookmark(Host item)
         {
             AddBookmark(item, -1);
         }
