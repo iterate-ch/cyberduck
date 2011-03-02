@@ -16,6 +16,7 @@
 "US" = "ZDA standardno";
 "us-west-1" = "ZDA-zahod (severna Kalifornija)";
 "ap-southeast-1" = "Azija, Pacifik (Singapur)";
+"ap-northeast-1" = "Asia Pacific (Tokyo)";
 
 /* Delivery methods including streaming protocols. */ 
 "Download (HTTP)" = "Prenos (HTTP) CDN";

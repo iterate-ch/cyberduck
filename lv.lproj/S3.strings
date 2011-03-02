@@ -16,6 +16,7 @@
 "US" = "ASV standarts";
 "us-west-1" = "ASV-Rietumu (Ziemeļ Kalifornija)";
 "ap-southeast-1" = "Āzija un Klusais okeāns (Singapore)";
+"ap-northeast-1" = "Asia Pacific (Tokyo)";
 
 /* Delivery methods including streaming protocols. */ 
 "Download (HTTP)" = "Lejuplāde (HTTP) CDN";
