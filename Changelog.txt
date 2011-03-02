@@ -18,6 +18,7 @@ Changelog. Last modified: $Date$
 - [Feature] Invalidation (Purge) of files in CDN (Cloudfiles/Akamai)
 - [Feature] Skip option not available in transfer prompt [#1159]
 - [Feature] User interface to create symbolic links (SFTP) [#1724]
+- [Feature] Support for Asia Pacific (Tokyo) location (S3)
 - [Bugfix] Limit number of concurrent transfers (#5539, #5624)
 - [Bugfix] Qeued transfers start in random order (#5632)
 - [Bugfix] Dragging into topmost folder in browser (#1945)
