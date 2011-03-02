@@ -1163,22 +1163,24 @@ public class S3Path extends CloudPath {
             if(this.isContainer()) {
                 this.getSession().getClient().putBucketAcl(this.getContainerName(), acl);
             }
-            else if(attributes().isFile() || attributes().isPlaceholder()) {
-                this.getSession().getClient().putObjectAcl(this.getContainerName(), this.getKey(), acl);
+            else {
+                if(attributes().isFile() || attributes().isPlaceholder()) {
+                    this.getSession().getClient().putObjectAcl(this.getContainerName(), this.getKey(), acl);
+                }
+                if(attributes().isDirectory()) {
+                    if(recursive) {
+                        for(AbstractPath child : this.children()) {
+                            if(!this.getSession().isConnected()) {
+                                break;
+                            }
+                            ((S3Path) child).writeAcl(acl, recursive);
+                        }
+                    }
+                }
             }
         }
         finally {
             this.attributes().clear(false, false, true, false);
-        }
-        if(attributes().isDirectory()) {
-            if(recursive) {
-                for(AbstractPath child : this.children()) {
-                    if(!this.getSession().isConnected()) {
-                        break;
-                    }
-                    ((S3Path) child).writeAcl(acl, recursive);
-                }
-            }
         }
     }
 
