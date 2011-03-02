@@ -37,7 +37,7 @@ public class QuartzQuickLook extends AbstractQuickLook {
     private static Logger log = Logger.getLogger(QuartzQuickLook.class);
 
     public static void register() {
-        if(Factory.VERSION_PLATFORM.matches("10\\.6.*")) {
+        if(!Factory.VERSION_PLATFORM.matches("10\\.5.*")) {
             QuickLookFactory.addFactory(Factory.VERSION_PLATFORM, new Factory());
         }
     }
