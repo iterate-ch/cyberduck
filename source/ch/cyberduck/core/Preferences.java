@@ -196,14 +196,14 @@ public abstract class Preferences {
         defaults.put("protocol." + Protocol.WEBDAV_SSL + ".enable", String.valueOf(true));
         defaults.put("protocol." + Protocol.IDISK + ".enable", String.valueOf(true));
         defaults.put("protocol." + Protocol.S3_SSL + ".enable", String.valueOf(true));
-        defaults.put("protocol." + Protocol.S3 + ".enable", String.valueOf(true));
+        defaults.put("protocol." + Protocol.S3 + ".enable", String.valueOf(false));
         defaults.put("protocol." + Protocol.GOOGLESTORAGE_SSL + ".enable", String.valueOf(true));
         defaults.put("protocol." + Protocol.EUCALYPTUS + ".enable", String.valueOf(true));
         defaults.put("protocol." + Protocol.CLOUDFILES + ".enable", String.valueOf(true));
         defaults.put("protocol." + Protocol.SWIFT + ".enable", String.valueOf(true));
         defaults.put("protocol." + Protocol.GDOCS_SSL + ".enable", String.valueOf(true));
         defaults.put("protocol." + Protocol.AZURE_SSL + ".enable", String.valueOf(true));
-        defaults.put("protocol." + Protocol.DROPBOX_SSL + ".enable", String.valueOf(true));
+        defaults.put("protocol." + Protocol.DROPBOX_SSL + ".enable", String.valueOf(false));
 
         defaults.put("path.symboliclink.resolve", String.valueOf(false));
         /**
