@@ -188,7 +188,7 @@ public class AbstractTestCase extends TestCase {
                 };
             }
         });
-        Protocol.register();
+        ProtocolFactory.register();
         PathReferenceFactory.addFactory(Factory.NATIVE_PLATFORM, new PathReferenceFactory() {
             @Override
             protected PathReference create() {
