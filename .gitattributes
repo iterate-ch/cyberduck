@@ -1364,6 +1364,7 @@ pl.lproj/S3.strings -text svneol=unset#text/utf-16
 pl.lproj/ServicesMenu.strings -text svneol=unset#text/utf-16
 pl.lproj/Status.strings -text svneol=unset#text/utf-16
 pl.lproj/Transfer.strings -text svneol=unset#text/utf-16
+profiles/Azure.cyberduckprofile -text
 profiles/Dropbox.cyberduckprofile -text
 profiles/S3[!!-~]Unsecure.cyberduckprofile -text
 pt_BR.lproj/Alert.nib/classes.nib -text
