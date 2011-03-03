@@ -23,6 +23,7 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.core.dropbox.client.Account;
 import ch.cyberduck.core.dropbox.client.DropboxClient;
 import ch.cyberduck.core.http.HTTP4Session;
+import ch.cyberduck.core.i18n.Locale;
 
 import org.apache.log4j.Logger;
 
@@ -81,10 +82,34 @@ public class DropboxSession extends HTTP4Session {
 
     @Override
     protected void login(LoginController controller, Credentials credentials) throws IOException {
-        String key = Preferences.instance().getProperty("dropbox.key");
-        String secret = Preferences.instance().getProperty("dropbox.secret");
+        Credentials application = new Credentials(
+                Preferences.instance().getProperty("dropbox.key"),
+                Preferences.instance().getProperty("dropbox.secret"), false) {
+            @Override
+            public String getUsernamePlaceholder() {
+                return Locale.localizedString("Dropbox API Key");
+            }
+
+            @Override
+            public String getPasswordPlaceholder() {
+                return Locale.localizedString("Dropbox API Secret");
+            }
+        };
+        if(!application.validate(this.getHost().getProtocol())) {
+            // Prompt for MFA credentials.
+            controller.prompt(host.getProtocol(), application,
+                    Locale.localizedString("Dropbox App Keys"),
+                    Locale.localizedString("Provide additional login credentials", "Credentials") + ".",
+                    false, false, false);
+            // Save updated keys
+            Preferences.instance().setProperty("dropbox.key", application.getUsername());
+            Preferences.instance().setProperty("dropbox.secret", application.getPassword());
+        }
         try {
-            client.authenticate(key, secret, credentials.getUsername(), credentials.getPassword());
+            client.authenticate(
+                    Preferences.instance().getProperty("dropbox.key"),
+                    Preferences.instance().getProperty("dropbox.secret"),
+                    credentials.getUsername(), credentials.getPassword());
         }
         catch(IOException e) {
             controller.fail(this.getHost().getProtocol(), credentials, e.getMessage());
