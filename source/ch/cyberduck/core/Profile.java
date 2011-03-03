@@ -60,7 +60,6 @@ public class Profile extends Protocol implements Serializable {
 
     public <T> T getAsDictionary() {
         final Serializer dict = SerializerFactory.createSerializer();
-        dict.setStringForKey("Identifier", this.getIdentifier());
         dict.setStringForKey("Protocol", parent.getIdentifier());
         dict.setStringForKey("Description", this.getDescription());
         dict.setStringForKey("Default Hostname", this.getDefaultHostname());
@@ -68,11 +67,6 @@ public class Profile extends Protocol implements Serializable {
         dict.setStringForKey("Username Placeholder", this.getUsernamePlaceholder());
         dict.setStringForKey("Password Placeholder", this.getPasswordPlaceholder());
         return dict.<T>getSerialized();
-    }
-
-    @Override
-    public void register() {
-        super.register();
     }
 
     public Protocol getProtocol() {
@@ -99,11 +93,7 @@ public class Profile extends Protocol implements Serializable {
 
     @Override
     public String getIdentifier() {
-        final String v = this.getValue("Identifier");
-        if(StringUtils.isBlank(v)) {
-            return parent.getIdentifier();
-        }
-        return v;
+        return parent.getIdentifier();
     }
 
     @Override
