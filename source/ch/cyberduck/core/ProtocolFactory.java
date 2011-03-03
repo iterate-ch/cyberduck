@@ -25,6 +25,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -37,21 +38,31 @@ public class ProtocolFactory {
      *
      */
     public static void register() {
+        // Order determines list in connection dropdown
         Protocol.FTP.register();
         Protocol.FTP_TLS.register();
+
         Protocol.SFTP.register();
+
         Protocol.WEBDAV.register();
         Protocol.WEBDAV_SSL.register();
+
         Protocol.IDISK.register();
+
         Protocol.S3_SSL.register();
         Protocol.S3.register();
+
         Protocol.GOOGLESTORAGE_SSL.register();
         Protocol.EUCALYPTUS.register();
+
         Protocol.CLOUDFILES.register();
         Protocol.SWIFT.register();
+
         Protocol.GDOCS_SSL.register();
+
         Protocol.AZURE_SSL.register();
         Protocol.DROPBOX_SSL.register();
+
         // Load thirdparty protocols
         final Local profiles = LocalFactory.createLocal(Preferences.instance().getProperty("application.support.path"), "Profiles");
         if(profiles.exists()) {
@@ -69,8 +80,28 @@ public class ProtocolFactory {
         }
     }
 
+    /**
+     * @return
+     */
     public static List<Protocol> getKnownProtocols() {
+        return getKnownProtocols(true);
+    }
+
+    /**
+     * @param filter Filter disabled protocols
+     * @return
+     */
+    public static List<Protocol> getKnownProtocols(boolean filter) {
         List<Protocol> list = SessionFactory.getRegisteredProtocols();
+        if(filter) {
+            // Remove protocols not enabled
+            for(Iterator<Protocol> iter = list.iterator(); iter.hasNext();) {
+                final Protocol protocol = iter.next();
+                if(!protocol.isEnabled()) {
+                    iter.remove();
+                }
+            }
+        }
         if(list.isEmpty()) {
             throw new RuntimeException("No protocols configured");
         }
@@ -82,7 +113,7 @@ public class ProtocolFactory {
      * @return The standard protocol for this port number
      */
     public static Protocol getDefaultProtocol(int port) {
-        for(Protocol protocol : getKnownProtocols()) {
+        for(Protocol protocol : getKnownProtocols(false)) {
             if(protocol.getDefaultPort() == port) {
                 return protocol;
             }
@@ -97,7 +128,7 @@ public class ProtocolFactory {
      * @return
      */
     public static Protocol forName(final String identifier) {
-        for(Protocol protocol : getKnownProtocols()) {
+        for(Protocol protocol : getKnownProtocols(false)) {
             if(protocol.getIdentifier().equals(identifier)) {
                 return protocol;
             }
@@ -112,7 +143,7 @@ public class ProtocolFactory {
      * @return
      */
     public static Protocol forScheme(final String scheme) {
-        for(Protocol protocol : getKnownProtocols()) {
+        for(Protocol protocol : getKnownProtocols(false)) {
             for(int k = 0; k < protocol.getSchemes().length; k++) {
                 if(protocol.getSchemes()[k].equals(scheme)) {
                     return protocol;
@@ -130,7 +161,7 @@ public class ProtocolFactory {
      */
     public static boolean isURL(String str) {
         if(StringUtils.isNotBlank(str)) {
-            for(Protocol protocol : getKnownProtocols()) {
+            for(Protocol protocol : getKnownProtocols(false)) {
                 String[] schemes = protocol.getSchemes();
                 for(String scheme : schemes) {
                     if(str.startsWith(scheme + "://")) {

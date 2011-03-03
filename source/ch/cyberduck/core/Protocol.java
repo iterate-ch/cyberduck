@@ -81,18 +81,11 @@ public abstract class Protocol {
      * Statically register protocol implementations.
      */
     public void register() {
-        if(this.isEnabled()) {
-            if(log.isDebugEnabled()) {
-                log.debug("Register protocol:" + this);
-            }
-            SessionFactory.addFactory(this, this.getSessionFactory());
-            PathFactory.addFactory(this, this.getPathFactory());
+        if(log.isDebugEnabled()) {
+            log.debug("Register protocol:" + this);
         }
-        else {
-            if(log.isDebugEnabled()) {
-                log.debug("Skip disabled protocol:" + this);
-            }
-        }
+        SessionFactory.addFactory(this, this.getSessionFactory());
+        PathFactory.addFactory(this, this.getPathFactory());
     }
 
     /**
