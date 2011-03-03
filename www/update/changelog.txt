@@ -1,9 +1,16 @@
 4.0 [http://trac.cyberduck.ch/milestone/4.0]
 - [Localize] Ukrainian Localization
+- [Feature] Open connection in PuTTY Terminal for current working directory (SFTP) (#5593)
 - [Feature] Invalidation (Purge) of files in CDN (Cloudfiles/Akamai)
 - [Feature] Skip option not available in transfer prompt [#1159]
 - [Feature] Support for Asia Pacific (Tokyo) location (S3)
+- [Feature] Website endpoint configuration option for buckets (S3)
+- [Feature] CDN configuration for website endpoints as custom origin (CloudFront)
 - [Bugfix] Preserve symbolic links in transfers (#1860) (SFTP)
+- [Bugfix] List all files regardless of document ownership (#5570) (Google Docs)
+- [Bugfix] Passwords not saved when custom port set (#5623)
+- [Bugfix] Switching application interface language (#5718)
+- [Bugfix] Uploads with reduced redunandency fail (#5694) (S3)
 
 4.0b9 [http://trac.cyberduck.ch/milestone/4.0b9]
 - [Feature] Multipart Uploads with parallelism (S3) (#5487)
@@ -12,7 +19,6 @@
 - [Bugfix] Sorting by file type lexicographically (#5401)
 - [Bugfix] Show hidden files (#5534)
 - [Bugfix] Change localization to Chinese or Portuguese (#5587)
-- [Bugfix] Files not shown (#5570) (Google Docs)
 - [Bugfix] Images always converted to documents (#5601) (Google Docs)
 - [Bugfix] Interoperability (#5553, #5569, #5572, #5581) (FTP)
 - [Bugfix] .CDN_ACCESS_LOGS folder listing is empty (Cloudfiles) (#5350)
