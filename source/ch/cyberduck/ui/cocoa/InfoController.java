@@ -1679,6 +1679,10 @@ public class InfoController extends ToolbarWindowController {
         distributionOriginField.setStringValue(Locale.localizedString("Unknown"));
         distributionUrlField.setStringValue(Locale.localizedString("Unknown"));
         distributionInvalidationStatusField.setStringValue(Locale.localizedString("None"));
+
+        // Remember last selection
+        final String selected = distributionDeliveryPopup.titleOfSelectedItem();
+        
         distributionDeliveryPopup.removeAllItems();
         distributionDeliveryPopup.addItemWithTitle(Locale.localizedString("None"));
         distributionDefaultRootPopup.removeAllItems();
@@ -1693,9 +1697,13 @@ public class InfoController extends ToolbarWindowController {
             distributionDeliveryPopup.addItemWithTitle(method.toString());
             distributionDeliveryPopup.itemWithTitle(method.toString()).setRepresentedObject(method.toString());
         }
-        // Select first distribution option
-        Distribution.Method method = session.cdn().getMethods().iterator().next();
-        distributionDeliveryPopup.selectItemWithTitle(method.toString());
+
+        distributionDeliveryPopup.selectItemWithTitle(selected);
+        if(null == distributionDeliveryPopup.selectedItem()) {
+            // Select first distribution option
+            Distribution.Method method = session.cdn().getMethods().iterator().next();
+            distributionDeliveryPopup.selectItemWithTitle(method.toString());
+        }
 
         this.distributionStatusButtonClicked(null);
     }
