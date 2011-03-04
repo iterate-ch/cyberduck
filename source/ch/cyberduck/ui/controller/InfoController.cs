@@ -1152,6 +1152,9 @@ namespace Ch.Cyberduck.Ui.Controller
             View.DistributionCname = Locale.localizedString("None");
             View.DistributionCnameUrlEnabled = false;
 
+            // Remember last selection
+            Distribution.Method selected = View.DistributionDeliveryMethod;
+
             IList<KeyValuePair<string, Distribution.Method>> methods = new List
                 <KeyValuePair<string, Distribution.Method>>
                                                                            {
@@ -1174,7 +1177,16 @@ namespace Ch.Cyberduck.Ui.Controller
                 methods.Add(new KeyValuePair<string, Distribution.Method>(method.ToString(), method));
             }
             View.PopulateDistributionDeliveryMethod(methods);
-            View.DistributionDeliveryMethod = (Distribution.Method) session.cdn().getMethods().iterator().next();
+            if(null == selected)
+            {
+                // Select first distribution option
+                View.DistributionDeliveryMethod = (Distribution.Method)session.cdn().getMethods().iterator().next();
+            }
+            else
+            {
+                View.DistributionDeliveryMethod = selected;
+            }
+
             DistributionDeliveryMethodChanged();
 
             AttachDistributionHandlers();
