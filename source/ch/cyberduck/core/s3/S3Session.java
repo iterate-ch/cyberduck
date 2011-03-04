@@ -950,7 +950,7 @@ public class S3Session extends CloudHTTP3Session {
          */
         @Override
         public List<Distribution.Method> getMethods() {
-            return Arrays.asList(Distribution.DOWNLOAD, Distribution.STREAMING, Distribution.WEBSITE, Distribution.WEBSITE_CDN);
+            return Arrays.asList(Distribution.WEBSITE, Distribution.WEBSITE_CDN, Distribution.DOWNLOAD, Distribution.STREAMING);
         }
 
         @Override
