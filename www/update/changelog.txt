@@ -1,5 +1,6 @@
 4.0 [http://trac.cyberduck.ch/milestone/4.0]
 - [Localize] Ukrainian Localization
+- [Feature] Connecting to Dropbox
 - [Feature] Open connection in PuTTY Terminal for current working directory (SFTP) (#5593)
 - [Feature] Invalidation (Purge) of files in CDN (Cloudfiles/Akamai)
 - [Feature] Skip option not available in transfer prompt [#1159]
@@ -79,5 +80,5 @@
 
 4.0b1 [http://trac.cyberduck.ch/milestone/4.0b1]
 - [Feature] Version for Microsoft Windows XP, Windows Vista & Windows 7.
-- [Feature] Connecting to Windows Azure Blob Storage (Azure) (#3938)
+- [Feature] Connecting to Windows Azure Blob Storage (#3938)
 - [Feature] FileZilla Bookmarks Importer

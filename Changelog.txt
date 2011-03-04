@@ -8,7 +8,8 @@ Changelog. Last modified: $Date$
 - [Localize] Ukrainian Localization
 - [Feature] Version for Microsoft Windows XP, Windows Vista & Windows 7.
 - [Feature] Replaced protocol implementation (FTP)
-- [Feature] Connecting to Windows Azure Blob Storage (Azure) (#3938)
+- [Feature] Connecting to Windows Azure Blob Storage (#3938)
+- [Feature] Connecting to Dropbox
 - [Feature] Copy and paste files using menu item to duplicate
 - [Feature] Multipart Uploads with parallelism (S3) (#5487)
 - [Feature] Support new 5TB Object Size Limit (S3)
