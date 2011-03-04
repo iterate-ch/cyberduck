@@ -318,8 +318,8 @@ public class S3Session extends CloudHTTP3Session {
         return Arrays.asList("US",
                 S3Bucket.LOCATION_EUROPE,
                 S3Bucket.LOCATION_US_WEST,
-                S3Bucket.LOCATION_ASIA_PACIFIC,
-                "ap-northeast-1"
+                S3Bucket.LOCATION_ASIA_PACIFIC_SOUTHEAST,
+                S3Bucket.LOCATION_ASIA_PACIFIC_NORTHEAST
         );
     }
 
