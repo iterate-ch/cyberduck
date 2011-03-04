@@ -33,6 +33,8 @@ using ch.cyberduck.ui;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Winforms.Commondialog;
 using Ch.Cyberduck.Ui.Winforms.Controls;
+using org.apache.commons.io;
+using org.apache.commons.lang;
 using org.apache.log4j;
 using DataObject = System.Windows.Forms.DataObject;
 using ToolStripRenderer = Ch.Cyberduck.Ui.Controller.ToolStripRenderer;
@@ -181,13 +183,11 @@ namespace Ch.Cyberduck.Ui.Winforms
 
             //Terminal app menu entries
             String command = Preferences.instance().getProperty("terminal.command.ssh");
-            String file = System.IO.Path.GetFileName(command);
+            String file = StringUtils.capitalize(FilenameUtils.getBaseName(System.IO.Path.GetFileName(command)));
             openInTerminalMainMenuItem.Text = String.Format(Locale.localizedString("Open in {0}"), file);
             openInTerminalToolStripMenuItem.Text = String.Format(Locale.localizedString("Open in {0}"), file);;
             openInTerminalToolbarMenuItem.Text = String.Format(Locale.localizedString("Open in {0}"), file);
-            openInTerminalToolStripButton.Image = IconCache.Instance.IconForFilename(command,
-                                                                                     IconCache.IconSize.
-                                                                                         Large);
+            openInTerminalToolStripButton.Image = IconCache.Instance.IconForFilename(command, IconCache.IconSize.Large);
 
             ConfigureToolbar();
             ConfigureFileCommands();
