@@ -134,6 +134,19 @@ public class DAVPath extends Path {
     }
 
     @Override
+    public boolean exists() {
+        try {
+            this.getSession().getClient().setPath(this.attributes().isDirectory() ?
+                    this.getAbsolute() + String.valueOf(Path.DELIMITER) : this.getAbsolute());
+            return this.getSession().getClient().exists();
+        }
+        catch(IOException e) {
+            this.error("Cannot read file attributes", e);
+        }
+        return super.exists();
+    }
+
+    @Override
     public void delete() {
         try {
             this.getSession().check();
@@ -150,7 +163,6 @@ public class DAVPath extends Path {
             this.error("Cannot delete {0}", e);
         }
     }
-
 
     @Override
     public AttributedList<Path> list(final AttributedList<Path> children) {
