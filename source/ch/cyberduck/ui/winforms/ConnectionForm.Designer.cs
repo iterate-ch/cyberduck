@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿using System;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Winforms.Controls;
 
@@ -492,7 +492,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
             this.Name = "ConnectionForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-            this.Text = "Open Connection";
+            this.Text = "New Connection";
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.alertIcon)).EndInit();
