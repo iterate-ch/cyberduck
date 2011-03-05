@@ -135,6 +135,9 @@ public class DAVPath extends Path {
 
     @Override
     public boolean exists() {
+        if(super.exists()) {
+            return true;
+        }
         try {
             this.getSession().getClient().setPath(this.attributes().isDirectory() ?
                     this.getAbsolute() + String.valueOf(Path.DELIMITER) : this.getAbsolute());
@@ -143,7 +146,7 @@ public class DAVPath extends Path {
         catch(IOException e) {
             this.error("Cannot read file attributes", e);
         }
-        return super.exists();
+        return false;
     }
 
     @Override

@@ -957,6 +957,9 @@ public abstract class Path extends AbstractPath implements Serializable {
         if(this.isRoot()) {
             return true;
         }
+        if(this.attributes().isDirectory() && this.cache().containsKey(this.getReference())) {
+            return true;
+        }
         return this.getParent().children().contains(this.getReference());
     }
 
