@@ -52,7 +52,10 @@ public class BackgroundException extends Exception {
         super(cause);
         this.session = session;
         this.path = path;
-        if(null == path) {
+        if(null == message) {
+            this.message = Locale.localizedString("Unknown");
+        }
+        else if(null == path) {
             this.message = StringUtils.chomp(message);
         }
         else {
@@ -143,14 +146,22 @@ public class BackgroundException extends Exception {
                     buffer.append(" ").append(s3.getErrorMessage());
                 }
             }
-            if(cause instanceof org.jets3t.service.impl.rest.HttpException) {
+//            else if(cause instanceof SardineException) {
+//                final SardineException http = (SardineException) cause;
+//                if(StringUtils.isNotBlank(http.getResponsePhrase())) {
+//                    buffer.delete(0, buffer.length());
+//                    // HTTP method status
+//                    buffer.append(http.getResponsePhrase()).append(".");
+//                }
+//            }
+            else if(cause instanceof org.jets3t.service.impl.rest.HttpException) {
                 final org.jets3t.service.impl.rest.HttpException http = (org.jets3t.service.impl.rest.HttpException) cause;
                 buffer.append(" ").append(http.getResponseCode());
                 if(StringUtils.isNotBlank(http.getResponseMessage())) {
                     buffer.append(" ").append(http.getResponseMessage());
                 }
             }
-            if(cause instanceof CloudFrontServiceException) {
+            else if(cause instanceof CloudFrontServiceException) {
                 final CloudFrontServiceException cf = (CloudFrontServiceException) cause;
                 if(StringUtils.isNotBlank(cf.getErrorMessage())) {
                     buffer.append(" ").append(cf.getErrorMessage());
@@ -159,7 +170,7 @@ public class BackgroundException extends Exception {
                     buffer.append(" ").append(cf.getErrorDetail());
                 }
             }
-            if(cause instanceof FilesException) {
+            else if(cause instanceof FilesException) {
                 final FilesException cf = (FilesException) cause;
                 final StatusLine status = cf.getHttpStatusLine();
                 if(null != status) {
@@ -168,7 +179,7 @@ public class BackgroundException extends Exception {
                     }
                 }
             }
-            if(cause instanceof StorageServerException) {
+            else if(cause instanceof StorageServerException) {
                 buffer.delete(buffer.indexOf("\r\n"), buffer.length());
             }
         }
