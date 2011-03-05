@@ -54,7 +54,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public override string[] BundleNames
         {
-            get { return new[] {"Connection"}; }
+            get { return new[] {"Connection", "Keychain", "Localizable"}; }
         }
 
         public Image Favicon
