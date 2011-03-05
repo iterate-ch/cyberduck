@@ -12,6 +12,9 @@
     <logger name="httpclient.wire.content" additivity="false">
         <level value="error"/>
     </logger>
+    <logger name="org.apache.http.wire" additivity="false">
+        <level value="error"/>
+    </logger>
     <root>
         <level value="error"/>
         <appender-ref ref="console"/>
