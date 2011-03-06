@@ -64,6 +64,14 @@ public abstract class LicenseFactory extends Factory<License> {
             })) {
                 return open(key);
             }
+            // No key found. Look for receipt
+            for(Local key : support.children(new PathFilter<Local>() {
+                public boolean accept(Local file) {
+                    return "cyberduckreceipt".equals(FilenameUtils.getExtension(file.getName()));
+                }
+            })) {
+                return new Receipt(key);
+            }
         }
         log.info("No donation key found");
         return LicenseFactory.EMPTY_LICENSE;

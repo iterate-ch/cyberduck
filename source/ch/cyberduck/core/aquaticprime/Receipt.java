@@ -63,7 +63,15 @@ public class Receipt extends AbstractLicense {
         protected License open(final Local file) {
             AbstractLicense l = new Receipt(file);
             // Verify immediatly and exit if not a valid receipt
-            l.verify();
+            if(!l.verify()) {
+                System.exit(APPSTORE_VALIDATION_FAILURE);
+            }
+            else {
+                // Copy to Application Support for users switching versions
+                Local support = LocalFactory.createLocal(
+                        Preferences.instance().getProperty("application.support.path"));
+                file.copy(LocalFactory.createLocal(support, l.getName() + ".cyberduckreceipt"));
+            }
             return l;
         }
 
@@ -89,6 +97,8 @@ public class Receipt extends AbstractLicense {
             return this.open();
         }
     }
+
+    private String name;
 
     /**
      * @param file The license key file.
@@ -171,16 +181,16 @@ public class Receipt extends AbstractLicense {
             }
             else {
                 log.error("Expected set of attributes for:" + asn);
-                System.exit(APPSTORE_VALIDATION_FAILURE);
+                return false;
             }
             if(!StringUtils.equals("ch.sudo.cyberduck", StringUtils.trim(bundleIdentifier))) {
                 log.error("Bundle identifier in ASN set does not match");
-                System.exit(APPSTORE_VALIDATION_FAILURE);
+                return false;
             }
             if(!StringUtils.equals(Preferences.instance().getDefault("CFBundleShortVersionString"),
                     StringUtils.trim(bundleVersion))) {
                 log.warn("Bundle version in ASN set does not match");
-                System.exit(APPSTORE_VALIDATION_FAILURE);
+                return false;
             }
 
             NetworkInterface en0 = NetworkInterface.getByName("en0");
@@ -192,11 +202,12 @@ public class Receipt extends AbstractLicense {
                 byte[] mac = en0.getHardwareAddress();
                 if(null == mac) {
                     log.error("Cannot determine MAC address");
-                    // Shutdown if receipt is not valid
-                    System.exit(APPSTORE_VALIDATION_FAILURE);
+                    // Continue without validation
+                    return true;
                 }
+                final String hex = Hex.encodeHexString(mac);
                 if(log.isDebugEnabled()) {
-                    log.debug("Interface en0:" + Hex.encodeHexString(mac));
+                    log.debug("Interface en0:" + hex);
                 }
                 // Compute the hash of the GUID
                 MessageDigest digest = MessageDigest.getInstance("SHA-1");
@@ -206,20 +217,21 @@ public class Receipt extends AbstractLicense {
                 byte[] result = digest.digest();
                 if(Arrays.equals(result, hash)) {
                     if(log.isInfoEnabled()) {
-                        log.info("Valid receipt for Computer GUID:" + Hex.encodeHexString(mac));
+                        log.info("Valid receipt for Computer GUID:" + hex);
                     }
+                    this.name = hex;
                 }
                 else {
                     log.error("Failed verfification. Hash with GUID "
-                            + Hex.encodeHexString(mac) + " does not match hash in receipt");
-                    System.exit(APPSTORE_VALIDATION_FAILURE);
+                            + hex + " does not match hash in receipt");
+                    return false;
                 }
             }
         }
         catch(Throwable e) {
             log.error("Unknown receipt validation error:" + e.getMessage());
             // Shutdown if receipt is not valid
-            System.exit(APPSTORE_VALIDATION_FAILURE);
+            return false;
         }
         // Always return true to dismiss donation prompt.
         return true;
@@ -231,7 +243,11 @@ public class Receipt extends AbstractLicense {
     }
 
     public String getValue(String property) {
-        return StringUtils.EMPTY;
+        if(StringUtils.isEmpty(name)) {
+            log.warn("Need to validate first before hash is available");
+            return StringUtils.EMPTY;
+        }
+        return name;
     }
 
     @Override

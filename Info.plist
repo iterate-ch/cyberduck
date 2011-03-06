@@ -59,6 +59,26 @@
             <dict>
                 <key>CFBundleTypeExtensions</key>
                 <array>
+                    <string>cyberduckreceipt</string>
+                </array>
+                <key>CFBundleTypeIconFile</key>
+                <string>cyberduck-document.icns</string>
+                <key>CFBundleTypeName</key>
+                <string>Cyberduck Receipt</string>
+                <key>CFBundleTypeRole</key>
+                <string>Viewer</string>
+                <key>LSItemContentTypes</key>
+                <array>
+                    <string>ch.sudo.cyberduck.receipt</string>
+                </array>
+                <key>LSHandlerRank</key>
+                <string>Owner</string>
+                <key>LSTypeIsPackage</key>
+                <false/>
+            </dict>
+            <dict>
+                <key>CFBundleTypeExtensions</key>
+                <array>
                     <string>cyberduckprofile</string>
                 </array>
                 <key>CFBundleTypeIconFile</key>
@@ -249,6 +269,25 @@
                     <key>public.filename-extension</key>
                     <array>
                         <string>cyberducklicense</string>
+                    </array>
+                </dict>
+                <key>UTTypeIconFile</key>
+                <string>cyberduck-document.icns</string>
+            </dict>
+            <dict>
+                <key>UTTypeConformsTo</key>
+                <array>
+                    <string>public.data</string>
+                </array>
+                <key>UTTypeDescription</key>
+                <string>Cyberduck Receipt</string>
+                <key>UTTypeIdentifier</key>
+                <string>ch.sudo.cyberduck.receipt</string>
+                <key>UTTypeTagSpecification</key>
+                <dict>
+                    <key>public.filename-extension</key>
+                    <array>
+                        <string>cyberduckreceipt</string>
                     </array>
                 </dict>
                 <key>UTTypeIconFile</key>
