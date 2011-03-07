@@ -267,7 +267,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         // Register in application support
                         Local profiles = LocalFactory.createLocal(Preferences.instance().getProperty("application.support.path"), "Profiles");
                         profiles.mkdir(true);
-                        f.rename(LocalFactory.createLocal(profiles, f.getName()));
+                        f.copy(LocalFactory.createLocal(profiles, f.getName()));
                     }
                 }
             }

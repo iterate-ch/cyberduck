@@ -537,7 +537,7 @@ public class MainController extends BundleController implements NSApplication.De
                 // Register in application support
                 final Local profiles = LocalFactory.createLocal(Preferences.instance().getProperty("application.support.path"), "Profiles");
                 profiles.mkdir(true);
-                f.rename(LocalFactory.createLocal(profiles, f.getName()));
+                f.copy(LocalFactory.createLocal(profiles, f.getName()));
             }
             else {
                 // Upload file
@@ -1115,7 +1115,7 @@ public class MainController extends BundleController implements NSApplication.De
             final Calendar nextreminder = Calendar.getInstance();
             nextreminder.setTimeInMillis(Preferences.instance().getLong("donate.reminder.date"));
             // Display donationPrompt every n days
-            nextreminder.add(Calendar.DAY_OF_YEAR, Preferences.instance().getInteger("donate.reminder.interval"));
+            nextreminder.add(Calendar.DAY_OF_YEAR, Preferences.instance().getInteger("y"));
             log.debug("Next reminder:" + nextreminder.getTime().toString());
             // Display after upgrade
             if(nextreminder.getTime().after(new Date(System.currentTimeMillis()))) {
