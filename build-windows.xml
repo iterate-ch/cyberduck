@@ -134,7 +134,7 @@
         </ikvmc>
     </target>
 
-    <target name="release" depends="package-release">
+    <target name="release" depends="clean, package-release">
         <scp file="${setup.file}"
              todir="dkocher@update.cyberduck.ch:./update.cyberduck.ch/windows"
              keyfile="${user.home}/.ssh/update.cyberduck.ch-rsa"
@@ -153,7 +153,7 @@
         </scp>
     </target>
 
-    <target name="nightly" depends="package-nightly">
+    <target name="nightly" depends="clean, package-nightly">
         <scp file="${setup.file}"
              todir="dkocher@update.cyberduck.ch:./update.cyberduck.ch/windows/nightly"
              keyfile="${user.home}/.ssh/update.cyberduck.ch-rsa"
@@ -172,7 +172,7 @@
         </scp>
     </target>
 
-    <target name="beta" depends="package-beta">
+    <target name="beta" depends="clean, package-beta">
         <scp file="${setup.file}"
              todir="dkocher@update.cyberduck.ch:./update.cyberduck.ch/windows/beta"
              keyfile="${user.home}/.ssh/update.cyberduck.ch-rsa"
@@ -191,7 +191,7 @@
         </scp>
     </target>
 
-    <target name="package-release" depends="clean, version">
+    <target name="package-release" depends="version">
         <property name="setup.file"
                   location="${build}/${app.name}-Installer-${cyberduck.version.major}.${cyberduck.version.minor}.exe"/>
         <antcall target="package">
@@ -199,7 +199,7 @@
         </antcall>
     </target>
 
-    <target name="package-beta" depends="clean, version">
+    <target name="package-beta" depends="version">
         <property name="setup.file"
                   location="${build}/${app.name}-Installer-${cyberduck.version.major}.${cyberduck.version.minor}.${svn.revision.stripped}.exe"/>
         <antcall target="package">
@@ -207,7 +207,7 @@
         </antcall>
     </target>
 
-    <target name="package-nightly" depends="clean, version">
+    <target name="package-nightly" depends="version">
         <property name="setup.file"
                   location="${build}/${app.name}-Installer-${cyberduck.version.major}.${cyberduck.version.minor}.${svn.revision.stripped}.exe"/>
         <antcall target="package">
@@ -215,7 +215,7 @@
         </antcall>
     </target>
 
-    <target name="package-dev" depends="clean, version">
+    <target name="package-dev" depends="version">
         <property name="setup.file"
                   location="${build}/${app.name}-Installer-${cyberduck.version.major}.${cyberduck.version.minor}.${svn.revision.stripped}.exe"/>
         <antcall target="package">

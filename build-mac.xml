@@ -279,7 +279,7 @@
                   algorithm="md5"/>
     </target>
 
-    <target name="nightly" depends="package-nightly">
+    <target name="nightly" depends="clean, package-nightly">
         <echo message="_REVISION_=${svn.revision}"/>
         <scp file="${build}/${app.name}-${svn.revision}.tar.gz"
              todir="dkocher@update.cyberduck.ch:./update.cyberduck.ch/nightly/"
@@ -304,7 +304,7 @@
         </scp>
     </target>
 
-    <target name="beta" depends="package-beta">
+    <target name="beta" depends="clean, package-beta">
         <echo message="_REVISION_=${svn.revision}"/>
         <scp file="${build}/${app.name}-${svn.revision}.tar.gz"
              todir="dkocher@update.cyberduck.ch:./update.cyberduck.ch/beta/"
@@ -329,7 +329,7 @@
         </scp>
     </target>
 
-    <target name="release" depends="package-release">
+    <target name="release" depends="clean, package-release">
         <scp file="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.zip"
              todir="dkocher@update.cyberduck.ch:./update.cyberduck.ch/"
              keyfile="${user.home}/.ssh/update.cyberduck.ch-rsa"
@@ -370,7 +370,7 @@
         </exec>
     </target>
 
-    <target name="package-mas" depends="clean, revision">
+    <target name="package-mas" depends="revision">
         <antcall target="package">
             <param name="system.min" value="10.6.6"/>
             <param name="sparkle.feed" value="/dev/null"/>
@@ -378,7 +378,7 @@
         <antcall target="distribution-mas"/>
     </target>
 
-    <target name="package-release" depends="clean, revision">
+    <target name="package-release" depends="revision">
         <antcall target="package">
             <param name="system.min" value="10.5"/>
             <param name="sparkle.feed" value="http://version.cyberduck.ch/changelog.rss"/>
@@ -389,7 +389,7 @@
         </antcall>
     </target>
 
-    <target name="package-beta" depends="clean, revision">
+    <target name="package-beta" depends="revision">
         <antcall target="package">
             <param name="system.min" value="10.5"/>
             <param name="sparkle.feed" value="http://version.cyberduck.ch/beta/changelog.rss"/>
@@ -400,7 +400,7 @@
         </antcall>
     </target>
 
-    <target name="package-nightly" depends="clean, revision">
+    <target name="package-nightly" depends="revision">
         <antcall target="package">
             <param name="system.min" value="10.5"/>
             <param name="sparkle.feed" value="http://version.cyberduck.ch/nightly/changelog.rss"/>
