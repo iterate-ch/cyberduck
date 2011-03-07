@@ -245,7 +245,7 @@ public class S3Session extends CloudHTTP3Session {
                     bucketname = host.getHostname(true);
                 }
                 if(!this.getClient().isBucketAccessible(bucketname)) {
-                    throw new IOException("Bucket not accessible: " + bucketname);
+                    throw new IOException(Locale.localizedString("Cannot read container configuration", "Error"));
                 }
                 S3Bucket bucket = new S3Bucket(bucketname);
                 try {
