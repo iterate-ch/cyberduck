@@ -185,7 +185,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             String command = Preferences.instance().getProperty("terminal.command.ssh");
             String file = StringUtils.capitalize(FilenameUtils.getBaseName(System.IO.Path.GetFileName(command)));
             openInTerminalMainMenuItem.Text = String.Format(Locale.localizedString("Open in {0}"), file);
-            openInTerminalToolStripMenuItem.Text = String.Format(Locale.localizedString("Open in {0}"), file);;
+            openInTerminalToolStripMenuItem.Text = String.Format(Locale.localizedString("Open in {0}"), file);
+            ;
             openInTerminalToolbarMenuItem.Text = String.Format(Locale.localizedString("Open in {0}"), file);
             openInTerminalToolStripButton.Image = IconCache.Instance.IconForFilename(command, IconCache.IconSize.Large);
 
@@ -2343,6 +2344,10 @@ namespace Ch.Cyberduck.Ui.Winforms
             public BookmarkMenuCollectionListener(BrowserForm f)
             {
                 _form = f;
+                if (BookmarkCollection.defaultCollection().size() > 0)
+                {
+                    BuildMenuItems();
+                }
             }
 
             public void collectionLoaded()
@@ -2852,6 +2857,10 @@ namespace Ch.Cyberduck.Ui.Winforms
                 _menu = menu;
                 _collection = collection;
                 _empty = empty;
+                if (_collection.size() > 0)
+                {
+                    BuildMenuItems();
+                }
             }
 
             public void collectionLoaded()
