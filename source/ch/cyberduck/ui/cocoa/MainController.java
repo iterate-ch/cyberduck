@@ -530,13 +530,14 @@ public class MainController extends BundleController implements NSApplication.De
                 return true;
             }
             else if("cyberduckprofile".equals(f.getExtension())) {
-                final Local profiles = LocalFactory.createLocal(Preferences.instance().getProperty("application.support.path"), "Profiles");
-                profiles.mkdir(true);
-                f.rename(LocalFactory.createLocal(profiles, f.getName()));
                 final Protocol profile = ProtocolReaderFactory.instance().read(f);
                 profile.register();
                 final Host host = new Host(profile, profile.getDefaultHostname(), profile.getDefaultPort());
                 MainController.newDocument().addBookmark(host);
+                // Register in application support
+                final Local profiles = LocalFactory.createLocal(Preferences.instance().getProperty("application.support.path"), "Profiles");
+                profiles.mkdir(true);
+                f.rename(LocalFactory.createLocal(profiles, f.getName()));
             }
             else {
                 // Upload file
