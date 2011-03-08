@@ -113,6 +113,7 @@ public class DropboxSession extends HTTP4Session {
         }
         catch(IOException e) {
             controller.fail(this.getHost().getProtocol(), credentials, e.getMessage());
+            Preferences.instance().deleteProperty("dropbox.secret");
             this.login();
         }
     }
