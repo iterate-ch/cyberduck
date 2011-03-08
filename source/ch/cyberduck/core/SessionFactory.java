@@ -40,7 +40,9 @@ public abstract class SessionFactory {
     protected abstract Session create(Host h);
 
     public static void addFactory(Protocol protocol, SessionFactory f) {
-        log.debug("Add factory for protocol " + protocol + ":" + f);
+        if(log.isDebugEnabled()) {
+            log.debug("Add factory for protocol " + protocol + ":" + f);
+        }
         protocols.add(protocol);
         factories.put(protocol, f);
     }

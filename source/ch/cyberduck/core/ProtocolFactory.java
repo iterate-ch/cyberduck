@@ -25,6 +25,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -92,7 +93,7 @@ public class ProtocolFactory {
      * @return
      */
     public static List<Protocol> getKnownProtocols(boolean filter) {
-        List<Protocol> list = SessionFactory.getRegisteredProtocols();
+        List<Protocol> list = new ArrayList<Protocol>(SessionFactory.getRegisteredProtocols());
         if(filter) {
             // Remove protocols not enabled
             for(Iterator<Protocol> iter = list.iterator(); iter.hasNext();) {
