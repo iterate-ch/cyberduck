@@ -165,11 +165,6 @@ public class UploadTransfer extends Transfer {
                     }
                 }
             }
-            if(file.attributes().isDirectory()) {
-                if(!file.exists()) {
-                    file.cache().put(file.<Object>getReference(), new AttributedList<Path>());
-                }
-            }
         }
 
         /**

@@ -958,6 +958,7 @@ public abstract class Path extends AbstractPath implements Serializable {
             return true;
         }
         if(this.attributes().isDirectory() && this.cache().containsKey(this.getReference())) {
+            // Shortcut for directories. If there is a cache it must exist.
             return true;
         }
         return this.getParent().children().contains(this.getReference());
