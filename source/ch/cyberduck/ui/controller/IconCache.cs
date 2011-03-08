@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2011 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -186,7 +186,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     }
                     else if (obj is Bitmap)
                     {
-                        image = (Bitmap)obj;
+                        image = (Bitmap) obj;
                         if (image.RawFormat == ImageFormat.Tiff)
                         {
                             // handle multi-page tiffs
@@ -288,7 +288,6 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             catch
             {
-                
             }
             //return default icon
             return IconForName("notfound", s);
@@ -345,7 +344,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 list = new ImageList();
                 list.ImageSize = new Size(size, size);
                 list.ColorDepth = ColorDepth.Depth32Bit;
-                foreach (Protocol p in ProtocolFactory.getKnownProtocols().toArray(new Protocol[] {}))
+                foreach (Protocol p in ProtocolFactory.getKnownProtocols(false).toArray(new Protocol[] {}))
                 {
                     list.Images.Add(p.getIdentifier(), IconForName(p.disk(), size));
                 }
@@ -362,7 +361,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 _protocolIcons.ImageSize = new Size(16, 16);
                 _protocolIcons.ColorDepth = ColorDepth.Depth32Bit;
                 _protocolIcons.Images.Clear();
-                foreach (Protocol p in ProtocolFactory.getKnownProtocols().toArray(new Protocol[] {}))
+                foreach (Protocol p in ProtocolFactory.getKnownProtocols(false).toArray(new Protocol[] {}))
                 {
                     _protocolIcons.Images.Add(p.getIdentifier(), IconForName(p.icon(), 16));
                 }
