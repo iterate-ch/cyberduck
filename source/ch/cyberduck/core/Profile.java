@@ -61,12 +61,26 @@ public class Profile extends Protocol implements Serializable {
     public <T> T getAsDictionary() {
         final Serializer dict = SerializerFactory.createSerializer();
         dict.setStringForKey("Protocol", parent.getIdentifier());
+        dict.setStringForKey("Vendor", this.getVendor());
         dict.setStringForKey("Description", this.getDescription());
         dict.setStringForKey("Default Hostname", this.getDefaultHostname());
         dict.setStringForKey("Default Port", String.valueOf(this.getDefaultPort()));
         dict.setStringForKey("Username Placeholder", this.getUsernamePlaceholder());
         dict.setStringForKey("Password Placeholder", this.getPasswordPlaceholder());
         return dict.<T>getSerialized();
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if(other instanceof Profile) {
+            return super.equals(other);
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return ("profile-" + this.getIdentifier()).hashCode();
     }
 
     public Protocol getProtocol() {
@@ -119,6 +133,15 @@ public class Profile extends Protocol implements Serializable {
         final String v = this.getValue("Default Hostname");
         if(StringUtils.isBlank(v)) {
             return parent.getDefaultHostname();
+        }
+        return v;
+    }
+
+    @Override
+    public String getVendor() {
+        final String v = this.getValue("Vendor");
+        if(StringUtils.isBlank(v)) {
+            return parent.getVendor();
         }
         return v;
     }

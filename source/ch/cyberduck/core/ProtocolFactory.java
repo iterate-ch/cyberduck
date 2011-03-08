@@ -129,8 +129,19 @@ public class ProtocolFactory {
      * @return
      */
     public static Protocol forName(final String identifier) {
+        return forName(identifier, identifier);
+    }
+
+    /**
+     *
+     * @param identifier
+     * @param vendor
+     * @return
+     */
+    public static Protocol forName(final String identifier, final String vendor) {
         for(Protocol protocol : getKnownProtocols(false)) {
-            if(protocol.getIdentifier().equals(identifier)) {
+            if(protocol.getIdentifier().equals(identifier)
+                    && protocol.getVendor().equals(vendor)) {
                 return protocol;
             }
         }

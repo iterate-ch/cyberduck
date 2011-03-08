@@ -65,6 +65,14 @@ public abstract class Protocol {
         return this.getScheme();
     }
 
+    /**
+     * Provider identification
+     * @return Identifier if default protocol
+     */
+    public String getVendor() {
+        return this.getIdentifier();
+    }
+
     public String getName() {
         return this.getScheme().toUpperCase();
     }
