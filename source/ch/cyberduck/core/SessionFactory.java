@@ -21,7 +21,7 @@ package ch.cyberduck.core;
 import org.apache.log4j.Logger;
 
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -35,7 +35,7 @@ public abstract class SessionFactory {
      * Ordered list of supported protocols.
      */
     private static Set<Protocol> protocols
-            = new HashSet<Protocol>();
+            = new LinkedHashSet<Protocol>();
 
     protected abstract Session create(Host h);
 

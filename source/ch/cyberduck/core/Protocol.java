@@ -111,6 +111,11 @@ public abstract class Protocol {
     }
 
     @Override
+    public int hashCode() {
+        return this.getIdentifier().hashCode();
+    }
+
+    @Override
     public String toString() {
         return this.getIdentifier();
     }
