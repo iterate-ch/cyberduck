@@ -20,10 +20,10 @@ package ch.cyberduck.core;
 
 import org.apache.log4j.Logger;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public abstract class SessionFactory {
     private static Logger log = Logger.getLogger(SessionFactory.class);
@@ -34,17 +34,18 @@ public abstract class SessionFactory {
     /**
      * Ordered list of supported protocols.
      */
-    private static List<Protocol> protocols
-            = new ArrayList<Protocol>();
+    private static Set<Protocol> protocols
+            = new HashSet<Protocol>();
 
     protected abstract Session create(Host h);
 
     public static void addFactory(Protocol protocol, SessionFactory f) {
-        if(log.isDebugEnabled()) {
-            log.debug("Add factory for protocol " + protocol + ":" + f);
+        if(protocols.add(protocol)) {
+            if(log.isDebugEnabled()) {
+                log.debug("Add factory for protocol " + protocol + ":" + f);
+            }
+            factories.put(protocol, f);
         }
-        protocols.add(protocol);
-        factories.put(protocol, f);
     }
 
     /**
@@ -58,7 +59,7 @@ public abstract class SessionFactory {
     /**
      * @return Available protocols for the user to choose from.
      */
-    public static List<Protocol> getRegisteredProtocols() {
+    public static Set<Protocol> getRegisteredProtocols() {
         return protocols;
     }
 }
