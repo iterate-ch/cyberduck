@@ -243,7 +243,7 @@ namespace Ch.Cyberduck.Ui.Controller
             defaults.put("update.feed.beta", "http://version.cyberduck.ch/beta/changelog.wys");
             defaults.put("update.feed.nightly", "http://version.cyberduck.ch/nightly/changelog.wys");
 
-            defaults.put("update.feed", "beta");
+            defaults.put("update.feed", "release");
 
             // Importers
             defaults.put("bookmark.import.filezilla.location", Path.Combine(Environment.GetFolderPath(
@@ -289,7 +289,7 @@ namespace Ch.Cyberduck.Ui.Controller
             defaults.put("ssh.knownhosts", Path.Combine(RoamingApplicationDataPath, "known_hosts"));
             defaults.put("browser.enterkey.rename", false.ToString());
             defaults.put("terminal.command.ssh", Path.Combine(HomeFolder, "putty.exe"));
-            defaults.put("terminal.command.ssh.args", "-ssh {0} {1}@{2} -t -P {3} -m {4}");
+            defaults.put("terminal.command.ssh.args", "-ssh {0} {1}@{2} -t -P {3} -m \"{4}\"");
 
             //default browser toolbar set
             defaults.put("browser.toolbar", true.ToString());
