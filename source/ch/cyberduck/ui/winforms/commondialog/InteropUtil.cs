@@ -150,6 +150,15 @@ namespace Ch.Cyberduck.Ui.Winforms.Commondialog
             );
 
         [DllImport("user32.dll", EntryPoint = "SendMessageW")]
+        public static extern uint SendListViewMessageInt
+            (
+            [In] IntPtr hWnd,
+            uint Msg,
+            int wParam,
+            ref LVITEM lParam
+            );
+
+        [DllImport("user32.dll", EntryPoint = "SendMessageW")]
         public static extern uint SendMessageString
             (
             [In] IntPtr hWnd,

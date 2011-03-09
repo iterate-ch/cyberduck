@@ -808,8 +808,8 @@ namespace Ch.Cyberduck.Ui.Winforms.Commondialog
                     Marshal.WriteInt16(nativeBuffer, 0);
                     lvitem.pszText = nativeBuffer;
                     lvitem.cchTextMax = InteropUtil.NumberOfFileChars;
-                    var length = InteropUtil.SendListViewMessage(hListView, InteropUtil.LVM_GETITEMTEXT,
-                                                                 (uint)selectedIndex, ref lvitem);
+                    var length = InteropUtil.SendListViewMessageInt(hListView, InteropUtil.LVM_GETITEMTEXT,
+                                                                 selectedIndex, ref lvitem);
                     name = Marshal.PtrToStringUni(lvitem.pszText, (int) length);
                 }
                 finally
