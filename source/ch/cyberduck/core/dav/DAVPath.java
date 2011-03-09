@@ -134,6 +134,25 @@ public class DAVPath extends Path {
     }
 
     @Override
+    public boolean exists() {
+        if(super.exists()) {
+            return true;
+        }
+        if(this.attributes().isDirectory()) {
+            // Parent directory may not be accessible. Issue #5662
+            try {
+                this.getSession().getClient().setPath(this.attributes().isDirectory() ?
+                        this.getAbsolute() + String.valueOf(Path.DELIMITER) : this.getAbsolute());
+                return this.getSession().getClient().exists();
+            }
+            catch(IOException e) {
+                this.error("Cannot read file attributes", e);
+            }
+        }
+        return false;
+    }
+
+    @Override
     public void delete() {
         try {
             this.getSession().check();
