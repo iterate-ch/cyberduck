@@ -68,6 +68,9 @@
                   value="${cyberduck.version.major}.${minor}.${svn.revision.stripped}"/>
         <property name="shortversion"
                   value="${cyberduck.version.major}.${cyberduck.version.minor} (${svn.revision.stripped})"/>
+        <!-- pattern = "[revision] ([major].[minor])" -->
+        <property name="updaterversion"
+                  value="${svn.revision.stripped} (${cyberduck.version.major}.${cyberduck.version.minor})"/>
     </target>
 
     <target name="build" depends="version, archive">
@@ -231,7 +234,7 @@
 
         <copy file="${www.update}/version.xml" todir="${build}" overwrite="true"/>
         <replace file="${build}/version.xml" summary="true" encoding="UTF-8">
-            <replacefilter token="_VERSION_" value="${shortversion}"/>
+            <replacefilter token="_VERSION_" value="${updaterversion}"/>
             <replacefilter token="_CHANGES_" value="${changes}"/>
             <replacefilter token="_BUILDPATH_" value="${buildpath}"/>
         </replace>
