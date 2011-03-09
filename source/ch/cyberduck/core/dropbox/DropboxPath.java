@@ -374,7 +374,7 @@ public class DropboxPath extends Path {
     }
 
     @Override
-    protected String toHttpURL(String host) {
+    protected String toHttpURL(String uri) {
         return null;
     }
 }

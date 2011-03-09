@@ -1039,13 +1039,13 @@ public abstract class Path extends AbstractPath implements Serializable {
     }
 
     /**
-     * @param host The hostname to prepend to the path
+     * @param uri The scheme and hostname to prepend to the path
      * @return The HTTP accessible URL of this path including the default path
      *         prepended from the bookmark
      */
-    protected String toHttpURL(String host) {
+    protected String toHttpURL(String uri) {
         try {
-            return new URI(host + this.getWebPath(this.getAbsolute())).normalize().toString();
+            return new URI(uri + this.getWebPath(this.getAbsolute())).normalize().toString();
         }
         catch(URISyntaxException e) {
             log.error("Failure parsing URI:" + e.getMessage());
@@ -1100,10 +1100,7 @@ public abstract class Path extends AbstractPath implements Serializable {
      */
     public Set<DescriptiveUrl> getHttpURLs() {
         Set<DescriptiveUrl> urls = new LinkedHashSet<DescriptiveUrl>();
-        String http = this.toHttpURL();
-        if(StringUtils.isNotBlank(http)) {
-            urls.add(new DescriptiveUrl(http, MessageFormat.format(Locale.localizedString("{0} URL"), "HTTP")));
-        }
+        // Include all CDN URLs
         Session session = this.getSession();
         for(Distribution.Method method : session.cdn().getMethods()) {
             if(session.cdn().isConfigured(method)) {
@@ -1116,6 +1113,11 @@ public abstract class Path extends AbstractPath implements Serializable {
                     urls.addAll(distribution.getURLs(this));
                 }
             }
+        }
+        // Include default Web URL
+        String http = this.toHttpURL();
+        if(StringUtils.isNotBlank(http)) {
+            urls.add(new DescriptiveUrl(http, MessageFormat.format(Locale.localizedString("{0} URL"), "HTTP")));
         }
         return urls;
     }

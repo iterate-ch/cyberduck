@@ -140,10 +140,8 @@ public abstract class CloudPath extends Path {
     }
 
     @Override
-    public Set<DescriptiveUrl> getHttpURLs() {
-        Set<DescriptiveUrl> list = super.getHttpURLs();
-        list.add(new DescriptiveUrl(this.toURL(), MessageFormat.format(Locale.localizedString("{0} URL"),
-                this.getHost().getProtocol().getScheme().toUpperCase())));
-        return list;
+    public Set<DescriptiveUrl> getURLs() {
+        // Storage URL is not accessible
+        return this.getHttpURLs();
     }
 }

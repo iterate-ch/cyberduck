@@ -1406,7 +1406,13 @@ public class S3Path extends CloudPath {
         return this.toURL(Protocol.S3.getScheme());
     }
 
-    public String toURL(String scheme) {
+    /**
+     * Properly URI encode and prepend the bucket name.
+     *
+     * @param scheme
+     * @return
+     */
+    private String toURL(String scheme) {
         StringBuilder url = new StringBuilder(scheme);
         url.append("://");
         if(this.isRoot()) {

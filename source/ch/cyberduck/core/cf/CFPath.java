@@ -44,17 +44,12 @@ import com.rackspacecloud.client.cloudfiles.FilesObjectMetaData;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.MessageFormat;
 import java.text.ParseException;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Rackspace Cloud Files Implementation
@@ -579,6 +574,11 @@ public class CFPath extends CloudPath {
         throw new UnsupportedOperationException();
     }
 
+    @Override
+    public Set<DescriptiveUrl> getHttpURLs() {
+        return super.getHttpURLs();
+    }
+
     /**
      * @return Publicy accessible URL of given object
      */
@@ -591,16 +591,7 @@ public class CFPath extends CloudPath {
                 return distribution.getURL(this);
             }
         }
-        try {
-            URI url = new URI(this.getSession().getClient().getStorageURL());
-            return this.toHttpURL(url.getHost());
-        }
-        catch(URISyntaxException e) {
-            log.error("Failure parsing URI:" + e.getMessage());
-        }
-        catch(ConnectionCanceledException e) {
-            log.warn(e.getMessage());
-        }
+        // Storage URL is not accessible
         return null;
     }
 }
