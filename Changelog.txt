@@ -4,6 +4,13 @@ http://cyberduck.ch/
 
 Changelog. Last modified: $Date$
 
+4.0.2 [http://trac.cyberduck.ch/milestone/4.0.2]
+- [Bugfix] Incomplete transfer synchronizing root directory (WebDAV) (#5662)
+- [Bugfix] Wrong version downloaded (S3 Versioning) (#5758)
+
+4.0.1 [http://trac.cyberduck.ch/milestone/4.0.1]
+- [Bugfix] Uploading folders fails to create directories (#5749)
+
 4.0 [http://trac.cyberduck.ch/milestone/4.0]
 - [Localize] Ukrainian Localization
 - [Feature] Version for Microsoft Windows XP, Windows Vista & Windows 7.
