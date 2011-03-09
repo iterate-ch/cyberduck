@@ -334,7 +334,7 @@ public class CFSession extends CloudHTTP4Session {
                                 final FilesCDNContainer info = CFSession.this.getClient().getCDNContainerInfo(origin);
                                 final Distribution distribution = new Distribution(info.getName(),
                                         new URI(CFSession.this.getClient().getStorageURL()).getHost(),
-                                        method, info.isEnabled(), info.getCdnURL(),
+                                        method, info.isEnabled(), info.getCdnURL(), null,
                                         info.isEnabled() ? Locale.localizedString("CDN Enabled", "Mosso") : Locale.localizedString("CDN Disabled", "Mosso"),
                                         info.getRetainLogs());
                                 distributionStatus.put(origin, distribution);

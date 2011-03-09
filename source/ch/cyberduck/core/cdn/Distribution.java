@@ -59,6 +59,10 @@ public class Distribution {
      */
     private String url;
     /**
+     * CDN SSL URL
+     */
+    private String sslUrl;
+    /**
      * Deployment status description
      */
     private String status;
@@ -266,6 +270,21 @@ public class Distribution {
      * @param method  Kind of distribution
      * @param enabled Deployment Enabled
      * @param url     Where to find this distribution
+     * @param sslUrl  Where to find this distribution using HTTPS
+     * @param status  Status Message about Deployment Status
+     * @param logging
+     */
+    public Distribution(String id, String origin, Method method, boolean enabled, String url, String sslUrl, String status, boolean logging) {
+        this(id, origin, method, enabled, enabled, url, null, status, new String[]{}, logging, null);
+    }
+
+
+    /**
+     * @param id      Identifier of this distribution
+     * @param origin  Server to fetch original content
+     * @param method  Kind of distribution
+     * @param enabled Deployment Enabled
+     * @param url     Where to find this distribution
      * @param status  Status Message about Deployment Status
      * @param cnames  Multiple CNAME aliases of this distribution
      */
@@ -315,6 +334,23 @@ public class Distribution {
      * @param defaultRootObject Index file
      */
     public Distribution(String id, String origin, Method method, boolean enabled, boolean deployed, String url, String status, String[] cnames, boolean logging, String defaultRootObject) {
+        this(id, origin, method, enabled, deployed, url, null, status, cnames, logging, null);
+    }
+
+    /**
+     * @param id                Identifier of this distribution
+     * @param origin            Server to fetch original content
+     * @param method            Kind of distribution
+     * @param enabled           Deployment Enabled
+     * @param deployed          Deployment Status is about to be changed
+     * @param url               Where to find this distribution
+     * @param sslUrl            Where to find this distribution using HTTPS
+     * @param status            Status Message about Deployment Status
+     * @param cnames            Multiple CNAME aliases of this distribution
+     * @param logging           Logging status
+     * @param defaultRootObject Index file
+     */
+    public Distribution(String id, String origin, Method method, boolean enabled, boolean deployed, String url, String sslUrl, String status, String[] cnames, boolean logging, String defaultRootObject) {
         this.id = id;
         this.origin = origin;
         this.enabled = enabled;
@@ -401,10 +437,19 @@ public class Distribution {
      * @return
      */
     public String getURL(Path file) {
-        if(StringUtils.isEmpty(this.getURL())) {
+        return this.getURL(file, this.getURL());
+    }
+
+    /**
+     * @param file
+     * @param base
+     * @return
+     */
+    private String getURL(Path file, String base) {
+        if(StringUtils.isEmpty(base)) {
             return null;
         }
-        StringBuilder b = new StringBuilder(this.getURL());
+        StringBuilder b = new StringBuilder(base);
         if(StringUtils.isNotEmpty(file.getKey())) {
             b.append(Path.encode(file.getKey()));
         }
@@ -418,6 +463,19 @@ public class Distribution {
     }
 
     /**
+     * Distribution HTTPS URL from CDN provider.
+     *
+     * @return Null if not available
+     */
+    public String getSslUrl() {
+        return sslUrl;
+    }
+
+    public String getSslUrl(Path file) {
+        return this.getURL(file, this.getSslUrl());
+    }
+
+    /**
      * Both CNAME and original URL
      *
      * @param file
@@ -426,7 +484,11 @@ public class Distribution {
     public List<AbstractPath.DescriptiveUrl> getURLs(Path file) {
         List<AbstractPath.DescriptiveUrl> urls = this.getCnameURL(file);
         urls.add(new AbstractPath.DescriptiveUrl(this.getURL(file),
-                MessageFormat.format(Locale.localizedString("{0} CDN URL"), Locale.localizedString(method.toString(), "S3"))));
+                MessageFormat.format(Locale.localizedString("{0} URL"), Locale.localizedString(method.toString(), "S3"))));
+        if(StringUtils.isNotBlank(this.getSslUrl())) {
+            urls.add(new AbstractPath.DescriptiveUrl(this.getSslUrl(file),
+                    MessageFormat.format(Locale.localizedString("SSL {0} URL"), Locale.localizedString(method.toString(), "S3"))));
+        }
         return urls;
     }
 
@@ -438,7 +500,7 @@ public class Distribution {
         List<AbstractPath.DescriptiveUrl> urls = new ArrayList<AbstractPath.DescriptiveUrl>();
         for(String cname : cnames) {
             urls.add(new AbstractPath.DescriptiveUrl(this.getCnameURL(cname, file),
-                    MessageFormat.format(Locale.localizedString("{0} CDN URL"), Locale.localizedString(method.toString(), "S3"))));
+                    MessageFormat.format(Locale.localizedString("{0} URL"), Locale.localizedString(method.toString(), "S3"))));
         }
         return urls;
     }
