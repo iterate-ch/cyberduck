@@ -186,6 +186,9 @@ public class UploadTransfer extends Transfer {
                 = Pattern.compile(Preferences.instance().getProperty("queue.upload.skip.regex"));
 
         public boolean accept(Local child) {
+            if(child.attributes().isDuplicate()) {
+                return false;
+            }
             try {
                 if(Preferences.instance().getBoolean("queue.upload.skip.enable")) {
                     if(pattern.matcher(child.getName()).matches()) {

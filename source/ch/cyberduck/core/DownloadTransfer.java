@@ -196,6 +196,9 @@ public class DownloadTransfer extends Transfer {
                 = Pattern.compile(Preferences.instance().getProperty("queue.download.skip.regex"));
 
         public boolean accept(Path child) {
+            if(child.attributes().isDuplicate()) {
+                return false;
+            }
             if(Preferences.instance().getBoolean("queue.download.skip.enable")) {
                 try {
                     if(pattern.matcher(child.getName()).matches()) {
