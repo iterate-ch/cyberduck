@@ -162,7 +162,7 @@
              keyfile="${user.home}/.ssh/update.cyberduck.ch-rsa"
              passphrase="">
         </scp>
-        <scp file="${build}/update/${app.name}-all-${shortversion}.wyu"
+        <scp file="${build}/update/${app.name}-all-${updaterversion}.wyu"
              todir="dkocher@update.cyberduck.ch:./update.cyberduck.ch/windows/nightly/update"
              keyfile="${user.home}/.ssh/update.cyberduck.ch-rsa"
              passphrase="">
