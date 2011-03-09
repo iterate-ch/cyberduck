@@ -44,6 +44,8 @@ import com.rackspacecloud.client.cloudfiles.FilesObjectMetaData;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -588,6 +590,16 @@ public class CFPath extends CloudPath {
                 final Distribution distribution = session.cdn().read(session.cdn().getOrigin(method, this.getContainerName()), method);
                 return distribution.getURL(this);
             }
+        }
+        try {
+            URI url = new URI(this.getSession().getClient().getStorageURL());
+            return this.toHttpURL(url.getHost());
+        }
+        catch(URISyntaxException e) {
+            log.error("Failure parsing URI:" + e.getMessage());
+        }
+        catch(ConnectionCanceledException e) {
+            log.warn(e.getMessage());
         }
         return null;
     }
