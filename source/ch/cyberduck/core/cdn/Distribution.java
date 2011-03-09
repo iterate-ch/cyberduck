@@ -275,7 +275,7 @@ public class Distribution {
      * @param logging
      */
     public Distribution(String id, String origin, Method method, boolean enabled, String url, String sslUrl, String status, boolean logging) {
-        this(id, origin, method, enabled, enabled, url, null, status, new String[]{}, logging, null);
+        this(id, origin, method, enabled, enabled, url, sslUrl, status, new String[]{}, logging, null);
     }
 
 
@@ -356,6 +356,7 @@ public class Distribution {
         this.enabled = enabled;
         this.deployed = deployed;
         this.url = url;
+        this.sslUrl = sslUrl;
         this.status = status;
         this.cnames = cnames;
         this.logging = logging;
