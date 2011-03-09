@@ -62,6 +62,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Commondialog
         public const uint LVM_FIRST = 0x1000;
         public const uint LVM_GETITEMTEXT = LVM_FIRST + 115;
         public const uint LVM_GETNEXTITEM = LVM_FIRST + 12;
+        public const uint LVM_GETNEXTITEMINDEX = LVM_FIRST + 211;
         public const uint LVM_GETSELECTEDCOUNT = LVM_FIRST + 50; //yla extension
         public const int LVNI_SELECTED = 0x0002;
         public const uint LVN_FIRST = unchecked(0U - 100U);
@@ -128,6 +129,15 @@ namespace Ch.Cyberduck.Ui.Winforms.Commondialog
             uint Msg,
             uint wParam,
             uint lParam
+            );
+
+        [DllImport("user32.dll", EntryPoint = "SendMessageW", CharSet=CharSet.Unicode)]
+        public static extern int SendMessageInt
+            (
+            [In] IntPtr hWnd,
+            uint Msg,
+            int wParam,
+            int lParam
             );
 
         [DllImport("user32.dll", EntryPoint = "SendMessageW")]

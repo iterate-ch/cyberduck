@@ -358,15 +358,14 @@ namespace Ch.Cyberduck.Ui.Winforms.Commondialog
             //if there is at least one item selected we always return these ones
             if (count > 0)
             {
-                uint ind = 0;
+                int ind = -1;
                 for (int i = 0; i < count; i++)
                 {
-                    //get index of the next selected element
-                    ind = InteropUtil.SendMessage(listview, InteropUtil.LVM_GETNEXTITEM,
+                    ind = InteropUtil.SendMessageInt(listview, InteropUtil.LVM_GETNEXTITEM,
                                                   ind,
                                                   InteropUtil.LVNI_SELECTED);
                     //with the index we can get the item's text
-                    string item = GetFileNameFromSelectedItem(listview, (int) ind);
+                    string item = GetFileNameFromSelectedItem(listview, ind);
                     _selected.Add(item);
                 }
                 return true;
@@ -810,7 +809,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Commondialog
                     lvitem.pszText = nativeBuffer;
                     lvitem.cchTextMax = InteropUtil.NumberOfFileChars;
                     var length = InteropUtil.SendListViewMessage(hListView, InteropUtil.LVM_GETITEMTEXT,
-                                                                 (uint) selectedIndex, ref lvitem);
+                                                                 (uint)selectedIndex, ref lvitem);
                     name = Marshal.PtrToStringUni(lvitem.pszText, (int) length);
                 }
                 finally
