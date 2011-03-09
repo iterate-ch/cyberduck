@@ -994,7 +994,7 @@ public class S3Session extends CloudHTTP3Session {
                                     // http://example-bucket.s3-website-us-east-1.amazonaws.com/
                                     url,
                                     Locale.localizedString("Deployed", "S3"),
-                                    null,
+                                    new String[]{},
                                     false,
                                     configuration.getIndexDocumentSuffix());
                             // Cache website configuration
