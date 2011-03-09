@@ -303,7 +303,7 @@ public class FTPSession extends SSLSession {
         client.setDataTimeout(this.timeout());
         client.setDefaultPort(Protocol.FTP.getDefaultPort());
         client.setParserFactory(new FTPParserFactory());
-        client.setRemoteVerificationEnabled(true);
+        client.setRemoteVerificationEnabled(Preferences.instance().getBoolean("ftp.datachannel.verify"));
         if(this.getConnectMode().equals(FTPConnectMode.PASV)) {
             client.enterLocalPassiveMode();
         }

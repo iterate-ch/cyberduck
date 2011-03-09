@@ -474,6 +474,13 @@ public abstract class Preferences {
         defaults.put("queue.logDrawer.isOpen", String.valueOf(false));
         defaults.put("queue.logDrawer.size.height", String.valueOf(200));
 
+        /**
+         * Enable or disable verification that the remote host taking part
+         * of a data connection is the same as the host to which the control
+         * connection is attached.
+         */
+        defaults.put("ftp.datachannel.verify", String.valueOf(true));
+
         defaults.put("ftp.command.feat", String.valueOf(true));
         /**
          * Send LIST -a
