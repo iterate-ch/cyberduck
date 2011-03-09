@@ -81,6 +81,18 @@ public class GotoController extends AlertController {
     }
 
     @Override
+    public void beginSheet() {
+        super.beginSheet();
+    }
+
+    @Override
+    protected void focus() {
+        // Focus accessory view.
+        folderCombobox.selectText(null);
+        this.window().makeFirstResponder(folderCombobox);
+    }
+
+    @Override
     protected void invalidate() {
         folderCombobox.setDelegate(null);
         folderCombobox.setDataSource(null);

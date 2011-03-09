@@ -60,6 +60,13 @@ public abstract class FileController extends AlertController {
         ));
     }
 
+    @Override
+    protected void focus() {
+        // Focus accessory view.
+        filenameField.selectText(null);
+        this.window().makeFirstResponder(filenameField);
+    }
+
     /**
      * @return The current working directory or selected folder
      */

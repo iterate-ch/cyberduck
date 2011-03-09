@@ -65,6 +65,12 @@ public abstract class AlertController extends SheetController {
     }
 
     @Override
+    public void beginSheet() {
+        super.beginSheet();
+        this.focus();
+    }
+
+    @Override
     protected void beginSheetImpl() {
         parent.window().makeKeyAndOrderFront(null);
         alert.layout();
@@ -77,6 +83,10 @@ public abstract class AlertController extends SheetController {
         }
         alert.beginSheet(parent.window(), this.id(), Foundation.selector("alertDidEnd:returnCode:contextInfo:"), null);
         sheetRegistry.add(this);
+    }
+
+    protected void focus() {
+        ;
     }
 
     protected void setTitle(String title) {
