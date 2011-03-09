@@ -192,10 +192,13 @@ public class DownloadTransfer extends Transfer {
     }
 
     private final PathFilter<Path> exclusionRegexFilter = new PathFilter<Path>() {
+        final Pattern pattern
+                = Pattern.compile(Preferences.instance().getProperty("queue.download.skip.regex"));
+
         public boolean accept(Path child) {
             if(Preferences.instance().getBoolean("queue.download.skip.enable")) {
                 try {
-                    if(Pattern.compile(Preferences.instance().getProperty("queue.download.skip.regex")).matcher(child.getName()).matches()) {
+                    if(pattern.matcher(child.getName()).matches()) {
                         return false;
                     }
                 }
