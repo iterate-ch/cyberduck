@@ -2016,11 +2016,16 @@ public class PreferencesController extends ToolbarWindowController {
                 Preferences.instance().getProperty("google.docs.export.document.formats"), ",");
         for(int i = 0; formats.hasMoreTokens(); i++) {
             String format = formats.nextToken();
-            final String title = new StringBuilder(FinderLocal.kind(format)).append(" (.").append(format).append(")").toString();
-            this.documentExportFormatPopup.addItemWithTitle(title);
+            final String description = FinderLocal.kind(format);
+            final String suffix = new StringBuilder().append(" (.").append(format).append(")").toString();
+            final StringBuilder title = new StringBuilder(description);
+            if(!description.endsWith(suffix)) {
+                title.append(suffix);
+            }
+            this.documentExportFormatPopup.addItemWithTitle(title.toString());
             this.documentExportFormatPopup.lastItem().setRepresentedObject(format);
             if(format.equals(Preferences.instance().getProperty("google.docs.export.document"))) {
-                this.documentExportFormatPopup.selectItemWithTitle(title);
+                this.documentExportFormatPopup.selectItemWithTitle(title.toString());
             }
         }
         this.documentExportFormatPopup.setTarget(this.id());
