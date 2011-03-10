@@ -1,4 +1,5 @@
 4.0.2 [http://trac.cyberduck.ch/milestone/4.0.2]
+- [Feature] SSL URL for files in Akamai CDN enabled containers (Cloud Files)
 - [Bugfix] Wrong local path for uploads with file chooser (#5590)
 - [Bugfix] Incomplete transfer synchronizing root directory (WebDAV) (#5662)
 - [Bugfix] Wrong version downloaded (S3 Versioning) (#5758)
