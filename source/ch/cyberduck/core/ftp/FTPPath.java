@@ -187,8 +187,7 @@ public class FTPPath extends Path {
                 final FTPFileEntryParser parser = this.getSession().getFileParser();
                 boolean success = false;
                 try {
-                    if(this.getSession().isStatListSupportedEnabled()
-                            && this.getSession().getClient().isFeatureSupported(FTPCommand.STAT)) {
+                    if(this.getSession().isStatListSupportedEnabled()) {
                         int response = this.getSession().getClient().stat(this.getAbsolute());
                         if(FTPReply.isPositiveCompletion(response)) {
                             String[] reply = this.getSession().getClient().getReplyStrings();
