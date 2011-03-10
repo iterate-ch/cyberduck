@@ -530,7 +530,7 @@ public class UploadTransfer extends Transfer {
                 file.mkdir();
             }
         }
-        if(!file.status().isCanceled()) {
+        if(!file.status().isCanceled() && file.status().isComplete()) {
             if(this.getSession().isAclSupported()) {
                 ; // Currently handled in S3 only.
             }
