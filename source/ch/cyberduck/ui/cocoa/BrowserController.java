@@ -903,13 +903,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 }
                 if(downloads.size() > 0) {
                     background(new BrowserBackgroundAction(BrowserController.this) {
-                        final Collection<Local> previews = new Collection<Local>() {
-                            @Override
-                            public void collectionItemRemoved(Local o) {
-                                super.collectionItemRemoved(o);
-                                (o).delete(false);
-                            }
-                        };
+                        final Collection<Local> previews = new Collection<Local>();
 
                         public void run() {
                             Transfer transfer = new DownloadTransfer(downloads);
@@ -1707,7 +1701,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     }
 
     /**
-     *
      * @param item
      */
     public void addBookmark(Host item) {
