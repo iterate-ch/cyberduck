@@ -190,7 +190,6 @@ public class Receipt extends AbstractLicense {
             if(!StringUtils.equals(Preferences.instance().getDefault("CFBundleShortVersionString"),
                     StringUtils.trim(bundleVersion))) {
                 log.warn("Bundle version in ASN set does not match");
-                return false;
             }
 
             NetworkInterface en0 = NetworkInterface.getByName("en0");
