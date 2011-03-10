@@ -247,8 +247,8 @@
 					x86_64,
 				);
 				GCC_ENABLE_OBJC_GC = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.4;
-				SDKROOT = /Developer/SDKs/MacOSX10.5.sdk;
+				MACOSX_DEPLOYMENT_TARGET = 10.5;
+				SDKROOT = "$(DEVELOPER_SDK_DIR)/MacOSX10.6.sdk";
 			};
 			name = Release;
 		};
