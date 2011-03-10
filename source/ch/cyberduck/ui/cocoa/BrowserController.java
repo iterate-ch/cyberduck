@@ -276,10 +276,11 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         final NSTableView browser = this.getSelectedBrowserView();
         browser.reloadData();
         this.deselectAll();
-        if(!selected.isEmpty()) {
-            for(Path path : selected) {
-                this.selectRow(path.getReference(), true);
-            }
+        boolean scroll = true;
+        for(Path path : selected) {
+            this.selectRow(path.getReference(), true, scroll);
+            // Only scroll to the first in the list
+            scroll = false;
         }
         this.updateStatusLabel();
         // Update path navigation
@@ -289,8 +290,9 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     /**
      * @param reference
      * @param expand    Expand the existing selection
+     * @param scroll
      */
-    private void selectRow(PathReference reference, boolean expand) {
+    private void selectRow(PathReference reference, boolean expand, boolean scroll) {
         if(log.isDebugEnabled()) {
             log.debug("selectRow:" + reference);
         }
@@ -304,7 +306,9 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         }
         final NSInteger index = new NSInteger(row);
         browser.selectRowIndexes(NSIndexSet.indexSetWithIndex(index), expand);
-        browser.scrollRowToVisible(index);
+        if(scroll) {
+            browser.scrollRowToVisible(index);
+        }
     }
 
     private List<Path> selected = Collections.emptyList();
@@ -1137,6 +1141,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
              * @see NSOutlineView.Delegate
              */
             public void outlineViewItemDidExpand(NSNotification notification) {
+                selectRow(new OutlinePathReference(notification.userInfo().objectEnumerator().nextObject()), true, true);
                 updateStatusLabel();
             }
 
