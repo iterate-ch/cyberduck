@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Comment</key>
+	<string>Unlimited File Storage &amp; Content Delivery</string>
+	<key>Hostname</key>
+	<string>storage.clouddrive.com</string>
+	<key>Nickname</key>
+	<string>Rackspace Cloud Files</string>
+	<key>Port</key>
+	<string>443</string>
+	<key>Protocol</key>
+	<string>cf</string>
+</dict>
+</plist>

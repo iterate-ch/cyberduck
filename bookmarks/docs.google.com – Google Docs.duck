@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Comment</key>
+	<string>Access all your documents, spreadsheets &amp; presentations</string>
+	<key>Hostname</key>
+	<string>docs.google.com</string>
+	<key>Nickname</key>
+	<string>docs.google.com – Google Docs</string>
+	<key>Port</key>
+	<string>443</string>
+	<key>Protocol</key>
+	<string>gd</string>
+</dict>
+</plist>

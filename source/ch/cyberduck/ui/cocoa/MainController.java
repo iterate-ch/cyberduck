@@ -808,7 +808,20 @@ public class MainController extends BundleController implements NSApplication.De
         }
         this.background(new AbstractBackgroundAction() {
             public void run() {
-                BookmarkCollection.defaultCollection().load();
+                final BookmarkCollection c = BookmarkCollection.defaultCollection();
+                c.load();
+                if(c.isEmpty()) {
+                    final FolderBookmarkCollection defaults = new FolderBookmarkCollection(LocalFactory.createLocal(
+                            Preferences.instance().getProperty("application.bookmarks.path")
+                    ));
+                    defaults.load();
+                    for(Host bookmark : defaults) {
+                        if(log.isDebugEnabled()) {
+                            log.debug("Adding default bookmark:" + bookmark);
+                        }
+                        c.add(bookmark);
+                    }
+                }
             }
 
             @Override

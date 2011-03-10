@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Comment</key>
+	<string>Amazon Simple Storage Service &amp; CloudFront CDN</string>
+	<key>Hostname</key>
+	<string>s3.amazonaws.com</string>
+	<key>Nickname</key>
+	<string>Amazon S3 (HTTPS)</string>
+	<key>Port</key>
+	<string>443</string>
+	<key>Protocol</key>
+	<string>s3</string>
+</dict>
+</plist>

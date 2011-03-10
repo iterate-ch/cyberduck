@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Access Timestamp</key>
+	<string>1299748610428</string>
+	<key>Hostname</key>
+	<string>mirror.switch.ch</string>
+	<key>Nickname</key>
+	<string>mirror.switch.ch – FTP</string>
+	<key>Path</key>
+	<string>/mirror</string>
+	<key>Port</key>
+	<string>21</string>
+	<key>Protocol</key>
+	<string>ftp</string>
+	<key>UUID</key>
+	<string>15d05637-3ea6-4530-bd1d-87b43718c00d</string>
+	<key>Username</key>
+	<string>anonymous</string>
+</dict>
+</plist>

@@ -17,6 +17,14 @@
 		470423D712EEC5EC004658C0 /* Growl.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4726277E0FD5743C001D5BA5 /* Growl.framework */; };
 		470912ED0C36FCE00049FBCE /* Prompt.nib in Resources */ = {isa = PBXBuildFile; fileRef = 470912EB0C36FCE00049FBCE /* Prompt.nib */; };
 		4709E81B0F864B16005A06CE /* sync.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 4709E81A0F864B16005A06CE /* sync.tiff */; };
+		470C64731328CBF300146FB6 /* docs.google.com – Google Docs.duck in Resources */ = {isa = PBXBuildFile; fileRef = 470C646E1328CBF300146FB6 /* docs.google.com – Google Docs.duck */; };
+		470C64741328CBF300146FB6 /* s3.amazonaws.com – S3.duck in Resources */ = {isa = PBXBuildFile; fileRef = 470C646F1328CBF300146FB6 /* s3.amazonaws.com – S3.duck */; };
+		470C64751328CBF300146FB6 /* storage.clouddrive.com – Cloud Files.duck in Resources */ = {isa = PBXBuildFile; fileRef = 470C64701328CBF300146FB6 /* storage.clouddrive.com – Cloud Files.duck */; };
+		470C64761328CBF300146FB6 /* svn.cyberduck.ch – WebDAV (HTTP).duck in Resources */ = {isa = PBXBuildFile; fileRef = 470C64711328CBF300146FB6 /* svn.cyberduck.ch – WebDAV (HTTP).duck */; };
+		470C64781328CC0300146FB6 /* docs.google.com – Google Docs.duck in CopyFiles */ = {isa = PBXBuildFile; fileRef = 470C646E1328CBF300146FB6 /* docs.google.com – Google Docs.duck */; };
+		470C64791328CC0300146FB6 /* s3.amazonaws.com – S3.duck in CopyFiles */ = {isa = PBXBuildFile; fileRef = 470C646F1328CBF300146FB6 /* s3.amazonaws.com – S3.duck */; };
+		470C647A1328CC0300146FB6 /* storage.clouddrive.com – Cloud Files.duck in CopyFiles */ = {isa = PBXBuildFile; fileRef = 470C64701328CBF300146FB6 /* storage.clouddrive.com – Cloud Files.duck */; };
+		470C647B1328CC0300146FB6 /* svn.cyberduck.ch – WebDAV (HTTP).duck in CopyFiles */ = {isa = PBXBuildFile; fileRef = 470C64711328CBF300146FB6 /* svn.cyberduck.ch – WebDAV (HTTP).duck */; };
 		47124259129AA0F200BC957C /* swift-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 47124257129AA0F200BC957C /* swift-icon.png */; };
 		4712425A129AA0F200BC957C /* swift.icns in Resources */ = {isa = PBXBuildFile; fileRef = 47124258129AA0F200BC957C /* swift.icns */; };
 		4716C5F50872BA9900938886 /* Command.nib in Resources */ = {isa = PBXBuildFile; fileRef = 4716C5EF0872BA9800938886 /* Command.nib */; };
@@ -223,6 +231,8 @@
 		47E0BB4B0746B1FA00C4A68E /* arrowDown.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47E0BB450746B1FA00C4A68E /* arrowDown.tiff */; };
 		47E0BB4F0746B1FA00C4A68E /* arrowUp.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47E0BB490746B1FA00C4A68E /* arrowUp.tiff */; };
 		47E987600D689A280077733F /* S3.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47E9875E0D689A280077733F /* S3.strings */; };
+		47EBC1301328D00200E9E6B3 /* mirror.switch.ch – FTP.duck in Resources */ = {isa = PBXBuildFile; fileRef = 47EBC12F1328D00200E9E6B3 /* mirror.switch.ch – FTP.duck */; };
+		47EBC1311328D01C00E9E6B3 /* mirror.switch.ch – FTP.duck in CopyFiles */ = {isa = PBXBuildFile; fileRef = 47EBC12F1328D00200E9E6B3 /* mirror.switch.ch – FTP.duck */; };
 		47F0B701087ACD0B00439978 /* Growl.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47F0B6FE087ACD0300439978 /* Growl.strings */; };
 		47F0B7D3087AD1B100439978 /* Status.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47F0B7D2087AD1AE00439978 /* Status.strings */; };
 		47F73ACA0F93721B0054C930 /* ftp-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 47F73AC40F93721B0054C930 /* ftp-icon.png */; };
@@ -310,6 +320,20 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		470C646B1328CBDD00146FB6 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = Bookmarks;
+			dstSubfolderSpec = 7;
+			files = (
+				470C64781328CC0300146FB6 /* docs.google.com – Google Docs.duck in CopyFiles */,
+				470C64791328CC0300146FB6 /* s3.amazonaws.com – S3.duck in CopyFiles */,
+				470C647A1328CC0300146FB6 /* storage.clouddrive.com – Cloud Files.duck in CopyFiles */,
+				470C647B1328CC0300146FB6 /* svn.cyberduck.ch – WebDAV (HTTP).duck in CopyFiles */,
+				47EBC1311328D01C00E9E6B3 /* mirror.switch.ch – FTP.duck in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		4749573207EDEC4E00B34D53 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -409,6 +433,10 @@
 		470913200C36FDE00049FBCE /* tr */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = tr; path = tr.lproj/Prompt.nib; sourceTree = "<group>"; };
 		470913220C36FDEA0049FBCE /* pt_PT */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = pt_PT; path = pt_PT.lproj/Prompt.nib; sourceTree = "<group>"; };
 		4709E81A0F864B16005A06CE /* sync.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = sync.tiff; sourceTree = "<group>"; };
+		470C646E1328CBF300146FB6 /* docs.google.com – Google Docs.duck */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = "docs.google.com – Google Docs.duck"; sourceTree = "<group>"; };
+		470C646F1328CBF300146FB6 /* s3.amazonaws.com – S3.duck */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = "s3.amazonaws.com – S3.duck"; sourceTree = "<group>"; };
+		470C64701328CBF300146FB6 /* storage.clouddrive.com – Cloud Files.duck */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = "storage.clouddrive.com – Cloud Files.duck"; sourceTree = "<group>"; };
+		470C64711328CBF300146FB6 /* svn.cyberduck.ch – WebDAV (HTTP).duck */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = "svn.cyberduck.ch – WebDAV (HTTP).duck"; sourceTree = "<group>"; };
 		470DEC5E125F2CAF00952823 /* ru */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = ru; path = ru.lproj/Prompt.nib; sourceTree = "<group>"; };
 		470DEC5F125F2CAF00952823 /* ru */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = ru; path = ru.lproj/Preferences.nib; sourceTree = "<group>"; };
 		470DEC60125F2CAF00952823 /* ru */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = ru; path = ru.lproj/Main.nib; sourceTree = "<group>"; };
@@ -1436,6 +1464,7 @@
 		47E284E11319333000D03060 /* uk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = uk; path = uk.lproj/Status.strings; sourceTree = "<group>"; };
 		47E284E21319333000D03060 /* uk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = uk; path = uk.lproj/Transfer.strings; sourceTree = "<group>"; };
 		47E9875F0D689A280077733F /* en */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = en; path = en.lproj/S3.strings; sourceTree = "<group>"; };
+		47EBC12F1328D00200E9E6B3 /* mirror.switch.ch – FTP.duck */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = "mirror.switch.ch – FTP.duck"; sourceTree = "<group>"; };
 		47EC858E0AF0929E0057AC1F /* zh_CN */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = zh_CN; path = zh_CN.lproj/Alert.nib; sourceTree = "<group>"; };
 		47EC858F0AF0929E0057AC1F /* tr */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = tr; path = tr.lproj/Alert.nib; sourceTree = "<group>"; };
 		47EC85910AF0929E0057AC1F /* sv */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = sv; path = sv.lproj/Alert.nib; sourceTree = "<group>"; };
@@ -1688,6 +1717,18 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		470C646C1328CBF300146FB6 /* bookmarks */ = {
+			isa = PBXGroup;
+			children = (
+				470C646E1328CBF300146FB6 /* docs.google.com – Google Docs.duck */,
+				470C646F1328CBF300146FB6 /* s3.amazonaws.com – S3.duck */,
+				470C64701328CBF300146FB6 /* storage.clouddrive.com – Cloud Files.duck */,
+				470C64711328CBF300146FB6 /* svn.cyberduck.ch – WebDAV (HTTP).duck */,
+				47EBC12F1328D00200E9E6B3 /* mirror.switch.ch – FTP.duck */,
+			);
+			path = bookmarks;
+			sourceTree = "<group>";
+		};
 		4718C1FE107AA41F006FDEFA /* urlhandler */ = {
 			isa = PBXGroup;
 			children = (
@@ -1810,6 +1851,7 @@
 			isa = PBXGroup;
 			children = (
 				478F0DF312FB03DC000FE33C /* update.pem */,
+				470C646C1328CBF300146FB6 /* bookmarks */,
 				4741653C06C4FC3F00AC0BD2 /* img */,
 				4786CB660E253B800029848F /* Error.nib */,
 				4786CB670E253B800029848F /* Activity.nib */,
@@ -2214,6 +2256,7 @@
 				4735940F0CE76EE50085DEAC /* Prune NIBs */,
 				47C2724412E99D8600A13758 /* Frameworks */,
 				4749573207EDEC4E00B34D53 /* CopyFiles */,
+				470C646B1328CBDD00146FB6 /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -2640,6 +2683,11 @@
 				47CD04A112DB5F5200694306 /* Duplicate.strings in Resources */,
 				478F0DF412FB03DC000FE33C /* update.pem in Resources */,
 				4732BDA813182C7F00CBC46B /* Download.strings in Resources */,
+				470C64731328CBF300146FB6 /* docs.google.com – Google Docs.duck in Resources */,
+				470C64741328CBF300146FB6 /* s3.amazonaws.com – S3.duck in Resources */,
+				470C64751328CBF300146FB6 /* storage.clouddrive.com – Cloud Files.duck in Resources */,
+				470C64761328CBF300146FB6 /* svn.cyberduck.ch – WebDAV (HTTP).duck in Resources */,
+				47EBC1301328D00200E9E6B3 /* mirror.switch.ch – FTP.duck in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
