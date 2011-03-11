@@ -488,7 +488,7 @@ public class Distribution {
                 MessageFormat.format(Locale.localizedString("{0} URL"), Locale.localizedString(method.toString(), "S3"))));
         if(StringUtils.isNotBlank(this.getSslUrl())) {
             urls.add(new AbstractPath.DescriptiveUrl(this.getSslUrl(file),
-                    MessageFormat.format(Locale.localizedString("SSL {0} URL"), Locale.localizedString(method.toString(), "S3"))));
+                    MessageFormat.format(Locale.localizedString("{0} URL"), Locale.localizedString(method.toString(), "S3")) + " (SSL)"));
         }
         return urls;
     }
