@@ -218,7 +218,6 @@ public class S3Path extends CloudPath {
     }
 
     /**
-     *
      * @param list
      * @return
      */
@@ -1123,6 +1122,10 @@ public class S3Path extends CloudPath {
      */
     protected AccessControlList convert(Acl acl) throws IOException {
         AccessControlList list = new AccessControlList();
+        if(null == acl.getOwner()) {
+            // Owner is lost in controller
+            acl.setOwner(this.attributes().getAcl().getOwner());
+        }
         list.setOwner(new S3Owner(acl.getOwner().getIdentifier(), acl.getOwner().getDisplayName()));
         for(Acl.UserAndRole userAndRole : acl.asList()) {
             if(!userAndRole.isValid()) {
