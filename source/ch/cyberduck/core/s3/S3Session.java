@@ -271,7 +271,7 @@ public class S3Session extends CloudHTTP3Session {
                         bucket.setOwner(owner);
                     }
                     catch(ServiceException e) {
-                        // ACL not readable by anonymous user.
+                        // ACL not readable by anonymous or IAM user.
                         log.warn(e.getMessage());
                     }
                     buckets.put(bucketname, bucket);

@@ -206,6 +206,7 @@ public class S3Path extends CloudPath {
                     list = this.getSession().getClient().getObjectAcl(container, this.getKey());
                 }
                 this.attributes().setAcl(this.convert(list));
+                this.attributes().setOwner(list.getOwner().getDisplayName());
             }
         }
         catch(ServiceException e) {
@@ -216,6 +217,11 @@ public class S3Path extends CloudPath {
         }
     }
 
+    /**
+     *
+     * @param list
+     * @return
+     */
     protected Acl convert(final AccessControlList list) {
         if(log.isDebugEnabled()) {
             try {
@@ -226,6 +232,7 @@ public class S3Path extends CloudPath {
             }
         }
         Acl acl = new Acl();
+        acl.setOwner(new Acl.CanonicalUser(list.getOwner().getId(), list.getOwner().getDisplayName()));
         for(GrantAndPermission grant : list.getGrantAndPermissions()) {
             Acl.Role role = new Acl.Role(grant.getPermission().toString());
             if(grant.getGrantee() instanceof CanonicalGrantee) {
@@ -964,7 +971,6 @@ public class S3Path extends CloudPath {
                 p.setParent(this);
                 p.attributes().setSize(object.getContentLength());
                 p.attributes().setModificationDate(object.getLastModifiedDate().getTime());
-                p.attributes().setOwner(this.getContainer().attributes().getOwner());
                 // Directory placholders
                 if(object.isDirectoryPlaceholder()) {
                     p.attributes().setType(Path.DIRECTORY_TYPE);
@@ -1004,7 +1010,6 @@ public class S3Path extends CloudPath {
                 if(children.contains(p.getReference())) {
                     continue;
                 }
-                p.attributes().setOwner(this.getContainer().attributes().getOwner());
                 p.attributes().setPlaceholder(false);
                 children.add(p);
             }
@@ -1048,7 +1053,6 @@ public class S3Path extends CloudPath {
             }
             path.attributes().setSize(version.getSize());
             path.attributes().setModificationDate(version.getLastModified().getTime());
-            path.attributes().setOwner(this.getContainer().attributes().getOwner());
             path.attributes().setStorageClass(version.getStorageClass());
             versions.add(path);
         }
@@ -1119,8 +1123,7 @@ public class S3Path extends CloudPath {
      */
     protected AccessControlList convert(Acl acl) throws IOException {
         AccessControlList list = new AccessControlList();
-        final StorageOwner owner = this.getSession().getBucket(this.getContainerName()).getOwner();
-        list.setOwner(owner);
+        list.setOwner(new S3Owner(acl.getOwner().getIdentifier(), acl.getOwner().getDisplayName()));
         for(Acl.UserAndRole userAndRole : acl.asList()) {
             if(!userAndRole.isValid()) {
                 continue;
@@ -1182,38 +1185,6 @@ public class S3Path extends CloudPath {
         finally {
             this.attributes().clear(false, false, true, false);
         }
-    }
-
-    /**
-     * @param permission The permissions to apply
-     * @return The updated access control list.
-     */
-    protected AccessControlList getAccessControlList(final Permission permission) throws IOException {
-        final AccessControlList acl = new AccessControlList();
-        final StorageOwner owner = this.getSession().getBucket(this.getContainerName()).getOwner();
-        acl.setOwner(owner);
-        final CanonicalGrantee grantee = new CanonicalGrantee(owner.getId());
-        if(permission.getOwnerPermissions()[Permission.READ]) {
-            acl.grantPermission(grantee, org.jets3t.service.acl.Permission.PERMISSION_READ);
-        }
-        if(permission.getOwnerPermissions()[Permission.WRITE]) {
-            // when applied to a bucket, grants permission to create, overwrite, and delete any object in the bucket.
-            // This permission is not supported for objects.
-            if(this.isContainer()) {
-                acl.grantPermission(grantee, org.jets3t.service.acl.Permission.PERMISSION_WRITE);
-            }
-        }
-        if(permission.getOtherPermissions()[Permission.READ]) {
-            acl.grantPermission(GroupGrantee.ALL_USERS, org.jets3t.service.acl.Permission.PERMISSION_READ);
-        }
-        if(permission.getOtherPermissions()[Permission.WRITE]) {
-            // when applied to a bucket, grants permission to create, overwrite, and delete any object in the bucket.
-            // This permission is not supported for objects.
-            if(this.isContainer()) {
-                acl.grantPermission(GroupGrantee.ALL_USERS, org.jets3t.service.acl.Permission.PERMISSION_WRITE);
-            }
-        }
-        return acl;
     }
 
     @Override

@@ -32,6 +32,8 @@ public class Acl extends HashMap<Acl.User, Set<Acl.Role>> {
 
     public static final Acl EMPTY = new Acl();
 
+    private CanonicalUser owner;
+
     public Acl() {
         super();
     }
@@ -42,6 +44,14 @@ public class Acl extends HashMap<Acl.User, Set<Acl.Role>> {
 
     public Acl(Acl.UserAndRole... set) {
         this.addAll(set);
+    }
+
+    public CanonicalUser getOwner() {
+        return owner;
+    }
+
+    public void setOwner(CanonicalUser owner) {
+        this.owner = owner;
     }
 
     /**
