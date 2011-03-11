@@ -27,9 +27,6 @@ import org.rococoa.ObjCClass;
 
 import org.apache.log4j.Logger;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-
 /**
  * @version $Id:$
  */
@@ -46,15 +43,8 @@ public abstract class Updater extends NSObject {
         Updater alloc();
     }
 
-    public static URL getFeed() {
-        String feed = Preferences.instance().getDefault("SUFeedURL");
-        try {
-            return new URL(feed);
-        }
-        catch(MalformedURLException e) {
-            log.warn("No valid update URL configured:" + feed);
-        }
-        return null;
+    public static String getFeed() {
+        return Preferences.instance().getDefault("SUFeedURL");
     }
 
     public abstract Updater init();
