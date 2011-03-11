@@ -199,6 +199,7 @@ public class FTPClient extends FTPSClient {
 
     /**
      * No argument to command
+     *
      * @param command
      * @return
      * @throws IOException
@@ -216,7 +217,7 @@ public class FTPClient extends FTPSClient {
      * @throws IOException
      */
     public List<String> list(int command, String pathname) throws IOException {
-        this.pret(this.getCommand(command));
+        this.pret(this.getCommand(command), pathname);
 
         Socket socket = _openDataConnection_(command, pathname);
 
@@ -240,37 +241,37 @@ public class FTPClient extends FTPSClient {
 
     @Override
     public boolean retrieveFile(String remote, OutputStream local) throws IOException {
-        this.pret(this.getCommand(FTPCommand.RETR));
+        this.pret(this.getCommand(FTPCommand.RETR), remote);
         return super.retrieveFile(remote, local);
     }
 
     @Override
     public InputStream retrieveFileStream(String remote) throws IOException {
-        this.pret(this.getCommand(FTPCommand.RETR));
+        this.pret(this.getCommand(FTPCommand.RETR), remote);
         return super.retrieveFileStream(remote);
     }
 
     @Override
     public boolean storeFile(String remote, InputStream local) throws IOException {
-        this.pret(this.getCommand(FTPCommand.STOR));
+        this.pret(this.getCommand(FTPCommand.STOR), remote);
         return super.storeFile(remote, local);
     }
 
     @Override
     public OutputStream storeFileStream(String remote) throws IOException {
-        this.pret(this.getCommand(FTPCommand.STOR));
+        this.pret(this.getCommand(FTPCommand.STOR), remote);
         return super.storeFileStream(remote);
     }
 
     @Override
     public boolean appendFile(String remote, InputStream local) throws IOException {
-        this.pret(this.getCommand(FTPCommand.APPE));
+        this.pret(this.getCommand(FTPCommand.APPE), remote);
         return super.appendFile(remote, local);
     }
 
     @Override
     public OutputStream appendFileStream(String remote) throws IOException {
-        this.pret(this.getCommand(FTPCommand.APPE));
+        this.pret(this.getCommand(FTPCommand.APPE), remote);
         return super.appendFileStream(remote);
     }
 
@@ -280,10 +281,10 @@ public class FTPClient extends FTPSClient {
      * @param file
      * @throws IOException
      */
-    protected void pret(String file) throws IOException {
+    protected void pret(String command, String file) throws IOException {
         if(this.isFeatureSupported(PRET)) {
             // PRET support
-            if(!FTPReply.isPositiveCompletion(this.sendCommand(PRET, file))) {
+            if(!FTPReply.isPositiveCompletion(this.sendCommand(PRET, command + " " + file))) {
                 log.warn("PRET command failed:" + this.getReplyString());
             }
         }
