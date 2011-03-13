@@ -52,18 +52,18 @@ public class TrellixFTPEntryParserTest extends AbstractTestCase {
     }
 
     public void testParse() throws Exception {
-        FTPFile parsed = null;
+        FTPFile parsed;
 
         //#1213
         parsed = parser.parseFTPEntry(
                 "-rw-r--r--  FTP  User       10439 Apr 20 05:29 ASCheckbox_2_0.zip"
         );
         assertNotNull(parsed);
-        assertEquals(parsed.getName(), "ASCheckbox_2_0.zip");
-        assertTrue(parsed.getType() == FTPFile.FILE_TYPE);
+        assertEquals("ASCheckbox_2_0.zip", parsed.getName());
+        assertEquals(FTPFile.FILE_TYPE, parsed.getType());
         assertEquals(10439, parsed.getSize());
-        assertTrue(parsed.getTimestamp().get(Calendar.MONTH) == Calendar.APRIL);
-        assertTrue(parsed.getTimestamp().get(Calendar.DAY_OF_MONTH) == 20);
+        assertEquals(Calendar.APRIL, parsed.getTimestamp().get(Calendar.MONTH));
+        assertEquals(20, parsed.getTimestamp().get(Calendar.DAY_OF_MONTH));
         assertTrue(parsed.hasPermission(FTPFile.USER_ACCESS, FTPFile.READ_PERMISSION));
         assertTrue(parsed.hasPermission(FTPFile.GROUP_ACCESS, FTPFile.READ_PERMISSION));
         assertTrue(parsed.hasPermission(FTPFile.WORLD_ACCESS, FTPFile.READ_PERMISSION));

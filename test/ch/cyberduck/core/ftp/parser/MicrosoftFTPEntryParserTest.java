@@ -53,19 +53,19 @@ public class MicrosoftFTPEntryParserTest extends AbstractTestCase {
     }
 
     public void testParse() throws Exception {
-        FTPFile parsed = null;
+        FTPFile parsed;
 
         // #3701
         parsed = parser.parseFTPEntry(
                 "12-04-06  12:43PM                65335 fon1.kucuk.jpg"
         );
         assertNotNull(parsed);
-        assertEquals(parsed.getName(), "fon1.kucuk.jpg");
-        assertTrue(parsed.getType() == FTPFile.FILE_TYPE);
+        assertEquals("fon1.kucuk.jpg", parsed.getName());
+        assertEquals(FTPFile.FILE_TYPE, parsed.getType());
         assertEquals(65335, parsed.getSize());
-        assertTrue(parsed.getTimestamp().get(Calendar.YEAR) == 2006);
-        assertTrue(parsed.getTimestamp().get(Calendar.MONTH) == Calendar.DECEMBER);
-        assertTrue(parsed.getTimestamp().get(Calendar.DAY_OF_MONTH) == 4);
+        assertEquals(2006, parsed.getTimestamp().get(Calendar.YEAR));
+        assertEquals(Calendar.DECEMBER, parsed.getTimestamp().get(Calendar.MONTH));
+        assertEquals(4, parsed.getTimestamp().get(Calendar.DAY_OF_MONTH));
     }
 
     public static Test suite() {

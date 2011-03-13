@@ -52,24 +52,24 @@ public class WebstarFTPEntryParserTest extends AbstractTestCase {
     }
 
     public void testParse() throws Exception {
-        FTPFile parsed = null;
+        FTPFile parsed;
 
         parsed = parser.parseFTPEntry(
                 "-rwx------          17      332      640 Dec 20 08:54 file 1"
         );
         assertNotNull(parsed);
-        assertEquals(parsed.getName(), "file 1");
-        assertTrue(parsed.getType() == FTPFile.FILE_TYPE);
+        assertEquals("file 1", parsed.getName());
+        assertEquals(FTPFile.FILE_TYPE, parsed.getType());
         assertEquals(640, parsed.getSize());
 
         parsed = parser.parseFTPEntry(
                 "drwx------             folder          2 Dec 20 08:55 folder1"
         );
         assertNotNull(parsed);
-        assertEquals(parsed.getName(), "folder1");
-        assertTrue(parsed.getType() == FTPFile.DIRECTORY_TYPE);
-        assertTrue(parsed.getTimestamp().get(Calendar.MONTH) == Calendar.DECEMBER);
-        assertTrue(parsed.getTimestamp().get(Calendar.DAY_OF_MONTH) == 20);
+        assertEquals("folder1", parsed.getName());
+        assertEquals(FTPFile.DIRECTORY_TYPE, parsed.getType());
+        assertEquals(Calendar.DECEMBER, parsed.getTimestamp().get(Calendar.MONTH));
+        assertEquals(20, parsed.getTimestamp().get(Calendar.DAY_OF_MONTH));
         assertTrue(parsed.hasPermission(FTPFile.USER_ACCESS, FTPFile.READ_PERMISSION));
         assertFalse(parsed.hasPermission(FTPFile.GROUP_ACCESS, FTPFile.READ_PERMISSION));
         assertFalse(parsed.hasPermission(FTPFile.WORLD_ACCESS, FTPFile.READ_PERMISSION));

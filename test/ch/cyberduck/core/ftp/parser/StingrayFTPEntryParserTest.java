@@ -54,18 +54,18 @@ public class StingrayFTPEntryParserTest extends AbstractTestCase {
      * http://trac.cyberduck.ch/ticket/1198
      */
     public void testFile() throws Exception {
-        FTPFile parsed = null;
+        FTPFile parsed;
 
         parsed = parser.parseFTPEntry(
                 "-r--r--r--          0     165100     165100 Aug  1 10:24 grau2.tif"
         );
         assertNotNull(parsed);
-        assertEquals(parsed.getName(), "grau2.tif");
-        assertTrue(parsed.getType() == FTPFile.FILE_TYPE);
-        assertTrue(parsed.getTimestamp().get(Calendar.MONTH) == Calendar.AUGUST);
-        assertTrue(parsed.getTimestamp().get(Calendar.DAY_OF_MONTH) == 1);
-        assertTrue(parsed.getTimestamp().get(Calendar.HOUR_OF_DAY) == 10);
-        assertTrue(parsed.getTimestamp().get(Calendar.MINUTE) == 24);
+        assertEquals("grau2.tif", parsed.getName());
+        assertEquals(FTPFile.FILE_TYPE, parsed.getType());
+        assertEquals(Calendar.AUGUST, parsed.getTimestamp().get(Calendar.MONTH));
+        assertEquals(1, parsed.getTimestamp().get(Calendar.DAY_OF_MONTH));
+        assertEquals(10, parsed.getTimestamp().get(Calendar.HOUR_OF_DAY));
+        assertEquals(24, parsed.getTimestamp().get(Calendar.MINUTE));
         assertTrue(parsed.hasPermission(FTPFile.USER_ACCESS, FTPFile.READ_PERMISSION));
         assertTrue(parsed.hasPermission(FTPFile.GROUP_ACCESS, FTPFile.READ_PERMISSION));
         assertTrue(parsed.hasPermission(FTPFile.WORLD_ACCESS, FTPFile.READ_PERMISSION));
@@ -81,18 +81,18 @@ public class StingrayFTPEntryParserTest extends AbstractTestCase {
      * http://trac.cyberduck.ch/ticket/1198
      */
     public void testFolder() throws Exception {
-        FTPFile parsed = null;
+        FTPFile parsed;
 
         parsed = parser.parseFTPEntry(
                 "dr--r--r--                folder          0 Aug  1 10:18 TestCyberduck"
         );
         assertNotNull(parsed);
-        assertEquals(parsed.getName(), "TestCyberduck");
-        assertTrue(parsed.getType() == FTPFile.DIRECTORY_TYPE);
-        assertTrue(parsed.getTimestamp().get(Calendar.MONTH) == Calendar.AUGUST);
-        assertTrue(parsed.getTimestamp().get(Calendar.DAY_OF_MONTH) == 1);
-        assertTrue(parsed.getTimestamp().get(Calendar.HOUR_OF_DAY) == 10);
-        assertTrue(parsed.getTimestamp().get(Calendar.MINUTE) == 18);
+        assertEquals("TestCyberduck", parsed.getName());
+        assertEquals(FTPFile.DIRECTORY_TYPE, parsed.getType());
+        assertEquals(Calendar.AUGUST, parsed.getTimestamp().get(Calendar.MONTH));
+        assertEquals(1, parsed.getTimestamp().get(Calendar.DAY_OF_MONTH));
+        assertEquals(10, parsed.getTimestamp().get(Calendar.HOUR_OF_DAY));
+        assertEquals(18, parsed.getTimestamp().get(Calendar.MINUTE));
         assertTrue(parsed.hasPermission(FTPFile.USER_ACCESS, FTPFile.READ_PERMISSION));
         assertTrue(parsed.hasPermission(FTPFile.GROUP_ACCESS, FTPFile.READ_PERMISSION));
         assertTrue(parsed.hasPermission(FTPFile.WORLD_ACCESS, FTPFile.READ_PERMISSION));

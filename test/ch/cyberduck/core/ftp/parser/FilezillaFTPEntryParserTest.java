@@ -52,18 +52,18 @@ public class FilezillaFTPEntryParserTest extends AbstractTestCase {
     }
 
     public void testParse() throws Exception {
-        FTPFile parsed = null;
+        FTPFile parsed;
 
         // #3119
         parsed = parser.parseFTPEntry(
                 "-rw-r--r-- 1 ftp ftp         100847 Sep 10  2004 octfront2.jpg"
         );
         assertNotNull(parsed);
-        assertEquals(parsed.getName(), "octfront2.jpg");
-        assertTrue(parsed.getType() == FTPFile.FILE_TYPE);
+        assertEquals("octfront2.jpg", parsed.getName());
+        assertEquals(FTPFile.FILE_TYPE, parsed.getType());
         assertEquals(100847, parsed.getSize());
-        assertTrue(parsed.getTimestamp().get(Calendar.MONTH) == Calendar.SEPTEMBER);
-        assertTrue(parsed.getTimestamp().get(Calendar.DAY_OF_MONTH) == 10);
+        assertEquals(Calendar.SEPTEMBER, parsed.getTimestamp().get(Calendar.MONTH));
+        assertEquals(10, parsed.getTimestamp().get(Calendar.DAY_OF_MONTH));
         assertTrue(parsed.hasPermission(FTPFile.USER_ACCESS, FTPFile.READ_PERMISSION));
         assertTrue(parsed.hasPermission(FTPFile.GROUP_ACCESS, FTPFile.READ_PERMISSION));
         assertTrue(parsed.hasPermission(FTPFile.WORLD_ACCESS, FTPFile.READ_PERMISSION));

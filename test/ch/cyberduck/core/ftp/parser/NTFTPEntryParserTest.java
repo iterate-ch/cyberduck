@@ -89,18 +89,14 @@ public class NTFTPEntryParserTest extends AbstractTestCase {
         assertNotNull("Could not parse entry.", parsed);
         assertEquals("Thu Dec 05 17:03:00 1996",
                 df.format(parsed.getTimestamp().getTime()));
-        assertTrue("Should have been a directory.",
-                parsed.isDirectory());
+        assertTrue(parsed.isDirectory());
         assertEquals("absoft2", parsed.getName());
-//        assertEquals(-1, (int)parsed.getSize());
 
         parsed = parser.parseFTPEntry(
                 "12-03-96  06:38AM       <DIR>          123456");
         assertNotNull("Could not parse entry.", parsed);
-        assertTrue("Should have been a directory.",
-                parsed.isDirectory());
+        assertTrue(parsed.isDirectory());
         assertEquals("123456", parsed.getName());
-//        assertEquals(-1, (int)parsed.getSize());
     }
 
     public void testParseFieldsOnFile() throws Exception {
@@ -109,8 +105,7 @@ public class NTFTPEntryParserTest extends AbstractTestCase {
         assertNotNull("Could not parse entry.", parsed);
         assertEquals("Thu May 22 00:08:00 1997",
                 df.format(parsed.getTimestamp().getTime()));
-        assertTrue("Should have been a file.",
-                parsed.isFile());
+        assertTrue(parsed.isFile());
         assertEquals("AUTOEXEC.BAK", parsed.getName());
         assertEquals(5000000000l, parsed.getSize());
     }
@@ -125,22 +120,22 @@ public class NTFTPEntryParserTest extends AbstractTestCase {
         FTPFile parsed = parser.parseFTPEntry(
                 "12-03-96  06:38AM       <DIR>          123 xyz");
         assertNotNull(parsed);
-        assertEquals("name", "123 xyz", parsed.getName());
+        assertEquals("123 xyz", parsed.getName());
         parsed = parser.parseFTPEntry(
                 "12-03-96  06:38AM       <DIR>          123 abc xyz");
         assertNotNull(parsed);
-        assertEquals("name", "123 abc xyz", parsed.getName());
+        assertEquals("123 abc xyz", parsed.getName());
     }
 
     public void testElectic() throws Exception {
         FTPFile parsed = parser.parseFTPEntry(
                 "09-04-06  11:28AM                  149 gearkommandon with spaces.txt");
         assertNotNull(parsed);
-        assertEquals(parsed.getName(), "gearkommandon with spaces.txt");
-        assertTrue(parsed.getType() == FTPFile.FILE_TYPE);
-        assertTrue(parsed.getTimestamp().get(Calendar.MONTH) == Calendar.SEPTEMBER);
-        assertTrue(parsed.getTimestamp().get(Calendar.DAY_OF_MONTH) == 4);
-        assertTrue(parsed.getTimestamp().get(Calendar.YEAR) == 2006);
+        assertEquals("gearkommandon with spaces.txt", parsed.getName());
+        assertEquals(FTPFile.FILE_TYPE, parsed.getType());
+        assertEquals(Calendar.SEPTEMBER, parsed.getTimestamp().get(Calendar.MONTH));
+        assertEquals(4, parsed.getTimestamp().get(Calendar.DAY_OF_MONTH));
+        assertEquals(2006, parsed.getTimestamp().get(Calendar.YEAR));
     }
 
     public static Test suite() {

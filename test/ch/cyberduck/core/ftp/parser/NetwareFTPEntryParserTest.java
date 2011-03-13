@@ -64,25 +64,22 @@ public class NetwareFTPEntryParserTest extends AbstractTestCase {
         );
         assertNotNull(parsed);
         assertEquals(parsed.getName(), "CIMSscheduler_log_May02_4.txt");
-        assertTrue(parsed.getType() == FTPFile.FILE_TYPE);
+        assertEquals(FTPFile.FILE_TYPE, parsed.getType());
         assertEquals("wtubbs", parsed.getUser());
         assertEquals(24038, parsed.getSize());
-        final int year = Calendar.getInstance().get(Calendar.YEAR);
-        assertTrue(parsed.getTimestamp().get(Calendar.YEAR) == year);
-        assertTrue(parsed.getTimestamp().get(Calendar.MONTH) == Calendar.MAY);
-        assertTrue(parsed.getTimestamp().get(Calendar.DAY_OF_MONTH) == 5);
+        assertEquals(Calendar.MAY, parsed.getTimestamp().get(Calendar.MONTH));
+        assertEquals(5, parsed.getTimestamp().get(Calendar.DAY_OF_MONTH));
 
         parsed = parser.parseFTPEntry(
                 "- [RWCEAFMS] wtubbs 9965 May 01 18:15 CIMSscheduler_log_May01.txt"
         );
         assertNotNull(parsed);
         assertEquals(parsed.getName(), "CIMSscheduler_log_May01.txt");
-        assertTrue(parsed.getType() == FTPFile.FILE_TYPE);
+        assertEquals(FTPFile.FILE_TYPE, parsed.getType());
         assertEquals("wtubbs", parsed.getUser());
         assertEquals(9965, parsed.getSize());
-        assertTrue(parsed.getTimestamp().get(Calendar.YEAR) == year);
-        assertTrue(parsed.getTimestamp().get(Calendar.MONTH) == Calendar.MAY);
-        assertTrue(parsed.getTimestamp().get(Calendar.DAY_OF_MONTH) == 1);
+        assertEquals(Calendar.MAY, parsed.getTimestamp().get(Calendar.MONTH));
+        assertEquals(1, parsed.getTimestamp().get(Calendar.DAY_OF_MONTH));
     }
 
     /**
@@ -98,7 +95,7 @@ public class NetwareFTPEntryParserTest extends AbstractTestCase {
         );
         assertNotNull(parsed);
         assertEquals(parsed.getName(), "/data/FTP_pub/WelcomeTo_PeakFTP");
-        assertTrue(parsed.getType() == FTPFile.FILE_TYPE);
+        assertEquals(FTPFile.FILE_TYPE, parsed.getType());
     }
 
     public static Test suite() {

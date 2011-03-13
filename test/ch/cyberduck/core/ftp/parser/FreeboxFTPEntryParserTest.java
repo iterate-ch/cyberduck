@@ -29,7 +29,7 @@ import org.apache.commons.net.ftp.FTPFileEntryParser;
 import java.util.Calendar;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class FreeboxFTPEntryParserTest extends AbstractTestCase {
 
@@ -52,7 +52,7 @@ public class FreeboxFTPEntryParserTest extends AbstractTestCase {
     }
 
     public void testParse() throws Exception {
-        FTPFile parsed = null;
+        FTPFile parsed;
 
 
         parsed = parser.parseFTPEntry(
@@ -60,24 +60,24 @@ public class FreeboxFTPEntryParserTest extends AbstractTestCase {
         );
         assertNotNull(parsed);
         assertEquals(parsed.getName(), "M6 - Capital 15-04-2007 21h37 1h40m.ts");
-        assertTrue(parsed.getType() == FTPFile.FILE_TYPE);
+        assertEquals(FTPFile.FILE_TYPE, parsed.getType());
         assertEquals("freebox", parsed.getUser());
         assertEquals("freebox", parsed.getGroup());
         assertEquals(2064965868, parsed.getSize());
-        assertTrue(parsed.getTimestamp().get(Calendar.MONTH) == Calendar.APRIL);
-        assertTrue(parsed.getTimestamp().get(Calendar.DAY_OF_MONTH) == 15);
+        assertEquals(Calendar.APRIL, parsed.getTimestamp().get(Calendar.MONTH));
+        assertEquals(15, parsed.getTimestamp().get(Calendar.DAY_OF_MONTH));
 
         parsed = parser.parseFTPEntry(
                 "-rw-r--r--   1  freebox  freebox 75906880 Sep 08 06:33 Direct 8 - Gym direct - 08-09-2007 08h30 1h08m.ts"
         );
         assertNotNull(parsed);
-        assertEquals(parsed.getName(), "Direct 8 - Gym direct - 08-09-2007 08h30 1h08m.ts");
-        assertTrue(parsed.getType() == FTPFile.FILE_TYPE);
+        assertEquals("Direct 8 - Gym direct - 08-09-2007 08h30 1h08m.ts", parsed.getName());
+        assertEquals(FTPFile.FILE_TYPE, parsed.getType());
         assertEquals("freebox", parsed.getUser());
         assertEquals("freebox", parsed.getGroup());
         assertEquals(75906880, parsed.getSize());
-        assertTrue(parsed.getTimestamp().get(Calendar.MONTH) == Calendar.SEPTEMBER);
-        assertTrue(parsed.getTimestamp().get(Calendar.DAY_OF_MONTH) == 8);
+        assertEquals(Calendar.SEPTEMBER, parsed.getTimestamp().get(Calendar.MONTH));
+        assertEquals(8, parsed.getTimestamp().get(Calendar.DAY_OF_MONTH));
         assertTrue(parsed.hasPermission(FTPFile.USER_ACCESS, FTPFile.READ_PERMISSION));
         assertTrue(parsed.hasPermission(FTPFile.GROUP_ACCESS, FTPFile.READ_PERMISSION));
         assertTrue(parsed.hasPermission(FTPFile.WORLD_ACCESS, FTPFile.READ_PERMISSION));
@@ -92,7 +92,7 @@ public class FreeboxFTPEntryParserTest extends AbstractTestCase {
                 "-rw-r--r--   1  freebox  freebox 1171138668 May 19 17:20 France 3 national - 19-05-2007 18h15 1h05m.ts"
         );
         assertNotNull(parsed);
-        assertEquals(parsed.getName(), "France 3 national - 19-05-2007 18h15 1h05m.ts");
+        assertEquals("France 3 national - 19-05-2007 18h15 1h05m.ts", parsed.getName());
     }
 
     public static Test suite() {

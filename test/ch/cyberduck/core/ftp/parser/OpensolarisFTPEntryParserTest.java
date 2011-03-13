@@ -53,7 +53,7 @@ public class OpensolarisFTPEntryParserTest extends AbstractTestCase {
     }
 
     public void testParse() throws Exception {
-        FTPFile parsed = null;
+        FTPFile parsed;
 
         // #3689
         parsed = parser.parseFTPEntry(
@@ -61,10 +61,10 @@ public class OpensolarisFTPEntryParserTest extends AbstractTestCase {
         );
         assertNotNull(parsed);
         assertEquals(parsed.getName(), "data");
-        assertTrue(parsed.getType() == FTPFile.DIRECTORY_TYPE);
+        assertEquals(FTPFile.DIRECTORY_TYPE, parsed.getType());
         assertEquals(7, parsed.getSize());
-        assertTrue(parsed.getTimestamp().get(Calendar.MONTH) == Calendar.SEPTEMBER);
-        assertTrue(parsed.getTimestamp().get(Calendar.DAY_OF_MONTH) == 6);
+        assertEquals(Calendar.SEPTEMBER, parsed.getTimestamp().get(Calendar.MONTH));
+        assertEquals(6, parsed.getTimestamp().get(Calendar.DAY_OF_MONTH));
         assertTrue(parsed.hasPermission(FTPFile.USER_ACCESS, FTPFile.READ_PERMISSION));
         assertTrue(parsed.hasPermission(FTPFile.USER_ACCESS, FTPFile.WRITE_PERMISSION));
         assertTrue(parsed.hasPermission(FTPFile.USER_ACCESS, FTPFile.EXECUTE_PERMISSION));

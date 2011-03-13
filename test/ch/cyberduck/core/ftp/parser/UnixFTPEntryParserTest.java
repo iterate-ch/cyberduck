@@ -228,7 +228,7 @@ public class UnixFTPEntryParserTest extends AbstractTestCase {
         parsed = parser.parseFTPEntry(
                 "-rwx------ 1 user group          38635 Jul 13 2006  users.xml");
         assertNotNull(parsed);
-        assertTrue(parsed.getType() == FTPFile.FILE_TYPE);
+        assertEquals(FTPFile.FILE_TYPE, parsed.getType());
         assertEquals("users.xml", parsed.getName());
         assertEquals("user", parsed.getUser());
         assertEquals("group", parsed.getGroup());
@@ -281,12 +281,12 @@ public class UnixFTPEntryParserTest extends AbstractTestCase {
                 "drwxrwsr-x+ 34 cristol  molvis      3072 Jul 12 20:16 molvis");
         assertNotNull(parsed);
         assertEquals(parsed.getName(), "molvis");
-        assertTrue(parsed.getType() == FTPFile.DIRECTORY_TYPE);
-        assertEquals(parsed.getUser(), "cristol");
-        assertEquals(parsed.getGroup(), "molvis");
+        assertEquals(FTPFile.DIRECTORY_TYPE, parsed.getType());
+        assertEquals("cristol", parsed.getUser());
+        assertEquals("molvis", parsed.getGroup());
         assertNotNull(parsed.getTimestamp());
-        assertTrue(parsed.getTimestamp().get(Calendar.MONTH) == Calendar.JULY);
-        assertTrue(parsed.getTimestamp().get(Calendar.DAY_OF_MONTH) == 12);
+        assertEquals(Calendar.JULY, parsed.getTimestamp().get(Calendar.MONTH));
+        assertEquals(12, parsed.getTimestamp().get(Calendar.DAY_OF_MONTH));
     }
 
     public void testUnknownTimestampFormat() throws Exception {

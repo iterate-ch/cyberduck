@@ -29,7 +29,7 @@ import org.apache.commons.net.ftp.FTPFileEntryParser;
 import java.util.Calendar;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class HPTru64ParserTest extends AbstractTestCase {
 
@@ -57,19 +57,19 @@ public class HPTru64ParserTest extends AbstractTestCase {
      * @throws Exception
      */
     public void testParse() throws Exception {
-        FTPFile parsed = null;
+        FTPFile parsed;
 
         parsed = parser.parseFTPEntry(
                 "drwxr-xr-x   7 ToysPKG  advertise   8192 Jun 24 11:58 Private Label Mock"
         );
         assertNotNull(parsed);
         assertEquals(parsed.getName(), "Private Label Mock");
-        assertTrue(parsed.getType() == FTPFile.DIRECTORY_TYPE);
+        assertEquals(FTPFile.DIRECTORY_TYPE, parsed.getType());
         assertEquals("ToysPKG", parsed.getUser());
         assertEquals("advertise", parsed.getGroup());
         assertEquals(8192, parsed.getSize());
-        assertTrue(parsed.getTimestamp().get(Calendar.MONTH) == Calendar.JUNE);
-        assertTrue(parsed.getTimestamp().get(Calendar.DAY_OF_MONTH) == 24);
+        assertEquals(Calendar.JUNE, parsed.getTimestamp().get(Calendar.MONTH));
+        assertEquals(24, parsed.getTimestamp().get(Calendar.DAY_OF_MONTH));
 
         parsed = parser.parseFTPEntry(
                 "-rw-r--r--   1 ToysPKG  advertise24809879 Jun 25 10:54 TRU-Warning Guide Master CD.sitx"

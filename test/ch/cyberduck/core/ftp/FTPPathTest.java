@@ -23,7 +23,6 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 import ch.cyberduck.core.*;
 
-import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPFileEntryParser;
 
 import java.util.Arrays;
@@ -53,8 +52,6 @@ public class FTPPathTest extends AbstractTestCase {
     public void test3243() throws Exception {
         FTPFileEntryParser parser = new FTPParserFactory().createFileEntryParser("UNIX");
 
-        FTPFile parsed = null;
-
         FTPPath path = (FTPPath) PathFactory.createPath(SessionFactory.createSession(new Host(Protocol.FTP, "localhost")),
                 "/SunnyD", Path.DIRECTORY_TYPE);
         assertEquals("SunnyD", path.getName());
@@ -70,8 +67,6 @@ public class FTPPathTest extends AbstractTestCase {
 
     public void testParseSymbolicLink() throws Exception {
         FTPFileEntryParser parser = new FTPParserFactory().createFileEntryParser("UNIX");
-
-        FTPFile parsed = null;
 
         FTPPath path = (FTPPath) PathFactory.createPath(SessionFactory.createSession(new Host(Protocol.FTP, "localhost")),
                 "/", Path.DIRECTORY_TYPE);
@@ -89,8 +84,6 @@ public class FTPPathTest extends AbstractTestCase {
 
     public void test3763() throws Exception {
         FTPFileEntryParser parser = new FTPParserFactory().createFileEntryParser("UNIX");
-
-        FTPFile parsed = null;
 
         FTPPath path = (FTPPath) PathFactory.createPath(SessionFactory.createSession(new Host(Protocol.FTP, "localhost")),
                 "/www", Path.DIRECTORY_TYPE);

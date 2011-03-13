@@ -19,10 +19,11 @@ package ch.cyberduck.core.ftp.parser;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.ftp.FTPParserFactory;
 import junit.framework.Test;
 import junit.framework.TestSuite;
+import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.ftp.FTPParserFactory;
+
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPFileEntryParser;
 
@@ -59,11 +60,11 @@ public class vsFTPdEntryParserTest extends AbstractTestCase {
                 "-rw-r--r--    1 3642     3643          106 Nov 15 22:20 index.html"
         );
         assertNotNull(parsed);
-        assertEquals(parsed.getName(), "index.html");
-        assertTrue(parsed.getType() == FTPFile.FILE_TYPE);
+        assertEquals("index.html", parsed.getName());
+        assertEquals(FTPFile.FILE_TYPE, parsed.getType());
         assertEquals(106, parsed.getSize());
-        assertTrue(parsed.getTimestamp().get(Calendar.MONTH) == Calendar.NOVEMBER);
-        assertTrue(parsed.getTimestamp().get(Calendar.DAY_OF_MONTH) == 15);
+        assertEquals(Calendar.NOVEMBER, parsed.getTimestamp().get(Calendar.MONTH));
+        assertEquals(15, parsed.getTimestamp().get(Calendar.DAY_OF_MONTH));
         assertTrue(parsed.hasPermission(FTPFile.USER_ACCESS, FTPFile.READ_PERMISSION));
         assertTrue(parsed.hasPermission(FTPFile.GROUP_ACCESS, FTPFile.READ_PERMISSION));
         assertTrue(parsed.hasPermission(FTPFile.WORLD_ACCESS, FTPFile.READ_PERMISSION));
