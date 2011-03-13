@@ -53,24 +53,18 @@
     </path>
 
     <target name="version" depends="revision">
-        <!-- remove any non-digits (e.g. a trailing M) from the current revision -->
-        <propertyregex property="svn.revision.stripped"
-                       input="${svn.revision}"
-                       regexp="([\d]+).*"
-                       select="\1"/>
-
         <propertyregex property="minor"
                        input="${cyberduck.version.minor}.0"
                        regexp="(\d)([\w\d]*)\.(\d)(\.\d)?"
                        select="\1.\3"/>
 
         <property name="version"
-                  value="${cyberduck.version.major}.${minor}.${svn.revision.stripped}"/>
+                  value="${cyberduck.version.major}.${minor}.${svn.revision}"/>
         <property name="shortversion"
-                  value="${cyberduck.version.major}.${cyberduck.version.minor} (${svn.revision.stripped})"/>
+                  value="${cyberduck.version.major}.${cyberduck.version.minor} (${svn.revision})"/>
         <!-- pattern = "[revision] ([major].[minor])" -->
         <property name="updaterversion"
-                  value="${svn.revision.stripped} (${cyberduck.version.major}.${cyberduck.version.minor})"/>
+                  value="${svn.revision} (${cyberduck.version.major}.${cyberduck.version.minor})"/>
     </target>
 
     <target name="build" depends="version, archive">
@@ -204,7 +198,7 @@
 
     <target name="package-beta" depends="version">
         <property name="setup.file"
-                  location="${build}/${app.name}-Installer-${cyberduck.version.major}.${cyberduck.version.minor}.${svn.revision.stripped}.exe"/>
+                  location="${build}/${app.name}-Installer-${cyberduck.version.major}.${cyberduck.version.minor}.${svn.revision}.exe"/>
         <antcall target="package">
             <param name="changelog.wyp" value="${www.update}/changelog-beta.wyp"/>
         </antcall>
@@ -212,7 +206,7 @@
 
     <target name="package-nightly" depends="version">
         <property name="setup.file"
-                  location="${build}/${app.name}-Installer-${cyberduck.version.major}.${cyberduck.version.minor}.${svn.revision.stripped}.exe"/>
+                  location="${build}/${app.name}-Installer-${cyberduck.version.major}.${cyberduck.version.minor}.${svn.revision}.exe"/>
         <antcall target="package">
             <param name="changelog.wyp" value="${www.update}/changelog-nightly.wyp"/>
         </antcall>
@@ -220,7 +214,7 @@
 
     <target name="package-dev" depends="version">
         <property name="setup.file"
-                  location="${build}/${app.name}-Installer-${cyberduck.version.major}.${cyberduck.version.minor}.${svn.revision.stripped}.exe"/>
+                  location="${build}/${app.name}-Installer-${cyberduck.version.major}.${cyberduck.version.minor}.${svn.revision}.exe"/>
         <antcall target="package">
             <param name="changelog.wyp" value="${www.update}/changelog-dev.wyp"/>
         </antcall>
