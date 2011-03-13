@@ -121,21 +121,6 @@ public class FTPPath extends Path {
         try {
             return action.run();
         }
-        catch(FTPException failure) {
-            log.warn("Error requesting data socket:" + failure.getMessage());
-            // Fallback handling
-            if(Preferences.instance().getBoolean("ftp.connectmode.fallback")) {
-                try {
-                    return this.fallback(action);
-                }
-                catch(IOException e) {
-                    this.getSession().interrupt();
-                    log.warn("Connect mode fallback failed:" + e.getMessage());
-                    // Throw original error message
-                    throw failure;
-                }
-            }
-        }
         catch(SocketTimeoutException failure) {
             log.warn("Timeout opening data socket:" + failure.getMessage());
             // Fallback handling
