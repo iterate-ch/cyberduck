@@ -57,26 +57,26 @@ public class UnixFTPEntryParserTest extends AbstractTestCase {
                 "drw-rw-rw-   1 user      ftp             0  DEC 11 20:56 ADMIN_Documentation");
         assertNotNull(parsed);
         assertNotNull(parsed.getTimestamp());
-        assertTrue(parsed.getTimestamp().get(Calendar.MONTH) == Calendar.DECEMBER);
-        assertTrue(parsed.getTimestamp().get(Calendar.DAY_OF_MONTH) == 11);
-        assertTrue(parsed.getTimestamp().get(Calendar.HOUR_OF_DAY) == 20);
-        assertTrue(parsed.getTimestamp().get(Calendar.MINUTE) == 56);
+        assertEquals(Calendar.DECEMBER, parsed.getTimestamp().get(Calendar.MONTH));
+        assertEquals(11, parsed.getTimestamp().get(Calendar.DAY_OF_MONTH));
+        assertEquals(20, parsed.getTimestamp().get(Calendar.HOUR_OF_DAY));
+        assertEquals(56, parsed.getTimestamp().get(Calendar.MINUTE));
 
         parsed = parser.parseFTPEntry(
                 "drwxr-xr-x    3 ftp      ftp           512 Mar 15  2004 doc");
         assertNotNull(parsed);
         assertNotNull(parsed.getTimestamp());
-        assertTrue(parsed.getTimestamp().get(Calendar.YEAR) == 2004);
-        assertTrue(parsed.getTimestamp().get(Calendar.MONTH) == Calendar.MARCH);
-        assertTrue(parsed.getTimestamp().get(Calendar.DAY_OF_MONTH) == 15);
+        assertEquals(2004, parsed.getTimestamp().get(Calendar.YEAR));
+        assertEquals(Calendar.MARCH, parsed.getTimestamp().get(Calendar.MONTH));
+        assertEquals(15, parsed.getTimestamp().get(Calendar.DAY_OF_MONTH));
 
         parsed = parser.parseFTPEntry(
                 "drwxrwxr-x    2 ftp      ftp           512 Oct 23  2007 aurox");
         assertNotNull(parsed);
         assertNotNull(parsed.getTimestamp());
-        assertTrue(parsed.getTimestamp().get(Calendar.YEAR) == 2007);
-        assertTrue(parsed.getTimestamp().get(Calendar.MONTH) == Calendar.OCTOBER);
-        assertTrue(parsed.getTimestamp().get(Calendar.DAY_OF_MONTH) == 23);
+        assertEquals(2007, parsed.getTimestamp().get(Calendar.YEAR));
+        assertEquals(Calendar.OCTOBER, parsed.getTimestamp().get(Calendar.MONTH));
+        assertEquals(23, parsed.getTimestamp().get(Calendar.DAY_OF_MONTH));
     }
 
     public void testParseFTPEntryExpected() throws Exception {
@@ -88,14 +88,14 @@ public class UnixFTPEntryParserTest extends AbstractTestCase {
                 "drw-rw-rw-   1 user      ftp             0  Mar 11 20:56 ADMIN_Documentation");
         assertNotNull(parsed);
         assertEquals(parsed.getType(), FTPFile.DIRECTORY_TYPE);
-        assertEquals(parsed.getUser(), "user");
-        assertEquals(parsed.getGroup(), "ftp");
-        assertEquals(parsed.getName(), "ADMIN_Documentation");
+        assertEquals("user", parsed.getUser());
+        assertEquals("ftp", parsed.getGroup());
+        assertEquals("ADMIN_Documentation", parsed.getName());
 
         parsed = parser.parseFTPEntry(
                 "drwxr--r--   1 user     group          0 Feb 14 18:14 Downloads");
         assertNotNull(parsed);
-        assertEquals(parsed.getName(), "Downloads");
+        assertEquals("Downloads", parsed.getName());
     }
 
     /**
@@ -109,7 +109,7 @@ public class UnixFTPEntryParserTest extends AbstractTestCase {
         parsed = parser.parseFTPEntry(
                 "drw-rw-rw-   1 user      ftp             0  Mar 11 20:56  ADMIN_Documentation");
         assertNotNull(parsed);
-        assertEquals(parsed.getName(), " ADMIN_Documentation");
+        assertEquals(" ADMIN_Documentation", parsed.getName());
     }
 
     /**
@@ -123,7 +123,7 @@ public class UnixFTPEntryParserTest extends AbstractTestCase {
         parsed = parser.parseFTPEntry(
                 "drw-rw-rw-   1 user      ftp             0  Mar 11 20:56 ADMIN_Documentation ");
         assertNotNull(parsed);
-        assertEquals(parsed.getName(), "ADMIN_Documentation ");
+        assertEquals("ADMIN_Documentation ", parsed.getName());
     }
 
     /**
@@ -141,37 +141,53 @@ public class UnixFTPEntryParserTest extends AbstractTestCase {
         );
         assertNotNull(parsed);
         assertTrue(parsed.isFile());
-        assertEquals(parsed.getName(), "Cyberduck-2.7.3.dmg");
-        assertTrue(parsed.getSize() == (long) (9.0 * 1048576));
+        assertEquals("Cyberduck-2.7.3.dmg", parsed.getName());
+        assertEquals((long) (9.0 * 1048576), parsed.getSize());
         assertEquals(parsed.getUser(), "ftp");
         assertEquals(parsed.getGroup(), "operator");
         assertNotNull(parsed.getTimestamp());
-        assertTrue(parsed.getTimestamp().get(Calendar.MONTH) == Calendar.MARCH);
-        assertTrue(parsed.getTimestamp().get(Calendar.DAY_OF_MONTH) == 22);
+        assertEquals(Calendar.MARCH, parsed.getTimestamp().get(Calendar.MONTH));
+        assertEquals(22, parsed.getTimestamp().get(Calendar.DAY_OF_MONTH));
 
         parsed = parser.parseFTPEntry(
                 "-rw-rw-rw- 1 ftp operator 61.8M Mar 7 18:42 GC Wayfinding pics.zip "
         );
         assertNotNull(parsed);
         assertTrue(parsed.isFile());
-        assertTrue(parsed.getSize() == (long) (61.8 * 1048576));
-        assertEquals(parsed.getUser(), "ftp");
-        assertEquals(parsed.getGroup(), "operator");
+        assertEquals((long) (61.8 * 1048576), parsed.getSize());
+        assertEquals("ftp", parsed.getUser());
+        assertEquals("operator", parsed.getGroup());
         assertNotNull(parsed.getTimestamp());
-        assertTrue(parsed.getTimestamp().get(Calendar.MONTH) == Calendar.MARCH);
-        assertTrue(parsed.getTimestamp().get(Calendar.DAY_OF_MONTH) == 7);
+        assertEquals(Calendar.MARCH, parsed.getTimestamp().get(Calendar.MONTH));
+        assertEquals(7, parsed.getTimestamp().get(Calendar.DAY_OF_MONTH));
 
         parsed = parser.parseFTPEntry(
                 "-rw-rw-rw- 1 ftp operator 172.4k Mar 7 16:01 HEALY071.TXT "
         );
         assertNotNull(parsed);
         assertTrue(parsed.isFile());
-        assertTrue(parsed.getSize() == (long) (172.4 * 1024));
+        assertEquals((long) (172.4 * 1024), parsed.getSize());
         assertEquals(parsed.getUser(), "ftp");
         assertEquals(parsed.getGroup(), "operator");
         assertNotNull(parsed.getTimestamp());
-        assertTrue(parsed.getTimestamp().get(Calendar.MONTH) == Calendar.MARCH);
-        assertTrue(parsed.getTimestamp().get(Calendar.DAY_OF_MONTH) == 7);
+        assertEquals(Calendar.MARCH, parsed.getTimestamp().get(Calendar.MONTH));
+        assertEquals(7, parsed.getTimestamp().get(Calendar.DAY_OF_MONTH));
+    }
+
+    public void testCurrentYear() throws Exception {
+        FTPFileEntryParser parser = new FTPParserFactory().createFileEntryParser("UNIX");
+
+        FTPFile parsed;
+
+        parsed = parser.parseFTPEntry(
+                "-rw-r--r--   1 20708    205             194 Oct 17 14:40 D3I0_805.fixlist");
+        assertNotNull(parsed);
+        assertTrue(parsed.isFile());
+        assertNotNull(parsed.getTimestamp());
+        assertEquals(Calendar.OCTOBER, parsed.getTimestamp().get(Calendar.MONTH));
+        assertEquals(17, parsed.getTimestamp().get(Calendar.DAY_OF_MONTH));
+        assertEquals(14, parsed.getTimestamp().get(Calendar.HOUR_OF_DAY));
+        assertEquals(40, parsed.getTimestamp().get(Calendar.MINUTE));
     }
 
     /**
@@ -185,55 +201,41 @@ public class UnixFTPEntryParserTest extends AbstractTestCase {
         FTPFile parsed;
 
         parsed = parser.parseFTPEntry(
-                "-rw-r--r--   1 20708    205             194 Oct 17 14:40 D3I0_805.fixlist");
-        assertNotNull(parsed);
-        assertTrue(parsed.isFile());
-        assertEquals(parsed.getName(), "D3I0_805.fixlist");
-        assertEquals(parsed.getUser(), "20708");
-        assertEquals(parsed.getGroup(), "205");
-        assertNotNull(parsed.getTimestamp());
-        assertTrue(parsed.getTimestamp().get(Calendar.MONTH) == Calendar.OCTOBER);
-        assertTrue(parsed.getTimestamp().get(Calendar.DAY_OF_MONTH) == 17);
-        assertTrue(parsed.getTimestamp().get(Calendar.YEAR) == Calendar.getInstance().get(Calendar.YEAR));
-        assertTrue(parsed.getTimestamp().get(Calendar.HOUR_OF_DAY) == 14);
-        assertTrue(parsed.getTimestamp().get(Calendar.MINUTE) == 40);
-
-        parsed = parser.parseFTPEntry(
                 "-rw-r--r--   1 20708    205         3553312 Feb 18 2005  D3I0_515.fmr");
         assertNotNull(parsed);
         assertTrue(parsed.isFile());
-        assertEquals(parsed.getName(), "D3I0_515.fmr");
-        assertEquals(parsed.getUser(), "20708");
-        assertEquals(parsed.getGroup(), "205");
+        assertEquals("D3I0_515.fmr", parsed.getName());
+        assertEquals("20708", parsed.getUser());
+        assertEquals("205", parsed.getGroup());
         assertNotNull(parsed.getTimestamp());
-        assertTrue(parsed.getTimestamp().get(Calendar.MONTH) == Calendar.FEBRUARY);
-        assertTrue(parsed.getTimestamp().get(Calendar.DAY_OF_MONTH) == 18);
-        assertTrue(parsed.getTimestamp().get(Calendar.YEAR) == 2005);
+        assertEquals(Calendar.FEBRUARY, parsed.getTimestamp().get(Calendar.MONTH));
+        assertEquals(18, parsed.getTimestamp().get(Calendar.DAY_OF_MONTH));
+        assertEquals(2005, parsed.getTimestamp().get(Calendar.YEAR));
 
         parsed = parser.parseFTPEntry(
                 "drwxr-sr-x  14 17037    209            4096 Oct  6 2000  v3r7");
         assertNotNull(parsed);
         assertTrue(parsed.isDirectory());
-        assertEquals(parsed.getName(), "v3r7");
-        assertEquals(parsed.getUser(), "17037");
-        assertEquals(parsed.getGroup(), "209");
+        assertEquals("v3r7", parsed.getName());
+        assertEquals("17037", parsed.getUser());
+        assertEquals("209", parsed.getGroup());
         assertNotNull(parsed.getTimestamp());
-        assertTrue(parsed.getTimestamp().get(Calendar.MONTH) == Calendar.OCTOBER);
-        assertTrue(parsed.getTimestamp().get(Calendar.DAY_OF_MONTH) == 6);
-        assertTrue(parsed.getTimestamp().get(Calendar.YEAR) == 2000);
+        assertEquals(Calendar.OCTOBER, parsed.getTimestamp().get(Calendar.MONTH));
+        assertEquals(6, parsed.getTimestamp().get(Calendar.DAY_OF_MONTH));
+        assertEquals(2000, parsed.getTimestamp().get(Calendar.YEAR));
 
         // #2895
         parsed = parser.parseFTPEntry(
                 "-rwx------ 1 user group          38635 Jul 13 2006  users.xml");
         assertNotNull(parsed);
         assertTrue(parsed.getType() == FTPFile.FILE_TYPE);
-        assertEquals(parsed.getName(), "users.xml");
-        assertEquals(parsed.getUser(), "user");
-        assertEquals(parsed.getGroup(), "group");
+        assertEquals("users.xml", parsed.getName());
+        assertEquals("user", parsed.getUser());
+        assertEquals("group", parsed.getGroup());
         assertNotNull(parsed.getTimestamp());
-        assertTrue(parsed.getTimestamp().get(Calendar.MONTH) == Calendar.JULY);
-        assertTrue(parsed.getTimestamp().get(Calendar.DAY_OF_MONTH) == 13);
-        assertTrue(parsed.getTimestamp().get(Calendar.YEAR) == 2006);
+        assertEquals(Calendar.JULY, parsed.getTimestamp().get(Calendar.MONTH));
+        assertEquals(13, parsed.getTimestamp().get(Calendar.DAY_OF_MONTH));
+        assertEquals(2006, parsed.getTimestamp().get(Calendar.YEAR));
     }
 
     public void testLowerCaseMonths() throws Exception {
@@ -244,13 +246,13 @@ public class UnixFTPEntryParserTest extends AbstractTestCase {
         parsed = parser.parseFTPEntry(
                 "drwxrwxrwx    41 spinkb  spinkb      1394 jan 21 20:57 Desktop");
         assertNotNull(parsed);
-        assertEquals(parsed.getName(), "Desktop");
-        assertTrue(parsed.getType() == FTPFile.DIRECTORY_TYPE);
-        assertEquals(parsed.getUser(), "spinkb");
-        assertEquals(parsed.getGroup(), "spinkb");
+        assertEquals("Desktop", parsed.getName());
+        assertEquals(FTPFile.DIRECTORY_TYPE, parsed.getType());
+        assertEquals("spinkb", parsed.getUser());
+        assertEquals("spinkb", parsed.getGroup());
         assertNotNull(parsed.getTimestamp());
-        assertTrue(parsed.getTimestamp().get(Calendar.MONTH) == Calendar.JANUARY);
-        assertTrue(parsed.getTimestamp().get(Calendar.DAY_OF_MONTH) == 21);
+        assertEquals(Calendar.JANUARY, parsed.getTimestamp().get(Calendar.MONTH));
+        assertEquals(21, parsed.getTimestamp().get(Calendar.DAY_OF_MONTH));
     }
 
     public void testUpperCaseMonths() throws Exception {
@@ -261,12 +263,12 @@ public class UnixFTPEntryParserTest extends AbstractTestCase {
         parsed = parser.parseFTPEntry(
                 "drwxrwxrwx    41 spinkb  spinkb      1394 Feb 21 20:57 Desktop");
         assertNotNull(parsed);
-        assertEquals(parsed.getName(), "Desktop");
-        assertTrue(parsed.getType() == FTPFile.DIRECTORY_TYPE);
-        assertEquals(parsed.getUser(), "spinkb");
-        assertEquals(parsed.getGroup(), "spinkb");
-        assertTrue(parsed.getTimestamp().get(Calendar.MONTH) == Calendar.FEBRUARY);
-        assertTrue(parsed.getTimestamp().get(Calendar.DAY_OF_MONTH) == 21);
+        assertEquals("Desktop", parsed.getName());
+        assertEquals(FTPFile.DIRECTORY_TYPE, parsed.getType());
+        assertEquals("spinkb", parsed.getUser());
+        assertEquals("spinkb", parsed.getGroup());
+        assertEquals(Calendar.FEBRUARY, parsed.getTimestamp().get(Calendar.MONTH));
+        assertEquals(21, parsed.getTimestamp().get(Calendar.DAY_OF_MONTH));
     }
 
     public void testSolarisAcl() throws Exception {
@@ -338,8 +340,6 @@ public class UnixFTPEntryParserTest extends AbstractTestCase {
         );
         assertNotNull(parsed);
         assertNotNull(parsed.getTimestamp());
-        assertEquals(parsed.getTimestamp().get(Calendar.MONTH), Calendar.FEBRUARY);
-        assertEquals(parsed.getTimestamp().get(Calendar.YEAR), Calendar.getInstance().get(Calendar.YEAR));
     }
 
     public void testCarriageReturn() throws Exception {
@@ -423,9 +423,8 @@ public class UnixFTPEntryParserTest extends AbstractTestCase {
         assertEquals("owner", parsed.getUser());
         assertEquals("group", parsed.getGroup());
         assertNotNull(parsed.getTimestamp());
-        assertEquals(parsed.getTimestamp().get(Calendar.MONTH), Calendar.DECEMBER);
-        assertTrue(parsed.getTimestamp().get(Calendar.DAY_OF_MONTH) == 5);
-        assertEquals(parsed.getTimestamp().get(Calendar.YEAR), Calendar.getInstance().get(Calendar.YEAR));
+        assertEquals(Calendar.DECEMBER, parsed.getTimestamp().get(Calendar.MONTH));
+        assertEquals(5, parsed.getTimestamp().get(Calendar.DAY_OF_MONTH));
 
         // #5505
         parsed = parser.parseFTPEntry(
@@ -436,9 +435,9 @@ public class UnixFTPEntryParserTest extends AbstractTestCase {
         assertEquals("owner", parsed.getUser());
         assertEquals("group", parsed.getGroup());
         assertNotNull(parsed.getTimestamp());
-        assertEquals(parsed.getTimestamp().get(Calendar.MONTH), Calendar.JANUARY);
-        assertTrue(parsed.getTimestamp().get(Calendar.DAY_OF_MONTH) == 22);
-        assertEquals(parsed.getTimestamp().get(Calendar.YEAR), 2009);
+        assertEquals(Calendar.JANUARY, parsed.getTimestamp().get(Calendar.MONTH));
+        assertEquals(22, parsed.getTimestamp().get(Calendar.DAY_OF_MONTH));
+        assertEquals(2009, parsed.getTimestamp().get(Calendar.YEAR));
 
     }
 
