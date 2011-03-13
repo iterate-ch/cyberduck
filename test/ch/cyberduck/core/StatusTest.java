@@ -38,11 +38,11 @@ public class StatusTest extends AbstractTestCase {
 
     public void testGetSizeAsString() throws Exception {
         assertEquals("1.0 KB", Status.getSizeAsString(1024));
-        assertEquals("1.4 KB", Status.getSizeAsString(1500));
-        assertEquals("1.9 KB", Status.getSizeAsString(2000));
+        assertEquals("1.5 KB", Status.getSizeAsString(1500));
+        assertEquals("2.0 KB", Status.getSizeAsString(2000));
         assertEquals("1.0 MB", Status.getSizeAsString(1048576));
         assertEquals("1.0 GB", Status.getSizeAsString(1073741824));
-        assertEquals("375.2 MB", Status.getSizeAsString(393495974));
+        assertEquals("375.3 MB", Status.getSizeAsString(393495974));
     }
 
     public void testSetComplete() throws Exception {
