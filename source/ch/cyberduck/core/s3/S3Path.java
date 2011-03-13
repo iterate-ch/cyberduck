@@ -886,7 +886,6 @@ public class S3Path extends CloudPath {
                                 Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
                         if(null != bucket.getOwner()) {
                             p.attributes().setOwner(bucket.getOwner().getDisplayName());
-                            p.attributes().setGroup(bucket.getOwner().getId());
                         }
                         if(null != bucket.getCreationDate()) {
                             p.attributes().setCreationDate(bucket.getCreationDate().getTime());
@@ -906,7 +905,10 @@ public class S3Path extends CloudPath {
                         // specified prefix. If you omit this optional argument, the value
                         // of Prefix for your query will be the empty string.
                         // In other words, the results will be not be restricted by prefix.
-                        prefix = this.getKey() + String.valueOf(Path.DELIMITER);
+                        prefix = this.getKey();
+                        if(!prefix.endsWith(String.valueOf(Path.DELIMITER))) {
+                            prefix += Path.DELIMITER;
+                        }
                     }
                     // If this optional, Unicode string parameter is included with your request,
                     // then keys that contain the same string between the prefix and the first
@@ -1077,9 +1079,9 @@ public class S3Path extends CloudPath {
                 else {
                     S3Object object = new S3Object(this.getKey() + Path.DELIMITER);
                     object.setBucketName(this.getContainerName());
-                    // Set object explicitly to private access by default.
                     //AccessControlList acl = this.getAccessControlList(new Permission(
                     //        Preferences.instance().getProperty("queue.upload.permissions.folder.default")));
+                    // Set object explicitly to private access by default.
                     AccessControlList acl = AccessControlList.REST_CANNED_PRIVATE;
                     object.setAcl(acl);
                     object.setContentLength(0);
@@ -1099,17 +1101,52 @@ public class S3Path extends CloudPath {
         }
     }
 
+    /**
+     * Write ACL to bucket or object.
+     *
+     * @param acl       The updated access control list.
+     * @param recursive Descend into directory placeholders
+     */
     @Override
     public void writeAcl(Acl acl, boolean recursive) {
         try {
-            AccessControlList list = this.convert(acl);
-            this.writeAcl(list, recursive);
+            if(null == acl.getOwner()) {
+                // Owner is lost in controller
+                acl.setOwner(this.attributes().getAcl().getOwner());
+            }
+            if(this.isContainer()) {
+                this.getSession().getClient().putBucketAcl(this.getContainerName(), this.convert(acl));
+            }
+            else {
+                if(attributes().isFile() || attributes().isPlaceholder()) {
+                    this.getSession().getClient().putObjectAcl(this.getContainerName(), this.getKey(), this.convert(acl));
+                }
+                if(attributes().isDirectory()) {
+                    if(recursive) {
+                        for(AbstractPath child : this.children()) {
+                            if(!this.getSession().isConnected()) {
+                                break;
+                            }
+                            // Existing ACL might not be cached
+                            if(Acl.EMPTY.equals(((S3Path) child).attributes().getAcl())) {
+                                ((S3Path) child).readAcl();
+                            }
+                            final List<Acl.UserAndRole> existing = ((S3Path) child).attributes().getAcl().asList();
+                            acl.addAll(existing.toArray(new Acl.UserAndRole[existing.size()]));
+                            ((S3Path) child).writeAcl(acl, recursive);
+                        }
+                    }
+                }
+            }
         }
         catch(ServiceException e) {
             this.error("Cannot change permissions", e);
         }
         catch(IOException e) {
             this.error("Cannot change permissions", e);
+        }
+        finally {
+            this.attributes().clear(false, false, true, false);
         }
     }
 
@@ -1122,10 +1159,6 @@ public class S3Path extends CloudPath {
      */
     protected AccessControlList convert(Acl acl) throws IOException {
         AccessControlList list = new AccessControlList();
-        if(null == acl.getOwner()) {
-            // Owner is lost in controller
-            acl.setOwner(this.attributes().getAcl().getOwner());
-        }
         list.setOwner(new S3Owner(acl.getOwner().getIdentifier(), acl.getOwner().getDisplayName()));
         for(Acl.UserAndRole userAndRole : acl.asList()) {
             if(!userAndRole.isValid()) {
@@ -1153,41 +1186,6 @@ public class S3Path extends CloudPath {
             }
         }
         return list;
-    }
-
-    /**
-     * Write ACL to bucket or object.
-     *
-     * @param acl The updated access control list.
-     */
-    protected void writeAcl(AccessControlList acl, boolean recursive) throws IOException, ServiceException {
-        try {
-            if(null == acl.getOwner()) {
-                log.warn("Owner unknown. Cannot update ACL");
-                return;
-            }
-            if(this.isContainer()) {
-                this.getSession().getClient().putBucketAcl(this.getContainerName(), acl);
-            }
-            else {
-                if(attributes().isFile() || attributes().isPlaceholder()) {
-                    this.getSession().getClient().putObjectAcl(this.getContainerName(), this.getKey(), acl);
-                }
-                if(attributes().isDirectory()) {
-                    if(recursive) {
-                        for(AbstractPath child : this.children()) {
-                            if(!this.getSession().isConnected()) {
-                                break;
-                            }
-                            ((S3Path) child).writeAcl(acl, recursive);
-                        }
-                    }
-                }
-            }
-        }
-        finally {
-            this.attributes().clear(false, false, true, false);
-        }
     }
 
     @Override
@@ -1219,7 +1217,7 @@ public class S3Path extends CloudPath {
                         this.delete(container, this.getKey() + Path.DELIMITER, this.attributes().getVersionId());
                         // Always returning 204 even if the key does not exist.
                         // Fallback to legacy directory placeholders with metadata instead of key with trailing delimiter
-                        this.delete(container, this.getKey(), this.attributes().getVersionId());
+                        this.delete(container, this.getKey(), attributes().getVersionId());
                     }
                     catch(ServiceException e) {
                         // AWS might change their mind and return 404 at some point for non-existing keys
