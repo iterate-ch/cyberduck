@@ -87,20 +87,20 @@ public class Status {
 
     /**
      * @param size
-     * @param number
-     * @return
+     * @param plain Include plain format of bytes
+     * @return Formatted size
      */
-    public static String getSizeAsString(double size, boolean number) {
-        return getSizeAsString(size, number, true);
+    public static String getSizeAsString(double size, boolean plain) {
+        return getSizeAsString(size, plain, true);
     }
 
     /**
      * @param size
      * @param bytes  Report file size as bytes or bits.
-     * @param number Include plain format of bytes
-     * @return
+     * @param plain Include plain format of bytes
+     * @return Formatted size
      */
-    public static String getSizeAsString(double size, boolean number, boolean bytes) {
+    public static String getSizeAsString(double size, boolean plain, boolean bytes) {
         if(-1 == size) {
             return Locale.localizedString("Unknown size");
         }
@@ -123,7 +123,7 @@ public class Status {
                     1,
                     BigDecimal.ROUND_HALF_UP).toString()).append(bytes ? " GB" : " Gbit");
         }
-        if(number) {
+        if(plain) {
             formatted.append(" (").append(NumberFormat.getInstance().format(size)).append(" bytes)");
         }
         return formatted.toString();
