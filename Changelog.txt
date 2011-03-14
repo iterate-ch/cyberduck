@@ -8,6 +8,8 @@ Changelog. Last modified: $Date$
 - [Feature] SSL URL for files in Akamai CDN enabled containers (Cloud Files)
 - [Bugfix] Incomplete transfer synchronizing root directory (WebDAV) (#5662)
 - [Bugfix] Wrong version downloaded (S3 Versioning) (#5758)
+- [Bugfix] Interoperability (FTP) (#5763, #5757, #5772, #5771)
+- [Bugfix] Wrong local path for uploads with file chooser (Windows) (#5590)
 
 4.0.1 [http://trac.cyberduck.ch/milestone/4.0.1]
 - [Bugfix] Uploading folders fails to create directories (#5749)
