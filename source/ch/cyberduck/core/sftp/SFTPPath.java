@@ -427,12 +427,13 @@ public class SFTPPath extends Path {
         if(this.attributes().isFile()) {
             InputStream in = null;
             OutputStream out = null;
+            SFTPv3FileHandle handle = null;
             try {
                 if(check) {
                     this.getSession().check();
                 }
                 if(Preferences.instance().getProperty("ssh.transfer").equals(Protocol.SFTP.getIdentifier())) {
-                    SFTPv3FileHandle handle = this.getSession().sftp().openFileRO(this.getAbsolute());
+                    handle = this.getSession().sftp().openFileRO(this.getAbsolute());
                     in = new SFTPInputStream(handle);
                     if(status().isResume()) {
                         log.info("Skipping " + status().getCurrent() + " bytes");
@@ -458,8 +459,18 @@ public class SFTPPath extends Path {
                 this.error("Download failed", e);
             }
             finally {
-                IOUtils.closeQuietly(in);
-                IOUtils.closeQuietly(out);
+                try {
+                    if(handle != null) {
+                        this.getSession().sftp().closeFile(handle);
+                    }
+                }
+                catch(IOException e) {
+                    log.error(e.getMessage());
+                }
+                finally {
+                    IOUtils.closeQuietly(in);
+                    IOUtils.closeQuietly(out);
+                }
             }
         }
     }
@@ -561,11 +572,13 @@ public class SFTPPath extends Path {
                     if(handle != null) {
                         this.getSession().sftp().closeFile(handle);
                     }
-                    IOUtils.closeQuietly(in);
-                    IOUtils.closeQuietly(out);
                 }
                 catch(IOException e) {
                     log.error(e.getMessage());
+                }
+                finally {
+                    IOUtils.closeQuietly(in);
+                    IOUtils.closeQuietly(out);
                 }
             }
         }
