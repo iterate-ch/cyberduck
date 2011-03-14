@@ -1,4 +1,4 @@
-﻿// 
+﻿﻿//
 // Copyright (c) 2010-2011 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
@@ -278,6 +278,8 @@ namespace Ch.Cyberduck.Ui.Controller
             defaults.put("defaulthandler.reminder", false.ToString());
             defaults.put("application.support.path", RoamingApplicationDataPath);
             defaults.put("application.receipt.path", RoamingApplicationDataPath);
+            defaults.put("application.bookmarks.path", Path.Combine(RoamingApplicationDataPath, "Bookmarks");
+
             defaults.put("update.check.last", "0");
 
             defaults.put("queue.download.folder", DefaultDownloadPath);
