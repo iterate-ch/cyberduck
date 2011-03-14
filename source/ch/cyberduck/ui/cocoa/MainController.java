@@ -50,6 +50,7 @@ import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 import java.text.MessageFormat;
 import java.util.*;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * Setting the main menu and implements application delegate methods
@@ -806,22 +807,14 @@ public class MainController extends BundleController implements NSApplication.De
                 }
             });
         }
+        // User bookmarks and thirdparty applications
+        final CountDownLatch loader = new CountDownLatch(2);
+
         this.background(new AbstractBackgroundAction() {
             public void run() {
                 final BookmarkCollection c = BookmarkCollection.defaultCollection();
                 c.load();
-                if(c.isEmpty()) {
-                    final FolderBookmarkCollection defaults = new FolderBookmarkCollection(LocalFactory.createLocal(
-                            Preferences.instance().getProperty("application.bookmarks.path")
-                    ));
-                    defaults.load();
-                    for(Host bookmark : defaults) {
-                        if(log.isDebugEnabled()) {
-                            log.debug("Adding default bookmark:" + bookmark);
-                        }
-                        c.add(bookmark);
-                    }
-                }
+                loader.countDown();
             }
 
             @Override
@@ -999,6 +992,7 @@ public class MainController extends BundleController implements NSApplication.De
                         }
                     }
                 }
+                loader.countDown();
             }
 
             @Override
@@ -1009,6 +1003,35 @@ public class MainController extends BundleController implements NSApplication.De
             private List<ThirdpartyBookmarkCollection> getThirdpartyBookmarks() {
                 return Arrays.asList(new TransmitBookmarkCollection(), new FilezillaBookmarkCollection(), new FetchBookmarkCollection(),
                         new FlowBookmarkCollection(), new InterarchyBookmarkCollection(), new CrossFtpBookmarkCollection(), new FireFtpBookmarkCollection());
+            }
+        });
+        this.background(new AbstractBackgroundAction() {
+            public void run() {
+                // Wait until bookmarks are loaded
+                try {
+                    loader.await();
+                }
+                catch(InterruptedException e) {
+                    log.error(e.getMessage());
+                }
+                final BookmarkCollection c = BookmarkCollection.defaultCollection();
+                if(c.isEmpty()) {
+                    final FolderBookmarkCollection defaults = new FolderBookmarkCollection(LocalFactory.createLocal(
+                            Preferences.instance().getProperty("application.bookmarks.path")
+                    ));
+                    defaults.load();
+                    for(Host bookmark : defaults) {
+                        if(log.isDebugEnabled()) {
+                            log.debug("Adding default bookmark:" + bookmark);
+                        }
+                        c.add(bookmark);
+                    }
+                }
+            }
+
+            @Override
+            public String getActivity() {
+                return "Loading Default Bookmarks";
             }
         });
     }
