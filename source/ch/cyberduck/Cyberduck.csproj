@@ -624,6 +624,10 @@
       <AdditionalResources Include="..\..\..\en.lproj\License.txt" />
     </ItemGroup>
     <Copy SourceFiles="@(AdditionalResources)" DestinationFolder="$(OutputPath)" />
+    <ItemGroup>
+      <DefaultBookmarks Include="..\..\..\bookmarks\*.duck" />
+    </ItemGroup>
+    <Copy SourceFiles="@(DefaultBookmarks)" DestinationFolder="$(OutputPath)\bookmarks" />
   </Target>
   <Target Name="AfterBuild">
   </Target>

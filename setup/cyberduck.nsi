@@ -212,12 +212,13 @@ Section "MainSection" SEC01
   File "${BASEDIR}\Cyberduck.exe"
   File "${BASEDIR}\Cyberduck.exe.config"
   File "${BASEDIR}\Acknowledgments.rtf"
+  File /r "${BASEDIR}\bookmarks"
   File "${BASEDIR}\License.txt"
   File "${BASEDIR}\cyberduck-document.ico"
   File "${BASEDIR}\*.dll"
   File "${BASEDIR}\..\..\update\Updater.exe"
   File "${BASEDIR}\..\..\update\*.wyc"
-  
+
   ${If} $BonjourCheckbox_State == ${BST_CHECKED}
         ;Bonjour
         ${If} ${RunningX64}

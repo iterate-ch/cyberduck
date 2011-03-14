@@ -329,18 +329,32 @@ namespace Ch.Cyberduck.Ui.Controller
                                        _sessions.clear();
                                    });
             }
-            if (Preferences.instance().getBoolean(
-                "browser.openUntitled"))
-            {
-                if (Browsers.Count == 0)
-                {
-                    OpenDefaultBookmark(NewBrowser());
-                }
-            }
             //Registering for Growl is an expensive operation. Takes up to 500ms on my machine.
             _bc.Background(delegate { ch.cyberduck.ui.growl.Growl.instance().register(); }, delegate { });
 
-            _bc.Background(delegate { BookmarkCollection.defaultCollection().load(); }, delegate { });
+            // User bookmarks and thirdparty applications
+            CountdownEvent cde = new CountdownEvent(2);
+
+            _bc.Background(delegate
+                               {
+                                   BookmarkCollection c = BookmarkCollection.defaultCollection();
+                                   c.load();
+                                   cde.Signal();
+                               }, delegate
+                                      {
+                                          if (Preferences.instance
+                                              ().getBoolean(
+                                                  "browser.openUntitled"))
+                                          {
+                                              if (
+                                                  Browsers.Count ==
+                                                  0)
+                                              {
+                                                  OpenDefaultBookmark
+                                                      (NewBrowser());
+                                              }
+                                          }
+                                      });
             _bc.Background(delegate { HistoryCollection.defaultCollection().load(); }, delegate { });
             _bc.Background(delegate { TransferCollection.defaultCollection().load(); }, delegate { });
 
@@ -460,7 +474,31 @@ namespace Ch.Cyberduck.Ui.Controller
                                            }
                                        }
                                    }
+                                   cde.Signal();
                                });
+
+
+            _bc.Background(delegate
+                               {
+                                   cde.Wait();
+                                   BookmarkCollection c = BookmarkCollection.defaultCollection();
+                                   if (c.isEmpty())
+                                   {
+                                       FolderBookmarkCollection defaults =
+                                           new FolderBookmarkCollection(LocalFactory.createLocal(
+                                               Preferences.instance().getProperty("application.bookmarks.path")
+                                                                            ));
+                                       defaults.load();
+                                       foreach (Host bookmark in defaults)
+                                       {
+                                           if (Logger.isDebugEnabled())
+                                           {
+                                               Logger.debug("Adding default bookmark:" + bookmark);
+                                           }
+                                           c.add(bookmark);
+                                       }
+                                   }
+                               }, delegate { });
         }
 
         private IList<ThirdpartyBookmarkCollection> GetThirdpartyBookmarks()
