@@ -2051,6 +2051,7 @@ source/ch/cyberduck/ui/winforms/taskdialog/VistaTaskDialog.cs -text
 source/ch/cyberduck/ui/winforms/taskdialog/VistaTaskDialogCommonDialog.cs -text
 source/ch/cyberduck/ui/winforms/taskdialog/VistaTaskDialogNotificationArgs.cs -text
 source/ch/cyberduck/ui/winforms/taskdialog/VistaUnsafeNativeMethods.cs -text
+source/ch/ethz/ssh2/sftp/PacketListener.java -text
 source/com/snoize/SNDisclosableView.m -text
 source/de/zathras/UKCrashReporter.m -text
 source/de/zathras/UKSystemInfo.h -text

@@ -77,17 +77,23 @@ public class SFTPv3Client {
     private String charsetName = null;
 
     /**
+     *
+     */
+    private PacketListener listener;
+
+    /**
      * Create a SFTP v3 client.
      *
      * @param conn The underlying SSH-2 connection to be used.
      * @throws IOException
      */
-    public SFTPv3Client(Connection conn) throws IOException {
+    public SFTPv3Client(Connection conn, PacketListener listener) throws IOException {
         if(conn == null) {
             throw new IllegalArgumentException("Cannot accept null argument!");
         }
 
         this.conn = conn;
+        this.listener = listener;
 
         log.log("Opening session and starting SFTP subsystem.");
         sess = conn.openSession();
@@ -157,6 +163,8 @@ public class SFTPv3Client {
     }
 
     private void sendMessage(int type, int requestId, byte[] msg, int off, int len) throws IOException {
+        listener.write(Packet.forName(type));
+
         int msglen = len + 1;
 
         if(type != Packet.SSH_FXP_INIT) {
@@ -326,6 +334,7 @@ public class SFTPv3Client {
         TypesReader tr = new TypesReader(resp);
 
         int t = tr.readByte();
+        listener.read(Packet.forName(t));
 
         int rep_id = tr.readUINT32();
         if(rep_id != req_id) {
@@ -341,8 +350,9 @@ public class SFTPv3Client {
         }
 
         int errorCode = tr.readUINT32();
-
-        throw new SFTPException(tr.readString(), errorCode);
+        String errorMessage = tr.readString();
+        listener.read(errorMessage);
+        throw new SFTPException(errorMessage, errorCode);
     }
 
     private SFTPv3FileAttributes statBoth(String path, int statMethod) throws IOException {
@@ -359,6 +369,7 @@ public class SFTPv3Client {
         TypesReader tr = new TypesReader(resp);
 
         int t = tr.readByte();
+        listener.read(Packet.forName(t));
 
         int rep_id = tr.readUINT32();
         if(rep_id != req_id) {
@@ -374,8 +385,9 @@ public class SFTPv3Client {
         }
 
         int errorCode = tr.readUINT32();
-
-        throw new SFTPException(tr.readString(), errorCode);
+        String errorMessage = tr.readString();
+        listener.read(errorMessage);
+        throw new SFTPException(errorMessage, errorCode);
     }
 
     /**
@@ -427,6 +439,7 @@ public class SFTPv3Client {
         TypesReader tr = new TypesReader(resp);
 
         int t = tr.readByte();
+        listener.read(Packet.forName(t));
 
         int rep_id = tr.readUINT32();
         if(rep_id != req_id) {
@@ -448,8 +461,9 @@ public class SFTPv3Client {
         }
 
         int errorCode = tr.readUINT32();
-
-        throw new SFTPException(tr.readString(), errorCode);
+        String errorMessage = tr.readString();
+        listener.read(errorMessage);
+        throw new SFTPException(errorMessage, errorCode);
     }
 
     private void expectStatusOKMessage(int id) throws IOException {
@@ -458,6 +472,7 @@ public class SFTPv3Client {
         TypesReader tr = new TypesReader(resp);
 
         int t = tr.readByte();
+        listener.read(Packet.forName(t));
 
         int rep_id = tr.readUINT32();
         if(rep_id != id) {
@@ -473,8 +488,9 @@ public class SFTPv3Client {
         if(errorCode == ErrorCodes.SSH_FX_OK) {
             return;
         }
-
-        throw new SFTPException(tr.readString(), errorCode);
+        String errorMessage = tr.readString();
+        listener.read(errorMessage);
+        throw new SFTPException(errorMessage, errorCode);
     }
 
     /**
@@ -571,6 +587,7 @@ public class SFTPv3Client {
         TypesReader tr = new TypesReader(resp);
 
         int t = tr.readByte();
+        listener.read(Packet.forName(t));
 
         int rep_id = tr.readUINT32();
         if(rep_id != req_id) {
@@ -584,7 +601,9 @@ public class SFTPv3Client {
                 throw new IOException("The server sent an invalid SSH_FXP_NAME packet.");
             }
 
-            return tr.readString(charsetName);
+            final String name = tr.readString(charsetName);
+            listener.read(name);
+            return name;
         }
 
         if(t != Packet.SSH_FXP_STATUS) {
@@ -592,8 +611,9 @@ public class SFTPv3Client {
         }
 
         int errorCode = tr.readUINT32();
-
-        throw new SFTPException(tr.readString(), errorCode);
+        String errorMessage = tr.readString();
+        listener.read(errorMessage);
+        throw new SFTPException(errorMessage, errorCode);
     }
 
     private List scanDirectory(byte[] handle) throws IOException {
@@ -613,6 +633,7 @@ public class SFTPv3Client {
             TypesReader tr = new TypesReader(resp);
 
             int t = tr.readByte();
+            listener.read(Packet.forName(t));
 
             int rep_id = tr.readUINT32();
             if(rep_id != req_id) {
@@ -628,6 +649,7 @@ public class SFTPv3Client {
 
                     dirEnt.filename = tr.readString(charsetName);
                     dirEnt.longEntry = tr.readString(charsetName);
+                    listener.read(dirEnt.longEntry);
 
                     dirEnt.attributes = readAttrs(tr);
                     files.add(dirEnt);
@@ -647,8 +669,9 @@ public class SFTPv3Client {
             if(errorCode == ErrorCodes.SSH_FX_EOF) {
                 return files;
             }
-
-            throw new SFTPException(tr.readString(), errorCode);
+            String errorMessage = tr.readString();
+            listener.read(errorMessage);
+            throw new SFTPException(errorMessage, errorCode);
         }
     }
 
@@ -666,6 +689,7 @@ public class SFTPv3Client {
         TypesReader tr = new TypesReader(resp);
 
         int t = tr.readByte();
+        listener.read(Packet.forName(t));
 
         int rep_id = tr.readUINT32();
         if(rep_id != req_id) {
@@ -683,7 +707,7 @@ public class SFTPv3Client {
 
         int errorCode = tr.readUINT32();
         String errorMessage = tr.readString();
-
+        listener.read(errorMessage);
         throw new SFTPException(errorMessage, errorCode);
     }
 
@@ -719,10 +743,11 @@ public class SFTPv3Client {
         log.log("Waiting for SSH_FXP_VERSION...");
         TypesReader tr = new TypesReader(receiveMessage(34000)); /* Should be enough for any reasonable server */
 
-        int type = tr.readByte();
+        int t = tr.readByte();
+        listener.read(Packet.forName(t));
 
-        if(type != Packet.SSH_FXP_VERSION) {
-            throw new IOException("The server did not send a SSH_FXP_VERSION packet (got " + type + ")");
+        if(t != Packet.SSH_FXP_VERSION) {
+            throw new IOException("The server did not send a SSH_FXP_VERSION packet (got " + t + ")");
         }
 
         protocol_version = tr.readUINT32();
@@ -736,6 +761,7 @@ public class SFTPv3Client {
 
         while(tr.remain() != 0) {
             String name = tr.readString();
+            listener.read(name);
             byte[] value = tr.readByteString();
             log.log("SSH_FXP_VERSION: extension: " + name + " = '" + expandString(value, 0, value.length) + "'");
         }
@@ -1067,6 +1093,7 @@ public class SFTPv3Client {
         TypesReader tr = new TypesReader(resp);
 
         int t = tr.readByte();
+        listener.read(Packet.forName(t));
 
         int rep_id = tr.readUINT32();
         if(rep_id != req_id) {
@@ -1084,7 +1111,7 @@ public class SFTPv3Client {
 
         int errorCode = tr.readUINT32();
         String errorMessage = tr.readString();
-
+        listener.read(errorMessage);
         throw new SFTPException(errorMessage, errorCode);
     }
 
@@ -1216,18 +1243,22 @@ public class SFTPv3Client {
             // Receive a single answer
             byte[] resp = receiveMessage(34000);
             TypesReader tr = new TypesReader(resp);
-            int type = tr.readByte();
+
+            int t = tr.readByte();
+            listener.read(Packet.forName(t));
+
             // Search the pending queue
             OutstandingReadRequest req = pendingReadQueue.remove(tr.readUINT32());
             if(null == req) {
                 throw new IOException("The server sent an invalid id field.");
             }
             // Evaluate the answer
-            if(type == Packet.SSH_FXP_STATUS) {
+            if(t == Packet.SSH_FXP_STATUS) {
                 /* In any case, stop sending more packets */
 
                 int code = tr.readUINT32();
                 String msg = tr.readString();
+                listener.read(msg);
 
                 if(log.isEnabled()) {
                     String[] desc = ErrorCodes.getDescription(code);
@@ -1242,7 +1273,7 @@ public class SFTPv3Client {
                     throw new SFTPException(msg, code);
                 }
             }
-            else if(type == Packet.SSH_FXP_DATA) {
+            else if(t == Packet.SSH_FXP_DATA) {
                 // OK, collect data
                 int readLen = tr.readUINT32();
 
@@ -1272,7 +1303,7 @@ public class SFTPv3Client {
                 return readLen;
             }
             else {
-                throw new IOException("The SFTP server sent an unexpected packet type (" + type + ")");
+                throw new IOException("The SFTP server sent an unexpected packet type (" + t + ")");
             }
         }
         // Should never reach here.
@@ -1331,7 +1362,8 @@ public class SFTPv3Client {
         byte[] resp = receiveMessage(34000);
 
         TypesReader tr = new TypesReader(resp);
-        int type = tr.readByte();
+        int t = tr.readByte();
+        listener.read(Packet.forName(t));
 
         // Search the pending queue
         OutstandingStatusRequest status = pendingStatusQueue.remove(tr.readUINT32());
@@ -1340,7 +1372,7 @@ public class SFTPv3Client {
         }
 
         // Evaluate the answer
-        if(type == Packet.SSH_FXP_STATUS) {
+        if(t == Packet.SSH_FXP_STATUS) {
             // In any case, stop sending more packets
             int code = tr.readUINT32();
             if(log.isEnabled()) {
@@ -1351,9 +1383,10 @@ public class SFTPv3Client {
                 return;
             }
             String msg = tr.readString();
+            listener.read(msg);
             throw new SFTPException(msg, code);
         }
-        throw new IOException("The SFTP server sent an unexpected packet type (" + type + ")");
+        throw new IOException("The SFTP server sent an unexpected packet type (" + t + ")");
     }
 
     /**
