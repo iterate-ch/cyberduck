@@ -479,7 +479,7 @@ public abstract class Preferences {
          * of a data connection is the same as the host to which the control
          * connection is attached.
          */
-        defaults.put("ftp.datachannel.verify", String.valueOf(true));
+        defaults.put("ftp.datachannel.verify", String.valueOf(false));
 
         defaults.put("ftp.command.feat", String.valueOf(true));
         /**
