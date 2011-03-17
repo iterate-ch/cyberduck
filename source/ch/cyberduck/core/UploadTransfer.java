@@ -312,7 +312,12 @@ public class UploadTransfer extends Transfer {
                 boolean resume = file.isUploadResumable();
                 file.status().setResume(resume);
                 if(resume) {
-                    file.status().setCurrent(file.attributes().getSize());
+                    if(file.attributes().getSize() == -1) {
+                        log.warn("Unknown remote size for:" + file.getAbsolute());
+                    }
+                    else {
+                        file.status().setCurrent(file.attributes().getSize());
+                    }
                 }
             }
             super.prepare(file);
