@@ -659,7 +659,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             source = HistoryCollection.defaultCollection();
         }
         bookmarkModel.setSource(source);
-        if(source.isLocked()) {
+        if(!source.isLoaded()) {
             browserSpinner.startAnimation(null);
         }
         source.addListener(new AbstractCollectionListener<Host>() {
@@ -673,7 +673,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 });
             }
         });
-        if(!source.isLocked()) {
+        if(source.isLoaded()) {
             browserSpinner.stopAnimation(null);
             bookmarkTable.setGridStyleMask(NSTableView.NSTableViewSolidHorizontalGridLineMask);
         }

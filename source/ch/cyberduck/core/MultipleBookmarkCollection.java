@@ -77,6 +77,7 @@ public class MultipleBookmarkCollection extends Collection<FolderBookmarkCollect
         for(Local group : groups) {
             this.add(new FolderBookmarkCollection(group));
         }
+        super.load();
     }
 
     public boolean contains(Host bookmark) {

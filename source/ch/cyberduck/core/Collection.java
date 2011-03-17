@@ -18,12 +18,26 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import org.apache.log4j.Logger;
+
 import java.util.*;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * @version $Id$
  */
 public class Collection<E> extends ArrayList<E> implements CollectionListener<E> {
+    private static Logger log = Logger.getLogger(Collection.class);
+
+    /**
+     *
+     */
+    private ReentrantLock locked = new ReentrantLock();
+
+    /**
+     *
+     */
+    private boolean loaded;
 
     public Collection() {
         super();
@@ -33,7 +47,11 @@ public class Collection<E> extends ArrayList<E> implements CollectionListener<E>
         super(c);
     }
 
+    /**
+     * Mark collection as loaded and notify listeners.
+     */
     public void load() {
+        this.loaded = true;
         this.collectionLoaded();
     }
 
@@ -131,26 +149,67 @@ public class Collection<E> extends ArrayList<E> implements CollectionListener<E>
     }
 
     public void collectionLoaded() {
+        if(this.isLocked()) {
+            log.debug("Do not notify changes of locked collection");
+            return;
+        }
         for(CollectionListener<E> listener : listeners.toArray(new CollectionListener[listeners.size()])) {
             listener.collectionLoaded();
         }
     }
 
     public void collectionItemAdded(E item) {
+        if(this.isLocked()) {
+            log.debug("Do not notify changes of locked collection");
+            return;
+        }
         for(CollectionListener<E> listener : listeners.toArray(new CollectionListener[listeners.size()])) {
             listener.collectionItemAdded(item);
         }
     }
 
     public void collectionItemRemoved(E item) {
+        if(this.isLocked()) {
+            log.debug("Do not notify changes of locked collection");
+            return;
+        }
         for(CollectionListener<E> listener : listeners.toArray(new CollectionListener[listeners.size()])) {
             listener.collectionItemRemoved(item);
         }
     }
 
     public void collectionItemChanged(E item) {
+        if(this.isLocked()) {
+            log.debug("Do not notify changes of locked collection");
+            return;
+        }
         for(CollectionListener<E> listener : listeners.toArray(new CollectionListener[listeners.size()])) {
             listener.collectionItemChanged(item);
         }
+    }
+
+    public boolean isLoaded() {
+        return loaded;
+    }
+
+    /**
+     * @return True while loading
+     */
+    public boolean isLocked() {
+        return locked.isLocked();
+    }
+
+    /**
+     *
+     */
+    protected void lock() {
+        locked.lock();
+    }
+
+    /**
+     *
+     */
+    protected void unlock() {
+        locked.unlock();
     }
 }

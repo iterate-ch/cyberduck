@@ -52,15 +52,6 @@ public class TransferCollection extends Collection<Transfer> {
     }
 
     @Override
-    public void collectionItemAdded(Transfer item) {
-        if(locked) {
-            log.debug("Do not notify changes of locked collection");
-            return;
-        }
-        super.collectionItemAdded(item);
-    }
-
-    @Override
     public boolean add(Transfer o) {
         boolean r = super.add(o);
         this.save();
@@ -104,17 +95,16 @@ public class TransferCollection extends Collection<Transfer> {
         }
     }
 
-    private boolean locked = true;
-
-    public boolean isLocked() {
-        return locked;
-    }
-
     @Override
     public void load() {
-        this.load(file);
-        locked = false;
-        this.collectionLoaded();
+        this.lock();
+        try {
+            this.load(file);
+        }
+        finally {
+            this.unlock();
+        }
+        super.load();
     }
 
     private void load(Local f) {

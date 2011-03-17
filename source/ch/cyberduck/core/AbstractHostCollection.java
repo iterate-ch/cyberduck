@@ -35,11 +35,6 @@ public abstract class AbstractHostCollection extends Collection<Host> implements
 
     private static final AbstractHostCollection EMPTY = new AbstractHostCollection() {
         @Override
-        public void load() {
-            ;
-        }
-
-        @Override
         public String getName() {
             return Locale.localizedString("None");
         }
@@ -170,13 +165,5 @@ public abstract class AbstractHostCollection extends Collection<Host> implements
     public void load(Collection<Host> c) {
         this.addAll(c);
         this.collectionLoaded();
-    }
-
-    /**
-     *
-     * @return True while loading
-     */
-    public boolean isLocked() {
-        return false;
     }
 }

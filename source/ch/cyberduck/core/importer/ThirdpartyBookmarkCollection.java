@@ -54,6 +54,7 @@ public abstract class ThirdpartyBookmarkCollection extends AbstractHostCollectio
     @Override
     public void load() {
         this.load(this.getFile());
+        super.load();
     }
 
     public abstract Local getFile();

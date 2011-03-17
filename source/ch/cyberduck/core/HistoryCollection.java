@@ -32,7 +32,7 @@ import java.util.Date;
 public class HistoryCollection extends AbstractFolderHostCollection {
     private static Logger log = Logger.getLogger(HistoryCollection.class);
 
-    private static HistoryCollection HISTORY_COLLECTION = new HistoryCollection(
+    private static final HistoryCollection HISTORY_COLLECTION = new HistoryCollection(
             LocalFactory.createLocal(Preferences.instance().getProperty("application.support.path"), "History")
     );
 

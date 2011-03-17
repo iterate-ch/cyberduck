@@ -63,44 +63,20 @@ public abstract class AbstractFolderHostCollection extends AbstractHostCollectio
 
     @Override
     public void collectionItemAdded(Host bookmark) {
-        if(locked) {
-            log.debug("Do not notify changes of locked collection");
-            return;
-        }
         HostWriterFactory.instance().write(bookmark, this.getFile(bookmark));
         super.collectionItemAdded(bookmark);
     }
 
     @Override
     public void collectionItemRemoved(Host bookmark) {
-        if(locked) {
-            log.debug("Do not notify changes of locked collection");
-            return;
-        }
         this.getFile(bookmark).delete(false);
         super.collectionItemRemoved(bookmark);
     }
 
     @Override
     public void collectionItemChanged(Host bookmark) {
-        if(locked) {
-            log.debug("Do not notify changes of locked collection");
-            return;
-        }
         HostWriterFactory.instance().write(bookmark, this.getFile(bookmark));
         super.collectionItemChanged(bookmark);
-    }
-
-    private boolean locked = true;
-
-    /**
-     * Locked while loading.
-     *
-     * @return
-     */
-    @Override
-    public boolean isLocked() {
-        return locked;
     }
 
     @Override
@@ -108,44 +84,36 @@ public abstract class AbstractFolderHostCollection extends AbstractHostCollectio
         if(log.isInfoEnabled()) {
             log.info("Reloading:" + folder);
         }
-        final AttributedList<Local> bookmarks = folder.children(
-                new PathFilter<Local>() {
-                    public boolean accept(Local file) {
-                        return file.getName().endsWith(".duck");
+        this.lock();
+        try {
+            final AttributedList<Local> bookmarks = folder.children(
+                    new PathFilter<Local>() {
+                        public boolean accept(Local file) {
+                            return file.getName().endsWith(".duck");
+                        }
                     }
+            );
+            final Reader<Host> reader = HostReaderFactory.instance();
+            for(Local next : bookmarks) {
+                Host bookmark = reader.read(next);
+                // Legacy support.
+                if(!this.getFile(bookmark).equals(next)) {
+                    // Rename all files previously saved with nickname to UUID.
+                    next.rename(this.getFile(bookmark));
                 }
-        );
-        final Reader<Host> reader = HostReaderFactory.instance();
-        for(Local next : bookmarks) {
-            Host bookmark = reader.read(next);
-            // Legacy support.
-            if(!this.getFile(bookmark).equals(next)) {
-                // Rename all files previously saved with nickname to UUID.
-                next.rename(this.getFile(bookmark));
+                this.add(bookmark);
             }
-            this.add(bookmark);
+            // Sort using previously built index
+            this.sort();
         }
-        locked = false;
-        // Sort using previously built index
-        this.sort();
-        this.collectionLoaded();
-    }
-
-    /**
-     * Importer for legacy bookmarks.
-     *
-     * @param c
-     */
-    @Override
-    public void load(Collection<Host> c) {
-        super.load(c);
-        locked = false;
+        finally {
+            this.unlock();
+        }
+        super.load();
     }
 
     @Override
     public void save() {
         ;// Save individual bookmarks upon add but not collection itself.
     }
-
-
 }

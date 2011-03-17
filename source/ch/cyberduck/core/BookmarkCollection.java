@@ -37,7 +37,7 @@ public class BookmarkCollection extends AbstractHostCollection {
     /**
      * Default bookmark file
      */
-    private static BookmarkCollection DEFAULT_COLLECTION = new BookmarkCollection(
+    private static final BookmarkCollection DEFAULT_COLLECTION = new BookmarkCollection(
             LocalFactory.createLocal(Preferences.instance().getProperty("application.support.path"), "Favorites.plist")
     );
 
@@ -217,20 +217,13 @@ public class BookmarkCollection extends AbstractHostCollection {
         return FolderBookmarkCollection.favoritesCollection().containsAll(c);
     }
 
-    private boolean locked = true;
-
-    @Override
-    public boolean isLocked() {
-        return locked;
-    }
-
     /**
      * Saves this collection of bookmarks in to a file to the users's application support directory
      * in a plist xml format
      */
     @Override
     public void save() {
-        if(locked) {
+        if(this.isLocked()) {
             log.debug("Do not write locked collection");
             return;
         }
@@ -242,18 +235,24 @@ public class BookmarkCollection extends AbstractHostCollection {
      */
     @Override
     public void load() {
-        FolderBookmarkCollection favorites = FolderBookmarkCollection.favoritesCollection();
-        if(file.exists()) {
-            if(log.isInfoEnabled()) {
-                log.info("Found Bookmarks file: " + file.getAbsolute());
+        this.lock();
+        try {
+            FolderBookmarkCollection favorites = FolderBookmarkCollection.favoritesCollection();
+            if(file.exists()) {
+                if(log.isInfoEnabled()) {
+                    log.info("Found Bookmarks file: " + file.getAbsolute());
+                }
+                favorites.load(HostReaderFactory.instance().readCollection(file));
+                log.info("Moving deprecated bookmarks file to Trash");
+                file.delete(true);
             }
-            favorites.load(HostReaderFactory.instance().readCollection(file));
-            log.info("Moving deprecated bookmarks file to Trash");
-            file.delete(true);
+            else {
+                favorites.load();
+            }
         }
-        else {
-            favorites.load();
+        finally {
+            this.unlock();
         }
-        locked = false;
+        super.load();
     }
 }

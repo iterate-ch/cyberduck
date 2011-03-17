@@ -68,7 +68,7 @@ public class TransferController extends WindowController implements NSToolbar.De
         this.window.setToolbar(toolbar);
 
         TransferCollection source = TransferCollection.defaultCollection();
-        if(source.isLocked()) {
+        if(!source.isLoaded()) {
             transferSpinner.startAnimation(null);
         }
         source.addListener(new AbstractCollectionListener<Transfer>() {
@@ -82,7 +82,7 @@ public class TransferController extends WindowController implements NSToolbar.De
                 });
             }
         });
-        if(!source.isLocked()) {
+        if(source.isLoaded()) {
             transferSpinner.stopAnimation(null);
             transferTable.setGridStyleMask(NSTableView.NSTableViewSolidHorizontalGridLineMask);
         }
