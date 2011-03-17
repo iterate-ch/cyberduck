@@ -20,6 +20,8 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.Collection;
+import ch.cyberduck.core.Queue;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
@@ -45,10 +47,7 @@ import org.rococoa.cocoa.foundation.NSUInteger;
 import org.apache.log4j.Logger;
 
 import java.text.MessageFormat;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.StringTokenizer;
+import java.util.*;
 
 /**
  * @version $Id$
@@ -638,15 +637,6 @@ public class TransferController extends WindowController implements NSToolbar.De
     }
 
     /**
-     * Remove this item form the list
-     *
-     * @param transfer
-     */
-    public void removeTransfer(final Transfer transfer) {
-        TransferCollection.defaultCollection().remove(transfer);
-    }
-
-    /**
      * Add this item to the list; select it and scroll the view to make it visible
      *
      * @param transfer
@@ -778,6 +768,57 @@ public class TransferController extends WindowController implements NSToolbar.De
             @Override
             public boolean isCanceled() {
                 return transfer.isCanceled();
+            }
+
+            @Override
+            public void log(final boolean request, final String message) {
+                if(logDrawer.state() == NSDrawer.OpenState) {
+                    invoke(new WindowMainAction(TransferController.this) {
+                        public void run() {
+                            TransferController.this.transcript.log(request, message);
+                        }
+                    });
+                }
+                super.log(request, message);
+            }
+
+            private final Object lock = new Object();
+
+            @Override
+            public Object lock() {
+                // No synchronization with other tasks
+                return lock;
+            }
+        });
+    }
+
+    /**
+     * Remove this item form the list.
+     *
+     * @param transfer
+     */
+    private void removeTransfer(final Transfer transfer) {
+        this.background(new AlertRepeatableBackgroundAction(this) {
+
+            public void run() {
+                // Server side cleanup
+                transfer.cleanup();
+            }
+
+            @Override
+            public void cleanup() {
+                TransferCollection.defaultCollection().remove(transfer);
+                TransferCollection.defaultCollection().save();
+            }
+
+            @Override
+            public Session getSession() {
+                return transfer.getSession();
+            }
+
+            @Override
+            public boolean isCanceled() {
+                return false;
             }
 
             @Override
@@ -1015,14 +1056,16 @@ public class TransferController extends WindowController implements NSToolbar.De
         NSIndexSet iterator = transferTable.selectedRowIndexes();
         final Collection<Transfer> transfers = transferTableModel.getSource();
         int i = 0;
+        final List<Transfer> remove = new ArrayList<Transfer>();
         for(NSUInteger index = iterator.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = iterator.indexGreaterThanIndex(index)) {
             final Transfer transfer = transfers.get(index.intValue() - i);
             if(!transfer.isRunning()) {
-                TransferCollection.defaultCollection().remove(transfer);
-                i++;
+                remove.add(transfer);
             }
         }
-        TransferCollection.defaultCollection().save();
+        for(Transfer t : remove) {
+            this.removeTransfer(t);
+        }
     }
 
     @Action

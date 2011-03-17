@@ -718,6 +718,13 @@ public abstract class Transfer implements Serializable {
     }
 
     /**
+     * Called before remove from the transfer queue
+     */
+    public void cleanup() {
+        ;
+    }
+
+    /**
      * Recalculate the size of the <code>queue</code>
      */
     protected void reset() {
