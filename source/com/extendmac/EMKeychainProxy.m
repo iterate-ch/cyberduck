@@ -142,7 +142,18 @@ static EMKeychainProxy* sharedProxy;
 	
 	if (returnStatus != noErr || !item)
 	{
-		NSLog(@"Error (%@) - %s", NSStringFromSelector(_cmd), GetMacOSStatusErrorString(returnStatus));
+        if (errSecDuplicateItem == returnStatus) {
+            EMGenericKeychainItem *existing = [self genericKeychainItemForService:serviceNameString
+																	 withUsername:usernameString];
+            if (nil == existing) {
+                return nil;
+            }
+            else {
+				[existing setPassword:passwordString];
+            }
+            return existing;
+        }
+        NSLog(@"Error (%@) - %s", NSStringFromSelector(_cmd), GetMacOSStatusErrorString(returnStatus));
 		return nil;
 	}
 	return [EMGenericKeychainItem genericKeychainItem:item forServiceName:serviceNameString username:usernameString password:passwordString];
