@@ -481,7 +481,7 @@ public class MainController extends BundleController implements NSApplication.De
      */
     public boolean application_openFile(NSApplication app, String filename) {
         log.debug("applicationOpenFile:" + filename);
-        Local f = LocalFactory.createLocal(filename);
+        final Local f = LocalFactory.createLocal(filename);
         if(f.exists()) {
             if("duck".equals(f.getExtension())) {
                 final Host host = HostReaderFactory.instance().read(f);
@@ -542,7 +542,28 @@ public class MainController extends BundleController implements NSApplication.De
             }
             else {
                 // Upload file
-                return this.upload(f);
+                this.background(new AbstractBackgroundAction() {
+                    public void run() {
+                        // Wait until bookmarks are loaded
+                        try {
+                            loader.await();
+                        }
+                        catch(InterruptedException e) {
+                            log.error(e.getMessage());
+                        }
+                    }
+
+                    @Override
+                    public void cleanup() {
+                        upload(f);
+                    }
+
+                    @Override
+                    public String getActivity() {
+                        return "Open File";
+                    }
+                });
+                return true;
             }
         }
         return false;
@@ -568,8 +589,17 @@ public class MainController extends BundleController implements NSApplication.De
             if(controller.isMounted()) {
                 open = controller.getSession().getHost();
                 workdir = controller.workdir().getAbsolute();
+                if(1 == MainController.getBrowsers().size()) {
+                    // If only one browser window upload to current working directory with no bookmark selection
+                    this.upload(open, files, workdir);
+                    return true;
+                }
                 break;
             }
+        }
+        if(BookmarkCollection.defaultCollection().isEmpty()) {
+            log.warn("No bookmark for upload");
+            return false;
         }
         final NSPopUpButton bookmarksPopup = NSPopUpButton.buttonWithFrame(new NSRect(0, 26));
         bookmarksPopup.setToolTip(Locale.localizedString("Bookmarks"));
@@ -635,12 +665,7 @@ public class MainController extends BundleController implements NSApplication.De
                                     parent = bookmark.getDefaultPath();
                                 }
                             }
-                            final Session session = SessionFactory.createSession(bookmark);
-                            List<Path> roots = new ArrayList<Path>();
-                            for(Local file : files) {
-                                roots.add(PathFactory.createPath(session, parent, file));
-                            }
-                            t.startTransfer(new UploadTransfer(roots));
+                            upload(bookmark, files, parent);
                             break;
                         }
                     }
@@ -655,6 +680,21 @@ public class MainController extends BundleController implements NSApplication.De
         alert.setAccessoryView(bookmarksPopup);
         alert.beginSheet();
         return true;
+    }
+
+    /**
+     * @param bookmark
+     * @param files
+     * @param destination
+     */
+    private void upload(Host bookmark, List<Local> files, String destination) {
+        final Session session = SessionFactory.createSession(bookmark);
+        List<Path> roots = new ArrayList<Path>();
+        for(Local file : files) {
+            roots.add(PathFactory.createPath(session, destination, file));
+        }
+        final TransferController t = TransferController.instance();
+        t.startTransfer(new UploadTransfer(roots));
     }
 
     /**
@@ -769,6 +809,9 @@ public class MainController extends BundleController implements NSApplication.De
         return false;
     }
 
+    // User bookmarks and thirdparty applications
+    private final CountDownLatch loader = new CountDownLatch(2);
+
     /**
      * Sent by the default notification center after the application has been launched and initialized but
      * before it has received its first event. aNotification is always an
@@ -807,8 +850,6 @@ public class MainController extends BundleController implements NSApplication.De
                 }
             });
         }
-        // User bookmarks and thirdparty applications
-        final CountDownLatch loader = new CountDownLatch(2);
 
         this.background(new AbstractBackgroundAction() {
             public void run() {
