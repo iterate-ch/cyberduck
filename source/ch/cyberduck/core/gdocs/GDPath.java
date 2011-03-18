@@ -24,14 +24,13 @@ import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.serializer.Deserializer;
 import ch.cyberduck.core.serializer.Serializer;
-import ch.cyberduck.core.threading.ThreadPool;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import com.google.gdata.client.CoreErrorDomain;
 import com.google.gdata.client.DocumentQuery;
+import com.google.gdata.client.GDataProtocol;
 import com.google.gdata.client.GoogleAuthTokenFactory;
 import com.google.gdata.client.Service;
 import com.google.gdata.client.http.HttpGDataRequest;
@@ -42,21 +41,22 @@ import com.google.gdata.data.acl.AclFeed;
 import com.google.gdata.data.acl.AclRole;
 import com.google.gdata.data.acl.AclScope;
 import com.google.gdata.data.docs.*;
-import com.google.gdata.data.media.MediaMultipart;
 import com.google.gdata.data.media.MediaSource;
-import com.google.gdata.data.media.MediaStreamSource;
 import com.google.gdata.util.ContentType;
 import com.google.gdata.util.NotImplementedException;
 import com.google.gdata.util.ServiceException;
 
-import javax.mail.MessagingException;
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class GDPath extends Path {
     private static Logger log = Logger.getLogger(GDPath.class);
@@ -263,6 +263,14 @@ public class GDPath extends Path {
         return this.getHostUrl().append("/feeds/default/media/document%3A").append(this.getDocumentId()).toString();
     }
 
+    protected String getUpdateSessionFeed() throws MalformedURLException {
+        return new StringBuilder(this.getCreateSessionFeed()).append("/document%3A").append(this.getDocumentId()).toString();
+    }
+
+    protected String getCreateSessionFeed() throws MalformedURLException {
+        return this.getHostUrl().append("/feeds/upload/create-session/default/private/full").toString();
+    }
+
     protected String getFolderFeed() throws MalformedURLException {
         final StringBuilder feed = this.getPrivateFeed();
         if(this.isRoot()) {
@@ -284,11 +292,6 @@ public class GDPath extends Path {
     @Override
     public void readSize() {
         ;
-    }
-
-    @Override
-    public void readTimestamp() {
-        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -499,13 +502,7 @@ public class GDPath extends Path {
                 OutputStream out = null;
                 try {
                     final String mime = this.getLocal().getMimeType();
-                    final MediaStreamSource source = new MediaStreamSource(this.getLocal().getInputStream(), mime,
-                            new DateTime(this.attributes().getModificationDate()),
-                            this.getLocal().attributes().getSize());
-                    final MediaContent content = new MediaContent();
-                    content.setMediaSource(source);
-                    content.setMimeType(new ContentType(mime));
-                    content.setLength(this.getLocal().attributes().getSize());
+                    final long size = this.getLocal().attributes().getSize();
 
                     DocumentListEntry document;
                     if(this.exists()) {
@@ -518,94 +515,93 @@ public class GDPath extends Path {
                         document = new DocumentListEntry();
                         document.setTitle(new PlainTextConstruct(this.getName()));
                     }
-                    document.setContent(content);
-
-                    status().setResume(false);
-
-                    String feed;
+                    StringBuilder feed;
                     if(this.exists()) {
-                        feed = this.getMediaFeed();
+                        // PUT /feeds/upload/create-session/default/private/full/document%3A12345 HTTP/1.1
+                        feed = new StringBuilder(this.getUpdateSessionFeed());
                     }
                     else {
-                        feed = ((GDPath) this.getParent()).getFolderFeed();
+                        feed = new StringBuilder(this.getCreateSessionFeed());
                     }
-                    StringBuilder url = new StringBuilder(feed);
-                    // Convertible to Google Docs file type
-                    url.append("?convert=").append(this.isConversionSupported()
+                    // Convertible to Google Docs file type. To create a resumable upload request for an arbitrary
+                    // file upload, include the convert=false parameter on this initial upload request
+                    feed.append("?convert=").append(this.isConversionSupported()
                             && Preferences.instance().getBoolean("google.docs.upload.convert"));
                     if(this.isOcrSupported()) {
                         // Image file type
-                        url.append("&ocr=").append(Preferences.instance().getProperty("google.docs.upload.ocr"));
+                        feed.append("&ocr=").append(Preferences.instance().getProperty("google.docs.upload.ocr"));
                     }
-                    Service.GDataRequest request = null;
+                    // To initiate a resumable upload session, send an HTTP POST request to the resumable-post link. The unique
+                    // upload URI will be used to upload the file chunks
+                    final Service.GDataRequest session;
+                    if(this.exists()) {
+                        session = this.getSession().getClient().createUpdateRequest(new URL(feed.toString()));
+                        session.setEtag(document.getEtag());
+                    }
+                    else {
+                        session = this.getSession().getClient().createInsertRequest(new URL(feed.toString()));
+                    }
+                    // Initialize a resumable media upload request.
+                    session.setHeader(GDataProtocol.Header.X_UPLOAD_CONTENT_TYPE, mime);
+                    session.setHeader(GDataProtocol.Header.X_UPLOAD_CONTENT_LENGTH, Long.toString(size));
+                    final URL location;
                     try {
-                        // Write as MIME multipart containing the entry and media.  Use the
-                        // content type from the multipart since this contains auto-generated
-                        // boundary attributes.
-                        final MediaMultipart multipart = new MediaMultipart(document, document.getMediaSource());
-                        request = this.getSession().getClient().createRequest(
-                                this.exists() ? Service.GDataRequest.RequestType.UPDATE : Service.GDataRequest.RequestType.INSERT,
-                                new URL(url.toString()),
-                                new ContentType(multipart.getContentType()));
-                        if(request instanceof HttpGDataRequest) {
-                            // No internal buffering of request with a known content length
-                            // Size is incorect because of additional MIME header
-//                                ((HttpGDataRequest)request).getConnection().setFixedLengthStreamingMode(
-//                                        (int) this.getLocal().attributes().getSize()
-//                                );
-                            // Use chunked upload with default chunk size.
-                            ((HttpGDataRequest) request).getConnection().setChunkedStreamingMode(0);
-                        }
-                        if(this.exists()) {
-                            request.setEtag(document.getEtag());
-                        }
-                        // Expect: Continue not supported
-//                        request.setHeader("Expect", "100-Continue");
-//                        // Parse response for HTTP error message.
-//                        try {
-//                            request.execute();
-//                        }
-//                        catch(ServiceException e) {
-//                            this.status().setComplete(false);
-//                            throw e;
-//                        }
-                        out = request.getRequestStream();
-
-                        final PipedOutputStream pipe = new PipedOutputStream();
-                        in = new PipedInputStream(pipe);
-                        ThreadPool.instance().execute(new Runnable() {
-                            public void run() {
-                                try {
-                                    multipart.writeTo(pipe);
-                                    pipe.flush();
-                                    pipe.close();
-                                }
-                                catch(IOException e) {
-                                    log.error(e.getMessage());
-                                }
-                                catch(MessagingException e) {
-                                    log.error(e.getMessage());
-                                }
-                            }
-                        });
-                        this.upload(out, in, throttle, listener);
-                        // Parse response for HTTP error message.
-                        try {
-                            request.execute();
-                        }
-                        catch(ServiceException e) {
-                            this.status().setComplete(false);
-                            throw e;
-                        }
-                    }
-                    catch(MessagingException e) {
-                        throw new ServiceException(
-                                CoreErrorDomain.ERR.cantWriteMimeMultipart, e);
+                        this.getSession().getClient().writeRequestData(session, document);
+                        session.execute();
+                        location = new URL(session.getResponseHeader("Location"));
                     }
                     finally {
-                        if(request != null) {
-                            request.end();
+                        session.end();
+                    }
+                    final Service.GDataRequest request;
+                    request = this.getSession().getClient().createRequest(Service.GDataRequest.RequestType.UPDATE,
+                            location, new ContentType(mime));
+                    request.setHeader("Content-Length", String.valueOf(size));
+                    if(this.exists()) {
+                        if(this.status().isResume()) {
+                            // Querying the status of an incomplete upload
+                            Service.GDataRequest status = this.getSession().getClient().createRequest(Service.GDataRequest.RequestType.UPDATE,
+                                    location, new ContentType(mime));
+                            // If your request is terminated prior to receiving an entry response from the server or
+                            // if you receive an HTTP 503 response from the server, you can query the
+                            // current status of the upload by issuing an empty PUT request on the unique upload URI
+                            status.setHeader("Content-Length", String.valueOf(0));
+                            status.setHeader("Content-Range", "bytes" + " " + "*/" + size);
+                            try {
+                                status.execute();
+                                final String header = status.getResponseHeader("Range");
+                                log.info("Content-Range reported by server:" + header);
+                                final long range = getNextByteIndexFromRangeHeader(header);
+                                request.setHeader("Content-Range", (this.status().isResume() ? range : 0)
+                                        + "-" + (size - 1)
+                                        + "/" + size
+                                );
+                            }
+                            catch(ServiceException e) {
+                                log.warn("Resume upload failed:" + e.getMessage());
+                                // Ignore several possible server errors. Reload instead.
+                                this.status().setResume(false);
+                            }
                         }
+                    }
+                    if(request instanceof HttpGDataRequest) {
+                        // No internal buffering of request with a known content length
+                        // Use chunked upload with default chunk size.
+                        ((HttpGDataRequest) request).getConnection().setChunkedStreamingMode(0);
+                    }
+                    in = getLocal().getInputStream();
+                    out = request.getRequestStream();
+                    this.upload(out, in, throttle, listener);
+                    try {
+                        // Parse response for HTTP error message.
+                        request.execute();
+                    }
+                    catch(ServiceException e) {
+                        this.status().setComplete(false);
+                        throw e;
+                    }
+                    finally {
+                        request.end();
                     }
                 }
                 finally {
@@ -619,6 +615,48 @@ public class GDPath extends Path {
         }
         catch(IOException e) {
             this.error("Upload failed", e);
+        }
+    }
+
+    /**
+     * Returns the next byte index identifying data that the server has not
+     * yet received, obtained from an HTTP Range header (e.g., a header of
+     * "Range: 0-55" would cause 56 to be returned).  <code>null</code> or
+     * malformed headers cause 0 to be returned.
+     *
+     * @param rangeHeader in the server response
+     * @return the byte index beginning where the server has yet to receive data
+     */
+    private long getNextByteIndexFromRangeHeader(String rangeHeader) {
+        if(rangeHeader == null || rangeHeader.indexOf('-') == -1) {
+
+            // No valid range header, start from the beginning of the file.
+            return 0L;
+        }
+
+        Matcher rangeMatcher =
+                Pattern.compile("[0-9]+-[0-9]+").matcher(rangeHeader);
+        if(!rangeMatcher.find(1)) {
+
+            // No valid range header, start from the beginning of the file.
+            return 0L;
+        }
+
+        try {
+            String[] rangeParts = rangeMatcher.group().split("-");
+
+            // Ensure that the start of the range is 0.
+            long firstByteIndex = Long.parseLong(rangeParts[0]);
+            if(firstByteIndex != 0) {
+                return 0L;
+            }
+
+            // Return the next byte index after the end of the range.
+            long lastByteIndex = Long.parseLong(rangeParts[1]);
+            return lastByteIndex + 1;
+        }
+        catch(NumberFormatException e) {
+            return 0L;
         }
     }
 
@@ -865,6 +903,11 @@ public class GDPath extends Path {
 
     @Override
     public void writeUnixPermission(Permission perm, boolean recursive) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void readTimestamp() {
         throw new UnsupportedOperationException();
     }
 
