@@ -499,7 +499,7 @@ public class Distribution {
      */
     public List<AbstractPath.DescriptiveUrl> getCnameURL(Path file) {
         List<AbstractPath.DescriptiveUrl> urls = new ArrayList<AbstractPath.DescriptiveUrl>();
-        for(String cname : cnames) {
+        for(String cname : this.getCNAMEs()) {
             urls.add(new AbstractPath.DescriptiveUrl(this.getCnameURL(cname, file),
                     MessageFormat.format(Locale.localizedString("{0} URL"), Locale.localizedString(method.toString(), "S3"))));
         }
