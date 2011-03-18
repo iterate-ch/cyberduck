@@ -324,23 +324,13 @@ namespace Ch.Cyberduck.Ui.Controller
                 // Hostname of newly selected protocol is not configurable. Change to default.
                 _host.setHostname(selected.getDefaultHostname());
             }
-            if(StringUtils.isNotBlank(selected.getDefaultHostname())) {
+            if(Utils.IsNotBlank(selected.getDefaultHostname())) {
                 // Prefill with default hostname
                 _host.setHostname(selected.getDefaultHostname());
             }
             if (!selected.isWebUrlConfigurable())
             {
                 _host.setWebURL(null);
-            }
-            if (selected.equals(Protocol.IDISK))
-            {
-                String member = Preferences.instance().getProperty("iToolsMember");
-                if (StringUtils.isNotEmpty(member))
-                {
-                    // Account name configured in System Preferences
-                    _host.getCredentials().setUsername(member);
-                    _host.setDefaultPath(Path.DELIMITER + member);
-                }
             }
             _host.setProtocol(selected);
             ReadOpenSshConfiguration();
@@ -367,7 +357,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     _host.getCredentials().setIdentity(
                         LocalFactory.createLocal(entry.getIdentityFile().getAbsolutePath()));
                 }
-                if (StringUtils.isNotBlank(entry.getUser()))
+                if (Utils.IsNotBlank(entry.getUser()))
                 {
                     _host.getCredentials().setUsername(entry.getUser());
                 }
@@ -380,7 +370,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void Reachable()
         {
-            if (StringUtils.isNotBlank(_host.getHostname()))
+            if (Utils.IsNotBlank(_host.getHostname()))
             {
                 // Delay to 2 second. When typing changes we don't have to check the reachbility for each stroke.
                 _ticklerRechability.Change(2000, Timeout.Infinite);
@@ -464,7 +454,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 View.UsernameEnabled = true;
                 if(Preferences.instance().getProperty("connection.login.name").Equals(
                        Preferences.instance().getProperty("connection.login.anon.name"))) {
-                    View.Username = StringUtils.EMPTY;
+                    View.Username = String.Empty;
                 }
                 else {
                     View.Username = Preferences.instance().getProperty("connection.login.name");
@@ -557,7 +547,7 @@ namespace Ch.Cyberduck.Ui.Controller
             View.Nickname = _host.getNickname();
             View.DownloadFolder = _host.getDownloadFolder().getAbsolute();
             string url;
-            if (StringUtils.isNotBlank(_host.getDefaultPath()))
+            if (Utils.IsNotBlank(_host.getDefaultPath()))
             {
                 url = _host.toURL() + Path.normalize(_host.getDefaultPath());
             }

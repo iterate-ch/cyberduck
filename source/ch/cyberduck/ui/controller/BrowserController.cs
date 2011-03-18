@@ -2683,7 +2683,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     }
                     else
                     {
-                        if (StringUtils.isNotBlank(_progress.Laststatus))
+                        if (Utils.IsNotBlank(_progress.Laststatus))
                         {
                             label = _progress.Laststatus;
                         }

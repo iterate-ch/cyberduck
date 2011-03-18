@@ -106,13 +106,13 @@ namespace Ch.Cyberduck.Ui.Controller
         private void View_ChangedUsernameEvent()
         {
             _credentials.setUsername(_view.Username);
-            if (StringUtils.isNotBlank(_credentials.getUsername()))
+            if (Utils.IsNotBlank(_credentials.getUsername()))
             {
                 String password = KeychainFactory.instance().getPassword(_protocol.getScheme(),
                                                                          _protocol.getDefaultPort(),
                                                                          _protocol.getDefaultHostname(),
                                                                          _credentials.getUsername());
-                if (StringUtils.isNotBlank(password))
+                if (Utils.IsNotBlank(password))
                 {
                     _view.Password = password;
                 }
