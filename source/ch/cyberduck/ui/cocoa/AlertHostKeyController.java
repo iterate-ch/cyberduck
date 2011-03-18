@@ -138,11 +138,10 @@ public class AlertHostKeyController extends MemoryHostKeyVerifier {
             }
         };
         c.beginSheet();
-        if(c.returnCode() == SheetCallback.CANCEL_OPTION) {
+        if(c.returnCode() == SheetCallback.ALTERNATE_OPTION) {
             throw new ConnectionCanceledException();
         }
-        return c.returnCode() == SheetCallback.DEFAULT_OPTION
-                || c.returnCode() == SheetCallback.ALTERNATE_OPTION;
+        return c.returnCode() == SheetCallback.DEFAULT_OPTION;
 
     }
 
@@ -180,11 +179,10 @@ public class AlertHostKeyController extends MemoryHostKeyVerifier {
             }
         };
         c.beginSheet();
-        if(c.returnCode() == SheetCallback.CANCEL_OPTION) {
+        if(c.returnCode() == SheetCallback.ALTERNATE_OPTION) {
             throw new ConnectionCanceledException();
         }
-        return c.returnCode() == SheetCallback.DEFAULT_OPTION
-                || c.returnCode() == SheetCallback.ALTERNATE_OPTION;
+        return c.returnCode() == SheetCallback.DEFAULT_OPTION;
 
     }
 
