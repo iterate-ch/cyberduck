@@ -168,7 +168,7 @@ public class MainController extends BundleController implements NSApplication.De
      */
     private void updateLicenseMenu() {
         License key = LicenseFactory.find();
-        if(key.isReceipt()) {
+        if(null == Updater.getFeed() && key.isReceipt()) {
             this.applicationMenu.removeItemAtIndex(new NSInteger(5));
             this.applicationMenu.removeItemAtIndex(new NSInteger(4));
         }
