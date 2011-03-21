@@ -23,7 +23,7 @@ package ch.cyberduck.core;
  */
 public class TransferOptions {
 
-    public static final TransferOptions DEFAULT 
+    public static final TransferOptions DEFAULT
             = new TransferOptions();
 
     /**
@@ -40,4 +40,9 @@ public class TransferOptions {
      * Close session after transfer
      */
     public boolean closeSession = true;
+
+    /**
+     * When set to false, do not invalidate entries in the directory listing cache.
+     */
+    public boolean invalidateCache = true;
 }

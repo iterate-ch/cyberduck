@@ -604,6 +604,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 TransferOptions options = new TransferOptions();
                 options.reloadRequested = _reload;
                 options.resumeRequested = _resume;
+                options.invalidateCache = false;
                 _transfer.start(TransferPromptController.Create(_controller, _transfer), options);
             }
 

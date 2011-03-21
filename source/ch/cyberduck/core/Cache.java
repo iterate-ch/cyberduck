@@ -31,6 +31,26 @@ import java.util.*;
 public class Cache<E extends AbstractPath> {
     protected static Logger log = Logger.getLogger(Cache.class);
 
+    public enum Lifecycle {
+        /**
+         * Do not invalidate entries
+         */
+        FOREVER,
+        /**
+         *
+         */
+        INVALIDATED;
+    }
+
+    /**
+     * Cache is valid as long as path is not invalidated
+     */
+    private Lifecycle lifecycle = Cache.Lifecycle.INVALIDATED;
+
+    public void setLifecycle(Lifecycle lifecycle) {
+        this.lifecycle = lifecycle;
+    }
+
     /**
      *
      */
@@ -169,6 +189,16 @@ public class Cache<E extends AbstractPath> {
     }
 
     /**
+     *
+     * @param reference
+     */
+    public void invalidate(PathReference reference) {
+        if(lifecycle.equals(Cache.Lifecycle.INVALIDATED)) {
+            this.get(reference).attributes().setInvalid(true);
+        }
+    }
+
+    /**
      * Clear all cached directory listings
      */
     public void clear() {
@@ -177,4 +207,6 @@ public class Cache<E extends AbstractPath> {
         }
         _impl.clear();
     }
+
+
 }

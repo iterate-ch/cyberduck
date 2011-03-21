@@ -66,7 +66,7 @@ public abstract class AbstractPath {
      */
     public void invalidate() {
         if(this.attributes().isDirectory()) {
-            this.cache().get(this.<Object>getReference()).attributes().setInvalid(true);
+            this.cache().invalidate(this.<Object>getReference());
         }
     }
 

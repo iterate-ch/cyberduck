@@ -518,6 +518,10 @@ public abstract class Transfer implements Serializable {
                 return;
             }
 
+            if(!options.invalidateCache) {
+                // Do not invalidate cache entries during file transfers
+                session.cache().setLifecycle(Cache.Lifecycle.FOREVER);
+            }
             // Determine the filter to match files against
             final TransferAction action = this.action(options.resumeRequested, options.reloadRequested);
             if(action.equals(TransferAction.ACTION_CANCEL)) {

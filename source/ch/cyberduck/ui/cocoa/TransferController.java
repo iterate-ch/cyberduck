@@ -722,6 +722,7 @@ public class TransferController extends WindowController implements NSToolbar.De
                 final TransferOptions options = new TransferOptions();
                 options.reloadRequested = reload;
                 options.resumeRequested = resume;
+                options.invalidateCache = false;
                 transfer.start(TransferPromptController.create(TransferController.this, transfer), options);
             }
 
