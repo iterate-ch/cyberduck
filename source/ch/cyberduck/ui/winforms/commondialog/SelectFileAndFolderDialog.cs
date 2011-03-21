@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2011 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -22,11 +22,18 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
+using Microsoft.Win32;
 
 namespace Ch.Cyberduck.Ui.Winforms.Commondialog
 {
     public class SelectFileAndFolderDialog : CommonDialog
     {
+        private const string HideFileExtensionKey =
+            @"HideFileExt";
+
+        private const string HideFileExtensionLocation =
+            @"Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced";
+
         private static readonly Dictionary<int, CalcPosDelegate> m_calcPosMap =
             new Dictionary<int, CalcPosDelegate>
                 {
@@ -205,26 +212,43 @@ namespace Ch.Cyberduck.Ui.Winforms.Commondialog
                     (ShowReadOnly ? 0 : InteropUtil.OFN_HIDEREADONLY);
 
                 m_useCurrentDir = false;
+                bool hideFileExtSettingChanged = false;
 
-                var ret = InteropUtil.GetOpenFileNameW(ref openFileName);
-                //var extErrpr = InteropUtil.CommDlgExtendedError();
-                //InteropUtil.CheckForWin32Error();
-
-                if (m_useCurrentDir)
+                try
                 {
-                    Path = m_currentFolder;
-                    return true;
-                }
-                else if (ret)
-                {
-                    Marshal.Copy(nativeBuffer, chars, 0, chars.Length);
-                    var firstZeroTerm = ((IList) chars).IndexOf('\0');
-                    if (firstZeroTerm >= 0 && firstZeroTerm <= chars.Length - 1)
+                    if (GetHideFileExtensionSetting())
                     {
-                        Path = new string(chars, 0, firstZeroTerm);
+                        HideFileExtension(false);
+                        hideFileExtSettingChanged = true;
+                    }
+                    var ret = InteropUtil.GetOpenFileNameW(ref openFileName);
+                    //var extErrpr = InteropUtil.CommDlgExtendedError();
+                    //InteropUtil.CheckForWin32Error();
+
+                    if (m_useCurrentDir)
+                    {
+                        Path = m_currentFolder;
+                        return true;
+                    }
+                    else if (ret)
+                    {
+                        Marshal.Copy(nativeBuffer, chars, 0, chars.Length);
+                        var firstZeroTerm = ((IList) chars).IndexOf('\0');
+                        if (firstZeroTerm >= 0 && firstZeroTerm <= chars.Length - 1)
+                        {
+                            Path = new string(chars, 0, firstZeroTerm);
+                        }
+                    }
+                    return ret;
+                }
+                finally
+                {
+                    //revert registry setting
+                    if (hideFileExtSettingChanged)
+                    {
+                        HideFileExtension(true);
                     }
                 }
-                return ret;
             }
             finally
             {
@@ -232,6 +256,33 @@ namespace Ch.Cyberduck.Ui.Winforms.Commondialog
                 if (filterBuffer != IntPtr.Zero)
                 {
                     Marshal.FreeCoTaskMem(filterBuffer);
+                }
+            }
+        }
+
+        private static bool GetHideFileExtensionSetting()
+        {
+            using (RegistryKey adv = Registry.CurrentUser.OpenSubKey(HideFileExtensionLocation))
+            {
+                if (null != adv)
+                {
+                    var hide = adv.GetValue(HideFileExtensionKey);
+                    if (null != hide)
+                    {
+                        return Convert.ToBoolean(hide);
+                    }
+                }
+            }
+            return false;
+        }
+
+        private static void HideFileExtension(bool hide)
+        {
+            using (RegistryKey adv = Registry.CurrentUser.OpenSubKey(HideFileExtensionLocation, true))
+            {
+                if (null != adv)
+                {
+                    adv.SetValue(HideFileExtensionKey, Convert.ToInt16(hide), RegistryValueKind.DWord);
                 }
             }
         }
@@ -362,8 +413,8 @@ namespace Ch.Cyberduck.Ui.Winforms.Commondialog
                 for (int i = 0; i < count; i++)
                 {
                     ind = InteropUtil.SendMessageInt(listview, InteropUtil.LVM_GETNEXTITEM,
-                                                  ind,
-                                                  InteropUtil.LVNI_SELECTED);
+                                                     ind,
+                                                     InteropUtil.LVNI_SELECTED);
                     //with the index we can get the item's text
                     string item = GetFileNameFromSelectedItem(listview, ind);
                     _selected.Add(item);
@@ -647,6 +698,12 @@ namespace Ch.Cyberduck.Ui.Winforms.Commondialog
                             InteropUtil.SetWindowTextW(fileNameCombo, "");
                         }
                         m_hasDirChangeFired = true;
+
+                        //refresh the file list to make sure that the extension is shown properly
+                        var hParent = InteropUtil.AssumeNonZero(InteropUtil.GetParent(hWnd));
+                        SetForegroundWindow(hParent);
+                        SendKeys.SendWait("{F5}");
+
                         break;
                     }
                 case InteropUtil.CDN_FILEOK:
@@ -673,7 +730,6 @@ namespace Ch.Cyberduck.Ui.Winforms.Commondialog
             }
             return 0;
         }
-
 
         private string GetTextFromCommonDialog(IntPtr hWnd, uint msg)
         {
@@ -809,7 +865,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Commondialog
                     lvitem.pszText = nativeBuffer;
                     lvitem.cchTextMax = InteropUtil.NumberOfFileChars;
                     var length = InteropUtil.SendListViewMessageInt(hListView, InteropUtil.LVM_GETITEMTEXT,
-                                                                 selectedIndex, ref lvitem);
+                                                                    selectedIndex, ref lvitem);
                     name = Marshal.PtrToStringUni(lvitem.pszText, (int) length);
                 }
                 finally
@@ -879,6 +935,9 @@ namespace Ch.Cyberduck.Ui.Winforms.Commondialog
         {
             return (x & 0xFFFF0000) >> 16;
         }
+
+        [DllImport("User32.dll", SetLastError = true)]
+        public static extern int SetForegroundWindow(IntPtr hwnd);
 
         private delegate void CalcPosDelegate(
             SelectFileAndFolderDialog @this, int baseRight, out int right, out int width);
