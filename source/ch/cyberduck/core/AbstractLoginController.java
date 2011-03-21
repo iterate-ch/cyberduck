@@ -74,13 +74,13 @@ public abstract class AbstractLoginController implements LoginController {
         if(StringUtils.isNotBlank(message)) {
             reason.append(message).append(". ");
         }
-        if(!credentials.validate(host.getProtocol())) {
+        if(!credentials.validate(host.getProtocol()) || credentials.isPublicKeyAuthentication()) {
+            // Lookup password if missing. Always lookup password for public key authentication. See #5754.
             if(StringUtils.isNotBlank(credentials.getUsername())) {
                 if(Preferences.instance().getBoolean("connection.login.useKeychain")) {
                     String saved = KeychainFactory.instance().find(host);
                     if(StringUtils.isBlank(saved)) {
                         if(credentials.isPublicKeyAuthentication()) {
-                            ;
                             // We decide later if the key is encrypted and a password must be known to decrypt.
                         }
                         else {
