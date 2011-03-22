@@ -963,10 +963,6 @@ public class FTPPath extends Path {
                             if(status().isComplete()) {
                                 IOUtils.closeQuietly(in);
                                 IOUtils.closeQuietly(out);
-                                if(!getSession().getClient().completePendingCommand()) {
-                                    status().setComplete(false);
-                                    throw new FTPException(getSession().getClient().getReplyString());
-                                }
                             }
                         }
                         finally {
@@ -976,6 +972,12 @@ public class FTPPath extends Path {
                         return true;
                     }
                 });
+                if(status().isComplete()) {
+                    if(!getSession().getClient().completePendingCommand()) {
+                        status().setComplete(false);
+                        throw new FTPException(getSession().getClient().getReplyString());
+                    }
+                }
             }
             catch(IOException e) {
                 this.error("Download failed", e);
@@ -1025,10 +1027,6 @@ public class FTPPath extends Path {
                             if(status().isComplete()) {
                                 IOUtils.closeQuietly(in);
                                 IOUtils.closeQuietly(out);
-                                if(!getSession().getClient().completePendingCommand()) {
-                                    status().setComplete(false);
-                                    throw new FTPException(getSession().getClient().getReplyString());
-                                }
                             }
                         }
                         finally {
@@ -1038,6 +1036,12 @@ public class FTPPath extends Path {
                         return true;
                     }
                 });
+                if(status().isComplete()) {
+                    if(!getSession().getClient().completePendingCommand()) {
+                        status().setComplete(false);
+                        throw new FTPException(getSession().getClient().getReplyString());
+                    }
+                }
             }
             catch(IOException e) {
                 this.error("Upload failed", e);
