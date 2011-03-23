@@ -1,4 +1,4 @@
-﻿// 
+﻿﻿//
 // Copyright (c) 2010-2011 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
@@ -612,9 +612,6 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 base.finish();
                 _transfer.removeListener(_listener);
-                // Upon retry, use resume
-                _reload = false;
-                _resume = true;
             }
 
             public override void cleanup()
@@ -648,6 +645,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 _transfer.fireTransferQueued();
                 // Upon retry do not suggest to overwrite already completed items from the transfer
+                _reload = false;
                 _resume = true;
                 base.pause();
                 _transfer.fireTransferResumed();

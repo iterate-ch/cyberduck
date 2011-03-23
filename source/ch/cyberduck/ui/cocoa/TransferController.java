@@ -730,9 +730,6 @@ public class TransferController extends WindowController implements NSToolbar.De
             public void finish() {
                 super.finish();
                 transfer.removeListener(tl);
-                // Upon retry, use resume
-                reload = false;
-                resume = true;
             }
 
             @Override
@@ -761,6 +758,7 @@ public class TransferController extends WindowController implements NSToolbar.De
             public void pause() {
                 transfer.fireTransferQueued();
                 // Upon retry do not suggest to overwrite already completed items from the transfer
+                reload = false;
                 resume = true;
                 super.pause();
                 transfer.fireTransferResumed();
