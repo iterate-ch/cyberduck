@@ -48,7 +48,7 @@ init() {
 	}
 	done
 	cp $base_language/Localizable.strings $language/
-	cp $base_language/ServiceMenu.strings $language/
+	cp $base_language/ServicesMenu.strings $language/
 	cp $base_language/Crash.strings $language/
 	cp $base_language/Status.strings $language/
 	cp $base_language/Error.strings $language/
