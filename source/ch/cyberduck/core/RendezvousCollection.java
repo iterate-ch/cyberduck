@@ -41,6 +41,7 @@ public class RendezvousCollection extends AbstractHostCollection {
                 RendezvousCollection.this.collectionItemRemoved(null);
             }
         });
+        this.load();
     }
 
     /**
