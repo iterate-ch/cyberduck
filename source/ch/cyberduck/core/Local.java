@@ -341,7 +341,7 @@ public abstract class Local extends AbstractPath {
         final AttributedList<Local> children = new AttributedList<Local>();
         File[] files = new File(path).listFiles();
         if(null == files) {
-            log.error("new File(path).listFiles == null");
+            log.error("Error listing children:" + path);
             return children;
         }
         for(File file : files) {
