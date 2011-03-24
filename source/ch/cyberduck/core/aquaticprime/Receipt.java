@@ -242,15 +242,15 @@ public class Receipt extends AbstractLicense {
     }
 
     public String getValue(String property) {
-        if(StringUtils.isEmpty(name)) {
-            log.warn("Need to validate first before hash is available");
-            return StringUtils.EMPTY;
-        }
-        return name;
+        return Locale.localizedString("Unknown");
     }
 
     @Override
     public String getName() {
-        return Locale.localizedString("Unknown");
+        if(StringUtils.isEmpty(name)) {
+            log.warn("Need to validate first before hash is available");
+            return Locale.localizedString("Unknown");
+        }
+        return name;
     }
 }
