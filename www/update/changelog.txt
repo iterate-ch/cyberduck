@@ -7,6 +7,7 @@
 - [Bugfix] Wrong local path for uploads with file chooser (Windows) (#5590)
 - [Bugfix] Uploads larger than 100MB fail (Google Docs) (#5712)
 - [Bugfix] Replace password for private key fails (SFTP) (#5754)
+- [Bugfix] Purge files with delimiters in object key fails (Cloudfiles) (#5822)
 
 4.0.1 [http://trac.cyberduck.ch/milestone/4.0.1]
 - [Bugfix] Uploading folders fails to create directories (#5749)
