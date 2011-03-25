@@ -23,8 +23,6 @@
 
 <project name="Cyberduck for Mac" basedir=".">
 
-    <property name="jdk.home" value="/System/Library/Java/JavaVirtualMachines/1.5.0.jdk/Contents/Home"/>
-
     <property name="build.deploy" location="${build}/${configuration}"/>
 
     <property name="app.bundle" value="${build.deploy}/${app.name}.app"/>
@@ -58,12 +56,6 @@
 
     <property name="spotlight" value="${home}/Spotlight Importer"/>
     <property name="build.spotlight" value="${spotlight}/build/${configuration}"/>
-
-    <path id="build.bootclasspath">
-        <pathelement location="${jdk.home}/Classes/classes.jar"/>
-        <pathelement location="${jdk.home}/Classes/jce.jar"/>
-        <pathelement location="${jdk.home}/Classes/jsse.jar"/>
-    </path>
 
     <target name="spotlight">
         <exec dir="${spotlight}" executable="/usr/bin/xcodebuild" spawn="false" failonerror="true">

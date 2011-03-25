@@ -36,7 +36,6 @@
 
     <property name="architecture" value="x86"/>
     <property name="build.deploy" value="${build}/${configuration}/${architecture}"/>
-    <property name="jdk.home" value="${env.ProgramFiles}/Java/jdk1.6.0_17"/>
     <property name="setup" value="${home}/setup"/>
     <property name="nsis.home" value="${programFiles}/NSIS"/>
     <property name="winsdk.home" value="${programFiles}/Microsoft SDKs/Windows/v7.0A/Bin"/>
@@ -45,12 +44,6 @@
 
     <taskdef resource="net/sf/antcontrib/antcontrib.properties"/>
     <taskdef name="ikvmc" classname="net.ikvm.ant.IkvmcTask"/>
-
-    <path id="build.bootclasspath">
-        <pathelement location="${jdk.home}/jre/lib/rt.jar"/>
-        <pathelement location="${jdk.home}/jre/lib/jce.jar"/>
-        <pathelement location="${jdk.home}/jre/lib/jsse.jar"/>
-    </path>
 
     <target name="version" depends="revision">
         <propertyregex property="minor"

@@ -90,7 +90,6 @@
         <echo message="	  ---------------------------------------------------------------"/>
         <echo message=""/>
         <echo message="Building ${app.name}..."/>
-        <echo message="Using JDK from ${jdk.home}"/>
         <mkdir dir="${build}"/>
         <mkdir dir="${build.classes}"/>
         <mkdir dir="${build.unittests}"/>
@@ -129,7 +128,6 @@
                listfiles="on"
                extdirs=""
                destdir="${build.classes}">
-            <bootclasspath refid="build.bootclasspath"/>
             <classpath refid="build.classpath"/>
         </javac>
     </target>
