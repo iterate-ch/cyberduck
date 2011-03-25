@@ -403,10 +403,13 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                     continue;
                 }
                 if(pasteboard.getSession().equals(controller.getSession())) {
-
                     if(info.draggingSourceOperationMask().intValue() == NSDraggingInfo.NSDragOperationCopy.intValue()) {
                         // Explicit copy requested if drag operation is already NSDragOperationCopy. User is pressing the option key.
                         return NSDraggingInfo.NSDragOperationCopy;
+                    }
+                    if(!controller.getSession().isRenameSupported(destination)) {
+                        // Rename is not supported by the target file system
+                        return NSDraggingInfo.NSDragOperationNone;
                     }
                     // Defaulting to move for same session
                     return NSDraggingInfo.NSDragOperationMove;

@@ -870,12 +870,17 @@ namespace Ch.Cyberduck.Ui.Controller
                     if (destination.getSession().equals(sourcePath.getSession()))
                     {
                         // Use drag action from user
-                        // args.Effect = DragDropEffects.Move;
                     }
                     else
                     {
                         // If copying between sessions is supported
                         args.Effect = DragDropEffects.Copy;
+                    }
+                    if (DragDropEffects.Move == args.Effect) {
+                        // Rename is not supported by the target file system
+                        args.Effect = DragDropEffects.None;
+                        args.DropTargetLocation = DropTargetLocation.None;
+                        return;
                     }
                     if (sourcePath.attributes().isDirectory() && sourcePath.equals(destination))
                     {
