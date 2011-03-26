@@ -605,6 +605,8 @@ public class S3Path extends CloudPath {
                     status().setResume(false);
                     this.uploadSingle(throttle, listener, object);
                 }
+                // The directory listing is no more current
+                this.getParent().invalidate();
             }
         }
         catch(ServiceException e) {

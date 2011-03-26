@@ -1042,6 +1042,8 @@ public class FTPPath extends Path {
                         throw new FTPException(getSession().getClient().getReplyString());
                     }
                 }
+                // The directory listing is no more current
+                this.getParent().invalidate();
             }
             catch(IOException e) {
                 this.error("Upload failed", e);

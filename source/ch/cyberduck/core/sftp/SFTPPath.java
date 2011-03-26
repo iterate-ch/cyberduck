@@ -563,6 +563,8 @@ public class SFTPPath extends Path {
                         (int) (this.attributes().getSize() / Preferences.instance().getInteger("connection.chunksize")) + 1
                 );
                 this.upload(out, in, throttle, listener);
+                // The directory listing is no more current
+                this.getParent().invalidate();
             }
             catch(IOException e) {
                 this.error("Upload failed", e);

@@ -229,6 +229,8 @@ public class DropboxPath extends Path {
                             return local.attributes().getSize();
                         }
                     });
+                    // The directory listing is no more current
+                    this.getParent().invalidate();
                 }
                 catch(IOException e) {
                     this.status().setComplete(false);

@@ -539,6 +539,8 @@ public class AzurePath extends CloudPath {
                 finally {
                     IOUtils.closeQuietly(in);
                 }
+                // The directory listing is no more current
+                this.getParent().invalidate();
             }
             catch(StorageException e) {
                 this.error("Upload failed", e);

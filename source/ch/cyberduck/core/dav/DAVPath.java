@@ -378,6 +378,8 @@ public class DAVPath extends Path {
                         // Upload failed
                         throw new IOException(this.getSession().getClient().getStatusMessage());
                     }
+                    // The directory listing is no more current
+                    this.getParent().invalidate();
                 }
                 finally {
                     IOUtils.closeQuietly(in);

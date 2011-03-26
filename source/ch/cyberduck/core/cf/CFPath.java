@@ -440,6 +440,8 @@ public class CFPath extends CloudPath {
                         }
                     }
                 }
+                // The directory listing is no more current
+                this.getParent().invalidate();
             }
             catch(HttpException e) {
                 this.error("Upload failed", e);

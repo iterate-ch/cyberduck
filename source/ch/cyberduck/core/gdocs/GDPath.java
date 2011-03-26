@@ -603,6 +603,8 @@ public class GDPath extends Path {
                     finally {
                         request.end();
                     }
+                    // The directory listing is no more current
+                    this.getParent().invalidate();
                 }
                 finally {
                     IOUtils.closeQuietly(in);
