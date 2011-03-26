@@ -105,14 +105,10 @@ public class FTPClient extends FTPSClient {
     private static final Map<Integer, String> commands
             = new HashMap<Integer, String>();
 
-    public static final int MLST = 50;
-    public static final int MLSD = 51;
     public static final int SIZE = 52;
     public static final int PRET = 53;
 
     static {
-        commands.put(MLST, "MLST");
-        commands.put(MLSD, "MLSD");
         commands.put(SIZE, "SIZE");
         commands.put(PRET, "PRET");
     }

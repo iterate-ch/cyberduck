@@ -220,8 +220,8 @@ public class FTPPath extends Path {
                             if(getSession().isMlsdListSupportedEnabled()
                                     // Note that there is no distinct FEAT output for MLSD.
                                     // The presence of the MLST feature indicates that both MLST and MLSD are supported.
-                                    && getSession().getClient().isFeatureSupported(FTPClient.MLST)) {
-                                success = parseMlsdResponse(children, getSession().getClient().list(FTPClient.MLSD));
+                                    && getSession().getClient().isFeatureSupported(FTPCommand.MLST)) {
+                                success = parseMlsdResponse(children, getSession().getClient().list(FTPCommand.MLSD));
                                 if(!success) {
                                     getSession().setMlsdListSupportedEnabled(false);
                                 }
