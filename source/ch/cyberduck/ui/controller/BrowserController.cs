@@ -3294,7 +3294,6 @@ namespace Ch.Cyberduck.Ui.Controller
                         break;
                     }
                     p.delete();
-                    p.getParent().invalidate();
                     if (!BrowserController.IsConnected())
                     {
                         break;
