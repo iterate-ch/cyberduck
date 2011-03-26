@@ -3558,6 +3558,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 if (_controller.IsMounted())
                 {
+                    _destination.invalidate();
                     if (!_transfer.isCanceled())
                     {
                         _controller.invoke(new ReloadAction(_controller, _destination));

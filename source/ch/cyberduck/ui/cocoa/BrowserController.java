@@ -2810,6 +2810,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             @Override
             public void transferDidEnd() {
                 if(isMounted()) {
+                    workdir.invalidate();
                     if(!transfer.isCanceled()) {
                         invoke(new WindowMainAction(BrowserController.this) {
                             public void run() {
