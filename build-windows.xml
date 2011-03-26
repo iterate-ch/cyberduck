@@ -24,7 +24,7 @@
 <project name="Cyberduck for Windows" basedir="." xmlns:dn="antlib:org.apache.ant.dotnet">
 
     <!-- the following path needs to be set appropriately -->
-    <property name="ikvm.home" value="C:/workspace/ikvm-0.44.0.5"/>
+    <property name="ikvm.home" value="C:/workspace/ikvm-0.46.0.1"/>
 
     <!-- try to detect the process architecture (32/64bit) -->
     <condition property="programFiles" value="${env.ProgramFiles(x86)}">
