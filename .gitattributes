@@ -8,6 +8,66 @@
 /LICENSE.txt -text
 Spotlight[!!-~]Importer/English.lproj/InfoPlist.strings svneol=native#unset
 Spotlight[!!-~]Importer/English.lproj/schema.strings svneol=native#unset
+bg.lproj/Alert.nib/classes.nib -text
+bg.lproj/Alert.nib/info.nib -text
+bg.lproj/Alert.nib/keyedobjects.nib -text
+bg.lproj/Alert.strings -text svneol=unset#text/utf-16
+bg.lproj/Archive.strings -text svneol=unset#text/utf-16
+bg.lproj/Bookmark.nib/classes.nib -text
+bg.lproj/Bookmark.nib/info.nib -text
+bg.lproj/Bookmark.nib/keyedobjects.nib -text
+bg.lproj/Bookmark.strings -text svneol=unset#text/utf-16
+bg.lproj/Browser.nib/classes.nib -text
+bg.lproj/Browser.nib/info.nib -text
+bg.lproj/Browser.nib/keyedobjects.nib -text
+bg.lproj/Browser.strings -text svneol=unset#text/utf-16
+bg.lproj/Command.nib/classes.nib -text
+bg.lproj/Command.nib/info.nib -text
+bg.lproj/Command.nib/keyedobjects.nib -text
+bg.lproj/Command.strings -text svneol=unset#text/utf-16
+bg.lproj/Configuration.strings -text svneol=unset#text/utf-16
+bg.lproj/Connection.nib/classes.nib -text
+bg.lproj/Connection.nib/info.nib -text
+bg.lproj/Connection.nib/keyedobjects.nib -text
+bg.lproj/Connection.strings -text svneol=unset#text/utf-16
+bg.lproj/Crash.strings -text svneol=unset#text/utf-16
+bg.lproj/Credentials.strings -text svneol=unset#text/utf-16
+bg.lproj/Donate.nib/classes.nib -text
+bg.lproj/Donate.nib/info.nib -text
+bg.lproj/Donate.nib/keyedobjects.nib -text
+bg.lproj/Donate.strings -text svneol=unset#text/utf-16
+bg.lproj/Error.strings -text svneol=unset#text/utf-16
+bg.lproj/Growl.strings -text svneol=unset#text/utf-16
+bg.lproj/IDisk.strings -text svneol=unset#text/utf-16
+bg.lproj/Info.nib/classes.nib -text
+bg.lproj/Info.nib/info.nib -text
+bg.lproj/Info.nib/keyedobjects.nib -text
+bg.lproj/Info.strings -text svneol=unset#text/utf-16
+bg.lproj/InfoPlist.strings -text svneol=unset#text/utf-16
+bg.lproj/Keychain.strings -text svneol=unset#text/utf-16
+bg.lproj/License.strings -text svneol=unset#text/utf-16
+bg.lproj/Localizable.strings -text svneol=unset#text/utf-16
+bg.lproj/Login.nib/classes.nib -text
+bg.lproj/Login.nib/info.nib -text
+bg.lproj/Login.nib/keyedobjects.nib -text
+bg.lproj/Login.strings -text svneol=unset#text/utf-16
+bg.lproj/Main.nib/classes.nib -text
+bg.lproj/Main.nib/info.nib -text
+bg.lproj/Main.nib/keyedobjects.nib -text
+bg.lproj/Main.strings -text svneol=unset#text/utf-16
+bg.lproj/Mosso.strings -text svneol=unset#text/utf-16
+bg.lproj/Preferences.nib/classes.nib -text
+bg.lproj/Preferences.nib/info.nib -text
+bg.lproj/Preferences.nib/keyedobjects.nib -text
+bg.lproj/Preferences.strings -text svneol=unset#text/utf-16
+bg.lproj/Prompt.nib/classes.nib -text
+bg.lproj/Prompt.nib/info.nib -text
+bg.lproj/Prompt.nib/keyedobjects.nib -text
+bg.lproj/Prompt.strings -text svneol=unset#text/utf-16
+bg.lproj/S3.strings -text svneol=unset#text/utf-16
+bg.lproj/ServicesMenu.strings -text svneol=unset#text/utf-16
+bg.lproj/Status.strings -text svneol=unset#text/utf-16
+bg.lproj/Transfer.strings -text svneol=unset#text/utf-16
 bookmarks/docs.google.com[!!-~]–[!!-~]Google[!!-~]Docs.duck -text
 bookmarks/mirror.switch.ch[!!-~]–[!!-~]FTP.duck -text
 bookmarks/s3.amazonaws.com[!!-~]–[!!-~]S3.duck -text

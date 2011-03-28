@@ -1,4 +1,5 @@
 4.0.3 [http://trac.cyberduck.ch/milestone/4.0.3]
+- [Localize] Bulgarian Localization
 - [Feature] IPv6 support (Windows) (#5699)
 
 4.0.2 [http://trac.cyberduck.ch/milestone/4.0.2]

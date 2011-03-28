@@ -428,6 +428,35 @@
 		470913200C36FDE00049FBCE /* tr */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = tr; path = tr.lproj/Prompt.nib; sourceTree = "<group>"; };
 		470913220C36FDEA0049FBCE /* pt_PT */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = pt_PT; path = pt_PT.lproj/Prompt.nib; sourceTree = "<group>"; };
 		4709E81A0F864B16005A06CE /* sync.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = sync.tiff; sourceTree = "<group>"; };
+		470BCD491340562B00EF835E /* bg */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = bg; path = bg.lproj/Alert.nib; sourceTree = "<group>"; };
+		470BCD4A1340562B00EF835E /* bg */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = bg; path = bg.lproj/Bookmark.nib; sourceTree = "<group>"; };
+		470BCD4B1340562B00EF835E /* bg */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = bg; path = bg.lproj/Browser.nib; sourceTree = "<group>"; };
+		470BCD4C1340562B00EF835E /* bg */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = bg; path = bg.lproj/Command.nib; sourceTree = "<group>"; };
+		470BCD4D1340562B00EF835E /* bg */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = bg; path = bg.lproj/Connection.nib; sourceTree = "<group>"; };
+		470BCD4E1340562B00EF835E /* bg */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = bg; path = bg.lproj/Donate.nib; sourceTree = "<group>"; };
+		470BCD4F1340562B00EF835E /* bg */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = bg; path = bg.lproj/Info.nib; sourceTree = "<group>"; };
+		470BCD501340562B00EF835E /* bg */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = bg; path = bg.lproj/Login.nib; sourceTree = "<group>"; };
+		470BCD511340562B00EF835E /* bg */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = bg; path = bg.lproj/Main.nib; sourceTree = "<group>"; };
+		470BCD521340562B00EF835E /* bg */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = bg; path = bg.lproj/Preferences.nib; sourceTree = "<group>"; };
+		470BCD531340562B00EF835E /* bg */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = bg; path = bg.lproj/Prompt.nib; sourceTree = "<group>"; };
+		470BCD811340563B00EF835E /* bg */ = {isa = PBXFileReference; lastKnownFileType = text; name = bg; path = bg.lproj/License.txt; sourceTree = "<group>"; };
+		470BCD821340563B00EF835E /* bg */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = bg; path = bg.lproj/Alert.strings; sourceTree = "<group>"; };
+		470BCD831340563B00EF835E /* bg */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = bg; path = bg.lproj/Archive.strings; sourceTree = "<group>"; };
+		470BCD8A1340563B00EF835E /* bg */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = bg; path = bg.lproj/Configuration.strings; sourceTree = "<group>"; };
+		470BCD8D1340563B00EF835E /* bg */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = bg; path = bg.lproj/Crash.strings; sourceTree = "<group>"; };
+		470BCD8E1340563B00EF835E /* bg */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = bg; path = bg.lproj/Credentials.strings; sourceTree = "<group>"; };
+		470BCD911340563B00EF835E /* bg */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = bg; path = bg.lproj/Error.strings; sourceTree = "<group>"; };
+		470BCD921340563B00EF835E /* bg */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = bg; path = bg.lproj/Growl.strings; sourceTree = "<group>"; };
+		470BCD931340563C00EF835E /* bg */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = bg; path = bg.lproj/IDisk.strings; sourceTree = "<group>"; };
+		470BCD961340563C00EF835E /* bg */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = bg; path = bg.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		470BCD971340563C00EF835E /* bg */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = bg; path = bg.lproj/Keychain.strings; sourceTree = "<group>"; };
+		470BCD981340563C00EF835E /* bg */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = bg; path = bg.lproj/License.strings; sourceTree = "<group>"; };
+		470BCD991340563C00EF835E /* bg */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = bg; path = bg.lproj/Localizable.strings; sourceTree = "<group>"; };
+		470BCD9E1340563C00EF835E /* bg */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = bg; path = bg.lproj/Mosso.strings; sourceTree = "<group>"; };
+		470BCDA31340563C00EF835E /* bg */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = bg; path = bg.lproj/S3.strings; sourceTree = "<group>"; };
+		470BCDA41340563C00EF835E /* bg */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = bg; path = bg.lproj/ServicesMenu.strings; sourceTree = "<group>"; };
+		470BCDA51340563C00EF835E /* bg */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = bg; path = bg.lproj/Status.strings; sourceTree = "<group>"; };
+		470BCDA61340563C00EF835E /* bg */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = bg; path = bg.lproj/Transfer.strings; sourceTree = "<group>"; };
 		470C646E1328CBF300146FB6 /* docs.google.com – Google Docs.duck */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = "docs.google.com – Google Docs.duck"; sourceTree = "<group>"; };
 		470C646F1328CBF300146FB6 /* s3.amazonaws.com – S3.duck */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = "s3.amazonaws.com – S3.duck"; sourceTree = "<group>"; };
 		470C64701328CBF300146FB6 /* storage.clouddrive.com – Cloud Files.duck */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = "storage.clouddrive.com – Cloud Files.duck"; sourceTree = "<group>"; };
@@ -2514,6 +2543,7 @@
 				sl,
 				ro,
 				uk,
+				bg,
 			);
 			mainGroup = 29B97314FDCFA39411CA2CEA /* cyberduck-cocoa */;
 			projectDirPath = "";
@@ -2966,6 +2996,7 @@
 				470F148411B208470053670F /* ro */,
 				470DECC5125F2CBD00952823 /* ru */,
 				47E284BE1319333000D03060 /* uk */,
+				470BCD831340563B00EF835E /* bg */,
 			);
 			name = Archive.strings;
 			sourceTree = "<group>";
@@ -3001,6 +3032,7 @@
 				470F14B711B208470053670F /* ro */,
 				470DEC9F125F2CBD00952823 /* ru */,
 				47E284DB1319333000D03060 /* uk */,
+				470BCD9E1340563C00EF835E /* bg */,
 			);
 			name = Mosso.strings;
 			sourceTree = "<group>";
@@ -3036,6 +3068,7 @@
 				470F14A811B208470053670F /* ro */,
 				470DECAA125F2CBD00952823 /* ru */,
 				47E284D01319333000D03060 /* uk */,
+				470BCD931340563C00EF835E /* bg */,
 			);
 			name = IDisk.strings;
 			sourceTree = "<group>";
@@ -3071,6 +3104,7 @@
 				470F14BB11B208470053670F /* ro */,
 				470DEC5E125F2CAF00952823 /* ru */,
 				47E2848E13191D0900D03060 /* uk */,
+				470BCD531340562B00EF835E /* bg */,
 			);
 			name = Prompt.nib;
 			sourceTree = "<group>";
@@ -3106,6 +3140,7 @@
 				470F148B11B208470053670F /* ro */,
 				470DEC6A125F2CAF00952823 /* ru */,
 				47E2848713191D0900D03060 /* uk */,
+				470BCD4C1340562B00EF835E /* bg */,
 			);
 			name = Command.nib;
 			sourceTree = "<group>";
@@ -3140,6 +3175,7 @@
 				471F5C2C12AD1B6B0005D323 /* sl */,
 				471F5C2D12AD1B6B0005D323 /* sk */,
 				47E284BD1319333000D03060 /* uk */,
+				470BCD821340563B00EF835E /* bg */,
 			);
 			name = Alert.strings;
 			sourceTree = "<group>";
@@ -3215,6 +3251,7 @@
 				470F14A911B208470053670F /* ro */,
 				470DEC62125F2CAF00952823 /* ru */,
 				47E2848A13191D0900D03060 /* uk */,
+				470BCD4F1340562B00EF835E /* bg */,
 			);
 			name = Info.nib;
 			sourceTree = "<group>";
@@ -3250,6 +3287,7 @@
 				470F148811B208470053670F /* ro */,
 				470DEC6B125F2CAF00952823 /* ru */,
 				47E2848613191D0900D03060 /* uk */,
+				470BCD4B1340562B00EF835E /* bg */,
 			);
 			name = Browser.nib;
 			sourceTree = "<group>";
@@ -3285,6 +3323,7 @@
 				470F14B411B208470053670F /* ro */,
 				470DEC60125F2CAF00952823 /* ru */,
 				47E2848C13191D0900D03060 /* uk */,
+				470BCD511340562B00EF835E /* bg */,
 			);
 			name = Main.nib;
 			sourceTree = "<group>";
@@ -3320,6 +3359,7 @@
 				470F14AF11B208470053670F /* ro */,
 				470DECC8125F2CBD00952823 /* ru */,
 				47E284BC1319333000D03060 /* uk */,
+				470BCD811340563B00EF835E /* bg */,
 			);
 			name = License.txt;
 			sourceTree = "<group>";
@@ -3355,6 +3395,7 @@
 				470F148F11B208470053670F /* ro */,
 				470DEC69125F2CAF00952823 /* ru */,
 				47E2848813191D0900D03060 /* uk */,
+				470BCD4D1340562B00EF835E /* bg */,
 			);
 			name = Connection.nib;
 			sourceTree = "<group>";
@@ -3390,6 +3431,7 @@
 				470F149411B208470053670F /* ro */,
 				470DEC68125F2CAF00952823 /* ru */,
 				47E2848913191D0900D03060 /* uk */,
+				470BCD4E1340562B00EF835E /* bg */,
 			);
 			name = Donate.nib;
 			sourceTree = "<group>";
@@ -3425,6 +3467,7 @@
 				470F14B111B208470053670F /* ro */,
 				470DEC61125F2CAF00952823 /* ru */,
 				47E2848B13191D0900D03060 /* uk */,
+				470BCD501340562B00EF835E /* bg */,
 			);
 			name = Login.nib;
 			sourceTree = "<group>";
@@ -3460,6 +3503,7 @@
 				470F14B811B208470053670F /* ro */,
 				470DEC5F125F2CAF00952823 /* ru */,
 				47E2848D13191D0900D03060 /* uk */,
+				470BCD521340562B00EF835E /* bg */,
 			);
 			name = Preferences.nib;
 			sourceTree = "<group>";
@@ -3495,6 +3539,7 @@
 				470F148511B208470053670F /* ro */,
 				470DEC6C125F2CAF00952823 /* ru */,
 				47E2848513191D0900D03060 /* uk */,
+				470BCD4A1340562B00EF835E /* bg */,
 			);
 			name = Bookmark.nib;
 			sourceTree = "<group>";
@@ -3530,6 +3575,7 @@
 				470F14AC11B208470053670F /* ro */,
 				470DECA7125F2CBD00952823 /* ru */,
 				47E284D31319333000D03060 /* uk */,
+				470BCD961340563C00EF835E /* bg */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
@@ -3565,6 +3611,7 @@
 				470F14B011B208470053670F /* ro */,
 				470DECA4125F2CBD00952823 /* ru */,
 				47E284D61319333000D03060 /* uk */,
+				470BCD991340563C00EF835E /* bg */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
@@ -3600,6 +3647,7 @@
 				470F148111B208470053670F /* ro */,
 				470DEC6D125F2CAF00952823 /* ru */,
 				47E2848413191D0900D03060 /* uk */,
+				470BCD491340562B00EF835E /* bg */,
 			);
 			name = Alert.nib;
 			sourceTree = "<group>";
@@ -3634,6 +3682,7 @@
 				470F149311B208470053670F /* ro */,
 				470DECB9125F2CBD00952823 /* ru */,
 				47E284C91319333000D03060 /* uk */,
+				470BCD8E1340563B00EF835E /* bg */,
 			);
 			name = Credentials.strings;
 			sourceTree = "<group>";
@@ -3674,6 +3723,7 @@
 				475EBE9112DA462C00E5C3A2 /* en */,
 				475EBE9212DA462C00E5C3A2 /* nl */,
 				475EBE9312DA462C00E5C3A2 /* da */,
+				470BCDA41340563C00EF835E /* bg */,
 			);
 			name = ServicesMenu.strings;
 			sourceTree = "<group>";
@@ -3742,6 +3792,7 @@
 				470F14AE11B208470053670F /* ro */,
 				470DECA5125F2CBD00952823 /* ru */,
 				47E284D51319333000D03060 /* uk */,
+				470BCD981340563C00EF835E /* bg */,
 			);
 			name = License.strings;
 			sourceTree = "<group>";
@@ -3777,6 +3828,7 @@
 				470F14D011B208C70053670F /* ro */,
 				470DEC98125F2CBD00952823 /* ru */,
 				47E284E21319333000D03060 /* uk */,
+				470BCDA61340563C00EF835E /* bg */,
 			);
 			name = Transfer.strings;
 			sourceTree = "<group>";
@@ -3812,6 +3864,7 @@
 				470F148E11B208470053670F /* ro */,
 				470DECBD125F2CBD00952823 /* ru */,
 				47E284C51319333000D03060 /* uk */,
+				470BCD8A1340563B00EF835E /* bg */,
 			);
 			name = Configuration.strings;
 			sourceTree = "<group>";
@@ -3847,6 +3900,7 @@
 				470F149D11B208470053670F /* ro */,
 				470DECB2125F2CBD00952823 /* ru */,
 				47E284CE1319333000D03060 /* uk */,
+				470BCD911340563B00EF835E /* bg */,
 			);
 			name = Error.strings;
 			sourceTree = "<group>";
@@ -3881,6 +3935,7 @@
 				470F14AD11B208470053670F /* ro */,
 				470DECA6125F2CBD00952823 /* ru */,
 				47E284D41319333000D03060 /* uk */,
+				470BCD971340563C00EF835E /* bg */,
 			);
 			name = Keychain.strings;
 			sourceTree = "<group>";
@@ -4075,6 +4130,7 @@
 				470F14BE11B208470053670F /* ro */,
 				470DEC9A125F2CBD00952823 /* ru */,
 				47E284E01319333000D03060 /* uk */,
+				470BCDA31340563C00EF835E /* bg */,
 			);
 			name = S3.strings;
 			sourceTree = "<group>";
@@ -4110,6 +4166,7 @@
 				470F14A711B208470053670F /* ro */,
 				470DECAB125F2CBD00952823 /* ru */,
 				47E284CF1319333000D03060 /* uk */,
+				470BCD921340563B00EF835E /* bg */,
 			);
 			name = Growl.strings;
 			sourceTree = "<group>";
@@ -4145,6 +4202,7 @@
 				470F14BF11B208470053670F /* ro */,
 				470DEC99125F2CBD00952823 /* ru */,
 				47E284E11319333000D03060 /* uk */,
+				470BCDA51340563C00EF835E /* bg */,
 			);
 			name = Status.strings;
 			sourceTree = "<group>";
@@ -4180,6 +4238,7 @@
 				470F149211B208470053670F /* ro */,
 				470DECBA125F2CBD00952823 /* ru */,
 				47E284C81319333000D03060 /* uk */,
+				470BCD8D1340563B00EF835E /* bg */,
 			);
 			name = Crash.strings;
 			sourceTree = "<group>";
