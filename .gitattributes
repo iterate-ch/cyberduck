@@ -36,7 +36,11 @@ bg.lproj/Donate.nib/classes.nib -text
 bg.lproj/Donate.nib/info.nib -text
 bg.lproj/Donate.nib/keyedobjects.nib -text
 bg.lproj/Donate.strings -text svneol=unset#text/utf-16
+bg.lproj/Duplicate.strings -text svneol=unset#text/utf-16
 bg.lproj/Error.strings -text svneol=unset#text/utf-16
+bg.lproj/File.strings -text svneol=unset#text/utf-16
+bg.lproj/Folder.strings -text svneol=unset#text/utf-16
+bg.lproj/Goto.strings -text svneol=unset#text/utf-16
 bg.lproj/Growl.strings -text svneol=unset#text/utf-16
 bg.lproj/IDisk.strings -text svneol=unset#text/utf-16
 bg.lproj/Info.nib/classes.nib -text
