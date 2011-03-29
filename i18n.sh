@@ -48,6 +48,10 @@ init() {
 	}
 	done
 	cp $base_language/Localizable.strings $language/
+	cp $base_language/File.strings $language/
+	cp $base_language/Folder.strings $language/
+	cp $base_language/Goto.strings $language/
+	cp $base_language/Duplicate.strings $language/
 	cp $base_language/ServicesMenu.strings $language/
 	cp $base_language/Crash.strings $language/
 	cp $base_language/Status.strings $language/
