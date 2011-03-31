@@ -18,7 +18,7 @@ public interface CarbonAPI extends Library {
             CFIndex numChars
     );
 
-    public FSEventStreamRef FSEventStreamCreate(
+    FSEventStreamRef FSEventStreamCreate(
             Pointer v, // always use Pointer.NULL
             FSEventStreamCallback callback,
             Pointer context,  // always use Pointer.NULL
@@ -45,6 +45,4 @@ public interface CarbonAPI extends Library {
         @SuppressWarnings({"UnusedDeclaration"})
         void invoke(FSEventStreamRef streamRef, Pointer clientCallBackInfo, NativeLong numEvents, Pointer eventPaths, Pointer eventFlags, Pointer eventIds);
     }
-
-
 }
