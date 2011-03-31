@@ -77,6 +77,13 @@ public class DownloadController extends AlertController {
     }
 
     @Override
+    protected void focus() {
+        // Focus accessory view.
+        urlField.selectText(null);
+        this.window().makeFirstResponder(urlField);
+    }
+
+    @Override
     protected boolean validateInput() {
         Host host = Host.parse(urlField.stringValue());
         return StringUtils.isNotBlank(host.getDefaultPath());
