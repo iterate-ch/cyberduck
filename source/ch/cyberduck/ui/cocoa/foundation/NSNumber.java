@@ -35,6 +35,10 @@ public abstract class NSNumber extends NSValue {
         return CLASS.numberWithDouble(value);
     }
 
+    public static NSNumber numberWithFloat(float value) {
+        return CLASS.numberWithFloat(value);
+    }
+
     public static NSNumber numberWithBoolean(boolean value) {
         return CLASS.numberWithBool(value);
     }
