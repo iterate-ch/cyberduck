@@ -365,7 +365,7 @@ static BOOL showSubviewsWhileResizing = NO;
 
     count = [masks count];
     for (index = 0; index < count; index++)
-        [[views objectAtIndex:index] setAutoresizingMask:[[masks objectAtIndex:index] unsignedIntValue]];    
+        [[views objectAtIndex:index] setAutoresizingMask:[[masks objectAtIndex:index] unsignedIntegerValue]];    
 }
 
 @end
