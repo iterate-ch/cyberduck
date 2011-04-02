@@ -116,9 +116,12 @@ public class FTPSession extends SSLSession {
                 parser = null;
             }
             if(null == parser) {
-                String system = this.getClient().getSystemType();
-                if(null == system) {
-                    log.warn(this.host.getHostname() + " does not support the SYST command");
+                String system = null; //Unknown
+                try {
+                    system = this.getClient().getSystemType();
+                }
+                catch(IOException e) {
+                    log.warn("SYST command failed:" + e.getMessage());
                 }
                 parser = new FTPParserFactory().createFileEntryParser(system, tz);
                 if(parser instanceof Configurable) {
