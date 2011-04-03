@@ -324,9 +324,9 @@ public class TransferController extends WindowController implements NSToolbar.De
 
     @Action
     public void bandwidthPopupChanged(NSPopUpButton sender) {
-        NSIndexSet iterator = transferTable.selectedRowIndexes();
+        NSIndexSet selected = transferTable.selectedRowIndexes();
         int bandwidth = Integer.valueOf(sender.selectedItem().representedObject());
-        for(NSUInteger index = iterator.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = iterator.indexGreaterThanIndex(index)) {
+        for(NSUInteger index = selected.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = selected.indexGreaterThanIndex(index)) {
             Transfer transfer = TransferCollection.defaultCollection().get(index.intValue());
             transfer.setBandwidth(bandwidth);
         }
@@ -530,9 +530,9 @@ public class TransferController extends WindowController implements NSToolbar.De
      */
     private void updateHighlight() {
         boolean main = window().isMainWindow();
-        NSIndexSet selected = transferTable.selectedRowIndexes();
+        NSIndexSet set = transferTable.selectedRowIndexes();
         for(int i = 0; i < transferTableModel.numberOfRowsInTableView(transferTable).intValue(); i++) {
-            boolean highlighted = selected.containsIndex(new NSUInteger(i)) && main;
+            boolean highlighted = set.containsIndex(new NSUInteger(i)) && main;
             if(transferTableModel.isHighlighted(i) == highlighted) {
                 continue;
             }
@@ -607,8 +607,8 @@ public class TransferController extends WindowController implements NSToolbar.De
         log.debug("updateBandwidthPopup");
         final int selected = transferTable.numberOfSelectedRows().intValue();
         bandwidthPopup.setEnabled(selected > 0);
-        NSIndexSet iterator = transferTable.selectedRowIndexes();
-        for(NSUInteger index = iterator.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = iterator.indexGreaterThanIndex(index)) {
+        NSIndexSet set = transferTable.selectedRowIndexes();
+        for(NSUInteger index = set.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = set.indexGreaterThanIndex(index)) {
             final Transfer transfer = transferTableModel.getSource().get(index.intValue());
             if(transfer instanceof SyncTransfer) {
                 // Currently we do not support bandwidth throtling for sync transfers due to
@@ -971,8 +971,8 @@ public class TransferController extends WindowController implements NSToolbar.De
 
     @Action
     public void stopButtonClicked(final ID sender) {
-        NSIndexSet iterator = transferTable.selectedRowIndexes();
-        for(NSUInteger index = iterator.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = iterator.indexGreaterThanIndex(index)) {
+        NSIndexSet selected = transferTable.selectedRowIndexes();
+        for(NSUInteger index = selected.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = selected.indexGreaterThanIndex(index)) {
             final Transfer transfer = transferTableModel.getSource().get(index.intValue());
             if(transfer.isRunning()) {
                 this.background(new AbstractBackgroundAction() {
@@ -1000,8 +1000,8 @@ public class TransferController extends WindowController implements NSToolbar.De
 
     @Action
     public void resumeButtonClicked(final ID sender) {
-        NSIndexSet iterator = transferTable.selectedRowIndexes();
-        for(NSUInteger index = iterator.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = iterator.indexGreaterThanIndex(index)) {
+        NSIndexSet selected = transferTable.selectedRowIndexes();
+        for(NSUInteger index = selected.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = selected.indexGreaterThanIndex(index)) {
             final Collection<Transfer> transfers = transferTableModel.getSource();
             final Transfer transfer = transfers.get(index.intValue());
             if(!transfer.isRunning()) {
@@ -1012,8 +1012,8 @@ public class TransferController extends WindowController implements NSToolbar.De
 
     @Action
     public void reloadButtonClicked(final ID sender) {
-        NSIndexSet iterator = transferTable.selectedRowIndexes();
-        for(NSUInteger index = iterator.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = iterator.indexGreaterThanIndex(index)) {
+        NSIndexSet selected = transferTable.selectedRowIndexes();
+        for(NSUInteger index = selected.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = selected.indexGreaterThanIndex(index)) {
             final Collection<Transfer> transfers = transferTableModel.getSource();
             final Transfer transfer = transfers.get(index.intValue());
             if(!transfer.isRunning()) {
@@ -1037,9 +1037,9 @@ public class TransferController extends WindowController implements NSToolbar.De
 
     @Action
     public void revealButtonClicked(final ID sender) {
-        NSIndexSet iterator = transferTable.selectedRowIndexes();
+        NSIndexSet selected = transferTable.selectedRowIndexes();
         final Collection<Transfer> transfers = transferTableModel.getSource();
-        for(NSUInteger index = iterator.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = iterator.indexGreaterThanIndex(index)) {
+        for(NSUInteger index = selected.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = selected.indexGreaterThanIndex(index)) {
             final Transfer transfer = transfers.get(index.intValue());
             for(Path i : transfer.getRoots()) {
                 Local l = i.getLocal();
@@ -1052,11 +1052,11 @@ public class TransferController extends WindowController implements NSToolbar.De
 
     @Action
     public void deleteButtonClicked(final ID sender) {
-        NSIndexSet iterator = transferTable.selectedRowIndexes();
+        NSIndexSet selected = transferTable.selectedRowIndexes();
         final Collection<Transfer> transfers = transferTableModel.getSource();
         int i = 0;
         final List<Transfer> remove = new ArrayList<Transfer>();
-        for(NSUInteger index = iterator.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = iterator.indexGreaterThanIndex(index)) {
+        for(NSUInteger index = selected.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = selected.indexGreaterThanIndex(index)) {
             final Transfer transfer = transfers.get(index.intValue() - i);
             if(!transfer.isRunning()) {
                 remove.add(transfer);
@@ -1069,20 +1069,21 @@ public class TransferController extends WindowController implements NSToolbar.De
 
     @Action
     public void clearButtonClicked(final ID sender) {
-        final Collection<Transfer> transfers = transferTableModel.getSource();
-        for(Transfer transfer : transfers) {
+        final TransferCollection collection = TransferCollection.defaultCollection();
+        for(Iterator<Transfer> iter = collection.iterator(); iter.hasNext();) {
+            Transfer transfer = iter.next();
             if(!transfer.isRunning() && transfer.isComplete()) {
-                TransferCollection.defaultCollection().remove(transfer);
+                iter.remove();
             }
         }
-        TransferCollection.defaultCollection().save();
+        collection.save();
     }
 
     @Action
     public void trashButtonClicked(final ID sender) {
-        NSIndexSet iterator = transferTable.selectedRowIndexes();
+        NSIndexSet selected = transferTable.selectedRowIndexes();
         final Collection<Transfer> transfers = transferTableModel.getSource();
-        for(NSUInteger index = iterator.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = iterator.indexGreaterThanIndex(index)) {
+        for(NSUInteger index = selected.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = selected.indexGreaterThanIndex(index)) {
             final Transfer transfer = transfers.get(index.intValue());
             if(!transfer.isRunning()) {
                 for(Path i : transfer.getRoots()) {
