@@ -1,4 +1,4 @@
-﻿// 
+﻿﻿//
 // Copyright (c) 2010-2011 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
@@ -231,14 +231,7 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             else
             {
-                if (session is S3Session)
-                {
-                    View.ToolbarS3Enabled = ((S3Session) session).isBucketLocationSupported();
-                }
-                else
-                {
-                    View.ToolbarS3Enabled = false;
-                }
+                View.ToolbarS3Enabled = session is S3Session;
             }
 
             if (anonymous)

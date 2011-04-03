@@ -1327,14 +1327,11 @@ public class InfoController extends ToolbarWindowController {
             return session.isCDNSupported();
         }
         if(itemIdentifier.equals(TOOLBAR_ITEM_S3)) {
-            if(session instanceof S3Session) {
-                if(!((S3Session) session).isBucketLocationSupported()) {
-                    return false;
-                }
-                return !anonymous;
+            if(anonymous) {
+                return false;
             }
             // Not enabled if not a AWS
-            return false;
+            return session instanceof S3Session;
         }
         if(itemIdentifier.equals(TOOLBAR_ITEM_METADATA)) {
             if(anonymous) {
