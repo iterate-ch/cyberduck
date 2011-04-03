@@ -1075,8 +1075,13 @@ public class S3Path extends CloudPath {
                     if(!ServiceUtils.isBucketNameValidDNSName(this.getName())) {
                         throw new ServiceException(Locale.localizedString("Bucket name is not DNS compatible", "S3"));
                     }
-                    this.getSession().getClient().createBucket(this.getContainerName(),
-                            this.getSession().isBucketLocationSupported() ? Preferences.instance().getProperty("s3.location") : "US",
+                    String location = Preferences.instance().getProperty("s3.location");
+                    if(!this.getSession().getHost().getProtocol().getLocations().contains(location)) {
+                        log.warn("Default bucket location not supported by provider:" + location);
+                        location = "US";
+                        log.warn("Fallback to US");
+                    }
+                    this.getSession().getClient().createBucket(this.getContainerName(), location,
                             AccessControlList.REST_CANNED_PUBLIC_READ);
                 }
                 else {

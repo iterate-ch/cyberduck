@@ -20,7 +20,6 @@ package ch.cyberduck.core.gstorage;
  */
 
 import ch.cyberduck.core.*;
-import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.s3.S3Session;
 
@@ -65,11 +64,6 @@ public class GSSession extends S3Session {
     @Override
     public List<String> getSupportedStorageClasses() {
         return Arrays.asList(S3Object.STORAGE_CLASS_STANDARD);
-    }
-
-    @Override
-    public String getLocation(String container) {
-        return Locale.localizedString("US", "S3");
     }
 
     @Override
@@ -138,11 +132,6 @@ public class GSSession extends S3Session {
             }
         }
         return roles;
-    }
-
-    @Override
-    public boolean isBucketLocationSupported() {
-        return false;
     }
 
     @Override

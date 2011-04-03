@@ -45,10 +45,15 @@ import ch.cyberduck.core.sftp.SFTPSession;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.jets3t.service.Constants;
+import org.jets3t.service.model.S3Bucket;
 import org.soyatec.windows.azure.authenticate.Base64;
 
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @version $Id$
@@ -67,6 +72,7 @@ public abstract class Protocol {
 
     /**
      * Provider identification
+     *
      * @return Identifier if default protocol
      */
     public String getVendor() {
@@ -187,6 +193,10 @@ public abstract class Protocol {
 
     public String getDefaultHostname() {
         return Preferences.instance().getProperty("connection.hostname.default");
+    }
+
+    public Set<String> getLocations() {
+        return Collections.emptySet();
     }
 
     /**
@@ -456,6 +466,17 @@ public abstract class Protocol {
         @Override
         public String getDefaultHostname() {
             return Constants.S3_DEFAULT_HOSTNAME;
+        }
+
+        @Override
+        public Set<String> getLocations() {
+            return new HashSet<String>(Arrays.asList(
+                    "US",
+                    S3Bucket.LOCATION_EUROPE,
+                    S3Bucket.LOCATION_US_WEST,
+                    S3Bucket.LOCATION_ASIA_PACIFIC_SOUTHEAST,
+                    S3Bucket.LOCATION_ASIA_PACIFIC_NORTHEAST
+            ));
         }
 
         @Override
@@ -1128,6 +1149,13 @@ public abstract class Protocol {
         @Override
         public String getDefaultHostname() {
             return "commondatastorage.googleapis.com";
+        }
+
+        @Override
+        public Set<String> getLocations() {
+            return new HashSet<String>(Arrays.asList(
+                    "US"//, S3Bucket.LOCATION_EUROPE
+            ));
         }
 
         @Override

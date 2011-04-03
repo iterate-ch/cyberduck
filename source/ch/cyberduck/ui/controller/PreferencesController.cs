@@ -1116,8 +1116,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private void PopulateDefaultBucketLocations()
         {
             IList<KeyValuePair<string, string>> defaultBucketLocations = new List<KeyValuePair<string, string>>();
-            List locations = S3Session.getAvailableLocations();
-
+            List locations = Protocol.S3_SSL.getLocations();
             for (int i = 0; i < locations.size(); i++)
             {
                 string location = (string) locations.get(i);
