@@ -317,7 +317,7 @@ public class DownloadTransfer extends Transfer {
         public void prepare(final Path file) {
             Local renamed = file.getLocal();
             while(renamed.exists()) {
-                String proposal = MessageFormat.format(Preferences.instance().getProperty("queue.upload.file.rename.format"),
+                String proposal = MessageFormat.format(Preferences.instance().getProperty("queue.download.file.rename.format"),
                         FilenameUtils.getBaseName(file.getName()),
                         DateFormatterFactory.instance().getLongFormat(System.currentTimeMillis(), false).replace(Path.DELIMITER, ':'),
                         StringUtils.isNotEmpty(file.getExtension()) ? "." + file.getExtension() : "");
