@@ -21,6 +21,8 @@ package ch.cyberduck.ui;
 import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.threading.MainAction;
 
+import java.util.concurrent.Future;
+
 /**
  * @version $Id$
  */
@@ -35,7 +37,7 @@ public interface Controller {
      * @see java.lang.Thread
      * @see ch.cyberduck.core.threading.BackgroundAction#lock()
      */
-    public void background(final BackgroundAction runnable);
+    public <T> Future<T> background(final BackgroundAction<T> runnable);
 
     /**
      * Run on main thread. Caller thread is blocked until the selector on the main thread is called.

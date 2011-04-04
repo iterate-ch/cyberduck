@@ -18,68 +18,72 @@ package ch.cyberduck.core.threading;
  *  dkocher@cyberduck.ch
  */
 
+import java.util.concurrent.Callable;
+
 /**
  * @version $Id$
  */
-public interface BackgroundAction extends Runnable {
+public interface BackgroundAction<T> extends Runnable, Callable<T> {
 
     /**
      * Called before synchronized with other pending actions
      */
-    abstract void init();
+    void init();
 
     /**
      * Called just before #run.
      *
-     * @see #run()
      * @return True if proceed to runnning
+     * @see #run()
      */
-    abstract boolean prepare();
+    boolean prepare();
 
     /**
      * Called form a worker thread not blocking the user interface
      */
-    abstract void run();
+    void run();
+
+    T call();
 
     /**
      * Called after #run but still on the working thread
      *
      * @see #run
      */
-    abstract void finish();
+    void finish();
 
-    abstract boolean isRunning();
+    boolean isRunning();
 
     /**
      * To be called from the main interface thread after the #run
      * has finished to allow calls to non-threadable view classes
      */
-    abstract void cleanup();
+    void cleanup();
 
     /**
      * Mark this action as canceled. Will not execute if scheduled.
      */
-    abstract void cancel();
+    void cancel();
 
-    abstract boolean isCanceled();
+    boolean isCanceled();
 
     /**
      * @return The name of the activity to display in the activity window
      */
-    abstract String getActivity();
+    String getActivity();
 
     /**
      * The synchronization object
      *
      * @return
      */
-    abstract Object lock();
+    Object lock();
 
     /**
      * @param listener A listener to be notified
      * @see ch.cyberduck.core.threading.BackgroundActionListener
      */
-    abstract void addListener(BackgroundActionListener listener);
+    void addListener(BackgroundActionListener listener);
 
-    abstract void removeListener(BackgroundActionListener listener);
+    void removeListener(BackgroundActionListener listener);
 }

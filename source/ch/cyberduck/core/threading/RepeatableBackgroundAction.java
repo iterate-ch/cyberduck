@@ -40,7 +40,7 @@ import java.util.concurrent.CyclicBarrier;
 /**
  * @version $Id$
  */
-public abstract class RepeatableBackgroundAction extends AbstractBackgroundAction implements ErrorListener, TranscriptListener {
+public abstract class RepeatableBackgroundAction extends AbstractBackgroundAction<Boolean> implements ErrorListener, TranscriptListener {
     private static Logger log = Logger.getLogger(RepeatableBackgroundAction.class);
     private static final String lineSeparator = System.getProperty("line.separator");
 

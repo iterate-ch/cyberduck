@@ -29,7 +29,7 @@ import java.util.Set;
 /**
  * @version $Id$
  */
-public abstract class AbstractBackgroundAction implements BackgroundAction {
+public abstract class AbstractBackgroundAction<T> implements BackgroundAction<T> {
 
     public void init() {
         ;
@@ -82,6 +82,17 @@ public abstract class AbstractBackgroundAction implements BackgroundAction {
         for(BackgroundActionListener listener : l) {
             listener.stop(this);
         }
+    }
+
+
+    /**
+     * Default implementation with no result
+     *
+     * @return Null
+     */
+    public T call() {
+        this.run();
+        return null;
     }
 
     public void cleanup() {

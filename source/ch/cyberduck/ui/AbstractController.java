@@ -22,8 +22,7 @@ import ch.cyberduck.core.threading.*;
 
 import org.apache.log4j.Logger;
 
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.*;
 
 /**
  * @version $Id$
@@ -64,15 +63,15 @@ public abstract class AbstractController implements Controller {
      * @see java.lang.Thread
      * @see ch.cyberduck.core.threading.BackgroundAction#lock()
      */
-    public void background(final BackgroundAction runnable) {
+    public <T> Future<T> background(final BackgroundAction<T> runnable) {
         if(log.isDebugEnabled()) {
             log.debug("background:" + runnable);
         }
         runnable.init();
         actions.add(runnable);
         // Start background task
-        Runnable command = new Runnable() {
-            public void run() {
+        Callable<T> command = new Callable<T>() {
+            public T call() {
                 // Synchronize all background threads to this lock so actions run
                 // sequentially as they were initiated from the main interface thread
                 synchronized(runnable.lock()) {
@@ -83,7 +82,7 @@ public abstract class AbstractController implements Controller {
                     try {
                         if(runnable.prepare()) {
                             // Execute the action of the runnable
-                            runnable.run();
+                            return runnable.call();
                         }
                     }
                     catch(Throwable e) {
@@ -104,11 +103,24 @@ public abstract class AbstractController implements Controller {
                         autorelease.operate();
                     }
                 }
+                // Canceled action yields no result
+                return null;
             }
         };
-        ThreadPool.instance().execute(command);
-        if(log.isInfoEnabled()) {
-            log.info("Scheduled background runnable for execution:" + runnable);
+        try {
+            final Future<T> future = ThreadPool.instance().execute(command);
+            if(log.isInfoEnabled()) {
+                log.info("Scheduled background runnable for execution:" + runnable);
+            }
+            return future;
+        }
+        catch(ExecutionException e) {
+            log.error("Error executing background task:" + e.getMessage());
+            throw new RuntimeException(e);
+        }
+        catch(InterruptedException e) {
+            log.error("Error executing background task:" + e.getMessage());
+            throw new RuntimeException(e);
         }
     }
 
