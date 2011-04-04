@@ -21,6 +21,7 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
+import ch.cyberduck.ui.FilenameComparator;
 import ch.cyberduck.ui.cocoa.application.NSCell;
 import ch.cyberduck.ui.cocoa.application.NSOutlineView;
 import ch.cyberduck.ui.cocoa.application.NSTableColumn;
@@ -166,7 +167,7 @@ public abstract class TransferPromptModel extends OutlineDataSource {
                     }
                 });
             }
-            return transfer.cache().get(path.getReference(), new NullComparator<Path>(), filter());
+            return transfer.cache().get(path.getReference(), new FilenameComparator(true), filter());
         }
     }
 

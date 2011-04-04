@@ -1,4 +1,4 @@
-﻿// 
+﻿﻿//
 // Copyright (c) 2010 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
@@ -22,6 +22,7 @@ using System.Windows.Forms;
 using ch.cyberduck.core;
 using ch.cyberduck.core.i18n;
 using ch.cyberduck.core.threading;
+using ch.cyberduck.ui.FilenameComparator;
 using Ch.Cyberduck.Ui.Winforms;
 using org.apache.log4j;
 
@@ -87,7 +88,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                                                                         _isLoadingListingInBackground));
                 }
             }
-            list = Transfer.cache().get(path.getReference(), new NullComparator(), Filter());
+            list = Transfer.cache().get(path.getReference(), new FilenameComparator(true), Filter());
             for (int i = 0; i < list.size(); i++)
             {
                 yield return new TreePathReference((Path) list.get(i));
