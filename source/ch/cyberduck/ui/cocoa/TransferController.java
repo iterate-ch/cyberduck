@@ -642,8 +642,31 @@ public class TransferController extends WindowController implements NSToolbar.De
      * @param transfer
      */
     public void addTransfer(final Transfer transfer) {
-        TransferCollection.defaultCollection().add(transfer);
-        final int row = TransferCollection.defaultCollection().size() - 1;
+        final TransferCollection collection = TransferCollection.defaultCollection();
+        if(collection.size() > Preferences.instance().getInteger("queue.size.warn")) {
+            final NSAlert alert = NSAlert.alert(
+                    Locale.localizedString(TOOLBAR_CLEAN_UP), //title
+                    Locale.localizedString("Remove completed transfers from list."), // message
+                    Locale.localizedString(TOOLBAR_CLEAN_UP), // defaultbutton
+                    Locale.localizedString("Cancel"), // alternate button
+                    null //other button
+            );
+            alert.setShowsSuppressionButton(true);
+            alert.suppressionButton().setTitle(Locale.localizedString("Don't ask again", "Configuration"));
+            this.alert(alert, new SheetCallback() {
+                public void callback(int returncode) {
+                    if(alert.suppressionButton().state() == NSCell.NSOnState) {
+                        // Never show again.
+                        Preferences.instance().setProperty("queue.size.warn", Integer.MAX_VALUE);
+                    }
+                    if(returncode == ALTERNATE_OPTION) {
+                        clearButtonClicked(null);
+                    }
+                }
+            });
+        }
+        collection.add(transfer);
+        final int row = collection.size() - 1;
         final NSInteger index = new NSInteger(row);
         transferTable.selectRowIndexes(NSIndexSet.indexSetWithIndex(index), false);
         transferTable.scrollRowToVisible(index);
@@ -734,19 +757,20 @@ public class TransferController extends WindowController implements NSToolbar.De
 
             @Override
             public void cleanup() {
+                final TransferCollection collection = TransferCollection.defaultCollection();
                 if(transfer.isComplete() && !transfer.isCanceled()) {
                     if(transfer.isReset()) {
                         if(Preferences.instance().getBoolean("queue.removeItemWhenComplete")) {
-                            removeTransfer(transfer);
+                            collection.remove(transfer);
                         }
                         if(Preferences.instance().getBoolean("queue.orderBackOnStop")) {
-                            if(!(TransferCollection.defaultCollection().numberOfRunningTransfers() > 0)) {
+                            if(!(collection.numberOfRunningTransfers() > 0)) {
                                 window().close();
                             }
                         }
                     }
                 }
-                TransferCollection.defaultCollection().save();
+                collection.save();
             }
 
             @Override
@@ -767,57 +791,6 @@ public class TransferController extends WindowController implements NSToolbar.De
             @Override
             public boolean isCanceled() {
                 return transfer.isCanceled();
-            }
-
-            @Override
-            public void log(final boolean request, final String message) {
-                if(logDrawer.state() == NSDrawer.OpenState) {
-                    invoke(new WindowMainAction(TransferController.this) {
-                        public void run() {
-                            TransferController.this.transcript.log(request, message);
-                        }
-                    });
-                }
-                super.log(request, message);
-            }
-
-            private final Object lock = new Object();
-
-            @Override
-            public Object lock() {
-                // No synchronization with other tasks
-                return lock;
-            }
-        });
-    }
-
-    /**
-     * Remove this item form the list.
-     *
-     * @param transfer
-     */
-    private void removeTransfer(final Transfer transfer) {
-        this.background(new AlertRepeatableBackgroundAction(this) {
-
-            public void run() {
-                // Server side cleanup
-                transfer.cleanup();
-            }
-
-            @Override
-            public void cleanup() {
-                TransferCollection.defaultCollection().remove(transfer);
-                TransferCollection.defaultCollection().save();
-            }
-
-            @Override
-            public Session getSession() {
-                return transfer.getSession();
-            }
-
-            @Override
-            public boolean isCanceled() {
-                return false;
             }
 
             @Override
@@ -964,7 +937,7 @@ public class TransferController extends WindowController implements NSToolbar.De
             if(pasteboard.isEmpty()) {
                 continue;
             }
-            TransferCollection.defaultCollection().add(new DownloadTransfer(pasteboard.copy()));
+            this.addTransfer(new DownloadTransfer(pasteboard.copy()));
             pasteboard.clear();
         }
     }
@@ -1062,9 +1035,11 @@ public class TransferController extends WindowController implements NSToolbar.De
                 remove.add(transfer);
             }
         }
+        final TransferCollection collection = TransferCollection.defaultCollection();
         for(Transfer t : remove) {
-            this.removeTransfer(t);
+            collection.remove(t);
         }
+        collection.save();
     }
 
     @Action
