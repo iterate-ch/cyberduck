@@ -174,10 +174,10 @@ public abstract class NSWorkspace extends NSObject {
      * Original signature : <code>BOOL selectFile(NSString*, NSString*)</code><br>
      * <i>native declaration : :72</i>
      */
-    public abstract boolean selectFile_inFileViewerRootedAtPath(String fullPath1, String rootFullpath2);
+    public abstract boolean selectFile_inFileViewerRootedAtPath(String fullpath, String rootpath);
 
-    public boolean selectFile(String fullPath1, String rootFullpath2) {
-        return selectFile_inFileViewerRootedAtPath(fullPath1, rootFullpath2);
+    public boolean selectFile(String fullpath, String rootpath) {
+        return selectFile_inFileViewerRootedAtPath(fullpath, rootpath);
     }
 
     /**
