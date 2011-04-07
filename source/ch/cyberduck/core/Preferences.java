@@ -362,11 +362,17 @@ public abstract class Preferences {
          * The maximum number of concurrent transfers
          */
         defaults.put("queue.maxtransfers", String.valueOf(5));
-
+        /**
+         * Warning when number of transfers in queue exceeds limit
+         */
+        defaults.put("queue.size.warn", String.valueOf(50));
         /**
          * Open completed downloads
          */
         defaults.put("queue.postProcessItemWhenComplete", String.valueOf(false));
+        /**
+         * Bring transfer window to front
+         */
         defaults.put("queue.orderFrontOnStart", String.valueOf(true));
         defaults.put("queue.orderBackOnStop", String.valueOf(false));
 
