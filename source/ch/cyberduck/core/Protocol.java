@@ -1154,7 +1154,7 @@ public abstract class Protocol {
         @Override
         public Set<String> getLocations() {
             return new HashSet<String>(Arrays.asList(
-                    "US"//, S3Bucket.LOCATION_EUROPE
+                    "US", S3Bucket.LOCATION_EUROPE
             ));
         }
 
