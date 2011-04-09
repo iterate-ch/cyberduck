@@ -20,12 +20,11 @@
  */
 
 #include <sys/stat.h>
-#include <sys/resource.h>
 #include <pthread.h>
 #include <CoreFoundation/CoreFoundation.h>
 #include "utils.h"
 
-/*Starts a JVM using the options,classpath,main class, and args stored in a VMLauchOptions structure */ 
+/*Starts a JVM using the options,classpath,main class, and args stored in a VMLaunchOptions structure */
 static void* startup(VMLaunchOptions *launchOptions) {    
     int result = 0;
     JNIEnv* env;
