@@ -659,7 +659,7 @@ public class TransferController extends WindowController implements NSToolbar.De
                         // Never show again.
                         Preferences.instance().setProperty("queue.size.warn", Integer.MAX_VALUE);
                     }
-                    if(returncode == ALTERNATE_OPTION) {
+                    if(returncode == DEFAULT_OPTION) {
                         clearButtonClicked(null);
                     }
                 }
