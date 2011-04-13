@@ -929,8 +929,12 @@ public class GDPath extends Path {
             this.getSession().message(MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),
                     this.getName()));
             try {
+                StringBuilder feed = new StringBuilder(this.getResourceFeed());
+                if(!Preferences.instance().getBoolean("google.docs.delete.trash")) {
+                    feed.append("?delete=true");
+                }
                 this.getSession().getClient().delete(
-                        new URL(this.getResourceFeed()), this.attributes().getChecksum());
+                        new URL(feed.toString()), this.attributes().getChecksum());
             }
             catch(ServiceException e) {
                 IOException failure = new IOException(e.getMessage());

@@ -597,6 +597,10 @@ public abstract class Preferences {
          * Show revisions as hidden files in browser
          */
         defaults.put("google.docs.revisions.enable", String.valueOf(false));
+        /**
+         * If set to true will only trash documents
+         */
+        defaults.put("google.docs.delete.trash", String.valueOf(false));
 
         /**
          * Dropbox OAuth Application Secrets
@@ -672,6 +676,9 @@ public abstract class Preferences {
          * Transfer read buffer size
          */
         defaults.put("connection.chunksize", String.valueOf(32768));
+
+        defaults.put("disk.unmount.timeout", String.valueOf(2));
+        defaults.put("disk.mount", String.valueOf(true));
 
         defaults.put("transcript.length", String.valueOf(1000));
 
