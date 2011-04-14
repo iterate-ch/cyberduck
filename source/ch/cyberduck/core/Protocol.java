@@ -213,7 +213,7 @@ public abstract class Protocol {
      * Check login credentials for validity for this protocol.
      *
      * @param credentials
-     * @return True if username and password is not a blank string and password
+     * @return True if username is not a blank string and password is not empty ("") and not null.
      */
     public boolean validate(Credentials credentials) {
         return StringUtils.isNotBlank(credentials.getUsername())
@@ -341,7 +341,7 @@ public abstract class Protocol {
         /**
          * Allows empty string for password.
          * @param credentials
-         * @return True if username is given and password is not null
+         * @return True if username is not blank and password is not null
          */
         @Override
         public boolean validate(Credentials credentials) {
@@ -701,6 +701,11 @@ public abstract class Protocol {
         }
 
         @Override
+        public boolean validate(Credentials credentials) {
+            return FTP.validate(credentials);
+        }
+
+        @Override
         public SessionFactory getSessionFactory() {
             return DAVSession.factory();
         }
@@ -755,6 +760,11 @@ public abstract class Protocol {
         @Override
         public String icon() {
             return FTP_TLS.icon();
+        }
+
+        @Override
+        public boolean validate(Credentials credentials) {
+            return FTP.validate(credentials);
         }
 
         @Override
