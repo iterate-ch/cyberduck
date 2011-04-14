@@ -125,8 +125,6 @@ public abstract class HTTP4Session extends SSLSession {
                 }
             }
         });
-//        client.addRequestInterceptor(new GzipRequestInterceptor());
-//        client.addResponseInterceptor(new GzipResponseInterceptor());
     }
 
     @Override
