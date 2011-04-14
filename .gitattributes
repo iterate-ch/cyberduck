@@ -1863,9 +1863,6 @@ source/ch/cyberduck/core/ftp/parser/CommonUnixFTPEntryParser.java -text
 source/ch/cyberduck/core/ftp/parser/LaxUnixFTPEntryParser.java -text
 source/ch/cyberduck/core/ftp/parser/RumpusFTPEntryParser.java -text
 source/ch/cyberduck/core/ftp/parser/TrellixFTPEntryParser.java -text
-source/ch/cyberduck/core/http/GzipDecompressingEntity.java -text
-source/ch/cyberduck/core/http/GzipRequestInterceptor.java -text
-source/ch/cyberduck/core/http/GzipResponseInterceptor.java -text
 source/ch/cyberduck/core/http/HTTP3Session.java -text
 source/ch/cyberduck/core/http/HTTP4Session.java -text
 source/ch/cyberduck/core/http/StickyHostConfiguration.java -text
