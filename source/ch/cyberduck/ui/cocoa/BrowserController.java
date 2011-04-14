@@ -251,13 +251,22 @@ public class BrowserController extends WindowController implements NSToolbar.Del
      * @param preserveSelection All selected files should be reselected after reloading the view
      * @pre Must always be invoked from the main interface thread
      */
-    public void reloadData(final boolean preserveSelection) {
+    public void reloadData(boolean preserveSelection) {
+        this.reloadData(preserveSelection, true);
+    }
+
+    /**
+     *
+     * @param preserveSelection All selected files should be reselected after reloading the view
+     * @param scroll
+     */
+    public void reloadData(boolean preserveSelection, boolean scroll) {
         if(preserveSelection) {
             //Remember the previously selected paths
-            this.reloadData(this.getSelectedPaths());
+            this.reloadData(this.getSelectedPaths(), scroll);
         }
         else {
-            this.reloadData(Collections.<Path>emptyList());
+            this.reloadData(Collections.<Path>emptyList(), scroll);
         }
     }
 
@@ -268,6 +277,15 @@ public class BrowserController extends WindowController implements NSToolbar.Del
      * @see #setSelectedPaths(java.util.List)
      */
     protected void reloadData(final List<Path> selected) {
+        this.reloadData(selected, true);
+    }
+
+    /**
+     *
+     * @param selected
+     * @param scroll
+     */
+    protected void reloadData(final List<Path> selected, boolean scroll) {
         if(log.isDebugEnabled()) {
             log.debug("reloadData:" + selected);
         }
@@ -276,7 +294,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         final NSTableView browser = this.getSelectedBrowserView();
         browser.reloadData();
         this.deselectAll();
-        boolean scroll = true;
         for(Path path : selected) {
             this.selectRow(path.getReference(), true, scroll);
             // Only scroll to the first in the list
@@ -1141,7 +1158,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
              * @see NSOutlineView.Delegate
              */
             public void outlineViewItemDidExpand(NSNotification notification) {
-                selectRow(new OutlinePathReference(notification.userInfo().objectEnumerator().nextObject()), true, true);
                 updateStatusLabel();
             }
 
