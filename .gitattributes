@@ -1075,12 +1075,10 @@ lib/Sparkle.framework/Sparkle -text
 lib/Sparkle.framework/Versions/A/Resources/Info.plist -text
 lib/Sparkle.framework/Versions/A/Resources/SUModelTranslation.plist -text
 lib/Sparkle.framework/Versions/A/Resources/SUStatus.nib -text
-lib/Sparkle.framework/Versions/A/Resources/ca.lproj/Sparkle.strings -text svneol=unset#text/utf-16
 lib/Sparkle.framework/Versions/A/Resources/cs.lproj/SUAutomaticUpdateAlert.nib -text
 lib/Sparkle.framework/Versions/A/Resources/cs.lproj/SUUpdateAlert.nib -text
 lib/Sparkle.framework/Versions/A/Resources/cs.lproj/SUUpdatePermissionPrompt.nib -text
 lib/Sparkle.framework/Versions/A/Resources/cs.lproj/Sparkle.strings -text svneol=unset#text/utf-16
-lib/Sparkle.framework/Versions/A/Resources/cy.lproj/Sparkle.strings -text svneol=unset#text/utf-16
 lib/Sparkle.framework/Versions/A/Resources/da.lproj/SUAutomaticUpdateAlert.nib -text
 lib/Sparkle.framework/Versions/A/Resources/da.lproj/SUUpdateAlert.nib -text
 lib/Sparkle.framework/Versions/A/Resources/da.lproj/SUUpdatePermissionPrompt.nib -text
@@ -1089,7 +1087,6 @@ lib/Sparkle.framework/Versions/A/Resources/de.lproj/SUAutomaticUpdateAlert.nib -
 lib/Sparkle.framework/Versions/A/Resources/de.lproj/SUUpdateAlert.nib -text
 lib/Sparkle.framework/Versions/A/Resources/de.lproj/SUUpdatePermissionPrompt.nib -text
 lib/Sparkle.framework/Versions/A/Resources/de.lproj/Sparkle.strings -text svneol=unset#text/utf-16
-lib/Sparkle.framework/Versions/A/Resources/el.lproj/Sparkle.strings -text svneol=unset#text/utf-16
 lib/Sparkle.framework/Versions/A/Resources/en.lproj/SUAutomaticUpdateAlert.nib -text
 lib/Sparkle.framework/Versions/A/Resources/en.lproj/SUUpdateAlert.nib -text
 lib/Sparkle.framework/Versions/A/Resources/en.lproj/SUUpdatePermissionPrompt.nib -text
@@ -1098,15 +1095,11 @@ lib/Sparkle.framework/Versions/A/Resources/es.lproj/SUAutomaticUpdateAlert.nib -
 lib/Sparkle.framework/Versions/A/Resources/es.lproj/SUUpdateAlert.nib -text
 lib/Sparkle.framework/Versions/A/Resources/es.lproj/SUUpdatePermissionPrompt.nib -text
 lib/Sparkle.framework/Versions/A/Resources/es.lproj/Sparkle.strings -text svneol=unset#text/utf-16
-lib/Sparkle.framework/Versions/A/Resources/fi.lproj/Sparkle.strings -text svneol=unset#text/utf-16
 lib/Sparkle.framework/Versions/A/Resources/fr.lproj/SUAutomaticUpdateAlert.nib -text
 lib/Sparkle.framework/Versions/A/Resources/fr.lproj/SUUpdateAlert.nib -text
 lib/Sparkle.framework/Versions/A/Resources/fr.lproj/SUUpdatePermissionPrompt.nib -text
 lib/Sparkle.framework/Versions/A/Resources/fr.lproj/Sparkle.strings -text svneol=unset#text/utf-16
 lib/Sparkle.framework/Versions/A/Resources/fr_CA.lproj -text
-lib/Sparkle.framework/Versions/A/Resources/he.lproj/Sparkle.strings -text svneol=unset#text/utf-16
-lib/Sparkle.framework/Versions/A/Resources/hu.lproj/Sparkle.strings -text svneol=unset#text/utf-16
-lib/Sparkle.framework/Versions/A/Resources/id.lproj/Sparkle.strings -text svneol=unset#text/utf-16
 lib/Sparkle.framework/Versions/A/Resources/is.lproj/SUAutomaticUpdateAlert.nib -text
 lib/Sparkle.framework/Versions/A/Resources/is.lproj/SUUpdateAlert.nib -text
 lib/Sparkle.framework/Versions/A/Resources/is.lproj/SUUpdatePermissionPrompt.nib -text
@@ -1127,7 +1120,6 @@ lib/Sparkle.framework/Versions/A/Resources/nl.lproj/SUAutomaticUpdateAlert.nib -
 lib/Sparkle.framework/Versions/A/Resources/nl.lproj/SUUpdateAlert.nib -text
 lib/Sparkle.framework/Versions/A/Resources/nl.lproj/SUUpdatePermissionPrompt.nib -text
 lib/Sparkle.framework/Versions/A/Resources/nl.lproj/Sparkle.strings -text svneol=unset#text/utf-16
-lib/Sparkle.framework/Versions/A/Resources/no.lproj/Sparkle.strings -text svneol=unset#text/utf-16
 lib/Sparkle.framework/Versions/A/Resources/pl.lproj/SUAutomaticUpdateAlert.nib -text
 lib/Sparkle.framework/Versions/A/Resources/pl.lproj/SUUpdateAlert.nib -text
 lib/Sparkle.framework/Versions/A/Resources/pl.lproj/SUUpdatePermissionPrompt.nib -text
@@ -1154,7 +1146,9 @@ lib/Sparkle.framework/Versions/A/Resources/sv.lproj/SUAutomaticUpdateAlert.nib -
 lib/Sparkle.framework/Versions/A/Resources/sv.lproj/SUUpdateAlert.nib -text
 lib/Sparkle.framework/Versions/A/Resources/sv.lproj/SUUpdatePermissionPrompt.nib -text
 lib/Sparkle.framework/Versions/A/Resources/sv.lproj/Sparkle.strings -text svneol=unset#text/utf-16
-lib/Sparkle.framework/Versions/A/Resources/th.lproj/Sparkle.strings -text svneol=unset#text/utf-16
+lib/Sparkle.framework/Versions/A/Resources/tr.lproj/SUAutomaticUpdateAlert.nib -text
+lib/Sparkle.framework/Versions/A/Resources/tr.lproj/SUUpdateAlert.nib -text
+lib/Sparkle.framework/Versions/A/Resources/tr.lproj/SUUpdatePermissionPrompt.nib -text
 lib/Sparkle.framework/Versions/A/Resources/tr.lproj/Sparkle.strings -text svneol=unset#text/utf-16
 lib/Sparkle.framework/Versions/A/Resources/zh_CN.lproj/SUAutomaticUpdateAlert.nib -text
 lib/Sparkle.framework/Versions/A/Resources/zh_CN.lproj/SUUpdateAlert.nib -text
