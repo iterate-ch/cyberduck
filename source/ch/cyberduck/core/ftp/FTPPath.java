@@ -112,7 +112,6 @@ public class FTPPath extends Path {
     }
 
     /**
-     *
      * @param action
      * @return
      * @throws IOException
@@ -142,7 +141,6 @@ public class FTPPath extends Path {
     }
 
     /**
-     *
      * @param action
      * @return
      * @throws IOException
@@ -596,7 +594,7 @@ public class FTPPath extends Path {
                     if(!getSession().getClient().setFileType(FTPClient.BINARY_FILE_TYPE)) {
                         throw new FTPException(getSession().getClient().getReplyString());
                     }
-                    this.attributes().setSize(this.getSession().getClient().getSize(this.getAbsolute()));
+                    this.attributes().setSize(this.getSession().getClient().size(this.getAbsolute()));
                 }
                 if(-1 == attributes().getSize()) {
                     // Read the size from the directory listing
@@ -615,7 +613,7 @@ public class FTPPath extends Path {
     /**
      * Format to interpret MTDM timestamp
      */
-    private SimpleDateFormat tsFormatSeconds =
+    private static final SimpleDateFormat tsFormatSeconds =
             new SimpleDateFormat("yyyyMMddHHmmss");
 
     {
@@ -625,7 +623,7 @@ public class FTPPath extends Path {
     /**
      * Format to interpret MTDM timestamp
      */
-    private SimpleDateFormat tsFormatMilliseconds =
+    private static final SimpleDateFormat tsFormatMilliseconds =
             new SimpleDateFormat("yyyyMMddHHmmss.SSS");
 
     {
@@ -669,11 +667,10 @@ public class FTPPath extends Path {
                         this.getName()));
 
                 if(this.getSession().getClient().isFeatureSupported(FTPCommand.MDTM)) {
-                    // The "pathname" specifies an object in the NVFS which may be the object of a RETR command.
-                    // Attempts to query the modification time of files that exist but are unable to be
-                    // retrieved may generate an error-response
-                    attributes().setModificationDate(
-                            this.parseTimestamp(this.getSession().getClient().getModificationTime(this.getAbsolute())));
+                    final String timestamp = this.getSession().getClient().getModificationTime(this.getAbsolute());
+                    if(null != timestamp) {
+                        attributes().setModificationDate(this.parseTimestamp(timestamp));
+                    }
                 }
                 if(-1 == attributes().getModificationDate()) {
                     // Read the timestamp from the directory listing

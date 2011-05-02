@@ -290,7 +290,7 @@ public class FTPClient extends FTPSClient {
      * @param pathname
      * @return -1 if unknown
      */
-    public long getSize(String pathname) throws IOException {
+    public long size(String pathname) throws IOException {
         if(this.isFeatureSupported(SIZE)) {
             if(!this.setFileType(FTPClient.BINARY_FILE_TYPE)) {
                 throw new FTPException(this.getReplyString());
@@ -311,5 +311,14 @@ public class FTPClient extends FTPSClient {
             }
         }
         return -1;
+    }
+
+    @Override
+    public String getModificationTime(String file) throws IOException {
+        final String status = super.getModificationTime(file);
+        if(null == status) {
+            return null;
+        }
+        return StringUtils.chomp(status.substring(3).trim());
     }
 }
