@@ -256,7 +256,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     }
 
     /**
-     *
      * @param preserveSelection All selected files should be reselected after reloading the view
      * @param scroll
      */
@@ -281,7 +280,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     }
 
     /**
-     *
      * @param selected
      * @param scroll
      */
@@ -1642,8 +1640,8 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         else {
             this.bookmarkModel.setFilter(new HostFilter() {
                 public boolean accept(Host host) {
-                    return  StringUtils.lowerCase(host.getNickname()).contains(searchString.toLowerCase())
-                            || StringUtils.lowerCase(host.getComment()).contains(searchString.toLowerCase())
+                    return StringUtils.lowerCase(host.getNickname()).contains(searchString.toLowerCase())
+                            //|| StringUtils.lowerCase(host.getComment()).contains(searchString.toLowerCase())
                             || StringUtils.lowerCase(host.getHostname()).contains(searchString.toLowerCase());
                 }
             });

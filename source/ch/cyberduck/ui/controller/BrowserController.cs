@@ -3150,7 +3150,7 @@ namespace Ch.Cyberduck.Ui.Controller
             public bool accept(Host host)
             {
                 return host.getNickname().ToLower().Contains(_searchString.ToLower())
-                       || host.getComment().ToLower().Contains(_searchString.ToLower());
+                       //|| host.getComment().ToLower().Contains(_searchString.ToLower());
                        || host.getHostname().ToLower().Contains(_searchString.ToLower());
             }
         }
