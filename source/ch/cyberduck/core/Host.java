@@ -776,7 +776,7 @@ public class Host implements Serializable {
      * @return
      */
     public String getWebURL() {
-        if(null == webURL) {
+        if(StringUtils.isBlank(webURL)) {
             return this.getDefaultWebURL();
         }
         final String protocol = "^http(s)?://.*$";
