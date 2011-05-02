@@ -1216,6 +1216,7 @@ model/vrml					wrl vrml
 # multipart/report
 # multipart/signed
 # multipart/voice-message
+text/cache-manifest             appcache
 text/calendar					ics ifb
 text/css					css
 text/csv					csv
