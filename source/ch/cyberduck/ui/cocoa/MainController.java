@@ -1104,7 +1104,7 @@ public class MainController extends BundleController implements NSApplication.De
     /**
      * Display donation reminder dialog
      */
-    private boolean donationPrompt = true;
+    private boolean displayDonationPrompt = true;
     private WindowController donationController;
 
 
@@ -1178,7 +1178,7 @@ public class MainController extends BundleController implements NSApplication.De
 
     public NSUInteger applicationShouldTerminateAfterDonationPrompt(final NSApplication app) {
         log.debug("applicationShouldTerminateAfterDonationPrompt");
-        if(!donationPrompt) {
+        if(!displayDonationPrompt) {
             // Already displayed
             return NSApplication.NSTerminateNow;
         }
@@ -1199,6 +1199,8 @@ public class MainController extends BundleController implements NSApplication.De
                 // Do not display if shown in the reminder interval
                 return NSApplication.NSTerminateNow;
             }
+            // Make sure prompt is not loaded twice upon next quit event
+            displayDonationPrompt = false;
             final int uses = Preferences.instance().getInteger("uses");
             donationController = new WindowController() {
                 @Override
@@ -1247,7 +1249,6 @@ public class MainController extends BundleController implements NSApplication.De
                     }
                     // Remeber this reminder date
                     Preferences.instance().setProperty("donate.reminder.date", System.currentTimeMillis());
-                    donationPrompt = false;
                     // Quit again
                     app.replyToApplicationShouldTerminate(true);
                 }
@@ -1280,7 +1281,7 @@ public class MainController extends BundleController implements NSApplication.De
 
     public void applicationWillRestartAfterUpdate(ID updater) {
         // Disable donation prompt after udpate install
-        donationPrompt = false;
+        displayDonationPrompt = false;
     }
 
     /**
