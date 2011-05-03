@@ -43,10 +43,11 @@ public interface DistributionConfiguration {
      * @param method            Distribution method
      * @param cnames            CNAME entires in the DNS pointing to the same origin.
      * @param logging           True if logging should be enabled for access to CDN.
+     * @param loggingBucket     The logging target
      * @param defaultRootObject Index file for root of container
      */
     void write(boolean enabled, String origin, Distribution.Method method,
-               String[] cnames, boolean logging, String defaultRootObject);
+               String[] cnames, boolean logging, String loggingBucket, String defaultRootObject);
 
     /**
      * Read distribution configuration of origin
@@ -113,7 +114,6 @@ public interface DistributionConfiguration {
     String toString();
 
     /**
-     *
      * @param method
      * @return
      */

@@ -274,14 +274,8 @@ public class CFSession extends CloudHTTP4Session {
                         return container;
                     }
 
-                    /**
-                     * @param enabled Enable content distribution for the container
-                     * @param method
-                     * @param cnames  Currently ignored
-                     * @param logging
-                     */
                     public void write(boolean enabled, String origin, Distribution.Method method,
-                                      String[] cnames, boolean logging, String defaultRootObject) {
+                                      String[] cnames, boolean logging, String loggingBucket, String defaultRootObject) {
                         try {
                             CFSession.this.check();
                             if(enabled) {
@@ -322,7 +316,7 @@ public class CFSession extends CloudHTTP4Session {
                         }
                     }
 
-                    public Distribution read(String origin, Distribution.Method method) {
+                    public Distribution read(String origin, final Distribution.Method method) {
                         if(!distributionStatus.containsKey(origin)
                                 || !distributionStatus.get(origin).isDeployed()) {
                             try {
@@ -336,7 +330,13 @@ public class CFSession extends CloudHTTP4Session {
                                         new URI(CFSession.this.getClient().getStorageURL()).getHost(),
                                         method, info.isEnabled(), info.getCdnURL(), info.getSSLURL(),
                                         info.isEnabled() ? Locale.localizedString("CDN Enabled", "Mosso") : Locale.localizedString("CDN Disabled", "Mosso"),
-                                        info.getRetainLogs());
+                                        info.getRetainLogs()) {
+                                    @Override
+                                    public String getLoggingTarget() {
+                                        return ".CDN_ACCESS_LOGS";
+                                    }
+                                };
+                                distribution.setContainers(Collections.singletonList(".CDN_ACCESS_LOGS"));
                                 distributionStatus.put(origin, distribution);
                             }
                             catch(HttpException e) {

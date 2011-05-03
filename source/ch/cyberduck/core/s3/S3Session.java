@@ -211,7 +211,7 @@ public class S3Session extends CloudHTTP3Session {
     }
 
     /**
-     * Caching the uses's buckets
+     * Caching the user's buckets
      */
     private Map<String, S3Bucket> buckets
             = new HashMap<String, S3Bucket>();
@@ -482,7 +482,7 @@ public class S3Session extends CloudHTTP3Session {
 
     public boolean isMultipartUploadSupported() {
         if(host.getHostname().equals(Protocol.S3_SSL.getDefaultHostname())) {
-            return true;
+            return Preferences.instance().getBoolean("s3.upload.multipart");
         }
         return false;
     }
@@ -508,6 +508,9 @@ public class S3Session extends CloudHTTP3Session {
         return !file.attributes().isVolume();
     }
 
+    /**
+     * AWS storage classes
+     */
     private List<String> storageClasses
             = Arrays.asList(S3Object.STORAGE_CLASS_STANDARD, S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY);
 
@@ -547,31 +550,35 @@ public class S3Session extends CloudHTTP3Session {
     private Map<String, S3BucketLoggingStatus> loggingStatus
             = new HashMap<String, S3BucketLoggingStatus>();
 
+    private void readLogging(String container) {
+        if(!loggingStatus.containsKey(container)) {
+            try {
+                if(this.getHost().getCredentials().isAnonymousLogin()) {
+                    log.info("Anonymous cannot access logging status");
+                    return;
+                }
+                this.check();
+                final S3BucketLoggingStatus status
+                        = this.getClient().getBucketLoggingStatus(container);
+                loggingStatus.put(container, status);
+            }
+            catch(ServiceException e) {
+                log.warn("Bucket logging not supported:" + e.getMessage());
+                this.setLoggingSupported(false);
+            }
+            catch(IOException e) {
+                this.error("Cannot read container configuration", e);
+            }
+        }
+    }
+
     /**
      * @param container The bucket name
      * @return True if the bucket logging status is enabled.
      */
     public boolean isLogging(final String container) {
         if(this.isLoggingSupported()) {
-            if(!loggingStatus.containsKey(container)) {
-                try {
-                    if(this.getHost().getCredentials().isAnonymousLogin()) {
-                        log.info("Anonymous cannot access logging status");
-                        return false;
-                    }
-                    this.check();
-                    final S3BucketLoggingStatus status
-                            = this.getClient().getBucketLoggingStatus(container);
-                    loggingStatus.put(container, status);
-                }
-                catch(ServiceException e) {
-                    log.warn("Bucket logging not supported:" + e.getMessage());
-                    this.setLoggingSupported(false);
-                }
-                catch(IOException e) {
-                    this.error("Cannot read container configuration", e);
-                }
-            }
+            this.readLogging(container);
             if(loggingStatus.containsKey(container)) {
                 return loggingStatus.get(container).isLoggingEnabled();
             }
@@ -581,13 +588,30 @@ public class S3Session extends CloudHTTP3Session {
 
     /**
      * @param container The bucket name
-     * @param enabled
+     * @return Null if bucket logging is not supported
      */
-    public void setLogging(final String container, final boolean enabled) {
+    public String getLoggingTarget(final String container) {
+        if(this.isLoggingSupported()) {
+            this.readLogging(container);
+            if(loggingStatus.containsKey(container)) {
+                return loggingStatus.get(container).getTargetBucketName();
+            }
+            return container;
+        }
+        return null;
+    }
+
+    /**
+     * @param container   The bucket name
+     * @param enabled     True if logging should be toggled on
+     * @param destination Logging bucket name or null to choose container itself as target
+     */
+    public void setLogging(final String container, final boolean enabled, String destination) {
         if(this.isLoggingSupported()) {
             try {
                 // Logging target bucket
-                final S3BucketLoggingStatus status = new S3BucketLoggingStatus(container, null);
+                final S3BucketLoggingStatus status = new S3BucketLoggingStatus(
+                        StringUtils.isNotBlank(destination) ? destination : container, null);
                 if(enabled) {
                     status.setLogfilePrefix(Preferences.instance().getProperty("s3.logging.prefix"));
                 }
@@ -1008,7 +1032,7 @@ public class S3Session extends CloudHTTP3Session {
         }
 
         @Override
-        public void write(boolean enabled, String origin, Distribution.Method method, String[] cnames, boolean logging, String defaultRootObject) {
+        public void write(boolean enabled, String origin, Distribution.Method method, String[] cnames, boolean logging, String loggingBucket, String defaultRootObject) {
             if(method.equals(Distribution.WEBSITE)) {
                 try {
                     S3Session.this.check();
@@ -1048,7 +1072,7 @@ public class S3Session extends CloudHTTP3Session {
                 }
             }
             else {
-                super.write(enabled, origin, method, cnames, logging, defaultRootObject);
+                super.write(enabled, origin, method, cnames, logging, loggingBucket, defaultRootObject);
             }
         }
 

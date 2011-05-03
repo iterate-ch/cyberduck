@@ -28,12 +28,14 @@ import ch.cyberduck.core.threading.BackgroundException;
 import org.apache.commons.httpclient.HostConfiguration;
 import org.apache.commons.httpclient.URI;
 import org.apache.commons.httpclient.URIException;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.jets3t.service.CloudFrontService;
 import org.jets3t.service.CloudFrontServiceException;
 import org.jets3t.service.Jets3tProperties;
 import org.jets3t.service.model.cloudfront.*;
 import org.jets3t.service.security.AWSCredentials;
+import org.jets3t.service.utils.ServiceUtils;
 
 import java.io.IOException;
 import java.text.MessageFormat;
@@ -215,7 +217,7 @@ public class CloudFrontDistributionConfiguration extends HTTP3Session implements
     }
 
     public void write(boolean enabled, String origin, ch.cyberduck.core.cdn.Distribution.Method method,
-                      String[] cnames, boolean logging, String defaultRootObject) {
+                      String[] cnames, boolean logging, String loggingBucket, String defaultRootObject) {
         try {
             this.check();
 
@@ -223,7 +225,10 @@ public class CloudFrontDistributionConfiguration extends HTTP3Session implements
             LoggingStatus loggingStatus = null;
             if(logging) {
                 if(this.isLoggingSupported(method)) {
-                    loggingStatus = new LoggingStatus(origin, Preferences.instance().getProperty("cloudfront.logging.prefix"));
+                    final String loggingDestination = StringUtils.isNotBlank(loggingBucket) ?
+                            ServiceUtils.generateS3HostnameForBucket(loggingBucket, false, this.getHost().getHostname(true)) : origin;
+                    loggingStatus = new LoggingStatus(loggingDestination,
+                            Preferences.instance().getProperty("cloudfront.logging.prefix"));
                 }
             }
             StringBuilder name = new StringBuilder(Locale.localizedString("Amazon CloudFront", "S3")).append(" ").append(method.toString());
@@ -294,7 +299,8 @@ public class CloudFrontDistributionConfiguration extends HTTP3Session implements
 
     public boolean isLoggingSupported(ch.cyberduck.core.cdn.Distribution.Method method) {
         return method.equals(ch.cyberduck.core.cdn.Distribution.DOWNLOAD)
-                || method.equals(ch.cyberduck.core.cdn.Distribution.STREAMING);
+                || method.equals(ch.cyberduck.core.cdn.Distribution.STREAMING)
+                || method.equals(ch.cyberduck.core.cdn.Distribution.CUSTOM);
     }
 
     public boolean isCnameSupported(ch.cyberduck.core.cdn.Distribution.Method method) {
@@ -405,6 +411,21 @@ public class CloudFrontDistributionConfiguration extends HTTP3Session implements
             this.error("Cannot read CDN configuration", e);
         }
         return Locale.localizedString("Unknown");
+    }
+
+    protected List<String> readContainers(ch.cyberduck.core.cdn.Distribution.Method method) {
+        if(this.isLoggingSupported(method)) {
+            // List S3 containers
+            final Session session = SessionFactory.createSession(host);
+            if(session.getHost().getCredentials().validate(session.getHost().getProtocol())) {
+                List<String> buckets = new ArrayList<String>();
+                for(Path bucket : session.mount().list()) {
+                    buckets.add(bucket.getName());
+                }
+                return buckets;
+            }
+        }
+        return Collections.emptyList();
     }
 
     public void clear() {
@@ -600,8 +621,17 @@ public class CloudFrontDistributionConfiguration extends HTTP3Session implements
     private ch.cyberduck.core.cdn.Distribution convert(Distribution d,
                                                        ch.cyberduck.core.cdn.Distribution.Method method)
             throws IOException, CloudFrontServiceException {
-        // Retrieve distribution's configuration to access current logging status settings.
+        // Retrieve distributions configuration to access current logging status settings.
         final DistributionConfig distributionConfig = this.getDistributionConfig(d);
+        final String loggingTarget;
+        if(null == distributionConfig.getLoggingStatus()) {
+            loggingTarget = ServiceUtils.findBucketNameInHostname(d.getOrigin().getDnsName(),
+                    this.getHost().getHostname(true));
+        }
+        else {
+            loggingTarget = ServiceUtils.findBucketNameInHostname(distributionConfig.getLoggingStatus().getBucket(),
+                    this.getHost().getHostname(true));
+        }
         final ch.cyberduck.core.cdn.Distribution distribution = new ch.cyberduck.core.cdn.Distribution(
                 d.getId(),
                 d.getOrigin().getDnsName(),
@@ -610,12 +640,18 @@ public class CloudFrontDistributionConfiguration extends HTTP3Session implements
                 d.isDeployed(),
                 // CloudFront URL
                 method.getProtocol() + d.getDomainName() + method.getContext(),
+                null, // No SSL
                 Locale.localizedString(d.getStatus(), "S3"),
                 d.getCNAMEs(),
                 distributionConfig.isLoggingEnabled(),
+                // Default logging target to origin itself
+                loggingTarget,
                 distributionConfig.getDefaultRootObject());
         if(this.isInvalidationSupported(method)) {
             distribution.setInvalidationStatus(this.readInvalidationStatus(distribution));
+        }
+        if(this.isLoggingSupported(method)) {
+            distribution.setContainers(this.readContainers(method));
         }
         return distribution;
     }

@@ -37,39 +37,61 @@ import java.util.List;
 public class Distribution {
     private static Logger log = Logger.getLogger(Distribution.class);
 
+    /**
+     * Unique identifier
+     */
     private String id;
+
     /**
      * Configuration sucessfully applied and distributed
      */
     private boolean deployed;
+
     /**
      * S3 bucket name or DNS
      */
     private String origin;
+
     /**
      * Deployment enabled
      */
     private boolean enabled;
+
     /**
      * Logging enabled
      */
     private boolean logging;
+
+    /**
+     * Logging target container
+     */
+    private String loggingContainer;
+
+    /**
+     * Containers available to store log files.
+     */
+    List<String> containers = new ArrayList<String>();
+
     /**
      * CDN URL
      */
     private String url;
+
     /**
      * CDN SSL URL
      */
     private String sslUrl;
+
     /**
      * Deployment status description
      */
     private String status;
+
     /**
      * CNAME DNS entires to the CDN hostname
      */
     private String cnames[];
+
     /**
      * Kind of distribution
      */
@@ -275,7 +297,7 @@ public class Distribution {
      * @param logging
      */
     public Distribution(String id, String origin, Method method, boolean enabled, String url, String sslUrl, String status, boolean logging) {
-        this(id, origin, method, enabled, enabled, url, sslUrl, status, new String[]{}, logging, null);
+        this(id, origin, method, enabled, enabled, url, sslUrl, status, new String[]{}, logging, null, null);
     }
 
 
@@ -334,7 +356,7 @@ public class Distribution {
      * @param defaultRootObject Index file
      */
     public Distribution(String id, String origin, Method method, boolean enabled, boolean deployed, String url, String status, String[] cnames, boolean logging, String defaultRootObject) {
-        this(id, origin, method, enabled, deployed, url, null, status, cnames, logging, null);
+        this(id, origin, method, enabled, deployed, url, null, status, cnames, logging, null, null);
     }
 
     /**
@@ -348,9 +370,10 @@ public class Distribution {
      * @param status            Status Message about Deployment Status
      * @param cnames            Multiple CNAME aliases of this distribution
      * @param logging           Logging status
+     * @param loggingContainer
      * @param defaultRootObject Index file
      */
-    public Distribution(String id, String origin, Method method, boolean enabled, boolean deployed, String url, String sslUrl, String status, String[] cnames, boolean logging, String defaultRootObject) {
+    public Distribution(String id, String origin, Method method, boolean enabled, boolean deployed, String url, String sslUrl, String status, String[] cnames, boolean logging, String loggingContainer, String defaultRootObject) {
         this.id = id;
         this.origin = origin;
         this.enabled = enabled;
@@ -360,6 +383,7 @@ public class Distribution {
         this.status = status;
         this.cnames = cnames;
         this.logging = logging;
+        this.loggingContainer = loggingContainer;
         this.method = method;
         this.defaultRootObject = defaultRootObject;
     }
@@ -422,6 +446,13 @@ public class Distribution {
 
     public void setLogging(boolean logging) {
         this.logging = logging;
+    }
+
+    /**
+     * @return The container where log files are stored
+     */
+    public String getLoggingTarget() {
+        return loggingContainer;
     }
 
     /**
@@ -550,6 +581,14 @@ public class Distribution {
             return new String[]{};
         }
         return cnames;
+    }
+
+    public List<String> getContainers() {
+        return containers;
+    }
+
+    public void setContainers(List<String> containers) {
+        this.containers = containers;
     }
 
     /**
