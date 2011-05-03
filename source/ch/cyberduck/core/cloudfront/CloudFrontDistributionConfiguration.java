@@ -254,16 +254,12 @@ public class CloudFrontDistributionConfiguration extends HTTP3Session implements
                 if(d.isLogging() != logging) {
                     modified = true;
                 }
-                if(null == d.getDefaultRootObject() && null == defaultRootObject) {
-                    // No change to default root object
-                }
-                else if(null != d.getDefaultRootObject() && null == defaultRootObject) {
+                // Compare default root object for possible change
+                if(!StringUtils.equals(d.getDefaultRootObject(), defaultRootObject)) {
                     modified = true;
                 }
-                else if(null == d.getDefaultRootObject() && null != defaultRootObject) {
-                    modified = true;
-                }
-                else if(!d.getDefaultRootObject().equals(defaultRootObject)) {
+                // Compare logging target for possible change
+                if(!StringUtils.equals(d.getLoggingTarget(), loggingBucket)) {
                     modified = true;
                 }
                 if(modified) {
@@ -422,6 +418,7 @@ public class CloudFrontDistributionConfiguration extends HTTP3Session implements
                 for(Path bucket : session.mount().list()) {
                     buckets.add(bucket.getName());
                 }
+                Collections.sort(buckets);
                 return buckets;
             }
         }
