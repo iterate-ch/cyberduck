@@ -262,7 +262,7 @@ public class DownloadTransfer extends Transfer {
                 }
             }
             if(file.status().isComplete()
-                    || file.getLocal().attributes().getSize() == file.attributes().getSize()) {
+                    || file.getLocal().attributes().getSize() >= file.attributes().getSize()) {
                 // No need to resume completed transfers
                 file.status().setComplete(true);
                 return false;
