@@ -36,6 +36,8 @@
 				<string>NSTextField</string>
 				<key>bucketLoggingButton</key>
 				<string>NSButton</string>
+				<key>bucketLoggingPopup</key>
+				<string>NSPopUpButton</string>
 				<key>bucketMfaButton</key>
 				<string>NSButton</string>
 				<key>bucketVersioningButton</key>
@@ -49,9 +51,9 @@
 				<key>distributionCnameUrlField</key>
 				<string>NSTextField</string>
 				<key>distributionDefaultRootPopup</key>
-				<string>id</string>
+				<string>NSPopUpButton</string>
 				<key>distributionDeliveryPopup</key>
-				<string>id</string>
+				<string>NSPopUpButton</string>
 				<key>distributionEnableButton</key>
 				<string>NSButton</string>
 				<key>distributionInvalidateObjectsButton</key>
@@ -60,6 +62,8 @@
 				<string>NSTextField</string>
 				<key>distributionLoggingButton</key>
 				<string>NSButton</string>
+				<key>distributionLoggingPopup</key>
+				<string>NSPopUpButton</string>
 				<key>distributionOriginField</key>
 				<string>NSTextField</string>
 				<key>distributionProgress</key>
@@ -79,7 +83,7 @@
 				<key>groupx</key>
 				<string>NSButton</string>
 				<key>iconImageView</key>
-				<string>id</string>
+				<string>NSImageView</string>
 				<key>kindField</key>
 				<string>NSTextField</string>
 				<key>metadataAddButton</key>
