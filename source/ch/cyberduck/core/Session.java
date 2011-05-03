@@ -21,6 +21,8 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.cloudfront.CloudFrontDistributionConfiguration;
+import ch.cyberduck.core.fs.Filesystem;
+import ch.cyberduck.core.fs.FilesystemFactory;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.threading.BackgroundException;
 
@@ -41,6 +43,8 @@ import java.util.*;
  */
 public abstract class Session implements TranscriptListener {
     private static Logger log = Logger.getLogger(Session.class);
+
+    private Filesystem fs;
 
     /**
      * Encapsulating all the information of the remote host
@@ -273,18 +277,30 @@ public abstract class Session implements TranscriptListener {
             this.interrupt();
         }
         finally {
+            // Reset current working directory in bookmark
             host.setWorkdir(null);
         }
+        // Mount failed
         return null;
     }
 
     /**
      * Connect to the remote host and mount the home directory
      *
-     * @param directory
-     * @return null if we fail, the mounted working directory if we succeed
+     * @param directory Default working directory
+     * @return Null if mount fails. Check the error listener for details.
      */
     protected Path mount(String directory) throws IOException {
+        return this.mount(directory, Preferences.instance().getBoolean("disk.mount"));
+    }
+
+    /**
+     * @param directory  Default working directory
+     * @param filesystem Mount as filesystem
+     * @return Null if mount fails. Check the error listener for details.
+     * @throws IOException
+     */
+    protected Path mount(String directory, boolean filesystem) throws IOException {
         this.message(MessageFormat.format(Locale.localizedString("Mounting {0}", "Status"),
                 host.getHostname()));
         this.check();
@@ -316,6 +332,10 @@ public abstract class Session implements TranscriptListener {
         }
         else {
             home = this.workdir();
+        }
+        if(filesystem) {
+            fs = FilesystemFactory.get();
+            fs.mount(this);
         }
         return home;
     }
@@ -640,6 +660,11 @@ public abstract class Session implements TranscriptListener {
         this.message(MessageFormat.format(Locale.localizedString("Disconnecting {0}", "Status"),
                 host.getHostname()));
 
+        if(null != fs) {
+            // Unmount filesystem first
+            fs.unmount();
+        }
+
         for(ConnectionListener listener : connectionListeners.toArray(new ConnectionListener[connectionListeners.size()])) {
             listener.connectionWillClose();
         }
@@ -707,7 +732,6 @@ public abstract class Session implements TranscriptListener {
     }
 
     /**
-     *
      * @return
      */
     public boolean isCreateSymlinkSupported() {
@@ -855,7 +879,7 @@ public abstract class Session implements TranscriptListener {
         errorListeners.remove(listener);
     }
 
-    protected void error(String message, Throwable e) {
+    public void error(String message, Throwable e) {
         this.error(workdir, message, e);
     }
 
@@ -866,11 +890,11 @@ public abstract class Session implements TranscriptListener {
      * @param message The error message to be displayed in the alert sheet
      * @param e       The cause of the error
      */
-    protected void error(Path path, String message, Throwable e) {
+    public void error(Path path, String message, Throwable e) {
         this.error(new BackgroundException(this, path, message, e));
     }
 
-    protected void error(BackgroundException failure) {
+    public void error(BackgroundException failure) {
         this.message(failure.getMessage());
         for(ErrorListener listener : errorListeners.toArray(new ErrorListener[errorListeners.size()])) {
             listener.error(failure);

@@ -1856,6 +1856,8 @@ source/ch/cyberduck/core/dropbox/DropboxSession.java -text
 source/ch/cyberduck/core/editor/AbstractEditor.java -text
 source/ch/cyberduck/core/eucalyptus/ECPath.java -text
 source/ch/cyberduck/core/eucalyptus/ECSession.java -text
+source/ch/cyberduck/core/fs/Filesystem.java -text
+source/ch/cyberduck/core/fs/FilesystemFactory.java -text
 source/ch/cyberduck/core/ftp/FTPClient.java -text
 source/ch/cyberduck/core/ftp/FTPConnectMode.java -text
 source/ch/cyberduck/core/ftp/FTPException.java -text
