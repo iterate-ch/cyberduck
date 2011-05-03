@@ -916,7 +916,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                         continue;
                     }
                     final Local folder = LocalFactory.createLocal(new File(Preferences.instance().getProperty("tmp.dir"),
-                            path.getParent().getAbsolute()));
+                                    path.getSession().getHost().getUuid() + String.valueOf(Path.DELIMITER) + path.getParent().getAbsolute()));
                     path.setLocal(LocalFactory.createLocal(folder, path.getName()));
                     downloads.add(path);
                 }
