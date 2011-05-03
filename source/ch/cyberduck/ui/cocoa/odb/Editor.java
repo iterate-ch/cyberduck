@@ -57,6 +57,7 @@ public abstract class Editor extends AbstractEditor {
     /**
      * Open the file in the parent directory
      */
+    @Override
     public void open(final BackgroundAction download) {
         controller.background(new BrowserBackgroundAction(controller) {
             public void run() {
