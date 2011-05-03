@@ -1641,7 +1641,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             this.bookmarkModel.setFilter(new HostFilter() {
                 public boolean accept(Host host) {
                     return StringUtils.lowerCase(host.getNickname()).contains(searchString.toLowerCase())
-                            //|| StringUtils.lowerCase(host.getComment()).contains(searchString.toLowerCase())
+                            || (null == host.getComment() ? false : StringUtils.lowerCase(host.getComment()).contains(searchString.toLowerCase()))
                             || StringUtils.lowerCase(host.getHostname()).contains(searchString.toLowerCase());
                 }
             });
