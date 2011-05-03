@@ -1,4 +1,4 @@
-﻿﻿//
+﻿﻿﻿//
 // Copyright (c) 2010-2011 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
@@ -1969,7 +1969,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     string container = next.getContainerName();
                     ((S3Session) BrowserController.getSession()).setLogging(container,
-                                                                            _infoController.View.BucketLogging);
+                                                                            _infoController.View.BucketLogging, null);
                     break;
                 }
             }
@@ -2173,7 +2173,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                             _deliveryMethod,
                                             _cname.Split(new[] {' '},
                                                          StringSplitOptions.RemoveEmptyEntries),
-                                            _logging,
+                                            _logging, null,
                                             _defaultRoot);
                     }
                     else
@@ -2181,7 +2181,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         session.cdn().write(_distribution,
                                             session.cdn().getOrigin(_deliveryMethod, next.getContainerName()),
                                             _deliveryMethod,
-                                            new string[] {}, _logging, _defaultRoot);
+                                            new string[] {}, _logging, null, _defaultRoot);
                     }
                     break;
                 }

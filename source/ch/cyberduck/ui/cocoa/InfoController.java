@@ -251,6 +251,14 @@ public class InfoController extends ToolbarWindowController {
         this.distributionLoggingButton.setAction(Foundation.selector("distributionApplyButtonClicked:"));
     }
 
+    private NSPopUpButton distributionLoggingPopup;
+
+    public void setDistributionLoggingPopup(NSPopUpButton b) {
+        this.distributionLoggingPopup = b;
+        this.distributionLoggingPopup.setTarget(this.id());
+        this.distributionLoggingPopup.setAction(Foundation.selector("distributionLoggingPopupClicked:"));
+    }
+
     @Outlet
     private NSButton distributionInvalidateObjectsButton;
 
@@ -297,8 +305,6 @@ public class InfoController extends ToolbarWindowController {
 
     public void setStorageClassPopup(NSPopUpButton b) {
         this.storageClassPopup = b;
-        this.storageClassPopup.setAutoenablesItems(false);
-        this.storageClassPopup.removeAllItems();
         this.storageClassPopup.setTarget(this.id());
         this.storageClassPopup.setAction(Foundation.selector("storageClassPopupClicked:"));
     }
@@ -345,7 +351,8 @@ public class InfoController extends ToolbarWindowController {
                 public void run() {
                     final String container = getSelected().getContainerName();
                     ((S3Session) controller.getSession()).setLogging(container,
-                            bucketLoggingButton.state() == NSCell.NSOnState);
+                            bucketLoggingButton.state() == NSCell.NSOnState,
+                            null == bucketLoggingPopup.selectedItem() ? null : bucketLoggingPopup.selectedItem().representedObject());
                 }
 
                 @Override
@@ -360,6 +367,22 @@ public class InfoController extends ToolbarWindowController {
                             this.toString(files));
                 }
             });
+        }
+    }
+
+    private NSPopUpButton bucketLoggingPopup;
+
+    public void setBucketLoggingPopup(NSPopUpButton b) {
+        this.bucketLoggingPopup = b;
+        this.bucketLoggingPopup.setTarget(this.id());
+        this.bucketLoggingPopup.setAction(Foundation.selector("bucketLoggingPopupClicked:"));
+    }
+
+    @Action
+    public void bucketLoggingPopupClicked(final NSPopUpButton sender) {
+        if(bucketLoggingButton.state() == NSCell.NSOnState) {
+            // Only write change if logging is already enabled
+            this.bucketLoggingButtonClicked(sender);
         }
     }
 
@@ -1679,7 +1702,7 @@ public class InfoController extends ToolbarWindowController {
 
         // Remember last selection
         final String selected = distributionDeliveryPopup.titleOfSelectedItem();
-        
+
         distributionDeliveryPopup.removeAllItems();
         distributionDeliveryPopup.addItemWithTitle(Locale.localizedString("None"));
         distributionDefaultRootPopup.removeAllItems();
@@ -1701,6 +1724,10 @@ public class InfoController extends ToolbarWindowController {
             Distribution.Method method = session.cdn().getMethods().iterator().next();
             distributionDeliveryPopup.selectItemWithTitle(method.toString());
         }
+
+        distributionLoggingPopup.removeAllItems();
+        distributionLoggingPopup.addItemWithTitle(Locale.localizedString("None"));
+        distributionLoggingPopup.itemWithTitle(Locale.localizedString("None")).setEnabled(false);
 
         this.distributionStatusButtonClicked(null);
     }
@@ -1782,6 +1809,7 @@ public class InfoController extends ToolbarWindowController {
         bucketMfaButton.setEnabled(stop && enable && versioning
                 && bucketVersioningButton.state() == NSCell.NSOnState);
         bucketLoggingButton.setEnabled(stop && enable && logging);
+        bucketLoggingPopup.setEnabled(stop && enable && logging);
         if(stop) {
             s3Progress.stopAnimation(null);
         }
@@ -1797,12 +1825,20 @@ public class InfoController extends ToolbarWindowController {
     private void initS3() {
         bucketLocationField.setStringValue(Locale.localizedString("Unknown"));
         bucketLoggingButton.setToolTip(Locale.localizedString("Unknown"));
+
+        bucketLoggingPopup.removeAllItems();
+        bucketLoggingPopup.addItemWithTitle(Locale.localizedString("None"));
+        bucketLoggingPopup.itemWithTitle(Locale.localizedString("None")).setEnabled(false);
+
         s3PublicUrlField.setStringValue(Locale.localizedString("None"));
         s3PublicUrlValidityField.setStringValue(Locale.localizedString("Unknown"));
         s3torrentUrlField.setStringValue(Locale.localizedString("None"));
+
+        storageClassPopup.removeAllItems();
         storageClassPopup.addItemWithTitle(Locale.localizedString("Unknown"));
         storageClassPopup.itemWithTitle(Locale.localizedString("Unknown")).setEnabled(false);
         storageClassPopup.selectItemWithTitle(Locale.localizedString("Unknown"));
+
         if(this.toggleS3Settings(false)) {
             for(String redundancy : ((CloudSession) controller.getSession()).getSupportedStorageClasses()) {
                 storageClassPopup.addItemWithTitle(Locale.localizedString(redundancy, "S3"));
@@ -1823,8 +1859,6 @@ public class InfoController extends ToolbarWindowController {
                 }
                 if(file.attributes().isFile()) {
                     final S3Path s3 = (S3Path) file;
-                    bucketLoggingButton.setToolTip(
-                            s3.getContainerName() + "/" + Preferences.instance().getProperty("s3.logging.prefix"));
                     final AbstractPath.DescriptiveUrl url = s3.toSignedUrl();
                     if(StringUtils.isNotBlank(url.getUrl())) {
                         s3PublicUrlField.setAttributedStringValue(
@@ -1848,17 +1882,23 @@ public class InfoController extends ToolbarWindowController {
                     }
                 }
             }
+            final String container = getSelected().getContainerName();
             controller.background(new BrowserBackgroundAction(controller) {
-                private String location = null;
-                private boolean logging = false;
-                private boolean versioning = false;
-                private boolean mfa = false;
+                String location = null;
+                boolean logging = false;
+                String loggingBucket = null;
+                boolean versioning = false;
+                boolean mfa = false;
+                List<String> containers = new ArrayList<String>();
 
                 public void run() {
                     final S3Session s = (S3Session) controller.getSession();
-                    final String container = getSelected().getContainerName();
                     location = s.getLocation(container);
                     logging = s.isLogging(container);
+                    loggingBucket = s.getLoggingTarget(container);
+                    for(AbstractPath c : getSelected().getContainer().getParent().children()) {
+                        containers.add(c.getName());
+                    }
                     versioning = s.isVersioning(container);
                     mfa = s.isMultiFactorAuthentication(container);
                 }
@@ -1867,6 +1907,20 @@ public class InfoController extends ToolbarWindowController {
                 public void cleanup() {
                     try {
                         bucketLoggingButton.setState(logging ? NSCell.NSOnState : NSCell.NSOffState);
+                        if(!containers.isEmpty()) {
+                            bucketLoggingPopup.removeAllItems();
+                        }
+                        for(String c : containers) {
+                            bucketLoggingPopup.addItemWithTitle(c);
+                            bucketLoggingPopup.lastItem().setRepresentedObject(c);
+                        }
+                        if(logging) {
+                            bucketLoggingPopup.selectItemWithTitle(loggingBucket);
+                        }
+                        else {
+                            // Default to write log files to origin bucket
+                            bucketLoggingPopup.selectItemWithTitle(container);
+                        }
                         if(StringUtils.isNotBlank(location)) {
                             bucketLocationField.setStringValue(Locale.localizedString(location, "S3"));
                         }
@@ -2207,6 +2261,7 @@ public class InfoController extends ToolbarWindowController {
         distributionEnableButton.setEnabled(stop && enable);
         distributionDeliveryPopup.setEnabled(stop && enable);
         distributionLoggingButton.setEnabled(stop && enable && session.cdn().isLoggingSupported(method));
+        distributionLoggingPopup.setEnabled(stop && enable && session.cdn().isLoggingSupported(method));
         distributionCnameField.setEnabled(stop && enable && session.cdn().isCnameSupported(method));
         distributionInvalidateObjectsButton.setEnabled(stop && enable && session.cdn().isInvalidationSupported(method));
         distributionDefaultRootPopup.setEnabled(stop && enable && session.cdn().isDefaultRootSupported(method));
@@ -2245,23 +2300,34 @@ public class InfoController extends ToolbarWindowController {
     }
 
     @Action
+    public void distributionLoggingPopupClicked(final ID sender) {
+        if(distributionLoggingButton.state() == NSCell.NSOnState) {
+            // Only write change if logging is already enabled
+            this.distributionApplyButtonClicked(sender);
+        }
+    }
+
+    @Action
     public void distributionApplyButtonClicked(final ID sender) {
         if(this.toggleDistributionSettings(false)) {
             controller.background(new BrowserBackgroundAction(controller) {
                 public void run() {
                     final Session session = controller.getSession();
                     Distribution.Method method = Distribution.Method.forName(distributionDeliveryPopup.selectedItem().representedObject());
+                    final String origin = session.cdn().getOrigin(method, getSelected().getContainerName());
                     if(StringUtils.isNotBlank(distributionCnameField.stringValue())) {
                         session.cdn().write(distributionEnableButton.state() == NSCell.NSOnState,
-                                session.cdn().getOrigin(method, getSelected().getContainerName()), method,
+                                origin, method,
                                 StringUtils.split(distributionCnameField.stringValue()),
                                 distributionLoggingButton.state() == NSCell.NSOnState,
+                                distributionLoggingPopup.selectedItem().representedObject(),
                                 distributionDefaultRootPopup.selectedItem().representedObject());
                     }
                     else {
                         session.cdn().write(distributionEnableButton.state() == NSCell.NSOnState,
-                                session.cdn().getOrigin(method, getSelected().getContainerName()), method,
+                                origin, method,
                                 new String[]{}, distributionLoggingButton.state() == NSCell.NSOnState,
+                                null == distributionLoggingPopup.selectedItem() ? getSelected().getContainerName() : distributionLoggingPopup.selectedItem().representedObject(),
                                 distributionDefaultRootPopup.selectedItem().representedObject());
                     }
                 }
@@ -2293,8 +2359,7 @@ public class InfoController extends ToolbarWindowController {
                             = Distribution.Method.forName(distributionDeliveryPopup.selectedItem().representedObject());
                     // We only support one distribution per bucket for the sake of simplicity
                     distribution = session.cdn().read(
-                            session.cdn().getOrigin(method, getSelected().getContainerName()),
-                            method);
+                            session.cdn().getOrigin(method, getSelected().getContainerName()), method);
                     // Make sure container items are cached for default root object.
                     getSelected().getContainer().children();
                 }
@@ -2307,8 +2372,29 @@ public class InfoController extends ToolbarWindowController {
                                 session.cdn().toString(distribution.getMethod())));
                         distributionEnableButton.setState(distribution.isEnabled() ? NSCell.NSOnState : NSCell.NSOffState);
                         distributionStatusField.setAttributedStringValue(NSMutableAttributedString.create(distribution.getStatus(), TRUNCATE_MIDDLE_ATTRIBUTES));
+
                         distributionLoggingButton.setEnabled(distribution.isEnabled());
                         distributionLoggingButton.setState(distribution.isLogging() ? NSCell.NSOnState : NSCell.NSOffState);
+                        final List<String> containers = distribution.getContainers();
+                        if(!containers.isEmpty()) {
+                            distributionLoggingPopup.removeAllItems();
+                        }
+                        for(String c : containers) {
+                            // Populate with list of available logging targets
+                            distributionLoggingPopup.addItemWithTitle(c);
+                            distributionLoggingPopup.lastItem().setRepresentedObject(c);
+                        }
+                        if(StringUtils.isNotBlank(distribution.getLoggingTarget())) {
+                            // Select configured logging container if any
+                            distributionLoggingPopup.selectItemWithTitle(distribution.getLoggingTarget());
+                        }
+                        else {
+                            final String container = getSelected().getContainerName();
+                            if(distributionLoggingPopup.itemWithTitle(container) != null) {
+                                distributionLoggingPopup.selectItemWithTitle(container);
+                            }
+                        }
+
                         String origin = distribution.getOrigin(getSelected());
                         distributionOriginField.setAttributedStringValue(
                                 HyperlinkAttributedStringFactory.create(
