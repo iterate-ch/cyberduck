@@ -738,7 +738,7 @@ public class S3Path extends CloudPath {
          * <tt>nThreads</tt> threads will be active processing tasks.
          */
         final ExecutorService pool = Executors.newFixedThreadPool(
-                Preferences.instance().getInteger("s3.upload.concurency"), threadFactory);
+                Preferences.instance().getInteger("s3.upload.multipart.concurency"), threadFactory);
 
         try {
             List<Future<MultipartPart>> parts = new ArrayList<Future<MultipartPart>>();
@@ -1024,6 +1024,8 @@ public class S3Path extends CloudPath {
 
     private List<Path> listVersions(String bucket, List<BaseVersionOrDeleteMarker> versionOrDeleteMarkers)
             throws IOException, ServiceException {
+        // Amazon S3 returns object versions in the order in which they were
+        // stored, with the most recently stored returned first.
         Collections.sort(versionOrDeleteMarkers, new Comparator<BaseVersionOrDeleteMarker>() {
             public int compare(BaseVersionOrDeleteMarker o1, BaseVersionOrDeleteMarker o2) {
                 return o1.getLastModified().compareTo(o2.getLastModified());
