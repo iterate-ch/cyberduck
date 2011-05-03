@@ -58,6 +58,7 @@ public class PromptLoginController extends AbstractLoginController {
                     return this.create(c);
                 }
             }
+            log.warn("No browser to attach login controller for session:" + s);
             return this.create();
         }
     }
