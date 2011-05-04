@@ -1217,6 +1217,7 @@ lib/log4j-1.2.15.jar -text
 lib/log4j.xml -text
 lib/mail-1.4.3.jar -text
 lib/mime.types -text
+lib/sardine-205.jar -text
 lib/signpost-commonshttp4-1.2.1.1.jar -text
 lib/signpost-core-1.2.1.1.jar -text
 lib/slf4j-api-1.6.1.jar -text
@@ -1883,6 +1884,8 @@ source/ch/cyberduck/core/importer/TransmitBookmarkCollection.java -text
 source/ch/cyberduck/core/importer/XmlBookmarkCollection.java -text
 source/ch/cyberduck/core/s3/S3Path.java -text
 source/ch/cyberduck/core/s3/S3Session.java -text
+source/ch/cyberduck/core/sardine/DAVPath.java -text
+source/ch/cyberduck/core/sardine/DAVSession.java -text
 source/ch/cyberduck/core/sftp/HostKeyController.java -text
 source/ch/cyberduck/core/sftp/MemoryHostKeyVerifier.java -text
 source/ch/cyberduck/core/sftp/PreferencesHostKeyVerifier.java -text
