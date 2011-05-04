@@ -39,7 +39,7 @@ public class Status {
     /**
      * Transfer is resumable
      */
-    private boolean resume = false;
+    private boolean resume;
 
     /**
      * The number of transfered bytes. Must be less or equals size.
@@ -238,13 +238,13 @@ public class Status {
      */
     public void setResume(boolean resume) {
         if(!resume) {
-            this.current = 0;
+            current = 0;
         }
         this.resume = resume;
     }
 
     public boolean isResume() {
-        return this.resume;
+        return resume;
     }
 
     /**
