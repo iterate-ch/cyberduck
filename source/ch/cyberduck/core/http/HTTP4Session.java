@@ -119,7 +119,7 @@ public abstract class HTTP4Session extends SSLSession {
         });
         http.addResponseInterceptor(new HttpResponseInterceptor() {
             public void process(final HttpResponse response, final HttpContext context) throws HttpException, IOException {
-                log(true, response.getStatusLine().toString());
+                log(false, response.getStatusLine().toString());
                 for(Header header : response.getAllHeaders()) {
                     log(false, header.toString());
                 }
