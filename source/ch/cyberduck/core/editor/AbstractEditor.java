@@ -151,7 +151,6 @@ public abstract class AbstractEditor {
                     return;
                 }
                 lastchecksum = edited.getLocal().attributes().getChecksum();
-                edited.status().reset();
                 TransferOptions options = new TransferOptions();
                 options.closeSession = false;
                 Transfer upload = new UploadTransfer(edited) {

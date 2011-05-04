@@ -449,12 +449,13 @@ public abstract class Transfer implements Serializable {
             return;
         }
 
+        // Reset transfer status
+        p.status().reset();
+
         if(filter.accept(p)) {
             // Notification
             this.fireWillTransferPath(p);
             _current = p;
-            // Reset transfer status
-            p.status().reset();
             // Transfer
             transfer(p);
             // Post process of file
@@ -469,7 +470,6 @@ public abstract class Transfer implements Serializable {
         }
 
         if(p.attributes().isDirectory()) {
-            p.status().reset();
             boolean failure = false;
             final AttributedList<Path> children = this.children(p);
             if(!children.attributes().isReadable()) {

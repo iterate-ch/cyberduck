@@ -261,8 +261,7 @@ public class DownloadTransfer extends Transfer {
                     return false;
                 }
             }
-            if(file.status().isComplete()
-                    || file.getLocal().attributes().getSize() >= file.attributes().getSize()) {
+            if(file.getLocal().attributes().getSize() >= file.attributes().getSize()) {
                 // No need to resume completed transfers
                 file.status().setComplete(true);
                 return false;
