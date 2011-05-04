@@ -7,6 +7,11 @@ Changelog. Last modified: $Date$
 4.0.3 [http://trac.cyberduck.ch/milestone/4.0.3]
 - [Localize] Bulgarian Localization
 - [Feature] IPv6 support (Windows) (#5699)
+- [Feature] Enable access logs for custom origin distributions (CloudFront)
+- [Feature] Choose target bucket for access logs (CloudFront)
+- [Feature] Choose target bucket for access logs (S3)
+- [Bugfix] Delete only trashes documents (Google Docs) (#5873)
+- [Bugfix] Wrong timestamp in transfer prompt (#5916)
 
 4.0.2 [http://trac.cyberduck.ch/milestone/4.0.2]
 - [Feature] SSL URL for files in Akamai CDN enabled containers (Cloud Files)
