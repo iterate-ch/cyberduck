@@ -28,6 +28,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpHeaders;
 import org.apache.http.entity.AbstractHttpEntity;
+import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.protocol.HTTP;
 import org.apache.log4j.Logger;
@@ -400,31 +401,23 @@ public class DAVPath extends Path {
                             throw new IOResumeException("Skipped " + skipped + " bytes instead of " + status.getCurrent());
                         }
                     }
-                    final AbstractHttpEntity entity = new AbstractHttpEntity() {
-                        private boolean consumed = false;
+                    final AbstractHttpEntity entity = new InputStreamEntity(in,
+                            getLocal().attributes().getSize() - status.getCurrent()) {
 
-                        public boolean isRepeatable() {
-                            return false;
-                        }
+                        private boolean consumed = false;
 
                         @Override
                         public Header getContentType() {
                             return new BasicHeader(HTTP.CONTENT_TYPE, getLocal().getMimeType());
                         }
 
-                        public long getContentLength() {
-                            return getLocal().attributes().getSize() - status.getCurrent();
-                        }
-
-                        public InputStream getContent() throws IOException, IllegalStateException {
-                            return getLocal().getInputStream();
-                        }
-
+                        @Override
                         public void writeTo(OutputStream out) throws IOException {
-                            upload(out, in, throttle, listener);
+                            DAVPath.this.upload(out, in, throttle, listener);
                             consumed = true;
                         }
 
+                        @Override
                         public boolean isStreaming() {
                             return !consumed;
                         }
@@ -432,9 +425,7 @@ public class DAVPath extends Path {
                         @Override
                         public void consumeContent() throws IOException {
                             this.consumed = true;
-                            // If the input stream is from a connection, closing it will read to
-                            // the end of the content. Otherwise, we don't care what it does.
-                            getLocal().getInputStream().close();
+                            super.consumeContent();
                         }
                     };
                     this.getSession().getClient().put(this.toURL(), entity, headers);

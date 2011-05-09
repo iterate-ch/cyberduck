@@ -28,7 +28,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpException;
-import org.apache.http.entity.AbstractHttpEntity;
+import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.protocol.HTTP;
 import org.apache.log4j.Logger;
@@ -378,31 +378,23 @@ public class CFPath extends CloudPath {
                         metadata.put(name, value);
                     }
                     etag = this.getSession().getClient().storeObjectAs(this.getContainerName(), this.getKey(),
-                            new AbstractHttpEntity() {
-                                private boolean consumed = false;
+                            new InputStreamEntity(in,
+                                    getLocal().attributes().getSize() - status.getCurrent()) {
 
-                                public boolean isRepeatable() {
-                                    return false;
-                                }
+                                private boolean consumed = false;
 
                                 @Override
                                 public Header getContentType() {
                                     return new BasicHeader(HTTP.CONTENT_TYPE, getLocal().getMimeType());
                                 }
 
-                                public long getContentLength() {
-                                    return getLocal().attributes().getSize() - status.getCurrent();
-                                }
-
-                                public InputStream getContent() throws IOException, IllegalStateException {
-                                    return getLocal().getInputStream();
-                                }
-
+                                @Override
                                 public void writeTo(OutputStream out) throws IOException {
-                                    upload(out, in, throttle, listener);
+                                    CFPath.this.upload(out, in, throttle, listener);
                                     consumed = true;
                                 }
 
+                                @Override
                                 public boolean isStreaming() {
                                     return !consumed;
                                 }
@@ -410,9 +402,7 @@ public class CFPath extends CloudPath {
                                 @Override
                                 public void consumeContent() throws IOException {
                                     this.consumed = true;
-                                    // If the input stream is from a connection, closing it will read to
-                                    // the end of the content. Otherwise, we don't care what it does.
-                                    getLocal().getInputStream().close();
+                                    super.consumeContent();
                                 }
                             },
                             metadata, md5sum
