@@ -854,16 +854,16 @@ public class S3Session extends CloudHTTP3Session {
                 log.warn("Owner not known for container " + container);
                 continue;
             }
-            final Acl.CanonicalUser canonicalUser = new Acl.CanonicalUser(owner.getId(), owner.getDisplayName(), false) {
+            final Acl.CanonicalUser user = new Acl.CanonicalUser(owner.getId(), owner.getDisplayName(), false) {
                 @Override
                 public String getPlaceholder() {
-                    return owner.getDisplayName() + " (" + Locale.localizedString("Owner") + ")";
+                    return this.getDisplayName() + " (" + Locale.localizedString("Owner") + ")";
                 }
             };
-            if(users.contains(canonicalUser)) {
+            if(users.contains(user)) {
                 continue;
             }
-            users.add(0, canonicalUser);
+            users.add(0, user);
         }
         return users;
     }
