@@ -22,17 +22,15 @@ package ch.cyberduck.core.s3;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
-import ch.cyberduck.core.cloud.CloudHTTP3Session;
+import ch.cyberduck.core.cloud.CloudHTTP4Session;
 import ch.cyberduck.core.cloudfront.CloudFrontDistributionConfiguration;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.threading.BackgroundException;
 
-import org.apache.commons.httpclient.auth.AuthScheme;
-import org.apache.commons.httpclient.auth.CredentialsNotAvailableException;
-import org.apache.commons.httpclient.auth.CredentialsProvider;
-import org.apache.commons.httpclient.methods.RequestEntity;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.HttpEntity;
+import org.apache.http.client.HttpClient;
 import org.apache.log4j.Logger;
 import org.jets3t.service.Jets3tProperties;
 import org.jets3t.service.S3ServiceException;
@@ -54,7 +52,7 @@ import java.util.*;
  *
  * @version $Id$
  */
-public class S3Session extends CloudHTTP3Session {
+public class S3Session extends CloudHTTP4Session {
     private static Logger log = Logger.getLogger(S3Session.class);
 
     private static class Factory extends SessionFactory {
@@ -87,31 +85,22 @@ public class S3Session extends CloudHTTP3Session {
      */
     protected class RequestEntityRestStorageService extends RestS3Service {
         public RequestEntityRestStorageService(ProviderCredentials credentials) throws ServiceException {
-            super(credentials, S3Session.this.getUserAgent(), new CredentialsProvider() {
-                /**
-                 * Implementation method for the CredentialsProvider interface
-                 * @throws CredentialsNotAvailableException
-                 */
-                public org.apache.commons.httpclient.Credentials getCredentials(AuthScheme authscheme, String hostname, int port, boolean proxy)
-                        throws CredentialsNotAvailableException {
-                    log.error("Additional HTTP authentication not supported:" + authscheme.getSchemeName());
-                    throw new CredentialsNotAvailableException("Unsupported authentication scheme: " +
-                            authscheme.getSchemeName());
-                }
-            }, S3Session.this.getProperties(), S3Session.this.getHostConfiguration());
+            super(credentials, S3Session.this.getUserAgent(), null, S3Session.this.getProperties());
         }
 
-        /**
-         * Exposing implementation method.
-         *
-         * @param bucketName
-         * @param object
-         * @param requestEntity
-         * @throws ServiceException
-         */
         @Override
-        public void putObjectWithRequestEntityImpl(String bucketName, StorageObject object,
-                                                   RequestEntity requestEntity, Map<String, String> requestParams) throws ServiceException {
+        protected HttpClient initHttpConnection() {
+            return S3Session.this.http();
+        }
+
+        @Override
+        protected void initializeProxy() {
+            ; // Client already configured
+        }
+
+        @Override
+        protected void putObjectWithRequestEntityImpl(String bucketName, StorageObject object,
+                                                      HttpEntity requestEntity, Map<String, String> requestParams) throws ServiceException {
             super.putObjectWithRequestEntityImpl(bucketName, object, requestEntity, requestParams);
         }
 
@@ -154,42 +143,6 @@ public class S3Session extends CloudHTTP3Session {
         // The maximum number of concurrent communication threads that will be started by
         // the multi-threaded service for upload and download operations.
         configuration.setProperty("s3service.max-thread-count", String.valueOf(1));
-
-        configuration.setProperty("httpclient.proxy-autodetect", String.valueOf(false));
-        if(Preferences.instance().getBoolean("connection.proxy.enable")) {
-            final Proxy proxy = ProxyFactory.instance();
-            if(host.getProtocol().isSecure()) {
-                if(proxy.isHTTPSProxyEnabled(host)) {
-                    configuration.setProperty("httpclient.proxy-host", proxy.getHTTPSProxyHost(host));
-                    configuration.setProperty("httpclient.proxy-port", String.valueOf(proxy.getHTTPSProxyPort(host)));
-                    configuration.setProperty("httpclient.proxy-user", null);
-                    configuration.setProperty("httpclient.proxy-password", null);
-                    if(StringUtils.isNotEmpty(Preferences.instance().getProperty("connection.proxy.ntlm.domain"))) {
-                        configuration.setProperty("httpclient.proxy-domain",
-                                Preferences.instance().getProperty("connection.proxy.ntlm.domain"));
-                    }
-                }
-            }
-            else {
-                if(proxy.isHTTPProxyEnabled(host)) {
-                    configuration.setProperty("httpclient.proxy-host", proxy.getHTTPProxyHost(host));
-                    configuration.setProperty("httpclient.proxy-port", String.valueOf(proxy.getHTTPProxyPort(host)));
-                    configuration.setProperty("httpclient.proxy-user", null);
-                    configuration.setProperty("httpclient.proxy-password", null);
-                    if(StringUtils.isNotEmpty(Preferences.instance().getProperty("connection.proxy.ntlm.domain"))) {
-                        configuration.setProperty("httpclient.proxy-domain",
-                                Preferences.instance().getProperty("connection.proxy.ntlm.domain"));
-                    }
-                }
-            }
-        }
-        configuration.setProperty("httpclient.connection-timeout-ms", String.valueOf(this.timeout()));
-        configuration.setProperty("httpclient.socket-timeout-ms", String.valueOf(this.timeout()));
-        configuration.setProperty("httpclient.useragent", this.getUserAgent());
-        configuration.setProperty("httpclient.authentication-preemptive", String.valueOf(false));
-
-        // How many times to retry connections when they fail with IO errors. Set this to 0 to disable retries.
-        configuration.setProperty("httpclient.retry-max", String.valueOf(0));
     }
 
     /**

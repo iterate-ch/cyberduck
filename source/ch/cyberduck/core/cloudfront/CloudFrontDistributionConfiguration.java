@@ -21,18 +21,16 @@ package ch.cyberduck.core.cloudfront;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
-import ch.cyberduck.core.http.HTTP3Session;
+import ch.cyberduck.core.http.HTTP4Session;
 import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.core.ssl.AbstractX509TrustManager;
 import ch.cyberduck.core.threading.BackgroundException;
 
-import org.apache.commons.httpclient.HostConfiguration;
-import org.apache.commons.httpclient.URI;
-import org.apache.commons.httpclient.URIException;
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.client.HttpClient;
 import org.apache.log4j.Logger;
 import org.jets3t.service.CloudFrontService;
 import org.jets3t.service.CloudFrontServiceException;
-import org.jets3t.service.Jets3tProperties;
 import org.jets3t.service.model.cloudfront.*;
 import org.jets3t.service.security.AWSCredentials;
 import org.jets3t.service.utils.ServiceUtils;
@@ -46,7 +44,7 @@ import java.util.*;
  *
  * @version $Id:$
  */
-public class CloudFrontDistributionConfiguration extends HTTP3Session implements DistributionConfiguration {
+public class CloudFrontDistributionConfiguration extends HTTP4Session implements DistributionConfiguration {
     private static Logger log = Logger.getLogger(CloudFrontDistributionConfiguration.class);
 
     /**
@@ -68,6 +66,11 @@ public class CloudFrontDistributionConfiguration extends HTTP3Session implements
         this.login = parent;
         this.listener = listener;
         this.clear();
+    }
+
+    @Override
+    public AbstractX509TrustManager getTrustManager() {
+        return this.getTrustManager("cloudfront.amazonaws.com");
     }
 
     /**
@@ -106,16 +109,14 @@ public class CloudFrontDistributionConfiguration extends HTTP3Session implements
     @Override
     protected void login(LoginController controller, Credentials credentials) throws IOException {
         try {
-            final URI endpoint = new URI(CloudFrontService.ENDPOINT, false);
-            // Construct a CloudFrontService object to interact with the service.
-            final HostConfiguration hostconfig = this.getHostConfiguration(
-                    new Host(Protocol.S3_SSL, endpoint.getHost(), endpoint.getPort()));
             client = new CloudFrontService(
-                    new AWSCredentials(credentials.getUsername(), credentials.getPassword()),
-                    this.getUserAgent(), // Invoking application description
-                    null, // Credentials Provider
-                    new Jets3tProperties(),
-                    hostconfig);
+                    new AWSCredentials(credentials.getUsername(), credentials.getPassword())) {
+
+                @Override
+                protected HttpClient initHttpConnection() {
+                    return CloudFrontDistributionConfiguration.this.http();
+                }
+            };
             // Provoke authentication error if any.
             client.listDistributions();
         }
@@ -124,11 +125,6 @@ public class CloudFrontDistributionConfiguration extends HTTP3Session implements
             this.message(Locale.localizedString("Login failed", "Credentials"));
             controller.fail(host.getProtocol(), credentials);
             this.login();
-        }
-        catch(URIException e) {
-            final IOException f = new IOException();
-            f.initCause(e);
-            throw f;
         }
     }
 

@@ -26,9 +26,12 @@ import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.ui.DateFormatterFactory;
 
-import org.apache.commons.httpclient.methods.InputStreamRequestEntity;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.Header;
+import org.apache.http.entity.InputStreamEntity;
+import org.apache.http.message.BasicHeader;
+import org.apache.http.protocol.HTTP;
 import org.apache.log4j.Logger;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.StorageObjectsChunk;
@@ -646,14 +649,33 @@ public class S3Path extends CloudPath {
             in = new DigestInputStream(this.getLocal().getInputStream(), digest);
         }
         try {
+            final Status status = this.status();
             this.getSession().getClient().putObjectWithRequestEntityImpl(
-                    this.getContainerName(), object, new InputStreamRequestEntity(in,
-                            this.getLocal().attributes().getSize() - status().getCurrent(),
-                            this.getLocal().getMimeType()) {
+                    this.getContainerName(), object, new InputStreamEntity(in,
+                            getLocal().attributes().getSize() - status.getCurrent()) {
+
+                        private boolean consumed = false;
 
                         @Override
-                        public void writeRequest(OutputStream out) throws IOException {
-                            S3Path.this.upload(out, in, throttle, listener);
+                        public Header getContentType() {
+                            return new BasicHeader(HTTP.CONTENT_TYPE, getLocal().getMimeType());
+                        }
+
+                        @Override
+                        public void writeTo(OutputStream out) throws IOException {
+                            upload(out, in, throttle, listener);
+                            consumed = true;
+                        }
+
+                        @Override
+                        public boolean isStreaming() {
+                            return !consumed;
+                        }
+
+                        @Override
+                        public void consumeContent() throws IOException {
+                            this.consumed = true;
+                            super.consumeContent();
                         }
                     }, Collections.<String, String>emptyMap());
         }
@@ -846,15 +868,34 @@ public class S3Path extends CloudPath {
                 final S3Object part = new S3Object(getKey());
                 try {
                     getSession().getClient().putObjectWithRequestEntityImpl(
-                            getContainerName(), part, new InputStreamRequestEntity(in,
-                                    length,
-                                    getLocal().getMimeType()) {
+                            getContainerName(), part,
+                            new InputStreamEntity(in,
+                            length) {
 
-                                @Override
-                                public void writeRequest(OutputStream out) throws IOException {
-                                    S3Path.this.upload(out, in, throttle, listener, offset, length);
-                                }
-                            }, requestParameters);
+                        private boolean consumed = false;
+
+                        @Override
+                        public Header getContentType() {
+                            return new BasicHeader(HTTP.CONTENT_TYPE, getLocal().getMimeType());
+                        }
+
+                        @Override
+                        public void writeTo(OutputStream out) throws IOException {
+                            S3Path.this.upload(out, in, throttle, listener, offset, length);
+                            consumed = true;
+                        }
+
+                        @Override
+                        public boolean isStreaming() {
+                            return !consumed;
+                        }
+
+                        @Override
+                        public void consumeContent() throws IOException {
+                            this.consumed = true;
+                            super.consumeContent();
+                        }
+                    }, requestParameters);
                 }
                 finally {
                     IOUtils.closeQuietly(in);
