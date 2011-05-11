@@ -1842,7 +1842,6 @@ source/ch/cyberduck/core/cdn/Distribution.java -text
 source/ch/cyberduck/core/cdn/DistributionConfiguration.java -text
 source/ch/cyberduck/core/cf/CFPath.java -text
 source/ch/cyberduck/core/cf/CFSession.java -text
-source/ch/cyberduck/core/cloud/CloudHTTP3Session.java -text
 source/ch/cyberduck/core/cloud/CloudHTTP4Session.java -text
 source/ch/cyberduck/core/cloud/CloudPath.java -text
 source/ch/cyberduck/core/cloud/CloudSession.java -text
