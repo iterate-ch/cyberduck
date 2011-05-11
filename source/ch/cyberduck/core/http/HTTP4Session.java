@@ -74,6 +74,7 @@ public abstract class HTTP4Session extends SSLSession {
 
             HttpConnectionParams.setTcpNoDelay(params, true);
             HttpConnectionParams.setSoTimeout(params, timeout());
+            HttpConnectionParams.setConnectionTimeout(params, timeout());
             HttpConnectionParams.setSocketBufferSize(params, 8192);
 
             HttpClientParams.setRedirecting(params, true);
