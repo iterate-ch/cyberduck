@@ -1208,7 +1208,7 @@ lib/jakarta-slide-webdavlib-2.2-dev.jar -text
 lib/java-xmlbuilder-0.4.jar -text
 lib/jaxen-1.1.1.jar -text
 lib/jdom-1.1.jar -text
-lib/jets3t-0.8.1.jar -text
+lib/jets3t-0.8.2.jar -text
 lib/jna-3.2.7.jar -text
 lib/json-simple-1.1.jar -text
 lib/libAquaticPrime.a -text
