@@ -679,7 +679,7 @@ public abstract class Preferences {
         defaults.put("connection.chunksize", String.valueOf(32768));
 
         defaults.put("disk.unmount.timeout", String.valueOf(2));
-        defaults.put("disk.mount", String.valueOf(true));
+        defaults.put("disk.mount", String.valueOf(false));
 
         defaults.put("transcript.length", String.valueOf(1000));
 
