@@ -688,6 +688,21 @@ public abstract class Path extends AbstractPath implements Serializable {
     }
 
     /**
+     *
+     * @return
+     * @throws IOException
+     */
+    public InputStream read() throws IOException {
+        return this.read(true);
+    }
+
+    /**
+     *
+     * @return
+     */
+    public abstract InputStream read(final boolean check) throws IOException;
+
+    /**
      * Download with no bandwidth limit
      */
     protected void download() {
@@ -722,6 +737,17 @@ public abstract class Path extends AbstractPath implements Serializable {
      * @param check    Check for open connection and open if needed before transfer
      */
     protected abstract void download(BandwidthThrottle throttle, StreamListener listener, boolean check);
+
+    /**
+     *
+     * @return
+     * @throws IOException
+     */
+    public OutputStream write() throws IOException {
+        return this.write(true);
+    }
+
+    public abstract OutputStream write(final boolean check) throws IOException;
 
     /**
      *

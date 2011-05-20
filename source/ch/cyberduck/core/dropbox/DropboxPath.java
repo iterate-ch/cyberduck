@@ -124,7 +124,6 @@ public class DropboxPath extends Path {
                     file.attributes().setChecksum(entry.getHash());
                     children.add(file);
                 }
-                this.getSession().setWorkdir(this);
             }
             catch(IOException e) {
                 log.warn("Listing directory failed:" + e.getMessage());
@@ -176,15 +175,20 @@ public class DropboxPath extends Path {
     }
 
     @Override
+    public InputStream read(boolean check) throws IOException {
+        if(check) {
+            this.getSession().check();
+        }
+        return this.getSession().getClient().get(this.getAbsolute(), this.attributes().getChecksum());
+    }
+
+    @Override
     protected void download(BandwidthThrottle throttle, StreamListener listener, boolean check) {
         if(attributes().isFile()) {
             OutputStream out = null;
             InputStream in = null;
             try {
-                if(check) {
-                    this.getSession().check();
-                }
-                in = this.getSession().getClient().get(this.getAbsolute(), this.attributes().getChecksum());
+                in = this.read(check);
                 out = this.getLocal().getOutputStream(this.status().isResume());
 
                 this.download(in, out, throttle, listener);
@@ -244,6 +248,14 @@ public class DropboxPath extends Path {
                 this.error("Upload failed", e);
             }
         }
+    }
+
+    @Override
+    public OutputStream write(boolean check) throws IOException {
+        if(check) {
+            this.getSession().check();
+        }
+        throw new UnsupportedOperationException();
     }
 
     @Override

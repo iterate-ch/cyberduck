@@ -256,10 +256,7 @@ public class FTPPath extends Path {
                         }
                     }
                 }
-                if(success) {
-                    this.getSession().setWorkdir(this);
-                }
-                else {
+                if(!success) {
                     // LIST listing failed
                     log.error("No compatible file listing method found");
                 }
@@ -917,50 +914,15 @@ public class FTPPath extends Path {
     protected void download(final BandwidthThrottle throttle, final StreamListener listener, final boolean check) {
         if(this.attributes().isFile()) {
             try {
-                if(check) {
-                    this.getSession().check();
-                }
                 this.data(new DataConnectionAction() {
                     @Override
                     public boolean run() throws IOException {
                         InputStream in = null;
                         OutputStream out = null;
                         try {
-                            if(!getSession().getClient().setFileType(FTP.BINARY_FILE_TYPE)) {
-                                throw new FTPException(getSession().getClient().getReplyString());
-                            }
-                            if(status().isResume()) {
-                                // Where a server process supports RESTart in STREAM mode
-                                if(!getSession().getClient().isFeatureSupported("REST STREAM")) {
-                                    status().setResume(false);
-                                }
-                                else {
-                                    getSession().getClient().setRestartOffset(
-                                            status().isResume() ? getLocal().attributes().getSize() : 0
-                                    );
-                                }
-                            }
-                            in = getSession().getClient().retrieveFileStream(getAbsolute());
+                            in = read(check);
                             out = getLocal().getOutputStream(status().isResume());
-                            try {
-                                download(in, out, throttle, listener);
-                            }
-                            catch(ConnectionCanceledException e) {
-                                // Interrupted by user
-                                IOUtils.closeQuietly(in);
-                                IOUtils.closeQuietly(out);
-                                // Tell the server to abort the previous command and any associated
-                                // transfer of data
-                                if(!getSession().getClient().abort()) {
-                                    log.error("Interrupting file transfer failed:" + getSession().getClient().getReplyString());
-                                }
-                                status().setComplete(false);
-                                throw e;
-                            }
-                            if(status().isComplete()) {
-                                IOUtils.closeQuietly(in);
-                                IOUtils.closeQuietly(out);
-                            }
+                            download(in, out, throttle, listener);
                         }
                         finally {
                             IOUtils.closeQuietly(in);
@@ -969,12 +931,6 @@ public class FTPPath extends Path {
                         return true;
                     }
                 });
-                if(status().isComplete()) {
-                    if(!getSession().getClient().completePendingCommand()) {
-                        status().setComplete(false);
-                        throw new FTPException(getSession().getClient().getReplyString());
-                    }
-                }
             }
             catch(IOException e) {
                 this.error("Download failed", e);
@@ -983,44 +939,118 @@ public class FTPPath extends Path {
     }
 
     @Override
+    public InputStream read(final boolean check) throws IOException {
+        if(check) {
+            this.getSession().check();
+        }
+        if(!getSession().getClient().setFileType(FTP.BINARY_FILE_TYPE)) {
+            throw new FTPException(getSession().getClient().getReplyString());
+        }
+        if(status().isResume()) {
+            // Where a server process supports RESTart in STREAM mode
+            if(!getSession().getClient().isFeatureSupported("REST STREAM")) {
+                status().setResume(false);
+            }
+            else {
+                getSession().getClient().setRestartOffset(
+                        status().isResume() ? getLocal().attributes().getSize() : 0);
+            }
+        }
+        final InputStream delegate = getSession().getClient().retrieveFileStream(getAbsolute());
+        return new InputStream() {
+            /**
+             * Keep own status flag because stream may be used outside of transfer status.
+             */
+            private boolean complete;
+
+            @Override
+            public int read() throws IOException {
+                final int read = delegate.read();
+                if(-1 == read) {
+                    complete = true;
+                }
+                return read;
+            }
+
+            @Override
+            public int read(byte[] b) throws IOException {
+                final int read = delegate.read(b);
+                if(-1 == read) {
+                    complete = true;
+                }
+                return read;
+            }
+
+            @Override
+            public int read(byte[] b, int off, int len) throws IOException {
+                final int read = delegate.read(b, off, len);
+                if(-1 == read) {
+                    complete = true;
+                }
+                return read;
+            }
+
+            @Override
+            public long skip(long n) throws IOException {
+                return delegate.skip(n);
+            }
+
+            @Override
+            public int available() throws IOException {
+                return delegate.available();
+            }
+
+            @Override
+            public void close() throws IOException {
+                try {
+                    delegate.close();
+                }
+                finally {
+                    if(complete) {
+                        // Read 226 status
+                        if(!getSession().getClient().completePendingCommand()) {
+                            log.error("Error closing data socket:" + getSession().getClient().getReplyString());
+                        }
+                    }
+                    else {
+                        // Interrupted transfer
+                        if(!getSession().getClient().abort()) {
+                            log.error("Error closing data socket:" + getSession().getClient().getReplyString());
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void mark(int readlimit) {
+                delegate.mark(readlimit);
+            }
+
+            @Override
+            public void reset() throws IOException {
+                delegate.reset();
+            }
+
+            @Override
+            public boolean markSupported() {
+                return delegate.markSupported();
+            }
+        };
+    }
+
+    @Override
     protected void upload(final BandwidthThrottle throttle, final StreamListener listener, final boolean check) {
         if(this.attributes().isFile()) {
             try {
-                if(check) {
-                    this.getSession().check();
-                }
                 this.data(new DataConnectionAction() {
                     @Override
                     public boolean run() throws IOException {
                         InputStream in = null;
                         OutputStream out = null;
                         try {
-                            if(!getSession().getClient().setFileType(FTPClient.BINARY_FILE_TYPE)) {
-                                throw new FTPException(getSession().getClient().getReplyString());
-                            }
                             in = getLocal().getInputStream();
-                            if(status().isResume()) {
-                                out = getSession().getClient().appendFileStream(
-                                        getAbsolute());
-                            }
-                            else {
-                                out = getSession().getClient().storeFileStream(getAbsolute());
-                            }
-                            try {
-                                upload(out, in, throttle, listener);
-                            }
-                            catch(ConnectionCanceledException e) {
-                                // Interrupted by user
-                                IOUtils.closeQuietly(in);
-                                IOUtils.closeQuietly(out);
-                                // Tell the server to abort the previous command and any associated
-                                // transfer of data
-                                if(!getSession().getClient().abort()) {
-                                    log.error("Interrupting file transfer failed:" + getSession().getClient().getReplyString());
-                                }
-                                status().setComplete(false);
-                                throw e;
-                            }
+                            out = write(check);
+                            upload(out, in, throttle, listener);
                             if(status().isComplete()) {
                                 IOUtils.closeQuietly(in);
                                 IOUtils.closeQuietly(out);
@@ -1046,5 +1076,19 @@ public class FTPPath extends Path {
                 this.error("Upload failed", e);
             }
         }
+    }
+
+    @Override
+    public OutputStream write(boolean check) throws IOException {
+        if(check) {
+            this.getSession().check();
+        }
+        if(!getSession().getClient().setFileType(FTPClient.BINARY_FILE_TYPE)) {
+            throw new FTPException(getSession().getClient().getReplyString());
+        }
+        if(status().isResume()) {
+            return getSession().getClient().appendFileStream(getAbsolute());
+        }
+        return getSession().getClient().storeFileStream(getAbsolute());
     }
 }

@@ -42,6 +42,7 @@ import com.google.gdata.data.acl.AclRole;
 import com.google.gdata.data.acl.AclScope;
 import com.google.gdata.data.docs.*;
 import com.google.gdata.data.media.MediaSource;
+import com.google.gdata.util.AuthenticationException;
 import com.google.gdata.util.ContentType;
 import com.google.gdata.util.NotImplementedException;
 import com.google.gdata.util.ServiceException;
@@ -420,6 +421,51 @@ public class GDPath extends Path {
     }
 
     @Override
+    public InputStream read(boolean check) throws IOException {
+        if(check) {
+            this.getSession().check();
+        }
+        MediaContent mc = new MediaContent();
+        StringBuilder uri = new StringBuilder(this.getExportUri());
+        final String type = this.getDocumentType();
+        final GoogleAuthTokenFactory.UserToken token
+                = (GoogleAuthTokenFactory.UserToken) this.getSession().getClient().getAuthTokenFactory().getAuthToken();
+        try {
+            if(type.equals(SpreadsheetEntry.LABEL)) {
+                // Authenticate against the Spreadsheets API to obtain an auth token
+                SpreadsheetService spreadsheet = new SpreadsheetService(this.getSession().getUserAgent());
+                final Credentials credentials = this.getSession().getHost().getCredentials();
+                try {
+                    spreadsheet.setUserCredentials(credentials.getUsername(), credentials.getPassword());
+                }
+                catch(AuthenticationException e) {
+                    e.printStackTrace();
+                }
+                // Substitute the spreadsheets token for the docs token
+                this.getSession().getClient().setUserToken(
+                        ((GoogleAuthTokenFactory.UserToken) spreadsheet.getAuthTokenFactory().getAuthToken()).getValue());
+            }
+            if(StringUtils.isNotEmpty(getExportFormat(type))) {
+                uri.append("&exportFormat=").append(getExportFormat(type));
+            }
+            mc.setUri(uri.toString());
+            try {
+                MediaSource ms = this.getSession().getClient().getMedia(mc);
+                return ms.getInputStream();
+            }
+            catch(ServiceException e) {
+                IOException failure = new IOException(e.getMessage());
+                failure.initCause(e);
+                throw failure;
+            }
+        }
+        finally {
+            // Restore docs token for our DocList client
+            this.getSession().getClient().setUserToken(token.getValue());
+        }
+    }
+
+    @Override
     protected void download(BandwidthThrottle throttle, StreamListener listener, boolean check) {
         if(attributes().isFile()) {
             OutputStream out = null;
@@ -428,42 +474,14 @@ public class GDPath extends Path {
                 if(check) {
                     this.getSession().check();
                 }
-                MediaContent mc = new MediaContent();
-                StringBuilder uri = new StringBuilder(this.getExportUri());
-                final String type = this.getDocumentType();
-                final GoogleAuthTokenFactory.UserToken token
-                        = (GoogleAuthTokenFactory.UserToken) this.getSession().getClient().getAuthTokenFactory().getAuthToken();
-                try {
-                    if(type.equals(SpreadsheetEntry.LABEL)) {
-                        // Authenticate against the Spreadsheets API to obtain an auth token
-                        SpreadsheetService spreadsheet = new SpreadsheetService(this.getSession().getUserAgent());
-                        final Credentials credentials = this.getSession().getHost().getCredentials();
-                        spreadsheet.setUserCredentials(credentials.getUsername(), credentials.getPassword());
-                        // Substitute the spreadsheets token for the docs token
-                        this.getSession().getClient().setUserToken(
-                                ((GoogleAuthTokenFactory.UserToken) spreadsheet.getAuthTokenFactory().getAuthToken()).getValue());
-                    }
-                    if(StringUtils.isNotEmpty(getExportFormat(type))) {
-                        uri.append("&exportFormat=").append(getExportFormat(type));
-                    }
-                    mc.setUri(uri.toString());
-                    MediaSource ms = this.getSession().getClient().getMedia(mc);
-                    in = ms.getInputStream();
-                    if(null == in) {
-                        throw new IOException("Unable opening data stream");
-                    }
-                    out = this.getLocal().getOutputStream(this.status().isResume());
-                    this.download(in, out, throttle, listener);
+                in = this.read(check);
+                if(null == in) {
+                    throw new IOException("Unable opening data stream");
                 }
-                finally {
-                    // Restore docs token for our DocList client
-                    this.getSession().getClient().setUserToken(token.getValue());
-                }
+                out = this.getLocal().getOutputStream(this.status().isResume());
+                this.download(in, out, throttle, listener);
             }
             catch(IOException e) {
-                this.error("Download failed", e);
-            }
-            catch(ServiceException e) {
                 this.error("Download failed", e);
             }
             finally {
@@ -495,128 +513,168 @@ public class GDPath extends Path {
     protected void upload(BandwidthThrottle throttle, StreamListener listener, boolean check) {
         try {
             if(attributes().isFile()) {
-                if(check) {
-                    this.getSession().check();
-                }
                 InputStream in = null;
                 OutputStream out = null;
                 try {
-                    final String mime = this.getLocal().getMimeType();
-                    final long size = this.getLocal().attributes().getSize();
-
-                    DocumentListEntry document;
-                    if(this.exists()) {
-                        // First, fetch entry using the resourceId
-                        URL url = new URL(this.getResourceFeed());
-                        document = this.getSession().getClient().getEntry(url, DocumentListEntry.class);
-                        this.setDocumentType(document.getType());
-                    }
-                    else {
-                        document = new DocumentListEntry();
-                        document.setTitle(new PlainTextConstruct(this.getName()));
-                    }
-                    StringBuilder feed;
-                    if(this.exists()) {
-                        // PUT /feeds/upload/create-session/default/private/full/document%3A12345 HTTP/1.1
-                        feed = new StringBuilder(this.getUpdateSessionFeed());
-                    }
-                    else {
-                        feed = new StringBuilder(this.getCreateSessionFeed());
-                    }
-                    // Convertible to Google Docs file type. To create a resumable upload request for an arbitrary
-                    // file upload, include the convert=false parameter on this initial upload request
-                    feed.append("?convert=").append(this.isConversionSupported()
-                            && Preferences.instance().getBoolean("google.docs.upload.convert"));
-                    if(this.isOcrSupported()) {
-                        // Image file type
-                        feed.append("&ocr=").append(Preferences.instance().getProperty("google.docs.upload.ocr"));
-                    }
-                    // To initiate a resumable upload session, send an HTTP POST request to the resumable-post link. The unique
-                    // upload URI will be used to upload the file chunks
-                    final Service.GDataRequest session;
-                    if(this.exists()) {
-                        session = this.getSession().getClient().createUpdateRequest(new URL(feed.toString()));
-                        session.setEtag(document.getEtag());
-                    }
-                    else {
-                        session = this.getSession().getClient().createInsertRequest(new URL(feed.toString()));
-                    }
-                    // Initialize a resumable media upload request.
-                    session.setHeader(GDataProtocol.Header.X_UPLOAD_CONTENT_TYPE, mime);
-                    session.setHeader(GDataProtocol.Header.X_UPLOAD_CONTENT_LENGTH, Long.toString(size));
-                    final URL location;
-                    try {
-                        this.getSession().getClient().writeRequestData(session, document);
-                        session.execute();
-                        location = new URL(session.getResponseHeader("Location"));
-                    }
-                    finally {
-                        session.end();
-                    }
-                    final Service.GDataRequest request;
-                    request = this.getSession().getClient().createRequest(Service.GDataRequest.RequestType.UPDATE,
-                            location, new ContentType(mime));
-                    request.setHeader("Content-Length", String.valueOf(size));
-                    if(this.exists()) {
-                        if(this.status().isResume()) {
-                            // Querying the status of an incomplete upload
-                            Service.GDataRequest status = this.getSession().getClient().createRequest(Service.GDataRequest.RequestType.UPDATE,
-                                    location, new ContentType(mime));
-                            // If your request is terminated prior to receiving an entry response from the server or
-                            // if you receive an HTTP 503 response from the server, you can query the
-                            // current status of the upload by issuing an empty PUT request on the unique upload URI
-                            status.setHeader("Content-Length", String.valueOf(0));
-                            status.setHeader("Content-Range", "bytes" + " " + "*/" + size);
-                            try {
-                                status.execute();
-                                final String header = status.getResponseHeader("Range");
-                                log.info("Content-Range reported by server:" + header);
-                                final long range = getNextByteIndexFromRangeHeader(header);
-                                request.setHeader("Content-Range", (this.status().isResume() ? range : 0)
-                                        + "-" + (size - 1)
-                                        + "/" + size
-                                );
-                            }
-                            catch(ServiceException e) {
-                                log.warn("Resume upload failed:" + e.getMessage());
-                                // Ignore several possible server errors. Reload instead.
-                                this.status().setResume(false);
-                            }
-                        }
-                    }
-                    if(request instanceof HttpGDataRequest) {
-                        // No internal buffering of request with a known content length
-                        // Use chunked upload with default chunk size.
-                        ((HttpGDataRequest) request).getConnection().setChunkedStreamingMode(0);
-                    }
                     in = getLocal().getInputStream();
-                    out = request.getRequestStream();
+                    out = this.write(check);
                     this.upload(out, in, throttle, listener);
-                    try {
-                        // Parse response for HTTP error message.
-                        request.execute();
-                    }
-                    catch(ServiceException e) {
-                        this.status().setComplete(false);
-                        throw e;
-                    }
-                    finally {
-                        request.end();
-                    }
-                    // The directory listing is no more current
-                    this.getParent().invalidate();
                 }
                 finally {
                     IOUtils.closeQuietly(in);
                     IOUtils.closeQuietly(out);
                 }
+                // The directory listing is no more current
+                this.getParent().invalidate();
             }
-        }
-        catch(ServiceException e) {
-            this.error("Upload failed", e);
         }
         catch(IOException e) {
             this.error("Upload failed", e);
+        }
+    }
+
+    @Override
+    public OutputStream write(boolean check) throws IOException {
+        if(check) {
+            this.getSession().check();
+        }
+        try {
+            final String mime = this.getLocal().getMimeType();
+            final long size = this.getLocal().attributes().getSize();
+
+            DocumentListEntry document;
+            if(this.exists()) {
+                // First, fetch entry using the resourceId
+                URL url = new URL(this.getResourceFeed());
+                document = this.getSession().getClient().getEntry(url, DocumentListEntry.class);
+                this.setDocumentType(document.getType());
+            }
+            else {
+                document = new DocumentListEntry();
+                document.setTitle(new PlainTextConstruct(this.getName()));
+            }
+            StringBuilder feed;
+            if(this.exists()) {
+                // PUT /feeds/upload/create-session/default/private/full/document%3A12345 HTTP/1.1
+                feed = new StringBuilder(this.getUpdateSessionFeed());
+            }
+            else {
+                feed = new StringBuilder(this.getCreateSessionFeed());
+            }
+            // Convertible to Google Docs file type. To create a resumable upload request for an arbitrary
+            // file upload, include the convert=false parameter on this initial upload request
+            feed.append("?convert=").append(this.isConversionSupported()
+                    && Preferences.instance().getBoolean("google.docs.upload.convert"));
+            if(this.isOcrSupported()) {
+                // Image file type
+                feed.append("&ocr=").append(Preferences.instance().getProperty("google.docs.upload.ocr"));
+            }
+            // To initiate a resumable upload session, send an HTTP POST request to the resumable-post link. The unique
+            // upload URI will be used to upload the file chunks
+            final Service.GDataRequest session;
+            if(this.exists()) {
+                session = this.getSession().getClient().createUpdateRequest(new URL(feed.toString()));
+                session.setEtag(document.getEtag());
+            }
+            else {
+                session = this.getSession().getClient().createInsertRequest(new URL(feed.toString()));
+            }
+            // Initialize a resumable media upload request.
+            session.setHeader(GDataProtocol.Header.X_UPLOAD_CONTENT_TYPE, mime);
+            session.setHeader(GDataProtocol.Header.X_UPLOAD_CONTENT_LENGTH, Long.toString(size));
+            final URL location;
+            try {
+                this.getSession().getClient().writeRequestData(session, document);
+                session.execute();
+                location = new URL(session.getResponseHeader("Location"));
+            }
+            finally {
+                session.end();
+            }
+            final Service.GDataRequest request;
+            request = this.getSession().getClient().createRequest(Service.GDataRequest.RequestType.UPDATE,
+                    location, new ContentType(mime));
+            request.setHeader("Content-Length", String.valueOf(size));
+            if(this.exists()) {
+                if(this.status().isResume()) {
+                    // Querying the status of an incomplete upload
+                    Service.GDataRequest status = this.getSession().getClient().createRequest(Service.GDataRequest.RequestType.UPDATE,
+                            location, new ContentType(mime));
+                    // If your request is terminated prior to receiving an entry response from the server or
+                    // if you receive an HTTP 503 response from the server, you can query the
+                    // current status of the upload by issuing an empty PUT request on the unique upload URI
+                    status.setHeader("Content-Length", String.valueOf(0));
+                    status.setHeader("Content-Range", "bytes" + " " + "*/" + size);
+                    try {
+                        status.execute();
+                        final String header = status.getResponseHeader("Range");
+                        log.info("Content-Range reported by server:" + header);
+                        final long range = getNextByteIndexFromRangeHeader(header);
+                        request.setHeader("Content-Range", (this.status().isResume() ? range : 0)
+                                + "-" + (size - 1)
+                                + "/" + size
+                        );
+                    }
+                    catch(ServiceException e) {
+                        log.warn("Resume upload failed:" + e.getMessage());
+                        // Ignore several possible server errors. Reload instead.
+                        this.status().setResume(false);
+                    }
+                }
+            }
+            if(request instanceof HttpGDataRequest) {
+                // No internal buffering of request with a known content length
+                // Use chunked upload with default chunk size.
+                ((HttpGDataRequest) request).getConnection().setChunkedStreamingMode(0);
+            }
+            final OutputStream out = request.getRequestStream();
+            return new OutputStream() {
+                @Override
+                public void close() throws IOException {
+                    try {
+                        try {
+                            // Parse response for HTTP error message.
+                            request.execute();
+                        }
+                        catch(ServiceException e) {
+                            IOException failure = new IOException(e.getMessage());
+                            failure.initCause(e);
+                            throw failure;
+                        }
+                        finally {
+                            request.end();
+                        }
+                    }
+                    finally {
+                        out.close();
+                    }
+                }
+
+                @Override
+                public void flush() throws IOException {
+                    out.flush();
+                }
+
+                @Override
+                public void write(byte[] b, int off, int len) throws IOException {
+                    out.write(b, off, len);
+                }
+
+                @Override
+                public void write(byte[] b) throws IOException {
+                    out.write(b);
+                }
+
+                @Override
+                public void write(int b) throws IOException {
+                    out.write(b);
+                }
+            };
+        }
+        catch(ServiceException e) {
+            IOException failure = new IOException(e.getMessage());
+            failure.initCause(e);
+            throw failure;
         }
     }
 
@@ -692,7 +750,6 @@ public class GDPath extends Path {
                         this.getName()));
 
                 children.addAll(this.list(new DocumentQuery(new URL(this.getFolderFeed()))));
-                this.getSession().setWorkdir(this);
             }
             catch(ServiceException e) {
                 log.warn("Listing directory failed:" + e.getMessage());

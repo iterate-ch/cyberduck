@@ -274,7 +274,6 @@ public class AzurePath extends CloudPath {
         }
     }
 
-
     @Override
     public boolean exists() {
         if(this.isRoot()) {
@@ -339,7 +338,6 @@ public class AzurePath extends CloudPath {
                         }
                     }
                 }
-                this.getSession().setWorkdir(this);
             }
             catch(StorageException e) {
                 log.warn("Listing directory failed:" + e.getMessage());
@@ -423,17 +421,21 @@ public class AzurePath extends CloudPath {
     }
 
     @Override
+    public InputStream read(boolean check) throws IOException {
+        if(check) {
+            this.getSession().check();
+        }
+        AzureSession.AzureContainer container = this.getSession().getContainer(this.getContainerName());
+        return container.getBlob(this.getKey());
+    }
+
+    @Override
     protected void download(BandwidthThrottle throttle, StreamListener listener, boolean check) {
         if(attributes().isFile()) {
             OutputStream out = null;
             InputStream in = null;
             try {
-                if(check) {
-                    this.getSession().check();
-                }
-
-                AzureSession.AzureContainer container = this.getSession().getContainer(this.getContainerName());
-                in = container.getBlob(this.getKey());
+                in = this.read(check);
                 if(null == in) {
                     throw new IOException("Unable opening data stream");
                 }
@@ -539,6 +541,14 @@ public class AzurePath extends CloudPath {
                 this.error("Upload failed", e);
             }
         }
+    }
+
+    @Override
+    public OutputStream write(boolean check) throws IOException {
+        if(check) {
+            this.getSession().check();
+        }
+        throw new UnsupportedOperationException();
     }
 
     @Override

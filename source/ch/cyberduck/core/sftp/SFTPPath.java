@@ -113,7 +113,6 @@ public class SFTPPath extends Path {
                     p.readAttributes(attributes);
                     children.add(p);
                 }
-                this.getSession().setWorkdir(this);
             }
             catch(IOException e) {
                 log.warn("Listing directory failed:" + e.getMessage());
@@ -423,31 +422,37 @@ public class SFTPPath extends Path {
     }
 
     @Override
+    public InputStream read(boolean check) throws IOException {
+        if(check) {
+            this.getSession().check();
+        }
+        InputStream in = null;
+        if(Preferences.instance().getProperty("ssh.transfer").equals(Protocol.SFTP.getIdentifier())) {
+            final SFTPv3FileHandle handle = this.getSession().sftp().openFileRO(this.getAbsolute());
+            in = new SFTPInputStream(handle);
+            if(status().isResume()) {
+                log.info("Skipping " + status().getCurrent() + " bytes");
+                final long skipped = in.skip(status().getCurrent());
+                if(skipped < status().getCurrent()) {
+                    throw new IOResumeException("Skipped " + skipped + " bytes instead of " + this.status().getCurrent());
+                }
+            }
+        }
+        if(Preferences.instance().getProperty("ssh.transfer").equals(Protocol.SCP.getIdentifier())) {
+            SCPClient scp = this.getSession().openScp();
+            scp.setCharset(this.getSession().getEncoding());
+            in = scp.get(this.getAbsolute());
+        }
+        return in;
+    }
+
+    @Override
     protected void download(BandwidthThrottle throttle, StreamListener listener, final boolean check) {
         if(this.attributes().isFile()) {
             InputStream in = null;
             OutputStream out = null;
-            SFTPv3FileHandle handle = null;
             try {
-                if(check) {
-                    this.getSession().check();
-                }
-                if(Preferences.instance().getProperty("ssh.transfer").equals(Protocol.SFTP.getIdentifier())) {
-                    handle = this.getSession().sftp().openFileRO(this.getAbsolute());
-                    in = new SFTPInputStream(handle);
-                    if(status().isResume()) {
-                        log.info("Skipping " + status().getCurrent() + " bytes");
-                        final long skipped = in.skip(status().getCurrent());
-                        if(skipped < status().getCurrent()) {
-                            throw new IOResumeException("Skipped " + skipped + " bytes instead of " + this.status().getCurrent());
-                        }
-                    }
-                }
-                if(Preferences.instance().getProperty("ssh.transfer").equals(Protocol.SCP.getIdentifier())) {
-                    SCPClient scp = this.getSession().openScp();
-                    scp.setCharset(this.getSession().getEncoding());
-                    in = scp.get(this.getAbsolute());
-                }
+                in = this.read(check);
                 out = this.getLocal().getOutputStream(this.status().isResume());
                 // No parallel requests if the file size is smaller than the buffer.
                 this.getSession().sftp().setRequestParallelism(
@@ -459,18 +464,8 @@ public class SFTPPath extends Path {
                 this.error("Download failed", e);
             }
             finally {
-                try {
-                    if(handle != null) {
-                        this.getSession().sftp().closeFile(handle);
-                    }
-                }
-                catch(IOException e) {
-                    log.error(e.getMessage());
-                }
-                finally {
-                    IOUtils.closeQuietly(in);
-                    IOUtils.closeQuietly(out);
-                }
+                IOUtils.closeQuietly(in);
+                IOUtils.closeQuietly(out);
             }
         }
     }
@@ -494,70 +489,79 @@ public class SFTPPath extends Path {
     }
 
     @Override
+    public OutputStream write(final boolean check) throws IOException {
+        if(check) {
+            this.getSession().check();
+        }
+        final String mode = Preferences.instance().getProperty("ssh.transfer");
+        if(mode.equals(Protocol.SFTP.getIdentifier())) {
+            SFTPv3FileHandle handle;
+            try {
+                SFTPv3FileAttributes attr = new SFTPv3FileAttributes();
+                if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
+                    int t = (int) (this.attributes().getModificationDate() / 1000);
+                    // We must both set the accessed and modified time. See AttribFlags.SSH_FILEXFER_ATTR_V3_ACMODTIME
+                    attr.atime = t;
+                    attr.mtime = t;
+                }
+                if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
+                    // We do set the permissions here as otherwise we might have an empty mask for
+                    // interrupted file transfers
+                    attr.permissions = Integer.parseInt(this.attributes().getPermission().getOctalString(), 8);
+                }
+                if(status().isResume() && this.exists()) {
+                    handle = this.getSession().sftp().openFile(this.getAbsolute(),
+                            SFTPv3Client.SSH_FXF_WRITE | SFTPv3Client.SSH_FXF_APPEND, attr);
+                }
+                else {
+                    handle = this.getSession().sftp().openFile(this.getAbsolute(),
+                            SFTPv3Client.SSH_FXF_CREAT | SFTPv3Client.SSH_FXF_TRUNC | SFTPv3Client.SSH_FXF_WRITE, attr);
+                }
+            }
+            catch(SFTPException ignore) {
+                // We might not be able to change the attributes if we are
+                // not the owner of the file; but then we still want to proceed as we
+                // might have group write privileges
+                log.warn(ignore.getMessage());
+
+                if(status().isResume() && this.exists()) {
+                    handle = this.getSession().sftp().openFile(this.getAbsolute(),
+                            SFTPv3Client.SSH_FXF_WRITE | SFTPv3Client.SSH_FXF_APPEND, null);
+                }
+                else {
+                    handle = this.getSession().sftp().openFile(this.getAbsolute(),
+                            SFTPv3Client.SSH_FXF_CREAT | SFTPv3Client.SSH_FXF_TRUNC | SFTPv3Client.SSH_FXF_WRITE, null);
+                }
+            }
+            OutputStream out = new SFTPOutputStream(handle);
+            if(status().isResume()) {
+                long skipped = ((SFTPOutputStream) out).skip(status().getCurrent());
+                log.info("Skipping " + skipped + " bytes");
+                if(skipped < this.status().getCurrent()) {
+                    throw new IOResumeException("Skipped " + skipped + " bytes instead of " + this.status().getCurrent());
+                }
+            }
+            return out;
+        }
+        else if(mode.equals(Protocol.SCP.getIdentifier())) {
+            SCPClient scp = this.getSession().openScp();
+            scp.setCharset(this.getSession().getEncoding());
+            return scp.put(this.getName(), this.getLocal().attributes().getSize(),
+                    this.getParent().getAbsolute(),
+                    "0" + this.attributes().getPermission().getOctalString());
+        }
+        throw new IOException("Unknown transfer mode:" + mode);
+    }
+
+    @Override
     protected void upload(BandwidthThrottle throttle, StreamListener listener, final boolean check) {
         if(this.attributes().isFile()) {
             InputStream in = null;
             OutputStream out = null;
-            SFTPv3FileHandle handle = null;
             try {
-                if(check) {
-                    this.getSession().check();
-                }
                 in = this.getLocal().getInputStream();
-                if(Preferences.instance().getProperty("ssh.transfer").equals(Protocol.SFTP.getIdentifier())) {
-                    try {
-                        SFTPv3FileAttributes attr = new SFTPv3FileAttributes();
-                        if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
-                            int t = (int) (this.attributes().getModificationDate() / 1000);
-                            // We must both set the accessed and modified time. See AttribFlags.SSH_FILEXFER_ATTR_V3_ACMODTIME
-                            attr.atime = t;
-                            attr.mtime = t;
-                        }
-                        if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
-                            // We do set the permissions here as otherwise we might have an empty mask for
-                            // interrupted file transfers
-                            attr.permissions = Integer.parseInt(this.attributes().getPermission().getOctalString(), 8);
-                        }
-                        if(status().isResume() && this.exists()) {
-                            handle = this.getSession().sftp().openFile(this.getAbsolute(),
-                                    SFTPv3Client.SSH_FXF_WRITE | SFTPv3Client.SSH_FXF_APPEND, attr);
-                        }
-                        else {
-                            handle = this.getSession().sftp().openFile(this.getAbsolute(),
-                                    SFTPv3Client.SSH_FXF_CREAT | SFTPv3Client.SSH_FXF_TRUNC | SFTPv3Client.SSH_FXF_WRITE, attr);
-                        }
-                    }
-                    catch(SFTPException ignore) {
-                        // We might not be able to change the attributes if we are
-                        // not the owner of the file; but then we still want to proceed as we
-                        // might have group write privileges
-                        log.warn(ignore.getMessage());
+                out = this.write(check);
 
-                        if(status().isResume() && this.exists()) {
-                            handle = this.getSession().sftp().openFile(this.getAbsolute(),
-                                    SFTPv3Client.SSH_FXF_WRITE | SFTPv3Client.SSH_FXF_APPEND, null);
-                        }
-                        else {
-                            handle = this.getSession().sftp().openFile(this.getAbsolute(),
-                                    SFTPv3Client.SSH_FXF_CREAT | SFTPv3Client.SSH_FXF_TRUNC | SFTPv3Client.SSH_FXF_WRITE, null);
-                        }
-                    }
-                    out = new SFTPOutputStream(handle);
-                    if(status().isResume()) {
-                        long skipped = ((SFTPOutputStream) out).skip(status().getCurrent());
-                        log.info("Skipping " + skipped + " bytes");
-                        if(skipped < this.status().getCurrent()) {
-                            throw new IOResumeException("Skipped " + skipped + " bytes instead of " + this.status().getCurrent());
-                        }
-                    }
-                }
-                else if(Preferences.instance().getProperty("ssh.transfer").equals(Protocol.SCP.getIdentifier())) {
-                    SCPClient scp = this.getSession().openScp();
-                    scp.setCharset(this.getSession().getEncoding());
-                    out = scp.put(this.getName(), this.getLocal().attributes().getSize(),
-                            this.getParent().getAbsolute(),
-                            "0" + this.attributes().getPermission().getOctalString());
-                }
                 // No parallel requests if the file size is smaller than the buffer.
                 this.getSession().sftp().setRequestParallelism(
                         (int) (this.attributes().getSize() / Preferences.instance().getInteger("connection.chunksize")) + 1
@@ -570,18 +574,8 @@ public class SFTPPath extends Path {
                 this.error("Upload failed", e);
             }
             finally {
-                try {
-                    if(handle != null) {
-                        this.getSession().sftp().closeFile(handle);
-                    }
-                }
-                catch(IOException e) {
-                    log.error(e.getMessage());
-                }
-                finally {
-                    IOUtils.closeQuietly(in);
-                    IOUtils.closeQuietly(out);
-                }
+                IOUtils.closeQuietly(in);
+                IOUtils.closeQuietly(out);
             }
         }
     }

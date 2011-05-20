@@ -378,10 +378,6 @@ public abstract class Session implements TranscriptListener {
         return host.getMaxConnections();
     }
 
-    public void setWorkdir(Path workdir) throws IOException {
-        ;
-    }
-
     /**
      * @param workdir The workdir to create query
      * @return True if making directories is possible.

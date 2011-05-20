@@ -351,7 +351,6 @@ public class DAVPath extends Path {
         }
     }
 
-    @Override
     public InputStream read(boolean check) throws IOException {
         if(check) {
             this.getSession().check();
@@ -448,6 +447,11 @@ public class DAVPath extends Path {
                 this.error("Upload failed", e);
             }
         }
+    }
+
+    @Override
+    public OutputStream write(boolean check) throws IOException {
+        throw new UnsupportedOperationException();
     }
 
     @Override

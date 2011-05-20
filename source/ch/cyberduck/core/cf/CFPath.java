@@ -267,7 +267,6 @@ public class CFPath extends CloudPath {
                     }
                     while(list.size() == limit);
                 }
-                this.getSession().setWorkdir(this);
             }
             catch(HttpException e) {
                 log.warn("Listing directory failed:" + e.getMessage());
@@ -288,15 +287,27 @@ public class CFPath extends CloudPath {
     }
 
     @Override
+    public InputStream read(boolean check) throws IOException {
+        if(check) {
+            this.getSession().check();
+        }
+        try {
+            return this.getSession().getClient().getObjectAsStream(this.getContainerName(), this.getKey());
+        }
+        catch(HttpException e) {
+            IOException failure = new IOException(e.getMessage());
+            failure.initCause(e);
+            throw failure;
+        }
+    }
+
+    @Override
     protected void download(final BandwidthThrottle throttle, final StreamListener listener, boolean check) {
         if(attributes().isFile()) {
             OutputStream out = null;
             InputStream in = null;
             try {
-                if(check) {
-                    this.getSession().check();
-                }
-                in = this.getSession().getClient().getObjectAsStream(this.getContainerName(), this.getKey());
+                in = this.read(check);
                 if(null == in) {
                     throw new IOException("Unable opening data stream");
                 }
@@ -304,9 +315,6 @@ public class CFPath extends CloudPath {
                 status.setResume(false);
                 out = this.getLocal().getOutputStream(status.isResume());
                 this.download(in, out, throttle, listener);
-            }
-            catch(HttpException e) {
-                this.error("Download failed", e);
             }
             catch(IOException e) {
                 this.error("Download failed", e);
@@ -430,8 +438,6 @@ public class CFPath extends CloudPath {
                         }
                     }
                 }
-                // The directory listing is no more current
-                this.getParent().invalidate();
             }
             catch(HttpException e) {
                 this.error("Upload failed", e);
@@ -440,6 +446,14 @@ public class CFPath extends CloudPath {
                 this.error("Upload failed", e);
             }
         }
+    }
+
+    @Override
+    public OutputStream write(boolean check) throws IOException {
+        if(check) {
+            this.getSession().check();
+        }
+        throw new UnsupportedOperationException();
     }
 
     @Override

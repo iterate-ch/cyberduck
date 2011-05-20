@@ -439,36 +439,43 @@ public class S3Path extends CloudPath {
     }
 
     @Override
+    public InputStream read(boolean check) throws IOException {
+        if(check) {
+            this.getSession().check();
+        }
+        try {
+            if(this.attributes().isDuplicate()) {
+                return this.getSession().getClient().getVersionedObject(attributes().getVersionId(),
+                        this.getContainerName(), this.getKey(),
+                        null, // ifModifiedSince
+                        null, // ifUnmodifiedSince
+                        null, // ifMatch
+                        null, // ifNoneMatch
+                        this.status().isResume() ? this.status().getCurrent() : null, null).getDataInputStream();
+            }
+            return this.getSession().getClient().getObject(this.getContainerName(), this.getKey(),
+                    null, // ifModifiedSince
+                    null, // ifUnmodifiedSince
+                    null, // ifMatch
+                    null, // ifNoneMatch
+                    this.status().isResume() ? this.status().getCurrent() : null, null).getDataInputStream();
+        }
+        catch(ServiceException e) {
+            IOException failure = new IOException(e.getMessage());
+            failure.initCause(e);
+            throw failure;
+        }
+    }
+
+    @Override
     protected void download(BandwidthThrottle throttle, final StreamListener listener, final boolean check) {
         if(attributes().isFile()) {
             OutputStream out = null;
             InputStream in = null;
             try {
-                if(check) {
-                    this.getSession().check();
-                }
-                if(this.attributes().isDuplicate()) {
-                    in = this.getSession().getClient().getVersionedObject(attributes().getVersionId(),
-                            this.getContainerName(), this.getKey(),
-                            null, // ifModifiedSince
-                            null, // ifUnmodifiedSince
-                            null, // ifMatch
-                            null, // ifNoneMatch
-                            this.status().isResume() ? this.status().getCurrent() : null, null).getDataInputStream();
-                }
-                else {
-                    in = this.getSession().getClient().getObject(this.getContainerName(), this.getKey(),
-                            null, // ifModifiedSince
-                            null, // ifUnmodifiedSince
-                            null, // ifMatch
-                            null, // ifNoneMatch
-                            this.status().isResume() ? this.status().getCurrent() : null, null).getDataInputStream();
-                }
+                in = this.read(check);
                 out = this.getLocal().getOutputStream(this.status().isResume());
                 this.download(in, out, throttle, listener);
-            }
-            catch(ServiceException e) {
-                this.error("Download failed", e);
             }
             catch(IOException e) {
                 this.error("Download failed", e);
@@ -870,32 +877,32 @@ public class S3Path extends CloudPath {
                     getSession().getClient().putObjectWithRequestEntityImpl(
                             getContainerName(), part,
                             new InputStreamEntity(in,
-                            length) {
+                                    length) {
 
-                        private boolean consumed = false;
+                                private boolean consumed = false;
 
-                        @Override
-                        public Header getContentType() {
-                            return new BasicHeader(HTTP.CONTENT_TYPE, getLocal().getMimeType());
-                        }
+                                @Override
+                                public Header getContentType() {
+                                    return new BasicHeader(HTTP.CONTENT_TYPE, getLocal().getMimeType());
+                                }
 
-                        @Override
-                        public void writeTo(OutputStream out) throws IOException {
-                            S3Path.this.upload(out, in, throttle, listener, offset, length);
-                            consumed = true;
-                        }
+                                @Override
+                                public void writeTo(OutputStream out) throws IOException {
+                                    S3Path.this.upload(out, in, throttle, listener, offset, length);
+                                    consumed = true;
+                                }
 
-                        @Override
-                        public boolean isStreaming() {
-                            return !consumed;
-                        }
+                                @Override
+                                public boolean isStreaming() {
+                                    return !consumed;
+                                }
 
-                        @Override
-                        public void consumeContent() throws IOException {
-                            this.consumed = true;
-                            super.consumeContent();
-                        }
-                    }, requestParameters);
+                                @Override
+                                public void consumeContent() throws IOException {
+                                    this.consumed = true;
+                                    super.consumeContent();
+                                }
+                            }, requestParameters);
                 }
                 finally {
                     IOUtils.closeQuietly(in);
@@ -910,6 +917,14 @@ public class S3Path extends CloudPath {
                         part.getETag(), part.getContentLength());
             }
         });
+    }
+
+    @Override
+    public OutputStream write(boolean check) throws IOException {
+        if(check) {
+            this.getSession().check();
+        }
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -976,7 +991,6 @@ public class S3Path extends CloudPath {
                     }
 
                 }
-                this.getSession().setWorkdir(this);
             }
             catch(ServiceException e) {
                 log.warn("Listing directory failed:" + e.getMessage());
