@@ -74,8 +74,8 @@ public class FTPSession extends SSLSession {
     }
 
     @Override
-    protected Path mount(Path directory) throws IOException {
-        final Path workdir = super.mount(directory);
+    public Path mount() {
+        final Path workdir = super.mount();
         if(Preferences.instance().getBoolean("ftp.timezone.auto")) {
             if(null == host.getTimezone()) {
                 // No custom timezone set
@@ -148,7 +148,7 @@ public class FTPSession extends SSLSession {
      * date in the directory listing from the UTC timestamp returned from <code>MDTM</code>
      * if available. Result is error prone because of additional daylight saving offsets.
      */
-    private List<TimeZone> calculateTimezone(Path workdir) throws IOException {
+    private List<TimeZone> calculateTimezone(Path workdir) {
         // Determine the server offset from UTC
         final AttributedList<Path> list = workdir.children();
         if(list.isEmpty()) {

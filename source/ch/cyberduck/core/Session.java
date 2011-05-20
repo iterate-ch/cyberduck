@@ -259,34 +259,15 @@ public abstract class Session implements TranscriptListener {
      * @return Null if mount fails. Check the error listener for details.
      */
     public Path mount() {
-        try {
-            // Working directory returned by server.
-            return this.mount(this.home());
-        }
-        catch(IOException e) {
-            this.interrupt();
-        }
-        // Mount failed
-        return null;
+        return this.mount(Preferences.instance().getBoolean("disk.mount"));
     }
 
     /**
-     * Connect to the remote host and mount the home directory
-     *
-     * @param directory Default working directory
-     * @return Null if mount fails. Check the error listener for details.
-     */
-    protected Path mount(Path directory) throws IOException {
-        return this.mount(directory, Preferences.instance().getBoolean("disk.mount"));
-    }
-
-    /**
-     * @param directory  Default working directory
      * @param filesystem Mount as filesystem
      * @return Null if mount fails. Check the error listener for details.
      * @throws IOException
      */
-    protected Path mount(Path directory, boolean filesystem) throws IOException {
+    protected Path mount(boolean filesystem) {
         this.message(MessageFormat.format(Locale.localizedString("Mounting {0}", "Status"),
                 host.getHostname()));
         try {
@@ -294,6 +275,7 @@ public abstract class Session implements TranscriptListener {
             if(!this.isConnected()) {
                 return null;
             }
+            Path directory = this.home();
             // Retrieve direcotry listing of default path
             if(!directory.children().attributes().isReadable()) {
                 // The default path does not exist or is not readable due to possible permission issues
@@ -305,6 +287,10 @@ public abstract class Session implements TranscriptListener {
                 fs.mount(this);
             }
             return directory;
+        }
+        catch(IOException e) {
+            // Connect failed
+            return null;
         }
         finally {
             // Reset current working directory in bookmark
@@ -329,11 +315,11 @@ public abstract class Session implements TranscriptListener {
                 Path workdir = this.workdir();
                 if(host.getDefaultPath().startsWith(Path.HOME)) {
                     // Relative path to the home directory
-                    return PathFactory.createPath(this, workdir.getAbsolute(),  host.getDefaultPath().substring(1), Path.DIRECTORY_TYPE);
+                    return PathFactory.createPath(this, workdir.getAbsolute(), host.getDefaultPath().substring(1), Path.DIRECTORY_TYPE);
                 }
                 else {
                     // Relative path
-                    return PathFactory.createPath(this, workdir.getAbsolute(),  host.getDefaultPath(), Path.DIRECTORY_TYPE);
+                    return PathFactory.createPath(this, workdir.getAbsolute(), host.getDefaultPath(), Path.DIRECTORY_TYPE);
                 }
             }
         }
