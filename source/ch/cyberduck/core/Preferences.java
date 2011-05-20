@@ -613,7 +613,6 @@ public abstract class Preferences {
          * NTLM Windows Domain
          */
         defaults.put("webdav.ntlm.domain", StringUtils.EMPTY);
-        defaults.put("webdav.followRedirects", String.valueOf(true));
 
         /**
          * Maximum concurrent connections to the same host

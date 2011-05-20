@@ -1,21 +1,22 @@
 package ch.cyberduck.core.dav;
 
 /*
- *  Copyright (c) 2008 David Kocher. All rights reserved.
- *  http://cyberduck.ch/
+ * Copyright (c) 2002-2011 David Kocher. All rights reserved.
  *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
+ * http://cyberduck.ch/
  *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
- *  Bug fixes, suggestions and comments should be sent to:
- *  dkocher@cyberduck.ch
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * Bug fixes, suggestions and comments should be sent to:
+ * dkocher@cyberduck.ch
  */
 
 import ch.cyberduck.core.*;
@@ -23,18 +24,26 @@ import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.IOResumeException;
 
-import org.apache.commons.httpclient.methods.InputStreamRequestEntity;
 import org.apache.commons.io.IOUtils;
+import org.apache.http.Header;
+import org.apache.http.HttpHeaders;
+import org.apache.http.entity.AbstractHttpEntity;
+import org.apache.http.entity.InputStreamEntity;
+import org.apache.http.message.BasicHeader;
+import org.apache.http.protocol.HTTP;
 import org.apache.log4j.Logger;
-import org.apache.webdav.lib.WebdavResource;
-import org.apache.webdav.lib.methods.DepthSupport;
+
+import com.googlecode.sardine.DavResource;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.text.MessageFormat;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @version $Id: $
@@ -103,11 +112,7 @@ public class DAVPath extends Path {
                 this.getSession().message(MessageFormat.format(Locale.localizedString("Getting size of {0}", "Status"),
                         this.getName()));
 
-                this.getSession().getClient().setPath(this.attributes().isDirectory() ?
-                        this.getAbsolute() + String.valueOf(Path.DELIMITER) : this.getAbsolute());
-
-                this.getSession().getClient().setProperties(WebdavResource.BASIC, DepthSupport.DEPTH_1);
-                attributes().setSize(this.getSession().getClient().getGetContentLength());
+                this.readAttributes();
             }
             catch(IOException e) {
                 this.error("Cannot read file attributes", e);
@@ -117,20 +122,38 @@ public class DAVPath extends Path {
 
     @Override
     public void readTimestamp() {
-        try {
-            this.getSession().check();
-            this.getSession().message(MessageFormat.format(Locale.localizedString("Getting timestamp of {0}", "Status"),
-                    this.getName()));
+        if(this.attributes().isFile()) {
+            try {
+                this.getSession().check();
+                this.getSession().message(MessageFormat.format(Locale.localizedString("Getting timestamp of {0}", "Status"),
+                        this.getName()));
 
-            this.getSession().getClient().setPath(this.attributes().isDirectory() ?
-                    this.getAbsolute() + String.valueOf(Path.DELIMITER) : this.getAbsolute());
+                this.readAttributes();
+            }
+            catch(IOException e) {
+                this.error("Cannot read file attributes", e);
+            }
+        }
+    }
 
-            this.getSession().getClient().setProperties(WebdavResource.BASIC, DepthSupport.DEPTH_1);
-            attributes().setModificationDate(this.getSession().getClient().getGetLastModified());
+    private void readAttributes() throws IOException {
+        final List<DavResource> resources = this.getSession().getClient().getResources(this.toURL());
+        for(final DavResource resource : resources) {
+            this.readAttributes(resource);
         }
-        catch(IOException e) {
-            this.error("Cannot read file attributes", e);
+    }
+
+    private void readAttributes(DavResource resource) {
+        if(resource.getModified() != null) {
+            this.attributes().setModificationDate(resource.getModified().getTime());
         }
+        if(resource.getCreation() != null) {
+            this.attributes().setCreationDate(resource.getCreation().getTime());
+        }
+        if(resource.getContentLength() != null) {
+            this.attributes().setSize(resource.getContentLength());
+        }
+        this.attributes().setChecksum(resource.getEtag());
     }
 
     @Override
@@ -141,9 +164,7 @@ public class DAVPath extends Path {
         if(this.attributes().isDirectory()) {
             // Parent directory may not be accessible. Issue #5662
             try {
-                this.getSession().getClient().setPath(this.attributes().isDirectory() ?
-                        this.getAbsolute() + String.valueOf(Path.DELIMITER) : this.getAbsolute());
-                return this.getSession().getClient().exists();
+                return this.getSession().getClient().exists(this.toURL());
             }
             catch(IOException e) {
                 this.error("Cannot read file attributes", e);
@@ -159,9 +180,7 @@ public class DAVPath extends Path {
             this.getSession().message(MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),
                     this.getName()));
 
-            if(!this.getSession().getClient().deleteMethod(this.getAbsolute())) {
-                throw new IOException(this.getSession().getClient().getStatusMessage());
-            }
+            this.getSession().getClient().delete(this.toURL());
             // The directory listing is no more current
             this.getParent().invalidate();
         }
@@ -178,35 +197,18 @@ public class DAVPath extends Path {
                 this.getSession().message(MessageFormat.format(Locale.localizedString("Listing directory {0}", "Status"),
                         this.getName()));
 
-                this.getSession().setWorkdir(this);
-                this.getSession().getClient().setContentType("text/xml");
-                WebdavResource[] resources = this.getSession().getClient().listWebdavResources();
+                List<DavResource> resources = this.getSession().getClient().getResources(this.toURL());
 
-                for(final WebdavResource resource : resources) {
-                    if(null == resource.getResourceType()) {
-                        log.warn("Skipping unknown resource type:" + resource);
-                        continue;
-                    }
-                    try {
-                        // Try to parse as RFC 2396
-                        URI uri = new URI(new String(resource.getHttpURL().getRawURI()));
-                        Path p = PathFactory.createPath(this.getSession(), uri.getPath(),
-                                resource.getResourceType().isCollection() ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
-                        p.setParent(this);
-                        p.attributes().setOwner(resource.getOwner());
-                        if(resource.getGetLastModified() > 0) {
-                            p.attributes().setModificationDate(resource.getGetLastModified());
-                        }
-                        if(resource.getCreationDate() > 0) {
-                            p.attributes().setCreationDate(resource.getCreationDate());
-                        }
-                        p.attributes().setSize(resource.getGetContentLength());
+                for(final DavResource resource : resources) {
+                    // Try to parse as RFC 2396
+                    final URI uri = resource.getHref();
+                    DAVPath p = (DAVPath)PathFactory.createPath(this.getSession(), uri.getPath(),
+                            resource.isDirectory() ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
+                    p.setParent(this);
 
-                        children.add(p);
-                    }
-                    catch(URISyntaxException e) {
-                        log.error("Failure parsing URI:" + e.getMessage());
-                    }
+                    p.readAttributes(resource);
+
+                    children.add(p);
                 }
             }
             catch(IOException e) {
@@ -228,10 +230,8 @@ public class DAVPath extends Path {
                 this.getSession().message(MessageFormat.format(Locale.localizedString("Making directory {0}", "Status"),
                         this.getName()));
 
-                this.getSession().getClient().setContentType("text/xml");
-                if(!this.getSession().getClient().mkcolMethod(this.getAbsolute())) {
-                    throw new IOException(this.getSession().getClient().getStatusMessage());
-                }
+                this.getSession().getClient().createDirectory(this.toURL());
+
                 this.cache().put(this.getReference(), AttributedList.<Path>emptyList());
                 // The directory listing is no more current
                 this.getParent().invalidate();
@@ -257,6 +257,46 @@ public class DAVPath extends Path {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * @return Modifiable HTTP header metatdata key and values
+     */
+    public void readMetadata() {
+        if(attributes().isFile()) {
+            try {
+                this.getSession().check();
+                this.getSession().message(MessageFormat.format(Locale.localizedString("Reading metadata of {0}", "Status"),
+                        this.getName()));
+
+                List<DavResource> resources = this.getSession().getClient().getResources(this.toURL());
+                for(DavResource resource : resources) {
+                    this.attributes().setMetadata(resource.getCustomProps());
+                }
+            }
+            catch(IOException e) {
+                this.error("Cannot read file attributes", e);
+            }
+        }
+    }
+
+    public void writeMetadata(Map<String, String> meta) {
+        if(attributes().isFile()) {
+            try {
+                this.getSession().check();
+                this.getSession().message(MessageFormat.format(Locale.localizedString("Writing metadata of {0}", "Status"),
+                        this.getName()));
+
+                this.getSession().getClient().setCustomProps(this.toURL(),
+                        meta, Collections.<java.lang.String>emptyList());
+            }
+            catch(IOException e) {
+                this.error("Cannot write file attributes", e);
+            }
+            finally {
+                this.attributes().clear(false, false, false, true);
+            }
+        }
+    }
+
     @Override
     public void rename(AbstractPath renamed) {
         try {
@@ -264,9 +304,8 @@ public class DAVPath extends Path {
             this.getSession().message(MessageFormat.format(Locale.localizedString("Renaming {0} to {1}", "Status"),
                     this.getName(), renamed.getName()));
 
-            if(!this.getSession().getClient().moveMethod(this.getAbsolute(), renamed.getAbsolute())) {
-                throw new IOException(this.getSession().getClient().getStatusMessage());
-            }
+            this.getSession().getClient().move(this.toURL(), renamed.toURL());
+
             // The directory listing of the target is no more current
             renamed.getParent().invalidate();
             // The directory listing of the source is no more current
@@ -286,10 +325,8 @@ public class DAVPath extends Path {
                 this.getSession().message(MessageFormat.format(Locale.localizedString("Copying {0} to {1}", "Status"),
                         this.getName(), copy));
 
-                if(this.attributes().isFile()) {
-                    if(!this.getSession().getClient().copyMethod(this.getAbsolute(), copy.getAbsolute())) {
-                        throw new IOException(this.getSession().getClient().getStatusMessage());
-                    }
+                if(attributes().isFile()) {
+                    this.getSession().getClient().copy(this.toURL(), copy.toURL());
                 }
                 else if(this.attributes().isDirectory()) {
                     copy.mkdir();
@@ -315,23 +352,24 @@ public class DAVPath extends Path {
     }
 
     @Override
+    public InputStream read(boolean check) throws IOException {
+        if(check) {
+            this.getSession().check();
+        }
+        Map<String, String> headers = new HashMap<String, String>();
+        if(this.status().isResume()) {
+            headers.put(HttpHeaders.RANGE, "bytes=" + this.status().getCurrent() + "-");
+        }
+        return this.getSession().getClient().get(this.toURL(), headers);
+    }
+
+    @Override
     protected void download(final BandwidthThrottle throttle, final StreamListener listener, final boolean check) {
         if(attributes().isFile()) {
             OutputStream out = null;
             InputStream in = null;
             try {
-                if(check) {
-                    this.getSession().check();
-                }
-                if(this.status().isResume()) {
-                    this.getSession().getClient().addRequestHeader("Range", "bytes=" + this.status().getCurrent() + "-");
-                }
-                this.getSession().getClient().addRequestHeader("Accept-Encoding", "gzip");
-                in = this.getSession().getClient().getMethodData(this.getAbsolute());
-                // Content-Range header in response not found
-                if(!this.getSession().getClient().isResume()) {
-                    this.status().setResume(false);
-                }
+                in = this.read(check);
                 out = this.getLocal().getOutputStream(this.status().isResume());
                 this.download(in, out, throttle, listener);
             }
@@ -355,8 +393,10 @@ public class DAVPath extends Path {
                 final InputStream in = this.getLocal().getInputStream();
                 try {
                     final Status status = this.status();
+                    Map<String, String> headers = new HashMap<String, String>();
+                    headers.put(HTTP.EXPECT_DIRECTIVE, HTTP.EXPECT_CONTINUE);
                     if(status.isResume()) {
-                        this.getSession().getClient().addRequestHeader("Content-Range", "bytes "
+                        headers.put(HttpHeaders.CONTENT_RANGE, "bytes "
                                 + status.getCurrent()
                                 + "-" + (this.getLocal().attributes().getSize() - 1)
                                 + "/" + this.getLocal().attributes().getSize()
@@ -367,17 +407,35 @@ public class DAVPath extends Path {
                             throw new IOResumeException("Skipped " + skipped + " bytes instead of " + status.getCurrent());
                         }
                     }
-                    if(!this.getSession().getClient().putMethod(this.getAbsolute(),
-                            new InputStreamRequestEntity(in, this.getLocal().attributes().getSize() - status.getCurrent(),
-                                    this.getLocal().getMimeType()) {
-                                @Override
-                                public void writeRequest(OutputStream out) throws IOException {
-                                    DAVPath.this.upload(out, in, throttle, listener);
-                                }
-                            })) {
-                        // Upload failed
-                        throw new IOException(this.getSession().getClient().getStatusMessage());
-                    }
+                    final AbstractHttpEntity entity = new InputStreamEntity(in,
+                            getLocal().attributes().getSize() - status.getCurrent()) {
+
+                        private boolean consumed = false;
+
+                        @Override
+                        public Header getContentType() {
+                            return new BasicHeader(HTTP.CONTENT_TYPE, getLocal().getMimeType());
+                        }
+
+                        @Override
+                        public void writeTo(OutputStream out) throws IOException {
+                            DAVPath.this.upload(out, in, throttle, listener);
+                            consumed = true;
+                        }
+
+                        @Override
+                        public boolean isStreaming() {
+                            return !consumed;
+                        }
+
+                        @Override
+                        public void consumeContent() throws IOException {
+                            this.consumed = true;
+                            super.consumeContent();
+                        }
+                    };
+                    this.getSession().getClient().put(this.toURL(), entity, headers);
+
                     // The directory listing is no more current
                     this.getParent().invalidate();
                 }
@@ -386,9 +444,18 @@ public class DAVPath extends Path {
                 }
             }
             catch(IOException e) {
+                this.status().setComplete(false);
                 this.error("Upload failed", e);
             }
         }
+    }
+
+    @Override
+    public String toURL() {
+        if(this.attributes().isDirectory()) {
+            return super.toURL() + Path.DELIMITER;
+        }
+        return super.toURL();
     }
 
     @Override

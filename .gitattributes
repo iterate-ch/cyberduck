@@ -1178,7 +1178,6 @@ lib/cloudfiles-1.8.1.jar -text
 lib/cloudfiles.properties -text
 lib/commons-codec-1.4.jar -text
 lib/commons-collections-3.2.1.jar -text
-lib/commons-httpclient-3.1.jar -text
 lib/commons-io-2.0.1.jar -text
 lib/commons-lang-2.4.jar -text
 lib/commons-logging-1.1.1.jar -text
@@ -1204,7 +1203,6 @@ lib/httpcore-4.1.jar -text
 lib/httpmime-4.1.1.jar -text
 lib/icu4j-module-4.4.1.1.jar -text
 lib/jakarta-oro-2.0.8.jar -text
-lib/jakarta-slide-webdavlib-2.2-dev.jar -text
 lib/java-xmlbuilder-0.4.jar -text
 lib/jaxen-1.1.1.jar -text
 lib/jdom-1.1.jar -text
@@ -1849,7 +1847,6 @@ source/ch/cyberduck/core/cloudfront/CloudFrontDistributionConfiguration.java -te
 source/ch/cyberduck/core/collections/IndexedLinkedList.cs -text
 source/ch/cyberduck/core/collections/LRUCache.cs -text
 source/ch/cyberduck/core/dav/DAVPath.java -text
-source/ch/cyberduck/core/dav/DAVResource.java -text
 source/ch/cyberduck/core/dav/DAVSession.java -text
 source/ch/cyberduck/core/dropbox/DropboxPath.java -text
 source/ch/cyberduck/core/dropbox/DropboxSession.java -text
@@ -1865,9 +1862,7 @@ source/ch/cyberduck/core/ftp/parser/CommonUnixFTPEntryParser.java -text
 source/ch/cyberduck/core/ftp/parser/LaxUnixFTPEntryParser.java -text
 source/ch/cyberduck/core/ftp/parser/RumpusFTPEntryParser.java -text
 source/ch/cyberduck/core/ftp/parser/TrellixFTPEntryParser.java -text
-source/ch/cyberduck/core/http/HTTP3Session.java -text
 source/ch/cyberduck/core/http/HTTP4Session.java -text
-source/ch/cyberduck/core/http/StickyHostConfiguration.java -text
 source/ch/cyberduck/core/idisk/IDiskPath.java -text
 source/ch/cyberduck/core/idisk/IDiskSession.java -text
 source/ch/cyberduck/core/importer/CDTransmitImporter.h -text
@@ -1883,8 +1878,6 @@ source/ch/cyberduck/core/importer/TransmitBookmarkCollection.java -text
 source/ch/cyberduck/core/importer/XmlBookmarkCollection.java -text
 source/ch/cyberduck/core/s3/S3Path.java -text
 source/ch/cyberduck/core/s3/S3Session.java -text
-source/ch/cyberduck/core/sardine/DAVPath.java -text
-source/ch/cyberduck/core/sardine/DAVSession.java -text
 source/ch/cyberduck/core/sftp/HostKeyController.java -text
 source/ch/cyberduck/core/sftp/MemoryHostKeyVerifier.java -text
 source/ch/cyberduck/core/sftp/PreferencesHostKeyVerifier.java -text

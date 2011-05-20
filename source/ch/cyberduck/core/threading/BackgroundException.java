@@ -30,6 +30,7 @@ import org.jets3t.service.CloudFrontServiceException;
 import org.jets3t.service.ServiceException;
 import org.soyatec.windows.azure.error.StorageServerException;
 
+import com.googlecode.sardine.impl.SardineException;
 import com.rackspacecloud.client.cloudfiles.FilesException;
 
 import java.io.IOException;
@@ -100,9 +101,6 @@ public class BackgroundException extends Exception {
         if(cause instanceof CloudFrontServiceException) {
             return "CloudFront " + Locale.localizedString("Error");
         }
-        if(cause instanceof org.apache.commons.httpclient.HttpException) {
-            return "HTTP " + Locale.localizedString("Error");
-        }
         if(cause instanceof org.apache.http.HttpException) {
             return "HTTP " + Locale.localizedString("Error");
         }
@@ -146,14 +144,14 @@ public class BackgroundException extends Exception {
                     buffer.append(" ").append(s3.getErrorMessage());
                 }
             }
-//            else if(cause instanceof SardineException) {
-//                final SardineException http = (SardineException) cause;
-//                if(StringUtils.isNotBlank(http.getResponsePhrase())) {
-//                    buffer.delete(0, buffer.length());
-//                    // HTTP method status
-//                    buffer.append(http.getResponsePhrase()).append(".");
-//                }
-//            }
+            else if(cause instanceof SardineException) {
+                final SardineException http = (SardineException) cause;
+                if(StringUtils.isNotBlank(http.getResponsePhrase())) {
+                    buffer.delete(0, buffer.length());
+                    // HTTP method status
+                    buffer.append(http.getResponsePhrase()).append(".");
+                }
+            }
             else if(cause instanceof org.jets3t.service.impl.rest.HttpException) {
                 final org.jets3t.service.impl.rest.HttpException http = (org.jets3t.service.impl.rest.HttpException) cause;
                 buffer.append(" ").append(http.getResponseCode());
