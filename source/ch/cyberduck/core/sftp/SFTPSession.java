@@ -433,21 +433,11 @@ public class SFTPSession extends Session {
     }
 
     @Override
-    public Path workdir() throws ConnectionCanceledException {
-        if(null == workdir) {
-            if(!this.isConnected()) {
-                throw new ConnectionCanceledException();
-            }
-            try {
-                // "." as referring to the current directory
-                workdir = PathFactory.createPath(this, this.sftp().canonicalPath("."), Path.DIRECTORY_TYPE);
-            }
-            catch(IOException e) {
-                log.warn(e.getMessage());
-                throw new ConnectionCanceledException(e.getMessage());
-            }
-        }
-        return workdir;
+    public Path workdir() throws IOException {
+        // "." as referring to the current directory
+        final String directory = this.sftp().canonicalPath(".");
+        return PathFactory.createPath(this, directory,
+                directory.equals(String.valueOf(Path.DELIMITER)) ? Path.VOLUME_TYPE | Path.DIRECTORY_TYPE : Path.DIRECTORY_TYPE);
     }
 
     @Override

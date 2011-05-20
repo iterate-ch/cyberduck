@@ -51,11 +51,6 @@ public abstract class Session implements TranscriptListener {
      */
     protected Host host;
 
-    /**
-     * Current working directory
-     */
-    protected Path workdir;
-
     protected Session(Host h) {
         this.host = h;
     }
@@ -265,20 +260,11 @@ public abstract class Session implements TranscriptListener {
      */
     public Path mount() {
         try {
-            if(StringUtils.isNotBlank(host.getWorkdir())) {
-                return this.mount(host.getWorkdir());
-            }
-            if(StringUtils.isNotBlank(host.getDefaultPath())) {
-                return this.mount(host.getDefaultPath());
-            }
-            return this.mount(null);
+            // Working directory returned by server.
+            return this.mount(this.home());
         }
         catch(IOException e) {
             this.interrupt();
-        }
-        finally {
-            // Reset current working directory in bookmark
-            host.setWorkdir(null);
         }
         // Mount failed
         return null;
@@ -290,7 +276,7 @@ public abstract class Session implements TranscriptListener {
      * @param directory Default working directory
      * @return Null if mount fails. Check the error listener for details.
      */
-    protected Path mount(String directory) throws IOException {
+    protected Path mount(Path directory) throws IOException {
         return this.mount(directory, Preferences.instance().getBoolean("disk.mount"));
     }
 
@@ -300,44 +286,72 @@ public abstract class Session implements TranscriptListener {
      * @return Null if mount fails. Check the error listener for details.
      * @throws IOException
      */
-    protected Path mount(String directory, boolean filesystem) throws IOException {
+    protected Path mount(Path directory, boolean filesystem) throws IOException {
         this.message(MessageFormat.format(Locale.localizedString("Mounting {0}", "Status"),
                 host.getHostname()));
-        this.check();
-        if(!this.isConnected()) {
-            return null;
-        }
-        Path home;
-        if(directory != null) {
-            if(directory.startsWith(String.valueOf(Path.DELIMITER)) || directory.equals(this.workdir().getName())) {
-                home = PathFactory.createPath(this, directory,
-                        directory.equals(String.valueOf(Path.DELIMITER)) ? Path.VOLUME_TYPE | Path.DIRECTORY_TYPE : Path.DIRECTORY_TYPE);
-            }
-            else if(directory.startsWith(Path.HOME)) {
-                // relative path to the home directory
-                home = PathFactory.createPath(this,
-                        this.workdir().getAbsolute(), directory.substring(1), Path.DIRECTORY_TYPE);
-            }
-            else {
-                // relative path
-                home = PathFactory.createPath(this,
-                        this.workdir().getAbsolute(), directory, Path.DIRECTORY_TYPE);
+        try {
+            this.check();
+            if(!this.isConnected()) {
+                return null;
             }
             // Retrieve direcotry listing of default path
-            if(!home.children().attributes().isReadable()) {
+            if(!directory.children().attributes().isReadable()) {
                 // The default path does not exist or is not readable due to possible permission issues
                 // Fallback to default working directory
-                home = this.workdir();
+                directory = this.workdir();
+            }
+            if(filesystem) {
+                fs = FilesystemFactory.get();
+                fs.mount(this);
+            }
+            return directory;
+        }
+        finally {
+            // Reset current working directory in bookmark
+            host.setWorkdir(null);
+        }
+    }
+
+    /**
+     * @return Home directory
+     */
+    public Path home() throws IOException {
+        final String directory;
+        if(StringUtils.isNotBlank(host.getWorkdir())) {
+            directory = host.getWorkdir();
+        }
+        else if(StringUtils.isNotBlank(host.getDefaultPath())) {
+            if(host.getDefaultPath().startsWith(String.valueOf(Path.DELIMITER))) {
+                // Mount absolute path
+                directory = host.getDefaultPath();
+            }
+            else {
+                Path workdir = this.workdir();
+                if(host.getDefaultPath().startsWith(Path.HOME)) {
+                    // Relative path to the home directory
+                    return PathFactory.createPath(this, workdir.getAbsolute(),  host.getDefaultPath().substring(1), Path.DIRECTORY_TYPE);
+                }
+                else {
+                    // Relative path
+                    return PathFactory.createPath(this, workdir.getAbsolute(),  host.getDefaultPath(), Path.DIRECTORY_TYPE);
+                }
             }
         }
         else {
-            home = this.workdir();
+            // No default path configured
+            return this.workdir();
         }
-        if(filesystem) {
-            fs = FilesystemFactory.get();
-            fs.mount(this);
-        }
-        return home;
+        return PathFactory.createPath(this, directory,
+                directory.equals(String.valueOf(Path.DELIMITER)) ? Path.VOLUME_TYPE | Path.DIRECTORY_TYPE : Path.DIRECTORY_TYPE);
+    }
+
+    /**
+     * @return The current working directory (pwd) or null if it cannot be retrieved for whatever reason
+     * @throws ConnectionCanceledException If the underlying connection has already been closed before
+     */
+    public Path workdir() throws IOException {
+        return PathFactory.createPath(this, String.valueOf(Path.DELIMITER),
+                Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
     }
 
     /**
@@ -378,32 +392,8 @@ public abstract class Session implements TranscriptListener {
         return host.getMaxConnections();
     }
 
-    /**
-     * @return The current working directory (pwd) or null if it cannot be retrieved for whatever reason
-     * @throws ConnectionCanceledException If the underlying connection has already been closed before
-     */
-    public Path workdir() throws ConnectionCanceledException {
-        if(!this.isConnected()) {
-            throw new ConnectionCanceledException();
-        }
-        if(null == workdir) {
-            workdir = PathFactory.createPath(this, String.valueOf(Path.DELIMITER), Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
-        }
-        return workdir;
-    }
-
-    /**
-     * Set the current working directory for this session. Implementations may
-     * implmeent a change working directory command.
-     *
-     * @param workdir The new working directory.
-     * @throws IOException
-     */
     public void setWorkdir(Path workdir) throws IOException {
-        if(!this.isConnected()) {
-            throw new ConnectionCanceledException();
-        }
-        this.workdir = workdir;
+        ;
     }
 
     /**
@@ -678,7 +668,6 @@ public abstract class Session implements TranscriptListener {
     protected void fireConnectionDidCloseEvent() {
         log.debug("connectionDidClose");
 
-        this.workdir = null;
         this.cdn().clear();
 
         for(ConnectionListener listener : connectionListeners.toArray(new ConnectionListener[connectionListeners.size()])) {
@@ -880,7 +869,7 @@ public abstract class Session implements TranscriptListener {
     }
 
     public void error(String message, Throwable e) {
-        this.error(workdir, message, e);
+        this.error(null, message, e);
     }
 
     /**

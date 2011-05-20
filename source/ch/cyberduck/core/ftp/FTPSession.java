@@ -74,12 +74,12 @@ public class FTPSession extends SSLSession {
     }
 
     @Override
-    protected Path mount(String directory) throws IOException {
+    protected Path mount(Path directory) throws IOException {
         final Path workdir = super.mount(directory);
         if(Preferences.instance().getBoolean("ftp.timezone.auto")) {
             if(null == host.getTimezone()) {
                 // No custom timezone set
-                final List<TimeZone> matches = this.calculateTimezone();
+                final List<TimeZone> matches = this.calculateTimezone(workdir);
                 for(TimeZone tz : matches) {
                     // Save in bookmark. User should have the option to choose from determined zones.
                     host.setTimezone(tz);
@@ -148,9 +148,9 @@ public class FTPSession extends SSLSession {
      * date in the directory listing from the UTC timestamp returned from <code>MDTM</code>
      * if available. Result is error prone because of additional daylight saving offsets.
      */
-    private List<TimeZone> calculateTimezone() throws IOException {
+    private List<TimeZone> calculateTimezone(Path workdir) throws IOException {
         // Determine the server offset from UTC
-        final AttributedList<Path> list = this.workdir().children();
+        final AttributedList<Path> list = workdir.children();
         if(list.isEmpty()) {
             log.warn("Cannot determine timezone with empty directory listing");
             return Collections.emptyList();
@@ -453,23 +453,10 @@ public class FTPSession extends SSLSession {
     }
 
     @Override
-    public Path workdir() throws ConnectionCanceledException {
-        if(!this.isConnected()) {
-            throw new ConnectionCanceledException();
-        }
-        if(null == workdir) {
-            try {
-                workdir = PathFactory.createPath(this, this.getClient().printWorkingDirectory(), Path.DIRECTORY_TYPE);
-                if(workdir.isRoot()) {
-                    workdir.attributes().setType(Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
-                }
-            }
-            catch(IOException e) {
-                this.error("Connection failed", e);
-                throw new ConnectionCanceledException(e.getMessage());
-            }
-        }
-        return workdir;
+    public Path workdir() throws IOException {
+        final String directory = this.getClient().printWorkingDirectory();
+        return PathFactory.createPath(this, directory,
+                directory.equals(String.valueOf(Path.DELIMITER)) ? Path.VOLUME_TYPE | Path.DIRECTORY_TYPE : Path.DIRECTORY_TYPE);
     }
 
     @Override
