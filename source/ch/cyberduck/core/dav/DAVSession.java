@@ -181,7 +181,8 @@ public class DAVSession extends HTTP4Session {
                 }
                 if(authscope.getScheme().equals(AuthPolicy.NTLM)) {
                     // Windows credentials. Provide empty string for NTLM domain by default.
-                    return new NTCredentials(credentials.getUsername(), credentials.getPassword(), null,
+                    return new NTCredentials(credentials.getUsername(), credentials.getPassword(),
+                            Preferences.instance().getProperty("webdav.ntlm.workstation"),
                             Preferences.instance().getProperty("webdav.ntlm.domain"));
                 }
                 else {
