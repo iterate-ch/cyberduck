@@ -1,3 +1,6 @@
+4.1 [http://trac.cyberduck.ch/milestone/4.1]
+- [Feature] Replaced WebDAV protocol implementation
+
 4.0.3 [http://trac.cyberduck.ch/milestone/4.0.3]
 - [Localize] Bulgarian Localization
 - [Feature] IPv6 support (Windows) (#5699)
