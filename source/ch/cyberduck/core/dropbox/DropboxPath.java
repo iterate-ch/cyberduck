@@ -27,7 +27,6 @@ import ch.cyberduck.core.io.BandwidthThrottle;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.entity.mime.content.InputStreamBody;
 import org.apache.log4j.Logger;
-import org.soyatec.windows.azure.error.StorageException;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -192,9 +191,6 @@ public class DropboxPath extends Path {
                 out = this.getLocal().getOutputStream(this.status().isResume());
 
                 this.download(in, out, throttle, listener);
-            }
-            catch(StorageException e) {
-                this.error("Download failed", e);
             }
             catch(IOException e) {
                 this.error("Download failed", e);
