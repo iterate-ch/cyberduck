@@ -1051,10 +1051,6 @@ public class FTPPath extends Path {
                             in = getLocal().getInputStream();
                             out = write(check);
                             upload(out, in, throttle, listener);
-                            if(status().isComplete()) {
-                                IOUtils.closeQuietly(in);
-                                IOUtils.closeQuietly(out);
-                            }
                         }
                         finally {
                             IOUtils.closeQuietly(in);
