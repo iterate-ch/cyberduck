@@ -19,18 +19,73 @@ package ch.cyberduck.core.cloud;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.http.HttpSession;
+import ch.cyberduck.core.ssl.AbstractX509TrustManager;
+
 import java.util.List;
 
 /**
- * @version $Id:$
+ * @version $Id: CloudSession.java 7011 2010-09-18 15:20:05Z dkocher $
  */
-public interface CloudSession {
+public abstract class CloudSession extends HttpSession {
 
-    String getHostnameForContainer(String container);
+    protected CloudSession(Host h) {
+        super(h);
+    }
+
+    /**
+     * Use ACL support.
+     *
+     * @return Always returning false because permissions should be set using ACLs
+     */
+    @Override
+    public boolean isUnixPermissionsSupported() {
+        return false;
+    }
+
+    @Override
+    public boolean isTimestampSupported() {
+        return false;
+    }
+
+    /**
+     * @param hostname
+     * @return
+     */
+    public String getContainerForHostname(String hostname) {
+        if(hostname.equals(host.getProtocol().getDefaultHostname())) {
+            return null;
+        }
+        // Bucket name is available in URL's host name.
+        if(hostname.endsWith(host.getProtocol().getDefaultHostname())) {
+            // Bucket name is available as S3 subdomain
+            return hostname.substring(0, hostname.length() - host.getProtocol().getDefaultHostname().length() - 1);
+        }
+        return null;
+    }
+
+    /**
+     * @param container
+     * @return
+     */
+    public String getHostnameForContainer(String container) {
+        return container + "." + this.getHost().getHostname(true);
+    }
+
+    @Override
+    public AbstractX509TrustManager getTrustManager() {
+        return this.getTrustManager(this.getHostnameForContainer(this.getHost().getCredentials().getUsername()));
+    }
+
+    @Override
+    public boolean isMetadataSupported() {
+        return true;
+    }
 
     /**
      * @return List of redundancy level options. Empty list
      *         no storage options are available.
      */
-    List<String> getSupportedStorageClasses();
+    public abstract List<String> getSupportedStorageClasses();
 }
