@@ -122,7 +122,11 @@ public class ConnectionController extends SheetController {
             final String title = protocol.getDescription();
             this.protocolPopup.addItemWithTitle(title);
             final NSMenuItem item = this.protocolPopup.itemWithTitle(title);
-            item.setRepresentedObject(protocol.getIdentifier());
+            final StringBuilder identifier = new StringBuilder(protocol.getIdentifier());
+            if(StringUtils.isNotBlank(protocol.getVendor())) {
+                identifier.append(",").append(protocol.getVendor());
+            }
+            item.setRepresentedObject(identifier.toString());
             item.setImage(IconCache.iconNamed(protocol.icon(), 16));
         }
         final Protocol defaultProtocol

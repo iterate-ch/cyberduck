@@ -96,7 +96,7 @@ public class ProtocolFactory {
         List<Protocol> list = new ArrayList<Protocol>(SessionFactory.getRegisteredProtocols());
         if(filter) {
             // Remove protocols not enabled
-            for(Iterator<Protocol> iter = list.iterator(); iter.hasNext();) {
+            for(Iterator<Protocol> iter = list.iterator(); iter.hasNext(); ) {
                 final Protocol protocol = iter.next();
                 if(!protocol.isEnabled()) {
                     iter.remove();
@@ -129,23 +129,33 @@ public class ProtocolFactory {
      * @return
      */
     public static Protocol forName(final String identifier) {
-        return forName(identifier, identifier);
+        if(StringUtils.contains(identifier, ',')) {
+            final String[] parts = StringUtils.split(identifier, ',');
+            return forName(parts[0], parts[1]);
+        }
+        return forName(identifier, null);
     }
 
     /**
-     *
      * @param identifier
      * @param vendor
      * @return
      */
     public static Protocol forName(final String identifier, final String vendor) {
         for(Protocol protocol : getKnownProtocols(false)) {
-            if(protocol.getIdentifier().equals(identifier)
-                    && protocol.getVendor().equals(vendor)) {
-                return protocol;
+            if(protocol.getIdentifier().equals(identifier)) {
+                if(StringUtils.isBlank(vendor)) {
+                    return protocol;
+                }
+                if(StringUtils.isBlank(protocol.getVendor())) {
+                    continue;
+                }
+                if(protocol.getVendor().equals(vendor)) {
+                    return protocol;
+                }
             }
         }
-        log.fatal("Unknown protocol:" + identifier);
+        log.fatal("Unknown protocol:" + identifier + ",vendor:" + vendor);
         return forName(
                 Preferences.instance().getProperty("connection.protocol.default"));
     }

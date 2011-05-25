@@ -177,11 +177,40 @@ public class Profile extends Protocol implements Serializable {
 
     @Override
     public String icon() {
-        final String v = this.getValue("Icon");
-        if(StringUtils.isBlank(v)) {
-            return parent.favicon();
+        final String temp = this.write(this.getValue("Icon"));
+        if(StringUtils.isBlank(temp)) {
+            return parent.icon();
         }
-        final byte[] favicon = Base64.decodeBase64(v);
+        // Temporary file
+        return temp;
+    }
+
+    @Override
+    public String favicon() {
+        return this.icon();
+    }
+
+    @Override
+    public String disk() {
+        final String temp = this.write(this.getValue("Disk"));
+        if(StringUtils.isBlank(temp)) {
+            return parent.disk();
+        }
+        // Temporary file
+        return temp;
+    }
+
+    /**
+     * Write temporary file with data
+     *
+     * @param icon Base64 encoded image information
+     * @return Path to file
+     */
+    private String write(String icon) {
+        if(StringUtils.isBlank(icon)) {
+            return null;
+        }
+        final byte[] favicon = Base64.decodeBase64(icon);
         final Local file = LocalFactory.createLocal(Preferences.instance().getProperty("tmp.dir"),
                 this.getIdentifier() + ".ico");
         try {
@@ -197,17 +226,7 @@ public class Profile extends Protocol implements Serializable {
         catch(IOException e) {
             log.error("Error writing temporary file:" + e.getMessage());
         }
-        return parent.favicon();
-    }
-
-    @Override
-    public String favicon() {
-        return this.icon();
-    }
-
-    @Override
-    public String disk() {
-        return parent.disk();
+        return null;
     }
 
     @Override

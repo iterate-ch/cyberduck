@@ -1705,7 +1705,11 @@ public class PreferencesController extends ToolbarWindowController {
     @Action
     public void protocolComboboxClicked(NSPopUpButton sender) {
         final Protocol selected = ProtocolFactory.forName(sender.selectedItem().representedObject());
-        Preferences.instance().setProperty("connection.protocol.default", selected.getIdentifier());
+        final StringBuilder identifier = new StringBuilder(selected.getIdentifier());
+        if(StringUtils.isNotBlank(selected.getVendor())) {
+            identifier.append(",").append(selected.getVendor());
+        }
+        Preferences.instance().setProperty("connection.protocol.default", identifier.toString());
         Preferences.instance().setProperty("connection.port.default", selected.getDefaultPort());
     }
 

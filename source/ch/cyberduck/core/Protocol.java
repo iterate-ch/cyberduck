@@ -73,10 +73,10 @@ public abstract class Protocol {
     /**
      * Provider identification
      *
-     * @return Identifier if default protocol
+     * @return Null if no vendor specific profile
      */
     public String getVendor() {
-        return this.getIdentifier();
+        return null;
     }
 
     public String getName() {
