@@ -20,7 +20,7 @@ package ch.cyberduck.core.azure;
  */
 
 import ch.cyberduck.core.*;
-import ch.cyberduck.core.cloud.CloudHTTP4Session;
+import ch.cyberduck.core.cloud.CloudSession;
 import ch.cyberduck.core.i18n.Locale;
 
 import org.apache.commons.lang.StringUtils;
@@ -62,7 +62,7 @@ import java.util.concurrent.Callable;
 /**
  * @version $Id$
  */
-public class AzureSession extends CloudHTTP4Session {
+public class AzureSession extends CloudSession {
     private static Logger log = Logger.getLogger(AzureSession.class);
 
     private static class Factory extends SessionFactory {

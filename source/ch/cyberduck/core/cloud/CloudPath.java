@@ -21,7 +21,6 @@ package ch.cyberduck.core.cloud;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
-import ch.cyberduck.core.http.HttpPath;
 
 import org.apache.log4j.Logger;
 
@@ -31,7 +30,7 @@ import java.util.Set;
 /**
  * @version $Id$
  */
-public abstract class CloudPath extends HttpPath {
+public abstract class CloudPath extends Path {
     private static Logger log = Logger.getLogger(CloudPath.class);
 
     public <T> CloudPath(T dict) {

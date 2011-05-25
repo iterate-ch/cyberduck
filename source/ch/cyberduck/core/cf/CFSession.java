@@ -19,10 +19,18 @@ package ch.cyberduck.core.cf;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.ConnectionCanceledException;
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LoginController;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.Session;
+import ch.cyberduck.core.SessionFactory;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
-import ch.cyberduck.core.cloud.CloudHTTP4Session;
+import ch.cyberduck.core.cloud.CloudSession;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.ssl.AbstractX509TrustManager;
 import ch.cyberduck.core.ssl.KeychainX509TrustManager;
@@ -30,22 +38,26 @@ import ch.cyberduck.core.ssl.KeychainX509TrustManager;
 import org.apache.http.HttpException;
 import org.apache.log4j.Logger;
 
-import com.rackspacecloud.client.cloudfiles.FilesCDNContainer;
-import com.rackspacecloud.client.cloudfiles.FilesClient;
-import com.rackspacecloud.client.cloudfiles.FilesException;
-
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.MessageFormat;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import com.rackspacecloud.client.cloudfiles.FilesCDNContainer;
+import com.rackspacecloud.client.cloudfiles.FilesClient;
+import com.rackspacecloud.client.cloudfiles.FilesException;
 
 /**
  * Rackspace Cloud Files Implementation
  *
  * @version $Id$
  */
-public class CFSession extends CloudHTTP4Session {
+public class CFSession extends CloudSession {
     private static Logger log = Logger.getLogger(CFSession.class);
 
     private static class Factory extends SessionFactory {

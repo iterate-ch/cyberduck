@@ -22,7 +22,7 @@ package ch.cyberduck.core.s3;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
-import ch.cyberduck.core.cloud.CloudHTTP4Session;
+import ch.cyberduck.core.cloud.CloudSession;
 import ch.cyberduck.core.cloudfront.CloudFrontDistributionConfiguration;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.threading.BackgroundException;
@@ -37,7 +37,13 @@ import org.jets3t.service.S3ServiceException;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.acl.GroupGrantee;
 import org.jets3t.service.impl.rest.httpclient.RestS3Service;
-import org.jets3t.service.model.*;
+import org.jets3t.service.model.S3Bucket;
+import org.jets3t.service.model.S3BucketLoggingStatus;
+import org.jets3t.service.model.S3BucketVersioningStatus;
+import org.jets3t.service.model.S3Object;
+import org.jets3t.service.model.StorageObject;
+import org.jets3t.service.model.StorageOwner;
+import org.jets3t.service.model.WebsiteConfig;
 import org.jets3t.service.model.cloudfront.CustomOrigin;
 import org.jets3t.service.security.AWSCredentials;
 import org.jets3t.service.security.ProviderCredentials;
@@ -45,14 +51,18 @@ import org.jets3t.service.utils.ServiceUtils;
 
 import java.io.IOException;
 import java.text.MessageFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Connecting to S3 service with plain HTTP.
  *
  * @version $Id$
  */
-public class S3Session extends CloudHTTP4Session {
+public class S3Session extends CloudSession {
     private static Logger log = Logger.getLogger(S3Session.class);
 
     private static class Factory extends SessionFactory {

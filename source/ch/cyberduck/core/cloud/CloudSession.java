@@ -20,7 +20,7 @@ package ch.cyberduck.core.cloud;
  */
 
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.http.HttpSession;
+import ch.cyberduck.core.http.HTTP4Session;
 import ch.cyberduck.core.ssl.AbstractX509TrustManager;
 
 import java.util.List;
@@ -28,7 +28,7 @@ import java.util.List;
 /**
  * @version $Id: CloudSession.java 7011 2010-09-18 15:20:05Z dkocher $
  */
-public abstract class CloudSession extends HttpSession {
+public abstract class CloudSession extends HTTP4Session {
 
     protected CloudSession(Host h) {
         super(h);
