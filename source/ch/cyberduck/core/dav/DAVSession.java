@@ -20,7 +20,7 @@ package ch.cyberduck.core.dav;
  */
 
 import ch.cyberduck.core.*;
-import ch.cyberduck.core.http.HTTP4Session;
+import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.i18n.Locale;
 
 import org.apache.commons.lang.StringUtils;
@@ -45,7 +45,7 @@ import java.io.IOException;
 /**
  * @version $Id$
  */
-public class DAVSession extends HTTP4Session {
+public class DAVSession extends HttpSession {
     private static Logger log = Logger.getLogger(DAVSession.class);
 
     private static class Factory extends SessionFactory {

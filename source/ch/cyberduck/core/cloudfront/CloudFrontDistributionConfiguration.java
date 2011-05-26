@@ -21,7 +21,7 @@ package ch.cyberduck.core.cloudfront;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
-import ch.cyberduck.core.http.HTTP4Session;
+import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.ssl.AbstractX509TrustManager;
 import ch.cyberduck.core.threading.BackgroundException;
@@ -44,7 +44,7 @@ import java.util.*;
  *
  * @version $Id:$
  */
-public class CloudFrontDistributionConfiguration extends HTTP4Session implements DistributionConfiguration {
+public class CloudFrontDistributionConfiguration extends HttpSession implements DistributionConfiguration {
     private static Logger log = Logger.getLogger(CloudFrontDistributionConfiguration.class);
 
     /**

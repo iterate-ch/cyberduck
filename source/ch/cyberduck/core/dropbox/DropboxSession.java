@@ -22,7 +22,7 @@ package ch.cyberduck.core.dropbox;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.dropbox.client.Account;
 import ch.cyberduck.core.dropbox.client.DropboxClient;
-import ch.cyberduck.core.http.HTTP4Session;
+import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.i18n.Locale;
 
 import org.apache.log4j.Logger;
@@ -32,7 +32,7 @@ import java.io.IOException;
 /**
  * @version $Id: AzureSession.java 7323 2010-10-14 12:26:34Z dkocher $
  */
-public class DropboxSession extends HTTP4Session {
+public class DropboxSession extends HttpSession {
     private static Logger log = Logger.getLogger(DropboxSession.class);
 
     private static class Factory extends SessionFactory {

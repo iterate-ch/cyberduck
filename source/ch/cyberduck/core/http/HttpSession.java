@@ -37,7 +37,7 @@ import org.apache.http.conn.scheme.SchemeRegistry;
 import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.impl.client.AbstractHttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.conn.SingleClientConnManager;
+import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
@@ -49,9 +49,9 @@ import java.io.IOException;
 /**
  * @version $Id: HTTPSession.java 7171 2010-10-02 15:06:28Z dkocher $
  */
-public abstract class HTTP4Session extends SSLSession {
+public abstract class HttpSession extends SSLSession {
 
-    protected HTTP4Session(Host h) {
+    protected HttpSession(Host h) {
         super(h);
     }
 
@@ -102,7 +102,7 @@ public abstract class HTTP4Session extends SSLSession {
                     }
                 }
             }
-            ClientConnectionManager manager = new SingleClientConnManager(registry);
+            ClientConnectionManager manager = new ThreadSafeClientConnManager(registry);
             http = new DefaultHttpClient(manager, params);
             this.configure(http);
         }
