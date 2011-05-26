@@ -116,6 +116,10 @@ public class S3Session extends CloudSession {
 
         @Override
         public void verifyExpectedAndActualETagValues(String expectedETag, StorageObject uploadedObject) throws ServiceException {
+            if(StringUtils.isBlank(uploadedObject.getETag())) {
+                log.warn("No ETag to verify");
+                return;
+            }
             super.verifyExpectedAndActualETagValues(expectedETag, uploadedObject);
         }
     }
