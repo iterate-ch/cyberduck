@@ -84,7 +84,7 @@ public class ThreadPool {
      * @param command
      * @throws Exception
      */
-    public <T> Future<T> execute(final Callable<T> command) throws ExecutionException, InterruptedException {
+    public <T> Future<T> execute(final Callable<T> command) {
         return this.getExecutor().submit(command);
     }
 }

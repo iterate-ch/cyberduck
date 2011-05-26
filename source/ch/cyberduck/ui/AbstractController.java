@@ -107,21 +107,11 @@ public abstract class AbstractController implements Controller {
                 return null;
             }
         };
-        try {
-            final Future<T> future = ThreadPool.instance().execute(command);
-            if(log.isInfoEnabled()) {
-                log.info("Scheduled background runnable for execution:" + runnable);
-            }
-            return future;
+        final Future<T> future = ThreadPool.instance().execute(command);
+        if(log.isInfoEnabled()) {
+            log.info("Scheduled background runnable for execution:" + runnable);
         }
-        catch(ExecutionException e) {
-            log.error("Error executing background task:" + e.getMessage());
-            throw new RuntimeException(e);
-        }
-        catch(InterruptedException e) {
-            log.error("Error executing background task:" + e.getMessage());
-            throw new RuntimeException(e);
-        }
+        return future;
     }
 
     /**
