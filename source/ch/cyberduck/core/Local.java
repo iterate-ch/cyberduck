@@ -530,11 +530,11 @@ public abstract class Local extends AbstractPath {
      */
     public abstract void setWhereFrom(final String dataUrl);
 
-    public java.io.InputStream getInputStream() throws FileNotFoundException {
+    public InputStream getInputStream() throws FileNotFoundException {
         return new RepeatableFileInputStream(new File(path));
     }
 
-    public java.io.OutputStream getOutputStream(boolean resume) throws FileNotFoundException {
-        return new FileOutputStream(new File(path), resume);
+    public OutputStream getOutputStream(boolean append) throws FileNotFoundException {
+        return new FileOutputStream(new File(path), append);
     }
 }
