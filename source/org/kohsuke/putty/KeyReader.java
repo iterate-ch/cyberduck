@@ -37,7 +37,7 @@ public class KeyReader {
         try {
             int len = di.readInt();
             if(len <= 0 || len > 512) {
-                throw new PEMDecryptException();
+                throw new PEMDecryptException("Invalid length " +len);
             }
             byte[] r = new byte[len];
             di.readFully(r);
