@@ -25,6 +25,7 @@ import ch.ethz.ssh2.*;
 import ch.ethz.ssh2.channel.ChannelClosedException;
 import ch.ethz.ssh2.crypto.PEMDecoder;
 import ch.ethz.ssh2.crypto.PEMDecryptException;
+import ch.ethz.ssh2.scp.SCPClient;
 import ch.ethz.ssh2.sftp.PacketListener;
 import ch.ethz.ssh2.sftp.SFTPv3Client;
 
