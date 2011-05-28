@@ -29,7 +29,6 @@ import ch.cyberduck.core.ssl.SSLSession;
 import org.apache.http.*;
 import org.apache.http.auth.params.AuthParams;
 import org.apache.http.client.params.HttpClientParams;
-import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.conn.params.ConnRouteParams;
 import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
@@ -37,6 +36,7 @@ import org.apache.http.conn.scheme.SchemeRegistry;
 import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.impl.client.AbstractHttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.conn.tsccm.ConnPoolByRoute;
 import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
@@ -45,6 +45,7 @@ import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.protocol.HttpContext;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @version $Id: HTTPSession.java 7171 2010-10-02 15:06:28Z dkocher $
@@ -76,9 +77,13 @@ public abstract class HttpSession extends SSLSession {
             HttpConnectionParams.setSoTimeout(params, timeout());
             HttpConnectionParams.setConnectionTimeout(params, timeout());
             HttpConnectionParams.setSocketBufferSize(params, 8192);
+            HttpConnectionParams.setStaleCheckingEnabled(params, true);
 
             HttpClientParams.setRedirecting(params, true);
             HttpClientParams.setAuthenticating(params, true);
+
+            // Sets the timeout in milliseconds used when retrieving a connection from the ClientConnectionManager
+            HttpClientParams.setConnectionManagerTimeout(params, 0);
 
             SchemeRegistry registry = new SchemeRegistry();
             // Always register HTTP for possible use with proxy
@@ -102,7 +107,15 @@ public abstract class HttpSession extends SSLSession {
                     }
                 }
             }
-            ClientConnectionManager manager = new ThreadSafeClientConnManager(registry);
+            ThreadSafeClientConnManager manager = new ThreadSafeClientConnManager(registry) {
+                @Override
+                protected ConnPoolByRoute createConnectionPool(long connTTL, TimeUnit connTTLTimeUnit) {
+                    // Set the maximum connections per host for the HTTP connection manager,
+                    // *and* also set the maximum number of total connections.
+                    connPerRoute.setDefaultMaxPerRoute(5);
+                    return new ConnPoolByRoute(connOperator, connPerRoute, 5);
+                }
+            };
             http = new DefaultHttpClient(manager, params);
             this.configure(http);
         }
