@@ -31,31 +31,24 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.HttpClient;
+import org.apache.http.impl.client.AbstractHttpClient;
+import org.apache.http.params.HttpProtocolParams;
 import org.apache.log4j.Logger;
 import org.jets3t.service.Jets3tProperties;
 import org.jets3t.service.S3ServiceException;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.acl.GroupGrantee;
 import org.jets3t.service.impl.rest.httpclient.RestS3Service;
-import org.jets3t.service.model.S3Bucket;
-import org.jets3t.service.model.S3BucketLoggingStatus;
-import org.jets3t.service.model.S3BucketVersioningStatus;
-import org.jets3t.service.model.S3Object;
-import org.jets3t.service.model.StorageObject;
-import org.jets3t.service.model.StorageOwner;
-import org.jets3t.service.model.WebsiteConfig;
+import org.jets3t.service.model.*;
 import org.jets3t.service.model.cloudfront.CustomOrigin;
 import org.jets3t.service.security.AWSCredentials;
 import org.jets3t.service.security.ProviderCredentials;
+import org.jets3t.service.utils.RestUtils;
 import org.jets3t.service.utils.ServiceUtils;
 
 import java.io.IOException;
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Connecting to S3 service with plain HTTP.
@@ -100,7 +93,9 @@ public class S3Session extends CloudSession {
 
         @Override
         protected HttpClient initHttpConnection() {
-            return S3Session.this.http();
+            final AbstractHttpClient client = http();
+            client.setHttpRequestRetryHandler(new RestUtils.AWSRetryHandler(5, this));
+            return client;
         }
 
         @Override
@@ -122,6 +117,13 @@ public class S3Session extends CloudSession {
             }
             super.verifyExpectedAndActualETagValues(expectedETag, uploadedObject);
         }
+    }
+
+    @Override
+    protected void configure(AbstractHttpClient client) {
+        super.configure(client);
+        // Activates 'Expect: 100-Continue' handshake for the entity enclosing methods
+        HttpProtocolParams.setUseExpectContinue(client.getParams(), true);
     }
 
     /**
