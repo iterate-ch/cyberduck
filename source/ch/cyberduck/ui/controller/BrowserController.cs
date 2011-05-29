@@ -36,13 +36,11 @@ using Ch.Cyberduck.Ui.Winforms.Taskdialog;
 using java.lang;
 using java.security.cert;
 using java.util;
-using org.apache.commons.lang;
 using org.apache.log4j;
 using StructureMap;
 using Collection = ch.cyberduck.core.Collection;
 using DataObject = System.Windows.Forms.DataObject;
 using Locale = ch.cyberduck.core.i18n.Locale;
-using NotImplementedException = System.NotImplementedException;
 using Object = System.Object;
 using Path = ch.cyberduck.core.Path;
 using String = System.String;
@@ -876,8 +874,9 @@ namespace Ch.Cyberduck.Ui.Controller
                         // If copying between sessions is supported
                         args.Effect = DragDropEffects.Copy;
                     }
-                    if (DragDropEffects.Move == args.Effect) {
-                        if(!getSession().isRenameSupported(destination))
+                    if (DragDropEffects.Move == args.Effect)
+                    {
+                        if (!getSession().isRenameSupported(destination))
                         {
                             // Rename is not supported by the target file system
                             args.Effect = DragDropEffects.None;
@@ -1941,6 +1940,7 @@ namespace Ch.Cyberduck.Ui.Controller
         /// <param name="args"></param>
         private void View_BrowserCanDrop(OlvDropEventArgs args)
         {
+            Log.trace("Entering View_BrowserCanDrop with " + args.Effect);
             if (IsMounted() && !(args.DataObject is OLVDataObject))
             {
                 if (args.DataObject is DataObject && ((DataObject) args.DataObject).ContainsFileDropList())
@@ -1966,10 +1966,12 @@ namespace Ch.Cyberduck.Ui.Controller
                     }
                     if (!getSession().isCreateFileSupported(destination))
                     {
+                        Log.trace("Session does not allow file creation");
                         args.Effect = DragDropEffects.None;
                         args.DropTargetLocation = DropTargetLocation.None;
                         return;
                     }
+                    Log.trace("Setting effect to copy");
                     args.Effect = DragDropEffects.Copy;
                     if (Workdir == destination)
                     {
@@ -3150,7 +3152,10 @@ namespace Ch.Cyberduck.Ui.Controller
             public bool accept(Host host)
             {
                 return host.getNickname().ToLower().Contains(_searchString.ToLower())
-                       || (null == host.getComment() ? false : host.getComment().ToLower().Contains(_searchString.ToLower()))
+                       ||
+                       (null == host.getComment()
+                            ? false
+                            : host.getComment().ToLower().Contains(_searchString.ToLower()))
                        || host.getHostname().ToLower().Contains(_searchString.ToLower());
             }
         }
