@@ -99,15 +99,209 @@
             the contents of this method with the code editor.
             </summary>
         </member>
-        <member name="M:wyDay.Controls.RichTextBoxEx.InsertLink(System.String,System.String)">
+        <member name="T:wyDay.Controls.AutomaticUpdaterBackend">
             <summary>
-            Insert a given text at a given position as a link. The link text is followed by
-            a hash (#) and the given hyperlink text, both of them invisible.
-            When clicked on, the whole link text and hyperlink string are given in the
-            LinkClickedEventArgs.
+            Backend for the AutomaticUpdater control.
             </summary>
-            <param name="text">Text to be inserted</param>
-            <param name="linkText">Invisible hyperlink string to be inserted</param>
+        </member>
+        <member name="M:wyDay.Controls.AutomaticUpdaterBackend.#ctor">
+            <summary>
+            Represents an AutomaticUpdater control.
+            </summary>
+        </member>
+        <member name="M:wyDay.Controls.AutomaticUpdaterBackend.InstallNow">
+            <summary>
+            Proceed with the download and installation of pending updates.
+            </summary>
+        </member>
+        <member name="M:wyDay.Controls.AutomaticUpdaterBackend.Cancel">
+            <summary>
+            Cancel the checking, downloading, or extracting currently in progress.
+            </summary>
+        </member>
+        <member name="M:wyDay.Controls.AutomaticUpdaterBackend.ForceCheckForUpdate(System.Boolean)">
+            <summary>
+            Check for updates forcefully.
+            </summary>
+            <param name="recheck">Recheck with the servers regardless of cached updates, etc.</param>
+            <returns>Returns true if checking has begun, false otherwise.</returns>
+        </member>
+        <member name="M:wyDay.Controls.AutomaticUpdaterBackend.ForceCheckForUpdate">
+            <summary>
+            Check for updates forcefully.
+            </summary>
+            <returns>Returns true if checking has begun, false otherwise.</returns>
+        </member>
+        <member name="M:wyDay.Controls.AutomaticUpdaterBackend.Initialize">
+            <summary>
+            The intialize function must be called before you can use any other functions.
+            </summary>
+        </member>
+        <member name="M:wyDay.Controls.AutomaticUpdaterBackend.AppLoaded">
+            <summary>
+            The function that must be called when your app has loaded.
+            </summary>
+        </member>
+        <member name="E:wyDay.Controls.AutomaticUpdaterBackend.BeforeChecking">
+            <summary>
+            Event is raised before the update checking begins.
+            </summary>
+        </member>
+        <member name="E:wyDay.Controls.AutomaticUpdaterBackend.BeforeDownloading">
+            <summary>
+            Event is raised before the downloading of the update begins.
+            </summary>
+        </member>
+        <member name="E:wyDay.Controls.AutomaticUpdaterBackend.BeforeExtracting">
+            <summary>
+            Event is raised before the extracting of the update begins.
+            </summary>
+        </member>
+        <member name="E:wyDay.Controls.AutomaticUpdaterBackend.Cancelled">
+            <summary>
+            Event is raised when checking or updating is cancelled.
+            </summary>
+        </member>
+        <member name="E:wyDay.Controls.AutomaticUpdaterBackend.CheckingFailed">
+            <summary>
+            Event is raised when the checking for updates fails.
+            </summary>
+        </member>
+        <member name="E:wyDay.Controls.AutomaticUpdaterBackend.ClosingAborted">
+            <summary>
+            Event is raised when an update can't be installed and the closing is aborted.
+            </summary>
+        </member>
+        <member name="E:wyDay.Controls.AutomaticUpdaterBackend.DownloadingFailed">
+            <summary>
+            Event is raised when the update fails to download.
+            </summary>
+        </member>
+        <member name="E:wyDay.Controls.AutomaticUpdaterBackend.ExtractingFailed">
+            <summary>
+            Event is raised when the update fails to extract.
+            </summary>
+        </member>
+        <member name="E:wyDay.Controls.AutomaticUpdaterBackend.ProgressChanged">
+            <summary>
+            Event is raised when the current update step progress changes.
+            </summary>
+        </member>
+        <member name="E:wyDay.Controls.AutomaticUpdaterBackend.ReadyToBeInstalled">
+            <summary>
+            Event is raised when the update is ready to be installed.
+            </summary>
+        </member>
+        <member name="E:wyDay.Controls.AutomaticUpdaterBackend.UpdateAvailable">
+            <summary>
+            Event is raised when a new update is found.
+            </summary>
+        </member>
+        <member name="E:wyDay.Controls.AutomaticUpdaterBackend.UpdateFailed">
+            <summary>
+            Event is raised when an update fails to install.
+            </summary>
+        </member>
+        <member name="E:wyDay.Controls.AutomaticUpdaterBackend.UpdateSuccessful">
+            <summary>
+            Event is raised when an update installs successfully.
+            </summary>
+        </member>
+        <member name="E:wyDay.Controls.AutomaticUpdaterBackend.UpToDate">
+            <summary>
+            Event is raised when the latest version is already installed.
+            </summary>
+        </member>
+        <member name="E:wyDay.Controls.AutomaticUpdaterBackend.UpdateStepMismatch">
+            <summary>
+            Event is raised when the update step that is supposed to be processed isn't the step that's processed.
+            </summary>
+        </member>
+        <member name="P:wyDay.Controls.AutomaticUpdaterBackend.Arguments">
+            <summary>
+            Gets or sets the arguments to pass to your app when it's being restarted after an update.
+            </summary>
+        </member>
+        <member name="P:wyDay.Controls.AutomaticUpdaterBackend.Changes">
+            <summary>
+            Gets the changes for the new update.
+            </summary>
+        </member>
+        <member name="P:wyDay.Controls.AutomaticUpdaterBackend.RawChanges">
+            <summary>
+            Gets the changes for the new update. It may be in RTF or TXT format. Use AreChangesRTF.
+            </summary>
+        </member>
+        <member name="P:wyDay.Controls.AutomaticUpdaterBackend.AreChangesRTF">
+            <summary>
+            Is the RawChanges RTF or text.
+            </summary>
+        </member>
+        <member name="P:wyDay.Controls.AutomaticUpdaterBackend.ClosingForInstall">
+            <summary>
+            Gets if this AutomaticUpdater has hidden this form and preparing to install an update.
+            </summary>
+        </member>
+        <member name="P:wyDay.Controls.AutomaticUpdaterBackend.GUID">
+            <summary>
+            Gets the GUID (Globally Unique ID) of the automatic updater. It is recommended you set this value (especially if there is more than one exe for your product).
+            </summary>
+            <exception cref="T:System.Exception">Thrown when trying to set the GUID at runtime.</exception>
+        </member>
+        <member name="P:wyDay.Controls.AutomaticUpdaterBackend.LastCheckDate">
+            <summary>
+            Gets the date the updates were last checked for.
+            </summary>
+        </member>
+        <member name="P:wyDay.Controls.AutomaticUpdaterBackend.UpdateStepOn">
+            <summary>
+            Gets the update step the AutomaticUpdater is currently on.
+            </summary>
+        </member>
+        <member name="P:wyDay.Controls.AutomaticUpdaterBackend.UpdateType">
+            <summary>
+            Gets or sets how much this AutomaticUpdater control should do without user interaction.
+            </summary>
+        </member>
+        <member name="P:wyDay.Controls.AutomaticUpdaterBackend.Version">
+            <summary>
+            Gets the version of the new update.
+            </summary>
+        </member>
+        <member name="P:wyDay.Controls.AutomaticUpdaterBackend.wyUpdateCommandline">
+            <summary>
+            Gets or sets the arguments to pass to wyUpdate when it is started to check for updates.
+            </summary>
+        </member>
+        <member name="P:wyDay.Controls.AutomaticUpdaterBackend.wyUpdateLocation">
+            <summary>
+            Gets or sets the relative path to the wyUpdate (e.g. wyUpdate.exe  or  SubDir\\wyUpdate.exe)
+            </summary>
+        </member>
+        <member name="P:wyDay.Controls.AutomaticUpdaterBackend.ServiceName">
+            <summary>
+            Gets or sets the service to start after the update.
+            </summary>
+        </member>
+        <member name="E:wyDay.Controls.AutomaticUpdaterBackend.CloseAppNow">
+            <summary>
+            When this event is called you should shutdown the application immediately.
+            </summary>
+        </member>
+        <member name="P:wyDay.Controls.AutomaticUpdaterBackend.UseCloseAppNow">
+            <summary>
+            Gets or sets whether to call the CloseAppNow event where you can close the application or to just call Environment.Exit(0).
+            </summary>
+        </member>
+        <member name="T:wyDay.Controls.FailedToInitializeException">
+            <summary>
+            The fail to Initialize exception.
+            </summary>
+        </member>
+        <member name="M:wyDay.Controls.FailedToInitializeException.#ctor">
+            <summary>
+            The fail to Initialize exception.
+            </summary>
         </member>
         <member name="M:wyDay.Controls.RichTextBoxEx.SetSelectionLink(System.Boolean)">
             <summary>
@@ -423,6 +617,11 @@
         <member name="P:wyDay.Controls.FailArgs.ErrorMessage">
             <summary>
             A more detailed description of the error.
+            </summary>
+        </member>
+        <member name="P:wyDay.Controls.FailArgs.wyUpdatePrematureExit">
+            <summary>
+            wyUpdate closed before it should've.
             </summary>
         </member>
         <member name="T:wyDay.Controls.BeforeArgs">
