@@ -1888,7 +1888,6 @@ source/ch/cyberduck/core/sftp/PreferencesHostKeyVerifier.java -text
 source/ch/cyberduck/core/sparkle/Updater.java -text
 source/ch/cyberduck/core/ssl/AbstractX509TrustManager.java -text
 source/ch/cyberduck/core/ssl/SSLSession.java -text
-source/ch/cyberduck/properties/AssemblyInfo.cs -text
 source/ch/cyberduck/properties/Settings.Designer.cs -text
 source/ch/cyberduck/properties/Settings.cs -text
 source/ch/cyberduck/properties/Settings.settings -text
