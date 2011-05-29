@@ -118,7 +118,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Commondialog
         {
             InteropUtil.Assume(Marshal.SystemDefaultCharSize == 2, "The character size should be 2");
 
-            var nativeBuffer = Marshal.AllocCoTaskMem(InteropUtil.NumberOfFileChars*2);
+            IntPtr nativeBuffer = Marshal.AllocCoTaskMem(InteropUtil.NumberOfFileChars*2);
             IntPtr filterBuffer = IntPtr.Zero;
             _selected = new List<string>();
 
@@ -136,8 +136,8 @@ namespace Ch.Cyberduck.Ui.Winforms.Commondialog
                     {
                         if (AcceptFiles)
                         {
-                            var fileName = System.IO.Path.GetFileName(Path);
-                            var length = Math.Min(fileName.Length, InteropUtil.NumberOfFileChars);
+                            string fileName = System.IO.Path.GetFileName(Path);
+                            int length = Math.Min(fileName.Length, InteropUtil.NumberOfFileChars);
                             fileName.CopyTo(0, chars, 0, length);
                             openFileName.lpstrInitialDir = System.IO.Path.GetDirectoryName(Path);
                         }
@@ -167,7 +167,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Commondialog
                         string pathToShow;
                         InitializePathDNE(Path, out openFileName.lpstrInitialDir, out pathToShow);
                         pathToShow = pathToShow ?? "";
-                        var length = Math.Min(pathToShow.Length, InteropUtil.NumberOfFileChars);
+                        int length = Math.Min(pathToShow.Length, InteropUtil.NumberOfFileChars);
                         pathToShow.CopyTo(0, chars, 0, length);
                     }
                 }
@@ -181,8 +181,8 @@ namespace Ch.Cyberduck.Ui.Winforms.Commondialog
 
                 if (!AcceptFiles)
                 {
-                    var str = string.Format("Folders\0*.{0}-{1}\0\0", Guid.NewGuid().ToString("N"),
-                                            Guid.NewGuid().ToString("N"));
+                    string str = string.Format("Folders\0*.{0}-{1}\0\0", Guid.NewGuid().ToString("N"),
+                                               Guid.NewGuid().ToString("N"));
                     filterBuffer = openFileName.lpstrFilter = Marshal.StringToCoTaskMemUni(str);
                 }
                 else
@@ -221,7 +221,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Commondialog
                         HideFileExtension(false);
                         hideFileExtSettingChanged = true;
                     }
-                    var ret = InteropUtil.GetOpenFileNameW(ref openFileName);
+                    bool ret = InteropUtil.GetOpenFileNameW(ref openFileName);
                     //var extErrpr = InteropUtil.CommDlgExtendedError();
                     //InteropUtil.CheckForWin32Error();
 
@@ -233,7 +233,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Commondialog
                     else if (ret)
                     {
                         Marshal.Copy(nativeBuffer, chars, 0, chars.Length);
-                        var firstZeroTerm = ((IList) chars).IndexOf('\0');
+                        int firstZeroTerm = ((IList) chars).IndexOf('\0');
                         if (firstZeroTerm >= 0 && firstZeroTerm <= chars.Length - 1)
                         {
                             Path = new string(chars, 0, firstZeroTerm);
@@ -266,7 +266,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Commondialog
             {
                 if (null != adv)
                 {
-                    var hide = adv.GetValue(HideFileExtensionKey);
+                    object hide = adv.GetValue(HideFileExtensionKey);
                     if (null != hide)
                     {
                         return Convert.ToBoolean(hide);
@@ -336,7 +336,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Commondialog
                     {
                         var notifyData =
                             (InteropUtil.OFNOTIFY) Marshal.PtrToStructure(lparam, typeof (InteropUtil.OFNOTIFY));
-                        var results = ProcessNotifyMessage(hWnd, notifyData);
+                        int results = ProcessNotifyMessage(hWnd, notifyData);
                         if (results != 0)
                         {
                             InteropUtil.SetWindowLongW(hWnd, InteropUtil.DWL_MSGRESULT, results);
@@ -359,9 +359,9 @@ namespace Ch.Cyberduck.Ui.Winforms.Commondialog
                     {
                         unchecked
                         {
-                            var hParent = InteropUtil.AssumeNonZero(InteropUtil.GetParent(hWnd));
-                            var code = HIGH((uint) wParam);
-                            var id = LOW((uint) wParam);
+                            IntPtr hParent = InteropUtil.AssumeNonZero(InteropUtil.GetParent(hWnd));
+                            uint code = HIGH((uint) wParam);
+                            uint id = LOW((uint) wParam);
                             if (code == InteropUtil.BN_CLICKED)
                             {
                                 switch (id)
@@ -426,9 +426,9 @@ namespace Ch.Cyberduck.Ui.Winforms.Commondialog
 
         private bool ProcessSelection(IntPtr handle, bool preferSelection)
         {
-            var shelldll_defview = InteropUtil.GetDlgItem(handle,
-                                                          InteropUtil.ID_FileList);
-            var listview = InteropUtil.GetDlgItem(shelldll_defview, 1);
+            IntPtr shelldll_defview = InteropUtil.GetDlgItem(handle,
+                                                             InteropUtil.ID_FileList);
+            IntPtr listview = InteropUtil.GetDlgItem(shelldll_defview, 1);
             IntPtr focus = InteropUtil.GetFocus();
             if (listview == focus || preferSelection)
             {
@@ -437,9 +437,9 @@ namespace Ch.Cyberduck.Ui.Winforms.Commondialog
             else
             {
                 //check the content of the file combobox
-                var hFileName = InteropUtil.GetDlgItem(handle,
-                                                       InteropUtil.ID_FileNameCombo);
-                var currentText = (InteropUtil.GetWindowTextW(hFileName) ?? "").Trim();
+                IntPtr hFileName = InteropUtil.GetDlgItem(handle,
+                                                          InteropUtil.ID_FileNameCombo);
+                string currentText = (InteropUtil.GetWindowTextW(hFileName) ?? "").Trim();
                 if (!String.IsNullOrEmpty(currentText))
                 {
                     try
@@ -456,8 +456,8 @@ namespace Ch.Cyberduck.Ui.Winforms.Commondialog
                         }
                         else if (!String.IsNullOrEmpty(m_currentFolder))
                         {
-                            var combined = System.IO.Path.Combine(m_currentFolder,
-                                                                  currentText);
+                            string combined = System.IO.Path.Combine(m_currentFolder,
+                                                                     currentText);
                             if (Directory.Exists(combined) || File.Exists(combined))
                             {
                                 //the contents of the text box are a relative path, that points to a 
@@ -486,17 +486,18 @@ namespace Ch.Cyberduck.Ui.Winforms.Commondialog
         {
             m_hWnd = hWnd;
 
-            var hParent = InteropUtil.AssumeNonZero(InteropUtil.GetParent(hWnd));
+            IntPtr hParent = InteropUtil.AssumeNonZero(InteropUtil.GetParent(hWnd));
             InteropUtil.SetWindowSubclass(hParent, m_openFileSubClassDelegate, 0, 0);
 
             //disable and hide the filter combo box
-            var hFilterCombo = InteropUtil.AssumeNonZero(InteropUtil.GetDlgItem(hParent, InteropUtil.ID_FilterCombo));
+            IntPtr hFilterCombo = InteropUtil.AssumeNonZero(InteropUtil.GetDlgItem(hParent, InteropUtil.ID_FilterCombo));
             InteropUtil.EnableWindow(hFilterCombo, false);
             InteropUtil.SendMessage(hParent, InteropUtil.CDM_HIDECONTROL, InteropUtil.ID_FilterCombo, 0);
             InteropUtil.SendMessage(hParent, InteropUtil.CDM_HIDECONTROL, InteropUtil.ID_FilterLabel, 0);
 
             //update the file name label
-            var hFileNameLabel = InteropUtil.AssumeNonZero(InteropUtil.GetDlgItem(hParent, InteropUtil.ID_FileNameLabel));
+            IntPtr hFileNameLabel =
+                InteropUtil.AssumeNonZero(InteropUtil.GetDlgItem(hParent, InteropUtil.ID_FileNameLabel));
 
             if (FileNameLabel != "")
             {
@@ -504,8 +505,8 @@ namespace Ch.Cyberduck.Ui.Winforms.Commondialog
             }
 
             //find the button controls in the parent
-            var hOkButton = InteropUtil.AssumeNonZero(InteropUtil.GetDlgItem(hParent, InteropUtil.IDOK));
-            var hCancelButton = InteropUtil.AssumeNonZero(InteropUtil.GetDlgItem(hParent, InteropUtil.IDCANCEL));
+            IntPtr hOkButton = InteropUtil.AssumeNonZero(InteropUtil.GetDlgItem(hParent, InteropUtil.IDOK));
+            IntPtr hCancelButton = InteropUtil.AssumeNonZero(InteropUtil.GetDlgItem(hParent, InteropUtil.IDCANCEL));
 
             //We don't want the accelerator keys for the ok and cancel buttons to work, because
             //they are not shown on the dialog. However, we still want the buttons enabled
@@ -515,8 +516,8 @@ namespace Ch.Cyberduck.Ui.Winforms.Commondialog
             InteropUtil.SetWindowTextW(hCancelButton, "");
 
             //find our button controls            
-            var hSelectButton = InteropUtil.AssumeNonZero(InteropUtil.GetDlgItem(hWnd, InteropUtil.ID_SELECT));
-            var hCustomCancelButton =
+            IntPtr hSelectButton = InteropUtil.AssumeNonZero(InteropUtil.GetDlgItem(hWnd, InteropUtil.ID_SELECT));
+            IntPtr hCustomCancelButton =
                 InteropUtil.AssumeNonZero(InteropUtil.GetDlgItem(hWnd, InteropUtil.ID_CUSTOM_CANCEL));
 
             if (!String.IsNullOrEmpty(SelectLabel))
@@ -532,19 +533,19 @@ namespace Ch.Cyberduck.Ui.Winforms.Commondialog
             InteropUtil.LoadFontFrom(hSelectButton, hOkButton);
             InteropUtil.LoadFontFrom(hCustomCancelButton, hCancelButton);
 
-            var cancelLoc = InteropUtil.GetWindowPlacement(hCancelButton);
+            InteropUtil.WINDOWPLACEMENT cancelLoc = InteropUtil.GetWindowPlacement(hCancelButton);
 
             //hide the ok and cancel buttons
             InteropUtil.SendMessage(hParent, InteropUtil.CDM_HIDECONTROL, InteropUtil.IDOK, 0);
             InteropUtil.SendMessage(hParent, InteropUtil.CDM_HIDECONTROL, InteropUtil.IDCANCEL, 0);
 
             //expand the file name combo to take up the space left by the OK and cancel buttons.
-            var hFileName = InteropUtil.AssumeNonZero(InteropUtil.GetDlgItem(hParent, InteropUtil.ID_FileNameCombo));
-            var fileNameLoc = InteropUtil.GetWindowPlacement(hFileName);
+            IntPtr hFileName = InteropUtil.AssumeNonZero(InteropUtil.GetDlgItem(hParent, InteropUtil.ID_FileNameCombo));
+            InteropUtil.WINDOWPLACEMENT fileNameLoc = InteropUtil.GetWindowPlacement(hFileName);
             fileNameLoc.Right = InteropUtil.GetWindowPlacement(hOkButton).Right;
             InteropUtil.SetWindowPlacement(hFileName, ref fileNameLoc);
 
-            var parentLoc = InteropUtil.GetWindowPlacement(hParent);
+            InteropUtil.WINDOWPLACEMENT parentLoc = InteropUtil.GetWindowPlacement(hParent);
 
             //subtract the height of the missing cancel button
             parentLoc.Bottom -= (cancelLoc.Bottom - cancelLoc.Top);
@@ -552,13 +553,13 @@ namespace Ch.Cyberduck.Ui.Winforms.Commondialog
 
             //move the select and custom cancel buttons to the right hand side of the window:
 
-            var selectLoc = InteropUtil.GetWindowPlacement(hSelectButton);
-            var customCancelLoc = InteropUtil.GetWindowPlacement(hCustomCancelButton);
+            InteropUtil.WINDOWPLACEMENT selectLoc = InteropUtil.GetWindowPlacement(hSelectButton);
+            InteropUtil.WINDOWPLACEMENT customCancelLoc = InteropUtil.GetWindowPlacement(hCustomCancelButton);
             m_cancelWidth = customCancelLoc.Right - customCancelLoc.Left;
             m_selectWidth = selectLoc.Right - selectLoc.Left;
             m_buttonGap = customCancelLoc.Left - selectLoc.Right;
 
-            var ctrlLoc = InteropUtil.GetWindowPlacement(hWnd);
+            InteropUtil.WINDOWPLACEMENT ctrlLoc = InteropUtil.GetWindowPlacement(hWnd);
             ctrlLoc.Right = fileNameLoc.Right;
 
             //ResizeCustomControl(hWnd, fileNameLoc.Right, hCustomCancelButton, hSelectButton);
@@ -569,21 +570,22 @@ namespace Ch.Cyberduck.Ui.Winforms.Commondialog
         {
             if (hWnd == m_hWnd)
             {
-                var hSelectButton =
+                IntPtr hSelectButton =
                     InteropUtil.AssumeNonZero(InteropUtil.GetDlgItem(InteropUtil.AssumeNonZero(hWnd),
                                                                      InteropUtil.ID_SELECT));
-                var hOkButton =
+                IntPtr hOkButton =
                     InteropUtil.AssumeNonZero(InteropUtil.GetDlgItem(InteropUtil.AssumeNonZero(hWnd),
                                                                      InteropUtil.ID_CUSTOM_CANCEL));
 
-                var hParent = InteropUtil.AssumeNonZero(InteropUtil.GetParent(hWnd));
-                var fileName = InteropUtil.AssumeNonZero(InteropUtil.GetDlgItem(hParent, InteropUtil.ID_FileNameCombo));
+                IntPtr hParent = InteropUtil.AssumeNonZero(InteropUtil.GetParent(hWnd));
+                IntPtr fileName =
+                    InteropUtil.AssumeNonZero(InteropUtil.GetDlgItem(hParent, InteropUtil.ID_FileNameCombo));
 
                 /*var right = fileName.GetWindowPlacement().Right;
                 var top = hSelectButton.GetWindowPlacement().Top;*/
 
                 var rect = new InteropUtil.RECT();
-                var selectRect = InteropUtil.GetWindowPlacement(hSelectButton);
+                InteropUtil.WINDOWPLACEMENT selectRect = InteropUtil.GetWindowPlacement(hSelectButton);
 
                 rect.top = selectRect.Top;
                 rect.bottom = selectRect.Bottom;
@@ -600,12 +602,12 @@ namespace Ch.Cyberduck.Ui.Winforms.Commondialog
 
             InteropUtil.AssumeNonZero(hWnd);
 
-            var wndLoc = InteropUtil.GetWindowPlacement(hWnd);
+            InteropUtil.WINDOWPLACEMENT wndLoc = InteropUtil.GetWindowPlacement(hWnd);
 
             wndLoc.Right = rect.right;
             InteropUtil.SetWindowPlacement(hWnd, ref wndLoc);
 
-            foreach (var hBtn in buttons)
+            foreach (IntPtr hBtn in buttons)
             {
                 int btnRight, btnWidth;
 
@@ -636,7 +638,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Commondialog
             //the custom buttons, and thus avoids the problem.
             //
             //I'm not sure why this wasn't an issue on Vista. 
-            var hRgn = InteropUtil.CreateRectRgnIndirect(ref rect);
+            IntPtr hRgn = InteropUtil.CreateRectRgnIndirect(ref rect);
             try
             {
                 if (InteropUtil.SetWindowRgn(hWnd, hRgn, true) == 0)
@@ -657,11 +659,11 @@ namespace Ch.Cyberduck.Ui.Winforms.Commondialog
         private void PositionButton(IntPtr hWnd, int right, int width)
         {
             InteropUtil.AssumeNonZero(hWnd);
-            var id = InteropUtil.GetDlgCtrlID(hWnd);
+            int id = InteropUtil.GetDlgCtrlID(hWnd);
 
             //hWnd.BringWindowToTop();
 
-            var buttonLoc = InteropUtil.GetWindowPlacement(hWnd);
+            InteropUtil.WINDOWPLACEMENT buttonLoc = InteropUtil.GetWindowPlacement(hWnd);
 
             buttonLoc.Right = right;
             buttonLoc.Left = buttonLoc.Right - width;
@@ -678,8 +680,9 @@ namespace Ch.Cyberduck.Ui.Winforms.Commondialog
                         //CDM_GETFOLDERPATH returns garbage for some standard folders like 'Libraries'
                         //var newFolder = GetTextFromCommonDialog(InteropUtil.AssumeNonZero(InteropUtil.GetParent(hWnd)),
                         //                  InteropUtil.CDM_GETFOLDERPATH);
-                        var newFolder = GetTextFromCommonDialog(InteropUtil.AssumeNonZero(InteropUtil.GetParent(hWnd)),
-                                                                InteropUtil.CDM_GETFILEPATH);
+                        string newFolder =
+                            GetTextFromCommonDialog(InteropUtil.AssumeNonZero(InteropUtil.GetParent(hWnd)),
+                                                    InteropUtil.CDM_GETFILEPATH);
                         /*
                         if (m_currentFolder != null && newFolder != null &&
                             Util.PathContains(newFolder, m_currentFolder))
@@ -689,7 +692,21 @@ namespace Ch.Cyberduck.Ui.Winforms.Commondialog
                         */
 
                         m_currentFolder = newFolder;
-                        var fileNameCombo =
+
+                        /* #5841 On Windows XP when changing the folder 'newFolder' contains the selected directory twice (e.g. c:\temp\i386\i386) 
+                           HACK
+                         */
+                        if (!Directory.Exists(newFolder))
+                        {
+                            String lastPart = System.IO.Path.GetFileName(newFolder);
+                            String parent = Directory.GetParent(newFolder).FullName;
+                            String parentFile = System.IO.Path.GetFileName(parent);
+                            if (lastPart.Equals(parentFile))
+                            {
+                                m_currentFolder = parent;
+                            }
+                        }
+                        IntPtr fileNameCombo =
                             InteropUtil.AssumeNonZero(
                                 InteropUtil.GetDlgItem(InteropUtil.AssumeNonZero(InteropUtil.GetParent(hWnd)),
                                                        InteropUtil.ID_FileNameCombo));
@@ -700,7 +717,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Commondialog
                         m_hasDirChangeFired = true;
 
                         //refresh the file list to make sure that the extension is shown properly
-                        var hParent = InteropUtil.AssumeNonZero(InteropUtil.GetParent(hWnd));
+                        IntPtr hParent = InteropUtil.AssumeNonZero(InteropUtil.GetParent(hWnd));
                         SetForegroundWindow(hParent);
                         SendKeys.SendWait("{F5}");
 
@@ -713,15 +730,15 @@ namespace Ch.Cyberduck.Ui.Winforms.Commondialog
                             return 1;
                         }
 
-                        var hParent = InteropUtil.AssumeNonZero(InteropUtil.GetParent(hWnd));
+                        IntPtr hParent = InteropUtil.AssumeNonZero(InteropUtil.GetParent(hWnd));
                         ProcessSelection(hParent, false);
 
                         break;
                     }
                 case InteropUtil.CDN_INITDONE:
                     {
-                        var hParent = InteropUtil.GetParent(hWnd);
-                        var hFile =
+                        IntPtr hParent = InteropUtil.GetParent(hWnd);
+                        IntPtr hFile =
                             InteropUtil.AssumeNonZero(InteropUtil.GetDlgItem(InteropUtil.AssumeNonZero(hParent),
                                                                              InteropUtil.ID_FileNameCombo));
                         InteropUtil.SetFocus(hFile);
@@ -734,13 +751,13 @@ namespace Ch.Cyberduck.Ui.Winforms.Commondialog
         private string GetTextFromCommonDialog(IntPtr hWnd, uint msg)
         {
             string str = null;
-            var buffer = Marshal.AllocCoTaskMem(2*InteropUtil.NumberOfFileChars);
+            IntPtr buffer = Marshal.AllocCoTaskMem(2*InteropUtil.NumberOfFileChars);
             try
             {
                 InteropUtil.SendMessage(hWnd, msg, InteropUtil.NumberOfFileChars, unchecked((uint) buffer));
                 var chars = new char[InteropUtil.NumberOfFileChars];
                 Marshal.Copy(buffer, chars, 0, chars.Length);
-                var firstZeroTerm = ((IList) chars).IndexOf('\0');
+                int firstZeroTerm = ((IList) chars).IndexOf('\0');
 
                 if (firstZeroTerm >= 0 && firstZeroTerm <= chars.Length - 1)
                 {
@@ -771,8 +788,8 @@ namespace Ch.Cyberduck.Ui.Winforms.Commondialog
                 {
                     var nmListView =
                         (InteropUtil.NMLISTVIEW) Marshal.PtrToStructure(lParam, typeof (InteropUtil.NMLISTVIEW));
-                    var oldSelected = (nmListView.uOldState & InteropUtil.LVIS_SELECTED) != 0;
-                    var newSelected = (nmListView.uNewState & InteropUtil.LVIS_SELECTED) != 0;
+                    bool oldSelected = (nmListView.uOldState & InteropUtil.LVIS_SELECTED) != 0;
+                    bool newSelected = (nmListView.uNewState & InteropUtil.LVIS_SELECTED) != 0;
                     if (!oldSelected && newSelected)
                     {
                         if (!m_suppressSelectionChange)
@@ -781,10 +798,10 @@ namespace Ch.Cyberduck.Ui.Winforms.Commondialog
                             //so we want to look and see if the selected item is a folder, and if so
                             //change the text of the item box to be the item on the folder. But, before we do that
                             //we want to make sure that the box isn't currently focused.
-                            var hParent = InteropUtil.GetParent(hWnd);
-                            var hFNCombo = InteropUtil.GetDlgItem(hParent, InteropUtil.ID_FileNameCombo);
-                            var hFNEditBox = InteropUtil.GetDlgItem(hParent, InteropUtil.ID_FileNameTextBox);
-                            var hFocus = InteropUtil.GetFocus();
+                            IntPtr hParent = InteropUtil.GetParent(hWnd);
+                            IntPtr hFNCombo = InteropUtil.GetDlgItem(hParent, InteropUtil.ID_FileNameCombo);
+                            IntPtr hFNEditBox = InteropUtil.GetDlgItem(hParent, InteropUtil.ID_FileNameTextBox);
+                            IntPtr hFocus = InteropUtil.GetFocus();
 
                             if
                                 (
@@ -808,7 +825,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Commondialog
             {
                 var lvitem = new InteropUtil.LVITEM();
                 lvitem.mask = InteropUtil.LVIF_TEXT;
-                var nativeBuffer = Marshal.AllocCoTaskMem(InteropUtil.NumberOfFileChars*2);
+                IntPtr nativeBuffer = Marshal.AllocCoTaskMem(InteropUtil.NumberOfFileChars*2);
                 for (int i = 0; i < InteropUtil.NumberOfFileChars; ++i)
                 {
                     Marshal.WriteInt16(nativeBuffer, i*2, '\0');
@@ -820,8 +837,8 @@ namespace Ch.Cyberduck.Ui.Winforms.Commondialog
                     Marshal.WriteInt16(nativeBuffer, 0);
                     lvitem.pszText = nativeBuffer;
                     lvitem.cchTextMax = InteropUtil.NumberOfFileChars;
-                    var length = InteropUtil.SendListViewMessage(hListView, InteropUtil.LVM_GETITEMTEXT,
-                                                                 (uint) selectedIndex, ref lvitem);
+                    uint length = InteropUtil.SendListViewMessage(hListView, InteropUtil.LVM_GETITEMTEXT,
+                                                                  (uint) selectedIndex, ref lvitem);
                     name = Marshal.PtrToStringUni(lvitem.pszText, (int) length);
                 }
                 finally
@@ -833,7 +850,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Commondialog
                 {
                     try
                     {
-                        var path = System.IO.Path.Combine(m_currentFolder, name);
+                        string path = System.IO.Path.Combine(m_currentFolder, name);
                         if (Directory.Exists(path))
                         {
                             InteropUtil.SetWindowTextW(hFNCombo, name);
@@ -852,7 +869,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Commondialog
             {
                 var lvitem = new InteropUtil.LVITEM();
                 lvitem.mask = InteropUtil.LVIF_TEXT;
-                var nativeBuffer = Marshal.AllocCoTaskMem(InteropUtil.NumberOfFileChars*2);
+                IntPtr nativeBuffer = Marshal.AllocCoTaskMem(InteropUtil.NumberOfFileChars*2);
                 for (int i = 0; i < InteropUtil.NumberOfFileChars; ++i)
                 {
                     Marshal.WriteInt16(nativeBuffer, i*2, '\0');
@@ -864,8 +881,8 @@ namespace Ch.Cyberduck.Ui.Winforms.Commondialog
                     Marshal.WriteInt16(nativeBuffer, 0);
                     lvitem.pszText = nativeBuffer;
                     lvitem.cchTextMax = InteropUtil.NumberOfFileChars;
-                    var length = InteropUtil.SendListViewMessageInt(hListView, InteropUtil.LVM_GETITEMTEXT,
-                                                                    selectedIndex, ref lvitem);
+                    uint length = InteropUtil.SendListViewMessageInt(hListView, InteropUtil.LVM_GETITEMTEXT,
+                                                                     selectedIndex, ref lvitem);
                     name = Marshal.PtrToStringUni(lvitem.pszText, (int) length);
                 }
                 finally
@@ -877,7 +894,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Commondialog
                 {
                     try
                     {
-                        var path = System.IO.Path.Combine(m_currentFolder, name);
+                        string path = System.IO.Path.Combine(m_currentFolder, name);
 
                         return path;
                         if (Directory.Exists(path))
@@ -912,7 +929,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Commondialog
                     {
                         unchecked
                         {
-                            var id = InteropUtil.GetDlgCtrlID(lParam);
+                            int id = InteropUtil.GetDlgCtrlID(lParam);
 
                             if (LOW((uint) wParam) == InteropUtil.WM_CREATE &&
                                 (id == InteropUtil.ID_FileList || id == 0))
@@ -939,7 +956,11 @@ namespace Ch.Cyberduck.Ui.Winforms.Commondialog
         [DllImport("User32.dll", SetLastError = true)]
         public static extern int SetForegroundWindow(IntPtr hwnd);
 
+        #region Nested type: CalcPosDelegate
+
         private delegate void CalcPosDelegate(
             SelectFileAndFolderDialog @this, int baseRight, out int right, out int width);
+
+        #endregion
     }
 }
