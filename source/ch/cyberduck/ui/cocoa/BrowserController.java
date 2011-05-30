@@ -3727,7 +3727,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             this.interrupt();
         }
         final Session session = this.getSession();
-        this.background(new AbstractBackgroundAction() {
+        this.background(new AbstractBackgroundAction<Void>() {
             public void run() {
                 session.close();
             }

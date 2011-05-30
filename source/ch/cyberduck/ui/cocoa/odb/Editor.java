@@ -58,7 +58,7 @@ public abstract class Editor extends AbstractEditor {
      * Open the file in the parent directory
      */
     @Override
-    public void open(final BackgroundAction download) {
+    public void open(final BackgroundAction<Void> download) {
         controller.background(new BrowserBackgroundAction(controller) {
             public void run() {
                 download.run();
@@ -96,7 +96,7 @@ public abstract class Editor extends AbstractEditor {
      * Upload the edited file to the server
      */
     @Override
-    protected void save(final BackgroundAction upload) {
+    protected void save(final BackgroundAction<Void> upload) {
         log.debug("save");
         controller.background(new BrowserBackgroundAction(controller) {
             public void run() {

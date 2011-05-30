@@ -304,7 +304,7 @@ public class ConnectionController extends SheetController {
     private void reachable() {
         final String hostname = hostField.stringValue();
         if(StringUtils.isNotBlank(hostname)) {
-            this.background(new AbstractBackgroundAction() {
+            this.background(new AbstractBackgroundAction<Void>() {
                 boolean reachable = false;
 
                 public void run() {

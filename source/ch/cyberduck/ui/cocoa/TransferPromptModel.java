@@ -140,7 +140,7 @@ public abstract class TransferPromptModel extends OutlineDataSource {
                 isLoadingListingInBackground.add(path);
                 // Reloading a workdir that is not cached yet would cause the interface to freeze;
                 // Delay until path is cached in the background
-                controller.background(new AbstractBackgroundAction() {
+                controller.background(new AbstractBackgroundAction<Void>() {
                     public void run() {
                         transfer.children(path);
                     }

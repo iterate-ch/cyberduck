@@ -272,7 +272,7 @@ public class BookmarkController extends WindowController {
      */
     private void updateFavicon() {
         if(Preferences.instance().getBoolean("bookmark.favicon.download")) {
-            this.background(new AbstractBackgroundAction() {
+            this.background(new AbstractBackgroundAction<Void>() {
 
                 public void run() {
                     NSImage img;
@@ -683,7 +683,7 @@ public class BookmarkController extends WindowController {
 
     private void reachable() {
         if(StringUtils.isNotBlank(host.getHostname())) {
-            this.background(new AbstractBackgroundAction() {
+            this.background(new AbstractBackgroundAction<Void>() {
                 boolean reachable = false;
 
                 public void run() {

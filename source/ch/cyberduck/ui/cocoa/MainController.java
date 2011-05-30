@@ -542,7 +542,7 @@ public class MainController extends BundleController implements NSApplication.De
             }
             else {
                 // Upload file
-                this.background(new AbstractBackgroundAction() {
+                this.background(new AbstractBackgroundAction<Void>() {
                     public void run() {
                         // Wait until bookmarks are loaded
                         try {
@@ -836,7 +836,7 @@ public class MainController extends BundleController implements NSApplication.De
             this.showTransferQueueClicked(null);
         }
         if(Preferences.instance().getBoolean("browser.serialize")) {
-            this.background(new AbstractBackgroundAction() {
+            this.background(new AbstractBackgroundAction<Void>() {
                 public void run() {
                     sessions.load();
                 }
@@ -851,7 +851,7 @@ public class MainController extends BundleController implements NSApplication.De
             });
         }
 
-        this.background(new AbstractBackgroundAction() {
+        this.background(new AbstractBackgroundAction<Void>() {
             public void run() {
                 final BookmarkCollection c = BookmarkCollection.defaultCollection();
                 c.load();
@@ -874,7 +874,7 @@ public class MainController extends BundleController implements NSApplication.De
                 return "Loading Bookmarks";
             }
         });
-        this.background(new AbstractBackgroundAction() {
+        this.background(new AbstractBackgroundAction<Void>() {
             public void run() {
                 HistoryCollection.defaultCollection().load();
             }
@@ -884,7 +884,7 @@ public class MainController extends BundleController implements NSApplication.De
                 return "Loading History";
             }
         });
-        this.background(new AbstractBackgroundAction() {
+        this.background(new AbstractBackgroundAction<Void>() {
             public void run() {
                 TransferCollection.defaultCollection().load();
             }
@@ -894,7 +894,7 @@ public class MainController extends BundleController implements NSApplication.De
                 return "Loading Transfers";
             }
         });
-        this.background(new AbstractBackgroundAction() {
+        this.background(new AbstractBackgroundAction<Void>() {
             public void run() {
                 // Make sure we register to Growl first
                 Growl.instance().register();
@@ -978,14 +978,14 @@ public class MainController extends BundleController implements NSApplication.De
                 "SUUpdaterWillRestartNotificationName",
                 null);
         if(Preferences.instance().getBoolean("rendezvous.enable")) {
-            this.background(new AbstractBackgroundAction() {
+            this.background(new AbstractBackgroundAction<Void>() {
                 public void run() {
                     RendezvousFactory.instance().init();
                 }
             });
         }
         // Import thirdparty bookmarks.
-        this.background(new AbstractBackgroundAction() {
+        this.background(new AbstractBackgroundAction<Void>() {
             private List<ThirdpartyBookmarkCollection> bookmarks = Collections.emptyList();
 
             public void run() {
@@ -1046,7 +1046,7 @@ public class MainController extends BundleController implements NSApplication.De
                         new FlowBookmarkCollection(), new InterarchyBookmarkCollection(), new CrossFtpBookmarkCollection(), new FireFtpBookmarkCollection());
             }
         });
-        this.background(new AbstractBackgroundAction() {
+        this.background(new AbstractBackgroundAction<Void>() {
             public void run() {
                 // Wait until bookmarks are loaded
                 try {

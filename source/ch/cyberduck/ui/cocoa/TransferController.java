@@ -948,7 +948,7 @@ public class TransferController extends WindowController implements NSToolbar.De
         for(NSUInteger index = selected.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = selected.indexGreaterThanIndex(index)) {
             final Transfer transfer = transferTableModel.getSource().get(index.intValue());
             if(transfer.isRunning()) {
-                this.background(new AbstractBackgroundAction() {
+                this.background(new AbstractBackgroundAction<Void>() {
                     public void run() {
                         transfer.cancel();
                     }
@@ -962,7 +962,7 @@ public class TransferController extends WindowController implements NSToolbar.De
         final Collection<Transfer> transfers = transferTableModel.getSource();
         for(final Transfer transfer : transfers) {
             if(transfer.isRunning()) {
-                this.background(new AbstractBackgroundAction() {
+                this.background(new AbstractBackgroundAction<Void>() {
                     public void run() {
                         transfer.cancel();
                     }
