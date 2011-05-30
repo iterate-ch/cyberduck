@@ -84,6 +84,11 @@ public class EditorFactory {
         }
         if(StringUtils.isEmpty(EditorFactory.getApplicationName(
                 Preferences.instance().getProperty("editor.bundleIdentifier")))) {
+            if(StringUtils.isEmpty(EditorFactory.getApplicationName(
+                    Preferences.instance().getProperty("com.apple.TextEdit")))) {
+                log.warn("com.apple.TextEdit missing in installation");
+                return null;
+            }
             return "com.apple.TextEdit";
         }
         return Preferences.instance().getProperty("editor.bundleIdentifier");
