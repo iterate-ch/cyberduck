@@ -88,7 +88,7 @@ public abstract class AbstractEditor {
      * Open the file in the parent directory
      */
     public void open() {
-        BackgroundAction background = new AbstractBackgroundAction() {
+        BackgroundAction<Void> background = new AbstractBackgroundAction<Void>() {
             public void run() {
                 // Delete any existing file which might be used by a watch editor already
                 edited.getLocal().delete(Preferences.instance().getBoolean("editor.file.trash"));
@@ -136,10 +136,10 @@ public abstract class AbstractEditor {
     /**
      * @param background
      */
-    protected abstract void open(BackgroundAction background);
+    protected abstract void open(BackgroundAction<Void> background);
 
     public void save() {
-        BackgroundAction background = new AbstractBackgroundAction() {
+        BackgroundAction<Void> background = new AbstractBackgroundAction<Void>() {
             public void run() {
                 // If checksum still the same no need for save
                 edited.getSession().message(MessageFormat.format(
@@ -188,5 +188,5 @@ public abstract class AbstractEditor {
     /**
      * @param background
      */
-    protected abstract void save(BackgroundAction background);
+    protected abstract void save(BackgroundAction<Void> background);
 }
