@@ -114,7 +114,7 @@ public class CFPath extends CloudPath {
 
     @Override
     public boolean exists() {
-        if(this.isRoot()) {
+        if(super.exists()) {
             return true;
         }
         if(this.isContainer()) {

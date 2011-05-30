@@ -276,7 +276,7 @@ public class AzurePath extends CloudPath {
 
     @Override
     public boolean exists() {
-        if(this.isRoot()) {
+        if(super.exists()) {
             return true;
         }
         try {
