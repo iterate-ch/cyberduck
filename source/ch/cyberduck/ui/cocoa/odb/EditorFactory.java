@@ -76,14 +76,15 @@ public class EditorFactory {
      * Determine the default editor set
      *
      * @return The bundle identifier of the default editor configured in
-     *         Preferences or null if not installed.
+     *         Preferences or com.apple.TextEdit if not installed.
      */
     public static String defaultEditor() {
         if(log.isTraceEnabled()) {
             log.trace("defaultEditor");
         }
-        if(StringUtils.isEmpty(EditorFactory.getApplicationName(Preferences.instance().getProperty("editor.bundleIdentifier")))) {
-            return null;
+        if(StringUtils.isEmpty(EditorFactory.getApplicationName(
+                Preferences.instance().getProperty("editor.bundleIdentifier")))) {
+            return "com.apple.TextEdit";
         }
         return Preferences.instance().getProperty("editor.bundleIdentifier");
     }
