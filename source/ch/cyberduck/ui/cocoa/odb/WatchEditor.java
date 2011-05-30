@@ -148,4 +148,10 @@ public class WatchEditor extends Editor implements FileWatcherListener {
         }
         monitor.removeListener(this);
     }
+
+    public void fileCreated(Local file) {
+        if(log.isInfoEnabled()) {
+            log.info("fileCreated:" + file);
+        }
+    }
 }

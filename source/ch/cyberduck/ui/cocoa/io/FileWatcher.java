@@ -93,9 +93,14 @@ public class FileWatcher {
                                         l.fileWritten(f);
                                     }
                                 }
-                                if(ENTRY_DELETE == kind) {
+                                else if(ENTRY_DELETE == kind) {
                                     for(FileWatcherListener l : listeners.toArray(new FileWatcherListener[listeners.size()])) {
                                         l.fileDeleted(f);
+                                    }
+                                }
+                                else if(ENTRY_CREATE == kind) {
+                                    for(FileWatcherListener l : listeners.toArray(new FileWatcherListener[listeners.size()])) {
+                                        l.fileCreated(f);
                                     }
                                 }
                             }
@@ -131,6 +136,7 @@ public class FileWatcher {
     }
 
     public void removeListener(final FileWatcherListener listener) {
+        listeners.remove(listener);
         if(listeners.isEmpty()) {
             log.debug("unwatch:" + file);
             try {

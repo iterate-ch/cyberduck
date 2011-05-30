@@ -42,4 +42,10 @@ public interface FileWatcherListener {
      * @param file
      */
     public void fileDeleted(Local file);
+
+    /**
+     *
+     * @param file
+     */
+    public void fileCreated(Local file);
 }
