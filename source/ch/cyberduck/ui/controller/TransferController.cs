@@ -1,4 +1,4 @@
-﻿﻿//
+﻿// 
 // Copyright (c) 2010-2011 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
@@ -106,7 +106,6 @@ namespace Ch.Cyberduck.Ui.Controller
                                if (_transferMap.TryGetValue(transfer, out progressController))
                                {
                                    View.RemoveTransfer(progressController.View);
-                                   _transferMap.Remove(transfer);
                                }
                            }
                        });
@@ -258,7 +257,6 @@ namespace Ch.Cyberduck.Ui.Controller
                 if (!t.isRunning() && t.isComplete())
                 {
                     TransferCollection.defaultCollection().remove(t);
-                    View.RemoveTransfer(pair.Value.View);
                     toRemove.Add(t);
                 }
             }
