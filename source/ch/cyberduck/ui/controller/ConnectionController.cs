@@ -458,6 +458,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 protocols.Add(new KeyValueIconTriple<Protocol, string>(p, p.getDescription(), p.getIdentifier()));
             }
             View.PopulateProtocols(protocols);
+            View.SelectedProtocol = ProtocolFactory.forName(Preferences.instance().getProperty("connection.protocol.default"));
         }
 
         private void InitConnectModes()
