@@ -229,11 +229,10 @@ namespace Ch.Cyberduck.Ui.Winforms
                               RendezvousCollection.defaultCollection().removeListener(bonjourMenuCollectionListener);
                           };
 
-            IActiveMenu menu = ActiveMenu.GetInstance(this);
-            ActiveButton button = new ActiveButton();
-            button.Text = " " + Locale.localizedString("Get a donation key!", "License") + " ";
-            button.Click += delegate { Utils.StartProcess(Preferences.instance().getProperty("website.donate")); };
-            menu.Items.Add(button);
+            if (LicenseFactory.find().Equals(LicenseFactory.EMPTY_LICENSE))
+            {
+                AddDonateButton();
+            }
         }
 
         public Image Favicon
@@ -924,6 +923,15 @@ namespace Ch.Cyberduck.Ui.Winforms
         public bool SecureConnection
         {
             set { securityToolStripStatusLabel.Image = IconCache.Instance.IconForName(value ? "locked" : "unlocked"); }
+        }
+
+        private void AddDonateButton()
+        {
+            IActiveMenu menu = ActiveMenu.GetInstance(this);
+            ActiveButton button = new ActiveButton();
+            button.Text = " " + Locale.localizedString("Get a donation key!", "License") + " ";
+            button.Click += delegate { Utils.StartProcess(Preferences.instance().getProperty("website.donate")); };
+            menu.Items.Add(button);
         }
 
         private void SetupComparators()
