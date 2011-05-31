@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2011 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -376,8 +376,9 @@ namespace Ch.Cyberduck.Core
             return map;
         }
 
-        public static String GetApplicationNameForExe(string exe)        
-        {   //Vista/Win7
+        public static String GetApplicationNameForExe(string exe)
+        {
+            //Vista/Win7
             using (
                 RegistryKey muiCache =
                     Registry.ClassesRoot.OpenSubKey(
@@ -406,7 +407,7 @@ namespace Ch.Cyberduck.Core
                     {
                         if (valueName.Equals(exe, StringComparison.CurrentCultureIgnoreCase))
                         {
-                            return (string)muiCache.GetValue(valueName);
+                            return (string) muiCache.GetValue(valueName);
                         }
                     }
                 }

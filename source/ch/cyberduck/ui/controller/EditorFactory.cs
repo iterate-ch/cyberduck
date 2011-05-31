@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2011 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -51,6 +51,28 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             editor.Editor = app;
             return editor;
+        }
+
+        public static string DefaultEditCommand(Local local)
+        {
+            bool alwaysUseDefault = Preferences.instance().getBoolean("editor.alwaysUseDefault");
+            Editor.AvailableEditor defaultEditor = Editor.DefaultEditor();
+            if (alwaysUseDefault && defaultEditor != null)
+            {
+                return defaultEditor.Location;
+            }
+
+            string defaultApplication = local.getDefaultApplication();
+            if (null != defaultApplication)
+            {
+                return defaultApplication;
+            }
+
+            if (defaultEditor != null)
+            {
+                return defaultEditor.Location;
+            }
+            return null;
         }
     }
 }

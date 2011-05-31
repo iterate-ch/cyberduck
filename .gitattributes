@@ -1043,6 +1043,8 @@ ko.lproj/S3.strings -text svneol=unset#text/utf-16
 ko.lproj/ServicesMenu.strings -text svneol=unset#text/utf-16
 ko.lproj/Status.strings -text svneol=unset#text/utf-16
 ko.lproj/Transfer.strings -text svneol=unset#text/utf-16
+lib/ActiveButtons.dll -text
+lib/ActiveButtons.pdb -text
 lib/AutomaticUpdater.dll -text
 lib/AutomaticUpdater.xml -text
 lib/ExceptionReporter.WinForms.dll -text

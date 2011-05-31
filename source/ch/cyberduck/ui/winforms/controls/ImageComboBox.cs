@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2011 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -63,9 +63,11 @@ namespace Ch.Cyberduck.Ui.Winforms.Controls
                 int xOffset = _icImagList.ImageSize.Width + 3;
 
                 e.Graphics.DrawRectangle(new Pen(Color.White), e.Bounds);
-                if (e.State == DrawItemState.Selected){
-                    e.Graphics.FillRectangle(new SolidBrush(Color.FromKnownColor(KnownColor.Highlight)), e.Bounds);                    
-                } else
+                if (e.State == DrawItemState.Selected)
+                {
+                    e.Graphics.FillRectangle(new SolidBrush(Color.FromKnownColor(KnownColor.Highlight)), e.Bounds);
+                }
+                else
                 {
                     e.Graphics.FillRectangle(new SolidBrush(e.BackColor), e.Bounds);
                 }
@@ -73,7 +75,8 @@ namespace Ch.Cyberduck.Ui.Winforms.Controls
                 {
                     ICImageList.Draw(e.Graphics, e.Bounds.Left + 1, e.Bounds.Top + yOffset,
                                      ICImageList.Images.IndexOfKey(iconKey));
-                } else
+                }
+                else
                 {
                     xOffset = 0;
                 }
@@ -91,7 +94,11 @@ namespace Ch.Cyberduck.Ui.Winforms.Controls
         private string IconKey(object item)
         {
             PropertyInfo property = item.GetType().GetProperty(IconMember);
-            return (string) property.GetValue(item, null);
+            if (property != null)
+            {
+                return (string) property.GetValue(item, null);
+            }
+            return null;
         }
     }
 

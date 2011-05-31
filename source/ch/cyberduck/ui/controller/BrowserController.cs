@@ -271,7 +271,7 @@ namespace Ch.Cyberduck.Ui.Controller
             View.ToolbarVisible = Preferences.instance().getBoolean("browser.toolbar");
             View.LogDrawerVisible = Preferences.instance().getBoolean("browser.logDrawer.isOpen");
 
-            View.GetEditors += View_GetEditors;
+            View.GetEditorsForSelection += View_GetEditorsForSelection;
             View.GetBookmarks += View_GetBookmarks;
             View.GetHistory += View_GetHistory;
             View.GetBonjourHosts += View_GetBonjourHosts;
@@ -464,7 +464,7 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
-        private IList<KeyValuePair<string, string>> View_GetEditors()
+        private IList<KeyValuePair<string, string>> View_GetEditorsForSelection()
         {
             Path p = SelectedPath;
             if (null != p)
@@ -2033,15 +2033,11 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 if (IsEditable(selected))
                 {
-                    string command = selected.getLocal().getDefaultApplication();
-                    if (null != command)
+                    string editCommand = EditorFactory.DefaultEditCommand(selected.getLocal());                    
+                    if (Utils.IsNotBlank(editCommand))
                     {
-                        Bitmap res = IconCache.Instance.ExtractIconForFilename(command);
-                        if (null != res)
-                        {
-                            View.EditIcon = res;
-                            return;
-                        }
+                        View.EditIcon = IconCache.Instance.GetFileIconFromExecutable(editCommand, IconCache.IconSize.Large).ToBitmap();
+                        return;
                     }
                 }
             }

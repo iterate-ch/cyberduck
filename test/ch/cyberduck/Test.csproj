@@ -75,7 +75,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ui\controller\LocalImplTest.cs" />
     <Compile Include="ui\controller\PersistentFormHandlerTest.cs" />
   </ItemGroup>
@@ -84,6 +83,9 @@
       <Project>{04AFCFBB-97D5-44EA-B087-F0CFAEB51E30}</Project>
       <Name>Cyberduck</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

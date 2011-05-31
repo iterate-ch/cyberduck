@@ -32,6 +32,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         private static readonly int MaxWidth = 1000;
         private static readonly int MinHeight = 250;
         private static readonly int MinWidth = 450;
+        private Editor.AvailableEditor lastSelectedEditor;
 
         public PreferencesForm()
         {
@@ -157,6 +158,22 @@ namespace Ch.Cyberduck.Ui.Winforms
         {
             get { return confirmDisconnectCheckbox.Checked; }
             set { confirmDisconnectCheckbox.Checked = value; }
+        }
+
+        public Editor.AvailableEditor DefaultEditor
+        {
+            get { return (Editor.AvailableEditor) editorComboBox.SelectedValue; }
+            set
+            {
+                editorComboBox.SelectedValue = value;
+                lastSelectedEditor = value;
+            }
+        }
+
+        public bool AlwaysUseDefaultEditor
+        {
+            get { return alwaysUseDefaultEditorCheckBox.Checked; }
+            set { alwaysUseDefaultEditorCheckBox.Checked = value; }
         }
 
         public string LoginName
@@ -661,6 +678,9 @@ namespace Ch.Cyberduck.Ui.Winforms
         public event VoidHandler DuplicateUploadActionChangedEvent = delegate { };
         public event VoidHandler DuplicateDownloadOverwriteChangedEvent = delegate { };
         public event VoidHandler DuplicateUploadOverwriteChangedEvent = delegate { };
+        public event VoidHandler DefaultEditorChangedEvent = delegate { };
+        public event VoidHandler RepopulateEditorsEvent = delegate { };
+        public event VoidHandler AlwaysUseDefaultEditorChangedEvent = delegate { };
         public event VoidHandler ChmodDownloadChangedEvent = delegate { };
         public event VoidHandler ChmodDownloadUseDefaultChangedEvent = delegate { };
         public event VoidHandler ChmodDownloadTypeChangedEvent = delegate { };
@@ -763,6 +783,26 @@ namespace Ch.Cyberduck.Ui.Winforms
             connectBookmarkCombobox.ValueMember = "Key";
             connectBookmarkCombobox.DisplayMember = "Value";
             connectBookmarkCombobox.IconMember = "IconKey";
+        }
+
+        public void PopulateEditors(List<KeyValueIconTriple<Editor.AvailableEditor, string>> editors)
+        {
+            editorComboBox.DataSource = editors;
+            editorComboBox.ValueMember = "Key";
+            editorComboBox.DisplayMember = "Value";
+            editorComboBox.IconMember = "IconKey";
+
+            ImageList imageList = new ImageList();
+            foreach (KeyValueIconTriple<Editor.AvailableEditor, string> triple in editors)
+            {
+                if (triple.Key.Location != null)
+                {
+                    imageList.Images.Add(triple.Value,
+                                         IconCache.Instance.GetFileIconFromExecutable(triple.Key.Location,
+                                                                                      IconCache.IconSize.Small));
+                }
+            }
+            editorComboBox.ICImageList = imageList;
         }
 
         public void PopulateProtocols(List<KeyValueIconTriple<Protocol, string>> protocols)
@@ -1399,6 +1439,54 @@ namespace Ch.Cyberduck.Ui.Winforms
         private void changeSystemProxyButton_Click(object sender, EventArgs e)
         {
             ChangeSystemProxyEvent();
+        }
+
+        private void editStripButton_Click(object sender, EventArgs e)
+        {
+            if (!editStripButton.Checked)
+            {
+                DisableAll();
+                editStripButton.Checked = true;
+                panelManager.SelectedPanel = managedEditorPanel;
+            }
+        }
+
+        private void editorComboBox_SelectionChangeCommitted(object sender, EventArgs e)
+        {
+            Editor.AvailableEditor selected = DefaultEditor;
+            if (selected.Location == null)
+            {
+                //choose dialog
+                editorOpenFileDialog.FileName = null;
+                DialogResult result = editorOpenFileDialog.ShowDialog();
+                if (result == DialogResult.OK)
+                {
+                    Preferences.instance().setProperty("editor.bundleIdentifier", editorOpenFileDialog.FileName);
+                    RepopulateEditorsEvent();
+                }
+                else
+                {
+                    if (lastSelectedEditor != null)
+                    {
+                        DefaultEditor = lastSelectedEditor;
+                    }
+                    else
+                    {
+                        //dummy editor which leads to an empty selection
+                        DefaultEditor = new Editor.CustomEditor(null, null);
+                    }
+                }
+            }
+            else
+            {
+                lastSelectedEditor = DefaultEditor;
+                DefaultEditorChangedEvent();
+            }
+        }
+
+        private void alwaysUseDefaultEditorCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            AlwaysUseDefaultEditorChangedEvent();
         }
     }
 }

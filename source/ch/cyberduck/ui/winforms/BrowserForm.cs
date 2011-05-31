@@ -36,6 +36,7 @@ using Ch.Cyberduck.Ui.Winforms.Controls;
 using org.apache.commons.io;
 using org.apache.commons.lang;
 using org.apache.log4j;
+using TheCodeKing.ActiveButtons.Controls;
 using DataObject = System.Windows.Forms.DataObject;
 using ToolStripRenderer = Ch.Cyberduck.Ui.Controller.ToolStripRenderer;
 
@@ -53,7 +54,7 @@ namespace Ch.Cyberduck.Ui.Winforms
     {
         private static readonly Font FixedFont = new Font(FontFamily.GenericMonospace, 8);
         private static readonly Logger Log = Logger.getLogger(typeof (BrowserForm).FullName);
-        private static readonly TypeConverter shortcutConverter = TypeDescriptor.GetConverter(typeof (Keys));
+        private static readonly TypeConverter ShortcutConverter = TypeDescriptor.GetConverter(typeof (Keys));
         private bool _browserStateRestored;
         private BrowserView _currentView;
         private bool _lastActivityRunning;
@@ -227,6 +228,12 @@ namespace Ch.Cyberduck.Ui.Winforms
                               HistoryCollection.defaultCollection().removeListener(historyMenuCollectionListener);
                               RendezvousCollection.defaultCollection().removeListener(bonjourMenuCollectionListener);
                           };
+
+            IActiveMenu menu = ActiveMenu.GetInstance(this);
+            ActiveButton button = new ActiveButton();
+            button.Text = " " + Locale.localizedString("Get a donation key!", "License") + " ";
+            button.Click += delegate { Utils.StartProcess(Preferences.instance().getProperty("website.donate")); };
+            menu.Items.Add(button);
         }
 
         public Image Favicon
@@ -303,7 +310,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         public event EndDragHandler HostEndDrag;
         public event VoidHandler NewFolder;
         public event ValidateCommand ValidateNewFolder;
-        public event EditorsHandler GetEditors;
+        public event EditorsHandler GetEditorsForSelection;
         public event ValidateCommand ContextMenuEnabled;
         public event VoidHandler Cut;
         public event ValidateCommand ValidateCut;
@@ -965,7 +972,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                 vistaMenu1.SetImage(item, IconCache.ResizeImage(editToolStripSplitButton.Image, new Size(16, 16)));
                 SetShortcutText(item, editWithToolStripMenuItem, null);
             }
-            IList<KeyValuePair<string, string>> editors = GetEditors();
+            IList<KeyValuePair<string, string>> editors = GetEditorsForSelection();
             if (editors.Count > 0)
             {
                 mainItem.MenuItems.Add("-");
@@ -996,7 +1003,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         private void OnEditorActionMenuOpening(object sender, EventArgs e)
         {
             editorMenuStrip.Items.Clear();
-            foreach (KeyValuePair<string, string> pair in GetEditors())
+            foreach (KeyValuePair<string, string> pair in GetEditorsForSelection())
             {
                 ToolStripItem item = new ToolStripMenuItem(pair.Key);
                 item.Tag = pair.Value;
@@ -1147,7 +1154,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             {
                 return String.Empty;
             }
-            return shortcutConverter.ConvertToString(shortcutKeys);
+            return ShortcutConverter.ConvertToString(shortcutKeys);
         }
 
         private void ConfigureToolbar()

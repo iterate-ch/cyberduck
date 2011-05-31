@@ -316,7 +316,7 @@ namespace Ch.Cyberduck.Ui.Controller
         /// <returns></returns>
         public Bitmap IconForFilename(string file, IconSize size)
         {
-            Icon icon = GetFileIcon(file, size, false);
+            Icon icon = GetFileIconFromExtension(file, size, false);
             if (null == icon)
             {
                 return IconForName("notfound", size);
@@ -327,13 +327,13 @@ namespace Ch.Cyberduck.Ui.Controller
         /// <summary>
         /// Returns an icon for a given file - indicated by the name parameter.
         /// </summary>
-        /// <param name="name">Pathname for file.</param>
+        /// <param name="filename">Pathname for file.</param>
         /// <param name="size">Large or small</param>
         /// <param name="linkOverlay">Whether to include the link icon</param>
         /// <returns>System.Drawing.Icon</returns>
-        private Icon GetFileIcon(string name, IconSize size, bool linkOverlay)
+        private Icon GetFileIconFromExtension(string filename, IconSize size, bool linkOverlay)
         {
-            return GetFileIcon(name, false, size, linkOverlay);
+            return GetFileIconFromExtension(filename, false, size, linkOverlay);
         }
 
         public ImageList GetProtocolImages(int size)
@@ -369,10 +369,10 @@ namespace Ch.Cyberduck.Ui.Controller
             return _protocolIcons;
         }
 
-        private Icon GetFileIcon(string name, bool isFolder, IconSize size, bool linkOverlay)
+        private Icon GetFileIconFromExtension(string filename, bool isFolder, IconSize size, bool linkOverlay)
         {
             //by extension
-            string key = Utils.GetSafeExtension(name);
+            string key = Utils.GetSafeExtension(filename);
             if (isFolder)
             {
                 key += "-folder";
@@ -410,8 +410,42 @@ namespace Ch.Cyberduck.Ui.Controller
                     fileAttributes = Shell32.FILE_ATTRIBUTE_NORMAL;
                 }
 
-                IntPtr hSuccess = Shell32.SHGetFileInfo(name,
+                IntPtr hSuccess = Shell32.SHGetFileInfo(filename,
                                                         fileAttributes,
+                                                        ref shfi,
+                                                        (uint) Marshal.SizeOf(shfi),
+                                                        flags);
+                if (hSuccess != IntPtr.Zero)
+                {
+                    // Copy (clone) the returned icon to a new object, thus allowing us to clean-up properly
+                    icon = (Icon) Icon.FromHandle(shfi.hIcon).Clone();
+                    _iconCache.Put(key, icon, s);
+                    // Release icon handle
+                    User32.DestroyIcon(shfi.hIcon);
+                }
+            }
+            return icon;
+        }
+
+        public Icon GetFileIconFromExecutable(string filename, IconSize size)
+        {
+            string key = filename;
+            int s = size == IconSize.Small ? 16 : 32;
+            Icon icon = _iconCache.Get(key, s);
+            if (null == icon)
+            {
+                Shell32.SHFILEINFO shfi = new Shell32.SHFILEINFO();
+                uint flags = Shell32.SHGFI_ICON | Shell32.SHGFI_USEFILEATTRIBUTES;
+                if (IconSize.Small == size)
+                {
+                    flags += Shell32.SHGFI_SMALLICON;
+                }
+                else
+                {
+                    flags += Shell32.SHGFI_LARGEICON;
+                }
+                IntPtr hSuccess = Shell32.SHGetFileInfo(filename,
+                                                        Shell32.FILE_ATTRIBUTE_NORMAL,
                                                         ref shfi,
                                                         (uint) Marshal.SizeOf(shfi),
                                                         flags);

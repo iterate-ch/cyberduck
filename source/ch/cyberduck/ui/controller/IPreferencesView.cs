@@ -29,6 +29,8 @@ namespace Ch.Cyberduck.Ui.Controller
         bool UseKeychain { set; get; }
         bool ConfirmDisconnect { set; get; }
         Protocol DefaultProtocol { set; get; }
+        Editor.AvailableEditor DefaultEditor { set; get; }
+        bool AlwaysUseDefaultEditor { set; get; }
         string LoginName { set; get; }
         bool ShowHiddenFiles { set; get; }
         bool DoubleClickEditor { set; get; }
@@ -161,7 +163,9 @@ namespace Ch.Cyberduck.Ui.Controller
         event VoidHandler DuplicateDownloadOverwriteChangedEvent;
         event VoidHandler DuplicateUploadOverwriteChangedEvent;
         event VoidHandler UploadWithTemporaryFilenameChangedEvent;
-
+        event VoidHandler DefaultEditorChangedEvent;
+        event VoidHandler RepopulateEditorsEvent;
+        event VoidHandler AlwaysUseDefaultEditorChangedEvent;
         event VoidHandler ChmodDownloadChangedEvent;
         event VoidHandler ChmodDownloadUseDefaultChangedEvent;
         event VoidHandler ChmodDownloadTypeChangedEvent;
@@ -210,6 +214,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         //todo introduce Enums to handle the objects directly instead of using strings
         void PopulateBookmarks(List<KeyValueIconTriple<Host, string>> bookmarks);
+        void PopulateEditors(List<KeyValueIconTriple<Editor.AvailableEditor, string>> editors);
         void PopulateProtocols(List<KeyValueIconTriple<Protocol, string>> protocols);
         void PopulateEncodings(List<string> encodings);
         void PopulateTransferModes(List<string> transferModes);

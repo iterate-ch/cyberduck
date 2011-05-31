@@ -21,7 +21,6 @@ using System.Diagnostics;
 using ch.cyberduck.core;
 using Ch.Cyberduck.Core;
 using ch.cyberduck.core.io;
-using ch.cyberduck.core.s3;
 using Ch.Cyberduck.Ui.Winforms;
 using Ch.Cyberduck.Ui.Winforms.Controls;
 using java.util;
@@ -38,20 +37,12 @@ namespace Ch.Cyberduck.Ui.Controller
         private static readonly string ForFiles = Locale.localizedString("for Files", "Preferences");
         private static readonly string ForFolders = Locale.localizedString("for Folders", "Preferences");
         private static readonly Logger Log = Logger.getLogger(typeof (PreferencesController).FullName);
-        private static readonly string MacLineEndings = Locale.localizedString("Mac Line Endings (CR)");
 
         private static readonly KeyValueIconTriple<Host, string> NoneBookmark =
             new KeyValueIconTriple<Host, string>(null, Locale.localizedString("None"), null);
 
-        private static readonly string TransfermodeAscii = Locale.localizedString("ASCII");
-
-        private static readonly string TransfermodeAuto = Locale.localizedString("Auto");
-        private static readonly string TransfermodeBinary = Locale.localizedString("Binary");
-
-        private static readonly string UnixLineEndings = Locale.localizedString("Unix Line Endings (LF)");
         private static readonly string UseBrowserSession = Locale.localizedString("Use browser connection");
         private static readonly string UseQueueSession = Locale.localizedString("Open new connection");
-        private static readonly string WindowsLineEndings = Locale.localizedString("Windows Line Endings (CRLF)");
         private static PreferencesController _instance;
 
         private bool DownloadRegexInvalid;
@@ -68,6 +59,9 @@ namespace Ch.Cyberduck.Ui.Controller
             View.UseKeychainChangedEvent += View_UseKeychainChangedEvent;
             View.ConfirmDisconnectChangedEvent += View_ConfirmDisconnectChangedEvent;
             View.DefaultProtocolChangedEvent += View_DefaultProtocolChangedEvent;
+            View.DefaultEditorChangedEvent += View_DefaultEditorChangedEvent;
+            View.RepopulateEditorsEvent += View_RepopulateEditorsEvent;
+            View.AlwaysUseDefaultEditorChangedEvent += View_AlwaysUseDefaultEditorChangedEvent;
             View.LoginNameChangedEvent += View_LoginNameChangedEvent;
             View.ShowHiddenFilesChangedEvent += View_ShowHiddenFilesChangedEvent;
             View.DoubleClickEditorChangedEvent += View_DoubleClickEditorChangedEvent;
@@ -209,6 +203,22 @@ namespace Ch.Cyberduck.Ui.Controller
             Host selected = View.DefaultBookmark;
             PopulateBookmarks();
             SelectDefaultBookmark(selected);
+        }
+
+        private void View_AlwaysUseDefaultEditorChangedEvent()
+        {
+            Preferences.instance().setProperty("editor.alwaysUseDefault", View.AlwaysUseDefaultEditor);
+        }
+
+        private void View_RepopulateEditorsEvent()
+        {
+            PopulateAndSelectEditor();
+        }
+
+        private void View_DefaultEditorChangedEvent()
+        {
+            Editor.AvailableEditor selected = View.DefaultEditor;
+            Preferences.instance().setProperty("editor.bundleIdentifier", selected.Location);
         }
 
         private void View_ChangeSystemProxyEvent()
@@ -893,6 +903,13 @@ namespace Ch.Cyberduck.Ui.Controller
 
             #endregion
 
+            #region Editor
+
+            PopulateAndSelectEditor();
+            View.AlwaysUseDefaultEditor = Preferences.instance().getBoolean("editor.alwaysUseDefault");
+
+            #endregion
+
             #region Transfers - Permissions
 
             PopulateChmodTypes();
@@ -1116,10 +1133,11 @@ namespace Ch.Cyberduck.Ui.Controller
         private void PopulateDefaultBucketLocations()
         {
             IList<KeyValuePair<string, string>> defaultBucketLocations = new List<KeyValuePair<string, string>>();
-            List locations = Protocol.S3_SSL.getLocations();
-            for (int i = 0; i < locations.size(); i++)
+            Set locations = Protocol.S3_SSL.getLocations();
+            Iterator iter = locations.iterator();
+            while (iter.hasNext())
             {
-                string location = (string) locations.get(i);
+                string location = (string) iter.next();
                 defaultBucketLocations.Add(new KeyValuePair<string, string>(location,
                                                                             Locale.localizedString(location, "S3")));
             }
@@ -1270,6 +1288,56 @@ namespace Ch.Cyberduck.Ui.Controller
                                                                    host.getProtocol().getIdentifier()));
             }
             View.PopulateBookmarks(bookmarks);
+        }
+
+        private void PopulateAndSelectEditor()
+        {
+            List<KeyValueIconTriple<Editor.AvailableEditor, string>> editors =
+                new List<KeyValueIconTriple<Editor.AvailableEditor, string>>();
+
+            Editor.AvailableEditor defaultEditor = Editor.DefaultEditor();
+            String defaultEditorLocation = null;
+            if (defaultEditor != null)
+            {
+                defaultEditorLocation = defaultEditor.Location;
+            }
+            bool defaultEditorAdded = false;
+
+            foreach (Editor.AvailableEditor editor in Editor.GetAvailableEditors())
+            {
+                if (editor.Installed)
+                {
+                    editors.Add(new KeyValueIconTriple<Editor.AvailableEditor, string>(editor, editor.Name,
+                                                                                       editor.Name));
+                    if (defaultEditorLocation != null && editor.Location.Equals(defaultEditorLocation))
+                    {
+                        defaultEditorAdded = true;
+                    }
+                }
+            }
+            if (!defaultEditorAdded)
+            {
+                if (defaultEditor != null && defaultEditor.Installed)
+                {
+                    editors.Insert(0,
+                                   new KeyValueIconTriple<Editor.AvailableEditor, string>(defaultEditor,
+                                                                                          defaultEditor.Name,
+                                                                                          defaultEditor.Name));
+                }
+            }
+            editors.Add(new KeyValueIconTriple<Editor.AvailableEditor, string>(new Editor.CustomEditor("/", null),
+                                                                               Locale.localizedString("Choose") + "…",
+                                                                               String.Empty));
+            View.PopulateEditors(editors);
+            if (defaultEditor != null)
+            {
+                View.DefaultEditor = defaultEditor;
+            }
+            else
+            {
+                //dummy editor which leads to an empty selection
+                View.DefaultEditor = new Editor.CustomEditor(null, null);
+            }
         }
     }
 }

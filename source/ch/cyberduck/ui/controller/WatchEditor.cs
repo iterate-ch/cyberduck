@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2011 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -48,7 +48,16 @@ namespace Ch.Cyberduck.Ui.Controller
             Process process = new Process();
             if (Utils.IsBlank(_editor))
             {
-                process.StartInfo.FileName = edited.getLocal().getAbsolute();
+                string editCommand = EditorFactory.DefaultEditCommand(edited.getLocal());
+                if (Utils.IsNotBlank(editCommand))
+                {
+                    process.StartInfo.FileName = editCommand;
+                    process.StartInfo.Arguments = "\"" + edited.getLocal().getAbsolute() + "\"";
+                }
+                else
+                {
+                    process.StartInfo.FileName = edited.getLocal().getAbsolute();
+                }
             }
             else
             {
