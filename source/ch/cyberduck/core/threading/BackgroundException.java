@@ -22,7 +22,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.ftp.FTPException;
 import ch.cyberduck.core.i18n.Locale;
-import ch.ethz.ssh2.sftp.SFTPException;
+import ch.ethz.ssh2.SFTPException;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.StatusLine;

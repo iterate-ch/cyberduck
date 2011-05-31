@@ -25,9 +25,9 @@ import ch.ethz.ssh2.*;
 import ch.ethz.ssh2.channel.ChannelClosedException;
 import ch.ethz.ssh2.crypto.PEMDecoder;
 import ch.ethz.ssh2.crypto.PEMDecryptException;
-import ch.ethz.ssh2.scp.SCPClient;
-import ch.ethz.ssh2.sftp.PacketListener;
-import ch.ethz.ssh2.sftp.SFTPv3Client;
+import ch.ethz.ssh2.SCPClient;
+import ch.ethz.ssh2.PacketListener;
+import ch.ethz.ssh2.SFTPv3Client;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;

@@ -23,8 +23,7 @@ import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.IOResumeException;
 import ch.cyberduck.ui.DateFormatterFactory;
-import ch.ethz.ssh2.scp.SCPClient;
-import ch.ethz.ssh2.sftp.*;
+import ch.ethz.ssh2.*;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
