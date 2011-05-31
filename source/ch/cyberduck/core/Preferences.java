@@ -480,6 +480,20 @@ public abstract class Preferences {
         defaults.put("queue.logDrawer.isOpen", String.valueOf(false));
         defaults.put("queue.logDrawer.size.height", String.valueOf(200));
 
+        defaults.put("http.compression.enable", String.valueOf(true));
+
+        /**
+         * HTTP routes to maximum number of connections allowed for those routes
+         */
+        defaults.put("http.connections.route", String.valueOf(5));
+        /**
+         * Total number of connections in the pool
+         */
+        defaults.put("http.connections.total", String.valueOf(5));
+        defaults.put("http.manager.timeout", String.valueOf(0)); // Inifinite
+        defaults.put("http.socket.buffer", String.valueOf(8192));
+        defaults.put("http.credentials.charset", "ISO-8859-1");
+
         /**
          * Enable or disable verification that the remote host taking part
          * of a data connection is the same as the host to which the control

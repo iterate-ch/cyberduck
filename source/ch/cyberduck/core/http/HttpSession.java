@@ -29,6 +29,8 @@ import ch.cyberduck.core.ssl.SSLSession;
 import org.apache.http.*;
 import org.apache.http.auth.params.AuthParams;
 import org.apache.http.client.params.HttpClientParams;
+import org.apache.http.client.protocol.RequestAcceptEncoding;
+import org.apache.http.client.protocol.ResponseContentEncoding;
 import org.apache.http.conn.params.ConnRouteParams;
 import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
@@ -71,19 +73,21 @@ public abstract class HttpSession extends SSLSession {
             HttpProtocolParams.setContentCharset(params, getEncoding());
             HttpProtocolParams.setUserAgent(params, getUserAgent());
 
-            AuthParams.setCredentialCharset(params, "ISO-8859-1");
+            AuthParams.setCredentialCharset(params, Preferences.instance().getProperty("http.credentials.charset"));
 
             HttpConnectionParams.setTcpNoDelay(params, true);
             HttpConnectionParams.setSoTimeout(params, timeout());
             HttpConnectionParams.setConnectionTimeout(params, timeout());
-            HttpConnectionParams.setSocketBufferSize(params, 8192);
+            HttpConnectionParams.setSocketBufferSize(params,
+                    Preferences.instance().getInteger("http.socket.buffer"));
             HttpConnectionParams.setStaleCheckingEnabled(params, true);
 
             HttpClientParams.setRedirecting(params, true);
             HttpClientParams.setAuthenticating(params, true);
 
             // Sets the timeout in milliseconds used when retrieving a connection from the ClientConnectionManager
-            HttpClientParams.setConnectionManagerTimeout(params, 0);
+            HttpClientParams.setConnectionManagerTimeout(params,
+                    Preferences.instance().getInteger("http.manager.timeout"));
 
             SchemeRegistry registry = new SchemeRegistry();
             // Always register HTTP for possible use with proxy
@@ -112,8 +116,9 @@ public abstract class HttpSession extends SSLSession {
                 protected ConnPoolByRoute createConnectionPool(long connTTL, TimeUnit connTTLTimeUnit) {
                     // Set the maximum connections per host for the HTTP connection manager,
                     // *and* also set the maximum number of total connections.
-                    connPerRoute.setDefaultMaxPerRoute(5);
-                    return new ConnPoolByRoute(connOperator, connPerRoute, 5);
+                    connPerRoute.setDefaultMaxPerRoute(Preferences.instance().getInteger("http.connections.route"));
+                    return new ConnPoolByRoute(connOperator, connPerRoute,
+                            Preferences.instance().getInteger("http.connections.total"));
                 }
             };
             http = new DefaultHttpClient(manager, params);
@@ -139,6 +144,10 @@ public abstract class HttpSession extends SSLSession {
                 }
             }
         });
+        if(Preferences.instance().getBoolean("http.compression.enable")) {
+            client.addRequestInterceptor(new RequestAcceptEncoding());
+            client.addResponseInterceptor(new ResponseContentEncoding());
+        }
     }
 
     @Override
