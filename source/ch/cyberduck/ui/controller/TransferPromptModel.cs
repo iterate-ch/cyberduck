@@ -1,5 +1,5 @@
-﻿﻿//
-// Copyright (c) 2010 Yves Langisch. All rights reserved.
+﻿// 
+// Copyright (c) 2010-2011 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -22,7 +22,7 @@ using System.Windows.Forms;
 using ch.cyberduck.core;
 using ch.cyberduck.core.i18n;
 using ch.cyberduck.core.threading;
-using ch.cyberduck.ui.FilenameComparator;
+using ch.cyberduck.ui;
 using Ch.Cyberduck.Ui.Winforms;
 using org.apache.log4j;
 
