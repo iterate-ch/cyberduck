@@ -1,5 +1,5 @@
 // 
-// Copyright (c) 2010 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2011 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -122,6 +122,13 @@ namespace Ch.Cyberduck.Ui.Winforms
             updater.UpdateType = UpdateType.DoNothing;
             updater.UpdateAvailable += delegate
                                            {
+                                               string newVersion = updater.Version;
+                                               if (newVersion == null)
+                                               {
+                                                   //could not sort out why this event is triggered in some cases altough there is no new version available
+                                                   return;
+                                               }
+
                                                laterButton.Visible = true;
                                                installButton.Text = Locale.localizedString("Install and Relaunch",
                                                                                            "Sparkle");
@@ -135,7 +142,6 @@ namespace Ch.Cyberduck.Ui.Winforms
 
                                                string currentVersion =
                                                    Preferences.instance().getProperty("application.version");
-                                               string newVersion = updater.Version;
 
                                                versionLabel.Text = Locale.localizedString(
                                                    "%1$@ %2$@ is now available (you have %3$@). Would you like to download it now?",
