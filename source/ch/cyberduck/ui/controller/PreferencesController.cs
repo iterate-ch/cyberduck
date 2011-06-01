@@ -45,8 +45,8 @@ namespace Ch.Cyberduck.Ui.Controller
         private static readonly string UseQueueSession = Locale.localizedString("Open new connection");
         private static PreferencesController _instance;
 
-        private bool DownloadRegexInvalid;
-        private bool UploadRegexInvalid;
+        private bool _downloadRegexInvalid;
+        private bool _uploadRegexInvalid;
 
         private PreferencesController(IPreferencesView view)
         {
@@ -368,15 +368,15 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 Pattern compiled = Pattern.compile(value);
                 Preferences.instance().setProperty("queue.upload.skip.regex", compiled.pattern());
-                if (UploadRegexInvalid)
+                if (_uploadRegexInvalid)
                 {
                     View.MarkUploadSkipRegex(-1);
                 }
-                UploadRegexInvalid = false;
+                _uploadRegexInvalid = false;
             }
             catch (PatternSyntaxException ex)
             {
-                UploadRegexInvalid = true;
+                _uploadRegexInvalid = true;
                 View.MarkUploadSkipRegex(ex.getIndex());
             }
         }
@@ -413,15 +413,15 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 Pattern compiled = Pattern.compile(value);
                 Preferences.instance().setProperty("queue.download.skip.regex", compiled.pattern());
-                if (DownloadRegexInvalid)
+                if (_downloadRegexInvalid)
                 {
                     View.MarkDownloadSkipRegex(-1);
                 }
-                DownloadRegexInvalid = false;
+                _downloadRegexInvalid = false;
             }
             catch (PatternSyntaxException ex)
             {
-                DownloadRegexInvalid = true;
+                _downloadRegexInvalid = true;
                 View.MarkDownloadSkipRegex(ex.getIndex());
             }
         }
