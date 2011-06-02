@@ -121,8 +121,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.menuItem86 = new System.Windows.Forms.MenuItem();
             this.updateMainMenuItem = new System.Windows.Forms.MenuItem();
             this.menuItem88 = new System.Windows.Forms.MenuItem();
-            this.keyMainMenuItem = new System.Windows.Forms.MenuItem();
             this.donateMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.keyMainMenuItem = new System.Windows.Forms.MenuItem();
             this.menuItem7 = new System.Windows.Forms.MenuItem();
             this.aboutMainMenuItem = new System.Windows.Forms.MenuItem();
             this.statusStrip = new System.Windows.Forms.StatusStrip();
@@ -971,15 +971,15 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.menuItem88.Index = 7;
             this.menuItem88.Text = "-";
             // 
-            // keyMainMenuItem
-            // 
-            this.keyMainMenuItem.Index = 9;
-            this.keyMainMenuItem.Text = "Registered to…";
-            // 
             // donateMainMenuItem
             // 
             this.donateMainMenuItem.Index = 8;
             this.donateMainMenuItem.Text = "Donate…";
+            // 
+            // keyMainMenuItem
+            // 
+            this.keyMainMenuItem.Index = 9;
+            this.keyMainMenuItem.Text = "Registered to…";
             // 
             // menuItem7
             // 
@@ -1374,7 +1374,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.transfersToolStripMenuItem1});
             this.toolbarContextMenu.Name = "toolbarContextMenu";
             this.toolbarContextMenu.OwnerItem = this.toolbarToolStripMenuItem;
-            this.toolbarContextMenu.Size = new System.Drawing.Size(189, 336);
+            this.toolbarContextMenu.Size = new System.Drawing.Size(189, 314);
             this.toolbarContextMenu.Closing += new System.Windows.Forms.ToolStripDropDownClosingEventHandler(this.toolbarContextMenu_Closing);
             this.toolbarContextMenu.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.toolbarContextMenu_ItemClicked);
             // 
@@ -1832,18 +1832,18 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.editor2ToolStripMenuItem});
             this.editorMenuStrip.Name = "editorMenuStrip";
             this.editorMenuStrip.OwnerItem = this.editToolStripSplitButton;
-            this.editorMenuStrip.Size = new System.Drawing.Size(153, 70);
+            this.editorMenuStrip.Size = new System.Drawing.Size(115, 48);
             // 
             // editor1ToolStripMenuItem
             // 
             this.editor1ToolStripMenuItem.Name = "editor1ToolStripMenuItem";
-            this.editor1ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.editor1ToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
             this.editor1ToolStripMenuItem.Text = "Editor 1";
             // 
             // editor2ToolStripMenuItem
             // 
             this.editor2ToolStripMenuItem.Name = "editor2ToolStripMenuItem";
-            this.editor2ToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.editor2ToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
             this.editor2ToolStripMenuItem.Text = "Editor 2";
             // 
             // editContextToolStripMenuItem
@@ -2131,8 +2131,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.infoToolStripButton.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.infoToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.infoToolStripButton.Name = "infoToolStripButton";
-            this.infoToolStripButton.Size = new System.Drawing.Size(36, 53);
-            this.infoToolStripButton.Text = "Info";
+            this.infoToolStripButton.Size = new System.Drawing.Size(53, 53);
+            this.infoToolStripButton.Text = "Get Info";
             this.infoToolStripButton.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
             // 
             // refreshToolStripButton
