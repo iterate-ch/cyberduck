@@ -1,8 +1,7 @@
 4.1 [http://trac.cyberduck.ch/milestone/4.1]
-- [Feature] Replaced WebDAV protocol implementation
-
-4.0.3 [http://trac.cyberduck.ch/milestone/4.0.3]
 - [Localize] Bulgarian Localization
+- [Feature] Replaced WebDAV protocol implementation
+- [Feature] Set preferred default editor (Windows) (#5729)
 - [Feature] IPv6 support (Windows) (#5699)
 - [Feature] Enable access logs for custom origin distributions (CloudFront)
 - [Feature] Choose target bucket for access logs (CloudFront)
