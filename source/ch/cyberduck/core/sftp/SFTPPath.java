@@ -245,8 +245,8 @@ public class SFTPPath extends Path {
                 }
             }
             catch(IOException e) {
-                log.error("Cannot read symbolic link target of " + this.getAbsolute() + ":" + e.getMessage());
-                this.attributes().setType(Path.SYMBOLIC_LINK_TYPE | Path.FILE_TYPE);
+                log.warn("Cannot read symbolic link target of " + this.getAbsolute() + ":" + e.getMessage());
+                this.attributes().setType(Path.FILE_TYPE);
             }
         }
     }
