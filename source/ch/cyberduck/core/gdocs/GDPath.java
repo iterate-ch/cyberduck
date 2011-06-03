@@ -269,7 +269,11 @@ public class GDPath extends Path {
     }
 
     protected String getCreateSessionFeed() throws MalformedURLException {
-        return this.getHostUrl().append("/feeds/upload/create-session/default/private/full").toString();
+        final StringBuilder feed = this.getHostUrl().append("/feeds/upload/create-session/default/private/full/");
+        if(this.isRoot()) {
+            return feed.append("folder%3Aroot/contents").toString();
+        }
+        return feed.append("folder%3A").append(this.getDocumentId()).append("/contents").toString();
     }
 
     protected String getFolderFeed() throws MalformedURLException {
@@ -559,7 +563,7 @@ public class GDPath extends Path {
                 feed = new StringBuilder(this.getUpdateSessionFeed());
             }
             else {
-                feed = new StringBuilder(this.getCreateSessionFeed());
+                feed = new StringBuilder(((GDPath) this.getParent()).getCreateSessionFeed());
             }
             // Convertible to Google Docs file type. To create a resumable upload request for an arbitrary
             // file upload, include the convert=false parameter on this initial upload request
