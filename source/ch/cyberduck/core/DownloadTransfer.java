@@ -62,7 +62,7 @@ public class DownloadTransfer extends Transfer {
             }
             this.getSession().message(MessageFormat.format(Locale.localizedString("Prepare {0}", "Status"), download.getName()));
             boolean duplicate = false;
-            for(Iterator<Path> iter = normalized.iterator(); iter.hasNext();) {
+            for(Iterator<Path> iter = normalized.iterator(); iter.hasNext(); ) {
                 Path n = iter.next();
                 if(download.isChild(n)) {
                     // The selected file is a child of a directory already included
@@ -134,6 +134,11 @@ public class DownloadTransfer extends Transfer {
                         }
                     }
                 }
+            }
+            Local volume = file.getLocal().getVolume();
+            if(!volume.exists()) {
+                log.warn("Volume not mounted:" + volume.getAbsolute());
+                return false;
             }
             return true;
         }

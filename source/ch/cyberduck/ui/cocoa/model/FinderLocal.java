@@ -121,6 +121,16 @@ public class FinderLocal extends Local {
     }
 
     @Override
+    public Local getVolume() {
+        for(AbstractPath parent = this.getParent(); !parent.isRoot(); parent = parent.getParent()) {
+            if(parent.getParent().getAbsolute().equals("/Volumes")) {
+                return (Local)parent;
+            }
+        }
+        return super.getVolume();
+    }
+
+    @Override
     public boolean exists() {
         return NSFileManager.defaultManager().fileExistsAtPath(this.getAbsolute());
     }

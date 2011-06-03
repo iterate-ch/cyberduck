@@ -396,6 +396,10 @@ public abstract class Local extends AbstractPath {
         return new File(path).getName();
     }
 
+    public Local getVolume() {
+        return LocalFactory.createLocal(new File(String.valueOf(this.getPathDelimiter())));
+    }
+
     @Override
     public AbstractPath getParent() {
         return LocalFactory.createLocal(new File(path).getParentFile());
