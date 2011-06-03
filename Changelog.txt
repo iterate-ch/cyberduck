@@ -14,6 +14,7 @@ Changelog. Last modified: $Date$
 - [Feature] Choose target bucket for access logs (S3)
 - [Bugfix] Delete only trashes documents (Google Docs) (#5873)
 - [Bugfix] Wrong timestamp in transfer prompt (#5916)
+- [Bugfix] Uploading file to collection places it in root folder instead (Google Docs) (#5856)
 
 4.0.2 [http://trac.cyberduck.ch/milestone/4.0.2]
 - [Feature] SSL URL for files in Akamai CDN enabled containers (Cloud Files)
