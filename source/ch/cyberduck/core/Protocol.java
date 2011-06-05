@@ -79,6 +79,18 @@ public abstract class Protocol {
         return null;
     }
 
+    /**
+     * @see #getIdentifier()
+     * @see #getVendor()
+     */
+    public String getIdentifierAndVendor() {
+        final StringBuilder identifier = new StringBuilder(this.getIdentifier());
+        if(StringUtils.isNotBlank(this.getVendor())) {
+            identifier.append(",").append(this.getVendor());
+        }
+        return identifier.toString();
+    }
+
     public String getName() {
         return this.getScheme().toUpperCase();
     }

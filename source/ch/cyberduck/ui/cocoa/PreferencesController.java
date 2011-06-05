@@ -21,7 +21,6 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.i18n.Locale;
-import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.sparkle.Updater;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.foundation.*;
@@ -1705,11 +1704,7 @@ public class PreferencesController extends ToolbarWindowController {
     @Action
     public void protocolComboboxClicked(NSPopUpButton sender) {
         final Protocol selected = ProtocolFactory.forName(sender.selectedItem().representedObject());
-        final StringBuilder identifier = new StringBuilder(selected.getIdentifier());
-        if(StringUtils.isNotBlank(selected.getVendor())) {
-            identifier.append(",").append(selected.getVendor());
-        }
-        Preferences.instance().setProperty("connection.protocol.default", identifier.toString());
+        Preferences.instance().setProperty("connection.protocol.default", selected.getIdentifierAndVendor());
         Preferences.instance().setProperty("connection.port.default", selected.getDefaultPort());
     }
 

@@ -56,11 +56,7 @@ public class BookmarkController extends WindowController {
             final String title = protocol.getDescription();
             this.protocolPopup.addItemWithTitle(title);
             final NSMenuItem item = this.protocolPopup.itemWithTitle(title);
-            final StringBuilder identifier = new StringBuilder(protocol.getIdentifier());
-            if(StringUtils.isNotBlank(protocol.getVendor())) {
-                identifier.append(",").append(protocol.getVendor());
-            }
-            item.setRepresentedObject(identifier.toString());
+            item.setRepresentedObject(protocol.getIdentifierAndVendor());
             item.setImage(IconCache.iconNamed(protocol.icon(), 16));
         }
     }
