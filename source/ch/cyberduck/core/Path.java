@@ -434,7 +434,9 @@ public abstract class Path extends AbstractPath implements Serializable {
     @Override
     public void invalidate() {
         if(this.attributes().isDirectory()) {
-            this.getSession().cdn().clear();
+            if(this.getSession().isCDNSupported()) {
+                this.getSession().cdn().clear();
+            }
         }
         super.invalidate();
     }
@@ -688,7 +690,6 @@ public abstract class Path extends AbstractPath implements Serializable {
     }
 
     /**
-     *
      * @return
      * @throws IOException
      */
@@ -697,7 +698,6 @@ public abstract class Path extends AbstractPath implements Serializable {
     }
 
     /**
-     *
      * @return
      */
     public abstract InputStream read(final boolean check) throws IOException;
@@ -739,7 +739,6 @@ public abstract class Path extends AbstractPath implements Serializable {
     protected abstract void download(BandwidthThrottle throttle, StreamListener listener, boolean check);
 
     /**
-     *
      * @return
      * @throws IOException
      */
@@ -1128,15 +1127,17 @@ public abstract class Path extends AbstractPath implements Serializable {
         Set<DescriptiveUrl> urls = new LinkedHashSet<DescriptiveUrl>();
         // Include all CDN URLs
         Session session = this.getSession();
-        for(Distribution.Method method : session.cdn().getMethods()) {
-            if(session.cdn().isConfigured(method)) {
-                String container = this.getContainerName();
-                if(null == container) {
-                    continue;
-                }
-                Distribution distribution = session.cdn().read(session.cdn().getOrigin(method, container), method);
-                if(distribution.isDeployed()) {
-                    urls.addAll(distribution.getURLs(this));
+        if(session.isCDNSupported()) {
+            for(Distribution.Method method : session.cdn().getMethods()) {
+                if(session.cdn().isConfigured(method)) {
+                    String container = this.getContainerName();
+                    if(null == container) {
+                        continue;
+                    }
+                    Distribution distribution = session.cdn().read(session.cdn().getOrigin(method, container), method);
+                    if(distribution.isDeployed()) {
+                        urls.addAll(distribution.getURLs(this));
+                    }
                 }
             }
         }
