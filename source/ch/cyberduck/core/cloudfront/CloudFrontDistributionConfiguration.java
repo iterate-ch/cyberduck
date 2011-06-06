@@ -24,7 +24,6 @@ import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.ssl.AbstractX509TrustManager;
-import ch.cyberduck.core.threading.BackgroundException;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.client.HttpClient;
@@ -52,7 +51,6 @@ public class CloudFrontDistributionConfiguration extends HttpSession implements 
      */
     private CloudFrontService client;
     private LoginController login;
-    private ErrorListener listener;
 
     /**
      * Cache distribution status result.
@@ -60,11 +58,15 @@ public class CloudFrontDistributionConfiguration extends HttpSession implements 
     protected Map<ch.cyberduck.core.cdn.Distribution.Method, Map<String, ch.cyberduck.core.cdn.Distribution>> distributionStatus
             = new HashMap<ch.cyberduck.core.cdn.Distribution.Method, Map<String, ch.cyberduck.core.cdn.Distribution>>();
 
-    public CloudFrontDistributionConfiguration(LoginController parent, Credentials credentials, ErrorListener listener) {
+    public CloudFrontDistributionConfiguration(LoginController parent, Credentials credentials,
+                                               ErrorListener error, ProgressListener progress,
+                                               TranscriptListener transcript) {
         // Configure with the same host as S3 to get the same credentials from the keychain.
         super(new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname(), credentials));
         this.login = parent;
-        this.listener = listener;
+        this.addErrorListener(error);
+        this.addProgressListener(progress);
+        this.addTranscriptListener(transcript);
         this.clear();
     }
 
@@ -118,7 +120,14 @@ public class CloudFrontDistributionConfiguration extends HttpSession implements 
                 }
             };
             // Provoke authentication error if any.
-            client.listDistributions();
+            for(ch.cyberduck.core.cdn.Distribution.Method method : getMethods()) {
+                for(String container : this.getContainers(method)) {
+                    // Cache first container
+                    this.cache(this.getOrigin(method, container), method);
+                    break;
+                }
+                break;
+            }
         }
         catch(CloudFrontServiceException e) {
             log.warn("Invalid CloudFront account:" + e.getMessage());
@@ -146,11 +155,6 @@ public class CloudFrontDistributionConfiguration extends HttpSession implements 
             client = null;
             this.fireConnectionDidCloseEvent();
         }
-    }
-
-    @Override
-    public void error(Path path, String message, Throwable e) {
-        listener.error(new BackgroundException(this, path, message, e));
     }
 
     @Override
@@ -186,12 +190,7 @@ public class CloudFrontDistributionConfiguration extends HttpSession implements 
                     this.message(MessageFormat.format(Locale.localizedString("Reading CDN configuration of {0}", "Status"),
                             origin));
 
-                    for(ch.cyberduck.core.cdn.Distribution d : this.listDistributions(origin, method)) {
-                        // Cache distributions
-                        distributionStatus.get(method).put(origin, d);
-                        // We currently only support one distribution per bucket
-                        break;
-                    }
+                    this.cache(origin, method);
                 }
                 catch(CloudFrontServiceException e) {
                     this.error("Cannot read CDN configuration", e);
@@ -405,18 +404,16 @@ public class CloudFrontDistributionConfiguration extends HttpSession implements 
         return Locale.localizedString("Unknown");
     }
 
-    protected List<String> readContainers(ch.cyberduck.core.cdn.Distribution.Method method) {
-        if(this.isLoggingSupported(method)) {
-            // List S3 containers
-            final Session session = SessionFactory.createSession(host);
-            if(session.getHost().getCredentials().validate(session.getHost().getProtocol())) {
-                List<String> buckets = new ArrayList<String>();
-                for(Path bucket : session.mount().list()) {
-                    buckets.add(bucket.getName());
-                }
-                Collections.sort(buckets);
-                return buckets;
+    protected List<String> getContainers(ch.cyberduck.core.cdn.Distribution.Method method) {
+        // List S3 containers
+        final Session session = SessionFactory.createSession(host);
+        if(session.getHost().getCredentials().validate(session.getHost().getProtocol())) {
+            List<String> buckets = new ArrayList<String>();
+            for(Path bucket : session.mount().list()) {
+                buckets.add(bucket.getName());
             }
+            Collections.sort(buckets);
+            return buckets;
         }
         return Collections.emptyList();
     }
@@ -575,40 +572,42 @@ public class CloudFrontDistributionConfiguration extends HttpSession implements 
      * @return All distributions for the given AWS Credentials
      * @throws CloudFrontServiceException CloudFront failure details
      */
-    private List<ch.cyberduck.core.cdn.Distribution> listDistributions(String origin,
-                                                                       ch.cyberduck.core.cdn.Distribution.Method method)
+    private void cache(String origin, ch.cyberduck.core.cdn.Distribution.Method method)
             throws IOException, CloudFrontServiceException {
         log.debug("listDistributions:" + origin);
 
         CloudFrontService cf = this.getClient();
 
-        List<ch.cyberduck.core.cdn.Distribution> list = new ArrayList<ch.cyberduck.core.cdn.Distribution>();
         if(method.equals(ch.cyberduck.core.cdn.Distribution.STREAMING)) {
             for(Distribution d : cf.listStreamingDistributions(origin)) {
-                list.add(this.convert(d, method));
+                // Write to cache
+                distributionStatus.get(method).put(origin, this.convert(d, method));
+                // We currently only support one distribution per bucket
+                break;
             }
         }
         else if(method.equals(ch.cyberduck.core.cdn.Distribution.DOWNLOAD)) {
+            // List distributions restricting to bucket name origin
             for(Distribution d : cf.listDistributions(origin)) {
                 if(d.getOrigin() instanceof S3Origin) {
-                    list.add(this.convert(d, method));
+                    // Write to cache
+                    distributionStatus.get(method).put(origin, this.convert(d, method));
+                    // We currently only support one distribution per bucket
+                    break;
                 }
             }
         }
         else if(method.equals(ch.cyberduck.core.cdn.Distribution.CUSTOM)
                 || method.equals(ch.cyberduck.core.cdn.Distribution.WEBSITE_CDN)) {
             for(org.jets3t.service.model.cloudfront.Distribution d : cf.listDistributions()) {
+                // Listing all distributions and look for custom origin
                 if(d.getOrigin() instanceof CustomOrigin) {
                     if(d.getOrigin().getDnsName().equals(origin)) {
-                        list.add(this.convert(d, method));
+                        distributionStatus.get(method).put(origin, this.convert(d, method));
                     }
                 }
             }
         }
-        else {
-            throw new RuntimeException("Invalid distribution method:" + method);
-        }
-        return list;
     }
 
     private ch.cyberduck.core.cdn.Distribution convert(Distribution d,
@@ -644,7 +643,7 @@ public class CloudFrontDistributionConfiguration extends HttpSession implements 
             distribution.setInvalidationStatus(this.readInvalidationStatus(distribution));
         }
         if(this.isLoggingSupported(method)) {
-            distribution.setContainers(this.readContainers(method));
+            distribution.setContainers(this.getContainers(method));
         }
         return distribution;
     }

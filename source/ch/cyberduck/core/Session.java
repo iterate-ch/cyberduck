@@ -760,7 +760,18 @@ public abstract class Session implements TranscriptListener {
                         public void error(BackgroundException exception) {
                             Session.this.error(exception);
                         }
-                    }) {
+                    },
+                    new ProgressListener() {
+                        public void message(String message) {
+                            Session.this.message(message);
+                        }
+                    },
+                    new TranscriptListener() {
+                        public void log(boolean request, String message) {
+                            Session.this.log(request, message);
+                        }
+                    }
+            ) {
 
                 @Override
                 protected void fireConnectionDidOpenEvent() {

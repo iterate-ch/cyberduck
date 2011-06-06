@@ -917,11 +917,23 @@ public class S3Session extends CloudSession {
     private class WebsiteCloudFrontDistributionConfiguration extends CloudFrontDistributionConfiguration {
 
         public WebsiteCloudFrontDistributionConfiguration() {
-            super(LoginControllerFactory.instance(S3Session.this), S3Session.this.host.getCredentials(), new ErrorListener() {
-                public void error(BackgroundException exception) {
-                    S3Session.this.error(exception);
-                }
-            });
+            super(LoginControllerFactory.instance(S3Session.this), S3Session.this.host.getCredentials(),
+                    new ErrorListener() {
+                        public void error(BackgroundException exception) {
+                            S3Session.this.error(exception);
+                        }
+                    },
+                    new ProgressListener() {
+                        public void message(String message) {
+                            S3Session.this.message(message);
+                        }
+                    },
+                    new TranscriptListener() {
+                        public void log(boolean request, String message) {
+                            S3Session.this.log(request, message);
+                        }
+                    }
+            );
         }
 
         /**
@@ -951,6 +963,11 @@ public class S3Session extends CloudSession {
                 return S3Session.this.getWebsiteEndpoint(container, method);
             }
             return super.getOrigin(method, container);
+        }
+
+        @Override
+        protected List<String> getContainers(Distribution.Method method) {
+            return new ArrayList<String>(buckets.keySet());
         }
 
         @Override
