@@ -18,11 +18,18 @@ package ch.cyberduck.ui;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.threading.*;
+import ch.cyberduck.core.threading.BackgroundAction;
+import ch.cyberduck.core.threading.BackgroundActionRegistry;
+import ch.cyberduck.core.threading.ControllerMainAction;
+import ch.cyberduck.core.threading.MainAction;
+import ch.cyberduck.core.threading.ThreadPool;
 
 import org.apache.log4j.Logger;
 
-import java.util.concurrent.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledExecutorService;
 
 /**
  * @version $Id$
@@ -85,8 +92,8 @@ public abstract class AbstractController implements Controller {
                             return runnable.call();
                         }
                     }
-                    catch(Throwable e) {
-                        log.error("Excpetion running background task:" + e.getMessage(), e);
+                    catch(Exception e) {
+                        log.error("Exception running background task:" + e.getMessage(), e);
                     }
                     finally {
                         // Increase the run counter
@@ -94,7 +101,12 @@ public abstract class AbstractController implements Controller {
                         // Invoke the cleanup on the main thread to let the action synchronize the user interface
                         invoke(new ControllerMainAction(AbstractController.this) {
                             public void run() {
-                                runnable.cleanup();
+                                try {
+                                    runnable.cleanup();
+                                }
+                                catch(Exception e) {
+                                    log.error("Exception running cleanup task:" + e.getMessage(), e);
+                                }
                             }
                         });
                         if(log.isDebugEnabled()) {
