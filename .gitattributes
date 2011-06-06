@@ -1434,6 +1434,9 @@ pl.lproj/Status.strings -text svneol=unset#text/utf-16
 pl.lproj/Transfer.strings -text svneol=unset#text/utf-16
 profiles/Azure.cyberduckprofile -text
 profiles/Dropbox.cyberduckprofile -text
+profiles/Dunkel[!!-~]Cloud[!!-~]Storage.cyberduckprofile -text
+profiles/Internap[!!-~]XIPCloud[!!-~]Storage.cyberduckprofile -text
+profiles/Rackspace[!!-~]UK.cyberduckprofile -text
 profiles/S3[!!-~]Unsecure.cyberduckprofile -text
 pt_BR.lproj/Alert.nib/classes.nib -text
 pt_BR.lproj/Alert.nib/info.nib -text

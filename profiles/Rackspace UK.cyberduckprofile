@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Protocol</key>
+	<string>cf</string>
+	<key>Vendor</key>
+	<string>rackspaceuk</string>
+	<key>Description</key>
+	<string>Rackspace Cloud Files UK</string>
+	<key>Default Hostname</key>
+	<string>lon.auth.api.rackspacecloud.com</string>
+	<key>Default Port</key>
+	<string>443</string>
+	<key>Username Placeholder</key>
+	<string>Username</string>
+	<key>Password Placeholder</key>
+	<string>API Key</string>
+</dict>
+</plist>
