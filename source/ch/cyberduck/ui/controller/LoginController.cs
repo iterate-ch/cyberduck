@@ -21,7 +21,6 @@ using ch.cyberduck.core;
 using Ch.Cyberduck.Core;
 using ch.cyberduck.core.i18n;
 using Ch.Cyberduck.Ui.Winforms.Taskdialog;
-using org.apache.commons.lang;
 using org.apache.log4j;
 using StructureMap;
 
