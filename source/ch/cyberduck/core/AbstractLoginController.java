@@ -97,10 +97,15 @@ public abstract class AbstractLoginController implements LoginController {
                     }
                 }
                 else {
-                    reason.append(Locale.localizedString(
-                            "The use of the Keychain is disabled in the Preferences", "Credentials")).append(".");
-                    this.prompt(host.getProtocol(), credentials, title, reason.toString(),
-                            enableKeychain, enablePublicKey, enableAnonymous);
+                    if(credentials.isPublicKeyAuthentication()) {
+                        // We decide later if the key is encrypted and a password must be known to decrypt.
+                    }
+                    else {
+                        reason.append(Locale.localizedString(
+                                "The use of the Keychain is disabled in the Preferences", "Credentials")).append(".");
+                        this.prompt(host.getProtocol(), credentials, title, reason.toString(),
+                                enableKeychain, enablePublicKey, enableAnonymous);
+                    }
                 }
             }
             else {
