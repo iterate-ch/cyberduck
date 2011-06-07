@@ -1,4 +1,4 @@
-﻿﻿﻿//
+﻿// 
 // Copyright (c) 2010-2011 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
@@ -580,7 +580,7 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
-        private void BucketLoggingChanged()
+        private void BucketLoggingCheckboxChanged()
         {
             if (ToggleS3Settings(false))
             {
@@ -638,8 +638,10 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             View.DistributionEnabled = stop && enable;
             View.DistributionDeliveryMethodEnabled = stop && enable;
-            View.DistributionLoggingEnabled = stop && enable &&
-                                              session.cdn().isLoggingSupported(View.DistributionDeliveryMethod);
+            View.DistributionLoggingCheckboxEnabled = stop && enable &&
+                                                      session.cdn().isLoggingSupported(View.DistributionDeliveryMethod);
+            View.DistributionLoggingPopupEnabled = stop && enable &&
+                                                   session.cdn().isLoggingSupported(View.DistributionDeliveryMethod);
             View.DistributionCnameEnabled = stop && enable &&
                                             session.cdn().isCnameSupported(View.DistributionDeliveryMethod);
             View.DistributionInvalidateObjectsEnabled = stop && enable &&
@@ -684,12 +686,23 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void AttachDistributionHandlers()
         {
+            DetachDistributionHandlers();
             View.DistributionDeliveryMethodChanged += DistributionDeliveryMethodChanged;
             View.DistributionCnameChanged += DistributionCnameChanged;
             View.DistributionEnabledChanged += DistributionApply;
-            View.DistributionLoggingChanged += DistributionApply;
+            View.DistributionLoggingCheckboxChanged += DistributionApply;
+            View.DistributionLoggingPopupChanged += DistributionLoggingPopupChanged;
             View.DistributionDefaultRootChanged += DistributionApply;
             View.DistributionInvalidateObjects += DistributionInvalidateObjects;
+        }
+
+        private void DistributionLoggingPopupChanged()
+        {
+            if (View.DistributionLoggingCheckbox)
+            {
+                // Only write change if logging is already enabled
+                DistributionApply();
+            }
         }
 
         private void DistributionInvalidateObjects()
@@ -708,10 +721,21 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void AttachS3Handlers()
         {
-            View.BucketLoggingChanged += BucketLoggingChanged;
+            DetachS3Handlers();
+            View.BucketLoggingCheckboxChanged += BucketLoggingCheckboxChanged;
+            View.BucketLoggingPopupChanged += BucketLoggingPopupChanged;
             View.StorageClassChanged += StorageClassChanged;
             View.BucketVersioningChanged += BucketVersioningChanged;
             View.BucketMfaChanged += BucketMfaChanged;
+        }
+
+        private void BucketLoggingPopupChanged()
+        {
+            if (View.BucketLoggingCheckbox)
+            {
+                // Only write change if logging is already enabled
+                BucketLoggingCheckboxChanged();
+            }
         }
 
         private void BucketVersioningChanged()
@@ -732,7 +756,8 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void DetachS3Handlers()
         {
-            View.BucketLoggingChanged -= BucketLoggingChanged;
+            View.BucketLoggingCheckboxChanged -= BucketLoggingCheckboxChanged;
+            View.BucketLoggingPopupChanged -= BucketLoggingPopupChanged;
             View.StorageClassChanged -= StorageClassChanged;
             View.BucketVersioningChanged -= BucketVersioningChanged;
             View.BucketMfaChanged -= BucketMfaChanged;
@@ -754,7 +779,8 @@ namespace Ch.Cyberduck.Ui.Controller
             View.DistributionDeliveryMethodChanged -= DistributionDeliveryMethodChanged;
             View.DistributionCnameChanged -= DistributionCnameChanged;
             View.DistributionEnabledChanged -= DistributionApply;
-            View.DistributionLoggingChanged -= DistributionApply;
+            View.DistributionLoggingCheckboxChanged -= DistributionApply;
+            View.DistributionLoggingPopupChanged -= DistributionLoggingPopupChanged;
             View.DistributionDefaultRootChanged -= DistributionApply;
             View.DistributionInvalidateObjects -= DistributionInvalidateObjects;
         }
@@ -1027,6 +1053,10 @@ namespace Ch.Cyberduck.Ui.Controller
 
             View.BucketLocation = Locale.localizedString("Unknown");
             View.BucketLoggingTooltip = Locale.localizedString("Unknown");
+
+            IList<string> none = new List<string> {Locale.localizedString("None")};
+            View.PopulateBucketLogging(none);
+
             View.S3PublicUrl = Locale.localizedString("None");
             View.S3PublicUrlEnabled = false;
             View.S3PublicUrlValidity = Locale.localizedString("Unknown");
@@ -1036,10 +1066,10 @@ namespace Ch.Cyberduck.Ui.Controller
             IList<KeyValuePair<string, string>> classes = new List<KeyValuePair<string, string>>();
             classes.Add(new KeyValuePair<string, string>(Locale.localizedString("Unknown"), "Unknown"));
             View.PopulateStorageClass(classes);
+            View.StorageClass = "Unknown";
 
             if (ToggleS3Settings(false))
             {
-                View.StorageClass = "Unknown";
                 List list = ((CloudSession) _controller.getSession()).getSupportedStorageClasses();
                 for (int i = 0; i < list.size(); i++)
                 {
@@ -1065,8 +1095,6 @@ namespace Ch.Cyberduck.Ui.Controller
                     }
                     if (file.attributes().isFile())
                     {
-                        View.BucketLoggingTooltip = file.getContainerName() + "/" +
-                                                    Preferences.instance().getProperty("s3.logging.prefix");
                         S3Path s3 = (S3Path) file;
                         AbstractPath.DescriptiveUrl url = s3.toSignedUrl();
                         if (null != url)
@@ -1118,7 +1146,8 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             View.BucketVersioningEnabled = stop && enable && versioning;
             View.BucketMfaEnabled = stop && enable && versioning && View.BucketVersioning;
-            View.BucketLoggingEnabled = stop && enable && logging;
+            View.BucketLoggingCheckboxEnabled = stop && enable && logging;
+            View.BucketLoggingPopupEnabled = stop && enable && logging;
             View.StorageClassEnabled = stop && enable && storageclass;
 
             if (stop)
@@ -1157,7 +1186,10 @@ namespace Ch.Cyberduck.Ui.Controller
                                                                            };
             View.PopulateDistributionDeliveryMethod(methods);
             View.PopulateDefaultRoot(new List<KeyValuePair<string, string>>
-                                         {new KeyValuePair<string, string>(Locale.localizedString("None"), null)});
+                                         {
+                                             new KeyValuePair<string, string>(Locale.localizedString("None"),
+                                                                              String.Empty)
+                                         });
 
             Session session = _controller.getSession();
             View.DistributionTitle = String.Format(Locale.localizedString("Enable {0} Distribution", "Status"),
@@ -1170,19 +1202,19 @@ namespace Ch.Cyberduck.Ui.Controller
                 methods.Add(new KeyValuePair<string, Distribution.Method>(method.ToString(), method));
             }
             View.PopulateDistributionDeliveryMethod(methods);
-            if(null == selected)
+            if (null == selected)
             {
                 // Select first distribution option
-                View.DistributionDeliveryMethod = (Distribution.Method)session.cdn().getMethods().iterator().next();
+                View.DistributionDeliveryMethod = (Distribution.Method) session.cdn().getMethods().iterator().next();
             }
             else
             {
                 View.DistributionDeliveryMethod = selected;
             }
-
+            IList<string> none = new List<string> {Locale.localizedString("None")};
+            View.PopulateDistributionLogging(none);
             DistributionDeliveryMethodChanged();
-
-            AttachDistributionHandlers();
+            //AttachDistributionHandlers();
         }
 
         private void InitPermissions()
@@ -1581,11 +1613,14 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private class FetchS3BackgroundAction : BrowserBackgroundAction
         {
+            private readonly String _container;
+            private readonly IList<string> _containers = new List<string>();
             private readonly InfoController _infoController;
             private readonly IInfoView _view;
 
             private String _location;
             private bool _logging;
+            private String _loggingBucket;
             private bool _mfa;
             private bool _versioning;
 
@@ -1594,26 +1629,42 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 _infoController = infoController;
                 _view = infoController.View;
+                _container = infoController.SelectedPath.getContainerName();
             }
 
             public override void run()
             {
-                foreach (Path file in _infoController.Files)
+                S3Session s = (S3Session) BrowserController.getSession();
+                _location = s.getLocation(_container);
+                _logging = s.isLogging(_container);
+                _loggingBucket = s.getLoggingTarget(_container);
+                AttributedList children = _infoController.SelectedPath.getContainer().getParent().children();
+                foreach (AbstractPath c in children)
                 {
-                    S3Session s = (S3Session) BrowserController.getSession();
-                    String container = file.getContainerName();
-                    _location = s.getLocation(container);
-                    _logging = s.isLogging(container);
-                    _versioning = s.isVersioning(container);
-                    _mfa = s.isMultiFactorAuthentication(container);
+                    _containers.Add(c.getName());
                 }
+                _versioning = s.isVersioning(_container);
+                _mfa = s.isMultiFactorAuthentication(_container);
             }
 
             public override void cleanup()
             {
                 try
                 {
-                    _view.BucketLogging = _logging;
+                    _view.BucketLoggingCheckbox = _logging;
+                    if (_containers.Count > 0)
+                    {
+                        _view.PopulateBucketLogging(_containers);
+                    }
+                    if (_logging)
+                    {
+                        _view.BucketLoggingPopup = _loggingBucket;
+                    }
+                    else
+                    {
+                        // Default to write log files to origin bucket
+                        _view.BucketLoggingPopup = _container;
+                    }
                     if (Utils.IsNotBlank(_location))
                     {
                         _view.BucketLocation = Locale.localizedString(_location, "S3");
@@ -1627,6 +1678,12 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     _infoController.AttachS3Handlers();
                 }
+            }
+
+            public override String getActivity()
+            {
+                return String.Format(Locale.localizedString("Reading metadata of {0}", "Status"),
+                                     toString(Utils.ConvertToJavaList(_infoController.Files)));
             }
         }
 
@@ -1730,10 +1787,11 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 Path file = _infoController.SelectedPath;
                 Session session = BrowserController.getSession();
+                // We only support one distribution per bucket for the sake of simplicity
                 _distribution = session.cdn().read(
                     session.cdn().getOrigin(_deliveryMethod, file.getContainerName()), _deliveryMethod);
                 // Make sure container items are cached for default root object.
-                _infoController.Files[0].getContainer().children();
+                _infoController.SelectedPath.getContainer().children();
             }
 
             public override void cleanup()
@@ -1741,15 +1799,41 @@ namespace Ch.Cyberduck.Ui.Controller
                 try
                 {
                     _infoController.DetachDistributionHandlers();
-
+                    Session session = BrowserController.getSession();
+                    _view.DistributionTitle = String.Format(Locale.localizedString("Enable {0} Distribution", "Status"),
+                                                            session.cdn().toString(_deliveryMethod));
                     Path file = _infoController.SelectedPath;
-
                     _view.Distribution = _distribution.isEnabled();
                     _view.DistributionStatus = _distribution.getStatus();
-                    _view.DistributionLoggingEnabled = _distribution.isEnabled();
-                    _view.DistributionLogging = _distribution.isLogging();
+                    _view.DistributionLoggingCheckboxEnabled = _distribution.isEnabled();
+                    _view.DistributionLoggingCheckbox = _distribution.isLogging();
                     _view.DistributionOrigin = _distribution.getOrigin(file);
 
+                    List containers = _distribution.getContainers();
+                    IList<string> buckets = new List<string>();
+                    bool containerForSelectionAvailable = false;
+                    for (Iterator iter = containers.iterator(); iter.hasNext();)
+                    {
+                        string c = (string) iter.next();
+                        buckets.Add(c);
+                        if (!containerForSelectionAvailable && c.Equals(file.getContainerName()))
+                        {
+                            containerForSelectionAvailable = true;
+                        }
+                    }
+                    _view.PopulateDistributionLogging(buckets);
+                    if (Utils.IsNotBlank(_distribution.getLoggingTarget()))
+                    {
+                        // Select configured logging container if any
+                        _view.DistributionLoggingPopup = _distribution.getLoggingTarget();
+                    }
+                    else
+                    {
+                        if (containerForSelectionAvailable)
+                        {
+                            _view.DistributionLoggingPopup = file.getContainerName();
+                        }
+                    }
                     // Concatenate URLs
                     if (_infoController.NumberOfFiles > 1)
                     {
@@ -1795,9 +1879,6 @@ namespace Ch.Cyberduck.Ui.Controller
                             break;
                         }
                     }
-                    Session session = BrowserController.getSession();
-                    _view.DistributionTitle = String.Format(Locale.localizedString("Enable {0} Distribution", "Status"),
-                                                            session.cdn().toString(_deliveryMethod));
 
                     KeyValuePair<string, string> noneEntry =
                         new KeyValuePair<string, string>(Locale.localizedString("None"), String.Empty);
@@ -1806,21 +1887,12 @@ namespace Ch.Cyberduck.Ui.Controller
                     {
                         List<KeyValuePair<string, string>> defaultRoots = new List<KeyValuePair<string, string>>
                                                                               {noneEntry};
-                        foreach (AbstractPath next in _infoController._files[0].getContainer().children())
+                        foreach (AbstractPath next in _infoController.SelectedPath.getContainer().children())
                         {
                             if (next.attributes().isFile())
                             {
                                 defaultRoots.Add(new KeyValuePair<string, string>(next.getName(), next.getName()));
                             }
-                        }
-
-                        KeyValuePair<string, string> defaultEntry =
-                            new KeyValuePair<string, string>(_distribution.getDefaultRootObject(),
-                                                             _distribution.getDefaultRootObject());
-
-                        if (!defaultRoots.Contains(defaultEntry))
-                        {
-                            defaultRoots.Add(defaultEntry);
                         }
                         _view.PopulateDefaultRoot(defaultRoots);
                     }
@@ -1955,29 +2027,29 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private class SetBucketLoggingBackgroundAction : BrowserBackgroundAction
         {
+            private readonly bool _bucketLoggingCheckbox;
+            private readonly string _bucketLoggingPopup;
             private readonly InfoController _infoController;
 
             public SetBucketLoggingBackgroundAction(BrowserController browserController, InfoController infoController)
                 : base(browserController)
             {
                 _infoController = infoController;
+                _bucketLoggingCheckbox = _infoController.View.BucketLoggingCheckbox;
+                _bucketLoggingPopup = _infoController.View.BucketLoggingPopup;
             }
 
             public override void run()
             {
-                foreach (Path next in _infoController._files)
-                {
-                    string container = next.getContainerName();
-                    ((S3Session) BrowserController.getSession()).setLogging(container,
-                                                                            _infoController.View.BucketLogging, null);
-                    break;
-                }
+                ((S3Session) BrowserController.getSession()).setLogging(_infoController.SelectedPath.getContainerName(),
+                                                                        _bucketLoggingCheckbox,
+                                                                        _bucketLoggingPopup);
             }
 
             public override void cleanup()
             {
                 _infoController.ToggleS3Settings(true);
-                _infoController.InitS3(); //really necessary?
+                _infoController.InitS3();
             }
 
             public override string getActivity()
@@ -1989,6 +2061,8 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private class SetBucketVersioningAndMfaBackgroundAction : BrowserBackgroundAction
         {
+            private readonly bool _bucketMfa;
+            private readonly bool _bucketVersioning;
             private readonly InfoController _infoController;
 
             public SetBucketVersioningAndMfaBackgroundAction(BrowserController browserController,
@@ -1996,6 +2070,8 @@ namespace Ch.Cyberduck.Ui.Controller
                 : base(browserController)
             {
                 _infoController = infoController;
+                _bucketMfa = _infoController.View.BucketMfa;
+                _bucketVersioning = _infoController.View.BucketVersioning;
             }
 
             public override void run()
@@ -2003,8 +2079,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 foreach (Path next in _infoController._files)
                 {
                     string container = next.getContainerName();
-                    ((S3Session) BrowserController.getSession()).setVersioning(container, _infoController.View.BucketMfa,
-                                                                               _infoController.View.BucketVersioning);
+                    ((S3Session) BrowserController.getSession()).setVersioning(container, _bucketMfa, _bucketVersioning);
                     break;
                 }
             }
@@ -2142,6 +2217,7 @@ namespace Ch.Cyberduck.Ui.Controller
             private readonly String _defaultRoot;
             private readonly Distribution.Method _deliveryMethod;
             private readonly bool _distribution;
+            private readonly string _distributionLogging;
             private readonly List<Path> _files;
             private readonly InfoController _infoController;
             private readonly bool _logging;
@@ -2155,35 +2231,33 @@ namespace Ch.Cyberduck.Ui.Controller
                 _view = infoController.View;
 
                 _deliveryMethod = _view.DistributionDeliveryMethod;
-                _logging = _view.DistributionLogging;
+                _logging = _view.DistributionLoggingCheckbox;
                 _cname = _view.DistributionCname;
                 _distribution = _view.Distribution;
                 _defaultRoot = Utils.IsBlank(_view.DistributionDefaultRoot) ? null : _view.DistributionDefaultRoot;
+                _distributionLogging = _view.DistributionLoggingPopup;
             }
 
             public override void run()
             {
-                foreach (Path next in _files)
+                Session session = BrowserController.getSession();
+                String origin = session.cdn().getOrigin(_deliveryMethod, _infoController.SelectedPath.getContainerName());
+                if (Utils.IsNotBlank(_cname))
                 {
-                    Session session = BrowserController.getSession();
-                    if (Utils.IsNotBlank(_cname))
-                    {
-                        session.cdn().write(_distribution,
-                                            session.cdn().getOrigin(_deliveryMethod, next.getContainerName()),
-                                            _deliveryMethod,
-                                            _cname.Split(new[] {' '},
-                                                         StringSplitOptions.RemoveEmptyEntries),
-                                            _logging, null,
-                                            _defaultRoot);
-                    }
-                    else
-                    {
-                        session.cdn().write(_distribution,
-                                            session.cdn().getOrigin(_deliveryMethod, next.getContainerName()),
-                                            _deliveryMethod,
-                                            new string[] {}, _logging, null, _defaultRoot);
-                    }
-                    break;
+                    session.cdn().write(_distribution,
+                                        origin,
+                                        _deliveryMethod,
+                                        _cname.Split(new[] {' '},
+                                                     StringSplitOptions.RemoveEmptyEntries),
+                                        _logging, _distributionLogging,
+                                        _defaultRoot);
+                }
+                else
+                {
+                    session.cdn().write(_distribution,
+                                        origin,
+                                        _deliveryMethod,
+                                        new string[] {}, _logging, _distributionLogging, _defaultRoot);
                 }
             }
 

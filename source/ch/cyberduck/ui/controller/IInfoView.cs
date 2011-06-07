@@ -113,8 +113,10 @@ namespace Ch.Cyberduck.Ui.Controller
         bool DistributionEnabled { set; }
         string DistributionTitle { set; }
         string DistributionStatus { set; }
-        bool DistributionLogging { set; get; }
-        bool DistributionLoggingEnabled { set; }
+        bool DistributionLoggingCheckbox { set; get; }
+        bool DistributionLoggingCheckboxEnabled { set; }
+        string DistributionLoggingPopup { set; get; }
+        bool DistributionLoggingPopupEnabled { set; }
         string DistributionUrl { set; }
         string DistributionUrlTooltip { set; }
         bool DistributionUrlEnabled { set; }
@@ -134,6 +136,8 @@ namespace Ch.Cyberduck.Ui.Controller
         string BucketLocation { set; }
         string StorageClass { set; get; }
         bool StorageClassEnabled { set; }
+        string BucketLoggingPopup { set; get; }
+        bool BucketLoggingPopupEnabled { set; }
         string S3PublicUrl { set; }
         bool S3PublicUrlEnabled { set; }
         string S3PublicUrlTooltip { set; }
@@ -142,9 +146,9 @@ namespace Ch.Cyberduck.Ui.Controller
         bool S3TorrentUrlEnabled { set; }
         string S3TorrentUrlTooltip { set; }
         bool S3AnimationActive { set; }
-        bool BucketLogging { set; get; }
+        bool BucketLoggingCheckbox { set; get; }
         string BucketLoggingTooltip { set; }
-        bool BucketLoggingEnabled { set; }
+        bool BucketLoggingCheckboxEnabled { set; }
         bool BucketVersioning { get; set; }
         bool BucketVersioningEnabled { set; }
         bool BucketMfa { set; get; }
@@ -171,17 +175,21 @@ namespace Ch.Cyberduck.Ui.Controller
         void EditMetadataRow(InfoController.CustomHeaderEntry headerEntry, bool selectValue);
         void PopulateDistributionDeliveryMethod(IList<KeyValuePair<string, Distribution.Method>> methods);
         void PopulateDefaultRoot(IList<KeyValuePair<string, string>> roots);
+        void PopulateBucketLogging(IList<string> buckets);
+        void PopulateDistributionLogging(IList<string> buckets);
 
         event VoidHandler DistributionDeliveryMethodChanged;
         event VoidHandler DistributionEnabledChanged;
-        event VoidHandler DistributionLoggingChanged;
+        event VoidHandler DistributionLoggingCheckboxChanged;
+        event VoidHandler DistributionLoggingPopupChanged;
         event VoidHandler DistributionCnameChanged;
         event VoidHandler DistributionDefaultRootChanged;
         event VoidHandler DistributionInvalidateObjects;
 
         void PopulateStorageClass(IList<KeyValuePair<string, string>> classes);
 
-        event VoidHandler BucketLoggingChanged;
+        event VoidHandler BucketLoggingCheckboxChanged;
+        event VoidHandler BucketLoggingPopupChanged;
         event VoidHandler StorageClassChanged;
         event VoidHandler BucketVersioningChanged;
         event VoidHandler BucketMfaChanged;

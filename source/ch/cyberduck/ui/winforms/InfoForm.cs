@@ -613,6 +613,16 @@ namespace Ch.Cyberduck.Ui.Winforms
             defaultRootComboBox.ValueMember = "Value";
         }
 
+        public void PopulateBucketLogging(IList<string> buckets)
+        {
+            bucketLoggingComboBox.DataSource = buckets;
+        }
+
+        public void PopulateDistributionLogging(IList<string> buckets)
+        {
+            distributionLoggingComboBox.DataSource = buckets;
+        }
+
         public bool DistributionDeliveryMethodEnabled
         {
             set { deliveryMethodComboBox.Enabled = value; }
@@ -639,15 +649,26 @@ namespace Ch.Cyberduck.Ui.Winforms
             set { statusLabel.Text = value; }
         }
 
-        public bool DistributionLogging
+        public bool DistributionLoggingCheckbox
         {
             get { return distributionLoggingCheckBox.Checked; }
             set { distributionLoggingCheckBox.Checked = value; }
         }
 
-        public bool DistributionLoggingEnabled
+        public bool DistributionLoggingCheckboxEnabled
         {
             set { distributionLoggingCheckBox.Enabled = value; }
+        }
+
+        public string DistributionLoggingPopup
+        {
+            get { return distributionLoggingComboBox.Text; }
+            set { distributionLoggingComboBox.Text = value; }
+        }
+
+        public bool DistributionLoggingPopupEnabled
+        {
+            set { distributionLoggingComboBox.Enabled = value; }
         }
 
         public string DistributionUrl
@@ -687,7 +708,8 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public event VoidHandler DistributionDeliveryMethodChanged = delegate { };
         public event VoidHandler DistributionEnabledChanged = delegate { };
-        public event VoidHandler DistributionLoggingChanged = delegate { };
+        public event VoidHandler DistributionLoggingCheckboxChanged = delegate { };
+        public event VoidHandler DistributionLoggingPopupChanged = delegate { };
         public event VoidHandler DistributionCnameChanged = delegate { };
         public event VoidHandler DistributionInvalidateObjects = delegate { };
 
@@ -713,6 +735,17 @@ namespace Ch.Cyberduck.Ui.Winforms
         public bool StorageClassEnabled
         {
             set { storageClassComboBox.Enabled = value; }
+        }
+
+        public string BucketLoggingPopup
+        {
+            get { return bucketLoggingComboBox.Text; }
+            set { bucketLoggingComboBox.Text = value; }
+        }
+
+        public bool BucketLoggingPopupEnabled
+        {
+            set { bucketLoggingComboBox.Enabled = value; }
         }
 
         public string S3PublicUrl
@@ -755,7 +788,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             set { s3Animation.Visible = value; }
         }
 
-        public bool BucketLogging
+        public bool BucketLoggingCheckbox
         {
             get { return bucketLoggingCheckBox.Checked; }
             set { bucketLoggingCheckBox.Checked = value; }
@@ -766,7 +799,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             set { toolTip.SetToolTip(bucketLoggingCheckBox, value); }
         }
 
-        public bool BucketLoggingEnabled
+        public bool BucketLoggingCheckboxEnabled
         {
             set { bucketLoggingCheckBox.Enabled = value; }
         }
@@ -793,7 +826,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             set { bucketMfaCheckBox.Enabled = value; }
         }
 
-        public event VoidHandler BucketLoggingChanged = delegate { };
+        public event VoidHandler BucketLoggingCheckboxChanged = delegate { };
+        public event VoidHandler BucketLoggingPopupChanged = delegate { };
         public event VoidHandler StorageClassChanged = delegate { };
         public event VoidHandler BucketVersioningChanged = delegate { };
         public event VoidHandler BucketMfaChanged = delegate { };
@@ -1122,12 +1156,12 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         private void distributionLoggingCheckBox_CheckedChanged(object sender, EventArgs e)
         {
-            DistributionLoggingChanged();
+            DistributionLoggingCheckboxChanged();
         }
 
         private void bucketLoggingCheckBox_CheckedChanged(object sender, EventArgs e)
         {
-            BucketLoggingChanged();
+            BucketLoggingCheckboxChanged();
         }
 
         private void filenameTextbox_Validated(object sender, EventArgs e)
@@ -1233,6 +1267,16 @@ namespace Ch.Cyberduck.Ui.Winforms
         private void originLinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             Utils.StartProcess(originLinkLabel.Text);
+        }
+
+        private void bucketLoggingComboBox_SelectionChangeCommitted(object sender, EventArgs e)
+        {
+            BucketLoggingPopupChanged();
+        }
+
+        private void distributionLoggingComboBox_SelectionChangeCommitted(object sender, EventArgs e)
+        {
+            DistributionLoggingPopupChanged();
         }
 
         private enum AclColumnName
