@@ -115,7 +115,7 @@
     </target>
 
     <target name="distribution-sparkle" depends="timestamp">
-        <antcall target="stub"/>
+        <antcall target="copy-stub"/>
         <antcall target="codesign"/>
         <antcall target="tar"/>
         <antcall target="zip"/>
@@ -250,7 +250,7 @@
                   algorithm="md5"/>
     </target>
 
-    <target name="stub">
+    <target name="copy-stub">
         <echo message="Using stub: ${apple.appstub}"/>
         <!-- copy application stub -->
         <copy file="${apple.appstub}" toFile="${app.executable}" overwrite="true"/>
