@@ -45,9 +45,9 @@ static void* startup(VMLaunchOptions *launchOptions) {
         exit(result);
         return NULL;
     }
-    
+
     /* Find the main class */
-	jclass mainClass = (*env)->FindClass(env, launchOptions->mainClass);
+    jclass mainClass = (*env)->FindClass(env, launchOptions->mainClass);
     if ( mainClass == NULL ) {
         (*env)->ExceptionDescribe(env);
         result = -1;
@@ -82,7 +82,7 @@ static void* startup(VMLaunchOptions *launchOptions) {
         result = -1;
         goto leave;
     }
-        
+
 leave:
     FreeVMLaunchOptions(launchOptions);
     (*theVM)->DestroyJavaVM(theVM);
@@ -102,23 +102,23 @@ int main(int argc, const char **argv)
     /* Parse the args */
     VMLaunchOptions *launchOptions = NewVMLaunchOptions(argc, argv);
 
-	/*
+    /*
      * Start VM.  The current thread becomes the main thread of the VM.
      */
-	startup(launchOptions);
+    startup(launchOptions);
 
     return 0;
 }
 
 /*
  Copyright: 	© Copyright 2003 Apple Computer, Inc. All rights reserved.
- 
+
  Disclaimer:	IMPORTANT:  This Apple software is supplied to you by Apple Computer, Inc.
  ("Apple") in consideration of your agreement to the following terms, and your
  use, installation, modification or redistribution of this Apple software
  constitutes acceptance of these terms.  If you do not agree with these terms,
  please do not use, install, modify or redistribute this Apple software.
- 
+
  In consideration of your agreement to abide by the following terms, and subject
  to these terms, Apple grants you a personal, non-exclusive license, under Apple’s
  copyrights in this original Apple software (the "Apple Software"), to use,
@@ -133,13 +133,13 @@ int main(int argc, const char **argv)
  are granted by Apple herein, including but not limited to any patent rights that
  may be infringed by your derivative works or by other works in which the Apple
  Software may be incorporated.
- 
+
  The Apple Software is provided by Apple on an "AS IS" basis.  APPLE MAKES NO
  WARRANTIES, EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION THE IMPLIED
  WARRANTIES OF NON-INFRINGEMENT, MERCHANTABILITY AND FITNESS FOR A PARTICULAR
  PURPOSE, REGARDING THE APPLE SOFTWARE OR ITS USE AND OPERATION ALONE OR IN
  COMBINATION WITH YOUR PRODUCTS.
- 
+
  IN NO EVENT SHALL APPLE BE LIABLE FOR ANY SPECIAL, INDIRECT, INCIDENTAL OR
  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
  GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
