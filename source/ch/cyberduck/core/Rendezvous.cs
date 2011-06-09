@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2011 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -24,41 +24,41 @@ namespace Ch.Cyberduck.Core
 {
     internal class Rendezvous : AbstractRendezvous
     {
-        private readonly Dictionary<string, DNSSDService> browsers
+        private readonly Dictionary<string, DNSSDService> _browsers
             = new Dictionary<string, DNSSDService>();
 
-        private DNSSDEventManager eventManager;
-        private DNSSDService service;
+        private DNSSDEventManager _eventManager;
+        private DNSSDService _service;
 
         public override void init()
         {
-            eventManager = new DNSSDEventManager();
-            eventManager.ServiceFound += ServiceFound;
-            eventManager.ServiceLost += ServiceLost;
-            eventManager.ServiceResolved += ServiceResolved;
-            eventManager.OperationFailed += OperationFailed;
-            service = new DNSSDService();
+            _eventManager = new DNSSDEventManager();
+            _eventManager.ServiceFound += ServiceFound;
+            _eventManager.ServiceLost += ServiceLost;
+            _eventManager.ServiceResolved += ServiceResolved;
+            _eventManager.OperationFailed += OperationFailed;
+            _service = new DNSSDService();
             for (int i = 0; i < getServiceTypes().Length; i++)
             {
-                browsers.Add(getServiceTypes()[i], service.Browse(0, 0, getServiceTypes()[i], null, eventManager));
+                _browsers.Add(getServiceTypes()[i], _service.Browse(0, 0, getServiceTypes()[i], null, _eventManager));
             }
         }
 
         public override void quit()
         {
-            if (null == eventManager)
+            if (null == _eventManager)
             {
                 return;
             }
 
-            eventManager.ServiceFound -= ServiceFound;
-            eventManager.ServiceLost -= ServiceLost;
-            eventManager.ServiceResolved -= ServiceResolved;
-            eventManager.OperationFailed -= OperationFailed;
+            _eventManager.ServiceFound -= ServiceFound;
+            _eventManager.ServiceLost -= ServiceLost;
+            _eventManager.ServiceResolved -= ServiceResolved;
+            _eventManager.OperationFailed -= OperationFailed;
             for (int i = 0; i < getServiceTypes().Length; i++)
             {
                 DNSSDService browser;
-                if (browsers.TryGetValue(getServiceTypes()[i], out browser))
+                if (_browsers.TryGetValue(getServiceTypes()[i], out browser))
                 {
                     if (null != browser)
                     {
@@ -66,9 +66,9 @@ namespace Ch.Cyberduck.Core
                     }
                 }
             }
-            if (service != null)
+            if (_service != null)
             {
-                service.Stop();
+                _service.Stop();
             }
         }
 
@@ -86,7 +86,7 @@ namespace Ch.Cyberduck.Core
                                  String regType,
                                  String domain)
         {
-            service.Resolve(flags, ifIndex, serviceName, regType, domain, eventManager);
+            service.Resolve(flags, ifIndex, serviceName, regType, domain, _eventManager);
         }
 
         public void ServiceLost(DNSSDService service,
