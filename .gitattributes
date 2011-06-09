@@ -1064,6 +1064,7 @@ lib/IKVM.OpenJDK.SwingAWT.dll -text
 lib/IKVM.OpenJDK.Text.dll -text
 lib/IKVM.OpenJDK.Util.dll -text
 lib/IKVM.OpenJDK.XML.API.dll -text
+lib/IKVM.OpenJDK.XML.Bind.dll -text
 lib/IKVM.OpenJDK.XML.Parse.dll -text
 lib/IKVM.OpenJDK.XML.Transform.dll -text
 lib/IKVM.OpenJDK.XML.XPath.dll -text

@@ -92,6 +92,7 @@
                 <exclude name="cglib-*.jar"/>
                 <exclude name="slf4j-*.jar"/>
                 <exclude name="dns_sd.jar"/>
+                <exclude name="jaxb*.jar"/>
             </fileset>
             <outputfilter>
                 <contains>Warning IKVMC0107: skipping resource (name clash): "META-INF/</contains>

@@ -127,6 +127,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\lib\IKVM.OpenJDK.XML.API.dll</HintPath>
     </Reference>
+    <Reference Include="IKVM.OpenJDK.XML.Bind">
+      <HintPath>..\..\..\lib\IKVM.OpenJDK.XML.Bind.dll</HintPath>
+    </Reference>
     <Reference Include="IKVM.OpenJDK.XML.Parse, Version=0.42.0.3, Culture=neutral, PublicKeyToken=13235d27fcbfff58, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\lib\IKVM.OpenJDK.XML.Parse.dll</HintPath>
