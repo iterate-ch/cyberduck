@@ -21,6 +21,7 @@
             <File source="_BUILDPATH_\IKVM.OpenJDK.Text.dll"/>
             <File source="_BUILDPATH_\IKVM.OpenJDK.Util.dll"/>
             <File source="_BUILDPATH_\IKVM.OpenJDK.XML.API.dll"/>
+            <File source="_BUILDPATH_\IKVM.OpenJDK.XML.Bind.dll"/>
             <File source="_BUILDPATH_\IKVM.OpenJDK.XML.Parse.dll"/>
             <File source="_BUILDPATH_\IKVM.OpenJDK.XML.Transform.dll"/>
             <File source="_BUILDPATH_\IKVM.OpenJDK.XML.XPath.dll"/>
