@@ -85,13 +85,13 @@
             <fileset file="${build}/core.jar"/>
             <fileset file="${build}/ui.jar"/>
             <fileset dir="${lib}">
-                <include name="**/*.jar"/>
+                <include name="*.jar"/>
                 <exclude name="jna-*.jar"/>
                 <exclude name="activation-*.jar"/>
                 <exclude name="asm-*.jar"/>
                 <exclude name="cglib-*.jar"/>
                 <exclude name="slf4j-*.jar"/>
-                <exclude name="ext/*.jar"/>
+                <exclude name="dns_sd.jar"/>
             </fileset>
             <outputfilter>
                 <contains>Warning IKVMC0107: skipping resource (name clash): "META-INF/</contains>
