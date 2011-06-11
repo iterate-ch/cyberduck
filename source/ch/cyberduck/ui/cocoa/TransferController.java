@@ -832,6 +832,7 @@ public class TransferController extends WindowController implements NSToolbar.De
     private static final String TOOLBAR_OPEN = "Open";
     private static final String TOOLBAR_SHOW = "Show";
     private static final String TOOLBAR_TRASH = "Trash";
+    private static final String TOOLBAR_LOG = "Log";
     private static final String TOOLBAR_FILTER = "Search";
 
     /**
@@ -915,6 +916,15 @@ public class TransferController extends WindowController implements NSToolbar.De
             item.setImage(IconCache.iconNamed("trash.tiff"));
             item.setTarget(this.id());
             item.setAction(Foundation.selector("trashButtonClicked:"));
+            return item;
+        }
+        if(itemIdentifier.equals(TOOLBAR_LOG)) {
+            item.setLabel(Locale.localizedString(TOOLBAR_LOG));
+            item.setPaletteLabel(Locale.localizedString(TOOLBAR_LOG));
+            item.setToolTip(Locale.localizedString("Toggle Log Drawer"));
+            item.setImage(IconCache.iconNamed("log"));
+            item.setTarget(this.id());
+            item.setAction(Foundation.selector("toggleLogDrawer:"));
             return item;
         }
         if(itemIdentifier.equals(TOOLBAR_FILTER)) {
@@ -1107,6 +1117,7 @@ public class TransferController extends WindowController implements NSToolbar.De
                 TOOLBAR_OPEN,
                 TOOLBAR_TRASH,
                 TOOLBAR_FILTER,
+                TOOLBAR_LOG,
                 NSToolbarItem.NSToolbarCustomizeToolbarItemIdentifier,
                 NSToolbarItem.NSToolbarSpaceItemIdentifier,
                 NSToolbarItem.NSToolbarSeparatorItemIdentifier,

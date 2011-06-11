@@ -4201,6 +4201,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     private static final String TOOLBAR_TERMINAL = "Terminal";
     private static final String TOOLBAR_ARCHIVE = "Archive";
     private static final String TOOLBAR_QUICKLOOK = "Quick Look";
+    private static final String TOOLBAR_LOG = "Log";
 
     public boolean validateToolbarItem(final NSToolbarItem item) {
         final String identifier = item.itemIdentifier();
@@ -4522,6 +4523,15 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             }
             return item;
         }
+        else if(itemIdentifier.equals(TOOLBAR_LOG)) {
+            item.setLabel(Locale.localizedString(TOOLBAR_LOG));
+            item.setPaletteLabel(Locale.localizedString(TOOLBAR_LOG));
+            item.setToolTip(Locale.localizedString("Toggle Log Drawer"));
+            item.setImage(IconCache.iconNamed("log"));
+            item.setTarget(this.id());
+            item.setAction(Foundation.selector("toggleLogDrawer:"));
+            return item;
+        }
         // Returning null will inform the toolbar this kind of item is not supported.
         return null;
     }
@@ -4572,6 +4582,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 TOOLBAR_TERMINAL,
                 TOOLBAR_ARCHIVE,
                 TOOLBAR_QUICKLOOK,
+                TOOLBAR_LOG,
                 TOOLBAR_DISCONNECT,
                 NSToolbarItem.NSToolbarCustomizeToolbarItemIdentifier,
                 NSToolbarItem.NSToolbarSpaceItemIdentifier,
