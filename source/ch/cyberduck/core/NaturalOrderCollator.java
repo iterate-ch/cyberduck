@@ -13,6 +13,8 @@ package ch.cyberduck.core;
  * Werner Randelshofer. For details see accompanying license terms. 
  */
 
+import org.apache.log4j.Logger;
+
 import java.text.CollationKey;
 import java.text.Collator;
 import java.text.ParseException;
@@ -43,6 +45,8 @@ import java.util.Locale;
  * @version $Id$
  */
 public class NaturalOrderCollator extends Collator {
+    private static Logger log = Logger.getLogger(NaturalOrderCollator.class);
+
     private Collator collator;
 
     public NaturalOrderCollator() {
@@ -89,7 +93,7 @@ public class NaturalOrderCollator extends Collator {
                 collator = new RuleBasedCollator(rules);
             }
             catch(ParseException e) {
-                e.printStackTrace();
+                log.error("Error configuring collator:" + e.getMessage());
             }
         }
     }
