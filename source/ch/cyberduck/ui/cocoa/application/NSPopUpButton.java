@@ -136,10 +136,10 @@ public abstract class NSPopUpButton extends NSButton {
      */
     public abstract NSInteger indexOfItemWithTag(NSInteger tag);
     /**
-     * <i>native declaration : :56</i><br>
-     * Conversion Error : /// Original signature : <code>NSInteger indexOfItemWithRepresentedObject(null)</code><br>
+     * Original signature : <code>NSInteger indexOfItemWithRepresentedObject(null)</code><br>
      * - (NSInteger)indexOfItemWithRepresentedObject:(null)obj; (Argument obj cannot be converted)
      */
+    public abstract NSInteger indexOfItemWithRepresentedObject(String object);
     /**
      * <i>native declaration : :57</i><br>
      * Conversion Error : /// Original signature : <code>NSInteger indexOfItemWithTarget(null, null)</code><br>

@@ -127,7 +127,9 @@ public class ConnectionController extends SheetController {
         }
         final Protocol defaultProtocol
                 = ProtocolFactory.forName(Preferences.instance().getProperty("connection.protocol.default"));
-        this.protocolPopup.selectItemWithTitle(defaultProtocol.getDescription());
+        this.protocolPopup.selectItemAtIndex(
+                protocolPopup.indexOfItemWithRepresentedObject(defaultProtocol.getIdentifierAndVendor())
+        );
     }
 
     public void protocolSelectionDidChange(final NSPopUpButton sender) {
@@ -276,7 +278,9 @@ public class ConnectionController extends SheetController {
      */
     private void hostChanged(final Host host) {
         this.updateField(hostField, host.getHostname());
-        protocolPopup.selectItemWithTitle(host.getProtocol().getDescription());
+        this.protocolPopup.selectItemAtIndex(
+                protocolPopup.indexOfItemWithRepresentedObject(host.getProtocol().getIdentifierAndVendor())
+        );
         this.updateField(portField, String.valueOf(host.getPort()));
         this.updateField(usernameField, host.getCredentials().getUsername());
         this.updateField(pathField, host.getDefaultPath());

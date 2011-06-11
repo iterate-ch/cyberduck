@@ -796,7 +796,9 @@ public class BookmarkController extends WindowController {
         usernameField.setEnabled(!host.getCredentials().isAnonymousLogin());
         anonymousCheckbox.setEnabled(host.getProtocol().isAnonymousConfigurable());
         anonymousCheckbox.setState(host.getCredentials().isAnonymousLogin() ? NSCell.NSOnState : NSCell.NSOffState);
-        protocolPopup.selectItemWithTitle(host.getProtocol().getDescription());
+        protocolPopup.selectItemAtIndex(
+                protocolPopup.indexOfItemWithRepresentedObject(host.getProtocol().getIdentifierAndVendor())
+        );
         if(null == host.getMaxConnections()) {
             transferPopup.selectItemWithTitle(DEFAULT);
         }
