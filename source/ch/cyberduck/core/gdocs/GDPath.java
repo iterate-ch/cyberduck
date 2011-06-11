@@ -443,7 +443,7 @@ public class GDPath extends Path {
                     spreadsheet.setUserCredentials(credentials.getUsername(), credentials.getPassword());
                 }
                 catch(AuthenticationException e) {
-                    e.printStackTrace();
+                    throw new IOException(e.getMessage());
                 }
                 // Substitute the spreadsheets token for the docs token
                 this.getSession().getClient().setUserToken(
