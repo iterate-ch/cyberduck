@@ -437,7 +437,12 @@ public class GDPath extends Path {
         try {
             if(type.equals(SpreadsheetEntry.LABEL)) {
                 // Authenticate against the Spreadsheets API to obtain an auth token
-                SpreadsheetService spreadsheet = new SpreadsheetService(this.getSession().getUserAgent());
+                SpreadsheetService spreadsheet = null;
+                GDSession session = this.getSession();
+                spreadsheet = new SpreadsheetService(this.getSession().getUserAgent(),
+                        session.new CustomTrustRequestFactory(),
+                        session.new CustomTrustGoogleAuthTokenFactory(
+                                spreadsheet, SpreadsheetService.SPREADSHEET_SERVICE, this.getSession().getUserAgent()));
                 final Credentials credentials = this.getSession().getHost().getCredentials();
                 try {
                     spreadsheet.setUserCredentials(credentials.getUsername(), credentials.getPassword());
