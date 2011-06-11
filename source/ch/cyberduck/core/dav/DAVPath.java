@@ -137,7 +137,7 @@ public class DAVPath extends Path {
     }
 
     private void readAttributes() throws IOException {
-        final List<DavResource> resources = this.getSession().getClient().getResources(this.toURL());
+        final List<DavResource> resources = this.getSession().getClient().list(this.toURL());
         for(final DavResource resource : resources) {
             this.readAttributes(resource);
         }
@@ -197,7 +197,7 @@ public class DAVPath extends Path {
                 this.getSession().message(MessageFormat.format(Locale.localizedString("Listing directory {0}", "Status"),
                         this.getName()));
 
-                List<DavResource> resources = this.getSession().getClient().getResources(this.toURL());
+                List<DavResource> resources = this.getSession().getClient().list(this.toURL());
 
                 for(final DavResource resource : resources) {
                     // Try to parse as RFC 2396
@@ -267,7 +267,7 @@ public class DAVPath extends Path {
                 this.getSession().message(MessageFormat.format(Locale.localizedString("Reading metadata of {0}", "Status"),
                         this.getName()));
 
-                List<DavResource> resources = this.getSession().getClient().getResources(this.toURL());
+                List<DavResource> resources = this.getSession().getClient().list(this.toURL());
                 for(DavResource resource : resources) {
                     this.attributes().setMetadata(resource.getCustomProps());
                 }

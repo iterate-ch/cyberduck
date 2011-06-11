@@ -227,7 +227,7 @@ public class DAVSession extends HttpSession {
         });
         try {
             // Provoke authentication failure if listing is denied
-            this.getClient().getResources(this.home().toURL());
+            this.getClient().list(this.home().toURL());
             this.message(Locale.localizedString("Login successful", "Credentials"));
         }
         catch(HttpResponseException e) {
