@@ -226,6 +226,7 @@
 		47DF9A27102CE43B00DCAD41 /* Local.m in Sources */ = {isa = PBXBuildFile; fileRef = 47DF9A23102CE43B00DCAD41 /* Local.m */; };
 		47E0BB4B0746B1FA00C4A68E /* arrowDown.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47E0BB450746B1FA00C4A68E /* arrowDown.tiff */; };
 		47E0BB4F0746B1FA00C4A68E /* arrowUp.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 47E0BB490746B1FA00C4A68E /* arrowUp.tiff */; };
+		47E0BDE913A3C20E00F86C80 /* log.png in Resources */ = {isa = PBXBuildFile; fileRef = 47E0BDE813A3C20E00F86C80 /* log.png */; };
 		47E987600D689A280077733F /* S3.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47E9875E0D689A280077733F /* S3.strings */; };
 		47EBC1311328D01C00E9E6B3 /* mirror.switch.ch – FTP.duck in CopyFiles */ = {isa = PBXBuildFile; fileRef = 47EBC12F1328D00200E9E6B3 /* mirror.switch.ch – FTP.duck */; };
 		47F0B701087ACD0B00439978 /* Growl.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47F0B6FE087ACD0300439978 /* Growl.strings */; };
@@ -1459,6 +1460,7 @@
 		47DF9A23102CE43B00DCAD41 /* Local.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Local.m; sourceTree = "<group>"; };
 		47E0BB450746B1FA00C4A68E /* arrowDown.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = arrowDown.tiff; sourceTree = "<group>"; };
 		47E0BB490746B1FA00C4A68E /* arrowUp.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = arrowUp.tiff; sourceTree = "<group>"; };
+		47E0BDE813A3C20E00F86C80 /* log.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = log.png; sourceTree = "<group>"; };
 		47E2848413191D0900D03060 /* uk */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = uk; path = uk.lproj/Alert.nib; sourceTree = "<group>"; };
 		47E2848513191D0900D03060 /* uk */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = uk; path = uk.lproj/Bookmark.nib; sourceTree = "<group>"; };
 		47E2848613191D0900D03060 /* uk */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = uk; path = uk.lproj/Browser.nib; sourceTree = "<group>"; };
@@ -1929,6 +1931,7 @@
 		4741653C06C4FC3F00AC0BD2 /* img */ = {
 			isa = PBXGroup;
 			children = (
+				47E0BDE813A3C20E00F86C80 /* log.png */,
 				476F5EA712CCDD34004E8BC1 /* advanced.tiff */,
 				4783C6F611EC62C4006D9FAD /* connection-secure.tiff */,
 				4783C6F711EC62C4006D9FAD /* connection.tiff */,
@@ -2708,6 +2711,7 @@
 				47CD04A112DB5F5200694306 /* Duplicate.strings in Resources */,
 				478F0DF412FB03DC000FE33C /* update.pem in Resources */,
 				4732BDA813182C7F00CBC46B /* Download.strings in Resources */,
+				47E0BDE913A3C20E00F86C80 /* log.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
