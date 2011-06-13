@@ -697,6 +697,21 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         this.getFocus();
     }
 
+    public void sortBookmarksByNickame(final ID sender) {
+        BookmarkCollection.defaultCollection().sortByNickname();
+        this.reloadBookmarks();
+    }
+
+    public void sortBookmarksByHostname(final ID sender) {
+        BookmarkCollection.defaultCollection().sortByHostname();
+        this.reloadBookmarks();
+    }
+
+    public void sortBookmarksByProtocol(final ID sender) {
+        BookmarkCollection.defaultCollection().sortByProtocol();
+        this.reloadBookmarks();
+    }
+
     /**
      * Reload bookmark table from currently selected model
      */

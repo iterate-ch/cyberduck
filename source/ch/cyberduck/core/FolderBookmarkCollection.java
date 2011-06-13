@@ -93,6 +93,11 @@ public class FolderBookmarkCollection extends AbstractFolderHostCollection {
         }
     }
 
+    @Override
+    public void save() {
+        this.index();
+    }
+
     /**
      * Importer for legacy bookmarks.
      *

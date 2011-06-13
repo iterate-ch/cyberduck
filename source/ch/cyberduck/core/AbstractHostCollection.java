@@ -25,6 +25,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -58,7 +60,6 @@ public abstract class AbstractHostCollection extends Collection<Host> implements
     public abstract String getName();
 
     /**
-     *
      * @param h
      * @return
      */
@@ -110,6 +111,36 @@ public abstract class AbstractHostCollection extends Collection<Host> implements
     public void collectionItemRemoved(Host item) {
         this.sort();
         super.collectionItemRemoved(item);
+    }
+
+    public void sortByNickname() {
+        this.sort(new Comparator<Host>() {
+            public int compare(Host o1, Host o2) {
+                return o1.getNickname().compareTo(o2.getNickname());
+            }
+        });
+    }
+
+    public void sortByHostname() {
+        this.sort(new Comparator<Host>() {
+            public int compare(Host o1, Host o2) {
+                return o1.getHostname().compareTo(o2.getHostname());
+            }
+        });
+    }
+
+    public void sortByProtocol() {
+        this.sort(new Comparator<Host>() {
+            public int compare(Host o1, Host o2) {
+                return o1.getProtocol().getIdentifier().compareTo(o2.getProtocol().getIdentifier());
+            }
+        });
+    }
+
+    public void sort(Comparator<Host> comparator) {
+        Collections.sort(FolderBookmarkCollection.favoritesCollection(), comparator);
+        // Save new index
+        this.save();
     }
 
     protected void sort() {
