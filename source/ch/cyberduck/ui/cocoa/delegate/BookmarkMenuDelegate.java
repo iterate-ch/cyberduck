@@ -43,7 +43,7 @@ public class BookmarkMenuDelegate extends CollectionMenuDelegate<Host> {
         super(BookmarkCollection.defaultCollection());
     }
 
-    private static final int BOOKMARKS_INDEX = 7;
+    private static final int BOOKMARKS_INDEX = 8;
 
     @Override
     public NSInteger numberOfItemsInMenu(NSMenu menu) {
@@ -54,6 +54,7 @@ public class BookmarkMenuDelegate extends CollectionMenuDelegate<Host> {
         }
         /**
          * Toogle Bookmarks
+         * Sort By
          * ----------------
          * New Bookmark
          * Edit Bookmark
