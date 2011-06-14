@@ -15,6 +15,7 @@
 // Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
 // 
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -25,18 +26,18 @@ using System.Reflection;
 using System.Text;
 using System.Windows.Forms;
 using BrightIdeasSoftware;
-using ch.cyberduck.core;
 using Ch.Cyberduck.Core;
-using ch.cyberduck.core.aquaticprime;
-using ch.cyberduck.core.i18n;
-using ch.cyberduck.ui;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Winforms.Commondialog;
 using Ch.Cyberduck.Ui.Winforms.Controls;
+using TheCodeKing.ActiveButtons.Controls;
+using ch.cyberduck.core;
+using ch.cyberduck.core.aquaticprime;
+using ch.cyberduck.core.i18n;
+using ch.cyberduck.ui;
 using org.apache.commons.io;
 using org.apache.commons.lang;
 using org.apache.log4j;
-using TheCodeKing.ActiveButtons.Controls;
 using DataObject = System.Windows.Forms.DataObject;
 using ToolStripRenderer = Ch.Cyberduck.Ui.Controller.ToolStripRenderer;
 
@@ -351,6 +352,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         public event ValidateCommand ValidateDeleteBookmark;
         public event VoidHandler DuplicateBookmark;
         public event ValidateCommand ValidateDuplicateBookmark;
+        public event VoidHandler SortBookmarksByProtocol;
         public event EventHandler<ConnectBookmarkArgs> ConnectBookmark;
         public event ValidateCommand ValidateConnectBookmark;
         public event VoidHandler OpenUrl;
@@ -365,6 +367,8 @@ namespace Ch.Cyberduck.Ui.Winforms
         public event ValidateCommand ValidateSearchField;
         public event SetComparatorHandler SetComparator;
         public event VoidHandler ToggleBookmarks;
+        public event VoidHandler SortBookmarksByNickname;
+        public event VoidHandler SortBookmarksByHostname;
         public event VoidHandler RevertFile;
         public event ValidateCommand ValidateRevertFile;
 
@@ -1458,7 +1462,15 @@ namespace Ch.Cyberduck.Ui.Winforms
                              {
                                  viewBookmarksToolStripMenuItem
                              }, new[] {toggleBookmarksMainMenuItem}, (sender, args) => ToggleBookmarks(), () => true);
-
+            Commands.Add(new ToolStripItem[]
+                             {                                 
+                             }, new[] {sortByHostnameMainMenuItem, sortByHostnameBookmarkContextMenuItem}, (sender, args) => SortBookmarksByHostname(), () => true);
+            Commands.Add(new ToolStripItem[]
+                             {                                 
+                             }, new[] {sortByNicknameMainMenuItem, sortByNicknameBookmarkContextMenuItem}, (sender, args) => SortBookmarksByNickname(), () => true);
+            Commands.Add(new ToolStripItem[]
+                             {                                 
+                             }, new[] {sortByProtocolMainMenuItem, sortByProtocolBookmarkContextMenuItem}, (sender, args) => SortBookmarksByProtocol(), () => true);
             Commands.Add(new ToolStripItem[]
                              {
                                  connectBookmarkContextToolStripMenuItem,

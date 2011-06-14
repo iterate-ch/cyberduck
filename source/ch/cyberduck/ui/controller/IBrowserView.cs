@@ -192,6 +192,9 @@ namespace Ch.Cyberduck.Ui.Controller
         event ValidateCommand ValidateDisconnect;
 
         event VoidHandler ToggleBookmarks;
+        event VoidHandler SortBookmarksByNickname;
+        event VoidHandler SortBookmarksByHostname;
+        event VoidHandler SortBookmarksByProtocol;
         event EventHandler<ConnectBookmarkArgs> ConnectBookmark;
         event ValidateCommand ValidateConnectBookmark;
 

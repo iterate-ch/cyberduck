@@ -219,6 +219,9 @@ namespace Ch.Cyberduck.Ui.Controller
             #region Commands - Bookmark
 
             View.ToggleBookmarks += View_ToggleBookmarks;
+            View.SortBookmarksByHostname += View_SortBookmarksByHostname;
+            View.SortBookmarksByNickname += View_SortBookmarksByNickname;
+            View.SortBookmarksByProtocol += View_SortBookmarksByProtocol;
 
             View.ConnectBookmark += View_ConnectBookmark;
             View.ValidateConnectBookmark += View_ValidateConnectBookmark;
@@ -289,6 +292,24 @@ namespace Ch.Cyberduck.Ui.Controller
             //hostCollection.addListener(this);
             View.ViewClosedEvent += delegate { bookmarkCollection.removeListener(this); };
             View.SetBookmarkModel(bookmarkCollection, null);
+        }
+
+        private void View_SortBookmarksByProtocol()
+        {
+            BookmarkCollection.defaultCollection().sortByProtocol();
+            ReloadBookmarks();
+        }
+
+        private void View_SortBookmarksByNickname()
+        {
+            BookmarkCollection.defaultCollection().sortByNickname();
+            ReloadBookmarks();
+        }
+
+        private void View_SortBookmarksByHostname()
+        {
+            BookmarkCollection.defaultCollection().sortByHostname();
+            ReloadBookmarks();
         }
 
         public BrowserController()
