@@ -527,6 +527,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                     pasteboard.get(0).getLocal().mkdir();
                 }
             }
+            // kTemporaryFolderType
             final boolean dock = destination.equals(LocalFactory.createLocal("~/Library/Caches/TemporaryItems"));
             DownloadTransfer transfer = new DownloadTransfer(pasteboard.copy(controller.getTransferSession())) {
                 @Override
