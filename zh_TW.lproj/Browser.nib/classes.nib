@@ -82,6 +82,9 @@
         reloadButtonClicked = id;
         renameFileButtonClicked = id;
         revertFileButtonClicked = id;
+        sortBookmarksByHostname = id;
+        sortBookmarksByNickame = id;
+        sortBookmarksByProtocol = id;
         syncButtonClicked = id;
         unarchiveButtonClicked = id;
         uploadButtonClicked = id;

@@ -137,6 +137,12 @@
 				<string>id</string>
 				<key>showTransferQueueClicked</key>
 				<string>id</string>
+				<key>sortBookmarksByHostname</key>
+				<string>id</string>
+				<key>sortBookmarksByNickame</key>
+				<string>id</string>
+				<key>sortBookmarksByProtocol</key>
+				<string>id</string>
 				<key>syncButtonClicked</key>
 				<string>id</string>
 				<key>toggleLogDrawer</key>

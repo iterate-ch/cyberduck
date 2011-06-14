@@ -69,6 +69,9 @@
         showActivityWindowClicked = id;
         showHiddenFilesClicked = id;
         showTransferQueueClicked = id;
+        sortBookmarksByHostname = id;
+        sortBookmarksByNickame = id;
+        sortBookmarksByProtocol = id;
         syncButtonClicked = id;
         toggleLogDrawer = id;
         unarchiveButtonClicked = id;

@@ -53,6 +53,12 @@
 				<string>id</string>
 				<key>revertFileButtonClicked</key>
 				<string>id</string>
+				<key>sortBookmarksByHostname</key>
+				<string>id</string>
+				<key>sortBookmarksByNickame</key>
+				<string>id</string>
+				<key>sortBookmarksByProtocol</key>
+				<string>id</string>
 				<key>syncButtonClicked</key>
 				<string>id</string>
 				<key>unarchiveButtonClicked</key>
