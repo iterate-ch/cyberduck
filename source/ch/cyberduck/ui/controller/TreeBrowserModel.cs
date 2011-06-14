@@ -15,12 +15,13 @@
 // Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
 // 
+
 using System;
 using System.Collections.Generic;
-using ch.cyberduck.core;
-using ch.cyberduck.core.i18n;
 using Ch.Cyberduck.Ui.Controller.Threading;
 using Ch.Cyberduck.Ui.Winforms;
+using ch.cyberduck.core;
+using ch.cyberduck.core.i18n;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -58,20 +59,16 @@ namespace Ch.Cyberduck.Ui.Controller
                         }
                         yield break;
                     }
+                    _isLoadingListingInBackground.Add(path);
+                    // Reloading a workdir that is not cached yet would cause the interface to freeze;
+                    // Delay until path is cached in the background
+                    // switch to blocking children fetching
+                    //path.childs();
+                    _controller.Background(new ChildGetterBrowserBackgrounAction(_controller, path,
+                                                                                 _isLoadingListingInBackground));
                 }
-                _isLoadingListingInBackground.Add(path);
-                // Reloading a workdir that is not cached yet would cause the interface to freeze;
-                // Delay until path is cached in the background
-
-
-                // switch to blocking children fetching
-                //path.childs();
-
-                _controller.Background(new ChildGetterBrowserBackgrounAction(_controller, path,
-                                                                             _isLoadingListingInBackground));
-            }
-            list = path.cache().get(path.getReference(), _controller.FilenameComparator, _controller.FilenameFilter);
-            /*
+                list = path.cache().get(path.getReference(), _controller.FilenameComparator, _controller.FilenameFilter);
+                /*
             if (list.size() == 0)
             {
                 yield return
@@ -80,12 +77,13 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             else
             {*/
-            for (int i = 0; i < list.size(); i++)
-            {
-                yield return new TreePathReference((Path) list.get(i));
+                for (int i = 0; i < list.size(); i++)
+                {
+                    yield return new TreePathReference((Path) list.get(i));
+                }
+                //}
+                yield break;
             }
-            //}
-            yield break;
         }
 
         public IEnumerable<TreePathReference> GetEnumerator()
