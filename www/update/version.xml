@@ -17,6 +17,7 @@
             <File source="_BUILDPATH_\Growl.CoreLibrary.dll"/>
             <File source="_BUILDPATH_\IKVM.OpenJDK.Beans.dll"/>
             <File source="_BUILDPATH_\IKVM.OpenJDK.Core.dll"/>
+            <File source="_BUILDPATH_\IKVM.OpenJDK.Charsets.dll"/>
             <File source="_BUILDPATH_\IKVM.OpenJDK.Security.dll"/>
             <File source="_BUILDPATH_\IKVM.OpenJDK.Text.dll"/>
             <File source="_BUILDPATH_\IKVM.OpenJDK.Util.dll"/>

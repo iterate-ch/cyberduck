@@ -15,6 +15,7 @@
 // Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
 // 
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -22,11 +23,12 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using Microsoft.Win32;
 using ch.cyberduck.core;
 using java.nio.charset;
 using java.util;
-using Microsoft.Win32;
 using org.apache.log4j;
+using sun.nio.cs.ext;
 
 namespace Ch.Cyberduck.Core
 {
@@ -40,6 +42,32 @@ namespace Ch.Cyberduck.Core
         public static readonly bool IsWin7OrLater = OperatingSystemVersion.Current >= OSVersionInfo.Win7;
 
         private static readonly Logger Log = Logger.getLogger(typeof (Utils).FullName);
+
+        private static readonly List<String> ExtendedCharsets = new List<string>
+                                                                    {
+                                                                        "Big5",
+                                                                        "Big5-HKSCS",
+                                                                        "EUC-JP",
+                                                                        "EUC-KR",
+                                                                        "GB18030",
+                                                                        "GB2312",
+                                                                        "GBK",
+                                                                        "ISO-2022-CN",
+                                                                        "ISO-2022-JP",
+                                                                        "ISO-2022-JP-2",
+                                                                        "ISO-2022-KR",
+                                                                        "ISO-8859-3",
+                                                                        "ISO-8859-6",
+                                                                        "ISO-8859-8",
+                                                                        "JIS_X0201",
+                                                                        "JIS_X0212-1990",
+                                                                        "Shift_JIS",
+                                                                        "TIS-620",
+                                                                        "windows-1255",
+                                                                        "windows-1256",
+                                                                        "windows-1258",
+                                                                        "windows-31j"
+                                                                    };
 
         public static bool StartProcess(string filename, string args)
         {
@@ -280,9 +308,10 @@ namespace Ch.Cyberduck.Core
                     charsets.Add(name);
                 }
             }
+            charsets.AddRange(ExtendedCharsets);
+            charsets.Sort();
             return charsets.ToArray();
         }
-
 
         private static IList<String> OpenWithListForExtension(String ext, RegistryKey rootKey)
         {
