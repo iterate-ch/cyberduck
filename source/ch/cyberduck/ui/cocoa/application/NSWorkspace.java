@@ -263,10 +263,10 @@ public abstract class NSWorkspace extends NSObject {
      * Returned tag < 0 on failure, 0 if sync, > 0 if async<br>
      * <i>native declaration : :94</i>
      */
-    public abstract boolean performFileOperation_source_destination_files_tag(String operation1, String source2, String destination3, NSArray files4, NativeLong tag5);
+    public abstract boolean performFileOperation_source_destination_files_tag(String operation1, String source2, String destination3, NSArray files4, NSInteger tag5);
 
     public boolean performFileOperation(String operation, String source, String destination, NSArray files) {
-        return this.performFileOperation_source_destination_files_tag(operation, source, destination, files, new NativeLong(0));
+        return this.performFileOperation_source_destination_files_tag(operation, source, destination, files, new NSInteger(0));
     }
 
     /**
