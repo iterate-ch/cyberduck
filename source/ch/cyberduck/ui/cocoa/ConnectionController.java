@@ -65,7 +65,7 @@ public class ConnectionController extends SheetController {
     }
 
     protected void init() {
-        passField.setStringValue("");
+        passField.setStringValue(StringUtils.EMPTY);
         final boolean enabled = Preferences.instance().getBoolean("connection.login.useKeychain");
         keychainCheckbox.setEnabled(enabled);
         if(!enabled) {
@@ -149,7 +149,7 @@ public class ConnectionController extends SheetController {
             }
             if(!pathField.isEnabled()) {
                 // Was previously configured with a static configuration
-                pathField.setStringValue("");
+                pathField.setStringValue(StringUtils.EMPTY);
             }
             if(StringUtils.isNotBlank(protocol.getDefaultHostname())) {
                 // Prefill with default hostname
@@ -159,8 +159,8 @@ public class ConnectionController extends SheetController {
             hostField.setEnabled(true);
             portField.setEnabled(true);
             pathField.setEnabled(true);
-            usernameField.cell().setPlaceholderString("");
-            passField.cell().setPlaceholderString("");
+            usernameField.cell().setPlaceholderString(StringUtils.EMPTY);
+            passField.cell().setPlaceholderString(StringUtils.EMPTY);
         }
         hostField.cell().setPlaceholderString(protocol.getDefaultHostname());
         usernameField.cell().setPlaceholderString(protocol.getUsernamePlaceholder());
@@ -365,9 +365,9 @@ public class ConnectionController extends SheetController {
     }
 
     public void portFieldTextDidChange(final NSNotification sender) {
-        if(null == this.portField.stringValue() || this.portField.stringValue().equals("")) {
+        if(StringUtils.isBlank(this.portField.stringValue())) {
             final Protocol protocol = ProtocolFactory.forName(protocolPopup.selectedItem().representedObject());
-            this.portField.setStringValue(String.valueOf(protocol.getDefaultPort()));
+            this.portField.setIntValue(protocol.getDefaultPort());
         }
         this.updateURLLabel();
         this.reachable();
@@ -445,7 +445,7 @@ public class ConnectionController extends SheetController {
             this.usernameField.setEnabled(false);
             this.usernameField.setStringValue(Preferences.instance().getProperty("connection.login.anon.name"));
             this.passField.setEnabled(false);
-            this.passField.setStringValue("");
+            this.passField.setStringValue(StringUtils.EMPTY);
         }
         if(sender.state() == NSCell.NSOffState) {
             this.usernameField.setEnabled(true);
@@ -572,7 +572,7 @@ public class ConnectionController extends SheetController {
             }
             final Protocol protocol = ProtocolFactory.forName(protocolPopup.selectedItem().representedObject());
             this.updateField(this.passField, KeychainFactory.instance().getPassword(protocol.getScheme(),
-                    Integer.parseInt(portField.stringValue()),
+                    portField.intValue(),
                     hostField.stringValue(), usernameField.stringValue()));
         }
     }
@@ -583,13 +583,13 @@ public class ConnectionController extends SheetController {
         if(StringUtils.isNotBlank(hostField.stringValue())) {
             final Protocol protocol = ProtocolFactory.forName(protocolPopup.selectedItem().representedObject());
             final String url = protocol.getScheme() + "://" + usernameField.stringValue()
-                    + "@" + hostField.stringValue() + ":" + portField.stringValue()
+                    + "@" + hostField.stringValue() + ":" + portField.intValue()
                     + Path.normalize(pathField.stringValue());
             urlLabel.setAttributedStringValue(HyperlinkAttributedStringFactory.create(
                     NSMutableAttributedString.create(url, TRUNCATE_MIDDLE_ATTRIBUTES), url));
         }
         else {
-            urlLabel.setStringValue("");
+            urlLabel.setStringValue(StringUtils.EMPTY);
         }
     }
 
@@ -618,7 +618,7 @@ public class ConnectionController extends SheetController {
             Host host = new Host(
                     protocol,
                     hostField.stringValue(),
-                    Integer.parseInt(portField.stringValue()),
+                    portField.intValue(),
                     pathField.stringValue());
             if(protocol.equals(Protocol.FTP) ||
                     protocol.equals(Protocol.FTP_TLS)) {

@@ -702,7 +702,7 @@ public class BookmarkController extends WindowController {
     @Action
     public void portInputDidEndEditing(final NSNotification sender) {
         try {
-            host.setPort(Integer.parseInt(portField.stringValue()));
+            host.setPort(portField.intValue());
         }
         catch(NumberFormatException e) {
             host.setPort(-1);
