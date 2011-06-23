@@ -162,7 +162,7 @@ public class Distribution {
 
         @Override
         public String getContext() {
-            return "";
+            return StringUtils.EMPTY;
         }
     };
 
@@ -186,7 +186,7 @@ public class Distribution {
 
         @Override
         public String getContext() {
-            return "";
+            return StringUtils.EMPTY;
         }
     };
 
@@ -207,7 +207,7 @@ public class Distribution {
 
         @Override
         public String getContext() {
-            return "";
+            return StringUtils.EMPTY;
         }
     };
 
@@ -228,7 +228,7 @@ public class Distribution {
 
         @Override
         public String getContext() {
-            return "";
+            return StringUtils.EMPTY;
         }
     };
 
