@@ -124,6 +124,7 @@ ca.lproj/S3.strings -text svneol=unset#text/utf-16
 ca.lproj/ServicesMenu.strings -text svneol=unset#text/utf-16
 ca.lproj/Status.strings -text svneol=unset#text/utf-16
 ca.lproj/Transfer.strings -text svneol=unset#text/utf-16
+/container-migration.plist -text
 cs.lproj/Alert.nib/classes.nib -text
 cs.lproj/Alert.nib/info.nib -text
 cs.lproj/Alert.nib/keyedobjects.nib -text
