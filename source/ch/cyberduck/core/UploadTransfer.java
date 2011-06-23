@@ -78,7 +78,7 @@ public class UploadTransfer extends Transfer {
             }
             this.getSession().message(MessageFormat.format(Locale.localizedString("Prepare {0}", "Status"), upload.getName()));
             boolean duplicate = false;
-            for(Iterator<Path> iter = normalized.iterator(); iter.hasNext();) {
+            for(Iterator<Path> iter = normalized.iterator(); iter.hasNext(); ) {
                 Path n = iter.next();
                 if(upload.getLocal().isChild(n.getLocal())) {
                     // The selected file is a child of a directory already included
@@ -177,7 +177,8 @@ public class UploadTransfer extends Transfer {
          */
         @Override
         public void complete(Path p) {
-            ;
+            // The directory listing is no more current
+            p.getParent().invalidate();
         }
     }
 
@@ -374,7 +375,7 @@ public class UploadTransfer extends Transfer {
                 String proposal = MessageFormat.format(Preferences.instance().getProperty("queue.upload.file.rename.format"),
                         FilenameUtils.getBaseName(file.getName()),
                         DateFormatterFactory.instance().getLongFormat(System.currentTimeMillis(), false).replace(Path.DELIMITER, ':'),
-                        StringUtils.isNotEmpty(file.getExtension()) ? "." + file.getExtension() : "");
+                        StringUtils.isNotEmpty(file.getExtension()) ? "." + file.getExtension() : StringUtils.EMPTY);
                 renamed = PathFactory.createPath(file.getSession(), renamed.getParent().getAbsolute(),
                         proposal, file.attributes().getType());
             }
