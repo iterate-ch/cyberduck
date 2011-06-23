@@ -111,10 +111,10 @@ public class DropboxClient extends AbstractHttpDropboxClient {
      */
     public ListEntryResponse metadata(String path, int file_limit, String hash, boolean list,
                                       boolean status_in_response, String callback) throws IOException {
-        String[] params = {"file_limit", "" + file_limit,
+        String[] params = {"file_limit", String.valueOf(file_limit),
                 "hash", hash,
-                "list", "" + list,
-                "status_in_response", "" + status_in_response,
+                "list", String.valueOf(list),
+                "status_in_response", String.valueOf(status_in_response),
                 "callback", callback};
 
         HttpResponse response = request(this.buildRequest(HttpGet.METHOD_NAME, "/files/" + ROOT + path, params));
