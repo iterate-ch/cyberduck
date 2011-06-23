@@ -121,6 +121,7 @@ public class AzureSession extends CloudSession {
             throw failure;
         }
         client.setTimeout(TimeSpan.fromMilliseconds(this.timeout()));
+        client.setRetryPolicy(RetryPolicies.noRetry());
         try {
             this.getContainers(true);
         }
@@ -543,7 +544,7 @@ public class AzureSession extends CloudSession {
     public List<Acl.User> getAvailableAclUsers() {
         return Arrays.asList(AzurePath.PUBLIC_ACL.getUser());
 //        List<Acl.User> l = new ArrayList<Acl.User>();
-//        l.add(new Acl.CanonicalUser(""));
+//        l.add(new Acl.CanonicalUser(StringUtils.EMPTY));
 //        l.add(AzurePath.PUBLIC_ACL.getUser());
 //        return l;
     }
