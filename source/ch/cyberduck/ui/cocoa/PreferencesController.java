@@ -311,7 +311,7 @@ public class PreferencesController extends ToolbarWindowController {
         editorCombobox.setAction(action);
         if(Preferences.instance().getBoolean("editor.kqueue.enable")) {
             editorCombobox.menu().addItem(NSMenuItem.separatorItem());
-            editorCombobox.menu().addItemWithTitle_action_keyEquivalent(CHOOSE, action, "");
+            editorCombobox.menu().addItemWithTitle_action_keyEquivalent(CHOOSE, action, StringUtils.EMPTY);
             editorCombobox.lastItem().setTarget(this.id());
         }
         editorCombobox.selectItemWithTitle(
@@ -1071,12 +1071,12 @@ public class PreferencesController extends ToolbarWindowController {
         this.addDownloadPath(action, LocalFactory.createLocal("~/Downloads"));
         // Choose another folder
         this.downloadPathPopup.menu().addItem(NSMenuItem.separatorItem());
-        this.downloadPathPopup.menu().addItemWithTitle_action_keyEquivalent(CHOOSE, action, "");
+        this.downloadPathPopup.menu().addItemWithTitle_action_keyEquivalent(CHOOSE, action, StringUtils.EMPTY);
         this.downloadPathPopup.lastItem().setTarget(this.id());
     }
 
     private void addDownloadPath(Selector action, Local f) {
-        this.downloadPathPopup.menu().addItemWithTitle_action_keyEquivalent(f.getDisplayName(), action, "");
+        this.downloadPathPopup.menu().addItemWithTitle_action_keyEquivalent(f.getDisplayName(), action, StringUtils.EMPTY);
         this.downloadPathPopup.lastItem().setTarget(this.id());
         this.downloadPathPopup.lastItem().setImage(
                 IconCache.instance().iconForPath(f, 16)
@@ -1261,7 +1261,7 @@ public class PreferencesController extends ToolbarWindowController {
 
     public void downloadSkipRegexFieldDidChange(NSNotification sender) {
         String value = this.downloadSkipRegexField.string().trim();
-        if("".equals(value)) {
+        if(StringUtils.EMPTY.equals(value)) {
             Preferences.instance().setProperty("queue.download.skip.enable", false);
             Preferences.instance().setProperty("queue.download.skip.regex", value);
             this.downloadSkipButton.setState(NSCell.NSOffState);
@@ -1326,7 +1326,7 @@ public class PreferencesController extends ToolbarWindowController {
 
     public void uploadSkipRegexFieldDidChange(NSNotification sender) {
         String value = this.uploadSkipRegexField.string().trim();
-        if("".equals(value)) {
+        if(StringUtils.EMPTY.equals(value)) {
             Preferences.instance().setProperty("queue.upload.skip.enable", false);
             Preferences.instance().setProperty("queue.upload.skip.regex", value);
             this.uploadSkipButton.setState(NSCell.NSOffState);

@@ -30,6 +30,8 @@ import ch.cyberduck.ui.cocoa.foundation.NSRange;
 
 import org.rococoa.cocoa.foundation.NSUInteger;
 
+import org.apache.commons.lang.StringUtils;
+
 /**
  * @version $Id$
  */
@@ -93,6 +95,6 @@ public class TranscriptController extends BundleController implements Transcript
     }
 
     public void clear() {
-        logTextView.setString("");
+        logTextView.setString(StringUtils.EMPTY);
     }
 }

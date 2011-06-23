@@ -198,7 +198,7 @@ public class MainController extends BundleController implements NSApplication.De
     public void setEncodingMenu(NSMenu encodingMenu) {
         this.encodingMenu = encodingMenu;
         for(String charset : availableCharsets()) {
-            this.encodingMenu.addItemWithTitle_action_keyEquivalent(charset, Foundation.selector("encodingMenuClicked:"), "");
+            this.encodingMenu.addItemWithTitle_action_keyEquivalent(charset, Foundation.selector("encodingMenuClicked:"), StringUtils.EMPTY);
         }
     }
 
@@ -219,7 +219,7 @@ public class MainController extends BundleController implements NSApplication.De
         int i = 0;
         for(Iterator iter = columns.values().iterator(); iter.hasNext(); i++) {
             NSMenuItem item = this.columnMenu.addItemWithTitle_action_keyEquivalent((String) iter.next(),
-                    Foundation.selector("columnMenuClicked:"), "");
+                    Foundation.selector("columnMenuClicked:"), StringUtils.EMPTY);
             final String identifier = identifiers.next();
             item.setState(Preferences.instance().getBoolean(identifier) ? NSCell.NSOnState : NSCell.NSOffState);
             item.setRepresentedObject(identifier);

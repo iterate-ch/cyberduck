@@ -295,15 +295,15 @@ public abstract class WindowController extends BundleController implements NSWin
     }
 
     protected void updateField(final NSTextView f, final String value) {
-        f.setString(StringUtils.isNotBlank(value) ? value : "");
+        f.setString(StringUtils.isNotBlank(value) ? value : StringUtils.EMPTY);
     }
 
     protected void updateField(final NSTextField f, final String value) {
-        f.setStringValue(StringUtils.isNotBlank(value) ? value : "");
+        f.setStringValue(StringUtils.isNotBlank(value) ? value : StringUtils.EMPTY);
     }
 
     protected void updateField(final NSTextField f, final String value, final NSDictionary attributes) {
-        f.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(StringUtils.isNotBlank(value) ? value : "", attributes));
+        f.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(StringUtils.isNotBlank(value) ? value : StringUtils.EMPTY, attributes));
 
     }
 

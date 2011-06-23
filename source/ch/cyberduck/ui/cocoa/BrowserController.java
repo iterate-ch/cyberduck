@@ -179,7 +179,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             log.debug("setPathFilter:" + search);
         }
         if(StringUtils.isBlank(search)) {
-            this.searchField.setStringValue("");
+            this.searchField.setStringValue(StringUtils.EMPTY);
             // Revert to the last used default filter
             if(this.isShowHiddenFiles()) {
                 this.filenameFilter = NULL_FILTER;
@@ -1263,7 +1263,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         }).id());
         {
             NSTableColumn c = browserListColumnsFactory.create(BrowserTableDataSource.ICON_COLUMN);
-            c.headerCell().setStringValue("");
+            c.headerCell().setStringValue(StringUtils.EMPTY);
             c.setMinWidth((20));
             c.setWidth((20));
             c.setMaxWidth((20));
@@ -1499,7 +1499,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
         {
             NSTableColumn c = bookmarkTableColumnFactory.create(BookmarkTableDataSource.ICON_COLUMN);
-            c.headerCell().setStringValue("");
+            c.headerCell().setStringValue(StringUtils.EMPTY);
             c.setResizingMask(NSTableColumn.NSTableColumnNoResizing);
             c.setDataCell(imageCellPrototype);
             this.bookmarkTable.addTableColumn(c);
@@ -1514,7 +1514,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         }
         {
             NSTableColumn c = bookmarkTableColumnFactory.create(BookmarkTableDataSource.STATUS_COLUMN);
-            c.headerCell().setStringValue("");
+            c.headerCell().setStringValue(StringUtils.EMPTY);
             c.setMinWidth(40);
             c.setWidth(40);
             c.setMaxWidth(40);
@@ -1557,7 +1557,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         this.actionPopupButton = actionPopupButton;
         this.actionPopupButton.setPullsDown(true);
         this.actionPopupButton.setAutoenablesItems(true);
-        this.actionPopupButton.insertItemWithTitle_atIndex("", new NSInteger(0));
+        this.actionPopupButton.insertItemWithTitle_atIndex(StringUtils.EMPTY, new NSInteger(0));
         this.actionPopupButton.itemAtIndex(new NSInteger(0)).setImage(IconCache.iconNamed("gear.tiff"));
     }
 
@@ -1649,7 +1649,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
     private void setBookmarkFilter(final String searchString) {
         if(StringUtils.isBlank(searchString)) {
-            this.searchField.setStringValue("");
+            this.searchField.setStringValue(StringUtils.EMPTY);
             this.bookmarkModel.setFilter(null);
         }
         else {
@@ -1906,7 +1906,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         final boolean enabled = this.isMounted() || this.getSelectedTabView() == TAB_BOOKMARKS;
         this.searchField.setEnabled(enabled);
         if(!enabled) {
-            this.searchField.setStringValue("");
+            this.searchField.setStringValue(StringUtils.EMPTY);
         }
     }
 
@@ -2068,7 +2068,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             statusLabel.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(label, TRUNCATE_MIDDLE_ATTRIBUTES));
         }
         else {
-            statusLabel.setStringValue("");
+            statusLabel.setStringValue(StringUtils.EMPTY);
         }
     }
 
@@ -2460,7 +2460,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
             @Override
             public String getActivity() {
-                return MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"), "");
+                return MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"), StringUtils.EMPTY);
             }
 
             @Override
@@ -3248,7 +3248,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             return;
         }
         String ssh = MessageFormat.format(Preferences.instance().getProperty("terminal.command.ssh"),
-                identity ? "-i " + host.getCredentials().getIdentity().getAbsolute() : "",
+                identity ? "-i " + host.getCredentials().getIdentity().getAbsolute() : StringUtils.EMPTY,
                 host.getCredentials().getUsername(),
                 host.getHostname(),
                 String.valueOf(host.getPort()), workdir);
@@ -3552,7 +3552,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                         // Update status icon
                         bookmarkTable.setNeedsDisplay();
                         window.setTitle(host.getNickname());
-                        window.setRepresentedFilename("");
+                        window.setRepresentedFilename(StringUtils.EMPTY);
                     }
                 });
             }
@@ -3589,7 +3589,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
                         if(!isMounted()) {
                             window.setTitle(Preferences.instance().getProperty("application.name"));
-                            window.setRepresentedFilename("");
+                            window.setRepresentedFilename(StringUtils.EMPTY);
                         }
                         window.setDocumentEdited(false);
 
@@ -4294,13 +4294,13 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             item.setToolTip(Locale.localizedString("Switch Browser View"));
             item.setView(browserSwitchView);
             // Add a menu representation for text mode of toolbar
-            NSMenuItem viewMenu = NSMenuItem.itemWithTitle(Locale.localizedString("View"), null, "");
+            NSMenuItem viewMenu = NSMenuItem.itemWithTitle(Locale.localizedString("View"), null, StringUtils.EMPTY);
             NSMenu viewSubmenu = NSMenu.menu();
             viewSubmenu.addItemWithTitle_action_keyEquivalent(Locale.localizedString("List"),
-                    Foundation.selector("browserSwitchMenuClicked:"), "");
+                    Foundation.selector("browserSwitchMenuClicked:"), StringUtils.EMPTY);
             viewSubmenu.itemWithTitle(Locale.localizedString("List")).setTag(0);
             viewSubmenu.addItemWithTitle_action_keyEquivalent(Locale.localizedString("Outline"),
-                    Foundation.selector("browserSwitchMenuClicked:"), "");
+                    Foundation.selector("browserSwitchMenuClicked:"), StringUtils.EMPTY);
             viewSubmenu.itemWithTitle(Locale.localizedString("Outline")).setTag(1);
             viewMenu.setSubmenu(viewSubmenu);
             item.setMenuFormRepresentation(viewMenu);
@@ -4331,7 +4331,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             if(inserted || !Factory.VERSION_PLATFORM.matches("10\\.5.*")) {
                 item.setView(this.actionPopupButton);
                 // Add a menu representation for text mode of toolbar
-                NSMenuItem toolMenu = NSMenuItem.itemWithTitle(Locale.localizedString("Action"), null, "");
+                NSMenuItem toolMenu = NSMenuItem.itemWithTitle(Locale.localizedString("Action"), null, StringUtils.EMPTY);
                 NSMenu toolSubmenu = NSMenu.menu();
                 for(int i = 1; i < this.actionPopupButton.menu().numberOfItems().intValue(); i++) {
                     NSMenuItem template = this.actionPopupButton.menu().itemAtIndex(new NSInteger(i));
@@ -4368,11 +4368,11 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             item.setView(this.encodingPopup);
             // Add a menu representation for text mode of toolbar
             NSMenuItem encodingMenu = NSMenuItem.itemWithTitle(Locale.localizedString(TOOLBAR_ENCODING),
-                    Foundation.selector("encodingMenuClicked:"), "");
+                    Foundation.selector("encodingMenuClicked:"), StringUtils.EMPTY);
             String[] charsets = MainController.availableCharsets();
             NSMenu charsetMenu = NSMenu.menu();
             for(String charset : charsets) {
-                charsetMenu.addItemWithTitle_action_keyEquivalent(charset, Foundation.selector("encodingMenuClicked:"), "");
+                charsetMenu.addItemWithTitle_action_keyEquivalent(charset, Foundation.selector("encodingMenuClicked:"), StringUtils.EMPTY);
             }
             encodingMenu.setSubmenu(charsetMenu);
             item.setMenuFormRepresentation(encodingMenu);
@@ -4450,7 +4450,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             item.setAction(Foundation.selector("editButtonClicked:"));
             // Add a menu representation for text mode of toolbar
             NSMenuItem toolbarMenu = NSMenuItem.itemWithTitle(Locale.localizedString(TOOLBAR_EDIT),
-                    Foundation.selector("editButtonClicked:"), "");
+                    Foundation.selector("editButtonClicked:"), StringUtils.EMPTY);
             NSMenu editMenu = NSMenu.menu();
             editMenu.setAutoenablesItems(true);
             editMenu.setDelegate(editMenuDelegate.id());

@@ -31,6 +31,7 @@ import ch.cyberduck.ui.cocoa.foundation.*;
 import org.rococoa.Foundation;
 import org.rococoa.cocoa.foundation.NSInteger;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.util.Date;
@@ -292,7 +293,7 @@ public class ProgressController extends BundleController {
         this.filesPopup.removeAllItems();
         {
             Path path = transfer.getRoot();
-            NSMenuItem item = this.filesPopup.menu().addItemWithTitle_action_keyEquivalent(path.getName(), Foundation.selector("reveal:"), "");
+            NSMenuItem item = this.filesPopup.menu().addItemWithTitle_action_keyEquivalent(path.getName(), Foundation.selector("reveal:"), StringUtils.EMPTY);
             item.setRepresentedObject(path.getAbsolute());
             item.setImage(IconCache.instance().iconForPath(path, 16, false));
             item.setEnabled(path.getLocal().exists());

@@ -37,6 +37,7 @@ import org.rococoa.cocoa.CGFloat;
 import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.text.MessageFormat;
@@ -219,12 +220,12 @@ public abstract class TransferPromptController extends SheetController implement
             @Override
             public void selectionDidChange(NSNotification notification) {
                 if(browserView.selectedRow().intValue() == -1) {
-                    remoteURLField.setStringValue("");
-                    remoteSizeField.setStringValue("");
-                    remoteModificationField.setStringValue("");
-                    localURLField.setStringValue("");
-                    localSizeField.setStringValue("");
-                    localModificationField.setStringValue("");
+                    remoteURLField.setStringValue(StringUtils.EMPTY);
+                    remoteSizeField.setStringValue(StringUtils.EMPTY);
+                    remoteModificationField.setStringValue(StringUtils.EMPTY);
+                    localURLField.setStringValue(StringUtils.EMPTY);
+                    localSizeField.setStringValue(StringUtils.EMPTY);
+                    localModificationField.setStringValue(StringUtils.EMPTY);
                 }
                 else {
                     final Path p = browserModel.lookup(new OutlinePathReference(
@@ -255,8 +256,8 @@ public abstract class TransferPromptController extends SheetController implement
                         localModificationField.setHidden(false);
                     }
                     else {
-                        localSizeField.setStringValue("");
-                        localModificationField.setStringValue("");
+                        localSizeField.setStringValue(StringUtils.EMPTY);
+                        localModificationField.setStringValue(StringUtils.EMPTY);
                     }
 
                     remoteURLField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
@@ -285,8 +286,8 @@ public abstract class TransferPromptController extends SheetController implement
                         remoteModificationField.setHidden(false);
                     }
                     else {
-                        remoteSizeField.setStringValue("");
-                        remoteModificationField.setStringValue("");
+                        remoteSizeField.setStringValue(StringUtils.EMPTY);
+                        remoteModificationField.setStringValue(StringUtils.EMPTY);
                     }
                 }
             }
@@ -359,7 +360,7 @@ public abstract class TransferPromptController extends SheetController implement
         }
         {
             NSTableColumn c = tableColumnsFactory.create(TransferPromptModel.SIZE_COLUMN);
-            c.headerCell().setStringValue("");
+            c.headerCell().setStringValue(StringUtils.EMPTY);
             c.setMinWidth(50f);
             c.setWidth(80f);
             c.setMaxWidth(100f);
@@ -370,7 +371,7 @@ public abstract class TransferPromptController extends SheetController implement
         }
         {
             NSTableColumn c = tableColumnsFactory.create(TransferPromptModel.WARNING_COLUMN);
-            c.headerCell().setStringValue("");
+            c.headerCell().setStringValue(StringUtils.EMPTY);
             c.setMinWidth(20f);
             c.setWidth(20f);
             c.setMaxWidth(20f);
@@ -382,14 +383,14 @@ public abstract class TransferPromptController extends SheetController implement
         }
         {
             NSTableColumn c = tableColumnsFactory.create(TransferPromptModel.INCLUDE_COLUMN);
-            c.headerCell().setStringValue("");
+            c.headerCell().setStringValue(StringUtils.EMPTY);
             c.setMinWidth(20f);
             c.setWidth(20f);
             c.setMaxWidth(20f);
             c.setResizingMask(NSTableColumn.NSTableColumnAutoresizingMask);
             c.setEditable(false);
             final NSButtonCell cell = buttonCellPrototype;
-            cell.setTitle("");
+            cell.setTitle(StringUtils.EMPTY);
             cell.setControlSize(NSCell.NSSmallControlSize);
             cell.setButtonType(NSButtonCell.NSSwitchButton);
             cell.setAllowsMixedState(false);

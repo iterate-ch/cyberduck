@@ -44,6 +44,7 @@ import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSSize;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.text.MessageFormat;
@@ -264,7 +265,7 @@ public class TransferController extends WindowController implements NSToolbar.De
         this.bandwidthPopup.setTarget(this.id());
         this.bandwidthPopup.setAction(Foundation.selector("bandwidthPopupChanged:"));
         this.bandwidthPopup.removeAllItems();
-        this.bandwidthPopup.addItemWithTitle("");
+        this.bandwidthPopup.addItemWithTitle(StringUtils.EMPTY);
         this.bandwidthPopup.lastItem().setImage(IconCache.iconNamed("bandwidth.tiff", 16));
         this.bandwidthPopup.addItemWithTitle(Locale.localizedString("Unlimited Bandwidth", "Transfer"));
         this.bandwidthPopup.lastItem().setRepresentedObject(String.valueOf(BandwidthThrottle.UNLIMITED));
@@ -575,8 +576,8 @@ public class TransferController extends WindowController implements NSToolbar.De
             }
         }
         else {
-            urlField.setStringValue("");
-            localField.setStringValue("");
+            urlField.setStringValue(StringUtils.EMPTY);
+            localField.setStringValue(StringUtils.EMPTY);
         }
     }
 
@@ -726,7 +727,7 @@ public class TransferController extends WindowController implements NSToolbar.De
                         if(Preferences.instance().getBoolean("queue.dock.badge")) {
                             int count = TransferCollection.defaultCollection().numberOfRunningTransfers();
                             if(0 == count) {
-                                NSApplication.sharedApplication().dockTile().setBadgeLabel("");
+                                NSApplication.sharedApplication().dockTile().setBadgeLabel(StringUtils.EMPTY);
                             }
                             else {
                                 NSApplication.sharedApplication().dockTile().setBadgeLabel(

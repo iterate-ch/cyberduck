@@ -49,7 +49,7 @@ public class DuplicateFileController extends FileController {
         String proposal = MessageFormat.format(Preferences.instance().getProperty("browser.duplicate.format"),
                 FilenameUtils.getBaseName(selected.getName()),
                 DateFormatterFactory.instance().getShortFormat(System.currentTimeMillis(), false).replace(Path.DELIMITER, ':'),
-                StringUtils.isNotEmpty(selected.getExtension()) ? "." + selected.getExtension() : "");
+                StringUtils.isNotEmpty(selected.getExtension()) ? "." + selected.getExtension() : StringUtils.EMPTY);
         this.filenameField.setStringValue(proposal);
     }
 

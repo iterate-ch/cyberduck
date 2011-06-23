@@ -688,7 +688,7 @@ public class InfoController extends ToolbarWindowController {
     public void setAclAddButton(NSPopUpButton b) {
         this.aclAddButton = b;
         this.aclAddButton.setTarget(this.id());
-        this.aclAddButton.addItemWithTitle("");
+        this.aclAddButton.addItemWithTitle(StringUtils.EMPTY);
         this.aclAddButton.lastItem().setImage(IconCache.iconNamed("gear.tiff"));
         for(Acl.User user : controller.getSession().getAvailableAclUsers()) {
             this.aclAddButton.addItemWithTitle(user.getPlaceholder());
@@ -701,7 +701,7 @@ public class InfoController extends ToolbarWindowController {
     public void aclAddButtonClicked(NSMenuItem sender) {
         for(Acl.User grantee : controller.getSession().getAvailableAclUsers()) {
             if(sender.representedObject().equals(grantee.getPlaceholder())) {
-                this.addAclItem(new Acl.UserAndRole(grantee, new Acl.Role("")));
+                this.addAclItem(new Acl.UserAndRole(grantee, new Acl.Role(StringUtils.EMPTY)));
             }
         }
     }
@@ -844,14 +844,14 @@ public class InfoController extends ToolbarWindowController {
                     final String identifier = tableColumn.identifier();
                     if(identifier.equals(HEADER_METADATA_NAME_COLUMN)) {
                         final String name = metadata.get(row.intValue()).getName();
-                        return NSAttributedString.attributedString(StringUtils.isNotEmpty(name) ? name : "");
+                        return NSAttributedString.attributedString(StringUtils.isNotEmpty(name) ? name : StringUtils.EMPTY);
                     }
                     if(identifier.equals(HEADER_METADATA_VALUE_COLUMN)) {
                         final String value = metadata.get(row.intValue()).getValue();
                         if(StringUtils.isEmpty(value)) {
                             return null;
                         }
-                        return NSAttributedString.attributedString(StringUtils.isNotEmpty(value) ? value : "");
+                        return NSAttributedString.attributedString(StringUtils.isNotEmpty(value) ? value : StringUtils.EMPTY);
                     }
                 }
                 return null;
@@ -934,7 +934,7 @@ public class InfoController extends ToolbarWindowController {
     public void setMetadataAddButton(NSPopUpButton b) {
         this.metadataAddButton = b;
         this.metadataAddButton.setTarget(this.id());
-        this.metadataAddButton.addItemWithTitle("");
+        this.metadataAddButton.addItemWithTitle(StringUtils.EMPTY);
         this.metadataAddButton.lastItem().setImage(IconCache.iconNamed("gear.tiff"));
         this.metadataAddButton.addItemWithTitle(Locale.localizedString("Custom Header", "S3"));
         this.metadataAddButton.lastItem().setAction(Foundation.selector("metadataAddCustomClicked:"));
@@ -977,12 +977,12 @@ public class InfoController extends ToolbarWindowController {
 
     @Action
     public void metadataAddContentTypeClicked(ID sender) {
-        this.addMetadataItem("Content-Type", "", true);
+        this.addMetadataItem("Content-Type", StringUtils.EMPTY, true);
     }
 
     @Action
     public void metadataAddContentEncodingClicked(ID sender) {
-        this.addMetadataItem("Content-Encoding", "", true);
+        this.addMetadataItem("Content-Encoding", StringUtils.EMPTY, true);
     }
 
     /**
@@ -1005,11 +1005,11 @@ public class InfoController extends ToolbarWindowController {
 
     @Action
     public void metadataAddPragmaClicked(ID sender) {
-        this.addMetadataItem("Pragma", "", true);
+        this.addMetadataItem("Pragma", StringUtils.EMPTY, true);
     }
 
     private void addMetadataItem() {
-        this.addMetadataItem("");
+        this.addMetadataItem(StringUtils.EMPTY);
     }
 
     /**
@@ -1018,7 +1018,7 @@ public class InfoController extends ToolbarWindowController {
      * @param name
      */
     private void addMetadataItem(String name) {
-        this.addMetadataItem(name, "", false);
+        this.addMetadataItem(name, StringUtils.EMPTY, false);
     }
 
     /**
@@ -1604,7 +1604,7 @@ public class InfoController extends ToolbarWindowController {
         // Web URL
         if(this.numberOfFiles() > 1) {
             this.updateField(webUrlField, "(" + Locale.localizedString("Multiple files") + ")");
-            webUrlField.setToolTip("");
+            webUrlField.setToolTip(StringUtils.EMPTY);
         }
         else {
             this.updateField(webUrlField, Locale.localizedString("Unknown"));
@@ -1846,9 +1846,9 @@ public class InfoController extends ToolbarWindowController {
             }
             if(this.numberOfFiles() > 1) {
                 s3PublicUrlField.setStringValue("(" + Locale.localizedString("Multiple files") + ")");
-                s3PublicUrlField.setToolTip("");
+                s3PublicUrlField.setToolTip(StringUtils.EMPTY);
                 s3torrentUrlField.setStringValue("(" + Locale.localizedString("Multiple files") + ")");
-                s3torrentUrlField.setToolTip("");
+                s3torrentUrlField.setToolTip(StringUtils.EMPTY);
             }
             else {
                 Path file = this.getSelected();
@@ -2032,7 +2032,7 @@ public class InfoController extends ToolbarWindowController {
             }
             if(this.numberOfFiles() > 1) {
                 aclUrlField.setStringValue("(" + Locale.localizedString("Multiple files") + ")");
-                aclUrlField.setToolTip("");
+                aclUrlField.setToolTip(StringUtils.EMPTY);
             }
             else {
                 for(Path file : files) {
@@ -2405,7 +2405,7 @@ public class InfoController extends ToolbarWindowController {
                         // Concatenate URLs
                         if(numberOfFiles() > 1) {
                             distributionUrlField.setStringValue("(" + Locale.localizedString("Multiple files") + ")");
-                            distributionUrlField.setToolTip("");
+                            distributionUrlField.setToolTip(StringUtils.EMPTY);
                             distributionCnameUrlField.setStringValue("(" + Locale.localizedString("Multiple files") + ")");
                         }
                         else {
@@ -2417,14 +2417,14 @@ public class InfoController extends ToolbarWindowController {
                             }
                             else {
                                 distributionUrlField.setStringValue(Locale.localizedString("None"));
-                                distributionUrlField.setToolTip("");
+                                distributionUrlField.setToolTip(StringUtils.EMPTY);
                             }
                         }
                         final String[] cnames = distribution.getCNAMEs();
                         if(0 == cnames.length) {
-                            distributionCnameField.setStringValue("");
-                            distributionCnameUrlField.setStringValue("");
-                            distributionCnameUrlField.setToolTip("");
+                            distributionCnameField.setStringValue(StringUtils.EMPTY);
+                            distributionCnameUrlField.setStringValue(StringUtils.EMPTY);
+                            distributionCnameUrlField.setToolTip(StringUtils.EMPTY);
                         }
                         else {
                             distributionCnameField.setStringValue(StringUtils.join(cnames, ' '));

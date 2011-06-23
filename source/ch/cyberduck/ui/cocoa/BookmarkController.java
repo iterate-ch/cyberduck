@@ -466,13 +466,13 @@ public class BookmarkController extends WindowController {
 
         // Choose another folder
         this.downloadPathPopup.menu().addItem(NSMenuItem.separatorItem());
-        this.downloadPathPopup.menu().addItemWithTitle_action_keyEquivalent(CHOOSE, action, "");
+        this.downloadPathPopup.menu().addItemWithTitle_action_keyEquivalent(CHOOSE, action, StringUtils.EMPTY);
         this.downloadPathPopup.lastItem().setTarget(this.id());
     }
 
     private void addDownloadPath(Selector action, Local f) {
         if(downloadPathPopup.menu().itemWithTitle(f.getDisplayName()) == null) {
-            downloadPathPopup.menu().addItemWithTitle_action_keyEquivalent(f.getDisplayName(), action, "");
+            downloadPathPopup.menu().addItemWithTitle_action_keyEquivalent(f.getDisplayName(), action, StringUtils.EMPTY);
             downloadPathPopup.lastItem().setTarget(this.id());
             downloadPathPopup.lastItem().setImage(
                     IconCache.instance().iconForPath(f, 16)

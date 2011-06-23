@@ -24,6 +24,7 @@ import ch.cyberduck.core.Transfer;
 import ch.cyberduck.core.TransferAction;
 import ch.cyberduck.ui.cocoa.application.*;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
 
@@ -49,7 +50,7 @@ public class SyncPromptController extends TransferPromptController {
         super.setBrowserView(view);
         {
             NSTableColumn c = tableColumnsFactory.create(SyncPromptModel.SYNC_COLUMN);
-            c.headerCell().setStringValue("");
+            c.headerCell().setStringValue(StringUtils.EMPTY);
             c.setMinWidth(20f);
             c.setWidth(20f);
             c.setMaxWidth(20f);
@@ -61,7 +62,7 @@ public class SyncPromptController extends TransferPromptController {
         }
         {
             NSTableColumn c = tableColumnsFactory.create(SyncPromptModel.CREATE_COLUMN);
-            c.headerCell().setStringValue("");
+            c.headerCell().setStringValue(StringUtils.EMPTY);
             c.setMinWidth(20f);
             c.setWidth(20f);
             c.setMaxWidth(20f);
