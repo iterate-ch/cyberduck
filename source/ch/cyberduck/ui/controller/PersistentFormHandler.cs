@@ -141,6 +141,9 @@ namespace Ch.Cyberduck.Ui.Controller
         public void Set<T>(string key, T value)
         {
             string xmlString = SerializeObject(value);
+            if (xmlString == null) {
+                return;
+            }
             string base64String = Convert.ToBase64String(Encoding.UTF8.GetBytes(xmlString));
             Preferences.instance().setProperty("ui." + Name + key, base64String);
         }
