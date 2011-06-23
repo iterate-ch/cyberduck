@@ -96,7 +96,7 @@ public abstract class HttpPath extends Path {
             final DelayedHttpEntity entity = new DelayedHttpEntity(entry) {
                 @Override
                 public long getContentLength() {
-                    return getLocal().attributes().getSize() - status().getCurrent();
+                    return command.getContentLength();
                 }
             };
             final FutureHttpResponse<T> target = new FutureHttpResponse<T>() {

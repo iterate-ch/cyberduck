@@ -28,4 +28,6 @@ import java.io.IOException;
  */
 public interface DelayedHttpEntityCallable<T> {
     public T call(AbstractHttpEntity entity) throws IOException;
+
+    long getContentLength();
 }
