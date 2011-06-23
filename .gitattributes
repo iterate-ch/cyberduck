@@ -1874,7 +1874,11 @@ source/ch/cyberduck/core/ftp/parser/CommonUnixFTPEntryParser.java -text
 source/ch/cyberduck/core/ftp/parser/LaxUnixFTPEntryParser.java -text
 source/ch/cyberduck/core/ftp/parser/RumpusFTPEntryParser.java -text
 source/ch/cyberduck/core/ftp/parser/TrellixFTPEntryParser.java -text
+source/ch/cyberduck/core/http/DelayedHttpEntity.java -text
+source/ch/cyberduck/core/http/DelayedHttpEntityCallable.java -text
+source/ch/cyberduck/core/http/HttpPath.java -text
 source/ch/cyberduck/core/http/HttpSession.java -text
+source/ch/cyberduck/core/http/ResponseOutputStream.java -text
 source/ch/cyberduck/core/idisk/IDiskPath.java -text
 source/ch/cyberduck/core/idisk/IDiskSession.java -text
 source/ch/cyberduck/core/importer/CDTransmitImporter.h -text
