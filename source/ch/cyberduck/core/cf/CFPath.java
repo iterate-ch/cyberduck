@@ -21,16 +21,16 @@ package ch.cyberduck.core.cf;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cloud.CloudPath;
+import ch.cyberduck.core.http.DelayedHttpEntity;
+import ch.cyberduck.core.http.DelayedHttpEntityCallable;
+import ch.cyberduck.core.http.ResponseOutputStream;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.http.Header;
 import org.apache.http.HttpException;
-import org.apache.http.entity.InputStreamEntity;
-import org.apache.http.message.BasicHeader;
-import org.apache.http.protocol.HTTP;
+import org.apache.http.entity.AbstractHttpEntity;
 import org.apache.log4j.Logger;
 import org.jets3t.service.utils.ServiceUtils;
 import org.w3c.util.DateParser;
@@ -330,19 +330,12 @@ public class CFPath extends CloudPath {
     protected void upload(final BandwidthThrottle throttle, final StreamListener listener, boolean check) {
         if(attributes().isFile()) {
             try {
-                if(check) {
-                    this.getSession().check();
-                }
-                // No Content-Range support
-                final Status status = this.status();
-                status.setResume(false);
                 String md5sum = null;
                 if(Preferences.instance().getBoolean("cf.upload.metadata.md5")) {
                     this.getSession().message(MessageFormat.format(Locale.localizedString("Compute MD5 hash of {0}", "Status"),
                             this.getName()));
                     md5sum = this.getLocal().attributes().getChecksum();
                 }
-                final InputStream in;
                 MessageDigest digest = null;
                 if(!Preferences.instance().getBoolean("cf.upload.metadata.md5")) {
                     try {
@@ -352,83 +345,34 @@ public class CFPath extends CloudPath {
                         log.error("MD5 calculation disabled:" + e.getMessage());
                     }
                 }
-                if(null == digest) {
-                    log.warn("MD5 calculation disabled");
-                    in = this.getLocal().getInputStream();
-                }
-                else {
-                    in = new DigestInputStream(this.getLocal().getInputStream(), digest);
-                }
-                String etag = null;
+                InputStream in = null;
+                ResponseOutputStream<String> out = null;
                 try {
-                    final HashMap<String, String> metadata = new HashMap<String, String>();
-                    // Default metadata for new files
-                    for(String m : Preferences.instance().getList("cf.metadata.default")) {
-                        if(StringUtils.isBlank(m)) {
-                            log.warn("Invalid header " + m);
-                            continue;
-                        }
-                        if(!m.contains("=")) {
-                            log.warn("Invalid header " + m);
-                            continue;
-                        }
-                        int split = m.indexOf('=');
-                        String name = m.substring(0, split);
-                        if(StringUtils.isBlank(name)) {
-                            log.warn("Missing key in " + m);
-                            continue;
-                        }
-                        String value = m.substring(split + 1);
-                        if(StringUtils.isEmpty(value)) {
-                            log.warn("Missing value in " + m);
-                            continue;
-                        }
-                        metadata.put(name, value);
+                    if(null == digest) {
+                        log.warn("MD5 calculation disabled");
+                        in = this.getLocal().getInputStream();
                     }
-                    etag = this.getSession().getClient().storeObjectAs(this.getContainerName(), this.getKey(),
-                            new InputStreamEntity(in,
-                                    getLocal().attributes().getSize() - status.getCurrent()) {
-
-                                private boolean consumed = false;
-
-                                @Override
-                                public Header getContentType() {
-                                    return new BasicHeader(HTTP.CONTENT_TYPE, getLocal().getMimeType());
-                                }
-
-                                @Override
-                                public void writeTo(OutputStream out) throws IOException {
-                                    CFPath.this.upload(out, in, throttle, listener);
-                                    consumed = true;
-                                }
-
-                                @Override
-                                public boolean isStreaming() {
-                                    return !consumed;
-                                }
-
-                                @Override
-                                public void consumeContent() throws IOException {
-                                    this.consumed = true;
-                                    super.consumeContent();
-                                }
-                            },
-                            metadata, md5sum
-                    );
+                    else {
+                        in = new DigestInputStream(this.getLocal().getInputStream(), digest);
+                    }
+                    out = this.write(check, md5sum);
+                    this.upload(out, in, throttle, listener);
                 }
                 finally {
                     IOUtils.closeQuietly(in);
+                    IOUtils.closeQuietly(out);
                 }
-                if(null != digest) {
+                if(null != digest && null != out) {
                     this.getSession().message(MessageFormat.format(
                             Locale.localizedString("Compute MD5 hash of {0}", "Status"), this.getName()));
                     // Obtain locally-calculated MD5 hash.
                     String expectedETag = ServiceUtils.toHex(digest.digest());
                     // Compare our locally-calculated hash with the ETag returned.
-                    if(!expectedETag.equals(etag)) {
+                    final String result = out.getResponse();
+                    if(!expectedETag.equals(result)) {
                         throw new IOException("Mismatch between MD5 hash of uploaded data ("
                                 + expectedETag + ") and ETag returned ("
-                                + etag + ") for object key: "
+                                + result + ") for object key: "
                                 + this.getKey());
                     }
                     else {
@@ -439,9 +383,6 @@ public class CFPath extends CloudPath {
                     }
                 }
             }
-            catch(HttpException e) {
-                this.error("Upload failed", e);
-            }
             catch(IOException e) {
                 this.error("Upload failed", e);
             }
@@ -450,10 +391,71 @@ public class CFPath extends CloudPath {
 
     @Override
     public OutputStream write(boolean check) throws IOException {
+        return this.write(check, null);
+    }
+
+    /**
+     * @param check
+     * @param md5sum
+     * @return
+     * @throws IOException
+     */
+    private ResponseOutputStream<String> write(boolean check, final String md5sum) throws IOException {
         if(check) {
             this.getSession().check();
         }
-        throw new UnsupportedOperationException();
+        // No Content-Range support
+        final Status status = this.status();
+        status.setResume(false);
+        final HashMap<String, String> metadata = new HashMap<String, String>();
+        // Default metadata for new files
+        for(String m : Preferences.instance().getList("cf.metadata.default")) {
+            if(StringUtils.isBlank(m)) {
+                log.warn("Invalid header " + m);
+                continue;
+            }
+            if(!m.contains("=")) {
+                log.warn("Invalid header " + m);
+                continue;
+            }
+            int split = m.indexOf('=');
+            String name = m.substring(0, split);
+            if(StringUtils.isBlank(name)) {
+                log.warn("Missing key in " + m);
+                continue;
+            }
+            String value = m.substring(split + 1);
+            if(StringUtils.isEmpty(value)) {
+                log.warn("Missing value in " + m);
+                continue;
+            }
+            metadata.put(name, value);
+        }
+
+        // Submit store call to background thread
+        final DelayedHttpEntityCallable<String> command = new DelayedHttpEntityCallable<String>() {
+            /**
+             *
+             * @return The ETag returned by the server for the uploaded object
+             */
+            public String call(AbstractHttpEntity entity) throws IOException {
+                try {
+                    return CFPath.this.getSession().getClient().storeObjectAs(CFPath.this.getContainerName(),
+                            CFPath.this.getKey(), entity,
+                            metadata, md5sum);
+                }
+                catch(HttpException e) {
+                    IOException failure = new IOException(e.getMessage());
+                    failure.initCause(e);
+                    throw failure;
+                }
+            }
+
+            public long getContentLength() {
+                return getLocal().attributes().getSize() - status().getCurrent();
+            }
+        };
+        return this.write(command);
     }
 
     @Override

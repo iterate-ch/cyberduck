@@ -21,14 +21,15 @@ package ch.cyberduck.core.azure;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.cloud.CloudPath;
+import ch.cyberduck.core.http.DelayedHttpEntityCallable;
+import ch.cyberduck.core.http.ResponseOutputStream;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.ui.DateFormatterFactory;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.http.Header;
-import org.apache.http.entity.InputStreamEntity;
+import org.apache.http.entity.AbstractHttpEntity;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.protocol.HTTP;
 import org.apache.log4j.Logger;
@@ -461,75 +462,24 @@ public class AzurePath extends CloudPath {
     protected void upload(final BandwidthThrottle throttle, final StreamListener listener, final boolean check) {
         if(attributes().isFile()) {
             try {
-                if(check) {
-                    this.getSession().check();
-                }
-
                 final Status status = this.status();
                 status.setResume(false);
-                final InputStream in = this.getLocal().getInputStream();
+                InputStream in = null;
+                ResponseOutputStream<Boolean> out = null;
                 try {
-                    AzureSession.AzureContainer container = this.getSession().getContainer(this.getContainerName());
-                    final BlobProperties properties = new BlobProperties(this.getKey());
-                    properties.setContentType(this.getLocal().getMimeType());
-                    NameValueCollection metadata = new NameValueCollection();
-                    // Default metadata for new files
-                    for(String m : Preferences.instance().getList("azure.metadata.default")) {
-                        if(StringUtils.isBlank(m)) {
-                            log.warn("Invalid header " + m);
-                            continue;
-                        }
-                        if(!m.contains("=")) {
-                            log.warn("Invalid header " + m);
-                            continue;
-                        }
-                        int split = m.indexOf('=');
-                        String name = m.substring(0, split);
-                        if(StringUtils.isBlank(name)) {
-                            log.warn("Missing key in " + m);
-                            continue;
-                        }
-                        String value = m.substring(split + 1);
-                        if(StringUtils.isEmpty(value)) {
-                            log.warn("Missing value in " + m);
-                            continue;
-                        }
-                        metadata.put(name, value);
-                    }
-                    properties.setMetadata(metadata);
-                    boolean blob = container.createBlob(properties, new InputStreamEntity(in,
-                            getLocal().attributes().getSize() - status.getCurrent()) {
-
-                        private boolean consumed = false;
-
-                        @Override
-                        public Header getContentType() {
-                            return new BasicHeader(HTTP.CONTENT_TYPE, getLocal().getMimeType());
-                        }
-
-                        @Override
-                        public void writeTo(OutputStream out) throws IOException {
-                            AzurePath.this.upload(out, in, throttle, listener);
-                            consumed = true;
-                        }
-
-                        @Override
-                        public boolean isStreaming() {
-                            return !consumed;
-                        }
-
-                        @Override
-                        public void consumeContent() throws IOException {
-                            this.consumed = true;
-                            super.consumeContent();
-                        }
-                    });
-                    if(!blob) {
-                        this.status().setComplete(false);
-                    }
+                    in = this.getLocal().getInputStream();
+                    out = this.write(check);
+                    this.upload(out, in, throttle, listener);
                 }
                 finally {
                     IOUtils.closeQuietly(in);
+                    IOUtils.closeQuietly(out);
+                }
+                if(out != null) {
+                    boolean blob = out.getResponse();
+                    if(!blob) {
+                        this.status().setComplete(false);
+                    }
                 }
                 // The directory listing is no more current
                 this.getParent().invalidate();
@@ -544,11 +494,55 @@ public class AzurePath extends CloudPath {
     }
 
     @Override
-    public OutputStream write(boolean check) throws IOException {
+    public ResponseOutputStream<Boolean> write(boolean check) throws IOException {
         if(check) {
             this.getSession().check();
         }
-        throw new UnsupportedOperationException();
+        // Submit store call to background thread
+        final DelayedHttpEntityCallable<Boolean> command = new DelayedHttpEntityCallable<Boolean>() {
+            /**
+             *
+             * @return The ETag returned by the server for the uploaded object
+             */
+            public Boolean call(AbstractHttpEntity entity) throws IOException {
+                AzureSession.AzureContainer container = null;
+                container = getSession().getContainer(getContainerName());
+                final BlobProperties properties = new BlobProperties(getKey());
+                properties.setContentType(getLocal().getMimeType());
+                NameValueCollection metadata = new NameValueCollection();
+                // Default metadata for new files
+                for(String m : Preferences.instance().getList("azure.metadata.default")) {
+                    if(StringUtils.isBlank(m)) {
+                        log.warn("Invalid header " + m);
+                        continue;
+                    }
+                    if(!m.contains("=")) {
+                        log.warn("Invalid header " + m);
+                        continue;
+                    }
+                    int split = m.indexOf('=');
+                    String name = m.substring(0, split);
+                    if(StringUtils.isBlank(name)) {
+                        log.warn("Missing key in " + m);
+                        continue;
+                    }
+                    String value = m.substring(split + 1);
+                    if(StringUtils.isEmpty(value)) {
+                        log.warn("Missing value in " + m);
+                        continue;
+                    }
+                    metadata.put(name, value);
+                }
+                properties.setMetadata(metadata);
+                entity.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, getLocal().getMimeType()));
+                return container.createBlob(properties, entity);
+            }
+
+            public long getContentLength() {
+                return getLocal().attributes().getSize() - status().getCurrent();
+            }
+        };
+        return this.write(command);
     }
 
     @Override

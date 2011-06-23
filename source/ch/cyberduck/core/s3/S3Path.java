@@ -22,16 +22,17 @@ package ch.cyberduck.core.s3;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.cloud.CloudPath;
+import ch.cyberduck.core.http.DelayedHttpEntityCallable;
+import ch.cyberduck.core.http.ResponseOutputStream;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.ui.DateFormatterFactory;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.http.Header;
-import org.apache.http.entity.InputStreamEntity;
+import org.apache.http.HttpHeaders;
+import org.apache.http.entity.AbstractHttpEntity;
 import org.apache.http.message.BasicHeader;
-import org.apache.http.protocol.HTTP;
 import org.apache.log4j.Logger;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.StorageObjectsChunk;
@@ -509,99 +510,8 @@ public class S3Path extends CloudPath {
                 if(check) {
                     this.getSession().check();
                 }
-                S3Object object = new S3Object(this.getKey());
-                object.setContentType(this.getLocal().getMimeType());
-                if(Preferences.instance().getBoolean("s3.upload.metadata.md5")) {
-                    try {
-                        this.getSession().message(MessageFormat.format(
-                                Locale.localizedString("Compute MD5 hash of {0}", "Status"), this.getName()));
-                        object.setMd5Hash(ServiceUtils.computeMD5Hash(this.getLocal().getInputStream()));
-                    }
-                    catch(NoSuchAlgorithmException e) {
-                        log.error(e.getMessage());
-                    }
-                }
-                Acl acl = Acl.EMPTY;
-                if(this.exists()) {
-                    // Do not overwrite ACL for existing file.
-                    if(this.attributes().getAcl().equals(Acl.EMPTY)) {
-                        this.readAcl();
-                    }
-                    acl = this.attributes().getAcl();
-                }
-                else {
-                    if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
-                        Permission perm = Permission.EMPTY;
-                        if(Preferences.instance().getBoolean("queue.upload.permissions.useDefault")) {
-                            if(this.attributes().isFile()) {
-                                perm = new Permission(
-                                        Preferences.instance().getInteger("queue.upload.permissions.file.default"));
-                            }
-                            if(this.attributes().isDirectory()) {
-                                perm = new Permission(
-                                        Preferences.instance().getInteger("queue.upload.permissions.folder.default"));
-                            }
-                        }
-                        else {
-                            if(this.getLocal().exists()) {
-                                // Read permissions from local file
-                                perm = this.getLocal().attributes().getPermission();
-                            }
-                        }
-                        if(perm.equals(Permission.EMPTY)) {
-                            log.debug("Skip writing empty permissions for:" + this.toString());
-                        }
-                        else {
-                            acl = this.getSession().getPublicAcl(this.getContainerName(),
-                                    perm.getOtherPermissions()[Permission.READ],
-                                    perm.getOtherPermissions()[Permission.WRITE]);
-                        }
-                    }
-                }
-                if(Acl.EMPTY.equals(acl)) {
-                    // Owner gets FULL_CONTROL. No one else has access rights (default).
-                    object.setAcl(AccessControlList.REST_CANNED_PRIVATE);
-                }
-                else if(acl.equals(this.getSession().getPrivateAcl(this.getContainerName()))) {
-                    // Owner gets FULL_CONTROL. No one else has access rights (default).
-                    object.setAcl(AccessControlList.REST_CANNED_PRIVATE);
-                }
-                else if(acl.equals(this.getSession().getPublicAcl(this.getContainerName(), true, false))) {
-                    // Owner gets FULL_CONTROL and the anonymous principal is granted READ access
-                    object.setAcl(AccessControlList.REST_CANNED_PUBLIC_READ);
-                }
-                else if(acl.equals(this.getSession().getPublicAcl(this.getContainerName(), true, true))) {
-                    // Owner gets FULL_CONTROL, the anonymous principal is granted READ and WRITE access
-                    object.setAcl(AccessControlList.REST_CANNED_PUBLIC_READ_WRITE);
-                }
-                else {
-                    object.setAcl(this.convert(acl));
-                }
-                // Storage class
-                object.setStorageClass(Preferences.instance().getProperty("s3.storage.class"));
-                // Default metadata for new files
-                for(String m : Preferences.instance().getList("s3.metadata.default")) {
-                    if(StringUtils.isBlank(m)) {
-                        log.warn("Invalid header " + m);
-                        continue;
-                    }
-                    if(!m.contains("=")) {
-                        log.warn("Invalid header " + m);
-                        continue;
-                    }
-                    int split = m.indexOf('=');
-                    String name = m.substring(0, split);
-                    if(StringUtils.isBlank(name)) {
-                        log.warn("Missing key in " + m);
-                        continue;
-                    }
-                    String value = m.substring(split + 1);
-                    if(StringUtils.isEmpty(value)) {
-                        log.warn("Missing value in " + m);
-                        continue;
-                    }
-                    object.addMetadata(name, value);
-                }
+
+                final S3Object object = this.createObjectDetails();
 
                 this.getSession().message(MessageFormat.format(Locale.localizedString("Uploading {0}", "Status"),
                         this.getName()));
@@ -611,8 +521,6 @@ public class S3Path extends CloudPath {
                     this.uploadMultipart(throttle, listener, object);
                 }
                 else {
-                    // No Content-Range support
-                    status().setResume(false);
                     this.uploadSingle(throttle, listener, object);
                 }
                 // The directory listing is no more current
@@ -620,12 +528,108 @@ public class S3Path extends CloudPath {
             }
         }
         catch(ServiceException e) {
-            this.status().setComplete(false);
             this.error("Upload failed", e);
         }
         catch(IOException e) {
             this.error("Upload failed", e);
         }
+    }
+
+    private S3Object createObjectDetails() throws IOException {
+        S3Object object = new S3Object(this.getKey());
+        object.setContentType(this.getLocal().getMimeType());
+        if(Preferences.instance().getBoolean("s3.upload.metadata.md5")) {
+            try {
+                this.getSession().message(MessageFormat.format(
+                        Locale.localizedString("Compute MD5 hash of {0}", "Status"), this.getName()));
+                object.setMd5Hash(ServiceUtils.computeMD5Hash(this.getLocal().getInputStream()));
+            }
+            catch(NoSuchAlgorithmException e) {
+                log.error(e.getMessage());
+            }
+        }
+        Acl acl = Acl.EMPTY;
+        if(this.exists()) {
+            // Do not overwrite ACL for existing file.
+            if(this.attributes().getAcl().equals(Acl.EMPTY)) {
+                this.readAcl();
+            }
+            acl = this.attributes().getAcl();
+        }
+        else {
+            if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
+                Permission perm = Permission.EMPTY;
+                if(Preferences.instance().getBoolean("queue.upload.permissions.useDefault")) {
+                    if(this.attributes().isFile()) {
+                        perm = new Permission(
+                                Preferences.instance().getInteger("queue.upload.permissions.file.default"));
+                    }
+                    if(this.attributes().isDirectory()) {
+                        perm = new Permission(
+                                Preferences.instance().getInteger("queue.upload.permissions.folder.default"));
+                    }
+                }
+                else {
+                    if(this.getLocal().exists()) {
+                        // Read permissions from local file
+                        perm = this.getLocal().attributes().getPermission();
+                    }
+                }
+                if(perm.equals(Permission.EMPTY)) {
+                    log.debug("Skip writing empty permissions for:" + this.toString());
+                }
+                else {
+                    acl = this.getSession().getPublicAcl(this.getContainerName(),
+                            perm.getOtherPermissions()[Permission.READ],
+                            perm.getOtherPermissions()[Permission.WRITE]);
+                }
+            }
+        }
+        if(Acl.EMPTY.equals(acl)) {
+            // Owner gets FULL_CONTROL. No one else has access rights (default).
+            object.setAcl(AccessControlList.REST_CANNED_PRIVATE);
+        }
+        else if(acl.equals(this.getSession().getPrivateAcl(this.getContainerName()))) {
+            // Owner gets FULL_CONTROL. No one else has access rights (default).
+            object.setAcl(AccessControlList.REST_CANNED_PRIVATE);
+        }
+        else if(acl.equals(this.getSession().getPublicAcl(this.getContainerName(), true, false))) {
+            // Owner gets FULL_CONTROL and the anonymous principal is granted READ access
+            object.setAcl(AccessControlList.REST_CANNED_PUBLIC_READ);
+        }
+        else if(acl.equals(this.getSession().getPublicAcl(this.getContainerName(), true, true))) {
+            // Owner gets FULL_CONTROL, the anonymous principal is granted READ and WRITE access
+            object.setAcl(AccessControlList.REST_CANNED_PUBLIC_READ_WRITE);
+        }
+        else {
+            object.setAcl(this.convert(acl));
+        }
+        // Storage class
+        object.setStorageClass(Preferences.instance().getProperty("s3.storage.class"));
+        // Default metadata for new files
+        for(String m : Preferences.instance().getList("s3.metadata.default")) {
+            if(StringUtils.isBlank(m)) {
+                log.warn("Invalid header " + m);
+                continue;
+            }
+            if(!m.contains("=")) {
+                log.warn("Invalid header " + m);
+                continue;
+            }
+            int split = m.indexOf('=');
+            String name = m.substring(0, split);
+            if(StringUtils.isBlank(name)) {
+                log.warn("Missing key in " + m);
+                continue;
+            }
+            String value = m.substring(split + 1);
+            if(StringUtils.isEmpty(value)) {
+                log.warn("Missing value in " + m);
+                continue;
+            }
+            object.addMetadata(name, value);
+        }
+        return object;
     }
 
     /**
@@ -637,7 +641,12 @@ public class S3Path extends CloudPath {
      */
     private void uploadSingle(final BandwidthThrottle throttle, final StreamListener listener, S3Object object)
             throws IOException, ServiceException {
-        final InputStream in;
+
+        // No Content-Range support
+        status().setResume(false);
+
+        InputStream in = null;
+        ResponseOutputStream<S3Object> out = null;
         MessageDigest digest = null;
         if(!Preferences.instance().getBoolean("s3.upload.metadata.md5")) {
             // Content-MD5 not set. Need to verify ourselves instad of S3
@@ -648,53 +657,29 @@ public class S3Path extends CloudPath {
                 log.error(e.getMessage());
             }
         }
-        if(null == digest) {
-            log.warn("MD5 calculation disabled");
-            in = this.getLocal().getInputStream();
-        }
-        else {
-            in = new DigestInputStream(this.getLocal().getInputStream(), digest);
-        }
         try {
-            final Status status = this.status();
-            this.getSession().getClient().putObjectWithRequestEntityImpl(
-                    this.getContainerName(), object, new InputStreamEntity(in,
-                            getLocal().attributes().getSize() - status.getCurrent()) {
-
-                        private boolean consumed = false;
-
-                        @Override
-                        public Header getContentType() {
-                            return new BasicHeader(HTTP.CONTENT_TYPE, getLocal().getMimeType());
-                        }
-
-                        @Override
-                        public void writeTo(OutputStream out) throws IOException {
-                            upload(out, in, throttle, listener);
-                            consumed = true;
-                        }
-
-                        @Override
-                        public boolean isStreaming() {
-                            return !consumed;
-                        }
-
-                        @Override
-                        public void consumeContent() throws IOException {
-                            this.consumed = true;
-                            super.consumeContent();
-                        }
-                    }, Collections.<String, String>emptyMap());
+            if(null == digest) {
+                log.warn("MD5 calculation disabled");
+                in = this.getLocal().getInputStream();
+            }
+            else {
+                in = new DigestInputStream(this.getLocal().getInputStream(), digest);
+            }
+            out = this.write(false, object, getLocal().attributes().getSize() - status().getCurrent(),
+                    Collections.<String, String>emptyMap());
+            this.upload(out, in, throttle, listener);
         }
         finally {
             IOUtils.closeQuietly(in);
+            IOUtils.closeQuietly(out);
         }
         if(null != digest) {
+            final S3Object part = out.getResponse();
             this.getSession().message(MessageFormat.format(
                     Locale.localizedString("Compute MD5 hash of {0}", "Status"), this.getName()));
             // Obtain locally-calculated MD5 hash.
             String hexMD5 = ServiceUtils.toHex(digest.digest());
-            this.getSession().getClient().verifyExpectedAndActualETagValues(hexMD5, object);
+            this.getSession().getClient().verifyExpectedAndActualETagValues(hexMD5, part);
         }
     }
 
@@ -809,12 +794,14 @@ public class S3Path extends CloudPath {
                 }
                 catch(InterruptedException e) {
                     log.error("Part upload failed:" + e.getMessage());
+                    status().setComplete(false);
                     // Cancel future tasks
                     pool.shutdown();
                     throw new ConnectionCanceledException(e.getMessage());
                 }
                 catch(ExecutionException e) {
                     log.warn("Part upload failed:" + e.getMessage());
+                    status().setComplete(false);
                     // Cancel future tasks
                     pool.shutdown();
                     if(e.getCause() instanceof ServiceException) {
@@ -854,61 +841,36 @@ public class S3Path extends CloudPath {
                 requestParameters.put("uploadId", multipart.getUploadId());
                 requestParameters.put("partNumber", String.valueOf(partNumber));
 
-                final InputStream in;
+                InputStream in = null;
+                ResponseOutputStream<S3Object> out = null;
                 MessageDigest digest = null;
-                if(!Preferences.instance().getBoolean("s3.upload.metadata.md5")) {
-                    // Content-MD5 not set. Need to verify ourselves instad of S3
-                    try {
-                        digest = MessageDigest.getInstance("MD5");
-                    }
-                    catch(NoSuchAlgorithmException e) {
-                        log.error(e.getMessage());
-                    }
-                }
-                if(null == digest) {
-                    log.warn("MD5 calculation disabled");
-                    in = getLocal().getInputStream();
-                }
-                else {
-                    in = new DigestInputStream(getLocal().getInputStream(), digest);
-                }
-                final S3Object part = new S3Object(getKey());
                 try {
-                    getSession().getClient().putObjectWithRequestEntityImpl(
-                            getContainerName(), part,
-                            new InputStreamEntity(in,
-                                    length) {
-
-                                private boolean consumed = false;
-
-                                @Override
-                                public Header getContentType() {
-                                    return new BasicHeader(HTTP.CONTENT_TYPE, getLocal().getMimeType());
-                                }
-
-                                @Override
-                                public void writeTo(OutputStream out) throws IOException {
-                                    S3Path.this.upload(out, in, throttle, listener, offset, length);
-                                    consumed = true;
-                                }
-
-                                @Override
-                                public boolean isStreaming() {
-                                    return !consumed;
-                                }
-
-                                @Override
-                                public void consumeContent() throws IOException {
-                                    this.consumed = true;
-                                    super.consumeContent();
-                                }
-                            }, requestParameters);
+                    if(!Preferences.instance().getBoolean("s3.upload.metadata.md5")) {
+                        // Content-MD5 not set. Need to verify ourselves instad of S3
+                        try {
+                            digest = MessageDigest.getInstance("MD5");
+                        }
+                        catch(NoSuchAlgorithmException e) {
+                            log.error(e.getMessage());
+                        }
+                    }
+                    if(null == digest) {
+                        log.warn("MD5 calculation disabled");
+                        in = getLocal().getInputStream();
+                    }
+                    else {
+                        in = new DigestInputStream(getLocal().getInputStream(), digest);
+                    }
+                    out = write(false, new S3Object(getKey()), length, requestParameters);
+                    upload(out, in, throttle, listener, offset, length);
                 }
                 finally {
                     IOUtils.closeQuietly(in);
+                    IOUtils.closeQuietly(out);
                 }
+                final S3Object part = out.getResponse();
                 if(null != digest) {
-                    // Obtain locally-calculated MD5 hash.
+                    // Obtain locally-calculated MD5 hash
                     String hexMD5 = ServiceUtils.toHex(digest.digest());
                     getSession().getClient().verifyExpectedAndActualETagValues(hexMD5, part);
                 }
@@ -921,10 +883,34 @@ public class S3Path extends CloudPath {
 
     @Override
     public OutputStream write(boolean check) throws IOException {
+        return this.write(check, this.createObjectDetails(), getLocal().attributes().getSize() - status().getCurrent(),
+                Collections.<String, String>emptyMap());
+    }
+
+    private ResponseOutputStream<S3Object> write(boolean check, final S3Object part, final long contentLength,
+                                                 final Map<String, String> requestParams) throws IOException {
         if(check) {
             this.getSession().check();
         }
-        throw new UnsupportedOperationException();
+        DelayedHttpEntityCallable<S3Object> command = new DelayedHttpEntityCallable<S3Object>() {
+            public S3Object call(AbstractHttpEntity entity) throws IOException {
+                try {
+                    entity.setContentType(new BasicHeader(HttpHeaders.CONTENT_TYPE, getLocal().getMimeType()));
+                    getSession().getClient().putObjectWithRequestEntityImpl(getContainerName(), part, entity, requestParams);
+                }
+                catch(ServiceException e) {
+                    IOException failure = new IOException(e.getMessage());
+                    failure.initCause(e);
+                    throw failure;
+                }
+                return part;
+            }
+
+            public long getContentLength() {
+                return contentLength;
+            }
+        };
+        return this.write(command);
     }
 
     @Override
@@ -1042,7 +1028,7 @@ public class S3Path extends CloudPath {
                 }
                 Object etag = object.getMetadataMap().get(StorageObject.METADATA_HEADER_ETAG);
                 if(null != etag) {
-                    String s = etag.toString().replaceAll("\"", "");
+                    String s = etag.toString().replaceAll("\"", StringUtils.EMPTY);
                     p.attributes().setChecksum(s);
                     if(s.equals("d66759af42f282e1ba19144df2d405d0")) {
                         // Fix #5374 s3sync.rb interoperability

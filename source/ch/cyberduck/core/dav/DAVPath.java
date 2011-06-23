@@ -20,15 +20,18 @@ package ch.cyberduck.core.dav;
  */
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.http.DelayedHttpEntityCallable;
+import ch.cyberduck.core.http.HttpPath;
+import ch.cyberduck.core.http.ResponseOutputStream;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.IOResumeException;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.http.Header;
 import org.apache.http.HttpHeaders;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.HttpResponseException;
 import org.apache.http.entity.AbstractHttpEntity;
-import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.protocol.HTTP;
 import org.apache.log4j.Logger;
@@ -48,7 +51,7 @@ import java.util.Map;
 /**
  * @version $Id: $
  */
-public class DAVPath extends Path {
+public class DAVPath extends HttpPath {
     private static Logger log = Logger.getLogger(DAVPath.class);
 
     private static class Factory extends PathFactory<DAVSession> {
@@ -202,7 +205,7 @@ public class DAVPath extends Path {
                 for(final DavResource resource : resources) {
                     // Try to parse as RFC 2396
                     final URI uri = resource.getHref();
-                    DAVPath p = (DAVPath)PathFactory.createPath(this.getSession(), uri.getPath(),
+                    DAVPath p = (DAVPath) PathFactory.createPath(this.getSession(), uri.getPath(),
                             resource.isDirectory() ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
                     p.setParent(this);
 
@@ -351,6 +354,7 @@ public class DAVPath extends Path {
         }
     }
 
+    @Override
     public InputStream read(boolean check) throws IOException {
         if(check) {
             this.getSession().check();
@@ -386,72 +390,86 @@ public class DAVPath extends Path {
     protected void upload(final BandwidthThrottle throttle, final StreamListener listener, boolean check) {
         if(attributes().isFile()) {
             try {
-                if(check) {
-                    this.getSession().check();
-                }
-                final InputStream in = this.getLocal().getInputStream();
+                InputStream in = null;
+                ResponseOutputStream<Void> out = null;
                 try {
-                    final Status status = this.status();
-                    Map<String, String> headers = new HashMap<String, String>();
-                    headers.put(HTTP.EXPECT_DIRECTIVE, HTTP.EXPECT_CONTINUE);
-                    if(status.isResume()) {
-                        headers.put(HttpHeaders.CONTENT_RANGE, "bytes "
-                                + status.getCurrent()
-                                + "-" + (this.getLocal().attributes().getSize() - 1)
-                                + "/" + this.getLocal().attributes().getSize()
-                        );
-                        long skipped = in.skip(status.getCurrent());
+                    in = this.getLocal().getInputStream();
+                    if(this.status().isResume()) {
+                        long skipped = in.skip(this.status().getCurrent());
                         log.info("Skipping " + skipped + " bytes");
-                        if(skipped < status.getCurrent()) {
-                            throw new IOResumeException("Skipped " + skipped + " bytes instead of " + status.getCurrent());
+                        if(skipped < this.status().getCurrent()) {
+                            throw new IOResumeException("Skipped " + skipped + " bytes instead of " + this.status().getCurrent());
                         }
                     }
-                    final AbstractHttpEntity entity = new InputStreamEntity(in,
-                            getLocal().attributes().getSize() - status.getCurrent()) {
+                    out = this.write(check);
 
-                        private boolean consumed = false;
-
-                        @Override
-                        public Header getContentType() {
-                            return new BasicHeader(HTTP.CONTENT_TYPE, getLocal().getMimeType());
-                        }
-
-                        @Override
-                        public void writeTo(OutputStream out) throws IOException {
-                            DAVPath.this.upload(out, in, throttle, listener);
-                            consumed = true;
-                        }
-
-                        @Override
-                        public boolean isStreaming() {
-                            return !consumed;
-                        }
-
-                        @Override
-                        public void consumeContent() throws IOException {
-                            this.consumed = true;
-                            super.consumeContent();
-                        }
-                    };
-                    this.getSession().getClient().put(this.toURL(), entity, headers);
+                    this.upload(out, in, throttle, listener);
 
                     // The directory listing is no more current
                     this.getParent().invalidate();
                 }
                 finally {
                     IOUtils.closeQuietly(in);
+                    IOUtils.closeQuietly(out);
+                }
+                if(null != out) {
+                    out.getResponse();
                 }
             }
             catch(IOException e) {
-                this.status().setComplete(false);
                 this.error("Upload failed", e);
             }
         }
     }
 
     @Override
-    public OutputStream write(boolean check) throws IOException {
-        throw new UnsupportedOperationException();
+    public ResponseOutputStream<Void> write(boolean check) throws IOException {
+        Map<String, String> headers = new HashMap<String, String>();
+        Status status = this.status();
+        if(status.isResume()) {
+            headers.put(HttpHeaders.CONTENT_RANGE, "bytes "
+                    + status.getCurrent()
+                    + "-" + (this.getLocal().attributes().getSize() - 1)
+                    + "/" + this.getLocal().attributes().getSize()
+            );
+        }
+        headers.put(HTTP.EXPECT_DIRECTIVE, HTTP.EXPECT_CONTINUE);
+        try {
+            return this.write(check, headers);
+        }
+        catch(HttpResponseException e) {
+            if(e.getStatusCode() == HttpStatus.SC_EXPECTATION_FAILED) {
+                // Retry with the Expect header removed
+                headers.remove(HTTP.EXPECT_DIRECTIVE);
+                return this.write(check, headers);
+            }
+            else {
+                throw e;
+            }
+        }
+    }
+
+    private ResponseOutputStream<Void> write(boolean check, final Map<String, String> headers) throws IOException {
+        if(check) {
+            this.getSession().check();
+        }
+        // Submit store call to background thread
+        final DelayedHttpEntityCallable<Void> command = new DelayedHttpEntityCallable<Void>() {
+            /**
+             *
+             * @return The ETag returned by the server for the uploaded object
+             */
+            public Void call(AbstractHttpEntity entity) throws IOException {
+                entity.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, getLocal().getMimeType()));
+                getSession().getClient().put(toURL(), entity, headers);
+                return null;
+            }
+
+            public long getContentLength() {
+                return getLocal().attributes().getSize() - status().getCurrent();
+            }
+        };
+        return this.write(command);
     }
 
     @Override
