@@ -94,7 +94,7 @@ public class S3Session extends CloudSession {
         @Override
         protected HttpClient initHttpConnection() {
             final AbstractHttpClient client = http();
-            client.setHttpRequestRetryHandler(new RestUtils.AWSRetryHandler(5, this));
+            client.setHttpRequestRetryHandler(new RestUtils.JetS3tRetryHandler(5, this));
             return client;
         }
 
