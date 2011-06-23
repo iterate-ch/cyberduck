@@ -19,6 +19,7 @@ package ch.cyberduck.core.ftp.parser;
 
 import ch.cyberduck.core.Permission;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPFileEntryParserImpl;
 
@@ -109,13 +110,13 @@ public class EPLFFTPEntryParser extends FTPFileEntryParserImpl {
 
             // readable file
             if(fact.charAt(0) == 'r') {
-                facts.put("r", "");
+                facts.put("r", StringUtils.EMPTY);
                 return;
             }
 
             // readable directory
             if(fact.charAt(0) == '/') {
-                facts.put("/", "");
+                facts.put("/", StringUtils.EMPTY);
                 return;
             }
 
