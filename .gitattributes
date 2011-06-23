@@ -1683,6 +1683,7 @@ ru.lproj/S3.strings -text svneol=unset#text/utf-16
 ru.lproj/ServicesMenu.strings -text svneol=unset#text/utf-16
 ru.lproj/Status.strings -text svneol=unset#text/utf-16
 ru.lproj/Transfer.strings -text svneol=unset#text/utf-16
+/sandbox.plist -text
 setup/Bonjour.msi -text
 setup/Bonjour64.msi -text
 setup/FileAssociation.nsh -text

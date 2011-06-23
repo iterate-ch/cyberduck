@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+	<dict>
+		<key>com.apple.security.app-protection</key>
+		<true/>
+		<key>com.apple.security.network.server</key>
+		<!-- The ability to open a socket for listening. Used for Active (PORT) FTP data connections -->
+		<true/>
+		<key>com.apple.security.network.client</key>
+		<!-- The ability to open an outgoing connection to another machine -->
+		<true/>
+		<key>com.apple.security.files.downloads.read-write</key>
+		<true/>
+		<key>com.apple.security.print</key>
+		<!-- The ability to print -->
+		<true/>
+		<key>com.apple.security.temporary-exception.apple-events</key>
+		<!-- The ability to send Apple events to the specified destination application. Used for ODB editors. -->
+		<true/>
+		<key>com.apple.security.temporary-exception.files.home-relative-path.read-write</key>
+		<!-- The ability to read or write the specified files or directories in the user’s home directory. Custom download location -->
+		<true/>
+		<key></key>
+		<true/>
+		<key></key>
+		<true/>
+		<key></key>
+		<true/>
+	</dict>
+</plist>
