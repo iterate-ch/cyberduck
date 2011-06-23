@@ -22,6 +22,7 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.core.aquaticprime.Donation;
 import ch.cyberduck.core.aquaticprime.Receipt;
 import ch.cyberduck.core.sparkle.Updater;
+import ch.cyberduck.core.threading.AutoreleaseActionOperationBatcher;
 import ch.cyberduck.ui.cocoa.application.NSApplication;
 import ch.cyberduck.ui.cocoa.foundation.NSAutoreleasePool;
 import ch.cyberduck.ui.cocoa.foundation.NSGarbageCollector;
@@ -33,7 +34,6 @@ import ch.cyberduck.ui.cocoa.quicklook.QuartzQuickLook;
 import ch.cyberduck.ui.cocoa.serializer.*;
 import ch.cyberduck.ui.growl.GrowlNative;
 
-import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
@@ -61,6 +61,7 @@ public class MainApplication {
              * Register factory implementations.
              */
             {
+                AutoreleaseActionOperationBatcher.register();
                 FinderLocal.register();
                 UserDefaultsPreferences.register();
                 BundleLocale.register();

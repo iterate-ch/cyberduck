@@ -18,11 +18,7 @@ package ch.cyberduck.ui;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.threading.BackgroundAction;
-import ch.cyberduck.core.threading.BackgroundActionRegistry;
-import ch.cyberduck.core.threading.ControllerMainAction;
-import ch.cyberduck.core.threading.MainAction;
-import ch.cyberduck.core.threading.ThreadPool;
+import ch.cyberduck.core.threading.*;
 
 import org.apache.log4j.Logger;
 
@@ -82,7 +78,7 @@ public abstract class AbstractController implements Controller {
                 // Synchronize all background threads to this lock so actions run
                 // sequentially as they were initiated from the main interface thread
                 synchronized(runnable.lock()) {
-                    final ActionOperationBatcher autorelease = AbstractController.this.getBatcher();
+                    final ActionOperationBatcher autorelease = ActionOperationBatcherFactory.get();
                     if(log.isDebugEnabled()) {
                         log.debug("Acquired lock for background runnable:" + runnable);
                     }
@@ -139,17 +135,5 @@ public abstract class AbstractController implements Controller {
             timerPool = Executors.newScheduledThreadPool(1);
         }
         return timerPool;
-    }
-
-    protected ActionOperationBatcher getBatcher() {
-        return this.getBatcher(1);
-    }
-
-    protected ActionOperationBatcher getBatcher(int size) {
-        return new ActionOperationBatcher() {
-            public void operate() {
-                ;
-            }
-        };
     }
 }

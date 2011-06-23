@@ -1,4 +1,4 @@
-package ch.cyberduck.ui;
+package ch.cyberduck.core.threading;
 
 /*
  * Copyright (c) 2002-2010 David Kocher. All rights reserved.
@@ -20,7 +20,7 @@ package ch.cyberduck.ui;
  */
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public interface ActionOperationBatcher {
     void operate();

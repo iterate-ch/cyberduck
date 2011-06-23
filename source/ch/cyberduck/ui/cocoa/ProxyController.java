@@ -20,7 +20,6 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.threading.MainAction;
 import ch.cyberduck.ui.AbstractController;
-import ch.cyberduck.ui.ActionOperationBatcher;
 import ch.cyberduck.ui.cocoa.foundation.NSNotificationCenter;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.foundation.NSThread;
@@ -28,7 +27,6 @@ import ch.cyberduck.ui.cocoa.foundation.NSThread;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
 import org.rococoa.Rococoa;
-import org.rococoa.internal.AutoreleaseBatcher;
 
 import org.apache.log4j.Logger;
 
@@ -87,23 +85,6 @@ public class ProxyController extends AbstractController {
             log.trace("finalize:" + this.toString());
         }
         super.finalize();
-    }
-
-    /**
-     * An autorelease pool is used to manage Foundation's autorelease
-     * mechanism for Objective-C objects. If you start off a thread
-     * that calls Cocoa, there won't be a top-level pool.
-     *
-     * @return
-     */
-    @Override
-    protected ActionOperationBatcher getBatcher(final int size) {
-        final AutoreleaseBatcher impl = AutoreleaseBatcher.forThread(size);
-        return new ActionOperationBatcher() {
-            public void operate() {
-                impl.operate();
-            }
-        };
     }
 
     /**
