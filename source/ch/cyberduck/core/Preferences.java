@@ -567,15 +567,15 @@ public abstract class Preferences {
         /**
          * Default metadata for uploads. Format must be "key1=value1 key2=value2"
          */
-        defaults.put("s3.metadata.default", "");
+        defaults.put("s3.metadata.default", StringUtils.EMPTY);
 
-        defaults.put("azure.metadata.default", "");
+        defaults.put("azure.metadata.default", StringUtils.EMPTY);
 
         defaults.put("cf.authentication.host", "auth.api.rackspacecloud.com");
         defaults.put("cf.authentication.context", "/v1.0");
 
         defaults.put("cf.upload.metadata.md5", String.valueOf(false));
-        defaults.put("cf.metadata.default", "");
+        defaults.put("cf.metadata.default", StringUtils.EMPTY);
 
         defaults.put("cf.list.limit", String.valueOf(10000));
 
@@ -620,8 +620,8 @@ public abstract class Preferences {
         /**
          * Dropbox OAuth Application Secrets
          */
-        defaults.put("dropbox.key", "");
-        defaults.put("dropbox.secret", "");
+        defaults.put("dropbox.key", StringUtils.EMPTY);
+        defaults.put("dropbox.secret", StringUtils.EMPTY);
 
         /**
          * NTLM Windows Domain
