@@ -11,7 +11,6 @@
 		470168500EED9EB7005E2CCF /* Mosso.strings in Resources */ = {isa = PBXBuildFile; fileRef = 470168320EED9EB7005E2CCF /* Mosso.strings */; };
 		47022C231018663600488C19 /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47022C221018663600488C19 /* CoreServices.framework */; };
 		47026428087DC91C008837FD /* IDisk.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47026426087DC91C008837FD /* IDisk.strings */; };
-		4704226212EEBFE8004658C0 /* libAquaticPrime.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4773D6B00F9C86A7004658BD /* libAquaticPrime.a */; };
 		4704227312EEC0DB004658C0 /* Growl.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4726277E0FD5743C001D5BA5 /* Growl.framework */; };
 		4704238712EEC56F004658C0 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 		470423D712EEC5EC004658C0 /* Growl.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4726277E0FD5743C001D5BA5 /* Growl.framework */; };
@@ -23,6 +22,7 @@
 		470C647B1328CC0300146FB6 /* svn.cyberduck.ch – WebDAV (HTTP).duck in CopyFiles */ = {isa = PBXBuildFile; fileRef = 470C64711328CBF300146FB6 /* svn.cyberduck.ch – WebDAV (HTTP).duck */; };
 		47124259129AA0F200BC957C /* swift-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 47124257129AA0F200BC957C /* swift-icon.png */; };
 		4712425A129AA0F200BC957C /* swift.icns in Resources */ = {isa = PBXBuildFile; fileRef = 47124258129AA0F200BC957C /* swift.icns */; };
+		4714591713B492CD00F1A9D2 /* libAquaticPrime.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4773D6B00F9C86A7004658BD /* libAquaticPrime.a */; };
 		4716C5F50872BA9900938886 /* Command.nib in Resources */ = {isa = PBXBuildFile; fileRef = 4716C5EF0872BA9800938886 /* Command.nib */; };
 		4717BE170F3096FD00BB4496 /* s3.icns in Resources */ = {isa = PBXBuildFile; fileRef = 4717BE100F3096FD00BB4496 /* s3.icns */; };
 		4717BE180F3096FD00BB4496 /* ftp.icns in Resources */ = {isa = PBXBuildFile; fileRef = 4717BE110F3096FD00BB4496 /* ftp.icns */; };
@@ -174,7 +174,6 @@
 		4781AF410828423100B3E0FA /* download0.icns in Resources */ = {isa = PBXBuildFile; fileRef = 4781AF400828423100B3E0FA /* download0.icns */; };
 		4783C6F511EC62B6006D9FAD /* azure-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 4783C6F411EC62B6006D9FAD /* azure-icon.png */; };
 		4783C6F811EC62C4006D9FAD /* connection-secure.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 4783C6F611EC62C4006D9FAD /* connection-secure.tiff */; };
-		4783C6F911EC62C4006D9FAD /* connection.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 4783C6F711EC62C4006D9FAD /* connection.tiff */; };
 		478426F40F9F75900068BA2E /* License.strings in Resources */ = {isa = PBXBuildFile; fileRef = 478426F20F9F75900068BA2E /* License.strings */; };
 		4786CB6C0E253B800029848F /* Error.nib in Resources */ = {isa = PBXBuildFile; fileRef = 4786CB660E253B800029848F /* Error.nib */; };
 		4786CB6D0E253B800029848F /* Activity.nib in Resources */ = {isa = PBXBuildFile; fileRef = 4786CB670E253B800029848F /* Activity.nib */; };
@@ -1653,8 +1652,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4704226212EEBFE8004658C0 /* libAquaticPrime.a in Frameworks */,
 				474524DD1076B89700823467 /* Foundation.framework in Frameworks */,
+				4714591713B492CD00F1A9D2 /* libAquaticPrime.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2502,6 +2501,7 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 0410;
 				ORGANIZATIONNAME = Cyberduck;
 			};
 			buildConfigurationList = 47D286ED0855740D008142CF /* Build configuration list for PBXProject "Cyberduck" */;
@@ -4305,7 +4305,6 @@
 			buildSettings = {
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				MACH_O_TYPE = mh_dylib;
 				PRODUCT_NAME = libDiagnostics;
 			};
@@ -4337,7 +4336,6 @@
 				MACH_O_TYPE = mh_dylib;
 				OTHER_LDFLAGS = "-lcrypto";
 				PRODUCT_NAME = libPrime;
-				SDKROOT = macosx10.5;
 			};
 			name = Release;
 		};
@@ -4346,7 +4344,6 @@
 			buildSettings = {
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				MACH_O_TYPE = mh_dylib;
 				PRODUCT_NAME = libQuickLook;
 			};
@@ -4364,13 +4361,12 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEPLOYMENT_POSTPROCESSING = NO;
 				FRAMEWORK_SEARCH_PATHS = "\"$(SRCROOT)/lib\"";
-				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_DEBUGGING_SYMBOLS = default;
 				GCC_ENABLE_OBJC_GC = unsupported;
-				GCC_VERSION = 4.2;
+				GCC_VERSION = "";
 				HEADER_SEARCH_PATHS = "\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Headers\"";
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
-				PREBINDING = NO;
 				SDKROOT = macosx10.6;
 				SEPARATE_STRIP = NO;
 				STRIP_INSTALLED_PRODUCT = NO;
@@ -4385,10 +4381,6 @@
 		47A8AD5F100A6A9E00DC800C /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = (
-					x86_64,
-					i386,
-				);
 				COPY_PHASE_STRIP = YES;
 				INFOPLIST_FILE = Info.plist;
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
@@ -4465,7 +4457,6 @@
 			buildSettings = {
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				LD_DYLIB_INSTALL_NAME = "";
 				MACH_O_TYPE = mh_dylib;
 				PRODUCT_NAME = libDiagnostics;
@@ -4477,7 +4468,6 @@
 			buildSettings = {
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				LD_DYLIB_INSTALL_NAME = "";
 				MACH_O_TYPE = mh_dylib;
 				PRODUCT_NAME = libURLSchemeHandlerConfiguration;
@@ -4489,7 +4479,6 @@
 			buildSettings = {
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				LD_DYLIB_INSTALL_NAME = "";
 				MACH_O_TYPE = mh_dylib;
 				PRODUCT_NAME = libQuickLook;
@@ -4502,11 +4491,13 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				LD_DYLIB_INSTALL_NAME = "";
-				LIBRARY_SEARCH_PATHS = "$(SRCROOT)/lib";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/lib\"",
+				);
 				MACH_O_TYPE = mh_dylib;
 				OTHER_LDFLAGS = "-lcrypto";
 				PRODUCT_NAME = libPrime;
-				SDKROOT = macosx10.5;
 			};
 			name = Debug;
 		};
@@ -4530,7 +4521,6 @@
 			buildSettings = {
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
-				GCC_ENABLE_FIX_AND_CONTINUE = NO;
 				MACH_O_TYPE = mh_dylib;
 				PRODUCT_NAME = libURLSchemeHandlerConfiguration;
 			};
@@ -4539,10 +4529,6 @@
 		47D286C70855740C008142CF /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = (
-					x86_64,
-					i386,
-				);
 				COPY_PHASE_STRIP = YES;
 				INFOPLIST_FILE = Info.plist;
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
@@ -4574,7 +4560,6 @@
 				GCC_ENABLE_OBJC_GC = unsupported;
 				HEADER_SEARCH_PATHS = "\"$(SYSTEM_LIBRARY_DIR)/Frameworks/JavaVM.framework/Headers\"";
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
-				PREBINDING = NO;
 				SDKROOT = macosx10.6;
 				SEPARATE_STRIP = YES;
 				STRIP_INSTALLED_PRODUCT = NO;
