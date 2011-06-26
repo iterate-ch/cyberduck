@@ -21,7 +21,6 @@ package ch.cyberduck.core.cf;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cloud.CloudPath;
-import ch.cyberduck.core.http.DelayedHttpEntity;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
 import ch.cyberduck.core.http.ResponseOutputStream;
 import ch.cyberduck.core.i18n.Locale;
@@ -217,15 +216,24 @@ public class CFPath extends CloudPath {
                         this.getName()));
 
                 if(this.isRoot()) {
+                    final int limit = Preferences.instance().getInteger("cf.list.limit");
+                    String marker = null;
+                    List<FilesContainerInfo> list;
                     // List all containers
-                    for(FilesContainerInfo container : this.getSession().getClient().listContainersInfo()) {
-                        Path p = PathFactory.createPath(this.getSession(), this.getAbsolute(), container.getName(),
-                                Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
-                        p.attributes().setSize(container.getTotalSize());
-                        p.attributes().setOwner(this.getSession().getClient().getUserName());
+                    do {
+                        list = this.getSession().getClient().listContainersInfo(limit, marker);
+                        for(FilesContainerInfo container : list) {
+                            Path p = PathFactory.createPath(this.getSession(), this.getAbsolute(), container.getName(),
+                                    Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
+                            p.attributes().setSize(container.getTotalSize());
+                            p.attributes().setOwner(this.getSession().getClient().getUserName());
 
-                        children.add(p);
+                            children.add(p);
+                            marker = container.getName();
+                        }
                     }
+                    while(list.size() == limit);
+                    // Clear CDN cache when reloading
                     this.getSession().cdn().clear();
                 }
                 else {
