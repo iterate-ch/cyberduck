@@ -116,8 +116,15 @@ namespace Ch.Cyberduck.Core
         {
             if (IsNotBlank(filename))
             {
-                String ext = LocalFactory.createLocal(filename).getExtension();
-                return "." + ext;
+                try
+                {
+                    String ext = LocalFactory.createLocal(filename).getExtension();
+                    return "." + ext;
+                }
+                catch (Exception e)
+                {
+                    Log.error(string.Format("Exception while getting file extension for {0}", filename), e);
+                }
             }
             return String.Empty;
         }
