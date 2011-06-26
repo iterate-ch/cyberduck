@@ -620,8 +620,7 @@ public class ConnectionController extends SheetController {
                     hostField.stringValue(),
                     portField.intValue(),
                     pathField.stringValue());
-            if(protocol.equals(Protocol.FTP) ||
-                    protocol.equals(Protocol.FTP_TLS)) {
+            if(protocol.isConnectModeConfigurable()) {
                 if(connectmodePopup.titleOfSelectedItem().equals(DEFAULT)) {
                     host.setFTPConnectMode(null);
                 }

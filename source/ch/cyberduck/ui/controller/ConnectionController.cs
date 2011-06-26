@@ -76,8 +76,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     View.Hostname,
                     Integer.parseInt(View.Port),
                     View.Path);
-                if (protocol.Equals(Protocol.FTP) ||
-                    protocol.Equals(Protocol.FTP_TLS))
+                if (protocol.isConnectModeConfigurable())
                 {
                     if (View.SelectedConnectMode.Equals(Default))
                     {
