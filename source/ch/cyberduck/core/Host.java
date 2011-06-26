@@ -341,7 +341,7 @@ public class Host implements Serializable {
         if(null != this.getCredentials().getIdentity()) {
             dict.setStringForKey(this.getCredentials().getIdentity().getAbbreviatedPath(), "Private Key File");
         }
-        if(this.getProtocol().equals(Protocol.FTP) || this.getProtocol().equals(Protocol.FTP_TLS)) {
+        if(this.getProtocol().isConnectModeConfigurable()) {
             if(null != this.getFTPConnectMode()) {
                 if(this.getFTPConnectMode().equals(FTPConnectMode.PORT)) {
                     dict.setStringForKey(FTPConnectMode.PORT.toString(), "FTP Connect Mode");
@@ -396,7 +396,7 @@ public class Host implements Serializable {
         }
         String username = null;
         String password = null;
-        if(protocol.equals(Protocol.FTP)) {
+        if(protocol.isAnonymousConfigurable()) {
             username = Preferences.instance().getProperty("connection.login.anon.name");
         }
         else {

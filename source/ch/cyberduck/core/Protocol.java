@@ -161,7 +161,7 @@ public abstract class Protocol {
     }
 
     /**
-     * @return
+     * @return True if the protocol is inherently secure.
      */
     public boolean isSecure() {
         return false;
@@ -171,6 +171,9 @@ public abstract class Protocol {
         return true;
     }
 
+    /**
+     * @return False if the port to connect is static.
+     */
     public boolean isPortConfigurable() {
         return true;
     }
@@ -179,14 +182,23 @@ public abstract class Protocol {
         return true;
     }
 
+    /**
+     * @return True if the character set is not defined in the protocol.
+     */
     public boolean isEncodingConfigurable() {
         return false;
     }
 
+    /**
+     * @return True if there are different connect mode. Only applies to FTP.
+     */
     public boolean isConnectModeConfigurable() {
         return false;
     }
 
+    /**
+     * @return True if anonymous logins are possible.
+     */
     public boolean isAnonymousConfigurable() {
         return true;
     }
