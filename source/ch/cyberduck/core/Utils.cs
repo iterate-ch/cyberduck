@@ -28,7 +28,6 @@ using ch.cyberduck.core;
 using java.nio.charset;
 using java.util;
 using org.apache.log4j;
-using sun.nio.cs.ext;
 
 namespace Ch.Cyberduck.Core
 {
@@ -37,11 +36,6 @@ namespace Ch.Cyberduck.Core
         public delegate object ApplyPerItemForwardDelegate<T>(T item);
 
         public delegate T ApplyPerItemReverseDelegate<T>(object item);
-
-        public static readonly bool IsVistaOrLater = OperatingSystemVersion.Current >= OSVersionInfo.Vista;
-        public static readonly bool IsWin7OrLater = OperatingSystemVersion.Current >= OSVersionInfo.Win7;
-
-        private static readonly Logger Log = Logger.getLogger(typeof (Utils).FullName);
 
         private static readonly List<String> ExtendedCharsets = new List<string>
                                                                     {
@@ -68,6 +62,11 @@ namespace Ch.Cyberduck.Core
                                                                         "windows-1258",
                                                                         "windows-31j"
                                                                     };
+
+        public static readonly bool IsVistaOrLater = OperatingSystemVersion.Current >= OSVersionInfo.Vista;
+        public static readonly bool IsWin7OrLater = OperatingSystemVersion.Current >= OSVersionInfo.Win7;
+
+        private static readonly Logger Log = Logger.getLogger(typeof (Utils).FullName);
 
         public static bool StartProcess(string filename, string args)
         {
