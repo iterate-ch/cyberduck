@@ -1149,70 +1149,6 @@ public class PreferencesController extends ToolbarWindowController {
     }
 
     @Outlet
-    private NSTextField anonymousField;
-
-    public void setAnonymousField(NSTextField f) {
-        this.anonymousField = f;
-        this.anonymousField.setStringValue(Preferences.instance().getProperty("connection.login.anon.pass"));
-        NSNotificationCenter.defaultCenter().addObserver(this.id(),
-                Foundation.selector("anonymousFieldDidChange:"),
-                NSControl.NSControlTextDidChangeNotification,
-                this.anonymousField);
-    }
-
-    public void anonymousFieldDidChange(NSNotification sender) {
-        Preferences.instance().setProperty("connection.login.anon.pass", this.anonymousField.stringValue());
-    }
-
-    @Outlet
-    private NSTextField textFileTypeRegexField;
-
-    public void setTextFileTypeRegexField(NSTextField f) {
-        this.textFileTypeRegexField = f;
-        this.textFileTypeRegexField.setStringValue(Preferences.instance().getProperty("filetype.text.regex"));
-        NSNotificationCenter.defaultCenter().addObserver(this.id(),
-                Foundation.selector("textFileTypeRegexFieldDidChange:"),
-                NSControl.NSControlTextDidChangeNotification,
-                this.textFileTypeRegexField);
-    }
-
-    public void textFileTypeRegexFieldDidChange(NSNotification sender) {
-        String value = this.textFileTypeRegexField.stringValue().trim();
-        try {
-            Pattern compiled = Pattern.compile(value);
-            this.textFileTypeRegexField.setTextColor(NSColor.controlTextColor());
-            Preferences.instance().setProperty("filetype.text.regex",
-                    compiled.pattern());
-        }
-        catch(PatternSyntaxException e) {
-            this.textFileTypeRegexField.setTextColor(NSColor.redColor());
-        }
-    }
-
-//    @Outlet private NSTextField binaryFileTypeRegexField;
-//
-//    public void setBinaryFileTypeRegexField(NSTextField binaryFileTypeRegexField) {
-//        this.binaryFileTypeRegexField = binaryFileTypeRegexField;
-//        this.binaryFileTypeRegexField.setStringValue(Preferences.instance().getProperty("filetype.binary.regex"));
-//        NSNotificationCenter.defaultCenter().addObserver(this.id(),
-//                Foundation.selector("binaryFileTypeRegexFieldDidChange:"),
-//                NSControl.ControlTextDidChangeNotification,
-//                this.binaryFileTypeRegexField);
-//    }
-//
-//    public void binaryFileTypeRegexFieldDidChange(NSNotification sender) {
-//        String value = this.binaryFileTypeRegexField.stringValue().trim();
-//        try {
-//            Pattern compiled = Pattern.compile(value);
-//            Preferences.instance().setProperty("filetype.binary.regex",
-//                    compiled.pattern());
-//        }
-//        catch(PatternSyntaxException e) {
-//            log.warn("Invalid regex:"+e.getMessage());
-//        }
-//    }
-
-    @Outlet
     private NSButton downloadSkipButton;
 
     public void setDownloadSkipButton(NSButton b) {
@@ -1364,27 +1300,6 @@ public class PreferencesController extends ToolbarWindowController {
             range = NSRange.NSMakeRange(new NSUInteger(index), new NSUInteger(1));
         }
         text.addAttributesInRange(RED_FONT, range);
-    }
-
-    @Outlet
-    private NSTextField loginField;
-
-    /**
-     * Default SSH login name
-     *
-     * @param f
-     */
-    public void setLoginField(NSTextField f) {
-        this.loginField = f;
-        this.loginField.setStringValue(Preferences.instance().getProperty("connection.login.name"));
-        NSNotificationCenter.defaultCenter().addObserver(this.id(),
-                Foundation.selector("loginFieldDidChange:"),
-                NSControl.NSControlTextDidChangeNotification,
-                this.loginField);
-    }
-
-    public void loginFieldDidChange(NSNotification sender) {
-        Preferences.instance().setProperty("connection.login.name", this.loginField.stringValue());
     }
 
     @Outlet
@@ -1922,6 +1837,15 @@ public class PreferencesController extends ToolbarWindowController {
         else {
             Preferences.instance().deleteProperty("SUScheduledCheckInterval");
         }
+    }
+
+    @Outlet
+    private NSButton updateCheckButton;
+
+    public void setUpdateCheckButton(NSButton b) {
+        this.updateCheckButton = b;
+        this.updateCheckButton.setTarget(NSApplication.sharedApplication().delegate());
+        this.updateCheckButton.setAction(Foundation.selector("updateMenuClicked:"));
     }
 
     @Outlet
