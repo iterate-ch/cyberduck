@@ -15,31 +15,32 @@
 // Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
 // 
+
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Drawing;
 using System.IO;
 using System.Threading;
 using System.Windows.Forms;
 using BrightIdeasSoftware;
-using ch.cyberduck.core;
 using Ch.Cyberduck.Core;
+using Ch.Cyberduck.Ui.Controller.Threading;
+using Ch.Cyberduck.Ui.Winforms.Taskdialog;
+using StructureMap;
+using ch.cyberduck.core;
 using ch.cyberduck.core.io;
 using ch.cyberduck.core.serializer;
 using ch.cyberduck.core.sftp;
 using ch.cyberduck.core.ssl;
 using ch.cyberduck.core.threading;
 using ch.cyberduck.ui;
-using Ch.Cyberduck.Ui.Controller.Threading;
-using Ch.Cyberduck.Ui.Winforms.Taskdialog;
 using java.lang;
 using java.security.cert;
 using java.util;
 using org.apache.log4j;
-using StructureMap;
 using Collection = ch.cyberduck.core.Collection;
 using DataObject = System.Windows.Forms.DataObject;
+using Exception = System.Exception;
 using Locale = ch.cyberduck.core.i18n.Locale;
 using Object = System.Object;
 using Path = ch.cyberduck.core.Path;
@@ -294,24 +295,6 @@ namespace Ch.Cyberduck.Ui.Controller
             View.SetBookmarkModel(bookmarkCollection, null);
         }
 
-        private void View_SortBookmarksByProtocol()
-        {
-            BookmarkCollection.defaultCollection().sortByProtocol();
-            ReloadBookmarks();
-        }
-
-        private void View_SortBookmarksByNickname()
-        {
-            BookmarkCollection.defaultCollection().sortByNickname();
-            ReloadBookmarks();
-        }
-
-        private void View_SortBookmarksByHostname()
-        {
-            BookmarkCollection.defaultCollection().sortByHostname();
-            ReloadBookmarks();
-        }
-
         public BrowserController()
             : this(ObjectFactory.GetInstance<IBrowserView>())
         {
@@ -427,6 +410,24 @@ namespace Ch.Cyberduck.Ui.Controller
                 AsyncDelegate mainAction = delegate { View.AddTranscriptEntry(request, transcript); };
                 Invoke(mainAction);
             }
+        }
+
+        private void View_SortBookmarksByProtocol()
+        {
+            BookmarkCollection.defaultCollection().sortByProtocol();
+            ReloadBookmarks();
+        }
+
+        private void View_SortBookmarksByNickname()
+        {
+            BookmarkCollection.defaultCollection().sortByNickname();
+            ReloadBookmarks();
+        }
+
+        private void View_SortBookmarksByHostname()
+        {
+            BookmarkCollection.defaultCollection().sortByHostname();
+            ReloadBookmarks();
         }
 
         private bool View_ValidateOpenInTerminal()
@@ -770,11 +771,18 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 if (d.IsReady && d.DriveType != DriveType.CDRom)
                 {
-                    FileSystemWatcher watcher = new FileSystemWatcher(@d.Name, System.IO.Path.GetFileName(tfile));
-                    watcher.IncludeSubdirectories = true;
-                    watcher.EnableRaisingEvents = true;
-                    watcher.Created += del;
-                    watcher.Created += delegate { watcher.Dispose(); };
+                    try
+                    {
+                        FileSystemWatcher watcher = new FileSystemWatcher(@d.Name, System.IO.Path.GetFileName(tfile));
+                        watcher.IncludeSubdirectories = true;
+                        watcher.EnableRaisingEvents = true;
+                        watcher.Created += del;
+                        watcher.Created += delegate { watcher.Dispose(); };
+                    }
+                    catch (Exception e)
+                    {
+                        Log.error(string.Format("Cannot watch drive {0}", d.VolumeLabel), e);
+                    }
                 }
             }
             return tfile;
@@ -2054,10 +2062,12 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 if (IsEditable(selected))
                 {
-                    string editCommand = EditorFactory.DefaultEditCommand(selected.getLocal());                    
+                    string editCommand = EditorFactory.DefaultEditCommand(selected.getLocal());
                     if (Utils.IsNotBlank(editCommand))
                     {
-                        View.EditIcon = IconCache.Instance.GetFileIconFromExecutable(editCommand, IconCache.IconSize.Large).ToBitmap();
+                        View.EditIcon =
+                            IconCache.Instance.GetFileIconFromExecutable(editCommand, IconCache.IconSize.Large).ToBitmap
+                                ();
                         return;
                     }
                 }
