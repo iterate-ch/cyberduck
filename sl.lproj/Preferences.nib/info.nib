@@ -7,7 +7,7 @@
 	<key>IBOldestOS</key>
 	<integer>5</integer>
 	<key>IBSystem Version</key>
-	<string>10J567</string>
+	<string>10K540</string>
 	<key>targetFramework</key>
 	<string>IBCocoaFramework</string>
 </dict>

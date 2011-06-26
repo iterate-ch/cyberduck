@@ -7,19 +7,6 @@
 		<dict>
 			<key>ACTIONS</key>
 			<dict>
-				<key>checkForUpdates</key>
-				<string>id</string>
-			</dict>
-			<key>CLASS</key>
-			<string>SUUpdater</string>
-			<key>LANGUAGE</key>
-			<string>ObjC</string>
-			<key>SUPERCLASS</key>
-			<string>NSObject</string>
-		</dict>
-		<dict>
-			<key>ACTIONS</key>
-			<dict>
 				<key></key>
 				<string>id</string>
 				<key>help</key>
@@ -41,8 +28,6 @@
 			<dict>
 				<key>alternatingRowBackgroundCheckbox</key>
 				<string>NSButton</string>
-				<key>anonymousField</key>
-				<string>NSTextField</string>
 				<key>bookmarkSizePopup</key>
 				<string>NSPopUpButton</string>
 				<key>bringQueueToBackCheckbox</key>
@@ -131,8 +116,6 @@
 				<string>NSPopUpButton</string>
 				<key>encodingCombobox</key>
 				<string>NSPopUpButton</string>
-				<key>failInsecureDataChannelCheckbox</key>
-				<string>NSButton</string>
 				<key>horizontalLinesCheckbox</key>
 				<string>NSButton</string>
 				<key>infoWindowAsInspectorCheckbox</key>
@@ -141,10 +124,6 @@
 				<string>NSButton</string>
 				<key>languagePopup</key>
 				<string>NSPopUpButton</string>
-				<key>lineEndingCombobox</key>
-				<string>NSPopUpButton</string>
-				<key>loginField</key>
-				<string>NSTextField</string>
 				<key>ocrUploadsCheckbox</key>
 				<string>NSButton</string>
 				<key>openAfterDownloadCheckbox</key>
@@ -187,8 +166,6 @@
 				<string>NSButton</string>
 				<key>returnKeyCheckbox</key>
 				<string>NSButton</string>
-				<key>secureDataChannelCheckbox</key>
-				<string>NSButton</string>
 				<key>showHiddenCheckbox</key>
 				<string>NSButton</string>
 				<key>spreadsheetExportFormatPopup</key>
@@ -197,11 +174,7 @@
 				<string>NSPopUpButton</string>
 				<key>tabView</key>
 				<string>NSTabView</string>
-				<key>textFileTypeRegexField</key>
-				<string>NSTextField</string>
 				<key>transferPopup</key>
-				<string>NSPopUpButton</string>
-				<key>transfermodeCombobox</key>
 				<string>NSPopUpButton</string>
 				<key>ugroupr</key>
 				<string>NSButton</string>
@@ -220,6 +193,8 @@
 				<key>uownerw</key>
 				<string>NSButton</string>
 				<key>uownerx</key>
+				<string>NSButton</string>
+				<key>updateCheckButton</key>
 				<string>NSButton</string>
 				<key>updateCheckbox</key>
 				<string>NSButton</string>

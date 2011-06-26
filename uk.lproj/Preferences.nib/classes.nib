@@ -5,7 +5,6 @@
     LANGUAGE = ObjC;
     OUTLETS =     {
         alternatingRowBackgroundCheckbox = NSButton;
-        anonymousField = NSTextField;
         bookmarkSizePopup = NSPopUpButton;
         bringQueueToBackCheckbox = NSButton;
         bringQueueToFrontCheckbox = NSButton;
@@ -50,13 +49,10 @@
         duplicateUploadOverwriteButton = NSButton;
         editorCombobox = NSPopUpButton;
         encodingCombobox = NSPopUpButton;
-        failInsecureDataChannelCheckbox = NSButton;
         horizontalLinesCheckbox = NSButton;
         infoWindowAsInspectorCheckbox = NSButton;
         keychainCheckbox = NSButton;
         languagePopup = NSPopUpButton;
-        lineEndingCombobox = NSPopUpButton;
-        loginField = NSTextField;
         ocrUploadsCheckbox = NSButton;
         openAfterDownloadCheckbox = NSButton;
         openUntitledBrowserCheckbox = NSButton;
@@ -78,14 +74,11 @@
         protocolCombobox = NSPopUpButton;
         removeFromQueueCheckbox = NSButton;
         returnKeyCheckbox = NSButton;
-        secureDataChannelCheckbox = NSButton;
         showHiddenCheckbox = NSButton;
         spreadsheetExportFormatPopup = NSPopUpButton;
         sshTransfersCombobox = NSPopUpButton;
         tabView = NSTabView;
-        textFileTypeRegexField = NSTextField;
         transferPopup = NSPopUpButton;
-        transfermodeCombobox = NSPopUpButton;
         ugroupr = NSButton;
         ugroupw = NSButton;
         ugroupx = NSButton;
@@ -95,6 +88,7 @@
         uownerr = NSButton;
         uownerw = NSButton;
         uownerx = NSButton;
+        updateCheckButton = NSButton;
         updateCheckbox = NSButton;
         updateFeedPopup = NSPopUpButton;
         uploadSkipButton = NSButton;
@@ -113,14 +107,6 @@
         help = id;
     };
     CLASS = FirstResponder;
-    LANGUAGE = ObjC;
-    SUPERCLASS = NSObject;
-},
-        {
-    ACTIONS =     {
-        checkForUpdates = id;
-    };
-    CLASS = SUUpdater;
     LANGUAGE = ObjC;
     SUPERCLASS = NSObject;
 }
