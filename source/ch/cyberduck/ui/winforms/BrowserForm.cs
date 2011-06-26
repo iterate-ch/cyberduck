@@ -30,6 +30,7 @@ using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Winforms.Commondialog;
 using Ch.Cyberduck.Ui.Winforms.Controls;
+using Ch.Cyberduck.Ui.Winforms.Taskdialog;
 using TheCodeKing.ActiveButtons.Controls;
 using ch.cyberduck.core;
 using ch.cyberduck.core.aquaticprime;
@@ -429,27 +430,33 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public String[] UploadDialog(string root)
         {
-            using (var dialog = new SelectFileAndFolderDialog())
+            SelectFileAndFolderDialog dialog = SelectFileAndFolderDialog.Instance;
+            dialog.AcceptFiles = true;
+            if (null != root)
             {
-                dialog.AcceptFiles = true;
-                if (null != root)
-                {
-                    dialog.Path = root;
-                }
-                string selectText = Locale.localizedString("Choose");
-                string canelText = Locale.localizedString("Cancel");
-
-                dialog.FileNameLabel = selectText + ":";
-                dialog.SelectLabel = "&" + selectText;
-                dialog.CancelLabel = "&" + canelText;
-                dialog.ShowDialog();
-                string[] paths = dialog.SelectedPaths;
-                if (paths.Length == 0)
-                {
-                    return null;
-                }
-                return paths;
+                dialog.Path = root;
             }
+            string selectText = Locale.localizedString("Choose");
+            string canelText = Locale.localizedString("Cancel");
+
+            dialog.FileNameLabel = selectText + ":";
+            dialog.SelectLabel = "&" + selectText;
+            dialog.CancelLabel = "&" + canelText;
+            try
+            {
+                dialog.ShowDialog();
+            }
+            catch (Exception e)
+            {
+                MessageBox(Locale.localizedString("Error"), null, e.Message, TaskDialogButtons.OK, SysIcons.Error);
+                Log.error("Exception while upload selection", e);
+            }
+            string[] paths = dialog.SelectedPaths;
+            if (paths.Length == 0)
+            {
+                return null;
+            }
+            return paths;
         }
 
         public int NumberOfBookmarks
@@ -1463,14 +1470,17 @@ namespace Ch.Cyberduck.Ui.Winforms
                                  viewBookmarksToolStripMenuItem
                              }, new[] {toggleBookmarksMainMenuItem}, (sender, args) => ToggleBookmarks(), () => true);
             Commands.Add(new ToolStripItem[]
-                             {                                 
-                             }, new[] {sortByHostnameMainMenuItem, sortByHostnameBookmarkContextMenuItem}, (sender, args) => SortBookmarksByHostname(), () => true);
+                             {
+                             }, new[] {sortByHostnameMainMenuItem, sortByHostnameBookmarkContextMenuItem},
+                         (sender, args) => SortBookmarksByHostname(), () => true);
             Commands.Add(new ToolStripItem[]
-                             {                                 
-                             }, new[] {sortByNicknameMainMenuItem, sortByNicknameBookmarkContextMenuItem}, (sender, args) => SortBookmarksByNickname(), () => true);
+                             {
+                             }, new[] {sortByNicknameMainMenuItem, sortByNicknameBookmarkContextMenuItem},
+                         (sender, args) => SortBookmarksByNickname(), () => true);
             Commands.Add(new ToolStripItem[]
-                             {                                 
-                             }, new[] {sortByProtocolMainMenuItem, sortByProtocolBookmarkContextMenuItem}, (sender, args) => SortBookmarksByProtocol(), () => true);
+                             {
+                             }, new[] {sortByProtocolMainMenuItem, sortByProtocolBookmarkContextMenuItem},
+                         (sender, args) => SortBookmarksByProtocol(), () => true);
             Commands.Add(new ToolStripItem[]
                              {
                                  connectBookmarkContextToolStripMenuItem,

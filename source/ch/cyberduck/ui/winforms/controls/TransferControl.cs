@@ -15,6 +15,7 @@
 // Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
 // 
+
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -229,6 +230,12 @@ namespace Ch.Cyberduck.Ui.Winforms.Controls
         public DialogResult MessageBox(string title, string message, string content, string expandedInfo,
                                        string help,
                                        string verificationText, DialogResponseHandler handler)
+        {
+            return DialogResult.None;
+        }
+
+        public DialogResult MessageBox(string title, string message, string content, TaskDialogButtons buttons,
+                                       SysIcons icons)
         {
             return DialogResult.None;
         }

@@ -15,6 +15,7 @@
 // Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
 // 
+
 using System;
 using System.Collections;
 using System.ComponentModel;
@@ -23,9 +24,9 @@ using System.Reflection;
 using System.Windows.Forms;
 using BrightIdeasSoftware;
 using Ch.Cyberduck.Core;
-using ch.cyberduck.core.i18n;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Winforms.Taskdialog;
+using ch.cyberduck.core.i18n;
 
 namespace Ch.Cyberduck.Ui.Winforms
 {
@@ -285,6 +286,19 @@ namespace Ch.Cyberduck.Ui.Winforms
         public new void Dispose()
         {
             base.Dispose();
+        }
+
+        public DialogResult MessageBox(string title, string message, string content,
+                                       TaskDialogButtons buttons,
+                                       SysIcons icons)
+        {
+            //BringToFront();
+            TaskDialog dialog = new TaskDialog();
+            return dialog.MessageBox(this,
+                                     title,
+                                     message,
+                                     content,
+                                     buttons, icons);
         }
 
         private string FormatHelp(string help)

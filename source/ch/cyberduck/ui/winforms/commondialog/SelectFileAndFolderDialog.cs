@@ -15,6 +15,7 @@
 // Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
 // 
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -26,7 +27,7 @@ using Microsoft.Win32;
 
 namespace Ch.Cyberduck.Ui.Winforms.Commondialog
 {
-    public class SelectFileAndFolderDialog : CommonDialog
+    public sealed class SelectFileAndFolderDialog : CommonDialog
     {
         private const string HideFileExtensionKey =
             @"HideFileExt";
@@ -55,6 +56,8 @@ namespace Ch.Cyberduck.Ui.Winforms.Commondialog
                         }
                 };
 
+        private static SelectFileAndFolderDialog _instance;
+
         private readonly InteropUtil.SUBCLASSPROC m_defViewSubClassDelegate;
         private readonly InteropUtil.WndProc m_hookDelegate;
         private readonly InteropUtil.SUBCLASSPROC m_openFileSubClassDelegate;
@@ -69,7 +72,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Commondialog
         private bool m_suppressSelectionChange;
         private bool m_useCurrentDir;
 
-        public SelectFileAndFolderDialog()
+        private SelectFileAndFolderDialog()
         {
             m_openFileSubClassDelegate = OpenFileSubClass;
             m_hookDelegate = HookProc;
@@ -84,6 +87,19 @@ namespace Ch.Cyberduck.Ui.Winforms.Commondialog
             m_selectWidth = 0;
             m_buttonGap = 0;
             m_hWnd = IntPtr.Zero;
+        }
+
+        public static SelectFileAndFolderDialog Instance
+        {
+            //not thread-safe
+            get
+            {
+                if (_instance == null)
+                {
+                    _instance = new SelectFileAndFolderDialog();
+                }
+                return _instance;
+            }
         }
 
         public string Path { get; set; }
@@ -221,7 +237,18 @@ namespace Ch.Cyberduck.Ui.Winforms.Commondialog
                         HideFileExtension(false);
                         hideFileExtSettingChanged = true;
                     }
-                    bool ret = InteropUtil.GetOpenFileNameW(ref openFileName);
+
+                    bool ret = false;
+                    try
+                    {
+                        ret = InteropUtil.GetOpenFileNameW(ref openFileName);
+                    }
+                    catch (Exception e)
+                    {
+                        IntPtr hParent = InteropUtil.AssumeNonZero(InteropUtil.GetParent(m_hWnd));
+                        InteropUtil.SendMessage(hParent, InteropUtil.WM_CLOSE, 0, 0);
+                        throw e;
+                    }
                     //var extErrpr = InteropUtil.CommDlgExtendedError();
                     //InteropUtil.CheckForWin32Error();
 
@@ -956,11 +983,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Commondialog
         [DllImport("User32.dll", SetLastError = true)]
         public static extern int SetForegroundWindow(IntPtr hwnd);
 
-        #region Nested type: CalcPosDelegate
-
         private delegate void CalcPosDelegate(
             SelectFileAndFolderDialog @this, int baseRight, out int right, out int width);
-
-        #endregion
     }
 }
