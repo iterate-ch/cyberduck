@@ -27,7 +27,9 @@ import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
 import ch.cyberduck.core.ssl.SSLSession;
 
 import org.apache.http.*;
+import org.apache.http.auth.params.AuthPNames;
 import org.apache.http.auth.params.AuthParams;
+import org.apache.http.client.params.AuthPolicy;
 import org.apache.http.client.params.HttpClientParams;
 import org.apache.http.client.protocol.RequestAcceptEncoding;
 import org.apache.http.client.protocol.ResponseContentEncoding;
@@ -45,14 +47,17 @@ import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.protocol.HttpContext;
+import org.apache.log4j.Logger;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 /**
  * @version $Id: HTTPSession.java 7171 2010-10-02 15:06:28Z dkocher $
  */
 public abstract class HttpSession extends SSLSession {
+    private static Logger log = Logger.getLogger(HttpSession.class);
 
     protected HttpSession(Host h) {
         super(h);
@@ -74,7 +79,17 @@ public abstract class HttpSession extends SSLSession {
             HttpProtocolParams.setUserAgent(params, getUserAgent());
 
             AuthParams.setCredentialCharset(params, Preferences.instance().getProperty("http.credentials.charset"));
-
+            // We do not currently have a fallback mechanism for multiple
+            // authentication schemes.
+            // Put Kerberos to the bottom because it requires additional configuration we
+            // do not currently provide.
+            params.setParameter(AuthPNames.TARGET_AUTH_PREF, Arrays.asList(
+                    AuthPolicy.NTLM,
+                    AuthPolicy.DIGEST,
+                    AuthPolicy.BASIC,
+                    // Disable Kerberos
+                    AuthPolicy.SPNEGO)
+            );
             HttpConnectionParams.setTcpNoDelay(params, true);
             HttpConnectionParams.setSoTimeout(params, timeout());
             HttpConnectionParams.setConnectionTimeout(params, timeout());
