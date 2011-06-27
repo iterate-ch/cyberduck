@@ -33,7 +33,7 @@ public interface DistributionConfiguration {
     /**
      * @return True if configuration is known.
      */
-    boolean isConfigured(Distribution.Method method);
+    boolean isCached(Distribution.Method method);
 
     /**
      * Write distribution configuration for origin.
@@ -122,7 +122,7 @@ public interface DistributionConfiguration {
     /**
      * Clear any cached distribution information.
      *
-     * @see #isConfigured(ch.cyberduck.core.cdn.Distribution.Method)
+     * @see #isCached(ch.cyberduck.core.cdn.Distribution.Method)
      */
     void clear();
 }

@@ -578,6 +578,7 @@ public abstract class Preferences {
         defaults.put("cf.metadata.default", StringUtils.EMPTY);
 
         defaults.put("cf.list.limit", String.valueOf(10000));
+        defaults.put("cf.list.cdn.preload", String.valueOf(false));
 
         //doc	Microsoft Word
         //html	HTML Format

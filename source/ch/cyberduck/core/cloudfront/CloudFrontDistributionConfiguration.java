@@ -166,7 +166,7 @@ public class CloudFrontDistributionConfiguration extends HttpSession implements 
         return this.toString();
     }
 
-    public boolean isConfigured(ch.cyberduck.core.cdn.Distribution.Method method) {
+    public boolean isCached(ch.cyberduck.core.cdn.Distribution.Method method) {
         return !distributionStatus.get(method).isEmpty();
     }
 
@@ -183,8 +183,7 @@ public class CloudFrontDistributionConfiguration extends HttpSession implements 
                 || method.equals(ch.cyberduck.core.cdn.Distribution.STREAMING)
                 || method.equals(ch.cyberduck.core.cdn.Distribution.CUSTOM)
                 || method.equals(ch.cyberduck.core.cdn.Distribution.WEBSITE_CDN)) {
-            if(!distributionStatus.get(method).containsKey(origin)
-                    || !distributionStatus.get(method).get(origin).isDeployed()) {
+            if(!distributionStatus.get(method).containsKey(origin)) {
                 try {
                     this.check();
                     this.message(MessageFormat.format(Locale.localizedString("Reading CDN configuration of {0}", "Status"),

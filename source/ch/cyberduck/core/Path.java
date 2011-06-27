@@ -1129,7 +1129,7 @@ public abstract class Path extends AbstractPath implements Serializable {
         Session session = this.getSession();
         if(session.isCDNSupported()) {
             for(Distribution.Method method : session.cdn().getMethods()) {
-                if(session.cdn().isConfigured(method)) {
+                if(session.cdn().isCached(method)) {
                     String container = this.getContainerName();
                     if(null == container) {
                         continue;

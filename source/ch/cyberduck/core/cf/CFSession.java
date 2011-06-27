@@ -271,7 +271,7 @@ public class CFSession extends CloudSession {
                         = new HashMap<String, Distribution>();
 
 
-                public boolean isConfigured(Distribution.Method method) {
+                public boolean isCached(Distribution.Method method) {
                     return !distributionStatus.isEmpty();
                 }
 
@@ -322,8 +322,7 @@ public class CFSession extends CloudSession {
                 }
 
                 public Distribution read(String origin, final Distribution.Method method) {
-                    if(!distributionStatus.containsKey(origin)
-                            || !distributionStatus.get(origin).isDeployed()) {
+                    if(!distributionStatus.containsKey(origin)) {
                         try {
                             CFSession.this.check();
                             CFSession.this.message(MessageFormat.format(Locale.localizedString("Reading CDN configuration of {0}", "Status"),
