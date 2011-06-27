@@ -43,7 +43,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.textBoxServer = new System.Windows.Forms.TextBox();
             this.labelServer = new System.Windows.Forms.Label();
             this.labelPort = new System.Windows.Forms.Label();
-            this.textBoxPort = new System.Windows.Forms.TextBox();
+            this.textBoxPort = new System.Windows.Forms.MaskedTextBox();
             this.labelUsername = new System.Windows.Forms.Label();
             this.textBoxUsername = new System.Windows.Forms.TextBox();
             this.textBoxPassword = new System.Windows.Forms.TextBox();
@@ -121,8 +121,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             // protocol
             // 
-            this.protocol.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.protocol.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.tableLayoutPanel1.SetColumnSpan(this.protocol, 4);
             this.protocol.DrawMode = System.Windows.Forms.DrawMode.OwnerDrawFixed;
             this.protocol.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
@@ -175,8 +175,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             // textBoxServer
             // 
-            this.textBoxServer.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.textBoxServer.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.textBoxServer.Location = new System.Drawing.Point(82, 45);
             this.textBoxServer.Name = "textBoxServer";
             this.textBoxServer.Size = new System.Drawing.Size(260, 23);
@@ -209,7 +209,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.textBoxPort.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.textBoxPort.Location = new System.Drawing.Point(398, 45);
+            this.textBoxPort.Mask = "########";
             this.textBoxPort.Name = "textBoxPort";
+            this.textBoxPort.PromptChar = ' ';
             this.textBoxPort.Size = new System.Drawing.Size(70, 23);
             this.textBoxPort.TabIndex = 8;
             this.textBoxPort.TextChanged += new System.EventHandler(this.textBoxPort_TextChanged);
@@ -227,8 +229,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             // textBoxUsername
             // 
-            this.textBoxUsername.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.textBoxUsername.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.tableLayoutPanel1.SetColumnSpan(this.textBoxUsername, 3);
             this.textBoxUsername.Location = new System.Drawing.Point(82, 101);
             this.textBoxUsername.Name = "textBoxUsername";
@@ -238,8 +240,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             // textBoxPassword
             // 
-            this.textBoxPassword.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.textBoxPassword.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.tableLayoutPanel1.SetColumnSpan(this.textBoxPassword, 3);
             this.textBoxPassword.Location = new System.Drawing.Point(82, 129);
             this.textBoxPassword.Name = "textBoxPassword";
@@ -273,8 +275,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             // separatorLine
             // 
-            this.separatorLine.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.separatorLine.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.separatorLine.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.tableLayoutPanel2.SetColumnSpan(this.separatorLine, 3);
             this.separatorLine.Location = new System.Drawing.Point(16, 56);
@@ -385,8 +387,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             // textBoxPath
             // 
-            this.textBoxPath.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.textBoxPath.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.optionsPanel.SetColumnSpan(this.textBoxPath, 3);
             this.textBoxPath.Location = new System.Drawing.Point(108, 3);
             this.textBoxPath.Name = "textBoxPath";
@@ -407,8 +409,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             // comboBoxConnectMode
             // 
-            this.comboBoxConnectMode.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.comboBoxConnectMode.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.optionsPanel.SetColumnSpan(this.comboBoxConnectMode, 3);
             this.comboBoxConnectMode.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBoxConnectMode.FormattingEnabled = true;
@@ -420,8 +422,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             // comboBoxEncoding
             // 
-            this.comboBoxEncoding.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.comboBoxEncoding.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.optionsPanel.SetColumnSpan(this.comboBoxEncoding, 3);
             this.comboBoxEncoding.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBoxEncoding.FormattingEnabled = true;
@@ -446,8 +448,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             // pkLabel
             // 
-            this.pkLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.pkLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.pkLabel.AutoSize = true;
             this.optionsPanel.SetColumnSpan(this.pkLabel, 3);
             this.pkLabel.Location = new System.Drawing.Point(125, 112);
@@ -515,7 +517,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         private System.Windows.Forms.TextBox textBoxServer;
         private System.Windows.Forms.Label labelServer;
         private System.Windows.Forms.Label labelPort;
-        private System.Windows.Forms.TextBox textBoxPort;
+        private System.Windows.Forms.MaskedTextBox textBoxPort;
         private System.Windows.Forms.Label labelUsername;
         private System.Windows.Forms.TextBox textBoxUsername;
         private System.Windows.Forms.TextBox textBoxPassword;

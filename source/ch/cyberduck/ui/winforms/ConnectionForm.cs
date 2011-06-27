@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2011 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -15,14 +15,15 @@
 // Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
 // 
+
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
-using ch.cyberduck.core;
-using ch.cyberduck.core.i18n;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Winforms.Controls;
+using ch.cyberduck.core;
+using ch.cyberduck.core.i18n;
 
 namespace Ch.Cyberduck.Ui.Winforms
 {
@@ -50,6 +51,8 @@ namespace Ch.Cyberduck.Ui.Winforms
 
             SetMinMaxSize(Height);
             ConfigureToggleOptions();
+
+            textBoxPort.GotFocus += delegate { textBoxPort.Select(0, textBoxPort.Text.Length); };
         }
 
         public override string[] BundleNames
