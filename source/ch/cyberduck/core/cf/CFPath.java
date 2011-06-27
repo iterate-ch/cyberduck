@@ -233,12 +233,6 @@ public class CFPath extends CloudPath {
 
                             children.add(p);
 
-                            if(Preferences.instance().getBoolean("cf.list.cdn.preload")) {
-                                for(Distribution.Method method : this.getSession().cdn().getMethods()) {
-                                    // Cache CDN configuration
-                                    this.getSession().cdn().read(this.getSession().cdn().getOrigin(method, container.getName()), method);
-                                }
-                            }
                             marker = container.getName();
                         }
                     }
@@ -279,6 +273,12 @@ public class CFPath extends CloudPath {
                             children.add(file);
 
                             marker = object.getName();
+                        }
+                        if(Preferences.instance().getBoolean("cf.list.cdn.preload")) {
+                            for(Distribution.Method method : this.getSession().cdn().getMethods()) {
+                                // Cache CDN configuration
+                                this.getSession().cdn().read(this.getSession().cdn().getOrigin(method, this.getContainerName()), method);
+                            }
                         }
                     }
                     while(list.size() == limit);
