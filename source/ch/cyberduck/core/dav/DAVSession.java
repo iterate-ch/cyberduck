@@ -29,7 +29,6 @@ import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.AuthState;
 import org.apache.http.auth.NTCredentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.params.AuthPolicy;
 import org.apache.http.client.protocol.ClientContext;
 import org.apache.http.impl.client.AbstractHttpClient;
@@ -104,6 +103,8 @@ public class DAVSession extends HttpSession {
     private static class CustomCredentialsProvider extends BasicCredentialsProvider {
         private boolean failure;
         private boolean retry;
+        private boolean canceled;
+        private boolean saved;
 
         public boolean isFailure() {
             return failure;
@@ -119,6 +120,22 @@ public class DAVSession extends HttpSession {
 
         public void setRetry(boolean retry) {
             this.retry = retry;
+        }
+
+        public boolean isCanceled() {
+            return canceled;
+        }
+
+        public void setCanceled(boolean canceled) {
+            this.canceled = canceled;
+        }
+
+        public boolean isSaved() {
+            return saved;
+        }
+
+        public void setSaved(boolean saved) {
+            this.saved = saved;
         }
 
         /**
@@ -155,6 +172,10 @@ public class DAVSession extends HttpSession {
              */
             @Override
             public org.apache.http.auth.Credentials getCredentials(AuthScope authscope) {
+                if(this.isCanceled()) {
+                    // Request will be canceled in the request interceptor below.
+                    return new UsernamePasswordCredentials(credentials.getUsername(), null);
+                }
                 final StringBuilder realm = this.getRealm(authscope);
                 try {
                     if(!this.isRetry()) {
@@ -172,8 +193,9 @@ public class DAVSession extends HttpSession {
                     this.setRetry(true);
                 }
                 catch(LoginCanceledException e) {
-                    // Request will not be retried again.
-                    return null;
+                    this.setCanceled(true);
+                    // Request will be canceled in the request interceptor below.
+                    return new UsernamePasswordCredentials(credentials.getUsername(), null);
                 }
                 if(!credentials.validate(DAVSession.this.getHost().getProtocol())) {
                     log.warn("No credentials available");
@@ -192,6 +214,13 @@ public class DAVSession extends HttpSession {
             }
         };
         client.setCredentialsProvider(provider);
+        client.addRequestInterceptor(new HttpRequestInterceptor() {
+            public void process(HttpRequest request, HttpContext context) throws HttpException, IOException {
+                if(provider.isCanceled()) {
+                    throw new LoginCanceledException();
+                }
+            }
+        });
         client.addResponseInterceptor(new HttpResponseInterceptor() {
             /**
              * Clear the credentials from the authentication state upon failed login to make sure a retry attempt is made.
@@ -223,19 +252,18 @@ public class DAVSession extends HttpSession {
                     // Do not handle here because authentication state is not populated yet.
                     provider.setFailure(true);
                 }
+                else {
+                    if(code == HttpStatus.SC_MULTI_STATUS) {
+                        message(Locale.localizedString("Login successful", "Credentials"));
+                        if(!provider.isSaved()) {
+                            // Save credentials upon first successful response
+                            controller.success(host);
+                            provider.setSaved(true);
+                        }
+                    }
+                }
             }
         });
-        try {
-            // Provoke authentication failure if listing is denied
-            this.getClient().list(this.home().toURL());
-            this.message(Locale.localizedString("Login successful", "Credentials"));
-        }
-        catch(HttpResponseException e) {
-            if(e.getStatusCode() == HttpStatus.SC_UNAUTHORIZED) {
-                throw new LoginCanceledException();
-            }
-            throw e;
-        }
     }
 
     @Override
