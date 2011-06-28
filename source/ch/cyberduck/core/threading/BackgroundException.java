@@ -26,6 +26,7 @@ import ch.ethz.ssh2.SFTPException;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.StatusLine;
+import org.apache.log4j.Logger;
 import org.jets3t.service.CloudFrontServiceException;
 import org.jets3t.service.ServiceException;
 import org.soyatec.windows.azure.error.StorageServerException;
@@ -42,6 +43,7 @@ import java.text.MessageFormat;
  * @version $Id$
  */
 public class BackgroundException extends Exception {
+    private static Logger log = Logger.getLogger(BackgroundException.class);
 
     private String message;
 
@@ -60,7 +62,13 @@ public class BackgroundException extends Exception {
             this.message = StringUtils.chomp(message);
         }
         else {
-            this.message = MessageFormat.format(StringUtils.chomp(message), path.getName());
+            try {
+                this.message = MessageFormat.format(StringUtils.chomp(message), path.getName());
+            }
+            catch(IllegalArgumentException e) {
+                log.warn("Error parsing message format:" + e.getMessage());
+                this.message = StringUtils.chomp(message);
+            }
         }
     }
 
