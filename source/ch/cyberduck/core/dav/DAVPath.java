@@ -118,7 +118,7 @@ public class DAVPath extends HttpPath {
                 this.readAttributes();
             }
             catch(IOException e) {
-                this.error("Cannot read file attributes", e);
+                log.warn("Cannot read file attributes");
             }
         }
     }
@@ -134,7 +134,7 @@ public class DAVPath extends HttpPath {
                 this.readAttributes();
             }
             catch(IOException e) {
-                this.error("Cannot read file attributes", e);
+                log.warn("Cannot read file attributes");
             }
         }
     }
