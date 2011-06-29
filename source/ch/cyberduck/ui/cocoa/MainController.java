@@ -1377,28 +1377,6 @@ public class MainController extends BundleController implements NSApplication.De
     }
 
     /**
-     * Sent by Cocoa’s built-in scripting support during execution of get or set script commands to
-     * find out if the delegate can handle operations on the specified key-value key.
-     *
-     * @param application
-     * @param key
-     * @return
-     */
-    @Applescript
-    public boolean application_delegateHandlesKey(NSApplication application, String key) {
-        return key.equals("orderedBrowsers");
-    }
-
-    @Applescript
-    public NSArray orderedBrowsers() {
-        NSMutableArray orderedDocs = NSMutableArray.array();
-        for(BrowserController browser : MainController.getBrowsers()) {
-            orderedDocs.addObject(browser.proxy());
-        }
-        return orderedDocs;
-    }
-
-    /**
      * We are not a Windows application. Long live the application wide menu bar.
      *
      * @param app
