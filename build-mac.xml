@@ -179,7 +179,6 @@
 
         <antcall target="codesign">
             <param name="codesign.certificate" value="3rd Party Mac Developer Application: David Kocher"/>
-            <!--<param name="codesign.arg" value="--entitlements ${codesign.entitlements}"/>-->
         </antcall>
 
         <echo message="Building ${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.pkg"/>
