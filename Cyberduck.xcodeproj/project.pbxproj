@@ -203,6 +203,7 @@
 		47AA19690AF09F810059C736 /* Error.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47AA19670AF09F810059C736 /* Error.strings */; };
 		47B6074A0DA420880068282C /* Keychain.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47B6072E0DA420880068282C /* Keychain.strings */; };
 		47BCB890119ADF960099C448 /* google.icns in Resources */ = {isa = PBXBuildFile; fileRef = 47BCB88F119ADF960099C448 /* google.icns */; };
+		47BCF18E13BB4EC700D26E4C /* container-migration.plist in Resources */ = {isa = PBXBuildFile; fileRef = 47BCF18D13BB4EC700D26E4C /* container-migration.plist */; };
 		47BE1F8B12369DF100E758FE /* CDTransmitImporter.h in Headers */ = {isa = PBXBuildFile; fileRef = 47BE1F8912369DF100E758FE /* CDTransmitImporter.h */; };
 		47BE1F8C12369DF100E758FE /* CDTransmitImporter.m in Sources */ = {isa = PBXBuildFile; fileRef = 47BE1F8A12369DF100E758FE /* CDTransmitImporter.m */; };
 		47BEDBD30B9296C800141EB4 /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47BEDBD20B9296C800141EB4 /* ApplicationServices.framework */; };
@@ -1251,6 +1252,7 @@
 		47B607480DA420880068282C /* es */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = es; path = es.lproj/Keychain.strings; sourceTree = "<group>"; };
 		47B607490DA420880068282C /* da */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = da; path = da.lproj/Keychain.strings; sourceTree = "<group>"; };
 		47BCB88F119ADF960099C448 /* google.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = google.icns; sourceTree = "<group>"; };
+		47BCF18D13BB4EC700D26E4C /* container-migration.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "container-migration.plist"; sourceTree = "<group>"; };
 		47BE1F8912369DF100E758FE /* CDTransmitImporter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CDTransmitImporter.h; path = importer/CDTransmitImporter.h; sourceTree = "<group>"; };
 		47BE1F8A12369DF100E758FE /* CDTransmitImporter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CDTransmitImporter.m; path = importer/CDTransmitImporter.m; sourceTree = "<group>"; };
 		47BEDB030B92960400141EB4 /* libURLSchemeHandlerConfiguration.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libURLSchemeHandlerConfiguration.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1875,6 +1877,7 @@
 		4741639206C4F58D00AC0BD2 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				47BCF18D13BB4EC700D26E4C /* container-migration.plist */,
 				478F0DF312FB03DC000FE33C /* update.pem */,
 				470C646C1328CBF300146FB6 /* bookmarks */,
 				4741653C06C4FC3F00AC0BD2 /* img */,
@@ -2690,7 +2693,6 @@
 				4725794F11DD7FD6009DD748 /* privatefolderbadge.png in Resources */,
 				4783C6F511EC62B6006D9FAD /* azure-icon.png in Resources */,
 				4783C6F811EC62C4006D9FAD /* connection-secure.tiff in Resources */,
-				4783C6F911EC62C4006D9FAD /* connection.tiff in Resources */,
 				4743700B11FF0D6C00BDCC48 /* transparent.tiff in Resources */,
 				47652D0B1202BED200745031 /* Azure.strings in Resources */,
 				476901D9120FEF4300A43B25 /* permissions.tiff in Resources */,
@@ -2712,6 +2714,7 @@
 				478F0DF412FB03DC000FE33C /* update.pem in Resources */,
 				4732BDA813182C7F00CBC46B /* Download.strings in Resources */,
 				47E0BDE913A3C20E00F86C80 /* log.png in Resources */,
+				47BCF18E13BB4EC700D26E4C /* container-migration.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

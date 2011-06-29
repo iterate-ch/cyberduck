@@ -35,7 +35,8 @@
     <property name="app.java" value="${app.resources}/Java"/>
     <property name="app.runtime" value="${app.java}/Runtime.jdk"/>
     <!--<property name="app.runtime.lib" value="@executable_path/../Resources/Java/Runtime.jdk/Contents/Home/jre/lib/i386/server/libjvm.dylib"/>-->
-    <property name="app.runtime.lib" value="@executable_path/../Resources/Java/Runtime.jdk/Contents/Home/jre/lib/server/libjvm.dylib"/>
+    <property name="app.runtime.lib"
+              value="@executable_path/../Resources/Java/Runtime.jdk/Contents/Home/jre/lib/server/libjvm.dylib"/>
     <!--<property name="app.runtime.lib" value="/System/Library/Frameworks/JavaVM.framework/Versions/A/JavaVM"/>-->
 
     <property name="app.spotlight" value="${app.library}/Spotlight"/>
@@ -45,10 +46,12 @@
     <property name="apple.appstub"
               location="/System/Library/Frameworks/JavaVM.framework/Resources/MacOS/JavaApplicationStub"/>
 
-    <property name="jvm.runtime" value="${user.home}/Library/Java/JavaVirtualMachines/1.7.0.20.0-b06.jdk"/>
+    <property name="jvm.runtime" value="${user.home}/Library/Java/JavaVirtualMachines/1.7.0.21.0-b15.jdk"/>
 
     <property name="codesign.certificate" value="Cyberduck Code Signing Certificate"/>
     <property name="codesign.keychain" value="${user.home}/Library/Keychains/codesign.keychain"/>
+    <property name="codesign.entitlements" value="${home}/sandbox.plist"/>
+    <property name="codesign.arg" value=""/>
 
     <property name="installer.certificate" value="3rd Party Mac Developer Installer: David Kocher"/>
     <property name="installer.keychain" value="${user.home}/Library/Keychains/codesign.keychain"/>
@@ -176,6 +179,7 @@
 
         <antcall target="codesign">
             <param name="codesign.certificate" value="3rd Party Mac Developer Application: David Kocher"/>
+            <!--<param name="codesign.arg" value="--entitlements ${codesign.entitlements}"/>-->
         </antcall>
 
         <echo message="Building ${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.pkg"/>
@@ -229,14 +233,14 @@
                 <include name="*.dylib"/>
             </fileset>
             <file file="${app.executable}"/>
-            <srcfile />
+            <srcfile/>
         </apply>
     </target>
 
     <target name="codesign">
         <echo message="Code signing application bundle..."/>
         <exec dir="${home}" executable="/usr/bin/codesign" spawn="false" failonerror="false">
-            <arg line="--force --sign '${codesign.certificate}' --keychain ${codesign.keychain} -v ${app.bundle}"/>
+            <arg line="--force --sign '${codesign.certificate}' --keychain ${codesign.keychain} ${codesign.arg} -v ${app.bundle}"/>
         </exec>
     </target>
 
