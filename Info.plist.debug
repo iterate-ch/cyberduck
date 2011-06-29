@@ -158,6 +158,16 @@
                 </array>
             </dict>
             <dict>
+                <key>CFBundleTypeRole</key>
+                <string>Viewer</string>
+                <key>CFBundleURLName</key>
+                <string>S3 URL</string>
+                <key>CFBundleURLSchemes</key>
+                <array>
+                    <string>s3</string>
+                </array>
+            </dict>
+            <dict>
                 <key>CFBundleURLName</key>
                 <string>Cyberduck Command URL</string>
                 <key>CFBundleURLSchemes</key>
