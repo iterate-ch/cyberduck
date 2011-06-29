@@ -7,14 +7,23 @@ Changelog. Last modified: $Date$
 4.1 [http://trac.cyberduck.ch/milestone/4.1]
 - [Localize] Bulgarian Localization
 - [Feature] Replaced WebDAV protocol implementation
+- [Feature] Sort bookmarks by nickname, hostname or protocol (#5925)
 - [Feature] Set preferred default editor (Windows) (#5729)
 - [Feature] IPv6 support (Windows) (#5699)
 - [Feature] Enable access logs for custom origin distributions (CloudFront)
 - [Feature] Choose target bucket for access logs (CloudFront)
 - [Feature] Choose target bucket for access logs (S3)
+- [Feature] CDN (Akamai) configuration (Cloudfiles UK) (#5989)
+- [Feature] Filter bookmarks by comments (#5926)
 - [Bugfix] Delete only trashes documents (Google Docs) (#5873)
 - [Bugfix] Wrong timestamp in transfer prompt (#5916)
 - [Bugfix] Uploading file to collection places it in root folder instead (Google Docs) (#5856)
+- [Bugfix] Support for extended character sets (Windows) (#6016)
+- [Bugfix] Limited to 10'000 containers (Cloudfiles) (#6037)
+- [Bugfix] SSL version number incompatibility (#5061)
+- [Bugfix] Donation key validation failure (10.5) (#5846)
+- [Bugfix] CDN URL for files only available after opening Info window (Cloudfiles) (#6040)
+- [Bugfix] Interoperability (FTP) (#5866, #5949)
 
 4.0.2 [http://trac.cyberduck.ch/milestone/4.0.2]
 - [Feature] SSL URL for files in Akamai CDN enabled containers (Cloud Files)
