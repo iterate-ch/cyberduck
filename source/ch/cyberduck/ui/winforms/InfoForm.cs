@@ -15,16 +15,16 @@
 // Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
 // 
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
-using Ch.Cyberduck.Core;
-using ch.cyberduck.core.cdn;
-using ch.cyberduck.core.i18n;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Winforms.Controls;
+using ch.cyberduck.core.cdn;
+using ch.cyberduck.core.i18n;
 using java.lang;
 using String = System.String;
 
@@ -1229,44 +1229,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             }
         }
 
-        private void weburlLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-        {
-            Utils.StartProcess(weburlLabel.Text);
-        }
-
-        private void authenticatedUrlLinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-        {
-            Utils.StartProcess(authenticatedUrlLinkLabel.Text);
-        }
-
-        private void whereLinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-        {
-            Utils.StartProcess(whereLinkLabel.Text);
-        }
-
-        private void cnameUrlLinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-        {
-            Utils.StartProcess(cnameUrlLinkLabel.Text);
-        }
-
-        private void s3PublicUrlLinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-        {
-            Utils.StartProcess(s3PublicUrlLinkLabel.Text);
-        }
-
-        private void s3TorrentUrlLinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-        {
-            Utils.StartProcess(s3TorrentUrlLinkLabel.Text);
-        }
-
         private void invalidateButton_Click(object sender, EventArgs e)
         {
             DistributionInvalidateObjects();
-        }
-
-        private void originLinkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-        {
-            Utils.StartProcess(originLinkLabel.Text);
         }
 
         private void bucketLoggingComboBox_SelectionChangeCommitted(object sender, EventArgs e)

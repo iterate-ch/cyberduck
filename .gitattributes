@@ -2085,6 +2085,7 @@ source/ch/cyberduck/ui/winforms/commondialog/InteropUtil.cs -text
 source/ch/cyberduck/ui/winforms/commondialog/SelectFileAndFolderDialog.cs -text
 source/ch/cyberduck/ui/winforms/commondialog/res1.rc -text
 source/ch/cyberduck/ui/winforms/commondialog/resource.h -text
+source/ch/cyberduck/ui/winforms/controls/ClickLinkLabel.cs -text
 source/ch/cyberduck/ui/winforms/controls/ClickThroughMenuStrip.cs -text
 source/ch/cyberduck/ui/winforms/controls/ClickThroughToolStrip.cs -text
 source/ch/cyberduck/ui/winforms/controls/EllipsisLabel.cs -text

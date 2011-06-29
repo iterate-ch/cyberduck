@@ -203,6 +203,9 @@
     <Compile Include="ui\controller\MainController.cs" />
     <Compile Include="ui\controller\threading\InfoBackgroundAction.cs" />
     <Compile Include="ui\controller\UpdateController.cs" />
+    <Compile Include="ui\winforms\controls\ClickLinkLabel.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="ui\winforms\controls\ClickThroughMenuStrip.cs">
       <SubType>Component</SubType>
     </Compile>

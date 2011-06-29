@@ -47,9 +47,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.distributionLoggingCheckBox = new System.Windows.Forms.CheckBox();
             this.statusLabel = new System.Windows.Forms.Label();
             this.distributionCnameTextBox = new System.Windows.Forms.TextBox();
-            this.whereLinkLabel = new System.Windows.Forms.LinkLabel();
+            this.whereLinkLabel = new ClickLinkLabel();
             this.distributionAnimation = new System.Windows.Forms.PictureBox();
-            this.cnameUrlLinkLabel = new System.Windows.Forms.LinkLabel();
+            this.cnameUrlLinkLabel = new ClickLinkLabel();
             this.label25 = new System.Windows.Forms.Label();
             this.defaultRootComboBox = new System.Windows.Forms.ComboBox();
             this.label13 = new System.Windows.Forms.Label();
@@ -57,7 +57,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.label24 = new System.Windows.Forms.Label();
             this.invalidateButton = new System.Windows.Forms.Button();
             this.label27 = new System.Windows.Forms.Label();
-            this.originLinkLabel = new System.Windows.Forms.LinkLabel();
+            this.originLinkLabel = new ClickLinkLabel();
             this.label28 = new System.Windows.Forms.Label();
             this.label29 = new System.Windows.Forms.Label();
             this.distributionLoggingComboBox = new System.Windows.Forms.ComboBox();
@@ -75,7 +75,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.label9 = new System.Windows.Forms.Label();
             this.sizeLabel = new System.Windows.Forms.Label();
             this.pathLabel = new System.Windows.Forms.Label();
-            this.weburlLabel = new System.Windows.Forms.LinkLabel();
+            this.weburlLabel = new ClickLinkLabel();
             this.kindLabel = new System.Windows.Forms.Label();
             this.permissionsLabel = new System.Windows.Forms.Label();
             this.ownerLabel = new System.Windows.Forms.Label();
@@ -92,8 +92,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.label19 = new System.Windows.Forms.Label();
             this.label20 = new System.Windows.Forms.Label();
             this.bucketLocationLabel = new System.Windows.Forms.Label();
-            this.s3PublicUrlLinkLabel = new System.Windows.Forms.LinkLabel();
-            this.s3TorrentUrlLinkLabel = new System.Windows.Forms.LinkLabel();
+            this.s3PublicUrlLinkLabel = new ClickLinkLabel();
+            this.s3TorrentUrlLinkLabel = new ClickLinkLabel();
             this.label26 = new System.Windows.Forms.Label();
             this.s3PublicUrlValidityLabel = new System.Windows.Forms.Label();
             this.storageClassComboBox = new System.Windows.Forms.ComboBox();
@@ -151,7 +151,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.removeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.authenticatedLabel = new System.Windows.Forms.Label();
-            this.authenticatedUrlLinkLabel = new System.Windows.Forms.LinkLabel();
+            this.authenticatedUrlLinkLabel = new ClickLinkLabel();
             this.aclAnimation = new System.Windows.Forms.PictureBox();
             this.managedS3Panel = new Ch.Cyberduck.Ui.Winforms.Controls.ManagedPanel();
             this.toolStrip.SuspendLayout();
@@ -434,7 +434,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.whereLinkLabel.Size = new System.Drawing.Size(0, 15);
             this.whereLinkLabel.TabIndex = 10;
             this.whereLinkLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.whereLinkLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.whereLinkLabel_LinkClicked);
             // 
             // distributionAnimation
             // 
@@ -458,7 +457,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.cnameUrlLinkLabel.Size = new System.Drawing.Size(0, 15);
             this.cnameUrlLinkLabel.TabIndex = 26;
             this.cnameUrlLinkLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.cnameUrlLinkLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.cnameUrlLinkLabel_LinkClicked);
             // 
             // label25
             // 
@@ -541,7 +539,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.originLinkLabel.Name = "originLinkLabel";
             this.originLinkLabel.Size = new System.Drawing.Size(0, 15);
             this.originLinkLabel.TabIndex = 34;
-            this.originLinkLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.originLinkLabel_LinkClicked);
             // 
             // label28
             // 
@@ -801,7 +798,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.weburlLabel.TabStop = true;
             this.weburlLabel.Text = "linkLabel1";
             this.weburlLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.weburlLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.weburlLabel_LinkClicked);
             // 
             // kindLabel
             // 
@@ -1063,7 +1059,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.s3PublicUrlLinkLabel.TabStop = true;
             this.s3PublicUrlLinkLabel.Text = "linkLabel1";
             this.s3PublicUrlLinkLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.s3PublicUrlLinkLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.s3PublicUrlLinkLabel_LinkClicked);
             // 
             // s3TorrentUrlLinkLabel
             // 
@@ -1077,7 +1072,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.s3TorrentUrlLinkLabel.TabStop = true;
             this.s3TorrentUrlLinkLabel.Text = "linkLabel2";
             this.s3TorrentUrlLinkLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.s3TorrentUrlLinkLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.s3TorrentUrlLinkLabel_LinkClicked);
             // 
             // label26
             // 
@@ -1727,7 +1721,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.authenticatedUrlLinkLabel.TabIndex = 32;
             this.authenticatedUrlLinkLabel.TabStop = true;
             this.authenticatedUrlLinkLabel.Text = "linkLabel1";
-            this.authenticatedUrlLinkLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.authenticatedUrlLinkLabel_LinkClicked);
             // 
             // aclAnimation
             // 
@@ -1823,7 +1816,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Label label9;
-        private System.Windows.Forms.LinkLabel weburlLabel;
+        private ClickLinkLabel weburlLabel;
         private System.Windows.Forms.Button calculateButton;
         private System.Windows.Forms.PictureBox sizeAnimation;
         private System.Windows.Forms.ToolTip toolTip;
@@ -1845,12 +1838,12 @@ namespace Ch.Cyberduck.Ui.Winforms
         private System.Windows.Forms.Label label20;
         private System.Windows.Forms.CheckBox bucketLoggingCheckBox;
         private System.Windows.Forms.Label bucketLocationLabel;
-        private System.Windows.Forms.LinkLabel s3PublicUrlLinkLabel;
-        private System.Windows.Forms.LinkLabel s3TorrentUrlLinkLabel;
-        private System.Windows.Forms.LinkLabel whereLinkLabel;
+        private ClickLinkLabel s3PublicUrlLinkLabel;
+        private ClickLinkLabel s3TorrentUrlLinkLabel;
+        private ClickLinkLabel whereLinkLabel;
         private System.Windows.Forms.PictureBox s3Animation;
         private System.Windows.Forms.PictureBox distributionAnimation;
-        private System.Windows.Forms.LinkLabel cnameUrlLinkLabel;
+        private ClickLinkLabel cnameUrlLinkLabel;
         private System.Windows.Forms.ToolStripButton metadataButton;
         private PanelManager panelManager;
         private ManagedPanel managedGeneralPanel;
@@ -1915,7 +1908,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         private ManagedPanel cloudManagedPanel;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.Label authenticatedLabel;
-        private System.Windows.Forms.LinkLabel authenticatedUrlLinkLabel;
+        private ClickLinkLabel authenticatedUrlLinkLabel;
         private System.Windows.Forms.PictureBox aclAnimation;
         private ClickThroughToolStrip toolStrip;
         private System.Windows.Forms.TextBox checksumTextBox;
@@ -1924,7 +1917,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         private System.Windows.Forms.Label label24;
         private System.Windows.Forms.Button invalidateButton;
         private System.Windows.Forms.Label label27;
-        private System.Windows.Forms.LinkLabel originLinkLabel;
+        private ClickLinkLabel originLinkLabel;
         private System.Windows.Forms.Label label28;
         private System.Windows.Forms.Label label29;
         private System.Windows.Forms.ComboBox distributionLoggingComboBox;
