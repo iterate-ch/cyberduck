@@ -947,7 +947,10 @@ public class GDPath extends Path {
                 DocumentListEntry folder = new FolderEntry();
                 folder.setTitle(new PlainTextConstruct(this.getName()));
                 try {
-                    this.getSession().getClient().insert(new URL(((GDPath) this.getParent()).getFolderFeed()), folder);
+                    DocumentListEntry entry = this.getSession().getClient().insert(new URL(((GDPath) this.getParent()).getFolderFeed()), folder);
+                    this.setExportUri(((OutOfLineContent) entry.getContent()).getUri());
+                    this.setDocumentUri(entry.getDocumentLink().getHref());
+                    this.setResourceId(entry.getResourceId());
                 }
                 catch(ServiceException e) {
                     IOException failure = new IOException(e.getMessage());
