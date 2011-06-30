@@ -293,12 +293,11 @@ public class CFSession extends CloudSession {
                         }
                         cdnRequest = true;
                         URI url = new URI(CFSession.this.getClient().getCdnManagementURL());
-                        if(enabled) {
-                            try {
-                                final FilesCDNContainer info = CFSession.this.getClient().getCDNContainerInfo(origin);
-                            }
-                            catch(FilesException e) {
-                                log.warn(e.getMessage());
+                        try {
+                            final FilesCDNContainer info = CFSession.this.getClient().getCDNContainerInfo(origin);
+                        }
+                        catch(FilesException e) {
+                            if(404 == e.getHttpStatusCode()) {
                                 // Not found.
                                 CFSession.this.getClient().cdnEnableContainer(origin);
                             }
