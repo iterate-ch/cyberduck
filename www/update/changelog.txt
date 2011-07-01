@@ -9,6 +9,7 @@
 - [Feature] Choose target bucket for access logs (S3)
 - [Feature] CDN (Akamai) configuration (Cloudfiles UK) (#5989)
 - [Feature] Filter bookmarks by comments (#5926)
+- [Feature] Upload arbitrary file types (Google Docs)
 - [Bugfix] Delete only trashes documents (Google Docs) (#5873)
 - [Bugfix] Wrong timestamp in transfer prompt (#5916)
 - [Bugfix] Uploading file to collection places it in root folder instead (Google Docs) (#5856)
@@ -18,6 +19,7 @@
 - [Bugfix] Donation key validation failure (10.5) (#5846)
 - [Bugfix] CDN URL for files only available after opening Info window (Cloudfiles) (#6040)
 - [Bugfix] Interoperability (FTP) (#5866, #5949)
+- [Bugfix] Copy and edit filenames in browser (Windows) (#5336, #6039)
 
 4.0.2 [http://trac.cyberduck.ch/milestone/4.0.2]
 - [Feature] SSL URL for files in Akamai CDN enabled containers (Cloud Files)
