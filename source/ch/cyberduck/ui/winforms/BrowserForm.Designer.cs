@@ -2363,6 +2363,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.browser.AllColumns.Add(this.treeColumnPermissions);
             this.browser.AllColumns.Add(this.treeColumnKind);
             this.browser.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.browser.CellEditActivation = BrightIdeasSoftware.ObjectListView.CellEditActivateMode.F2Only;
+            this.browser.CheckBoxes = false;
             this.browser.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.treeColumnName,
             this.treeColumnSize,
@@ -2381,8 +2383,10 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.browser.UseCompatibleStateImageBehavior = false;
             this.browser.View = System.Windows.Forms.View.Details;
             this.browser.VirtualMode = true;
+            this.browser.CellEditFinishing += new BrightIdeasSoftware.CellEditEventHandler(this.browser_CellEditFinishing);
             this.browser.SelectionChanged += new System.EventHandler(this.browser_SelectionChanged);
             this.browser.AfterLabelEdit += new System.Windows.Forms.LabelEditEventHandler(this.browser_AfterLabelEdit);
+            this.browser.BeforeLabelEdit += new System.Windows.Forms.LabelEditEventHandler(this.browser_BeforeLabelEdit);
             this.browser.DoubleClick += new System.EventHandler(this.browser_DoubleClick);
             this.browser.KeyDown += new System.Windows.Forms.KeyEventHandler(this.browser_KeyDown);
             this.browser.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.browser_KeyPress);

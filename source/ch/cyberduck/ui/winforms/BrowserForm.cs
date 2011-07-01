@@ -765,7 +765,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public void StartRenaming(Path path)
         {
-            browser.GetItem(browser.IndexOf(path)).BeginEdit();
+            browser.EditSubItem(browser.GetItem(browser.IndexOf(path)), 0);
         }
 
         public void StartSearch()
@@ -1958,7 +1958,8 @@ namespace Ch.Cyberduck.Ui.Winforms
                                  renameFileToolStripMenuItem,
                                  renameContextToolStripMenuItem
                              }, new[] {renameMainMenuItem, renameBrowserContextMenuItem},
-                         (o, eventArgs) => browser.SelectedItem.BeginEdit(), () => ValidateRenameFile());
+                         (o, eventArgs) => browser.EditSubItem((OLVListItem) browser.FocusedItem, 0),
+                         () => ValidateRenameFile());
             Commands.Add(new ToolStripItem[]
                              {
                                  duplicateFileToolStripMenuItem,
@@ -2125,10 +2126,6 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         private void browser_KeyDown(object sender, KeyEventArgs e)
         {
-            if (browser.SelectedObjects.Count > 0 && e.KeyCode == Keys.F2)
-            {
-                browser.GetItem(browser.SelectedIndices[0]).BeginEdit();
-            }
             if (e.KeyCode == Keys.Delete)
             {
                 Delete();
@@ -2361,7 +2358,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                 {
                     if (ValidateRenameFile())
                     {
-                        browser.SelectedItem.BeginEdit();
+                        browser.EditSubItem((OLVListItem) browser.FocusedItem, 0);
                     }
                 }
                 else
@@ -2370,6 +2367,18 @@ namespace Ch.Cyberduck.Ui.Winforms
                 }
                 e.Handled = true;
             }
+        }
+
+        private void browser_CellEditFinishing(object sender, CellEditEventArgs e)
+        {
+            e.Cancel = RenameFile(((TreePathReference) e.RowObject).Unique, (String) e.NewValue);
+        }
+
+        private void browser_BeforeLabelEdit(object sender, LabelEditEventArgs e)
+        {
+            //we want to use the ObjectListView's cell editor
+            e.CancelEdit = true;
+            browser.StartCellEdit(browser.GetItem(e.Item), 0);
         }
 
         private class BookmarkMenuCollectionListener : CollectionListener

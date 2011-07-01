@@ -15,12 +15,14 @@
 // Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
 // 
+
 using System.Drawing;
 using System.Windows.Forms;
 using BrightIdeasSoftware;
+using Ch.Cyberduck.Ui.Controller;
 using ch.cyberduck.core.i18n;
 using ch.cyberduck.ui;
-using Ch.Cyberduck.Ui.Controller;
+using org.apache.commons.io;
 
 namespace Ch.Cyberduck.Ui.Winforms.Controls
 {
@@ -30,6 +32,8 @@ namespace Ch.Cyberduck.Ui.Winforms.Controls
     public class MulticolorTreeListView : TreeListView
     {
         public delegate bool ActiveGetterDelegate(TreePathReference reference);
+
+        private const int IconSize = 16;
 
         private Color _activeForegroudColor = DefaultForeColor;
 
@@ -78,6 +82,26 @@ namespace Ch.Cyberduck.Ui.Winforms.Controls
                 cm.MenuItems.Add(nItem);
             }
             cm.Show(this, PointToClient(pt)); //transform coordinates
+        }
+
+        protected override void OnCellEditStarting(CellEditEventArgs e)
+        {
+            e.Control.AutoSize = false;
+            e.Control.Bounds = new Rectangle(e.Control.Bounds.X + IconSize,
+                                             e.Control.Bounds.Y,
+                                             e.Control.Bounds.Width - IconSize,
+                                             e.Control.Bounds.Height);
+            if (e.Control is TextBox)
+            {
+                //Only select filename part w/o extension (Explorer like behavior)
+                TextBox tb = e.Control as TextBox;
+                int extensionIndex = FilenameUtils.indexOfExtension((string) e.Value);
+                if (extensionIndex > -1)
+                {
+                    tb.Select(0, extensionIndex);
+                }
+            }
+            base.OnCellEditStarting(e);
         }
     }
 
