@@ -16,6 +16,7 @@ Changelog. Last modified: $Date$
 - [Feature] CDN (Akamai) configuration (Cloudfiles UK) (#5989)
 - [Feature] Filter bookmarks by comments (#5926)
 - [Feature] Upload arbitrary file types (Google Docs)
+- [Feature] Support trackpad gestures for navigation and selection (Mac) (#2793)
 - [Bugfix] Delete only trashes documents (Google Docs) (#5873)
 - [Bugfix] Wrong timestamp in transfer prompt (#5916)
 - [Bugfix] Uploading file to collection places it in root folder instead (Google Docs) (#5856)
