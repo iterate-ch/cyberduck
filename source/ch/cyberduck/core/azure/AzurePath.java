@@ -568,7 +568,7 @@ public class AzurePath extends CloudPath {
                 }
                 this.cache().put(this.getReference(), AttributedList.<Path>emptyList());
                 // The directory listing is no more current
-                this.getParent().invalidate();
+                this.cache().get(this.getParent().getReference()).add(this);
             }
             catch(StorageException e) {
                 this.error("Cannot create folder {0}", e);

@@ -266,7 +266,7 @@ public class DropboxPath extends Path {
 
                 this.cache().put(this.getReference(), AttributedList.<Path>emptyList());
                 // The directory listing is no more current
-                this.getParent().invalidate();
+                this.cache().get(this.getParent().getReference()).add(this);
             }
             catch(IOException e) {
                 this.error("Cannot create folder {0}", e);
