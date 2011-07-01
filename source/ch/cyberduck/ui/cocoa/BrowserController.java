@@ -931,7 +931,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                         continue;
                     }
                     final Local folder = LocalFactory.createLocal(new File(Preferences.instance().getProperty("tmp.dir"),
-                                    path.getSession().getHost().getUuid() + String.valueOf(Path.DELIMITER) + path.getParent().getAbsolute()));
+                            path.getSession().getHost().getUuid() + String.valueOf(Path.DELIMITER) + path.getParent().getAbsolute()));
                     path.setLocal(LocalFactory.createLocal(folder, path.getName()));
                     downloads.add(path);
                 }
@@ -1057,17 +1057,32 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             }
             else if(event.deltaX().doubleValue() == kSwipeGestureRight) {
                 BrowserController.this.forwardButtonClicked(event.id());
-                return;
             }
             else if(event.deltaY().doubleValue() == kSwipeGestureUp) {
                 NSInteger row = getSelectedBrowserView().selectedRow();
+                NSInteger next;
+                if(-1 == row.intValue()) {
+                    // No current selection
+                    next = new NSInteger(0);
+                }
+                else {
+                    next = new NSInteger(row.longValue() - 1);
+                }
                 BrowserController.this.getSelectedBrowserView().selectRowIndexes(
-                        NSIndexSet.indexSetWithIndex(new NSInteger(row.longValue() - 1)), false);
+                        NSIndexSet.indexSetWithIndex(next), false);
             }
             else if(event.deltaY().doubleValue() == kSwipeGestureDown) {
                 NSInteger row = getSelectedBrowserView().selectedRow();
+                NSInteger next;
+                if(-1 == row.intValue()) {
+                    // No current selection
+                    next = new NSInteger(0);
+                }
+                else {
+                    next = new NSInteger(row.longValue() + 1);
+                }
                 BrowserController.this.getSelectedBrowserView().selectRowIndexes(
-                        NSIndexSet.indexSetWithIndex(new NSInteger(row.longValue() + 1)), false);
+                        NSIndexSet.indexSetWithIndex(next), false);
             }
         }
     }
@@ -1517,6 +1532,46 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
             public boolean tableView_isGroupRow(NSTableView view, NSInteger row) {
                 return false;
+            }
+
+            private static final double kSwipeGestureLeft = 1.000000;
+            private static final double kSwipeGestureRight = -1.000000;
+            private static final double kSwipeGestureUp = 1.000000;
+            private static final double kSwipeGestureDown = -1.000000;
+
+            /**
+             * Available in Mac OS X v10.6 and later.
+             *
+             * @param event
+             */
+            @Action
+            public void swipeWithEvent(NSEvent event) {
+                if(event.deltaY().doubleValue() == kSwipeGestureUp) {
+                    NSInteger row = bookmarkTable.selectedRow();
+                    NSInteger next;
+                    if(-1 == row.intValue()) {
+                        // No current selection
+                        next = new NSInteger(0);
+                    }
+                    else {
+                        next = new NSInteger(row.longValue() - 1);
+                    }
+                    bookmarkTable.selectRowIndexes(
+                            NSIndexSet.indexSetWithIndex(next), false);
+                }
+                else if(event.deltaY().doubleValue() == kSwipeGestureDown) {
+                    NSInteger row = bookmarkTable.selectedRow();
+                    NSInteger next;
+                    if(-1 == row.intValue()) {
+                        // No current selection
+                        next = new NSInteger(0);
+                    }
+                    else {
+                        next = new NSInteger(row.longValue() + 1);
+                    }
+                    bookmarkTable.selectRowIndexes(
+                            NSIndexSet.indexSetWithIndex(next), false);
+                }
             }
         }).id());
         // receive drag events from types
