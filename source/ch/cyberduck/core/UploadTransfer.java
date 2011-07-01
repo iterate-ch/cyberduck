@@ -177,8 +177,7 @@ public class UploadTransfer extends Transfer {
          */
         @Override
         public void complete(Path p) {
-            // The directory listing is no more current
-            p.getParent().invalidate();
+            ;
         }
     }
 
