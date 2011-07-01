@@ -4339,6 +4339,7 @@
 				MACH_O_TYPE = mh_dylib;
 				OTHER_LDFLAGS = "-lcrypto";
 				PRODUCT_NAME = libPrime;
+				SDKROOT = macosx10.5;
 			};
 			name = Release;
 		};
