@@ -119,6 +119,7 @@
 
     <target name="compile" depends="init" description="Compile the source tree">
         <javac fork="true"
+               includeantruntime="false"
                debug="${debug}"
                encoding="utf-8"
                srcdir="${source}"
