@@ -15,14 +15,15 @@
 // Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
 // 
+
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
-using ch.cyberduck.core;
-using ch.cyberduck.core.i18n;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Winforms.Controls;
+using ch.cyberduck.core;
+using ch.cyberduck.core.i18n;
 
 namespace Ch.Cyberduck.Ui.Winforms
 {
@@ -174,12 +175,6 @@ namespace Ch.Cyberduck.Ui.Winforms
         {
             get { return alwaysUseDefaultEditorCheckBox.Checked; }
             set { alwaysUseDefaultEditorCheckBox.Checked = value; }
-        }
-
-        public string LoginName
-        {
-            get { return loginNameTextbox.Text; }
-            set { loginNameTextbox.Text = value; }
         }
 
         public bool ShowHiddenFiles
@@ -659,7 +654,6 @@ namespace Ch.Cyberduck.Ui.Winforms
         public event VoidHandler UseKeychainChangedEvent = delegate { };
         public event VoidHandler ConfirmDisconnectChangedEvent = delegate { };
         public event VoidHandler DefaultProtocolChangedEvent = delegate { };
-        public event VoidHandler LoginNameChangedEvent = delegate { };
         public event VoidHandler ShowHiddenFilesChangedEvent = delegate { };
         public event VoidHandler DoubleClickEditorChangedEvent = delegate { };
         public event VoidHandler ReturnKeyRenamesChangedEvent = delegate { };
@@ -979,11 +973,6 @@ namespace Ch.Cyberduck.Ui.Winforms
         private void defaultProtocolCombobox_SelectionChangeCommitted(object sender, EventArgs e)
         {
             DefaultProtocolChangedEvent();
-        }
-
-        private void loginNameTextbox_Validated(object sender, EventArgs e)
-        {
-            LoginNameChangedEvent();
         }
 
         private void defaultEncodingCombobox_SelectionChangeCommitted(object sender, EventArgs e)

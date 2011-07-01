@@ -31,7 +31,6 @@ namespace Ch.Cyberduck.Ui.Controller
         Protocol DefaultProtocol { set; get; }
         Editor.AvailableEditor DefaultEditor { set; get; }
         bool AlwaysUseDefaultEditor { set; get; }
-        string LoginName { set; get; }
         bool ShowHiddenFiles { set; get; }
         bool DoubleClickEditor { set; get; }
         bool ReturnKeyRenames { set; get; }
@@ -143,7 +142,6 @@ namespace Ch.Cyberduck.Ui.Controller
         event VoidHandler UseKeychainChangedEvent;
         event VoidHandler ConfirmDisconnectChangedEvent;
         event VoidHandler DefaultProtocolChangedEvent;
-        event VoidHandler LoginNameChangedEvent;
         event VoidHandler ShowHiddenFilesChangedEvent;
         event VoidHandler DoubleClickEditorChangedEvent;
         event VoidHandler ReturnKeyRenamesChangedEvent;

@@ -15,19 +15,20 @@
 // Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
 // 
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using ch.cyberduck.core;
 using Ch.Cyberduck.Core;
-using ch.cyberduck.core.io;
 using Ch.Cyberduck.Ui.Winforms;
 using Ch.Cyberduck.Ui.Winforms.Controls;
+using StructureMap;
+using ch.cyberduck.core;
+using ch.cyberduck.core.io;
 using java.util;
 using java.util.regex;
 using org.apache.log4j;
 using org.jets3t.service.model;
-using StructureMap;
 using Locale = ch.cyberduck.core.i18n.Locale;
 
 namespace Ch.Cyberduck.Ui.Controller
@@ -62,7 +63,6 @@ namespace Ch.Cyberduck.Ui.Controller
             View.DefaultEditorChangedEvent += View_DefaultEditorChangedEvent;
             View.RepopulateEditorsEvent += View_RepopulateEditorsEvent;
             View.AlwaysUseDefaultEditorChangedEvent += View_AlwaysUseDefaultEditorChangedEvent;
-            View.LoginNameChangedEvent += View_LoginNameChangedEvent;
             View.ShowHiddenFilesChangedEvent += View_ShowHiddenFilesChangedEvent;
             View.DoubleClickEditorChangedEvent += View_DoubleClickEditorChangedEvent;
             View.ReturnKeyRenamesChangedEvent += View_ReturnKeyRenamesChangedEvent;
@@ -755,11 +755,6 @@ namespace Ch.Cyberduck.Ui.Controller
             Preferences.instance().setProperty("browser.showHidden", View.ShowHiddenFiles);
         }
 
-        private void View_LoginNameChangedEvent()
-        {
-            Preferences.instance().setProperty("connection.login.name", View.LoginName);
-        }
-
         private void View_DefaultProtocolChangedEvent()
         {
             Protocol selected = View.DefaultProtocol;
@@ -854,7 +849,6 @@ namespace Ch.Cyberduck.Ui.Controller
             PopulateDefaultProtocols();
             View.DefaultProtocol =
                 ProtocolFactory.forName(Preferences.instance().getProperty("connection.protocol.default"));
-            View.LoginName = Preferences.instance().getProperty("connection.login.name");
             View.InfoWindowShowsCurrentSelection =
                 Preferences.instance().getBoolean("browser.info.isInspector");
             View.ShowHiddenFiles = Preferences.instance().getBoolean("browser.showHidden");
