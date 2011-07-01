@@ -1039,6 +1039,37 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         protected abstract Path pathAtRow(int row);
 
         protected abstract void setBrowserColumnSortingIndicator(NSImage image, String columnIdentifier);
+
+        private static final double kSwipeGestureLeft = 1.000000;
+        private static final double kSwipeGestureRight = -1.000000;
+        private static final double kSwipeGestureUp = 1.000000;
+        private static final double kSwipeGestureDown = -1.000000;
+
+        /**
+         * Available in Mac OS X v10.6 and later.
+         *
+         * @param event
+         */
+        @Action
+        public void swipeWithEvent(NSEvent event) {
+            if(event.deltaX().doubleValue() == kSwipeGestureLeft) {
+                BrowserController.this.backButtonClicked(event.id());
+            }
+            else if(event.deltaX().doubleValue() == kSwipeGestureRight) {
+                BrowserController.this.forwardButtonClicked(event.id());
+                return;
+            }
+            else if(event.deltaY().doubleValue() == kSwipeGestureUp) {
+                NSInteger row = getSelectedBrowserView().selectedRow();
+                BrowserController.this.getSelectedBrowserView().selectRowIndexes(
+                        NSIndexSet.indexSetWithIndex(new NSInteger(row.longValue() - 1)), false);
+            }
+            else if(event.deltaY().doubleValue() == kSwipeGestureDown) {
+                NSInteger row = getSelectedBrowserView().selectedRow();
+                BrowserController.this.getSelectedBrowserView().selectRowIndexes(
+                        NSIndexSet.indexSetWithIndex(new NSInteger(row.longValue() + 1)), false);
+            }
+        }
     }
 
     /**
@@ -1813,18 +1844,18 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     public void navigationButtonClicked(NSSegmentedControl sender) {
         switch(sender.selectedSegment()) {
             case NAVIGATION_LEFT_SEGMENT_BUTTON: {
-                this.backButtonClicked(sender);
+                this.backButtonClicked(sender.id());
                 break;
             }
             case NAVIGATION_RIGHT_SEGMENT_BUTTON: {
-                this.forwardButtonClicked(sender);
+                this.forwardButtonClicked(sender.id());
                 break;
             }
         }
     }
 
     @Action
-    public void backButtonClicked(final NSSegmentedControl sender) {
+    public void backButtonClicked(final ID sender) {
         final Path selected = this.getPreviousPath();
         if(selected != null) {
             final Path previous = this.workdir();
@@ -1838,7 +1869,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     }
 
     @Action
-    public void forwardButtonClicked(final NSSegmentedControl sender) {
+    public void forwardButtonClicked(final ID sender) {
         final Path selected = this.getForwardPath();
         if(selected != null) {
             this.setWorkdir(selected);
@@ -2268,7 +2299,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             int i = 0;
             Iterator<Path> iter;
             boolean shouldWarn = false;
-            for(iter = selected.iterator(); iter.hasNext();) {
+            for(iter = selected.iterator(); iter.hasNext(); ) {
                 Path item = iter.next();
                 if(item.exists()) {
                     if(i < 10) {
@@ -2315,7 +2346,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                         Locale.localizedString("Do you want to move the selected files?"));
                 int i = 0;
                 Iterator<Path> iter;
-                for(iter = selected.iterator(); i < 10 && iter.hasNext();) {
+                for(iter = selected.iterator(); i < 10 && iter.hasNext(); ) {
                     Path item = iter.next();
                     alertText.append("\n" + Character.toString('\u2022') + " " + item.getName());
                     i++;
@@ -2356,7 +2387,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             Path f = sourcesIter.next();
             Path r = destinationsIter.next();
             boolean duplicate = false;
-            for(Iterator<Path> normalizedIter = normalized.keySet().iterator(); normalizedIter.hasNext();) {
+            for(Iterator<Path> normalizedIter = normalized.keySet().iterator(); normalizedIter.hasNext(); ) {
                 Path n = normalizedIter.next();
                 if(f.isChild(n)) {
                     // The selected file is a child of a directory
@@ -2422,7 +2453,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 new StringBuilder(Locale.localizedString("Really delete the following files? This cannot be undone."));
         int i = 0;
         Iterator<Path> iter;
-        for(iter = normalized.iterator(); i < 10 && iter.hasNext();) {
+        for(iter = normalized.iterator(); i < 10 && iter.hasNext(); ) {
             alertText.append("\n").append(Character.toString('\u2022')).append(" ").append(iter.next().getName());
             i++;
         }
@@ -3848,19 +3879,20 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         // Determine if there are any open connections
         for(final BrowserController controller : MainController.getBrowsers()) {
             if(!controller.unmount(new SheetCallback() {
-                public void callback(final int returncode) {
-                    if(returncode == DEFAULT_OPTION) { //Disconnect
-                        controller.window().close();
-                        if(NSApplication.NSTerminateNow.equals(BrowserController.applicationShouldTerminate(app))) {
-                            app.terminate(null);
+                        public void callback(final int returncode) {
+                            if(returncode == DEFAULT_OPTION) { //Disconnect
+                                controller.window().close();
+                                if(NSApplication.NSTerminateNow.equals(BrowserController.applicationShouldTerminate(app))) {
+                                    app.terminate(null);
+                                }
+                            }
                         }
-                    }
-                }
-            }, new Runnable() {
+                    }, new Runnable() {
                 public void run() {
                     ;
                 }
-            })) {
+            }
+            )) {
                 return NSApplication.NSTerminateCancel;
             }
         }

@@ -184,6 +184,15 @@ static NSTableColumn *localSelectionColumn;
 	[super keyDown:event];
 }
 
+- (void)swipeWithEvent:(NSEvent *)event {
+    if ([[self delegate] respondsToSelector:@selector(swipeWithEvent:)]) {
+        [[self delegate] performSelector:@selector(swipeWithEvent:) withObject:event];
+    }
+    else {
+        [super swipeWithEvent:event];
+    }
+}
+
 + (NSTableColumn *)_localSelectionColumn
 {
 	if(nil == localSelectionColumn) {
