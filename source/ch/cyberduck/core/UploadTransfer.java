@@ -176,8 +176,15 @@ public class UploadTransfer extends Transfer {
          * Post process
          */
         @Override
-        public void complete(Path p) {
-            ;
+        public void complete(Path file) {
+            if(file.getSession().isTimestampSupported()) {
+                if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
+                    // Read timestamps from local file
+                    file.writeTimestamp(file.getLocal().attributes().getCreationDate(),
+                            file.getLocal().attributes().getModificationDate(),
+                            file.getLocal().attributes().getAccessedDate());
+                }
+            }
         }
     }
 
@@ -534,7 +541,7 @@ public class UploadTransfer extends Transfer {
                 file.mkdir();
             }
         }
-        if(!file.status().isCanceled() && file.status().isComplete()) {
+        if(!file.status().isCanceled()) {
             if(this.getSession().isAclSupported()) {
                 ; // Currently handled in S3 only.
             }
@@ -566,28 +573,7 @@ public class UploadTransfer extends Transfer {
                     }
                 }
             }
-            if(file.attributes().isFile() && file.getSession().isTimestampSupported()) {
-                if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
-                    // Read timestamps from local file
-                    file.writeTimestamp(file.getLocal().attributes().getCreationDate(),
-                            file.getLocal().attributes().getModificationDate(),
-                            file.getLocal().attributes().getAccessedDate());
-                }
-            }
         }
-    }
-
-    @Override
-    protected void fireDidTransferPath(Path file) {
-        if(file.attributes().isDirectory() && file.getSession().isTimestampSupported()) {
-            if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
-                // Read timestamps from local file
-                file.writeTimestamp(file.getLocal().attributes().getCreationDate(),
-                        file.getLocal().attributes().getModificationDate(),
-                        file.getLocal().attributes().getAccessedDate());
-            }
-        }
-        super.fireDidTransferPath(file);
     }
 
     @Override

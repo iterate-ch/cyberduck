@@ -458,8 +458,10 @@ public abstract class Transfer implements Serializable {
             _current = p;
             // Transfer
             transfer(p);
-            // Post process of file
-            filter.complete(p);
+            if(p.attributes().isFile()) {
+                // Post process of file
+                filter.complete(p);
+            }
             _current = null;
             // Notification
             this.fireDidTransferPath(p);
@@ -481,6 +483,9 @@ public abstract class Transfer implements Serializable {
                     failure = true;
                 }
             }
+            // Post process of directory
+            filter.complete(p);
+            // Set completion status
             if(!failure) {
                 p.status().setComplete(true);
             }
