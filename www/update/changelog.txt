@@ -20,6 +20,7 @@
 - [Bugfix] CDN URL for files only available after opening Info window (Cloudfiles) (#6040)
 - [Bugfix] Interoperability (FTP) (#5866, #5949)
 - [Bugfix] Copy and edit filenames in browser (Windows) (#5336, #6039)
+- [Bugfix] Preserve modification dates for folders on upload (#6048)
 
 4.0.2 [http://trac.cyberduck.ch/milestone/4.0.2]
 - [Feature] SSL URL for files in Akamai CDN enabled containers (Cloud Files)
