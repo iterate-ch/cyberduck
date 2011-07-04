@@ -1218,7 +1218,9 @@ lib/jdom-1.1.jar -text
 lib/jets3t-0.8.2.jar -text
 lib/jna-3.3.0.jar -text
 lib/json-simple-1.1.jar -text
+lib/jul-to-slf4j-1.6.1.jar -text
 lib/libAquaticPrime.a -text
+lib/libKFS.dylib -text
 lib/libjdns_sd.dylib -text
 lib/log4j-1.2.15.jar -text
 lib/log4j.xml -text
