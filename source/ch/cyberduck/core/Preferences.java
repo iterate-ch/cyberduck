@@ -24,6 +24,7 @@ import ch.cyberduck.ui.cocoa.BrowserTableDataSource;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.jets3t.service.model.S3Object;
+import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import java.util.*;
 
@@ -160,6 +161,8 @@ public abstract class Preferences {
          * The logging level (debug, info, warn, error)
          */
         defaults.put("logging", "error");
+        // call only once during initialization time of your application
+        SLF4JBridgeHandler.install();
 
         /**
          * How many times the application was launched
