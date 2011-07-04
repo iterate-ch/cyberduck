@@ -27,6 +27,8 @@ import org.jets3t.service.model.S3Object;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import java.util.*;
+import java.util.logging.Handler;
+import java.util.logging.LogManager;
 
 /**
  * Holding all application preferences. Default values get overwritten when loading
@@ -161,6 +163,12 @@ public abstract class Preferences {
          * The logging level (debug, info, warn, error)
          */
         defaults.put("logging", "error");
+
+        java.util.logging.Logger rootLogger = LogManager.getLogManager().getLogger("");
+        Handler[] handlers = rootLogger.getHandlers();
+        for(Handler handler : handlers) {
+            rootLogger.removeHandler(handler);
+        }
         // call only once during initialization time of your application
         SLF4JBridgeHandler.install();
 
