@@ -537,4 +537,9 @@ public class FTPSession extends SSLSession {
     public void setUtimeSupported(boolean utimeSupported) {
         this.utimeSupported = utimeSupported;
     }
+
+    @Override
+    public boolean isUnixPermissionsSupported() {
+        return true;
+    }
 }
