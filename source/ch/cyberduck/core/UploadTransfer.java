@@ -177,12 +177,25 @@ public class UploadTransfer extends Transfer {
          */
         @Override
         public void complete(Path file) {
-            if(file.getSession().isTimestampSupported()) {
-                if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
-                    // Read timestamps from local file
-                    file.writeTimestamp(file.getLocal().attributes().getCreationDate(),
-                            file.getLocal().attributes().getModificationDate(),
-                            file.getLocal().attributes().getAccessedDate());
+            if(!file.status().isCanceled()) {
+                if(getSession().isAclSupported()) {
+                    ; // Currently handled in S3 only.
+                }
+                if(getSession().isUnixPermissionsSupported()) {
+                    if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
+                        Permission permission = file.attributes().getPermission();
+                        if(!Permission.EMPTY.equals(permission)) {
+                            file.writeUnixPermission(permission, false);
+                        }
+                    }
+                }
+                if(file.getSession().isTimestampSupported()) {
+                    if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
+                        // Read timestamps from local file
+                        file.writeTimestamp(file.getLocal().attributes().getCreationDate(),
+                                file.getLocal().attributes().getModificationDate(),
+                                file.getLocal().attributes().getAccessedDate());
+                    }
                 }
             }
         }
@@ -490,7 +503,34 @@ public class UploadTransfer extends Transfer {
     @Override
     protected void transfer(Path file) {
         log.debug("transfer:" + file);
-        Permission perm = Permission.EMPTY;
+        if(this.getSession().isUnixPermissionsSupported()) {
+            if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
+                if(file.exists()) {
+                    // Do not overwrite permissions for existing file.
+                    if(file.attributes().getPermission().equals(Permission.EMPTY)) {
+                        file.readUnixPermission();
+                    }
+                }
+                else {
+                    if(Preferences.instance().getBoolean("queue.upload.permissions.useDefault")) {
+                        if(file.attributes().isFile()) {
+                            file.attributes().setPermission(new Permission(
+                                    Preferences.instance().getInteger("queue.upload.permissions.file.default")));
+                        }
+                        else if(file.attributes().isDirectory()) {
+                            file.attributes().setPermission(new Permission(
+                                    Preferences.instance().getInteger("queue.upload.permissions.folder.default")));
+                        }
+                    }
+                    else {
+                        if(file.getLocal().exists()) {
+                            // Read permissions from local file
+                            file.attributes().setPermission(file.getLocal().attributes().getPermission());
+                        }
+                    }
+                }
+            }
+        }
         if(file.getLocal().attributes().isSymbolicLink() && this.isSymlinkSupported(file)) {
             // Make relative symbolic link
             final String target = StringUtils.substringAfter(file.getLocal().getSymlinkTarget().getAbsolute(),
@@ -502,17 +542,6 @@ public class UploadTransfer extends Transfer {
             file.status().setComplete(true);
         }
         else if(file.attributes().isFile()) {
-            if(this.getSession().isUnixPermissionsSupported()) {
-                if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
-                    if(file.exists()) {
-                        // Do not overwrite permissions for existing file.
-                        if(file.attributes().getPermission().equals(Permission.EMPTY)) {
-                            file.readUnixPermission();
-                        }
-                        perm = file.attributes().getPermission();
-                    }
-                }
-            }
             String original = file.getName();
             if(Preferences.instance().getBoolean("queue.upload.file.temporary")
                     && file.getSession().isRenameSupported(file)) {
@@ -539,39 +568,6 @@ public class UploadTransfer extends Transfer {
         else if(file.attributes().isDirectory()) {
             if(file.getSession().isCreateFolderSupported(file)) {
                 file.mkdir();
-            }
-        }
-        if(!file.status().isCanceled()) {
-            if(this.getSession().isAclSupported()) {
-                ; // Currently handled in S3 only.
-            }
-            if(this.getSession().isUnixPermissionsSupported()) {
-                if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
-                    if(perm.equals(Permission.EMPTY)) {
-                        if(Preferences.instance().getBoolean("queue.upload.permissions.useDefault")) {
-                            if(file.attributes().isFile()) {
-                                perm = new Permission(
-                                        Preferences.instance().getInteger("queue.upload.permissions.file.default"));
-                            }
-                            else if(file.attributes().isDirectory()) {
-                                perm = new Permission(
-                                        Preferences.instance().getInteger("queue.upload.permissions.folder.default"));
-                            }
-                        }
-                        else {
-                            if(file.getLocal().exists()) {
-                                // Read permissions from local file
-                                perm = file.getLocal().attributes().getPermission();
-                            }
-                        }
-                    }
-                    if(perm.equals(Permission.EMPTY)) {
-                        log.debug("Skip writing empty permissions for:" + this.toString());
-                    }
-                    else {
-                        file.writeUnixPermission(perm, false);
-                    }
-                }
             }
         }
     }
