@@ -537,12 +537,6 @@ public class FTPPath extends Path {
                         this.getName()));
 
                 if(this.getSession().getClient().makeDirectory(this.getAbsolute())) {
-                    if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
-                        if(Preferences.instance().getBoolean("queue.upload.permissions.useDefault")) {
-                            this.writeUnixPermissionImpl(new Permission(
-                                    Preferences.instance().getInteger("queue.upload.permissions.folder.default")), false);
-                        }
-                    }
                     this.cache().put(this.getReference(), AttributedList.<Path>emptyList());
                     // The directory listing is no more current
                     this.cache().get(this.getParent().getReference()).add(this);
