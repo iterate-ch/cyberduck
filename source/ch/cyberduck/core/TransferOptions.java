@@ -23,9 +23,6 @@ package ch.cyberduck.core;
  */
 public class TransferOptions {
 
-    public static final TransferOptions DEFAULT
-            = new TransferOptions();
-
     /**
      * Resume requested using user interface
      */

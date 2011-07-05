@@ -652,15 +652,6 @@ public abstract class Transfer implements Serializable {
     }
 
     /**
-     * Use default transfer options
-     *
-     * @param prompt
-     */
-    public void start(TransferPrompt prompt) {
-        this.start(prompt, TransferOptions.DEFAULT);
-    }
-
-    /**
      *
      */
     protected TransferPrompt prompt;
