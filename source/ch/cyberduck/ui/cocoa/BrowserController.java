@@ -3030,6 +3030,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 public void run() {
                     TransferOptions options = new TransferOptions();
                     options.closeSession = false;
+                    options.invalidateCache = Cache.Lifecycle.FOREVER;
                     transfer.start(prompt, options);
                 }
 

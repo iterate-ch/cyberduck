@@ -507,70 +507,69 @@ public abstract class Transfer implements Serializable {
      */
     private void transfer(final TransferOptions options) {
         final Session session = this.getSession();
+
         try {
-            try {
-                log.debug("Checking connnection");
-                // We manually open the connection here first as otherwise
-                // every transfer will try again if it should fail
-                session.check();
-            }
-            catch(IOException e) {
-                log.warn(e.getMessage());
-                return;
-            }
-
-            if(!this.check()) {
-                return;
-            }
-
-            if(!options.invalidateCache) {
-                // Do not invalidate cache entries during file transfers
-                session.cache().setLifecycle(Cache.Lifecycle.FOREVER);
-            }
-            // Determine the filter to match files against
-            final TransferAction action = this.action(options.resumeRequested, options.reloadRequested);
-            if(action.equals(TransferAction.ACTION_CANCEL)) {
-                if(log.isInfoEnabled()) {
-                    log.info("Transfer canceled by user:" + this);
-                }
-                this.cancel();
-                return;
-            }
-
-            this.clear(options);
-
-            this.normalize();
-
-            if(!this.check()) {
-                return;
-            }
-
-            // Get the transfer filter from the concret transfer class
-            final TransferFilter filter = this.filter(action);
-            if(null == filter) {
-                // The user has canceled choosing a transfer filter
-                this.cancel();
-                return;
-            }
-
-            // Reset the cached size of the transfer and progress value
-            this.reset();
-
-            // Calculate information about the files in advance to give progress information
-            for(Path next : roots) {
-                this.prepare(next, filter);
-            }
-
-            // Transfer all files sequentially
-            for(Path next : roots) {
-                this.transfer(next, filter);
-            }
+            log.debug("Checking connnection");
+            // We manually open the connection here first as otherwise
+            // every transfer will try again if it should fail
+            session.check();
         }
-        finally {
-            this.clear(options);
-            if(options.closeSession) {
-                session.close();
+        catch(IOException e) {
+            log.warn(e.getMessage());
+            return;
+        }
+
+        if(!this.check()) {
+            return;
+        }
+
+        // Do not invalidate cache entries during file transfers
+        session.cache().setLifecycle(options.invalidateCache);
+
+        // Determine the filter to match files against
+        final TransferAction action = this.action(options.resumeRequested, options.reloadRequested);
+        if(action.equals(TransferAction.ACTION_CANCEL)) {
+            if(log.isInfoEnabled()) {
+                log.info("Transfer canceled by user:" + this);
             }
+            this.cancel();
+            return;
+        }
+
+        this.clear(options);
+
+        this.normalize();
+
+        if(!this.check()) {
+            return;
+        }
+
+        // Get the transfer filter from the concret transfer class
+        final TransferFilter filter = this.filter(action);
+        if(null == filter) {
+            // The user has canceled choosing a transfer filter
+            this.cancel();
+            return;
+        }
+
+        // Reset the cached size of the transfer and progress value
+        this.reset();
+
+        // Calculate information about the files in advance to give progress information
+        for(Path next : roots) {
+            this.prepare(next, filter);
+        }
+
+        // Transfer all files sequentially
+        for(Path next : roots) {
+            this.transfer(next, filter);
+        }
+
+        session.cache().setLifecycle(Cache.Lifecycle.INVALIDATED);
+
+        this.clear(options);
+        if(options.closeSession) {
+            session.close();
         }
     }
 

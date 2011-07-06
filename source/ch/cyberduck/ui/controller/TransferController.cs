@@ -602,7 +602,8 @@ namespace Ch.Cyberduck.Ui.Controller
                 TransferOptions options = new TransferOptions();
                 options.reloadRequested = _reload;
                 options.resumeRequested = _resume;
-                options.invalidateCache = false;
+                // Do not invalidate cache entries during file transfers
+                options.invalidateCache = Cache.Lifecycle.FOREVER;
                 _transfer.start(TransferPromptController.Create(_controller, _transfer), options);
             }
 

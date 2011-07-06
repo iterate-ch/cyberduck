@@ -41,5 +41,5 @@ public class TransferOptions {
     /**
      * When set to false, do not invalidate entries in the directory listing cache.
      */
-    public boolean invalidateCache = true;
+    public Cache.Lifecycle invalidateCache = Cache.Lifecycle.INVALIDATED;
 }

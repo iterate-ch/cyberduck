@@ -3783,7 +3783,9 @@ namespace Ch.Cyberduck.Ui.Controller
             public override void run()
             {
                 Log.debug("run: " + getActivity());
-                TransferOptions options = new TransferOptions {closeSession = false};
+                TransferOptions options = new TransferOptions();
+                options.closeSession = false;
+                options.invalidateCache = Cache.Lifecycle.FOREVER;
                 _transfer.start(_prompt, options);
             }
 
