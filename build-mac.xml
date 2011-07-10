@@ -197,7 +197,7 @@
         </antcall>
         <antcall target="lipo">
             <param name="arch" value="ppc7400"/>
-            <param name="binary" value="${app.java}/*.dylib"/>
+            <param name="binary" value="**/*.dylib"/>
         </antcall>
     </target>
 
