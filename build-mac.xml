@@ -160,18 +160,7 @@
         </replace>
         <delete dir="${app.frameworks}/Sparkle.framework"/>
 
-        <antcall target="lipo">
-            <param name="arch" value="ppc7400"/>
-            <param name="binary" value="${app.executable}"/>
-        </antcall>
-        <antcall target="lipo">
-            <param name="arch" value="x86_64"/>
-            <param name="binary" value="${app.executable}"/>
-        </antcall>
-        <antcall target="lipo">
-            <param name="arch" value="ppc7400"/>
-            <param name="binary" value="'${app.spotlight.executable}'"/>
-        </antcall>
+        <antcall target="strip"/>
 
         <antcall target="codesign">
             <param name="codesign.certificate" value="3rd Party Mac Developer Application: David Kocher"/>
@@ -184,6 +173,21 @@
         </exec>
         <checksum file="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.pkg"
                   algorithm="md5"/>
+    </target>
+
+    <target name="strip">
+        <antcall target="lipo">
+            <param name="arch" value="ppc7400"/>
+            <param name="binary" value="${app.executable}"/>
+        </antcall>
+        <antcall target="lipo">
+            <param name="arch" value="x86_64"/>
+            <param name="binary" value="${app.executable}"/>
+        </antcall>
+        <antcall target="lipo">
+            <param name="arch" value="ppc7400"/>
+            <param name="binary" value="'${app.spotlight.executable}'"/>
+        </antcall>
     </target>
 
     <target name="install" depends="mas">
@@ -234,7 +238,7 @@
 
     <target name="codesign">
         <echo message="Code signing application bundle..."/>
-        <exec dir="${home}" executable="/usr/bin/codesign" spawn="false" failonerror="false">
+        <exec dir="${home}" executable="/usr/bin/codesign" spawn="false" failonerror="true">
             <arg line="--force --sign '${codesign.certificate}' --keychain ${codesign.keychain} ${codesign.arg} -v ${app.bundle}"/>
         </exec>
     </target>
