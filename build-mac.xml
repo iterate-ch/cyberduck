@@ -38,6 +38,8 @@
     <property name="app.runtime.lib"
               value="@executable_path/../Resources/Java/Runtime.jdk/Contents/Home/jre/lib/server/libjvm.dylib"/>
     <!--<property name="app.runtime.lib" value="/System/Library/Frameworks/JavaVM.framework/Versions/A/JavaVM"/>-->
+    <property name="app.runtime.properties.key" value="Java"/>
+    <property name="app.runtime.system.min" value="10.5"/>
 
     <property name="app.spotlight" value="${app.library}/Spotlight"/>
     <property name="app.spotlight.executable"
@@ -100,19 +102,13 @@
 
         <echo message="_VERSION_=${cyberduck.version.major}.${cyberduck.version.minor}"/>
         <echo message="_REVISION_=${svn.revision}"/>
+        <echo message="_SPARKLEFEED_=${sparkle.feed}"/>
         <replace dir="${app.bundle}" summary="true" encoding="UTF-8">
             <include name="**/Info.plist"/>
             <replacefilter token="_REVISION_" value="${svn.revision}"/>
             <replacefilter token="_VERSION_" value="${cyberduck.version.major}.${cyberduck.version.minor}"/>
-        </replace>
-    </target>
-
-    <target name="package" depends="build">
-        <echo message="_REVISION_=${svn.revision}"/>
-        <echo message="_SPARKLEFEED_=${sparkle.feed}"/>
-        <replace dir="${app.bundle}" summary="true" encoding="UTF-8">
-            <include name="**/Info.plist"/>
-            <replacefilter token="_MINIMUM_SYSTEM_" value="${system.min}"/>
+            <replacefilter token="_RUNTIME_" value="${app.runtime.properties.key}"/>
+            <replacefilter token="_MINIMUM_SYSTEM_" value="${app.runtime.system.min}"/>
             <replacefilter token="_SPARKLEFEED_" value="${sparkle.feed}"/>
         </replace>
     </target>
@@ -190,7 +186,7 @@
                   algorithm="md5"/>
     </target>
 
-    <target name="install" depends="package-mas">
+    <target name="install" depends="mas">
         <exec dir="${home}" executable="/usr/bin/sudo" spawn="false" failonerror="true">
             <arg line="installer -store -pkg ${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.pkg -target /"/>
         </exec>
@@ -274,7 +270,14 @@
                   algorithm="md5"/>
     </target>
 
-    <target name="nightly" depends="clean, package-nightly">
+    <target name="nightly" depends="clean">
+        <antcall target="build">
+            <param name="sparkle.feed" value="http://version.cyberduck.ch/nightly/changelog.rss"/>
+        </antcall>
+        <antcall target="distribution-sparkle">
+            <param name="url.archive" value="http://update.cyberduck.ch/nightly/Cyberduck-_REVISION_.tar.gz"/>
+            <param name="url.changelog" value="http://version.cyberduck.ch/nightly/changelog.html"/>
+        </antcall>
         <echo message="_REVISION_=${svn.revision}"/>
         <scp file="${build}/${app.name}-${svn.revision}.tar.gz"
              todir="dkocher@update.cyberduck.ch:./update.cyberduck.ch/nightly/"
@@ -299,7 +302,14 @@
         </scp>
     </target>
 
-    <target name="beta" depends="clean, package-beta">
+    <target name="beta" depends="clean">
+        <antcall target="build">
+            <param name="sparkle.feed" value="http://version.cyberduck.ch/beta/changelog.rss"/>
+        </antcall>
+        <antcall target="distribution-sparkle">
+            <param name="url.archive" value="http://update.cyberduck.ch/beta/Cyberduck-_REVISION_.tar.gz"/>
+            <param name="url.changelog" value="http://version.cyberduck.ch/beta/changelog.html"/>
+        </antcall>
         <echo message="_REVISION_=${svn.revision}"/>
         <scp file="${build}/${app.name}-${svn.revision}.tar.gz"
              todir="dkocher@update.cyberduck.ch:./update.cyberduck.ch/beta/"
@@ -324,7 +334,14 @@
         </scp>
     </target>
 
-    <target name="release" depends="clean, package-release">
+    <target name="release" depends="clean">
+        <antcall target="build">
+            <param name="sparkle.feed" value="http://version.cyberduck.ch/changelog.rss"/>
+        </antcall>
+        <antcall target="distribution-sparkle">
+            <param name="url.archive" value="http://update.cyberduck.ch/Cyberduck-_REVISION_.tar.gz"/>
+            <param name="url.changelog" value="http://version.cyberduck.ch/changelog.html"/>
+        </antcall>
         <scp file="${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.zip"
              todir="dkocher@update.cyberduck.ch:./update.cyberduck.ch/"
              keyfile="${user.home}/.ssh/update.cyberduck.ch-rsa"
@@ -358,51 +375,19 @@
         </scp>
     </target>
 
-    <target name="lipo">
-        <echo message="Remove ${arch} slice from ${app.executable}"/>
-        <exec dir="${home}" executable="/usr/bin/lipo" spawn="false" failonerror="false">
-            <arg line="-remove ${arch} -output ${binary} ${binary}"/>
-        </exec>
-    </target>
-
-    <target name="package-mas" depends="revision">
-        <antcall target="package">
-            <param name="system.min" value="10.6.6"/>
+    <target name="mas" depends="clean">
+        <antcall target="build">
+            <param name="app.runtime.properties.key" value="Runtime"/>
+            <param name="app.runtime.system.min" value="10.6.6"/>
             <param name="sparkle.feed" value="/dev/null"/>
         </antcall>
         <antcall target="distribution-mas"/>
     </target>
 
-    <target name="package-release" depends="revision">
-        <antcall target="package">
-            <param name="system.min" value="10.5"/>
-            <param name="sparkle.feed" value="http://version.cyberduck.ch/changelog.rss"/>
-        </antcall>
-        <antcall target="distribution-sparkle">
-            <param name="url.archive" value="http://update.cyberduck.ch/Cyberduck-_REVISION_.tar.gz"/>
-            <param name="url.changelog" value="http://version.cyberduck.ch/changelog.html"/>
-        </antcall>
-    </target>
-
-    <target name="package-beta" depends="revision">
-        <antcall target="package">
-            <param name="system.min" value="10.5"/>
-            <param name="sparkle.feed" value="http://version.cyberduck.ch/beta/changelog.rss"/>
-        </antcall>
-        <antcall target="distribution-sparkle">
-            <param name="url.archive" value="http://update.cyberduck.ch/beta/Cyberduck-_REVISION_.tar.gz"/>
-            <param name="url.changelog" value="http://version.cyberduck.ch/beta/changelog.html"/>
-        </antcall>
-    </target>
-
-    <target name="package-nightly" depends="revision">
-        <antcall target="package">
-            <param name="system.min" value="10.5"/>
-            <param name="sparkle.feed" value="http://version.cyberduck.ch/nightly/changelog.rss"/>
-        </antcall>
-        <antcall target="distribution-sparkle">
-            <param name="url.archive" value="http://update.cyberduck.ch/nightly/Cyberduck-_REVISION_.tar.gz"/>
-            <param name="url.changelog" value="http://version.cyberduck.ch/nightly/changelog.html"/>
-        </antcall>
+    <target name="lipo">
+        <echo message="Remove ${arch} slice from ${app.executable}"/>
+        <exec dir="${home}" executable="/usr/bin/lipo" spawn="false" failonerror="false">
+            <arg line="-remove ${arch} -output ${binary} ${binary}"/>
+        </exec>
     </target>
 </project>
