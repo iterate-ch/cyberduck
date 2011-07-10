@@ -177,21 +177,46 @@
 
     <target name="strip">
         <antcall target="lipo">
+            <!--Remove from executables-->
             <param name="arch" value="ppc7400"/>
-            <param name="binary" value="${app.executable}"/>
+            <param name="binary" value="**/MacOS/*"/>
         </antcall>
         <antcall target="lipo">
+            <!--Currently ship i386 only-->
             <param name="arch" value="x86_64"/>
-            <param name="binary" value="${app.executable}"/>
+            <param name="binary" value="**/MacOS/*"/>
+        </antcall>
+        <!--Remove from frameworks-->
+        <antcall target="lipo">
+            <param name="arch" value="ppc7400"/>
+            <param name="binary" value="**/Current/*"/>
+        </antcall>
+        <antcall target="lipo">
+            <param name="arch" value="ppc"/>
+            <param name="binary" value="**/Current/*"/>
         </antcall>
         <antcall target="lipo">
             <param name="arch" value="ppc7400"/>
-            <param name="binary" value="'${app.spotlight.executable}'"/>
+            <param name="binary" value="${app.java}/*.dylib"/>
         </antcall>
     </target>
 
+    <target name="lipo">
+        <echo message="Remove ${arch} slice from ${binary}"/>
+        <apply executable="/usr/bin/lipo" failonerror="false" dest="${app.bundle}"
+               parallel="false" spawn="false" force="true">
+            <fileset dir="${app.bundle}">
+                <include name="${binary}"/>
+            </fileset>
+            <arg line="-remove ${arch} -output"/>
+            <srcfile/>
+            <targetfile/>
+            <identitymapper/>
+        </apply>
+    </target>
+
     <target name="install" depends="mas">
-        <exec dir="${home}" executable="/usr/bin/sudo" spawn="false" failonerror="true">
+        <exec executable="/usr/bin/sudo" spawn="false" failonerror="true">
             <arg line="installer -store -pkg ${build}/${app.name}-${cyberduck.version.major}.${cyberduck.version.minor}.pkg -target /"/>
         </exec>
     </target>
@@ -214,6 +239,7 @@
                 <exclude name="Contents/Home/jre/lib/i386/xawt/**"/>
                 <exclude name="Contents/Home/jre/lib/i386/client/**"/>
                 <exclude name="Contents/Home/jre/lib/xawt/**"/>
+                <exclude name="Contents/Home/jre/lib/lwawt/**"/>
                 <exclude name="Contents/Home/jre/lib/client/**"/>
                 <exclude name="Contents/Home/jre/lib/libJObjC.dylib"/>
                 <exclude name="Contents/Home/jre/lib/libsplashscreen.dylib"/>
@@ -226,7 +252,8 @@
             </fileset>
         </copy>
         <echo message="Change dynamic shared library install names..."/>
-        <apply executable="/usr/bin/install_name_tool" failonerror="true" dir="${build}" parallel="false" spawn="false">
+        <apply executable="/usr/bin/install_name_tool" failonerror="true"
+               parallel="false" spawn="false" force="true">
             <arg line="-change /System/Library/Frameworks/JavaVM.framework/Versions/A/JavaVM ${app.runtime.lib}"/>
             <fileset dir="${app.java}">
                 <include name="*.dylib"/>
@@ -238,7 +265,7 @@
 
     <target name="codesign">
         <echo message="Code signing application bundle..."/>
-        <exec dir="${home}" executable="/usr/bin/codesign" spawn="false" failonerror="true">
+        <exec executable="/usr/bin/codesign" spawn="false" failonerror="true">
             <arg line="--force --sign '${codesign.certificate}' --keychain ${codesign.keychain} ${codesign.arg} -v ${app.bundle}"/>
         </exec>
     </target>
@@ -386,12 +413,5 @@
             <param name="sparkle.feed" value="/dev/null"/>
         </antcall>
         <antcall target="distribution-mas"/>
-    </target>
-
-    <target name="lipo">
-        <echo message="Remove ${arch} slice from ${app.executable}"/>
-        <exec dir="${home}" executable="/usr/bin/lipo" spawn="false" failonerror="false">
-            <arg line="-remove ${arch} -output ${binary} ${binary}"/>
-        </exec>
     </target>
 </project>
