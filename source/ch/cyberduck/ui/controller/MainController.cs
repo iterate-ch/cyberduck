@@ -281,7 +281,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     {
                         Host bookmark = (Host) HostReaderFactory.instance().read(f);
                         if(null == bookmark) {
-                            return false;
+                            return;
                         }
                         NewBrowser().Mount(bookmark);
                     }
