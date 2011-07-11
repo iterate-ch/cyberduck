@@ -2385,7 +2385,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.browser.VirtualMode = true;
             this.browser.CellEditFinishing += new BrightIdeasSoftware.CellEditEventHandler(this.browser_CellEditFinishing);
             this.browser.SelectionChanged += new System.EventHandler(this.browser_SelectionChanged);
-            this.browser.AfterLabelEdit += new System.Windows.Forms.LabelEditEventHandler(this.browser_AfterLabelEdit);
             this.browser.BeforeLabelEdit += new System.Windows.Forms.LabelEditEventHandler(this.browser_BeforeLabelEdit);
             this.browser.DoubleClick += new System.EventHandler(this.browser_DoubleClick);
             this.browser.KeyDown += new System.Windows.Forms.KeyEventHandler(this.browser_KeyDown);

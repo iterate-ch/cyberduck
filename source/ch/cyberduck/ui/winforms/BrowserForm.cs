@@ -120,6 +120,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             browser.SelectedRowDecoration = new ExplorerRowBorderDecoration();
             browser.ItemsChanged += (sender, args) => ItemsChanged();
             browser.BeforeSorting += BeforeSorting;
+            browser.CellEditStarting += (sender, args) => args.Cancel = !ValidateRenameFile();
             SetupComparators();
 
             searchTextBox.PlaceHolderText = Locale.localizedString("Search…", "Main");
@@ -2115,12 +2116,6 @@ namespace Ch.Cyberduck.Ui.Winforms
         private void browser_SelectionChanged(object sender, EventArgs e)
         {
             BrowserSelectionChanged();
-        }
-
-        private void browser_AfterLabelEdit(object sender, LabelEditEventArgs e)
-        {
-            bool c = RenameFile(((TreePathReference) browser.GetModelObject(e.Item)).Unique, e.Label);
-            e.CancelEdit = c;
         }
 
         private void browser_KeyDown(object sender, KeyEventArgs e)
