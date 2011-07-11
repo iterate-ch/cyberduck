@@ -304,7 +304,7 @@
                   algorithm="md5"/>
     </target>
 
-    <target name="nightly" depends="clean">
+    <target name="nightly" depends="clean, revision">
         <antcall target="build">
             <param name="sparkle.feed" value="http://version.cyberduck.ch/nightly/changelog.rss"/>
         </antcall>
@@ -336,7 +336,7 @@
         </scp>
     </target>
 
-    <target name="beta" depends="clean">
+    <target name="beta" depends="clean, revision">
         <antcall target="build">
             <param name="sparkle.feed" value="http://version.cyberduck.ch/beta/changelog.rss"/>
         </antcall>
@@ -368,7 +368,7 @@
         </scp>
     </target>
 
-    <target name="release" depends="clean">
+    <target name="release" depends="clean, revision">
         <antcall target="build">
             <param name="sparkle.feed" value="http://version.cyberduck.ch/changelog.rss"/>
         </antcall>
@@ -409,7 +409,7 @@
         </scp>
     </target>
 
-    <target name="mas" depends="clean">
+    <target name="mas" depends="clean, revision">
         <antcall target="build">
             <param name="app.runtime.properties.key" value="Runtime"/>
             <param name="app.runtime.system.min" value="10.6.6"/>
