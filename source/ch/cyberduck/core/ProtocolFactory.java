@@ -73,6 +73,9 @@ public class ProtocolFactory {
                 }
             })) {
                 final Profile protocol = ProtocolReaderFactory.instance().read(profile);
+                if(null == protocol) {
+                    continue;
+                }
                 if(log.isInfoEnabled()) {
                     log.info("Adding thirdparty protocol:" + protocol);
                 }

@@ -96,6 +96,9 @@ public abstract class AbstractFolderHostCollection extends AbstractHostCollectio
             final Reader<Host> reader = HostReaderFactory.instance();
             for(Local next : bookmarks) {
                 Host bookmark = reader.read(next);
+                if(null == bookmark) {
+                    continue;
+                }
                 // Legacy support.
                 if(!this.getFile(bookmark).equals(next)) {
                     // Rename all files previously saved with nickname to UUID.
