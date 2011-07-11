@@ -159,21 +159,21 @@ public class UserDefaultsPreferences extends Preferences {
     protected void setDefaults() {
         super.setDefaults();
 
+        String name = NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleName").toString();
+        defaults.put("application.name", name);
         NSArray directories = FoundationKitFunctionsLibrary.NSSearchPathForDirectoriesInDomains(
                 FoundationKitFunctions.NSSearchPathDirectory.NSApplicationSupportDirectory,
                 FoundationKitFunctions.NSSearchPathDomainMask.NSUserDomainMask,
                 true);
         if(directories.count().intValue() == 0) {
             log.error("Failed searching for application support directory");
-            defaults.put("application.support.path", LocalFactory.createLocal("~/Library/Application Support/Cyberduck").getAbbreviatedPath());
+            defaults.put("application.support.path", LocalFactory.createLocal("~/Library/Application Support", name).getAbbreviatedPath());
         }
         else {
             String directory = directories.objectAtIndex(new NSUInteger(0)).toString();
             log.info("Found application support directory:" + directory);
-            defaults.put("application.support.path", LocalFactory.createLocal(directory).getAbbreviatedPath());
+            defaults.put("application.support.path", LocalFactory.createLocal(directory, name).getAbbreviatedPath());
         }
-        defaults.put("application.name",
-                NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleName").toString());
         defaults.put("application.version",
                 NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleShortVersionString").toString());
 
