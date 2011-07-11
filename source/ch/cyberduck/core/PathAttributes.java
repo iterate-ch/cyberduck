@@ -141,13 +141,10 @@ public class PathAttributes extends Attributes implements Serializable {
         if(permissionObj != null) {
             permission = new Permission(permissionObj);
         }
-        Object versionObj = dict.objectForKey("Version");
-        if(versionObj != null) {
-            versionId = versionObj.toString();
-        }
-        Object duplicateObj = dict.objectForKey("Duplicate");
+        versionId = dict.stringForKey("Version");
+        String duplicateObj = dict.stringForKey("Duplicate");
         if(duplicateObj != null) {
-            duplicate = Boolean.valueOf(duplicateObj.toString());
+            duplicate = Boolean.valueOf(duplicateObj);
         }
     }
 
