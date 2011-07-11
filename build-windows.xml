@@ -90,7 +90,6 @@
                 <exclude name="activation-*.jar"/>
                 <exclude name="asm-*.jar"/>
                 <exclude name="cglib-*.jar"/>
-                <exclude name="slf4j-*.jar"/>
                 <exclude name="dns_sd.jar"/>
                 <exclude name="jaxb*.jar"/>
             </fileset>
