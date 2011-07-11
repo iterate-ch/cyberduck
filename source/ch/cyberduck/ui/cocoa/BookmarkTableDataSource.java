@@ -375,7 +375,11 @@ public class BookmarkTableDataSource extends ListDataSource {
                 String filename = filesList.objectAtIndex(new NSUInteger(i)).toString();
                 if(filename.endsWith(".duck")) {
                     // Adding a previously exported bookmark file from the Finder
-                    source.add(row.intValue(), HostReaderFactory.instance().read(LocalFactory.createLocal(filename)));
+                    Host bookmark = HostReaderFactory.instance().read(LocalFactory.createLocal(filename));
+                    if(null == bookmark) {
+                        continue;
+                    }
+                    source.add(row.intValue(), bookmark);
                     view.selectRowIndexes(NSIndexSet.indexSetWithIndex(row), true);
                     view.scrollRowToVisible(row);
                 }

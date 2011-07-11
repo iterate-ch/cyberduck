@@ -484,8 +484,11 @@ public class MainController extends BundleController implements NSApplication.De
         final Local f = LocalFactory.createLocal(filename);
         if(f.exists()) {
             if("duck".equals(f.getExtension())) {
-                final Host host = HostReaderFactory.instance().read(f);
-                MainController.newDocument().mount(host);
+                final Host bookmark = HostReaderFactory.instance().read(f);
+                if(null == bookmark) {
+                    return false;
+                }
+                MainController.newDocument().mount(bookmark);
                 return true;
             }
             else if("cyberducklicense".equals(f.getExtension())) {
@@ -532,6 +535,9 @@ public class MainController extends BundleController implements NSApplication.De
             }
             else if("cyberduckprofile".equals(f.getExtension())) {
                 final Protocol profile = ProtocolReaderFactory.instance().read(f);
+                if(null == profile) {
+                    return false;
+                }
                 profile.register();
                 final Host host = new Host(profile, profile.getDefaultHostname(), profile.getDefaultPort());
                 MainController.newDocument().addBookmark(host);

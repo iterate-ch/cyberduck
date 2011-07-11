@@ -264,6 +264,9 @@ namespace Ch.Cyberduck.Ui.Controller
                     else if ("cyberduckprofile".Equals(f.getExtension()))
                     {
                         Protocol profile = (Protocol) ProtocolReaderFactory.instance().read(f);
+                        if(null == profile) {
+                            return;
+                        }
                         profile.register();
                         Host host = new Host(profile, profile.getDefaultHostname(), profile.getDefaultPort());
                         NewBrowser().AddBookmark(host);
@@ -276,8 +279,11 @@ namespace Ch.Cyberduck.Ui.Controller
                     }
                     else if ("duck".Equals(f.getExtension()))
                     {
-                        Host host = (Host) HostReaderFactory.instance().read(f);
-                        NewBrowser().Mount(host);
+                        Host bookmark = (Host) HostReaderFactory.instance().read(f);
+                        if(null == bookmark) {
+                            return false;
+                        }
+                        NewBrowser().Mount(bookmark);
                     }
                 }
             }
