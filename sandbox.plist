@@ -17,15 +17,34 @@
 		<true/>
 		<key>com.apple.security.temporary-exception.apple-events</key>
 		<!-- The ability to send Apple events to the specified destination application. Used for ODB editors. -->
-		<true/>
+		<array>
+	        <string>de.codingmonkeys.SubEthaEdit</string>
+	        <string>com.barebones.bbedit</string>
+	        <string>com.barebones.textwrangler</string>
+	        <string>com.macromates.textmate</string>
+	        <string>com.transtex.texeditplus</string>
+	        <string>jp.co.artman21.JeditX</string>
+	        <string>net.mimikaki.mi</string>
+	        <string>org.smultron.Smultron</string>
+	        <string>org.fraise.Fraise</string>
+	        <string>com.aynimac.CotEditor</string>
+	        <string>com.macrabbit.cssedit</string>
+	        <string>com.talacia.Tag</string>
+	        <string>org.skti.skEdit</string>
+	        <string>com.cgerdes.ji</string>
+	        <string>com.optima.PageSpinner</string>
+	        <string>com.hogbaysoftware.WriteRoom</string>
+	        <string>org.vim.MacVim</string>
+	        <string>com.forgedit.ForgEdit</string>
+	        <string>com.tacosw.TacoHTMLEdit</string>
+	        <string>com.macrabbit.Espresso</string>
+	        <string>net.experiya.ScinteX</string>
+		</array> 
 		<key>com.apple.security.temporary-exception.files.home-relative-path.read-write</key>
 		<!-- The ability to read or write the specified files or directories in the user’s home directory. Custom download location -->
-		<true/>
-		<key></key>
-		<true/>
-		<key></key>
-		<true/>
-		<key></key>
-		<true/>
+		<array>
+			<string>Desktop</string>
+			<string>Documents</string>
+		</array> 
 	</dict>
 </plist>

@@ -58,6 +58,8 @@
     <property name="installer.certificate" value="3rd Party Mac Developer Installer: David Kocher"/>
     <property name="installer.keychain" value="${user.home}/Library/Keychains/codesign.keychain"/>
 
+    <property name="sparkle.feed" value="/dev/null"/>
+
     <property name="spotlight" value="${home}/Spotlight Importer"/>
     <property name="build.spotlight" value="${spotlight}/build/${configuration}"/>
 
@@ -163,6 +165,7 @@
         <antcall target="strip"/>
 
         <antcall target="codesign">
+            <param name="codesign.arg" value="${codesign.entitlements}"/>
             <param name="codesign.certificate" value="3rd Party Mac Developer Application: David Kocher"/>
         </antcall>
 
@@ -264,7 +267,7 @@
     </target>
 
     <target name="codesign">
-        <echo message="Code signing application bundle..."/>
+        <echo message="Code signing application bundle with entitlements ${codesign.arg}..."/>
         <exec executable="/usr/bin/codesign" spawn="false" failonerror="true">
             <arg line="--force --sign '${codesign.certificate}' --keychain ${codesign.keychain} ${codesign.arg} -v ${app.bundle}"/>
         </exec>
@@ -410,7 +413,6 @@
         <antcall target="build">
             <param name="app.runtime.properties.key" value="Runtime"/>
             <param name="app.runtime.system.min" value="10.6.6"/>
-            <param name="sparkle.feed" value="/dev/null"/>
         </antcall>
         <antcall target="distribution-mas"/>
     </target>
