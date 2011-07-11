@@ -119,7 +119,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             browser.TreeColumnRenderer = new BrowserRenderer();
             browser.SelectedRowDecoration = new ExplorerRowBorderDecoration();
             browser.ItemsChanged += (sender, args) => ItemsChanged();
-
             browser.BeforeSorting += BeforeSorting;
             SetupComparators();
 
@@ -2129,6 +2128,10 @@ namespace Ch.Cyberduck.Ui.Winforms
             if (e.KeyCode == Keys.Delete)
             {
                 Delete();
+            }
+            if (e.KeyCode == Keys.F5 && ValidateRefresh())
+            {
+                RefreshBrowser();
             }
         }
 
