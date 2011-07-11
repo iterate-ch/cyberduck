@@ -19,15 +19,24 @@ package ch.cyberduck.ui.cocoa.foundation;
  * dkocher@cyberduck.ch
  */
 
-import org.rococoa.cocoa.foundation.*;
+import org.rococoa.cocoa.foundation.NSRect;
+import org.rococoa.internal.RococoaTypeMapper;
+
+import com.sun.jna.Library;
+import com.sun.jna.Native;
+
+import java.util.Collections;
 
 /**
  * @version $Id$
  */
 public class FoundationKitFunctionsLibrary {
 
+    private static final FoundationKitFunctions instance = (FoundationKitFunctions) Native.loadLibrary(
+            "Foundation", FoundationKitFunctions.class, Collections.singletonMap(Library.OPTION_TYPE_MAPPER, new RococoaTypeMapper()));
+
     public static NSRect NSUnionRect(NSRect aRect, NSRect bRect) {
-        return FoundationKitFunctions.instance.NSUnionRect(aRect, bRect);
+        return instance.NSUnionRect(aRect, bRect);
     }
 
     /**
@@ -35,7 +44,7 @@ public class FoundationKitFunctionsLibrary {
      * <i>native declaration : /System/Library/Frameworks/Foundation.framework/Headers/NSPathUtilities.h:46</i>
      */
     public static String NSUserName() {
-        return FoundationKitFunctions.instance.NSUserName();
+        return instance.NSUserName();
     }
 
     /**
@@ -43,7 +52,7 @@ public class FoundationKitFunctionsLibrary {
      * <i>native declaration : /System/Library/Frameworks/Foundation.framework/Headers/NSPathUtilities.h:47</i>
      */
     public static String NSFullUserName() {
-        return FoundationKitFunctions.instance.NSFullUserName();
+        return instance.NSFullUserName();
     }
 
     /**
@@ -51,7 +60,7 @@ public class FoundationKitFunctionsLibrary {
      * <i>native declaration : /System/Library/Frameworks/Foundation.framework/Headers/NSPathUtilities.h:49</i>
      */
     public static String NSHomeDirectory() {
-        return FoundationKitFunctions.instance.NSHomeDirectory();
+        return instance.NSHomeDirectory();
     }
 
     /**
@@ -59,6 +68,10 @@ public class FoundationKitFunctionsLibrary {
      * <i>native declaration : /System/Library/Frameworks/Foundation.framework/Headers/NSPathUtilities.h:52</i>
      */
     public static String NSTemporaryDirectory() {
-        return FoundationKitFunctions.instance.NSTemporaryDirectory();
+        return instance.NSTemporaryDirectory();
+    }
+
+    public static NSArray NSSearchPathForDirectoriesInDomains(int directory, int domainMask, boolean expandTilde) {
+        return instance.NSSearchPathForDirectoriesInDomains(directory, domainMask, expandTilde);
     }
 }

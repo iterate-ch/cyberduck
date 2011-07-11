@@ -25,6 +25,7 @@ import ch.cyberduck.ui.cocoa.foundation.*;
 
 import org.rococoa.Rococoa;
 import org.rococoa.cocoa.foundation.NSInteger;
+import org.rococoa.cocoa.foundation.NSUInteger;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -158,7 +159,19 @@ public class UserDefaultsPreferences extends Preferences {
     protected void setDefaults() {
         super.setDefaults();
 
-        defaults.put("application.support.path", LocalFactory.createLocal("~/Library/Application Support/Cyberduck").getAbbreviatedPath());
+        NSArray directories = FoundationKitFunctionsLibrary.NSSearchPathForDirectoriesInDomains(
+                FoundationKitFunctions.NSSearchPathDirectory.NSApplicationSupportDirectory,
+                FoundationKitFunctions.NSSearchPathDomainMask.NSUserDomainMask,
+                true);
+        if(directories.count().intValue() == 0) {
+            log.error("Failed searching for application support directory");
+            defaults.put("application.support.path", LocalFactory.createLocal("~/Library/Application Support/Cyberduck").getAbbreviatedPath());
+        }
+        else {
+            String directory = directories.objectAtIndex(new NSUInteger(0)).toString();
+            log.info("Found application support directory:" + directory);
+            defaults.put("application.support.path", LocalFactory.createLocal(directory).getAbbreviatedPath());
+        }
         defaults.put("application.name",
                 NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleName").toString());
         defaults.put("application.version",
