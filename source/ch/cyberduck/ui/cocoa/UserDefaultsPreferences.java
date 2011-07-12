@@ -102,7 +102,6 @@ public class UserDefaultsPreferences extends Preferences {
             // Setting a default has no effect on the value returned by the objectForKey method if
             // the same key exists in a domain that precedes the application domain in the search list.
             this.props.setObjectForKey(NSString.stringWithString(value), property);
-            this.save();
         }
     }
 
@@ -112,14 +111,12 @@ public class UserDefaultsPreferences extends Preferences {
         // Setting a default has no effect on the value returned by the objectForKey method if
         // the same key exists in a domain that precedes the application domain in the search list.
         this.props.setObjectForKey(NSArray.arrayWithObjects(value.toArray(new String[value.size()])), property);
-        this.save();
     }
 
     @Override
     public void deleteProperty(final String property) {
         log.debug("deleteProperty:" + property);
         this.props.removeObjectForKey(property);
-        this.save();
     }
 
     /**

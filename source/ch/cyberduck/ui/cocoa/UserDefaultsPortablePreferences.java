@@ -43,7 +43,6 @@ public class UserDefaultsPortablePreferences extends UserDefaultsPreferences {
     @Override
     public void deleteProperty(String property) {
         this.dict.removeObjectForKey(property);
-        this.save();
     }
 
     @Override
