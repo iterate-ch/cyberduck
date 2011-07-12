@@ -1,4 +1,4 @@
-﻿﻿//
+﻿// 
 // Copyright (c) 2010-2011 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
@@ -15,6 +15,7 @@
 // Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
 // 
+
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -22,9 +23,9 @@ using System.IO;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
-using ch.cyberduck.core;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Properties;
+using ch.cyberduck.core;
 using java.util;
 using org.apache.log4j;
 using Path = System.IO.Path;
@@ -119,7 +120,6 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             Log.info("setProperty: " + property + "," + value);
             _settings[property] = value;
-            save();
         }
 
         public override string locale()
@@ -136,7 +136,6 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             Log.debug("deleteProperty: " + property);
             _settings.Remove(property);
-            save();
         }
 
         public override string getProperty(string property)

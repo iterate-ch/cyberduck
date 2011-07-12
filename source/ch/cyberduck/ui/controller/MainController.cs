@@ -15,26 +15,28 @@
 // Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
 // 
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows.Forms;
-using ch.cyberduck.core;
 using Ch.Cyberduck.Core;
-using ch.cyberduck.core.aquaticprime;
-using ch.cyberduck.core.i18n;
-using ch.cyberduck.core.importer;
-using ch.cyberduck.core.serializer;
-using ch.cyberduck.ui;
 using Ch.Cyberduck.Ui.Controller.Growl;
 using Ch.Cyberduck.Ui.Winforms;
 using Ch.Cyberduck.Ui.Winforms.Serializer;
 using Ch.Cyberduck.Ui.Winforms.Taskdialog;
 using Microsoft.VisualBasic.ApplicationServices;
+using ch.cyberduck.core;
+using ch.cyberduck.core.aquaticprime;
+using ch.cyberduck.core.i18n;
+using ch.cyberduck.core.importer;
+using ch.cyberduck.core.serializer;
+using ch.cyberduck.ui;
 using org.apache.log4j;
 using Path = System.IO.Path;
 using Rendezvous = Ch.Cyberduck.Core.Rendezvous;
@@ -119,6 +121,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                     }
                                 }
                                 Preferences.instance().setProperty("uses", Preferences.instance().getInteger("uses") + 1);
+                                Preferences.instance().save();
                                 // Shutdown thread pools
                                 AbstractController.getTimerPool().shutdownNow();
                                 ThreadPool.instance().shutdown();
@@ -264,7 +267,8 @@ namespace Ch.Cyberduck.Ui.Controller
                     else if ("cyberduckprofile".Equals(f.getExtension()))
                     {
                         Protocol profile = (Protocol) ProtocolReaderFactory.instance().read(f);
-                        if(null == profile) {
+                        if (null == profile)
+                        {
                             return;
                         }
                         profile.register();
@@ -280,7 +284,8 @@ namespace Ch.Cyberduck.Ui.Controller
                     else if ("duck".Equals(f.getExtension()))
                     {
                         Host bookmark = (Host) HostReaderFactory.instance().read(f);
-                        if(null == bookmark) {
+                        if (null == bookmark)
+                        {
                             return;
                         }
                         NewBrowser().Mount(bookmark);
@@ -482,8 +487,6 @@ namespace Ch.Cyberduck.Ui.Controller
                                    }
                                    cde.Signal();
                                });
-
-
             _bc.Background(delegate
                                {
                                    cde.Wait();
