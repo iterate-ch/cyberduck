@@ -1047,6 +1047,7 @@ ko.lproj/Transfer.strings -text svneol=unset#text/utf-16
 lib/ActiveButtons.dll -text
 lib/ActiveButtons.pdb -text
 lib/AutomaticUpdater.dll -text
+lib/AutomaticUpdater.pdb -text
 lib/AutomaticUpdater.xml -text
 lib/ExceptionReporter.WinForms.dll -text
 lib/ExceptionReporter.WinForms.xml -text
