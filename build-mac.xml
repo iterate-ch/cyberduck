@@ -165,7 +165,7 @@
         <antcall target="strip"/>
 
         <antcall target="codesign">
-            <param name="codesign.arg" value="${codesign.entitlements}"/>
+            <!--><param name="codesign.arg" value="${codesign.entitlements}"/>-->
             <param name="codesign.certificate" value="3rd Party Mac Developer Application: David Kocher"/>
         </antcall>
 
