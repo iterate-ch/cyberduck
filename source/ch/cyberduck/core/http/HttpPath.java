@@ -151,4 +151,9 @@ public abstract class HttpPath extends Path {
             throw new IOException(e.getMessage());
         }
     }
+
+    @Override
+    public String toURL() {
+        return this.toURL(false);
+    }
 }

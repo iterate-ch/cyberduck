@@ -852,9 +852,14 @@ public class Host implements Serializable {
      * @return The URL of the remote host including user login hostname and port
      */
     public String toURL() {
+        return this.toURL(true);
+    }
+
+    public String toURL(boolean credentials) {
         StringBuilder url = new StringBuilder(this.getProtocol().getScheme());
         url.append("://");
-        if(StringUtils.isNotEmpty(this.getCredentials().getUsername())) {
+        if(credentials
+                && StringUtils.isNotEmpty(this.getCredentials().getUsername())) {
             url.append(this.getCredentials().getUsername()).append("@");
         }
         url.append(this.getHostname(true));

@@ -1051,8 +1051,16 @@ public abstract class Path extends AbstractPath implements Serializable {
      */
     @Override
     public String toURL() {
+        return this.toURL(true);
+    }
+
+    /**
+     * @param credentials Include username
+     * @return Null if there is a encoding failure
+     */
+    public String toURL(boolean credentials) {
         // Do not use java.net.URL because it doesn't know about custom protocols!
-        return this.getHost().toURL() + encode(this.getAbsolute());
+        return this.getHost().toURL(credentials) + encode(this.getAbsolute());
     }
 
     /**
