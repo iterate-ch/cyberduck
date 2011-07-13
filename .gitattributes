@@ -1694,6 +1694,7 @@ setup/Bonjour64.msi -text
 setup/FileAssociation.nsh -text
 setup/cyberduck.nsi -text
 setup/header.bmp -text
+setup/uninstall.png -text svneol=unset#image/png
 setup/verpatch.exe -text
 setup/welcome.bmp -text
 sk.lproj/Alert.nib/classes.nib -text
