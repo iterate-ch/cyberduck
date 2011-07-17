@@ -801,7 +801,7 @@ public class GDPath extends Path {
                 path.setDocumentUri(entry.getDocumentLink().getHref());
                 path.setResourceId(entry.getResourceId());
                 // Add unique document ID as checksum
-                path.attributes().setChecksum(entry.getEtag());
+                path.attributes().setChecksum(entry.getMd5Checksum());
                 if(null != entry.getMediaSource()) {
                     path.attributes().setSize(entry.getMediaSource().getContentLength());
                 }
@@ -852,7 +852,7 @@ public class GDPath extends Path {
                                 revision.attributes().setModificationDate(revisionEntry.getUpdated().getValue());
                                 // Versioning is enabled if non null.
                                 revision.attributes().setVersionId(revisionEntry.getVersionId());
-                                revision.attributes().setChecksum(revisionEntry.getEtag());
+                                revision.attributes().setChecksum(revisionEntry.getMd5Checksum());
                                 revision.attributes().setRevision(++i);
                                 revision.attributes().setDuplicate(true);
                                 // Add to listing
