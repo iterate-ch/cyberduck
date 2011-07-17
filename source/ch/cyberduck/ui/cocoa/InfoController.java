@@ -1771,7 +1771,7 @@ public class InfoController extends ToolbarWindowController {
                         try {
                             for(String checksum : checksums) {
                                 if(StringUtils.isNotBlank(checksum)) {
-                                    updateField(checksumField, checksum);
+                                    updateField(checksumField, checksum, TRUNCATE_MIDDLE_ATTRIBUTES);
                                 }
                             }
                         }
