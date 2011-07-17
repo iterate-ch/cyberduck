@@ -488,7 +488,7 @@ public abstract class Path extends AbstractPath implements Serializable {
      * provider implementation.
      */
     public void readChecksum() {
-        ;
+        throw new UnsupportedOperationException();
     }
 
     /**
