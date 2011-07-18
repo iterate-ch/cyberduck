@@ -243,8 +243,13 @@ public class GDSession extends SSLSession {
     }
 
     @Override
-    public boolean isTimestampSupported() {
+    public boolean isWriteTimestampSupported() {
         return false;
+    }
+
+    @Override
+    public boolean isChecksumSupported() {
+        return true;
     }
 
     @Override

@@ -483,36 +483,78 @@ public abstract class Path extends AbstractPath implements Serializable {
         throw new UnsupportedOperationException();
     }
 
+    private Path update() {
+        final AttributedList<Path> l = this.getParent().children();
+        if(l.contains(this.getReference())) {
+            return l.get(this.getReference());
+        }
+        return this;
+    }
+
     /**
+     * Default implementation updating timestamp from directory listing.
+     * <p/>
      * No checksum calculation by default. Might be supported by specific
      * provider implementation.
      */
     public void readChecksum() {
+        this.getSession().message(MessageFormat.format(Locale.localizedString("Compute MD5 hash of {0}", "Status"),
+                this.getName()));
+
+        Path r = this.update();
+        attributes().setChecksum(r.attributes().getChecksum());
+    }
+
+    /**
+     * Default implementation updating size from directory listing
+     */
+    public void readSize() {
+        this.getSession().message(MessageFormat.format(Locale.localizedString("Getting size of {0}", "Status"),
+                this.getName()));
+
+        Path r = this.update();
+        attributes().setSize(r.attributes().getSize());
+    }
+
+    @Override
+    public void writeTimestamp(long created, long modified, long accessed) {
         throw new UnsupportedOperationException();
     }
 
     /**
-     * Read the size of the file
+     * Default implementation updating timestamp from directory listing.
      *
-     * @see Attributes#getSize()
+     * @see ch.cyberduck.core.Attributes#getModificationDate()
      */
-    public abstract void readSize();
+    public void readTimestamp() {
+        this.getSession().message(MessageFormat.format(Locale.localizedString("Getting timestamp of {0}", "Status"),
+                this.getName()));
+
+        Path r = this.update();
+        attributes().setModificationDate(r.attributes().getModificationDate());
+        attributes().setCreationDate(r.attributes().getCreationDate());
+        attributes().setAccessedDate(r.attributes().getAccessedDate());
+    }
 
     /**
-     * Read the modification date of the file
-     *
-     * @see Attributes#getModificationDate()
-     * @see ch.cyberduck.core.Session#isTimestampSupported()
-     */
-    public abstract void readTimestamp();
-
-    /**
-     * Read the file permission of the file
+     * Default implementation updating permissions from directory listing.
      *
      * @see Attributes#getPermission()
      * @see Session#isUnixPermissionsSupported()
      */
-    public abstract void readUnixPermission();
+    public void readUnixPermission() {
+        this.getSession().message(MessageFormat.format(Locale.localizedString("Getting permission of {0}", "Status"),
+                this.getName()));
+
+        Path r = this.update();
+        attributes().setPermission(r.attributes().getPermission());
+    }
+
+
+    @Override
+    public void writeUnixPermission(Permission perm, boolean recursive) {
+        throw new UnsupportedOperationException();
+    }
 
     /**
      * @param acl       The permissions to apply

@@ -295,11 +295,6 @@ public class GDPath extends Path {
     }
 
     @Override
-    public void readSize() {
-        ;
-    }
-
-    @Override
     public void readAcl() {
         try {
             this.getSession().check();
@@ -965,26 +960,6 @@ public class GDPath extends Path {
                 this.error("Cannot create folder {0}", e);
             }
         }
-    }
-
-    @Override
-    public void readUnixPermission() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void writeUnixPermission(Permission perm, boolean recursive) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void readTimestamp() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void writeTimestamp(long created, long modified, long accessed) {
-        throw new UnsupportedOperationException();
     }
 
     @Override

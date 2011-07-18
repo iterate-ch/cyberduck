@@ -665,34 +665,13 @@ public class FTPPath extends Path {
                 }
                 if(-1 == attributes().getModificationDate()) {
                     // Read the timestamp from the directory listing
-                    final AttributedList<AbstractPath> l = this.getParent().children();
-                    if(l.contains(this.getReference())) {
-                        attributes().setModificationDate(l.get(this.getReference()).attributes().getModificationDate());
-                    }
+                    super.readTimestamp();
                 }
             }
             catch(IOException e) {
                 this.error("Cannot read file attributes", e);
 
             }
-        }
-    }
-
-    @Override
-    public void readUnixPermission() {
-        try {
-            this.getSession().check();
-            this.getSession().message(MessageFormat.format(Locale.localizedString("Getting permission of {0}", "Status"),
-                    this.getName()));
-
-            // Read the permission from the directory listing
-            final AttributedList<AbstractPath> l = this.getParent().children();
-            if(l.contains(this.getReference())) {
-                attributes().setPermission(l.get(this.getReference()).attributes().getPermission());
-            }
-        }
-        catch(IOException e) {
-            this.error("Cannot read file attributes", e);
         }
     }
 
