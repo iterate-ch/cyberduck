@@ -655,11 +655,6 @@ public class AzurePath extends CloudPath {
     }
 
     @Override
-    public void writeTimestamp(long created, long modified, long accessed) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public void rename(AbstractPath renamed) {
         this.copy(renamed);
         // The directory listing of the target is no more current

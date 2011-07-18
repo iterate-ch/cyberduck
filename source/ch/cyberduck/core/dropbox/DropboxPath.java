@@ -344,11 +344,6 @@ public class DropboxPath extends Path {
     }
 
     @Override
-    public void writeTimestamp(long created, long modified, long accessed) {
-        ;
-    }
-
-    @Override
     public void readTimestamp() {
         try {
             this.getSession().check();
@@ -366,16 +361,6 @@ public class DropboxPath extends Path {
         catch(IOException e) {
             this.error("Cannot read file attributes", e);
         }
-    }
-
-    @Override
-    public void writeUnixPermission(Permission perm, boolean recursive) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void readUnixPermission() {
-        throw new UnsupportedOperationException();
     }
 
     @Override

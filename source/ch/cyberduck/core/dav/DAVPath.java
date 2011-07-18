@@ -245,21 +245,6 @@ public class DAVPath extends HttpPath {
         }
     }
 
-    @Override
-    public void readUnixPermission() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void writeUnixPermission(Permission perm, boolean recursive) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void writeTimestamp(long created, long modified, long accessed) {
-        throw new UnsupportedOperationException();
-    }
-
     /**
      * @return Modifiable HTTP header metatdata key and values
      */

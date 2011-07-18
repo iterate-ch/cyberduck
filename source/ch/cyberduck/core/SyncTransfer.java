@@ -231,7 +231,7 @@ public class SyncTransfer extends Transfer {
             children.addAll(_delegateUpload.children(parent));
         }
         for(Path child : children) {
-            if(child.getSession().isTimestampSupported()) {
+            if(child.getSession().isReadTimestampSupported()) {
                 if(child instanceof FTPPath) {
                     // Make sure we have a UTC timestamp
                     child.readTimestamp();
@@ -528,7 +528,7 @@ public class SyncTransfer extends Transfer {
             log.debug("compareTimestamp:" + p);
         }
         if(-1 == p.attributes().getModificationDate()) {
-            if(p.getSession().isTimestampSupported()) {
+            if(p.getSession().isReadTimestampSupported()) {
                 // Make sure we have a UTC timestamp
                 p.readTimestamp();
             }

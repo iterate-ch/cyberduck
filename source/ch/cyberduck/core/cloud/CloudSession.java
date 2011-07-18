@@ -45,7 +45,7 @@ public abstract class CloudSession extends HttpSession {
     }
 
     @Override
-    public boolean isTimestampSupported() {
+    public boolean isWriteTimestampSupported() {
         return false;
     }
 

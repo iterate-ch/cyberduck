@@ -419,11 +419,20 @@ public abstract class Session implements TranscriptListener {
     }
 
     /**
+     * @return True if timestamp of file can be read.
+     * @see AbstractPath#writeTimestamp(long, long, long)
+     * @see ch.cyberduck.core.Path#readTimestamp()
+     */
+    public boolean isReadTimestampSupported() {
+        return true;
+    }
+
+    /**
      * @return True if timestamp of file can be read and written.
      * @see AbstractPath#writeTimestamp(long, long, long)
      * @see ch.cyberduck.core.Path#readTimestamp()
      */
-    public boolean isTimestampSupported() {
+    public boolean isWriteTimestampSupported() {
         return true;
     }
 

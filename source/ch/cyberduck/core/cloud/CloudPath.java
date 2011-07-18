@@ -119,26 +119,6 @@ public abstract class CloudPath extends HttpPath {
     public abstract void writeMetadata(Map<String, String> meta);
 
     @Override
-    public void writeTimestamp(long created, long modified, long accessed) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void readTimestamp() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void writeUnixPermission(Permission perm, boolean recursive) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void readUnixPermission() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public Set<DescriptiveUrl> getURLs() {
         // Storage URL is not accessible
         return this.getHttpURLs();

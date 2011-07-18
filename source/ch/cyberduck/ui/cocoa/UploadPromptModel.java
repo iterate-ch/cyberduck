@@ -46,7 +46,7 @@ public class UploadPromptModel extends TransferPromptModel {
                 if(file.attributes().getSize() == -1) {
                     file.readSize();
                 }
-                if(file.getSession().isTimestampSupported()) {
+                if(file.getSession().isReadTimestampSupported()) {
                     if(file.attributes().getModificationDate() == -1) {
                         file.readTimestamp();
                     }

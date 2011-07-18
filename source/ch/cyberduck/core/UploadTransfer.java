@@ -189,7 +189,7 @@ public class UploadTransfer extends Transfer {
                         }
                     }
                 }
-                if(file.getSession().isTimestampSupported()) {
+                if(file.getSession().isWriteTimestampSupported()) {
                     if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
                         // Read timestamps from local file
                         file.writeTimestamp(file.getLocal().attributes().getCreationDate(),

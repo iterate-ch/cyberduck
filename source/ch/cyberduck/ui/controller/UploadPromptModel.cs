@@ -75,7 +75,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     if(child.attributes().getSize() == -1) {
                         child.readSize();
                     }
-                    if(child.getSession().isTimestampSupported()) {
+                    if(child.getSession().isReadTimestampSupported()) {
                         if(child.attributes().getModificationDate() == -1) {
                             child.readTimestamp();
                         }
