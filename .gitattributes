@@ -1175,7 +1175,7 @@ lib/VistaBridgeLibrary.dll -text
 lib/Windows7.DesktopIntegration.dll -text
 lib/activation-1.1.1.jar -text
 lib/apache-mime4j-0.6.jar -text
-lib/asm-3.3.jar -text
+lib/asm-3.3.1.jar -text
 lib/azure-8.jar -text
 lib/backport-util-concurrent-3.1.jar -text
 lib/bcmail-jdk15-145.jar -text
