@@ -38,7 +38,7 @@
     <property name="app.runtime.lib"
               value="@executable_path/../Resources/Java/Runtime.jdk/Contents/Home/jre/lib/server/libjvm.dylib"/>
     <!--<property name="app.runtime.lib" value="/System/Library/Frameworks/JavaVM.framework/Versions/A/JavaVM"/>-->
-    <property name="app.runtime.properties.key" value="Java"/>
+    <property name="app.runtime.properties.key" value="Runtime"/>
     <property name="app.runtime.system.min" value="10.5"/>
 
     <property name="app.spotlight" value="${app.library}/Spotlight"/>
@@ -370,6 +370,7 @@
 
     <target name="release" depends="clean, revision">
         <antcall target="build">
+            <param name="app.runtime.properties.key" value="Java"/>
             <param name="sparkle.feed" value="http://version.cyberduck.ch/changelog.rss"/>
         </antcall>
         <antcall target="distribution-sparkle">
