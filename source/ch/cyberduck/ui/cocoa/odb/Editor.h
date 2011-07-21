@@ -33,7 +33,7 @@ extern "C" {
  * Method:    edit
  * Signature: (Ljava/lang/String;)V
  */
-JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_odb_ODBEditor_edit
+JNIEXPORT jboolean JNICALL Java_ch_cyberduck_ui_cocoa_odb_ODBEditor_edit
   (JNIEnv *, jobject, jstring, jstring, jstring);
 
 #ifdef __cplusplus
@@ -52,6 +52,6 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_odb_ODBEditor_edit
 }
 
 - (id)init:(JNIEnv*)env withEditorClass:(jclass)editorClass withEditorObject:(jobject)editorObject;
-- (void)odbEdit:(id) sender path:(NSString *)path url:(NSString *)url withEditor:(NSString *)editor;
+- (BOOL)odbEdit:(id) sender path:(NSString *)path url:(NSString *)url withEditor:(NSString *)editor;
 
 @end

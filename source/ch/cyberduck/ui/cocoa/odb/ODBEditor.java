@@ -108,7 +108,9 @@ public class ODBEditor extends Editor {
         if(!ODBEditor.loadNative()) {
             return;
         }
-        this.edit(edited.getLocal().getAbsolute(), edited.toURL(), bundleIdentifier);
+        if(!this.edit(edited.getLocal().getAbsolute(), edited.toURL(), bundleIdentifier)) {
+            log.warn("Edit failed for:" + edited.getLocal().getAbsolute());
+        }
     }
 
     /**
@@ -119,7 +121,7 @@ public class ODBEditor extends Editor {
      * @param url              The remote URL
      * @param bundleIdentifier
      */
-    private native void edit(String local, String url, String bundleIdentifier);
+    private native boolean edit(String local, String url, String bundleIdentifier);
 
     /**
      * Called by the native editor when the file has been closed

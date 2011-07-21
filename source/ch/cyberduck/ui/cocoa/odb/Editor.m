@@ -46,7 +46,7 @@ jstring convertToJString(JNIEnv *env, NSString *nsString)
 	return (*env)->NewStringUTF(env, unichars);
 }
 
-JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_odb_ODBEditor_edit(
+JNIEXPORT jboolean JNICALL Java_ch_cyberduck_ui_cocoa_odb_ODBEditor_edit(
 										JNIEnv *env, 
 										jobject this, 
 										jstring local,
@@ -56,7 +56,10 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_odb_ODBEditor_edit(
 	Editor *editor = [[Editor alloc] init: env
 						  withEditorClass: (*env)->NewGlobalRef(env, (*env)->GetObjectClass(env, this)) 
 						 withEditorObject: (*env)->NewGlobalRef(env, this)];
-	[editor odbEdit:nil path:convertToNSString(env, local) url:convertToNSString(env, url) withEditor:convertToNSString(env, bundleIdentifier)];
+	if([editor odbEdit:nil path:convertToNSString(env, local) url:convertToNSString(env, url) withEditor:convertToNSString(env, bundleIdentifier)]) {
+	    return true;
+	}
+	return false;
 }
 
 @implementation Editor
@@ -82,13 +85,13 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_odb_ODBEditor_edit(
 	[super dealloc];
 }
 
-- (void)odbEdit:(id) sender path:(NSString *)path url:(NSString *)url withEditor:(NSString *)editor
+- (BOOL)odbEdit:(id) sender path:(NSString *)path url:(NSString *)url withEditor:(NSString *)editor
 {
     NSDictionary* options = [NSDictionary dictionaryWithObjectsAndKeys:
                                 url, ODBEditorCustomPathKey,
                                 nil
                             ];
-    [[ODBEditor sharedODBEditor:editor] editFile:path options:options forClient:self context:nil];
+    return [[ODBEditor sharedODBEditor:editor] editFile:path options:options forClient:self context:nil];
 }
 
 - (void)odbEditor:(ODBEditor *)editor didModifyFile:(NSString *)path newFileLocation:(NSString *)newPath  context:(NSDictionary *)context
