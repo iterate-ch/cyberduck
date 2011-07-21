@@ -292,7 +292,6 @@ public class CFSession extends CloudSession {
                                     Locale.localizedString("Rackspace Cloud Files", "Mosso")));
                         }
                         cdnRequest = true;
-                        URI url = new URI(CFSession.this.getClient().getCdnManagementURL());
                         try {
                             final FilesCDNContainer info = CFSession.this.getClient().getCDNContainerInfo(origin);
                         }
@@ -306,9 +305,6 @@ public class CFSession extends CloudSession {
                         CFSession.this.getClient().cdnUpdateContainer(origin, -1, enabled, logging);
                     }
                     catch(IOException e) {
-                        CFSession.this.error("Cannot write CDN configuration", e);
-                    }
-                    catch(URISyntaxException e) {
                         CFSession.this.error("Cannot write CDN configuration", e);
                     }
                     catch(HttpException e) {
@@ -411,6 +407,9 @@ public class CFSession extends CloudSession {
                 }
 
                 public List<Distribution.Method> getMethods() {
+                    if(!CFSession.this.isCDNSupported()) {
+                        return Collections.emptyList();
+                    }
                     return Arrays.asList(Distribution.DOWNLOAD);
                 }
 
@@ -430,6 +429,7 @@ public class CFSession extends CloudSession {
         return cdn;
     }
 
+    @Override
     public List<String> getSupportedStorageClasses() {
         return Collections.emptyList();
     }
