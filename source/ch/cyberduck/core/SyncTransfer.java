@@ -24,6 +24,8 @@ import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.serializer.Serializer;
 import ch.cyberduck.ui.growl.Growl;
 
+import org.apache.commons.collections.map.AbstractLinkedMap;
+import org.apache.commons.collections.map.LRUMap;
 import org.apache.log4j.Logger;
 
 import java.util.*;
@@ -161,7 +163,7 @@ public class SyncTransfer extends Transfer {
         }
     };
 
-    private TransferFilter ACTION_OVERWRITE = new TransferFilter() {
+    private TransferFilter filter = new TransferFilter() {
         /**
          * Download delegate filter
          */
@@ -187,22 +189,28 @@ public class SyncTransfer extends Transfer {
 
         public boolean accept(Path p) {
             final Comparison compare = SyncTransfer.this.compare(p);
-            if(!COMPARISON_EQUAL.equals(compare)) {
-                if(compare.equals(COMPARISON_REMOTE_NEWER)) {
-                    // Ask the download delegate for inclusion
-                    return _delegateFilterDownload.accept(p);
-                }
-                else if(compare.equals(COMPARISON_LOCAL_NEWER)) {
-                    // Ask the upload delegate for inclusion
-                    return _delegateFilterUpload.accept(p);
-                }
+            if(compare.equals(COMPARISON_REMOTE_NEWER)) {
+                // Ask the download delegate for inclusion
+                return _delegateFilterDownload.accept(p);
+            }
+            else if(compare.equals(COMPARISON_LOCAL_NEWER)) {
+                // Ask the upload delegate for inclusion
+                return _delegateFilterUpload.accept(p);
             }
             return false;
         }
 
         @Override
         public void complete(Path p) {
-            ;
+            final Comparison compare = SyncTransfer.this.compare(p);
+            if(compare.equals(COMPARISON_REMOTE_NEWER)) {
+                _delegateFilterDownload.complete(p);
+            }
+            else if(compare.equals(COMPARISON_LOCAL_NEWER)) {
+                _delegateFilterUpload.complete(p);
+            }
+            comparisons.remove(p);
+            cache.remove(p.getReference());
         }
     };
 
@@ -211,7 +219,7 @@ public class SyncTransfer extends Transfer {
         log.debug("filter:" + action);
         if(action.equals(TransferAction.ACTION_OVERWRITE)) {
             // When synchronizing, either cancel or overwrite. Resume is not supported
-            return ACTION_OVERWRITE;
+            return filter;
         }
         if(action.equals(TransferAction.ACTION_CALLBACK)) {
             TransferAction result = prompt.prompt();
@@ -360,6 +368,7 @@ public class SyncTransfer extends Transfer {
     protected void clear(final TransferOptions options) {
         _delegateDownload.clear(options);
         _delegateUpload.clear(options);
+        comparisons.clear();
         super.clear(options);
     }
 
@@ -418,46 +427,66 @@ public class SyncTransfer extends Transfer {
         }
     };
 
+    private Map<PathReference<Path>, Comparison> comparisons = Collections.<PathReference<Path>, Comparison>synchronizedMap(new LRUMap(
+            Preferences.instance().getInteger("transfer.cache.size")
+    ) {
+        @Override
+        protected boolean removeLRU(AbstractLinkedMap.LinkEntry
+                                            entry) {
+            log.debug("Removing from cache:" + entry);
+            return true;
+        }
+    });
+
     /**
      * @param p The path to compare
      * @return COMPARISON_REMOTE_NEWER, COMPARISON_LOCAL_NEWER or COMPARISON_EQUAL
      */
     public Comparison compare(Path p) {
+        if(comparisons.containsKey(p.<Path>getReference())) {
+            return comparisons.get(p.<Path>getReference());
+        }
         if(log.isDebugEnabled()) {
             log.debug("compare:" + p);
         }
-        if(p.getLocal().exists() && p.exists()) {
-            if(Preferences.instance().getBoolean("queue.sync.compare.hash")) {
-                // MD5/ETag Checksum is supported
-                Comparison comparison = this.compareHash(p);
+        Comparison result = COMPARISON_EQUAL;
+        try {
+            if(p.getLocal().exists() && p.exists()) {
+                if(Preferences.instance().getBoolean("queue.sync.compare.hash")) {
+                    // MD5/ETag Checksum is supported
+                    Comparison comparison = this.compareHash(p);
+                    if(!COMPARISON_UNEQUAL.equals(comparison)) {
+                        // Decision is available
+                        return result = comparison;
+                    }
+                }
+                if(Preferences.instance().getBoolean("queue.sync.compare.size")) {
+                    Comparison comparison = this.compareSize(p);
+                    if(!COMPARISON_UNEQUAL.equals(comparison)) {
+                        // Decision is available
+                        return result = comparison;
+                    }
+                }
+                // Default comparison is using timestamp of file.
+                Comparison comparison = this.compareTimestamp(p);
                 if(!COMPARISON_UNEQUAL.equals(comparison)) {
                     // Decision is available
-                    return comparison;
+                    return result = comparison;
                 }
             }
-            if(Preferences.instance().getBoolean("queue.sync.compare.size")) {
-                Comparison comparison = this.compareSize(p);
-                if(!COMPARISON_UNEQUAL.equals(comparison)) {
-                    // Decision is available
-                    return comparison;
-                }
+            else if(p.exists()) {
+                // Only the remote file exists
+                return result = COMPARISON_REMOTE_NEWER;
             }
-            // Default comparison is using timestamp of file.
-            Comparison comparison = this.compareTimestamp(p);
-            if(!COMPARISON_UNEQUAL.equals(comparison)) {
-                // Decision is available
-                return comparison;
+            else if(p.getLocal().exists()) {
+                // Only the local file exists
+                return result = COMPARISON_LOCAL_NEWER;
             }
+            return result;
         }
-        else if(p.exists()) {
-            // Only the remote file exists
-            return COMPARISON_REMOTE_NEWER;
+        finally {
+            comparisons.put(p.<Path>getReference(), result);
         }
-        else if(p.getLocal().exists()) {
-            // Only the local file exists
-            return COMPARISON_LOCAL_NEWER;
-        }
-        return COMPARISON_EQUAL;
     }
 
     /**
