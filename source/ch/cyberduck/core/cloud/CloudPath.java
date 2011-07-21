@@ -20,9 +20,9 @@ package ch.cyberduck.core.cloud;
 
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.http.HttpPath;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.util.Map;
@@ -36,30 +36,30 @@ public abstract class CloudPath extends HttpPath {
 
     public <T> CloudPath(T dict) {
         super(dict);
+        if(this.isContainer()) {
+            this.attributes().setType(Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
+        }
     }
 
     protected CloudPath(String parent, String name, int type) {
         super(parent, name, type);
+        if(this.isContainer()) {
+            this.attributes().setType(Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
+        }
     }
 
     protected CloudPath(String path, int type) {
         super(path, type);
+        if(this.isContainer()) {
+            this.attributes().setType(Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
+        }
     }
 
     protected CloudPath(String parent, final Local local) {
         super(parent, local);
-    }
-
-    @Override
-    public Path getParent() {
-        final CloudPath parent = (CloudPath) super.getParent();
-        if(parent.isRoot()) {
-            parent.attributes().setType(Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
+        if(this.isContainer()) {
+            this.attributes().setType(Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
         }
-        if(parent.isContainer()) {
-            parent.attributes().setType(Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
-        }
-        return parent;
     }
 
     /**
@@ -67,7 +67,7 @@ public abstract class CloudPath extends HttpPath {
      */
     @Override
     public boolean isContainer() {
-        return super.getParent().isRoot();
+        return !StringUtils.contains(StringUtils.substring(this.getAbsolute(), 1), this.getPathDelimiter());
     }
 
     /**
