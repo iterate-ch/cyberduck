@@ -113,10 +113,12 @@ public abstract class AbstractHostCollection extends Collection<Host> implements
         super.collectionItemRemoved(item);
     }
 
+    private Comparator<String> comparator = new NaturalOrderComparator();
+
     public void sortByNickname() {
         this.sort(new Comparator<Host>() {
             public int compare(Host o1, Host o2) {
-                return o1.getNickname().compareTo(o2.getNickname());
+                return comparator.compare(o1.getNickname(), o2.getNickname());
             }
         });
     }
@@ -124,7 +126,7 @@ public abstract class AbstractHostCollection extends Collection<Host> implements
     public void sortByHostname() {
         this.sort(new Comparator<Host>() {
             public int compare(Host o1, Host o2) {
-                return o1.getHostname().compareTo(o2.getHostname());
+                return comparator.compare(o1.getHostname(), o2.getHostname());
             }
         });
     }
@@ -132,7 +134,7 @@ public abstract class AbstractHostCollection extends Collection<Host> implements
     public void sortByProtocol() {
         this.sort(new Comparator<Host>() {
             public int compare(Host o1, Host o2) {
-                return o1.getProtocol().getIdentifier().compareTo(o2.getProtocol().getIdentifier());
+                return comparator.compare(o1.getProtocol().getIdentifier(), o2.getProtocol().getIdentifier());
             }
         });
     }
