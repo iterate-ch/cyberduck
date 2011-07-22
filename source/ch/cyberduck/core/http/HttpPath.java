@@ -107,6 +107,7 @@ public abstract class HttpPath extends Path {
                         response = command.call(entity);
                     }
                     catch(IOException e) {
+                        entry.countDown();
                         exception = e;
                     }
                     finally {
