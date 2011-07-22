@@ -306,6 +306,7 @@
 
     <target name="nightly" depends="clean, revision">
         <antcall target="build">
+            <param name="app.runtime.properties.key" value="Java"/>
             <param name="sparkle.feed" value="http://version.cyberduck.ch/nightly/changelog.rss"/>
         </antcall>
         <antcall target="distribution-sparkle">
@@ -338,6 +339,7 @@
 
     <target name="beta" depends="clean, revision">
         <antcall target="build">
+            <param name="app.runtime.properties.key" value="Java"/>
             <param name="sparkle.feed" value="http://version.cyberduck.ch/beta/changelog.rss"/>
         </antcall>
         <antcall target="distribution-sparkle">
