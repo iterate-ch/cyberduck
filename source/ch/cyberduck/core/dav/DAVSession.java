@@ -287,7 +287,7 @@ public class DAVSession extends HttpSession {
     }
 
     @Override
-    public boolean isReadTimestampSupported() {
+    public boolean isWriteTimestampSupported() {
         return false;
     }
 }
