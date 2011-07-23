@@ -4,6 +4,11 @@ http://cyberduck.ch/
 
 Changelog. Last modified: $Date$
 
+4.1.1 [http://trac.cyberduck.ch/milestone/4.1.1]
+- [Bugfix] Connection failure with email address as username (WebDAV) (#6066)
+- [Bugfix] Synchronisation comparison failures (#6074)
+- [Bugfix] Error listing folders (Openstack Swift) (#6089)
+
 4.1 [http://trac.cyberduck.ch/milestone/4.1]
 - [Localize] Bulgarian Localization
 - [Feature] Replaced WebDAV protocol implementation
