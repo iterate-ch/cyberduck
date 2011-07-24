@@ -25,7 +25,6 @@ import ch.cyberduck.core.sparkle.Updater;
 import ch.cyberduck.core.threading.AutoreleaseActionOperationBatcher;
 import ch.cyberduck.ui.cocoa.application.NSApplication;
 import ch.cyberduck.ui.cocoa.foundation.NSAutoreleasePool;
-import ch.cyberduck.ui.cocoa.foundation.NSGarbageCollector;
 import ch.cyberduck.ui.cocoa.i18n.BundleLocale;
 import ch.cyberduck.ui.cocoa.model.FinderLocal;
 import ch.cyberduck.ui.cocoa.model.OutlinePathReference;
@@ -104,7 +103,6 @@ public class MainApplication {
             root.setLevel(Level.toLevel(Preferences.instance().getProperty("logging")));
 
             if(log.isInfoEnabled()) {
-                log.info("Default garbage collector for the current process:" + NSGarbageCollector.defaultCollector());
                 log.info("Encoding " + System.getProperty("file.encoding"));
             }
 
