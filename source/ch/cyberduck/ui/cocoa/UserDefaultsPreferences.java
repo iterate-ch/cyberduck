@@ -156,6 +156,8 @@ public class UserDefaultsPreferences extends Preferences {
     protected void setDefaults() {
         super.setDefaults();
 
+        defaults.put("tmp.dir", FoundationKitFunctionsLibrary.NSTemporaryDirectory());
+
         String name = NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleName").toString();
         defaults.put("application.name", name);
         NSArray directories = FoundationKitFunctionsLibrary.NSSearchPathForDirectoriesInDomains(
