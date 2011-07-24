@@ -101,9 +101,10 @@ public class WatchEditor extends Editor implements FileWatcherListener {
      */
     @Override
     public void edit() {
-        NSWorkspace.sharedWorkspace().openFile(edited.getLocal().getAbsolute(),
-                NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(bundleIdentifier));
-        this.watch();
+        if(NSWorkspace.sharedWorkspace().openFile(edited.getLocal().getAbsolute(),
+                NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(bundleIdentifier))) {
+            this.watch();
+        }
     }
 
     /**
