@@ -245,6 +245,11 @@
                 <exclude name="Contents/Home/jre/lib/xawt/**"/>
                 <exclude name="Contents/Home/jre/lib/lwawt/**"/>
                 <exclude name="Contents/Home/jre/lib/client/**"/>
+                <exclude name="Contents/Home/jre/lib/headless/**"/>
+                <exclude name="Contents/Home/jre/lib/jli/**"/>
+                <exclude name="Contents/Home/jre/lib/management/**"/>
+                <exclude name="Contents/Home/jre/lib/cmm/**"/>
+                <exclude name="Contents/Home/jre/lib/JObjC.jar"/>
                 <exclude name="Contents/Home/jre/lib/libJObjC.dylib"/>
                 <exclude name="Contents/Home/jre/lib/libsplashscreen.dylib"/>
                 <exclude name="Contents/Home/jre/lib/libfontmanager.dylib"/>
@@ -253,6 +258,8 @@
                 <exclude name="Contents/Home/jre/lib/libhprof.dylib"/>
                 <exclude name="Contents/Home/jre/lib/libinstrument.dylib"/>
                 <exclude name="Contents/Home/jre/lib/libjsound.dylib"/>
+                <exclude name="Contents/Home/jre/lib/liblaf.dylib"/>
+                <exclude name="Contents/Home/jre/lib/libjava_crw_demo.dylib"/>
             </fileset>
         </copy>
         <echo message="Change dynamic shared library install names..."/>
