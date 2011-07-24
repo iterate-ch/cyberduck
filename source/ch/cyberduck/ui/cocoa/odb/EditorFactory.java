@@ -231,32 +231,37 @@ public class EditorFactory {
         if(!applicationNameCache.containsKey(bundleIdentifier)) {
             log.debug("getApplicationName:" + bundleIdentifier);
             final String path = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(bundleIdentifier);
+            String name = null;
             if(StringUtils.isBlank(path)) {
                 log.warn("Cannot determine installation path for " + bundleIdentifier);
-                applicationNameCache.put(bundleIdentifier, null);
-                return null;
-            }
-            NSBundle app = NSBundle.bundleWithPath(path);
-            if(null == app) {
-                log.error("Loading bundle failed:" + path);
-                applicationNameCache.put(bundleIdentifier, null);
-                return null;
-            }
-            NSDictionary dict = app.infoDictionary();
-            if(null == dict) {
-                log.error("Loading application dictionary failed:" + path);
-                applicationNameCache.put(bundleIdentifier, null);
-                return null;
-            }
-            final NSObject name = dict.objectForKey("CFBundleName");
-            if(null == name) {
-                log.warn("No CFBundleName for " + bundleIdentifier);
-                applicationNameCache.put(bundleIdentifier,
-                        FilenameUtils.removeExtension(LocalFactory.createLocal(path).getDisplayName()));
             }
             else {
-                applicationNameCache.put(bundleIdentifier, name.toString());
+                NSBundle app = NSBundle.bundleWithPath(path);
+                if(null == app) {
+                    log.error("Loading bundle failed:" + path);
+                }
+                else {
+                    NSDictionary dict = app.infoDictionary();
+                    if(null == dict) {
+                        log.error("Loading application dictionary failed:" + path);
+                        applicationNameCache.put(bundleIdentifier, null);
+                        return null;
+                    }
+                    else {
+                        final NSObject bundlename = dict.objectForKey("CFBundleName");
+                        if(null == bundlename) {
+                            log.warn("No CFBundleName for " + bundleIdentifier);
+                        }
+                        else {
+                            name = bundlename.toString();
+                        }
+                    }
+                }
             }
+            if(null == name) {
+                name = FilenameUtils.removeExtension(LocalFactory.createLocal(path).getDisplayName());
+            }
+            applicationNameCache.put(bundleIdentifier, name);
         }
         return applicationNameCache.get(bundleIdentifier);
     }
