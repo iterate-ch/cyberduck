@@ -89,6 +89,7 @@
             <fileset dir="${lib}">
                 <include name="*.jar"/>
                 <include name="*.dylib"/>
+                <include name="*.jnilib"/>
             </fileset>
         </copy>
         <exec dir="${home}" executable="/usr/bin/xcodebuild" spawn="false" failonerror="true">
