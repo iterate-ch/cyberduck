@@ -40,11 +40,5 @@
 	        <string>com.macrabbit.Espresso</string>
 	        <string>net.experiya.ScinteX</string>
 		</array> 
-		<key>com.apple.security.temporary-exception.files.home-relative-path.read-write</key>
-		<!-- The ability to read or write the specified files or directories in the user’s home directory. Custom download location -->
-		<array>
-			<string>Desktop</string>
-			<string>Documents</string>
-		</array> 
 	</dict>
 </plist>
