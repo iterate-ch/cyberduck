@@ -95,7 +95,7 @@ public class HistoryCollection extends AbstractFolderHostCollection {
      * Sort by timestamp of bookmark file.
      */
     @Override
-    protected void sort() {
+    protected synchronized void sort() {
         Collections.sort(this, new Comparator<Host>() {
             public int compare(Host o1, Host o2) {
                 if(null == o1.getTimestamp()) {

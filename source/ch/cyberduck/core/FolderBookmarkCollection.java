@@ -116,7 +116,7 @@ public class FolderBookmarkCollection extends AbstractFolderHostCollection {
     }
 
     @Override
-    protected void sort() {
+    protected synchronized void sort() {
         Collections.sort(this, new Comparator<Host>() {
             public int compare(Host o1, Host o2) {
                 return new Integer(Preferences.instance().getInteger(PREFIX + o1.getUuid())).compareTo(
