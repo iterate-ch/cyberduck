@@ -391,11 +391,6 @@ public class MainController extends BundleController implements NSApplication.De
     }
 
     @Action
-    public void faqMenuClicked(final ID sender) {
-        LocalFactory.createLocal(NSBundle.mainBundle().pathForResource_ofType("Cyberduck FAQ", "rtfd")).open();
-    }
-
-    @Action
     public void licenseMenuClicked(final ID sender) {
         LocalFactory.createLocal(NSBundle.mainBundle().pathForResource_ofType("License", "txt")).open();
     }
