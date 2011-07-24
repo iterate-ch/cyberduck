@@ -18,6 +18,9 @@
 		<key>com.apple.security.temporary-exception.apple-events</key>
 		<!-- The ability to send Apple events to the specified destination application. Used for ODB editors. -->
 		<array>
+			<!-- Register this application with Growl -->
+			<string>com.Growl.GrowlHelperApp</string>
+			<!-- Open Terminal for current SFTP connection -->
 			<string>com.apple.terminal</string>
 			<string>de.codingmonkeys.subethaedit</string>
 			<string>com.barebones.bbedit</string>
@@ -40,6 +43,10 @@
 			<string>com.tacosw.tacohtmledit</string>
 			<string>com.macrabbit.espresso</string>
 			<string>net.experiya.scintex</string>
-		</array> 
+		</array>
+		<key>com.apple.security.temporary-exception.mach-lookup.global-name</key>
+		<array>
+			<string>GrowlApplicationBridgePathway</string>
+		</array>
 	</dict>
 </plist>
