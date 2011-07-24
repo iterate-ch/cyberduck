@@ -1223,6 +1223,7 @@ lib/jul-to-slf4j-1.6.1.jar -text
 lib/libAquaticPrime.a -text
 lib/libKFS.dylib -text
 lib/libjdns_sd.dylib -text
+lib/libjnidispatch.jnilib -text
 lib/log4j-1.2.15.jar -text
 lib/log4j.xml -text
 lib/mail-1.4.3.jar -text
