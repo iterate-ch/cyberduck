@@ -582,12 +582,9 @@ public abstract class Preferences {
 
         defaults.put("azure.metadata.default", StringUtils.EMPTY);
 
-        defaults.put("cf.authentication.host", "auth.api.rackspacecloud.com");
         defaults.put("cf.authentication.context", "/v1.0");
-
         defaults.put("cf.upload.metadata.md5", String.valueOf(false));
         defaults.put("cf.metadata.default", StringUtils.EMPTY);
-
         defaults.put("cf.list.limit", String.valueOf(10000));
         defaults.put("cf.list.cdn.preload", String.valueOf(true));
 
