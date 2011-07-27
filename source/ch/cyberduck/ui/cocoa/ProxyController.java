@@ -106,22 +106,24 @@ public class ProxyController extends AbstractController {
         if(!runnable.isValid()) {
             return;
         }
-        if(log.isTraceEnabled()) {
-            log.trace("invoke:" + runnable);
-        }
-        if(this.isMainThread()) {
-            if(log.isDebugEnabled()) {
-                log.debug("Already on main thread. Invoke " + runnable + " directly.");
+        synchronized(runnable.lock()) {
+            if(log.isTraceEnabled()) {
+                log.trace("invoke:" + runnable);
             }
-            runnable.run();
-            return;
-        }
-        try {
-            //Defer to main thread
-            Foundation.runOnMainThread(runnable, wait);
-        }
-        catch(Throwable e) {
-            log.error("Exception running task on main thread:" + e.getMessage(), e);
+            if(this.isMainThread()) {
+                if(log.isDebugEnabled()) {
+                    log.debug("Already on main thread. Invoke " + runnable + " directly.");
+                }
+                runnable.run();
+                return;
+            }
+            try {
+                //Defer to main thread
+                Foundation.runOnMainThread(runnable, wait);
+            }
+            catch(Throwable e) {
+                log.error("Exception running task on main thread:" + e.getMessage(), e);
+            }
         }
     }
 
