@@ -139,7 +139,7 @@ public class IconCache {
 
     private NSImage load(String key, Integer size) {
         if(!cache.containsKey(key)) {
-            log.warn("No cached image for " + key);
+            log.debug("No cached image for " + key);
             return null;
         }
         final Map<Integer, NSImage> versions = cache.get(key);
