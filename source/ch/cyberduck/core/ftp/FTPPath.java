@@ -227,11 +227,15 @@ public class FTPPath extends Path {
                             if(!success) {
                                 // MLSD listing failed or not enabled
                                 if(getSession().isExtendedListEnabled()) {
-                                    success = parseListResponse(children, parser, getSession().getClient().list(FTPCommand.LIST, "-a"));
+                                    try {
+                                        success = parseListResponse(children, parser, getSession().getClient().list(FTPCommand.LIST, "-a"));
+                                    }
+                                    catch(FTPException e) {
+                                        getSession().setExtendedListEnabled(false);
+                                    }
                                 }
                                 if(!success) {
                                     // LIST -a listing failed or not enabled
-                                    getSession().setExtendedListEnabled(false);
                                     success = parseListResponse(children, parser, getSession().getClient().list(FTPCommand.LIST));
                                 }
                             }
