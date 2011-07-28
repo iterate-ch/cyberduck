@@ -184,11 +184,6 @@
             <param name="arch" value="ppc7400"/>
             <param name="binary" value="**/MacOS/*"/>
         </antcall>
-        <antcall target="lipo">
-            <!--Currently ship i386 only-->
-            <param name="arch" value="x86_64"/>
-            <param name="binary" value="**/MacOS/*"/>
-        </antcall>
         <!--Remove from frameworks-->
         <antcall target="lipo">
             <param name="arch" value="ppc7400"/>
