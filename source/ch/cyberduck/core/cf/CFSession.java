@@ -115,8 +115,8 @@ public class CFSession extends CloudSession {
         StringBuilder authentication = new StringBuilder(host.getProtocol().getScheme()).append("://");
         if(host.getHostname().equals(Protocol.CLOUDFILES.getDefaultHostname())) {
             // Use default authentication server. Rackspace.
-            authentication.append(Preferences.instance().getProperty("auth.api.rackspacecloud.com"));
-            authentication.append(Preferences.instance().getProperty("/v1.0"));
+            authentication.append("auth.api.rackspacecloud.com");
+            authentication.append("/v1.0");
         }
         else {
             // Use custom authentication server. Swift (OpenStack Object Storage) installation.
