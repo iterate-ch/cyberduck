@@ -22,7 +22,7 @@
 		<key>CFBundleInfoDictionaryVersion</key>
 		<string>6.0</string>
         <key>CFBundleVersion</key>
-        <string>*revision*</string>
+        <string>_REVISION_</string>
 		<key>CFPlugInDynamicRegisterFunction</key>
 		<string></string>
 		<key>CFPlugInDynamicRegistration</key>
