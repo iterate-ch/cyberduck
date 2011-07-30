@@ -363,7 +363,9 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                     }
                 }
             }
-            log.warn("URL dragging pasteboard is empty.");
+            else {
+                log.warn("URL dragging pasteboard is empty.");
+            }
         }
         if(controller.isMounted()) {
             if(null == destination) {
