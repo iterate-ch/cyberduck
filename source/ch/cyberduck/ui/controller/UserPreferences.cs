@@ -245,6 +245,8 @@ namespace Ch.Cyberduck.Ui.Controller
             defaults.put("update.feed", "release");
 
             // Importers
+            defaults.put("bookmark.import.winscp.location", Path.Combine(Environment.GetFolderPath(
+                Environment.SpecialFolder.Programs), "WinSCP", "winscp.ini"));
             defaults.put("bookmark.import.filezilla.location", Path.Combine(Environment.GetFolderPath(
                 Environment.SpecialFolder.ApplicationData), "FileZilla", "sitemanager.xml"));
             defaults.put("bookmark.import.smartftp.location", Path.Combine(Environment.GetFolderPath(

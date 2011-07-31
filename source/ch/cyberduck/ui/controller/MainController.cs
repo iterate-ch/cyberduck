@@ -515,6 +515,7 @@ namespace Ch.Cyberduck.Ui.Controller
             return new List<ThirdpartyBookmarkCollection>
                        {
                            new FilezillaBookmarkCollection(),
+                           new WinScpBookmarkCollection(),
                            new SmartFtpBookmarkCollection(),
                            new FlashFxp4BookmarkCollection(),
                            new FlashFxp3BookmarkCollection(),

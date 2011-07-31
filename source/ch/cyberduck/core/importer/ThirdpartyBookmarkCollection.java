@@ -45,9 +45,14 @@ public abstract class ThirdpartyBookmarkCollection extends AbstractHostCollectio
     protected void load(Local file) {
         if(file.exists()) {
             if(log.isInfoEnabled()) {
-                log.info("Found Bookmarks file: " + file.getAbsolute());
+                log.info("Found bookmarks file: " + file.getAbsolute());
             }
             this.parse(file);
+        }
+        else {
+            if(log.isInfoEnabled()) {
+                log.info("No bookmarks file at:" + file.getAbsolute());
+            }
         }
     }
 
