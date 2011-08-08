@@ -19,7 +19,7 @@
 # From Xcode 2.5 Developer Tools installation
 nibtool="nibtool"
 base_language="en.lproj"
-arch="i386"
+arch="x86_64"
 
 usage() {
 	echo ""
