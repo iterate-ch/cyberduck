@@ -33,6 +33,7 @@ import org.apache.http.client.params.AuthPolicy;
 import org.apache.http.client.params.HttpClientParams;
 import org.apache.http.client.protocol.RequestAcceptEncoding;
 import org.apache.http.client.protocol.ResponseContentEncoding;
+import org.apache.http.conn.params.ConnManagerParams;
 import org.apache.http.conn.params.ConnRouteParams;
 import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
@@ -101,7 +102,7 @@ public abstract class HttpSession extends SSLSession {
             HttpClientParams.setAuthenticating(params, true);
 
             // Sets the timeout in milliseconds used when retrieving a connection from the ClientConnectionManager
-            HttpClientParams.setConnectionManagerTimeout(params,
+            ConnManagerParams.setTimeout(params,
                     Preferences.instance().getInteger("http.manager.timeout"));
 
             SchemeRegistry registry = new SchemeRegistry();
