@@ -232,10 +232,7 @@ public class EditorFactory {
             log.debug("getApplicationName:" + bundleIdentifier);
             final String path = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(bundleIdentifier);
             String name = null;
-            if(StringUtils.isBlank(path)) {
-                log.warn("Cannot determine installation path for " + bundleIdentifier);
-            }
-            else {
+            if(StringUtils.isNotBlank(path)) {
                 NSBundle app = NSBundle.bundleWithPath(path);
                 if(null == app) {
                     log.error("Loading bundle failed:" + path);
@@ -257,9 +254,12 @@ public class EditorFactory {
                         }
                     }
                 }
+                if(null == name) {
+                    name = FilenameUtils.removeExtension(LocalFactory.createLocal(path).getDisplayName());
+                }
             }
-            if(null == name) {
-                name = FilenameUtils.removeExtension(LocalFactory.createLocal(path).getDisplayName());
+            else {
+                log.warn("Cannot determine installation path for " + bundleIdentifier);
             }
             applicationNameCache.put(bundleIdentifier, name);
         }
