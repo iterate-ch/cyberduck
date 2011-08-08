@@ -48,7 +48,7 @@
     <property name="apple.appstub"
               location="/System/Library/Frameworks/JavaVM.framework/Resources/MacOS/JavaApplicationStub"/>
 
-    <property name="jvm.runtime" value="${user.home}/Library/Java/JavaVirtualMachines/1.7.0.20.0-b06.jdk"/>
+    <property name="jvm.runtime" value="${user.home}/Library/Java/JavaVirtualMachines/1.7.0.21.0-b17.jdk"/>
 
     <property name="codesign.certificate" value="Cyberduck Code Signing Certificate"/>
     <property name="codesign.keychain" value="${user.home}/Library/Keychains/codesign.keychain"/>
@@ -165,7 +165,8 @@
         <antcall target="strip"/>
 
         <antcall target="codesign">
-            <!--><param name="codesign.arg" value="${codesign.entitlements}"/>-->
+            <!-- Enable sandbox environment with -entitlements ${codesign.entitlements} -->
+            <param name="codesign.arg" value=""/>
             <param name="codesign.certificate" value="3rd Party Mac Developer Application: David Kocher"/>
         </antcall>
 
