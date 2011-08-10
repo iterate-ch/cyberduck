@@ -37,25 +37,25 @@ public class FTPParserFactory implements FTPFileEntryParserFactory {
     public FTPFileEntryParser createFileEntryParser(String system, TimeZone timezone) throws ParserInitializationException {
         if(null != system) {
             String ukey = system.toUpperCase();
-            if(ukey.indexOf(FTPClientConfig.SYST_UNIX) >= 0) {
+            if(ukey.contains(FTPClientConfig.SYST_UNIX)) {
                 return this.createUnixFTPEntryParser(timezone);
             }
-            else if(ukey.indexOf(FTPClientConfig.SYST_VMS) >= 0) {
+            else if(ukey.contains(FTPClientConfig.SYST_VMS)) {
                 throw new ParserInitializationException("\"" + system + "\" is not currently a supported system.");
             }
-            else if(ukey.indexOf(FTPClientConfig.SYST_NETWARE) >= 0) {
+            else if(ukey.contains(FTPClientConfig.SYST_NETWARE)) {
                 return this.createNetwareFTPEntryParser(timezone);
             }
-            else if(ukey.indexOf(FTPClientConfig.SYST_NT) >= 0) {
+            else if(ukey.contains(FTPClientConfig.SYST_NT)) {
                 return this.createNTFTPEntryParser(timezone);
             }
-            else if(ukey.indexOf(FTPClientConfig.SYST_OS2) >= 0) {
+            else if(ukey.contains(FTPClientConfig.SYST_OS2)) {
                 return this.createOS2FTPEntryParser(timezone);
             }
-            else if(ukey.indexOf(FTPClientConfig.SYST_OS400) >= 0) {
+            else if(ukey.contains(FTPClientConfig.SYST_OS400)) {
                 return this.createOS400FTPEntryParser(timezone);
             }
-            else if(ukey.indexOf(FTPClientConfig.SYST_MVS) >= 0) {
+            else if(ukey.contains(FTPClientConfig.SYST_MVS)) {
                 return this.createMVSEntryParser(timezone);
             }
         }
