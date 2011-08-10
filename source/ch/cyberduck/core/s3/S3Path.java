@@ -1336,10 +1336,6 @@ public class S3Path extends CloudPath {
                 // Moving the object retaining the metadata of the original.
                 this.getSession().getClient().moveObject(this.getContainerName(), this.getKey(), ((S3Path) renamed).getContainerName(),
                         destination, false);
-                // The directory listing of the target is no more current
-                renamed.getParent().invalidate();
-                // The directory listing of the source is no more current
-                this.getParent().invalidate();
             }
             if(attributes().isDirectory()) {
                 for(AbstractPath i : this.children()) {
@@ -1350,6 +1346,10 @@ public class S3Path extends CloudPath {
                             i.getName(), i.attributes().getType()));
                 }
             }
+            // The directory listing of the target is no more current
+            renamed.getParent().invalidate();
+            // The directory listing of the source is no more current
+            this.getParent().invalidate();
         }
         catch(ServiceException e) {
             this.error("Cannot rename {0}", e);
