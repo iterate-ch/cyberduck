@@ -6,8 +6,8 @@
             <param name="ConversionPattern" value="%d [%t] %-5p %c - %m%n"/>
         </layout>
     </appender>
-    <logger name="org.apache.http.wire" additivity="false">
-        <level value="error"/>
+    <logger name="org.apache.http.wire">
+        <level value="debug"/>
     </logger>
     <root>
         <level value="error"/>

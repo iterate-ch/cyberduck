@@ -1228,7 +1228,7 @@ lib/log4j-1.2.15.jar -text
 lib/log4j.xml -text
 lib/mail-1.4.3.jar -text
 lib/mime.types -text
-lib/sardine-296.jar -text
+lib/sardine-300.jar -text
 lib/signpost-commonshttp4-1.2.1.1.jar -text
 lib/signpost-core-1.2.1.1.jar -text
 lib/slf4j-api-1.6.1.jar -text
