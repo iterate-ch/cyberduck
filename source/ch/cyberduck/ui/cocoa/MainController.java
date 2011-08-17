@@ -1060,7 +1060,12 @@ public class MainController extends BundleController implements NSApplication.De
                 if(c.isEmpty()) {
                     final FolderBookmarkCollection defaults = new FolderBookmarkCollection(LocalFactory.createLocal(
                             Preferences.instance().getProperty("application.bookmarks.path")
-                    ));
+                    )) {
+                        @Override
+                        protected void rename(Local next, Host bookmark) {
+                            ; // Bookmarks in application bundle should not attempt to be renamed to UUID
+                        }
+                    };
                     defaults.load();
                     for(Host bookmark : defaults) {
                         if(log.isDebugEnabled()) {

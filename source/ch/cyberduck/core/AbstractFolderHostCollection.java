@@ -101,8 +101,8 @@ public abstract class AbstractFolderHostCollection extends AbstractHostCollectio
                 }
                 // Legacy support.
                 if(!this.getFile(bookmark).equals(next)) {
-                    // Rename all files previously saved with nickname to UUID.
-                    next.rename(this.getFile(bookmark));
+                    this.rename(next, bookmark);
+
                 }
                 this.add(bookmark);
             }
@@ -113,6 +113,11 @@ public abstract class AbstractFolderHostCollection extends AbstractHostCollectio
             this.unlock();
         }
         super.load();
+    }
+
+    protected void rename(Local next, Host bookmark) {
+        // Rename all files previously saved with nickname to UUID.
+        next.rename(this.getFile(bookmark));
     }
 
     @Override
