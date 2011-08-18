@@ -39,6 +39,7 @@ import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
 import org.apache.http.conn.ssl.SSLSocketFactory;
+import org.apache.http.conn.ssl.X509HostnameVerifier;
 import org.apache.http.impl.client.AbstractHttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.tsccm.ConnPoolByRoute;
@@ -50,7 +51,10 @@ import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.protocol.HttpContext;
 import org.apache.log4j.Logger;
 
+import javax.net.ssl.SSLException;
+import javax.net.ssl.SSLSocket;
 import java.io.IOException;
+import java.security.cert.X509Certificate;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
@@ -111,7 +115,25 @@ public abstract class HttpSession extends SSLSession {
             if("https".equals(this.getHost().getProtocol().getScheme())) {
                 org.apache.http.conn.ssl.SSLSocketFactory factory = new SSLSocketFactory(
                         new CustomTrustSSLProtocolSocketFactory(this.getTrustManager()).getSSLContext(),
-                        org.apache.http.conn.ssl.SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+                        new X509HostnameVerifier() {
+                            public void verify(String host, SSLSocket ssl) throws IOException {
+                                log.warn("Hostname verification disabled for:" + host);
+                            }
+
+                            public void verify(String host, X509Certificate cert) throws SSLException {
+                                log.warn("Hostname verification disabled for:" + host);
+                            }
+
+                            public void verify(String host, String[] cns, String[] subjectAlts) throws SSLException {
+                                log.warn("Hostname verification disabled for:" + host);
+                            }
+
+                            public boolean verify(String s, javax.net.ssl.SSLSession sslSession) {
+                                log.warn("Hostname verification disabled for:" + s);
+                                return true;
+                            }
+                        }
+                );
                 registry.register(new Scheme(host.getProtocol().getScheme(), host.getPort(), factory));
             }
             if(Preferences.instance().getBoolean("connection.proxy.enable")) {
