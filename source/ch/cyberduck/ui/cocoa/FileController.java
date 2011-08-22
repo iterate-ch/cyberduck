@@ -55,7 +55,7 @@ public abstract class FileController extends AlertController {
         alert.setShowsHelp(true);
         super.beginSheet();
         filenameField.selectText(null);
-        this.window().fieldEditor_forObject(true, filenameField).setSelectedRange(NSRange.NSMakeRange(
+        filenameField.currentEditor().setSelectedRange(NSRange.NSMakeRange(
                 new NSUInteger(0), new NSUInteger(FilenameUtils.getBaseName(filenameField.stringValue()).length())
         ));
     }
