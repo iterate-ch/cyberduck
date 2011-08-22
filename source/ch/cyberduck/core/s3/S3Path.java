@@ -1124,8 +1124,14 @@ public class S3Path extends CloudPath {
                         location = "US";
                         log.warn("Fallback to US");
                     }
-                    this.getSession().getClient().createBucket(this.getContainerName(), location,
-                            AccessControlList.REST_CANNED_PUBLIC_READ);
+                    AccessControlList acl;
+                    if(Preferences.instance().getProperty("s3.bucket.acl.default").equals("public-read")) {
+                        acl = AccessControlList.REST_CANNED_PUBLIC_READ;
+                    }
+                    else {
+                        acl = AccessControlList.REST_CANNED_PRIVATE;
+                    }
+                    this.getSession().getClient().createBucket(this.getContainerName(), location, acl);
                 }
                 else {
                     S3Object object = new S3Object(this.getKey() + Path.DELIMITER);

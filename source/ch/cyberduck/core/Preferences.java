@@ -543,6 +543,9 @@ public abstract class Preferences {
          * Default bucket location
          */
         defaults.put("s3.location", "US");
+        defaults.put("s3.bucket.acl.default", "public-read");
+        //defaults.put("s3.bucket.acl.default", "private");
+
         /**
          * Default redundancy level
          */
