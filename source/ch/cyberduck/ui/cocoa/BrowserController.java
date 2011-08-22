@@ -1156,9 +1156,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             public void enterKeyPressed(final ID sender) {
                 if(Preferences.instance().getBoolean("browser.enterkey.rename")) {
                     if(browserOutlineView.numberOfSelectedRows().intValue() == 1) {
-                        browserOutlineView.editRow(
-                                browserOutlineView.columnWithIdentifier(BrowserTableDataSource.FILENAME_COLUMN),
-                                browserOutlineView.selectedRow(), true);
+                        renameFileButtonClicked(sender);
                     }
                 }
                 else {
@@ -1276,9 +1274,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             public void enterKeyPressed(final ID sender) {
                 if(Preferences.instance().getBoolean("browser.enterkey.rename")) {
                     if(browserListView.numberOfSelectedRows().intValue() == 1) {
-                        browserListView.editRow(
-                                browserListView.columnWithIdentifier(BrowserTableDataSource.FILENAME_COLUMN),
-                                browserListView.selectedRow(), true);
+                        renameFileButtonClicked(sender);
                     }
                 }
                 else {
@@ -2631,9 +2627,16 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     @Action
     public void renameFileButtonClicked(final ID sender) {
         final NSTableView browser = this.getSelectedBrowserView();
-        browser.editRow(
-                browser.columnWithIdentifier(BrowserTableDataSource.FILENAME_COLUMN),
+        browser.editRow(browser.columnWithIdentifier(BrowserTableDataSource.FILENAME_COLUMN),
                 browser.selectedRow(), true);
+        final Path selected = this.getSelectedPath();
+        if(StringUtils.isNotBlank(selected.getExtension())) {
+            NSText view = browser.currentEditor();
+            int index = selected.getName().indexOf(selected.getExtension()) - 1;
+            if(index > 0) {
+                view.setSelectedRange(NSRange.NSMakeRange(new NSUInteger(0), new NSUInteger(index)));
+            }
+        }
     }
 
     @Action
