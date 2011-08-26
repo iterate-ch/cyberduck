@@ -665,7 +665,7 @@ public class AzurePath extends CloudPath {
     }
 
     @Override
-    public void copy(AbstractPath copy) {
+    public boolean copy(AbstractPath copy) {
         if(((Path) copy).getSession().equals(this.getSession())) {
             // Copy on same server
             if(attributes().isFile()) {
@@ -680,6 +680,7 @@ public class AzurePath extends CloudPath {
                 }
                 catch(IOException e) {
                     this.error("Cannot copy {0}");
+                    return false;
                 }
             }
             else if(this.attributes().isDirectory()) {
@@ -693,10 +694,11 @@ public class AzurePath extends CloudPath {
             }
             // The directory listing is no more current
             copy.getParent().invalidate();
+            return true;
         }
         else {
             // Copy to different host
-            super.copy(copy);
+            return super.copy(copy);
         }
     }
 

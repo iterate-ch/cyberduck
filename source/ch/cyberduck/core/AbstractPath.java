@@ -364,7 +364,7 @@ public abstract class AbstractPath {
      *
      * @param copy Destination
      */
-    public abstract void copy(AbstractPath copy);
+    public abstract boolean copy(AbstractPath copy);
 
     public static class DescriptiveUrl {
         private String url = StringUtils.EMPTY;

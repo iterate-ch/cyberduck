@@ -232,7 +232,7 @@ public class CFSession extends CloudSession {
      */
     @Override
     public boolean isRenameSupported(Path file) {
-        return false;
+        return !file.attributes().isVolume();
     }
 
     /**

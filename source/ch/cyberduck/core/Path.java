@@ -971,7 +971,7 @@ public abstract class Path extends AbstractPath implements Serializable {
      * @param copy Destination
      */
     @Override
-    public void copy(final AbstractPath copy) {
+    public boolean copy(final AbstractPath copy) {
         final Local local = LocalFactory.createLocal(Preferences.instance().getProperty("tmp.dir"),
                 copy.getName());
         TransferOptions options = new TransferOptions();
@@ -1004,13 +1004,15 @@ public abstract class Path extends AbstractPath implements Serializable {
                         return TransferAction.ACTION_OVERWRITE;
                     }
                 }, options);
-                copy.getParent().invalidate();
+                return upload.isComplete();
             }
             else {
                 this.error("Cannot copy {0}");
+                return false;
             }
         }
         finally {
+            copy.getParent().invalidate();
             this.setLocal(null);
             local.delete();
         }

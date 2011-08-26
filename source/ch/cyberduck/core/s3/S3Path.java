@@ -1366,7 +1366,7 @@ public class S3Path extends CloudPath {
     }
 
     @Override
-    public void copy(AbstractPath copy) {
+    public boolean copy(AbstractPath copy) {
         if(((Path) copy).getSession().equals(this.getSession())) {
             // Copy on same server
             try {
@@ -1399,19 +1399,24 @@ public class S3Path extends CloudPath {
                         i.copy(destination);
                     }
                 }
-                // The directory listing is no more current
-                copy.getParent().invalidate();
+                return true;
             }
             catch(ServiceException e) {
                 this.error("Cannot copy {0}");
+                return false;
             }
             catch(IOException e) {
                 this.error("Cannot copy {0}");
+                return false;
+            }
+            finally {
+                // The directory listing is no more current
+                copy.getParent().invalidate();
             }
         }
         else {
             // Copy to different host
-            super.copy(copy);
+            return super.copy(copy);
         }
     }
 

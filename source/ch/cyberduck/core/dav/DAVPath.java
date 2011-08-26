@@ -305,7 +305,7 @@ public class DAVPath extends HttpPath {
     }
 
     @Override
-    public void copy(AbstractPath copy) {
+    public boolean copy(AbstractPath copy) {
         if(((Path) copy).getSession().equals(this.getSession())) {
             // Copy on same server
             try {
@@ -326,16 +326,20 @@ public class DAVPath extends HttpPath {
                                 i.getName(), i.attributes().getType()));
                     }
                 }
-                // The directory listing is no more current
-                copy.getParent().invalidate();
+                return true;
             }
             catch(IOException e) {
                 this.error("Cannot copy {0}");
+                return false;
+            }
+            finally {
+                // The directory listing is no more current
+                copy.getParent().invalidate();
             }
         }
         else {
             // Copy to different host
-            super.copy(copy);
+            return super.copy(copy);
         }
     }
 

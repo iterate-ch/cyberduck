@@ -595,7 +595,55 @@ public class CFPath extends CloudPath {
 
     @Override
     public void rename(AbstractPath renamed) {
-        throw new UnsupportedOperationException();
+        if(this.copy(renamed)) {
+            this.delete();
+        }
+    }
+
+    @Override
+    public boolean copy(AbstractPath copy) {
+        if(((Path) copy).getSession().equals(this.getSession())) {
+            // Copy on same server
+            try {
+                this.getSession().check();
+                this.getSession().message(MessageFormat.format(Locale.localizedString("Copying {0} to {1}", "Status"),
+                        this.getName(), copy));
+
+                if(this.attributes().isFile()) {
+                    String destination = ((CFPath) copy).getKey();
+                    final String etag = this.getSession().getClient().copyObject(this.getContainerName(), this.getKey(),
+                            ((CFPath) copy).getContainerName(), destination);
+                    return StringUtils.isNotBlank(etag);
+                }
+                else if(this.attributes().isDirectory()) {
+                    for(AbstractPath i : this.children()) {
+                        if(!this.getSession().isConnected()) {
+                            break;
+                        }
+                        CFPath destination = (CFPath) PathFactory.createPath(this.getSession(), copy.getAbsolute(),
+                                i.getName(), i.attributes().getType());
+                        i.copy(destination);
+                    }
+                }
+                return true;
+            }
+            catch(HttpException e) {
+                this.error("Cannot copy {0}");
+                return false;
+            }
+            catch(IOException e) {
+                this.error("Cannot copy {0}");
+                return false;
+            }
+            finally {
+                // The directory listing is no more current
+                copy.getParent().invalidate();
+            }
+        }
+        else {
+            // Copy to different host
+            return super.copy(copy);
+        }
     }
 
     @Override
