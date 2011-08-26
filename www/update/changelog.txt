@@ -1,5 +1,11 @@
+4.1.2 [http://trac.cyberduck.ch/milestone/4.1.2]
+- [Feature] Rename files (Cloudfiles)
+- [Feature] Duplicate files (Cloudfiles)
+- [Bugfix] Select filename only without suffix in browser (#6158)
+
 4.1.1 [http://trac.cyberduck.ch/milestone/4.1.1]
-- [Feature] Importer for WinSCP bookmarks
+- [Feature] Importer for WinSCP bookmarks (Windows)
+- [Bugfix] Runtime crash (App Store)
 - [Bugfix] Connection failure with email address as username (WebDAV) (#6066)
 - [Bugfix] Synchronisation comparison failures (#6074)
 - [Bugfix] Error listing folders (Openstack Swift) (#6089)
