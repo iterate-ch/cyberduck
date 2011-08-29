@@ -167,7 +167,7 @@ public class UploadTransfer extends Transfer {
             }
             if(file.attributes().isDirectory()) {
                 if(!file.exists()) {
-                    file.cache().put(file.<Object>getReference(), new AttributedList<Path>());
+                    file.cache().put(file.getReference(), new AttributedList<Path>());
                 }
             }
         }
@@ -250,12 +250,12 @@ public class UploadTransfer extends Transfer {
             if(log.isDebugEnabled()) {
                 log.debug("Do not list children for symbolic link:" + parent);
             }
-            this.cache().put(parent.<Object>getReference(), AttributedList.<Path>emptyList());
+            this.cache().put(parent.getReference(), AttributedList.<Path>emptyList());
         }
-        else if(!this.cache().containsKey(parent.<Object>getReference())) {
+        else if(!this.cache().containsKey(parent.getReference())) {
             if(!parent.getLocal().exists()) {
                 // Cannot fetch file listing of non existant file
-                this.cache().put(parent.<Object>getReference(), AttributedList.<Path>emptyList());
+                this.cache().put(parent.getReference(), AttributedList.<Path>emptyList());
             }
             else {
                 final AttributedList<Path> children = new AttributedList<Path>();
@@ -268,10 +268,10 @@ public class UploadTransfer extends Transfer {
                     }
                     children.add(upload);
                 }
-                this.cache().put(parent.<Object>getReference(), children);
+                this.cache().put(parent.getReference(), children);
             }
         }
-        return this.cache().get(parent.<Object>getReference());
+        return this.cache().get(parent.getReference());
     }
 
     @Override

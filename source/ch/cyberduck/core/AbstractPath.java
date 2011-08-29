@@ -97,7 +97,7 @@ public abstract class AbstractPath {
      *         cache.
      * @see ch.cyberduck.core.Cache#lookup(PathReference)
      */
-    public abstract <T extends AbstractPath> PathReference<T> getReference();
+    public abstract <T> PathReference<T> getReference();
 
     public abstract String toURL();
 

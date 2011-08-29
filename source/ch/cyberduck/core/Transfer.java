@@ -379,7 +379,7 @@ public abstract class Transfer implements Serializable {
      */
     public Path lookup(PathReference r) {
         for(Path root : roots) {
-            if(r.equals(root.<Object>getReference())) {
+            if(r.equals(root.getReference())) {
                 return root;
             }
         }
