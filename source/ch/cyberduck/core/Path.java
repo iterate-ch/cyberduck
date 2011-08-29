@@ -402,6 +402,31 @@ public abstract class Path extends AbstractPath implements Serializable {
     }
 
     /**
+     * To lookup a copy of the path in the cache.
+     */
+    protected PathReference<Path> reference;
+
+    /**
+     * Default implementation returning a reference to self. You can override this
+     * if you need a different strategy to compare hashcode and equality for caching
+     * in a model.
+     *
+     * @return Reference to the path to be used in table models an file listing
+     *         cache.
+     * @see ch.cyberduck.core.Cache#lookup(PathReference)
+     */
+    public PathReference<Path> getReference() {
+        if(null == reference) {
+            reference = PathReferenceFactory.createPathReference(this);
+        }
+        return reference;
+    }
+
+    public void setReference(PathReference<Path> reference) {
+        this.reference = reference;
+    }
+
+    /**
      * Attributes denoting this path
      */
     private PathAttributes attributes;
@@ -1048,7 +1073,7 @@ public abstract class Path extends AbstractPath implements Serializable {
             return false;
         }
         if(other instanceof Path) {
-            return this.getReference().equals(((Path) other).<Object>getReference());
+            return this.getReference().equals(((Path) other).<Path>getReference());
         }
         return false;
     }

@@ -48,8 +48,8 @@ public abstract class AbstractPath {
      * @see ch.cyberduck.core.Cache
      */
     public boolean isCached() {
-        return this.cache().containsKey(this.<Object>getReference())
-                && !this.cache().get(this.<Object>getReference()).attributes().isInvalid();
+        return this.cache().containsKey(this.<AbstractPath>getReference())
+                && !this.cache().get(this.<AbstractPath>getReference()).attributes().isInvalid();
     }
 
     public abstract <T extends AbstractPath> Cache<T> cache();
@@ -66,7 +66,7 @@ public abstract class AbstractPath {
      */
     public void invalidate() {
         if(this.attributes().isDirectory()) {
-            this.cache().invalidate(this.<Object>getReference());
+            this.cache().invalidate(this.<AbstractPath>getReference());
         }
     }
 
@@ -89,11 +89,6 @@ public abstract class AbstractPath {
     }
 
     /**
-     * To lookup a copy of the path in the cache.
-     */
-    protected PathReference reference;
-
-    /**
      * Default implementation returning a reference to self. You can override this
      * if you need a different strategy to compare hashcode and equality for caching
      * in a model.
@@ -102,16 +97,7 @@ public abstract class AbstractPath {
      *         cache.
      * @see ch.cyberduck.core.Cache#lookup(PathReference)
      */
-    public <T> PathReference<T> getReference() {
-        if(null == reference) {
-            reference = PathReferenceFactory.createPathReference(this);
-        }
-        return reference;
-    }
-
-    public void setReference(PathReference reference) {
-        this.reference = reference;
-    }
+    public abstract <T extends AbstractPath> PathReference<T> getReference();
 
     public abstract String toURL();
 
@@ -157,7 +143,7 @@ public abstract class AbstractPath {
      */
     public <T extends AbstractPath> AttributedList<T> children(Comparator<T> comparator, PathFilter<T> filter) {
         if(!this.isCached()) {
-            this.cache().put(this.<Object>getReference(), this.list());
+            this.cache().put(this.<AbstractPath>getReference(), this.list());
         }
         return this.<T>cache().get(this.getReference(), comparator, filter);
     }

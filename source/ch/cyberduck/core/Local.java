@@ -405,6 +405,16 @@ public abstract class Local extends AbstractPath {
         return LocalFactory.createLocal(new File(path).getParentFile());
     }
 
+    @Override
+    public PathReference<Local> getReference() {
+        return new PathReference<Local>() {
+            @Override
+            public Local unique() {
+                return Local.this;
+            }
+        };
+    }
+
     /**
      * @return True if the path exists on the file system.
      */
