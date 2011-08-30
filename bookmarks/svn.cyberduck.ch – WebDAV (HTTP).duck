@@ -14,5 +14,7 @@
 	<string>80</string>
 	<key>Protocol</key>
 	<string>dav</string>
+	<key>Username</key>
+	<string>anonymous</string>
 </dict>
 </plist>
