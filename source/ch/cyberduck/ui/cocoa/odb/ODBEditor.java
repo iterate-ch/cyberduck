@@ -40,7 +40,6 @@ public class ODBEditor extends Editor {
     private static final Map<String, String> INSTALLED_ODB_EDITORS = new HashMap<String, String>();
 
     static {
-        SUPPORTED_ODB_EDITORS.put("SubEthaEdit", "de.codingmonkeys.SubEthaEdit");
         SUPPORTED_ODB_EDITORS.put("BBEdit", "com.barebones.bbedit");
         SUPPORTED_ODB_EDITORS.put("TextWrangler", "com.barebones.textwrangler");
         SUPPORTED_ODB_EDITORS.put("TextMate", "com.macromates.textmate");

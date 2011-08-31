@@ -45,6 +45,7 @@ public class WatchEditor extends Editor implements FileWatcherListener {
     private static final Map<String, String> INSTALLED_KQUEUE_EDITORS = new HashMap<String, String>();
 
     static {
+        SUPPORTED_KQUEUE_EDITORS.put("SubEthaEdit", "de.codingmonkeys.SubEthaEdit");
         SUPPORTED_KQUEUE_EDITORS.put("TextEdit", "com.apple.TextEdit");
         SUPPORTED_KQUEUE_EDITORS.put("Xcode", "com.apple.Xcode");
 
