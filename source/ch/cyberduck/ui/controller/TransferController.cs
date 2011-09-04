@@ -615,24 +615,21 @@ namespace Ch.Cyberduck.Ui.Controller
 
             public override void cleanup()
             {
-                if (_transfer.isComplete() && !_transfer.isCanceled())
+                if (_transfer.isComplete() && !_transfer.isCanceled() && _transfer.isReset())
                 {
-                    if (_transfer.isReset())
+                    if (Preferences.instance().getBoolean("queue.removeItemWhenComplete"))
                     {
-                        if (Preferences.instance().getBoolean("queue.removeItemWhenComplete"))
+                        TransferCollection.defaultCollection().remove(_transfer);
+                        TransferCollection.defaultCollection().save();
+                    }
+                    if (Preferences.instance().getBoolean("queue.orderBackOnStop"))
+                    {
+                        if (!(TransferCollection.defaultCollection().numberOfRunningTransfers() > 0))
                         {
-                            TransferCollection.defaultCollection().remove(_transfer);
-                        }
-                        if (Preferences.instance().getBoolean("queue.orderBackOnStop"))
-                        {
-                            if (!(TransferCollection.defaultCollection().numberOfRunningTransfers() > 0))
-                            {
-                                _controller.View.Close();
-                            }
+                            _controller.View.Close();
                         }
                     }
                 }
-                TransferCollection.defaultCollection().save();
             }
 
             protected override Session getSession()

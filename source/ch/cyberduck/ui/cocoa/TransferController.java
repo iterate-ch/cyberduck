@@ -759,19 +759,17 @@ public class TransferController extends WindowController implements NSToolbar.De
             @Override
             public void cleanup() {
                 final TransferCollection collection = TransferCollection.defaultCollection();
-                if(transfer.isComplete() && !transfer.isCanceled()) {
-                    if(transfer.isReset()) {
-                        if(Preferences.instance().getBoolean("queue.removeItemWhenComplete")) {
-                            collection.remove(transfer);
-                        }
-                        if(Preferences.instance().getBoolean("queue.orderBackOnStop")) {
-                            if(!(collection.numberOfRunningTransfers() > 0)) {
-                                window().close();
-                            }
+                if(transfer.isComplete() && !transfer.isCanceled() && transfer.isReset()) {
+                    if(Preferences.instance().getBoolean("queue.removeItemWhenComplete")) {
+                        collection.remove(transfer);
+                        collection.save();
+                    }
+                    if(Preferences.instance().getBoolean("queue.orderBackOnStop")) {
+                        if(!(collection.numberOfRunningTransfers() > 0)) {
+                            window().close();
                         }
                     }
                 }
-                collection.save();
             }
 
             @Override
