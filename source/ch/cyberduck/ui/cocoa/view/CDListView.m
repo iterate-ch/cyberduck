@@ -108,7 +108,7 @@ static NSTableColumn *localSelectionColumn;
 - (NSMenu *) menuForEvent:(NSEvent *) event 
 {
 	NSPoint where = [self convertPoint:[event locationInWindow] fromView:nil];
-	int row = [self rowAtPoint:where];
+    NSInteger row = [self rowAtPoint:where];
 	if(row >= 0) {
 		if([[self delegate] respondsToSelector:@selector(tableView:shouldSelectRow:)]) {
 			if([[self delegate] tableView:self shouldSelectRow:row])
