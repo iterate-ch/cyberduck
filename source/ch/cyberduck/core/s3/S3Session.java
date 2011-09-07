@@ -151,6 +151,8 @@ public class S3Session extends CloudSession {
             configuration.setProperty("s3service.s3-endpoint", hostname);
             configuration.setProperty("s3service.disable-dns-buckets", String.valueOf(true));
         }
+        configuration.setProperty("s3service.s3-endpoint-http-port", String.valueOf(host.getPort()));
+        configuration.setProperty("s3service.s3-endpoint-https-port", String.valueOf(host.getPort()));
         configuration.setProperty("s3service.enable-storage-classes", String.valueOf(true));
         configuration.setProperty("s3service.https-only", String.valueOf(host.getProtocol().isSecure()));
         // The maximum number of retries that will be attempted when an S3 connection fails
