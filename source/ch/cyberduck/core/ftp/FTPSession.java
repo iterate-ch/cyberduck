@@ -128,10 +128,12 @@ public class FTPSession extends SSLSession {
                     // Configure with default configuration
                     ((Configurable) parser).configure(null);
                 }
-                String ukey = system.toUpperCase();
-                if(ukey.indexOf(FTPClientConfig.SYST_NT) >= 0) {
-                    // Workaround for #5572.
-                    this.setStatListSupportedEnabled(false);
+                if(StringUtils.isNotBlank(system)) {
+                    String ukey = system.toUpperCase();
+                    if(ukey.contains(FTPClientConfig.SYST_NT)) {
+                        // Workaround for #5572.
+                        this.setStatListSupportedEnabled(false);
+                    }
                 }
             }
             return parser;
