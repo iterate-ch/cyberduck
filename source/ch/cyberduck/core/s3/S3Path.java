@@ -923,7 +923,7 @@ public class S3Path extends CloudPath {
 
                 if(this.isRoot()) {
                     // List all buckets
-                    for(S3Bucket bucket : this.getSession().getBuckets(
+                    for(StorageBucket bucket : this.getSession().getBuckets(
                             this.cache().get(this.getReference()).attributes().isInvalid()
                     )) {
                         Path p = PathFactory.createPath(this.getSession(), this.getAbsolute(), bucket.getName(),

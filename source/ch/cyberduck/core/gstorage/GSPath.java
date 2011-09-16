@@ -19,19 +19,20 @@ package ch.cyberduck.core.gstorage;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFactory;
-import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.s3.S3Path;
 import ch.cyberduck.core.s3.S3Session;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.jets3t.service.acl.AccessControlList;
-import org.jets3t.service.acl.CanonicalGrantee;
-import org.jets3t.service.acl.GroupGrantee;
+import org.jets3t.service.ServiceException;
+import org.jets3t.service.acl.*;
+import org.jets3t.service.acl.gs.*;
+import org.jets3t.service.model.GSOwner;
 
 import java.io.IOException;
 import java.text.MessageFormat;
@@ -129,5 +130,58 @@ public class GSPath extends S3Path {
         }
         return urls;
 
+    }
+
+    @Override
+    protected AccessControlList convert(Acl acl) throws IOException {
+        GSAccessControlList list = new GSAccessControlList();
+        list.setOwner(new GSOwner(acl.getOwner().getIdentifier(), null));
+        for(Acl.UserAndRole userAndRole : acl.asList()) {
+            if(!userAndRole.isValid()) {
+                continue;
+            }
+            if(userAndRole.getUser() instanceof Acl.EmailUser) {
+                list.grantPermission(new UserByEmailAddressGrantee(userAndRole.getUser().getIdentifier()),
+                        org.jets3t.service.acl.Permission.parsePermission(userAndRole.getRole().getName()));
+            }
+            else if(userAndRole.getUser() instanceof Acl.GroupUser) {
+                if(userAndRole.getUser().getIdentifier().equals("AllUsers")) {
+                    list.grantPermission(new AllUsersGrantee(),
+                            org.jets3t.service.acl.Permission.parsePermission(userAndRole.getRole().getName()));
+                }
+                else if(userAndRole.getUser().getIdentifier().equals("AllAuthenticatedUsers")) {
+                    list.grantPermission(new AllAuthenticatedUsersGrantee(),
+                            org.jets3t.service.acl.Permission.parsePermission(userAndRole.getRole().getName()));
+                }
+                else {
+                    list.grantPermission(new GroupByIdGrantee(userAndRole.getUser().getIdentifier()),
+                            org.jets3t.service.acl.Permission.parsePermission(userAndRole.getRole().getName()));
+                }
+            }
+            else if(userAndRole.getUser() instanceof Acl.DomainUser) {
+                list.grantPermission(new GroupByDomainGrantee(userAndRole.getUser().getIdentifier()),
+                        org.jets3t.service.acl.Permission.parsePermission(userAndRole.getRole().getName()));
+            }
+            else if(userAndRole.getUser() instanceof Acl.CanonicalUser) {
+                list.grantPermission(new UserByIdGrantee(userAndRole.getUser().getIdentifier()),
+                        org.jets3t.service.acl.Permission.parsePermission(userAndRole.getRole().getName()));
+            }
+            else if(userAndRole.getUser() instanceof Acl.EmailGroupUser) {
+                list.grantPermission(new GroupByEmailAddressGrantee(userAndRole.getUser().getIdentifier()),
+                        org.jets3t.service.acl.Permission.parsePermission(userAndRole.getRole().getName()));
+            }
+            else {
+                log.warn("Unsupported user:" + userAndRole.getUser());
+            }
+        }
+        if(log.isDebugEnabled()) {
+            try {
+                log.debug(list.toXml());
+            }
+            catch(ServiceException e) {
+                log.error(e.getMessage());
+            }
+        }
+        return list;
     }
 }

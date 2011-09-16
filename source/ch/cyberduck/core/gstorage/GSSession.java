@@ -23,11 +23,21 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.s3.S3Session;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.jets3t.service.Jets3tProperties;
+import org.jets3t.service.ServiceException;
 import org.jets3t.service.acl.Permission;
+import org.jets3t.service.impl.rest.AccessControlListHandler;
+import org.jets3t.service.impl.rest.GSAccessControlListHandler;
+import org.jets3t.service.impl.rest.XmlResponsesSaxParser;
 import org.jets3t.service.model.S3Object;
 
-import java.util.*;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Google Storage for Developers is a new service for developers to store and
@@ -38,6 +48,7 @@ import java.util.*;
  * @version $Id$
  */
 public class GSSession extends S3Session {
+    private static Logger log = Logger.getLogger(GSSession.class);
 
     private static class Factory extends SessionFactory {
         @Override
@@ -59,6 +70,7 @@ public class GSSession extends S3Session {
         super.configure(hostname);
         Jets3tProperties configuration = super.getProperties();
         configuration.setProperty("s3service.enable-storage-classes", String.valueOf(false));
+        configuration.setProperty("http.protocol.expect-continue", "false");
     }
 
     @Override
@@ -89,7 +101,7 @@ public class GSSession extends S3Session {
     @Override
     public List<Acl.User> getAvailableAclUsers() {
         final List<Acl.User> users = super.getAvailableAclUsers();
-        for(Iterator<Acl.User> iter = users.iterator(); iter.hasNext();) {
+        for(Iterator<Acl.User> iter = users.iterator(); iter.hasNext(); ) {
             if(iter.next() instanceof Acl.EmailUser) {
                 iter.remove();
             }
@@ -100,18 +112,21 @@ public class GSSession extends S3Session {
                 return Locale.localizedString("Google Account Email Address", "S3");
             }
         });
-//        users.add(new Acl.DomainUser(StringUtils.EMPTY) {
-//            @Override
-//            public String getPlaceholder() {
-//                return Locale.localizedString("Google Apps Domain", "S3");
-//            }
-//        });
-//        users.add(new Acl.GroupUser(StringUtils.EMPTY, true) {
-//            @Override
-//            public String getPlaceholder() {
-//                return Locale.localizedString("Google Group Email Address", "S3");
-//            }
-//        });
+        // Google Apps customers can associate their email accounts with an Internet domain name. When you do
+        // this, each email account takes the form username@yourdomain.com. You can specify a scope by using
+        // any Internet domain name that is associated with a Google Apps account.
+        users.add(new Acl.DomainUser(StringUtils.EMPTY) {
+            @Override
+            public String getPlaceholder() {
+                return Locale.localizedString("Google Apps Domain", "S3");
+            }
+        });
+        users.add(new Acl.EmailGroupUser(StringUtils.EMPTY, true) {
+            @Override
+            public String getPlaceholder() {
+                return Locale.localizedString("Google Group Email Address", "S3");
+            }
+        });
         return users;
     }
 
@@ -132,6 +147,45 @@ public class GSSession extends S3Session {
             }
         }
         return roles;
+    }
+
+    @Override
+    public String getLocation(final String container) {
+        return null;
+    }
+
+    @Override
+    protected XmlResponsesSaxParser getXmlResponseSaxParser() throws ServiceException {
+        return new XmlResponsesSaxParser(configuration, false) {
+            @Override
+            public AccessControlListHandler parseAccessControlListResponse(InputStream inputStream) throws ServiceException {
+                return this.parseAccessControlListResponse(inputStream, new GSAccessControlListHandler());
+            }
+        };
+    }
+
+    /**
+     * @return the identifier for the signature algorithm.
+     */
+    @Override
+    protected String getSignatureIdentifier() {
+        return "GOOG1";
+    }
+
+    /**
+     * @return header prefix for general Google Storage headers: x-goog-.
+     */
+    @Override
+    protected String getRestHeaderPrefix() {
+        return "x-goog-";
+    }
+
+    /**
+     * @return header prefix for Google Storage metadata headers: x-goog-meta-.
+     */
+    @Override
+    protected String getRestMetadataPrefix() {
+        return "x-goog-meta-";
     }
 
     @Override

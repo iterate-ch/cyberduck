@@ -38,6 +38,7 @@ import org.jets3t.service.Jets3tProperties;
 import org.jets3t.service.S3ServiceException;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.acl.GroupGrantee;
+import org.jets3t.service.impl.rest.XmlResponsesSaxParser;
 import org.jets3t.service.impl.rest.httpclient.RestS3Service;
 import org.jets3t.service.model.*;
 import org.jets3t.service.model.cloudfront.CustomOrigin;
@@ -117,6 +118,60 @@ public class S3Session extends CloudSession {
             }
             super.verifyExpectedAndActualETagValues(expectedETag, uploadedObject);
         }
+
+        /**
+         * @return the identifier for the signature algorithm.
+         */
+        @Override
+        protected String getSignatureIdentifier() {
+            return S3Session.this.getSignatureIdentifier();
+        }
+
+        /**
+         * @return header prefix for general Google Storage headers: x-goog-.
+         */
+        @Override
+        public String getRestHeaderPrefix() {
+            return S3Session.this.getRestHeaderPrefix();
+        }
+
+        /**
+         * @return header prefix for Google Storage metadata headers: x-goog-meta-.
+         */
+        @Override
+        public String getRestMetadataPrefix() {
+            return S3Session.this.getRestMetadataPrefix();
+        }
+
+        @Override
+        protected XmlResponsesSaxParser getXmlResponseSaxParser() throws ServiceException {
+            return S3Session.this.getXmlResponseSaxParser();
+        }
+    }
+
+    protected XmlResponsesSaxParser getXmlResponseSaxParser() throws ServiceException {
+        return new XmlResponsesSaxParser(configuration, false);
+    }
+
+    /**
+     * @return the identifier for the signature algorithm.
+     */
+    protected String getSignatureIdentifier() {
+        return "AWS";
+    }
+
+    /**
+     * @return header prefix for general Google Storage headers: x-goog-.
+     */
+    protected String getRestHeaderPrefix() {
+        return "x-amz-";
+    }
+
+    /**
+     * @return header prefix for Google Storage metadata headers: x-goog-meta-.
+     */
+    protected String getRestMetadataPrefix() {
+        return "x-amz-meta-";
     }
 
     @Override
@@ -129,8 +184,7 @@ public class S3Session extends CloudSession {
     /**
      *
      */
-    private Jets3tProperties configuration
-            = new Jets3tProperties();
+    protected Jets3tProperties configuration = new Jets3tProperties();
 
     /**
      * @return Client configuration
@@ -184,15 +238,15 @@ public class S3Session extends CloudSession {
     /**
      * Caching the user's buckets
      */
-    private Map<String, S3Bucket> buckets
-            = new HashMap<String, S3Bucket>();
+    private Map<String, StorageBucket> buckets
+            = new HashMap<String, StorageBucket>();
 
     /**
      * @param reload
      * @return
      * @throws ServiceException
      */
-    protected List<S3Bucket> getBuckets(boolean reload) throws IOException, ServiceException {
+    protected List<StorageBucket> getBuckets(boolean reload) throws IOException, ServiceException {
         if(buckets.isEmpty() || reload) {
             buckets.clear();
             if(host.getCredentials().isAnonymousLogin()) {
@@ -249,7 +303,7 @@ public class S3Session extends CloudSession {
                 }
                 else {
                     // List all buckets owned
-                    for(S3Bucket bucket : this.getClient().listAllBuckets()) {
+                    for(StorageBucket bucket : this.getClient().listAllBuckets()) {
                         buckets.put(bucket.getName(), bucket);
                     }
                 }
@@ -260,7 +314,7 @@ public class S3Session extends CloudSession {
                 this.cdn().clear();
             }
         }
-        return new ArrayList<S3Bucket>(buckets.values());
+        return new ArrayList<StorageBucket>(buckets.values());
     }
 
     /**
@@ -268,9 +322,9 @@ public class S3Session extends CloudSession {
      * @return
      * @throws IOException
      */
-    protected S3Bucket getBucket(final String bucketname) throws IOException {
+    protected StorageBucket getBucket(final String bucketname) throws IOException {
         try {
-            for(S3Bucket bucket : this.getBuckets(false)) {
+            for(StorageBucket bucket : this.getBuckets(false)) {
                 if(bucket.getName().equals(bucketname)) {
                     return bucket;
                 }
@@ -288,7 +342,7 @@ public class S3Session extends CloudSession {
      */
     private boolean bucketLocationSupported = true;
 
-    public boolean isBucketLocationSupported() {
+    public boolean isLocationSupported() {
         return bucketLocationSupported;
     }
 
@@ -302,9 +356,9 @@ public class S3Session extends CloudSession {
      * @return
      */
     public String getLocation(final String container) {
-        if(this.isBucketLocationSupported()) {
+        if(this.isLocationSupported()) {
             try {
-                final S3Bucket bucket = this.getBucket(container);
+                final S3Bucket bucket = (S3Bucket) this.getBucket(container);
                 if(bucket.isLocationKnown()) {
                     return bucket.getLocation();
                 }
@@ -352,7 +406,7 @@ public class S3Session extends CloudSession {
         try {
             this.S3 = new RequestEntityRestStorageService(credentials.isAnonymousLogin() ? null : new AWSCredentials(credentials.getUsername(),
                     credentials.getPassword()));
-            for(S3Bucket bucket : this.getBuckets(true)) {
+            for(StorageBucket bucket : this.getBuckets(true)) {
                 if(log.isDebugEnabled()) {
                     log.debug("Bucket:" + bucket);
                 }
@@ -820,7 +874,7 @@ public class S3Session extends CloudSession {
                     }
                 })
         );
-        for(final S3Bucket container : buckets.values()) {
+        for(final StorageBucket container : buckets.values()) {
             final StorageOwner owner = container.getOwner();
             if(null == owner) {
                 log.warn("Owner not known for container " + container);
@@ -842,7 +896,7 @@ public class S3Session extends CloudSession {
 
     @Override
     public Acl getPrivateAcl(String container) {
-        for(final S3Bucket bucket : buckets.values()) {
+        for(final StorageBucket bucket : buckets.values()) {
             if(bucket.getName().equals(container)) {
                 StorageOwner owner = bucket.getOwner();
                 if(null == owner) {
