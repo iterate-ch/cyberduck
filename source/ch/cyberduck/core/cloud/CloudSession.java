@@ -49,6 +49,46 @@ public abstract class CloudSession extends HttpSession {
         return false;
     }
 
+    public boolean isLoggingSupported() {
+        return false;
+    }
+
+    public boolean isLogging(final String container) {
+        throw new UnsupportedOperationException();
+    }
+
+    public void setLogging(final String container, final boolean enabled, String destination) {
+        throw new UnsupportedOperationException();
+    }
+
+    public String getLoggingTarget(final String container) {
+        throw new UnsupportedOperationException();
+    }
+
+    public boolean isVersioningSupported() {
+        return false;
+    }
+
+    public boolean isVersioning(final String container) {
+        throw new UnsupportedOperationException();
+    }
+
+    public void setVersioning(final String container, boolean mfa, boolean versioning) {
+        throw new UnsupportedOperationException();
+    }
+
+    public boolean isLocationSupported() {
+        return false;
+    }
+
+    public String getLocation(final String container) {
+        throw new UnsupportedOperationException();
+    }
+
+    public boolean isMultiFactorAuthentication(final String container) {
+        throw new UnsupportedOperationException();
+    }
+
     /**
      * @param hostname
      * @return

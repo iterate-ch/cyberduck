@@ -87,7 +87,7 @@ public class ECSession extends S3Session {
     }
 
     @Override
-    public boolean isBucketLocationSupported() {
+    public boolean isLocationSupported() {
         return false;
     }
 
