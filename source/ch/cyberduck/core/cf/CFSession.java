@@ -328,7 +328,7 @@ public class CFSession extends CloudSession {
                             final FilesCDNContainer info = CFSession.this.getClient().getCDNContainerInfo(origin);
                             final Distribution distribution = new Distribution(info.getName(),
                                     new URI(CFSession.this.getClient().getStorageURL()).getHost(),
-                                    method, info.isEnabled(), info.getCdnURL(), info.getSSLURL(),
+                                    method, info.isEnabled(), info.getCdnURL(), info.getSSLURL(), info.getStreamingURL(),
                                     info.isEnabled() ? Locale.localizedString("CDN Enabled", "Mosso") : Locale.localizedString("CDN Disabled", "Mosso"),
                                     info.getRetainLogs()) {
                                 @Override

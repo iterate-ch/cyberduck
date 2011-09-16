@@ -632,6 +632,7 @@ public class CloudFrontDistributionConfiguration extends HttpSession implements 
                 // CloudFront URL
                 method.getProtocol() + d.getDomainName() + method.getContext(),
                 null, // No SSL
+                null,
                 Locale.localizedString(d.getStatus(), "S3"),
                 d.getCNAMEs(),
                 distributionConfig.isLoggingEnabled(),

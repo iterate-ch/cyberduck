@@ -83,6 +83,11 @@ public class Distribution {
     private String sslUrl;
 
     /**
+     * CDN SSL URL
+     */
+    private String streamingUrl;
+
+    /**
      * Deployment status description
      */
     private String status;
@@ -293,11 +298,12 @@ public class Distribution {
      * @param enabled Deployment Enabled
      * @param url     Where to find this distribution
      * @param sslUrl  Where to find this distribution using HTTPS
+     * @param streamingUrl
      * @param status  Status Message about Deployment Status
      * @param logging
      */
-    public Distribution(String id, String origin, Method method, boolean enabled, String url, String sslUrl, String status, boolean logging) {
-        this(id, origin, method, enabled, enabled, url, sslUrl, status, new String[]{}, logging, null, null);
+    public Distribution(String id, String origin, Method method, boolean enabled, String url, String sslUrl, String streamingUrl, String status, boolean logging) {
+        this(id, origin, method, enabled, enabled, url, sslUrl, null, status, new String[]{}, logging, null, null);
     }
 
 
@@ -356,7 +362,7 @@ public class Distribution {
      * @param defaultRootObject Index file
      */
     public Distribution(String id, String origin, Method method, boolean enabled, boolean deployed, String url, String status, String[] cnames, boolean logging, String defaultRootObject) {
-        this(id, origin, method, enabled, deployed, url, null, status, cnames, logging, null, null);
+        this(id, origin, method, enabled, deployed, url, null, null, status, cnames, logging, null, null);
     }
 
     /**
@@ -367,13 +373,14 @@ public class Distribution {
      * @param deployed          Deployment Status is about to be changed
      * @param url               Where to find this distribution
      * @param sslUrl            Where to find this distribution using HTTPS
+     * @param streamingUrl
      * @param status            Status Message about Deployment Status
      * @param cnames            Multiple CNAME aliases of this distribution
      * @param logging           Logging status
      * @param loggingContainer
      * @param defaultRootObject Index file
      */
-    public Distribution(String id, String origin, Method method, boolean enabled, boolean deployed, String url, String sslUrl, String status, String[] cnames, boolean logging, String loggingContainer, String defaultRootObject) {
+    public Distribution(String id, String origin, Method method, boolean enabled, boolean deployed, String url, String sslUrl, String streamingUrl, String status, String[] cnames, boolean logging, String loggingContainer, String defaultRootObject) {
         this.id = id;
         this.origin = origin;
         this.enabled = enabled;
@@ -507,6 +514,15 @@ public class Distribution {
         return this.getURL(file, this.getSslUrl());
     }
 
+    public String getStreamingUrl() {
+        return streamingUrl;
+    }
+
+    public String getStreamingUrl(Path file) {
+        return this.getURL(file, this.getStreamingUrl());
+    }
+
+
     /**
      * Both CNAME and original URL
      *
@@ -520,6 +536,10 @@ public class Distribution {
         if(StringUtils.isNotBlank(this.getSslUrl())) {
             urls.add(new AbstractPath.DescriptiveUrl(this.getSslUrl(file),
                     MessageFormat.format(Locale.localizedString("{0} URL"), Locale.localizedString(method.toString(), "S3")) + " (SSL)"));
+        }
+        if(StringUtils.isNotBlank(this.getStreamingUrl())) {
+            urls.add(new AbstractPath.DescriptiveUrl(this.getStreamingUrl(file),
+                    MessageFormat.format(Locale.localizedString("{0} URL"), Locale.localizedString(method.toString(), "S3")) + " (Streaming)"));
         }
         return urls;
     }
