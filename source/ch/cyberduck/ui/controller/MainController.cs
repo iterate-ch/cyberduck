@@ -444,45 +444,42 @@ namespace Ch.Cyberduck.Ui.Controller
                                {
                                    foreach (ThirdpartyBookmarkCollection c in thirdpartyBookmarks)
                                    {
-                                       if (!Preferences.instance().getBoolean(c.getConfiguration()))
+                                       if (!c.isEmpty())
                                        {
-                                           if (!c.isEmpty())
-                                           {
-                                               ThirdpartyBookmarkCollection c1 = c;
-                                               _bc.CommandBox(Locale.localizedString("Import", "Configuration"),
-                                                              String.Format(
-                                                                  Locale.localizedString("Import {0} Bookmarks",
-                                                                                         "Configuration"), c.getName()),
-                                                              String.Format(
-                                                                  Locale.localizedString(
-                                                                      "{0} bookmarks found. Do you want to add these to your bookmarks?",
-                                                                      "Configuration"), c.size()),
-                                                              String.Format("{0}",
-                                                                            Locale.localizedString("Import",
-                                                                                                   "Configuration")),
-                                                              true,
-                                                              Locale.localizedString("Don't ask again", "Configuration"),
-                                                              SysIcons.Question,
-                                                              delegate(int option, bool verificationChecked)
+                                           ThirdpartyBookmarkCollection c1 = c;
+                                           _bc.CommandBox(Locale.localizedString("Import", "Configuration"),
+                                                          String.Format(
+                                                              Locale.localizedString("Import {0} Bookmarks",
+                                                                                     "Configuration"), c.getName()),
+                                                          String.Format(
+                                                              Locale.localizedString(
+                                                                  "{0} bookmarks found. Do you want to add these to your bookmarks?",
+                                                                  "Configuration"), c.size()),
+                                                          String.Format("{0}",
+                                                                        Locale.localizedString("Import",
+                                                                                               "Configuration")),
+                                                          true,
+                                                          Locale.localizedString("Don't ask again", "Configuration"),
+                                                          SysIcons.Question,
+                                                          delegate(int option, bool verificationChecked)
+                                                              {
+                                                                  if (verificationChecked)
                                                                   {
-                                                                      if (verificationChecked)
-                                                                      {
+                                                                      // Flag as imported
+                                                                      Preferences.instance().setProperty(
+                                                                          c1.getConfiguration(), true);
+                                                                  }
+                                                                  switch (option)
+                                                                  {
+                                                                      case 0:
+                                                                          BookmarkCollection.defaultCollection().
+                                                                              addAll(c1);
                                                                           // Flag as imported
                                                                           Preferences.instance().setProperty(
                                                                               c1.getConfiguration(), true);
-                                                                      }
-                                                                      switch (option)
-                                                                      {
-                                                                          case 0:
-                                                                              BookmarkCollection.defaultCollection().
-                                                                                  addAll(c1);
-                                                                              // Flag as imported
-                                                                              Preferences.instance().setProperty(
-                                                                                  c1.getConfiguration(), true);
-                                                                              break;
-                                                                      }
-                                                                  });
-                                           }
+                                                                          break;
+                                                                  }
+                                                              });
                                        }
                                    }
                                    cde.Signal();

@@ -1009,29 +1009,27 @@ public class MainController extends BundleController implements NSApplication.De
             @Override
             public void cleanup() {
                 for(ThirdpartyBookmarkCollection c : bookmarks) {
-                    if(!Preferences.instance().getBoolean(c.getConfiguration())) {
-                        if(c.isEmpty()) {
-                            continue;
-                        }
-                        final NSAlert alert = NSAlert.alert(
-                                MessageFormat.format(Locale.localizedString("Import {0} Bookmarks", "Configuration"), c.getName()),
-                                MessageFormat.format(Locale.localizedString("{0} bookmarks found. Do you want to add these to your bookmarks?", "Configuration"), c.size()),
-                                Locale.localizedString("Import", "Configuration"), //default
-                                null, //other
-                                Locale.localizedString("Cancel", "Configuration"));
-                        alert.setShowsSuppressionButton(true);
-                        alert.suppressionButton().setTitle(Locale.localizedString("Don't ask again", "Configuration"));
-                        alert.setAlertStyle(NSAlert.NSInformationalAlertStyle);
-                        int choice = alert.runModal(); //alternate
-                        if(alert.suppressionButton().state() == NSCell.NSOnState) {
-                            // Never show again.
-                            Preferences.instance().setProperty(c.getConfiguration(), true);
-                        }
-                        if(choice == SheetCallback.DEFAULT_OPTION) {
-                            BookmarkCollection.defaultCollection().addAll(c);
-                            // Flag as imported
-                            Preferences.instance().setProperty(c.getConfiguration(), true);
-                        }
+                    if(c.isEmpty()) {
+                        continue;
+                    }
+                    final NSAlert alert = NSAlert.alert(
+                            MessageFormat.format(Locale.localizedString("Import {0} Bookmarks", "Configuration"), c.getName()),
+                            MessageFormat.format(Locale.localizedString("{0} bookmarks found. Do you want to add these to your bookmarks?", "Configuration"), c.size()),
+                            Locale.localizedString("Import", "Configuration"), //default
+                            null, //other
+                            Locale.localizedString("Cancel", "Configuration"));
+                    alert.setShowsSuppressionButton(true);
+                    alert.suppressionButton().setTitle(Locale.localizedString("Don't ask again", "Configuration"));
+                    alert.setAlertStyle(NSAlert.NSInformationalAlertStyle);
+                    int choice = alert.runModal(); //alternate
+                    if(alert.suppressionButton().state() == NSCell.NSOnState) {
+                        // Never show again.
+                        Preferences.instance().setProperty(c.getConfiguration(), true);
+                    }
+                    if(choice == SheetCallback.DEFAULT_OPTION) {
+                        BookmarkCollection.defaultCollection().addAll(c);
+                        // Flag as imported
+                        Preferences.instance().setProperty(c.getConfiguration(), true);
                     }
                 }
                 loader.countDown();
