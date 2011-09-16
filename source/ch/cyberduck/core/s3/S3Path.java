@@ -1229,9 +1229,12 @@ public class S3Path extends CloudPath {
                 list.grantPermission(new GroupGrantee(userAndRole.getUser().getIdentifier()),
                         org.jets3t.service.acl.Permission.parsePermission(userAndRole.getRole().getName()));
             }
-            else {
+            else if(userAndRole.getUser() instanceof Acl.CanonicalUser) {
                 list.grantPermission(new CanonicalGrantee(userAndRole.getUser().getIdentifier()),
                         org.jets3t.service.acl.Permission.parsePermission(userAndRole.getRole().getName()));
+            }
+            else {
+                log.warn("Unsupported user:" + userAndRole.getUser());
             }
         }
         if(log.isDebugEnabled()) {
