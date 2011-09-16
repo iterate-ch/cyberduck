@@ -52,8 +52,10 @@
 "Google Group Email Address" = "Google Group Email Address";
 "Google Apps Domain" = "Google Apps Domain";
 
-"http://acs.amazonaws.com/groups/global/AllUsers" ="http://acs.amazonaws.com/groups/global/AllUsers";
-"http://acs.amazonaws.com/groups/s3/LogDelivery" = "http://acs.amazonaws.com/groups/s3/LogDelivery";
+"http://acs.amazonaws.com/groups/global/AllUsers" ="Everyone";
+"http://acs.amazonaws.com/groups/s3/LogDelivery" = "Log Delivery";
+"AllUsers" ="Everyone";
+"AllAuthenticatedUsers" = "Google Account Holders";
 
 /* Signed URL Expiry */
 "Signed" = "Signed";
