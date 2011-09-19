@@ -4,6 +4,7 @@
 - [Feature] Support streaming URLs (Cloudfiles)
 - [Feature] Option to set ACLs for Google Apps Domain (Google Storage)
 - [Feature] Option to set ACLs for Google Group Email Address (Google Storage)
+- [Feature] Allow setting non-metadata headers (Cloudfiles, Openstack Swift) (#6191, #6239)
 
 4.1.2 [http://trac.cyberduck.ch/milestone/4.1.2]
 - [Feature] Rename files (Cloudfiles)
