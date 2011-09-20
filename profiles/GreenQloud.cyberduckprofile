@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Protocol</key>
+	<string>s3</string>
+	<key>Vendor</key>
+	<string>greenqloud</string>
+	<key>Description</key>
+	<string>Storage Qloud (S3)</string>
+	<key>Default Hostname</key>
+	<string>s.greenqloud.com</string>
+	<key>Default Port</key>
+	<string>443</string>
+	<key>Icon</key>
+	<string>
+	iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAsTAAALEwEAmpwY
+	AAADGklEQVQ4EXVTzWsTQRSfmf3OJpsPktTGTagpjQpFiYI1AQOtUArioSJCe1Pw0Fvbc/+E
+	Qum1IAiSSz17EVpqi4qWHqpoW4T6gUaTtLT53N1sdsd5xS29+Jblze577zfzfu83GP3PCCKc
+	hCUv7NrUpl3U9b49j70FeCJjGTnIwRziXIc61EY2wuyh7PkHSGHNzDWpCf4UAIooK/YKhDAJ
+	px76HwavidfMklP68aT5pLln72EGRF3knnpAAXTEfqZntJnEfd99s+yUozflm8FesbfVttuK
+	j/d1bdfef9Z4JgRI4PC19frrYn0RQDgiYhF6Oz+pTg4txZd8Oq/LOqfXPtufD96b79eyv7M4
+	iIJ2h3aiOTkXH1KGEmO+saOP1scGyyGYRzwcQu3j+zrsGF3s4h9Pm0/fFP4UGjv2TmxUGbWP
+	6fHbkfLIl/nafId1abM8f1pIQx0HRPkzQmZgLjgnJ7gEcGZVnaqS5tOXpkPTFx8HH0fych4p
+	SNEGxcEQe11KqXqZv3y4bq0TQLmxHF+OXZevA6fVNXPt3d3KXe2CcMGsObXn2r5W3TQ2A31C
+	39ZEdaL80nhJMMaBpJi8UYwXidzD9ShJLmkYjoHYhAJXhCuJB+oD7EM+YN1p0Aa0QkI41Dvu
+	G9fYVGBTs9ltAlcEGD/e6mz5FUHp1NyaFhEiPbeV21uTB5MWi2VYayIb6bs7lTuhq9LVYFSM
+	WnWnHvCLfgDmAK3CjhUZk8bUFJ9y2Xen5bTYpF1ew9ru3PGcOiAMhLJiNnxLuqVm+AxhCj38
+	YH3YvFe5x3MKVmCnIzbbMCPIarmteEEpJApqAYCMn87P/iltStNFHSZgGa4hKkRpst3b37rf
+	iCdNkyWKiEM86ILJ1WLJv160X+wv1Be+F5tFk10DUKogYEFiedSgjDMYI8iXWX27s82nSIoP
+	kVB9195VY0JM1QXdZP32P9IeSWE+XN4wNuAilFbaK59mj2adFm1B7YmBLGEBdwJ8OCfl8qs9
+	q6MlvZR/de5VdFgePomfzQPReAYAQA5cphN1ng2eVCJM2PEhDnneRn8BaeJgrIXh1/kAAAAA
+	SUVORK5CYII=
+	</string>
+</dict>
+</plist>
