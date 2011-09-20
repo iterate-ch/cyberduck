@@ -23,7 +23,6 @@ import ch.cyberduck.core.i18n.Locale;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -226,7 +225,7 @@ public abstract class Archive {
         for(Path path : paths) {
             files.add(this.escape(path.getAbsolute()));
         }
-        return MessageFormat.format(Preferences.instance().getProperty("archive.command.create." + this.getIdentifier()),
+        return String.format(Preferences.instance().getProperty("archive.command.create." + this.getIdentifier()),
                 this.escape(archive.toString()), StringUtils.join(files, " "));
     }
 
@@ -234,7 +233,7 @@ public abstract class Archive {
      * @return
      */
     public String getDecompressCommand(final Path path) {
-        return MessageFormat.format(Preferences.instance().getProperty("archive.command.expand." + this.getIdentifier()),
+        return String.format(Preferences.instance().getProperty("archive.command.expand." + this.getIdentifier()),
                 this.escape(path.getAbsolute()), this.escape(path.getParent().getAbsolute()));
     }
 
