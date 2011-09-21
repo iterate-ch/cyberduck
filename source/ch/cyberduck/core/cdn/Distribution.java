@@ -303,7 +303,7 @@ public class Distribution {
      * @param logging
      */
     public Distribution(String id, String origin, Method method, boolean enabled, String url, String sslUrl, String streamingUrl, String status, boolean logging) {
-        this(id, origin, method, enabled, enabled, url, sslUrl, null, status, new String[]{}, logging, null, null);
+        this(id, origin, method, enabled, enabled, url, sslUrl, streamingUrl, status, new String[]{}, logging, null, null);
     }
 
 
