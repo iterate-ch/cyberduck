@@ -75,18 +75,18 @@ public abstract class Protocol {
      *
      * @return Null if no vendor specific profile
      */
-    public String getVendor() {
+    public String getProvider() {
         return null;
     }
 
     /**
      * @see #getIdentifier()
-     * @see #getVendor()
+     * @see #getProvider()
      */
     public String getIdentifierAndVendor() {
         final StringBuilder identifier = new StringBuilder(this.getIdentifier());
-        if(StringUtils.isNotBlank(this.getVendor())) {
-            identifier.append(",").append(this.getVendor());
+        if(StringUtils.isNotBlank(this.getProvider())) {
+            identifier.append(",").append(this.getProvider());
         }
         return identifier.toString();
     }
@@ -128,17 +128,18 @@ public abstract class Protocol {
         return new String[]{this.getScheme()};
     }
 
+
     @Override
     public boolean equals(Object other) {
         if(other instanceof Protocol) {
-            return ((Protocol) other).getIdentifier().equals(this.getIdentifier());
+            return ((Protocol) other).getIdentifierAndVendor().equals(this.getIdentifierAndVendor());
         }
         return false;
     }
 
     @Override
     public int hashCode() {
-        return this.getIdentifier().hashCode();
+        return this.getIdentifierAndVendor().hashCode();
     }
 
     @Override

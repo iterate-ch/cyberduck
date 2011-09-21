@@ -239,7 +239,13 @@ public class Host implements Serializable {
         }
         Object protocolObj = dict.stringForKey("Protocol");
         if(protocolObj != null) {
-            this.setProtocol(ProtocolFactory.forName(protocolObj.toString()));
+            Object providerObj = dict.stringForKey("Provider");
+            if(providerObj != null) {
+                this.setProtocol(ProtocolFactory.forName(protocolObj.toString(), providerObj.toString()));
+            }
+            else {
+                this.setProtocol(ProtocolFactory.forName(protocolObj.toString()));
+            }
         }
         Object hostnameObj = dict.stringForKey("Hostname");
         if(hostnameObj != null) {
@@ -319,6 +325,9 @@ public class Host implements Serializable {
     public <T> T getAsDictionary() {
         final Serializer dict = SerializerFactory.createSerializer();
         dict.setStringForKey(this.getProtocol().getIdentifier(), "Protocol");
+        if(StringUtils.isNotBlank(this.getProtocol().getProvider())) {
+            dict.setStringForKey(this.getProtocol().getProvider(), "Provider");
+        }
         dict.setStringForKey(this.getNickname(), "Nickname");
         dict.setStringForKey(this.getUuid(), "UUID");
         dict.setStringForKey(this.getHostname(), "Hostname");

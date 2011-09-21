@@ -61,7 +61,7 @@ public class Profile extends Protocol implements Serializable {
     public <T> T getAsDictionary() {
         final Serializer dict = SerializerFactory.createSerializer();
         dict.setStringForKey("Protocol", parent.getIdentifier());
-        dict.setStringForKey("Vendor", this.getVendor());
+        dict.setStringForKey("Vendor", this.getProvider());
         dict.setStringForKey("Description", this.getDescription());
         dict.setStringForKey("Default Hostname", this.getDefaultHostname());
         dict.setStringForKey("Default Port", String.valueOf(this.getDefaultPort()));
@@ -80,7 +80,7 @@ public class Profile extends Protocol implements Serializable {
 
     @Override
     public int hashCode() {
-        return ("profile-" + this.getIdentifier()).hashCode();
+        return ("profile-" + this.getIdentifierAndVendor()).hashCode();
     }
 
     public Protocol getProtocol() {
@@ -138,10 +138,10 @@ public class Profile extends Protocol implements Serializable {
     }
 
     @Override
-    public String getVendor() {
+    public String getProvider() {
         final String v = this.getValue("Vendor");
         if(StringUtils.isBlank(v)) {
-            return parent.getVendor();
+            return parent.getProvider();
         }
         return v;
     }
@@ -212,7 +212,7 @@ public class Profile extends Protocol implements Serializable {
         }
         final byte[] favicon = Base64.decodeBase64(icon);
         final Local file = LocalFactory.createLocal(Preferences.instance().getProperty("tmp.dir"),
-                this.getIdentifier() + ".ico");
+                this.getProvider() + ".ico");
         try {
             final OutputStream out = file.getOutputStream(false);
             try {

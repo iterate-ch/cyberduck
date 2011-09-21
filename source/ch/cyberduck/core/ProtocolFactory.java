@@ -150,10 +150,10 @@ public class ProtocolFactory {
                 if(StringUtils.isBlank(vendor)) {
                     return protocol;
                 }
-                if(StringUtils.isBlank(protocol.getVendor())) {
+                if(StringUtils.isBlank(protocol.getProvider())) {
                     continue;
                 }
-                if(protocol.getVendor().equals(vendor)) {
+                if(protocol.getProvider().equals(vendor)) {
                     return protocol;
                 }
             }
