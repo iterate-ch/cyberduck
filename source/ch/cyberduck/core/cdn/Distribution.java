@@ -387,6 +387,7 @@ public class Distribution {
         this.deployed = deployed;
         this.url = url;
         this.sslUrl = sslUrl;
+        this.streamingUrl = streamingUrl;
         this.status = status;
         this.cnames = cnames;
         this.logging = logging;
