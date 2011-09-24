@@ -1972,6 +1972,7 @@ source/ch/cyberduck/ui/controller/FileController.cs -text
 source/ch/cyberduck/ui/controller/FirefoxStyleRenderer.cs -text
 source/ch/cyberduck/ui/controller/FolderController.cs -text
 source/ch/cyberduck/ui/controller/FolderItems.cs -text
+source/ch/cyberduck/ui/controller/GotoController.cs -text
 source/ch/cyberduck/ui/controller/HostKeyController.cs -text
 source/ch/cyberduck/ui/controller/IActivityView.cs -text
 source/ch/cyberduck/ui/controller/IBookmarkManagerView.cs -text
@@ -1982,6 +1983,7 @@ source/ch/cyberduck/ui/controller/ICreateFilePromptView.cs -text
 source/ch/cyberduck/ui/controller/IDonationView.cs -text
 source/ch/cyberduck/ui/controller/IDuplicateFilePromptView.cs -text
 source/ch/cyberduck/ui/controller/IErrorView.cs -text
+source/ch/cyberduck/ui/controller/IGotoPromptView.cs -text
 source/ch/cyberduck/ui/controller/IInfoView.cs -text
 source/ch/cyberduck/ui/controller/ILoginView.cs -text
 source/ch/cyberduck/ui/controller/INewFolderPromptView.cs -text
@@ -2057,6 +2059,8 @@ source/ch/cyberduck/ui/winforms/DuplicateFilePromptForm.cs -text
 source/ch/cyberduck/ui/winforms/ErrorForm.Designer.cs -text
 source/ch/cyberduck/ui/winforms/ErrorForm.cs -text
 source/ch/cyberduck/ui/winforms/ErrorForm.resx -text
+source/ch/cyberduck/ui/winforms/GotoPromptForm.Designer.cs -text
+source/ch/cyberduck/ui/winforms/GotoPromptForm.cs -text
 source/ch/cyberduck/ui/winforms/InfoForm.Designer.cs -text
 source/ch/cyberduck/ui/winforms/InfoForm.cs -text
 source/ch/cyberduck/ui/winforms/InfoForm.resx -text

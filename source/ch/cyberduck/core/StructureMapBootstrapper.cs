@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2011 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -15,9 +15,11 @@
 // Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
 // 
+
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Winforms;
 using Ch.Cyberduck.Ui.Winforms.Controls;
+using Ch.Cyberduck.ui.winforms;
 using StructureMap;
 
 namespace Ch.Cyberduck.Core
@@ -42,6 +44,7 @@ namespace Ch.Cyberduck.Core
                                              // Singletons
                                              x.For<INewFolderPromptView>().Singleton().Use<NewFolderPromptForm>();
                                              x.For<ICreateFilePromptView>().Singleton().Use<CreateFilePromptForm>();
+                                             x.For<IGotoPromptView>().Singleton().Use<GotoPromptForm>();
                                              x.For<IDuplicateFilePromptView>().Singleton().Use<DuplicateFilePromptForm>();
                                              x.For<IPreferencesView>().Singleton().Use<PreferencesForm>();
                                              x.For<IDonationView>().Singleton().Use<DonationForm>();

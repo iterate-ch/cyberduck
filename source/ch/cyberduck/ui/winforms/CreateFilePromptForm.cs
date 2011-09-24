@@ -40,6 +40,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                                    };
             tableLayoutPanel.Controls.Add(cancelBtn, 1, 2);
 
+            pictureBox.Padding = new Padding(0, 0, 0, 5);
             label.Text = Locale.localizedString("Enter the name for the new file:", "File");
             okButton.Text = Locale.localizedString("Create", "File");
 

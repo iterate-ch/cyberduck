@@ -1,6 +1,6 @@
 ﻿namespace Ch.Cyberduck.Ui.Winforms
 {
-    partial class NewFolderPromptForm
+    partial class GotoPromptForm
     {
         /// <summary>
         /// Required designer variable.
@@ -28,18 +28,9 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.SuspendLayout();
-            // 
-            // NewFolderPromptForm
-            // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+            this.components = new System.ComponentModel.Container();
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(462, 133);
-            this.MinimumSize = new System.Drawing.Size(464, 167);
-            this.Name = "NewFolderPromptForm";
-            this.Text = "Go to folder";
-            this.ResumeLayout(false);
-
+            this.Text = "GotoPromptForm";
         }
 
         #endregion

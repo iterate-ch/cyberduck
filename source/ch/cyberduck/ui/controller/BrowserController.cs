@@ -1335,7 +1335,6 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private bool View_ValidateGotoFolder()
         {
-            return false; //todo
             return IsMounted();
         }
 
@@ -1443,8 +1442,8 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_GotoFolder()
         {
-            //todo implement
-            throw new NotImplementedException();
+            GotoController gc = new GotoController(ObjectFactory.GetInstance<IGotoPromptView>(), this);
+            gc.Show();
         }
 
         private void View_RefreshBrowser()

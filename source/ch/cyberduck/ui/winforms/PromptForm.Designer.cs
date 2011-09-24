@@ -64,9 +64,9 @@
             // 
             // tableLayoutPanel
             // 
-            this.tableLayoutPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.tableLayoutPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.tableLayoutPanel.ColumnCount = 4;
             this.tableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
@@ -88,10 +88,11 @@
             // 
             // pictureBox
             // 
+            this.pictureBox.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.pictureBox.Location = new System.Drawing.Point(3, 3);
             this.pictureBox.Name = "pictureBox";
-            this.tableLayoutPanel.SetRowSpan(this.pictureBox, 3);
-            this.pictureBox.Size = new System.Drawing.Size(75, 74);
+            this.tableLayoutPanel.SetRowSpan(this.pictureBox, 2);
+            this.pictureBox.Size = new System.Drawing.Size(75, 61);
             this.pictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
             this.pictureBox.TabIndex = 0;
             this.pictureBox.TabStop = false;
