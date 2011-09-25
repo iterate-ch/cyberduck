@@ -56,7 +56,7 @@ public class BookmarkController extends WindowController {
             final String title = protocol.getDescription();
             this.protocolPopup.addItemWithTitle(title);
             final NSMenuItem item = this.protocolPopup.itemWithTitle(title);
-            item.setRepresentedObject(protocol.getIdentifierAndVendor());
+            item.setRepresentedObject(protocol.getIdentifierAndProvider());
             item.setImage(IconCache.iconNamed(protocol.icon(), 16));
         }
     }
@@ -797,7 +797,7 @@ public class BookmarkController extends WindowController {
         anonymousCheckbox.setEnabled(host.getProtocol().isAnonymousConfigurable());
         anonymousCheckbox.setState(host.getCredentials().isAnonymousLogin() ? NSCell.NSOnState : NSCell.NSOffState);
         protocolPopup.selectItemAtIndex(
-                protocolPopup.indexOfItemWithRepresentedObject(host.getProtocol().getIdentifierAndVendor())
+                protocolPopup.indexOfItemWithRepresentedObject(host.getProtocol().getIdentifierAndProvider())
         );
         if(null == host.getMaxConnections()) {
             transferPopup.selectItemWithTitle(DEFAULT);

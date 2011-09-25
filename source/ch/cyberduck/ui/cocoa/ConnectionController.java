@@ -122,13 +122,13 @@ public class ConnectionController extends SheetController {
             final String title = protocol.getDescription();
             this.protocolPopup.addItemWithTitle(title);
             final NSMenuItem item = this.protocolPopup.itemWithTitle(title);
-            item.setRepresentedObject(protocol.getIdentifierAndVendor());
+            item.setRepresentedObject(protocol.getIdentifierAndProvider());
             item.setImage(IconCache.iconNamed(protocol.icon(), 16));
         }
         final Protocol defaultProtocol
                 = ProtocolFactory.forName(Preferences.instance().getProperty("connection.protocol.default"));
         this.protocolPopup.selectItemAtIndex(
-                protocolPopup.indexOfItemWithRepresentedObject(defaultProtocol.getIdentifierAndVendor())
+                protocolPopup.indexOfItemWithRepresentedObject(defaultProtocol.getIdentifierAndProvider())
         );
     }
 
@@ -279,7 +279,7 @@ public class ConnectionController extends SheetController {
     private void hostChanged(final Host host) {
         this.updateField(hostField, host.getHostname());
         this.protocolPopup.selectItemAtIndex(
-                protocolPopup.indexOfItemWithRepresentedObject(host.getProtocol().getIdentifierAndVendor())
+                protocolPopup.indexOfItemWithRepresentedObject(host.getProtocol().getIdentifierAndProvider())
         );
         this.updateField(portField, String.valueOf(host.getPort()));
         this.updateField(usernameField, host.getCredentials().getUsername());
@@ -596,7 +596,12 @@ public class ConnectionController extends SheetController {
     public void helpButtonClicked(final ID sender) {
         final Protocol protocol = ProtocolFactory.forName(protocolPopup.selectedItem().representedObject());
         StringBuilder site = new StringBuilder(Preferences.instance().getProperty("website.help"));
-        site.append("/").append(protocol.getIdentifier());
+        if(StringUtils.isBlank(protocol.getProvider())) {
+            site.append("/").append(protocol.getIdentifier());
+        }
+        else {
+            site.append("/").append(protocol.getProvider());
+        }
         openUrl(site.toString());
     }
 

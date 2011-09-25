@@ -80,7 +80,7 @@ public class Profile extends Protocol implements Serializable {
 
     @Override
     public int hashCode() {
-        return ("profile-" + this.getIdentifierAndVendor()).hashCode();
+        return ("profile-" + this.getIdentifierAndProvider()).hashCode();
     }
 
     public Protocol getProtocol() {

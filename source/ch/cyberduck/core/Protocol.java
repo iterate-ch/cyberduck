@@ -83,7 +83,7 @@ public abstract class Protocol {
      * @see #getIdentifier()
      * @see #getProvider()
      */
-    public String getIdentifierAndVendor() {
+    public String getIdentifierAndProvider() {
         final StringBuilder identifier = new StringBuilder(this.getIdentifier());
         if(StringUtils.isNotBlank(this.getProvider())) {
             identifier.append(",").append(this.getProvider());
@@ -132,14 +132,14 @@ public abstract class Protocol {
     @Override
     public boolean equals(Object other) {
         if(other instanceof Protocol) {
-            return ((Protocol) other).getIdentifierAndVendor().equals(this.getIdentifierAndVendor());
+            return ((Protocol) other).getIdentifierAndProvider().equals(this.getIdentifierAndProvider());
         }
         return false;
     }
 
     @Override
     public int hashCode() {
-        return this.getIdentifierAndVendor().hashCode();
+        return this.getIdentifierAndProvider().hashCode();
     }
 
     @Override
