@@ -70,19 +70,6 @@ public class Profile extends Protocol implements Serializable {
         return dict.<T>getSerialized();
     }
 
-    @Override
-    public boolean equals(Object other) {
-        if(other instanceof Profile) {
-            return super.equals(other);
-        }
-        return false;
-    }
-
-    @Override
-    public int hashCode() {
-        return ("profile-" + this.getIdentifierAndProvider()).hashCode();
-    }
-
     public Protocol getProtocol() {
         return parent;
     }
