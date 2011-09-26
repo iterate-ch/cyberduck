@@ -174,7 +174,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 if (FilenameUtils.getPrefix(name) != string.Empty)
                 {
-                    image = new Icon(name).ToBitmap();
+                    image = new Icon(name, size, size).ToBitmap();
                 }
                 else
                 {
