@@ -132,33 +132,12 @@ public class ProtocolFactory {
      * @return
      */
     public static Protocol forName(final String identifier) {
-        if(StringUtils.contains(identifier, ',')) {
-            final String[] parts = StringUtils.split(identifier, ',');
-            return forName(parts[0], parts[1]);
-        }
-        return forName(identifier, null);
-    }
-
-    /**
-     * @param identifier
-     * @param vendor
-     * @return
-     */
-    public static Protocol forName(final String identifier, final String vendor) {
         for(Protocol protocol : getKnownProtocols(false)) {
-            if(protocol.getIdentifier().equals(identifier)) {
-                if(StringUtils.isBlank(vendor)) {
-                    return protocol;
-                }
-                if(StringUtils.isBlank(protocol.getProvider())) {
-                    continue;
-                }
-                if(protocol.getProvider().equals(vendor)) {
-                    return protocol;
-                }
+            if(protocol.getProvider().equals(identifier)) {
+                return protocol;
             }
         }
-        log.fatal("Unknown protocol:" + identifier + ",vendor:" + vendor);
+        log.fatal("Unknown protocol:" + identifier);
         return forName(
                 Preferences.instance().getProperty("connection.protocol.default"));
     }

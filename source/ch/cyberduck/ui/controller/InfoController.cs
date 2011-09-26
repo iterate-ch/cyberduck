@@ -182,13 +182,13 @@ namespace Ch.Cyberduck.Ui.Controller
                 // Set icon of cloud service provider
                 View.ToolbarS3Label = session.getHost().getProtocol().getName();
                 View.ToolbarS3Image = IconCache.Instance.GetProtocolImages(32).Images[
-                    session.getHost().getProtocol().getIdentifier()];
+                    session.getHost().getProtocol().getProvider()];
             }
             else
             {
                 // Currently these settings are only available for Amazon S3
                 View.ToolbarS3Label = Protocol.S3_SSL.getName();
-                View.ToolbarS3Image = IconCache.Instance.GetProtocolImages(32).Images[Protocol.S3_SSL.getIdentifier()];
+                View.ToolbarS3Image = IconCache.Instance.GetProtocolImages(32).Images[Protocol.S3_SSL.getProvider()];
             }
 
             //ACL or permission view
@@ -208,7 +208,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 View.ToolbarDistributionEnabled = false;
                 View.ToolbarDistributionImage = IconCache.Instance.GetProtocolImages(32).Images[
-                    Protocol.S3_SSL.getIdentifier()];
+                    Protocol.S3_SSL.getProvider()];
             }
             else
             {
@@ -216,12 +216,12 @@ namespace Ch.Cyberduck.Ui.Controller
                 if (session is CloudSession)
                 {
                     View.ToolbarDistributionImage = IconCache.Instance.GetProtocolImages(32).Images[
-                        session.getHost().getProtocol().getIdentifier()];
+                        session.getHost().getProtocol().getProvider()];
                 }
                 else
                 {
                     View.ToolbarDistributionImage = IconCache.Instance.GetProtocolImages(32).Images[
-                        Protocol.S3_SSL.getIdentifier()];
+                        Protocol.S3_SSL.getProvider()];
                 }
             }
 
@@ -271,7 +271,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 foreach (Path file in _files)
                 {
-                    enable = enable && file.attributes().isFile() || file.attributes().isPlaceholder();
+                    enable = enable && (file.attributes().isVolume() || file.attributes().isFile() || file.attributes().isPlaceholder());
                 }
             }
             View.MetadataTableEnabled = stop && enable;
@@ -413,14 +413,14 @@ namespace Ch.Cyberduck.Ui.Controller
                                              break;
                                          case InfoHelpArgs.Context.Metdadata:
                                              site.Append("/").Append(
-                                                 _controller.getSession().getHost().getProtocol().getIdentifier());
+                                                 _controller.getSession().getHost().getProtocol().getProvider());
                                              break;
                                          case InfoHelpArgs.Context.Cdn:
                                              site.Append("/howto/cdn");
                                              break;
                                          case InfoHelpArgs.Context.S3:
                                              site.Append("/").Append(
-                                                 _controller.getSession().getHost().getProtocol().getIdentifier());
+                                                 _controller.getSession().getHost().getProtocol().getProvider());
                                              break;
                                      }
                                      Utils.StartProcess(site.ToString());

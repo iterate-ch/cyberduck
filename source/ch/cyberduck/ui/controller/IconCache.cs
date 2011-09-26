@@ -346,7 +346,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 list.ColorDepth = ColorDepth.Depth32Bit;
                 foreach (Protocol p in ProtocolFactory.getKnownProtocols(false).toArray(new Protocol[] {}))
                 {
-                    list.Images.Add(p.getIdentifier(), IconForName(p.disk(), size));
+                    list.Images.Add(p.getProvider(), IconForName(p.disk(), size));
                 }
                 _protocolImages.Add(size, list);
             }
@@ -363,7 +363,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 _protocolIcons.Images.Clear();
                 foreach (Protocol p in ProtocolFactory.getKnownProtocols(false).toArray(new Protocol[] {}))
                 {
-                    _protocolIcons.Images.Add(p.getIdentifier(), IconForName(p.icon(), 16));
+                    _protocolIcons.Images.Add(p.getProvider(), IconForName(p.icon(), 16));
                 }
             }
             return _protocolIcons;

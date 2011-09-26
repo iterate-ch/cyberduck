@@ -2543,10 +2543,10 @@ public class InfoController extends ToolbarWindowController {
             site.append("/howto/acl");
         }
         else if(tab.equals(TOOLBAR_ITEM_METADATA)) {
-            site.append("/").append(controller.getSession().getHost().getProtocol().getIdentifier());
+            site.append("/").append(controller.getSession().getHost().getProtocol().getProvider());
         }
         else if(tab.equals(TOOLBAR_ITEM_S3)) {
-            site.append("/").append(controller.getSession().getHost().getProtocol().getIdentifier());
+            site.append("/").append(controller.getSession().getHost().getProtocol().getProvider());
         }
         else if(tab.equals(TOOLBAR_ITEM_DISTRIBUTION)) {
             site.append("/howto/cdn");

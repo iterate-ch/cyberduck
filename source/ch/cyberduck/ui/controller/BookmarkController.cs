@@ -507,7 +507,7 @@ namespace Ch.Cyberduck.Ui.Controller
             List<KeyValueIconTriple<Protocol, string>> protocols = new List<KeyValueIconTriple<Protocol, string>>();
             foreach (Protocol p in ProtocolFactory.getKnownProtocols().toArray(new Protocol[] {}))
             {
-                protocols.Add(new KeyValueIconTriple<Protocol, string>(p, p.getDescription(), p.getIdentifier()));
+                protocols.Add(new KeyValueIconTriple<Protocol, string>(p, p.getDescription(), p.getProvider()));
             }
             View.PopulateProtocols(protocols);
         }

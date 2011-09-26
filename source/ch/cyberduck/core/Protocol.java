@@ -76,19 +76,7 @@ public abstract class Protocol {
      * @return Null if no vendor specific profile
      */
     public String getProvider() {
-        return null;
-    }
-
-    /**
-     * @see #getIdentifier()
-     * @see #getProvider()
-     */
-    public String getIdentifierAndProvider() {
-        final StringBuilder identifier = new StringBuilder(this.getIdentifier());
-        if(StringUtils.isNotBlank(this.getProvider())) {
-            identifier.append(",").append(this.getProvider());
-        }
-        return identifier.toString();
+        return this.getIdentifier();
     }
 
     public String getName() {
@@ -132,19 +120,19 @@ public abstract class Protocol {
     @Override
     public boolean equals(Object other) {
         if(other instanceof Protocol) {
-            return ((Protocol) other).getIdentifierAndProvider().equals(this.getIdentifierAndProvider());
+            return ((Protocol) other).getProvider().equals(this.getProvider());
         }
         return false;
     }
 
     @Override
     public int hashCode() {
-        return this.getIdentifierAndProvider().hashCode();
+        return this.getProvider().hashCode();
     }
 
     @Override
     public String toString() {
-        return this.getIdentifier();
+        return this.getProvider();
     }
 
     /**

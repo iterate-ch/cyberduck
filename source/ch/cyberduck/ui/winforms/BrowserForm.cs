@@ -2263,7 +2263,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             foreach (Host bookmark in bookmarks)
             {
                 ToolStripItem item = new ToolStripMenuItem(bookmark.getNickname(),
-                                                           icons[bookmark.getProtocol().getIdentifier()]);
+                                                           icons[bookmark.getProtocol().getProvider()]);
                 item.Tag = bookmark;
                 item.Click += (o, args) => ConnectBookmark(this, new ConnectBookmarkArgs(item.Tag as Host));
                 items.Add(item);
@@ -2284,7 +2284,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                 foreach (Host h in history)
                 {
                     ToolStripItem item = new ToolStripMenuItem(h.getNickname(),
-                                                               icons[h.getProtocol().getIdentifier()]);
+                                                               icons[h.getProtocol().getProvider()]);
                     item.Tag = h;
                     item.Click += (o, args) => ConnectBookmark(this, new ConnectBookmarkArgs(item.Tag as Host));
                     items.Add(item);
@@ -2420,7 +2420,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                                                                                                  _icons[
                                                                                                      h.getProtocol()
                                                                                                          .
-                                                                                                         getIdentifier
+                                                                                                         getProvider
                                                                                                          ()]);
                                                                    }));
             }
@@ -2445,7 +2445,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                                                                        _form.vistaMenu1.SetImage(i,
                                                                                                  _icons[
                                                                                                      h.getProtocol().
-                                                                                                         getIdentifier()
+                                                                                                         getProvider()
                                                                                                      ]);
 
 
@@ -2477,7 +2477,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                                                                                                              h.
                                                                                                                  getProtocol
                                                                                                                  ().
-                                                                                                                 getIdentifier
+                                                                                                                 getProvider
                                                                                                                  ()]);
                                                                                break;
                                                                            }
@@ -2516,7 +2516,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                     foreach (MenuItem item in items)
                     {
                         if (null != item.Tag)
-                            _form.vistaMenu1.SetImage(item, _icons[((Host) item.Tag).getProtocol().getIdentifier()]);
+                            _form.vistaMenu1.SetImage(item, _icons[((Host) item.Tag).getProtocol().getProvider()]);
                     }
                     _form.Menu = _form.mainMenu;
                     _form.ResumeLayout();
@@ -2936,7 +2936,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                                                                                                      _icons[
                                                                                                          h.getProtocol()
                                                                                                              .
-                                                                                                             getIdentifier
+                                                                                                             getProvider
                                                                                                              ()]);
                                                                        }
                                                                    }));
@@ -3011,7 +3011,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                     foreach (MenuItem item in items)
                     {
                         if (null != item.Tag)
-                            _form.vistaMenu1.SetImage(item, _icons[((Host) item.Tag).getProtocol().getIdentifier()]);
+                            _form.vistaMenu1.SetImage(item, _icons[((Host) item.Tag).getProtocol().getProvider()]);
                     }
                 }
                 else

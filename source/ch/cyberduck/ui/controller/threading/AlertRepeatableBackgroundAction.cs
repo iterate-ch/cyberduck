@@ -68,7 +68,7 @@ namespace Ch.Cyberduck.Ui.Controller.Threading
                                            {
                                                footer = Preferences.instance().getProperty("website.help") + "/" +
                                                         failure.getPath().getSession().getHost().getProtocol().
-                                                            getIdentifier();
+                                                            getProvider();
                                            }
                                            DialogResult result =
                                                _controller.WarningBox(failure.getReadableTitle(),

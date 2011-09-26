@@ -115,7 +115,7 @@ public class PromptLoginController extends AbstractLoginController {
             @Override
             public void helpButtonClicked(NSButton sender) {
                 StringBuilder site = new StringBuilder(Preferences.instance().getProperty("website.help"));
-                site.append("/").append(protocol.getIdentifier());
+                site.append("/").append(protocol.getProvider());
                 openUrl(site.toString());
             }
 
@@ -291,6 +291,7 @@ public class PromptLoginController extends AbstractLoginController {
                     credentials.setIdentity(null);
                 }
                 update();
+                // Fix #6233
             }
 
             private void update() {
