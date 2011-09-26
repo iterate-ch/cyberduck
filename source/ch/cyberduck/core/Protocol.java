@@ -1254,11 +1254,6 @@ public abstract class Protocol {
         }
 
         @Override
-        public boolean isHostnameConfigurable() {
-            return false;
-        }
-
-        @Override
         public String getDefaultHostname() {
             return "blob.core.windows.net";
         }
@@ -1271,11 +1266,6 @@ public abstract class Protocol {
         @Override
         public int getDefaultPort() {
             return 443;
-        }
-
-        @Override
-        public boolean isPortConfigurable() {
-            return false;
         }
 
         @Override
