@@ -134,7 +134,7 @@ public abstract class AbstractHostCollection extends Collection<Host> implements
     public void sortByProtocol() {
         this.sort(new Comparator<Host>() {
             public int compare(Host o1, Host o2) {
-                return comparator.compare(o1.getProtocol().getIdentifier(), o2.getProtocol().getIdentifier());
+                return comparator.compare(o1.getProtocol().getProvider(), o2.getProtocol().getProvider());
             }
         });
     }
