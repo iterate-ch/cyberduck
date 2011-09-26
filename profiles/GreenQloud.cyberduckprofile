@@ -7,7 +7,7 @@
 	<key>Vendor</key>
 	<string>greenqloud</string>
 	<key>Description</key>
-	<string>Storage Qloud (S3)</string>
+	<string>GreenQloud Storage Qloud</string>
 	<key>Default Hostname</key>
 	<string>s.greenqloud.com</string>
 	<key>Default Port</key>
