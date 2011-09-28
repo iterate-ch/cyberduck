@@ -19,7 +19,6 @@
 		470C64781328CC0300146FB6 /* docs.google.com – Google Docs.duck in CopyFiles */ = {isa = PBXBuildFile; fileRef = 470C646E1328CBF300146FB6 /* docs.google.com – Google Docs.duck */; };
 		470C64791328CC0300146FB6 /* s3.amazonaws.com – S3.duck in CopyFiles */ = {isa = PBXBuildFile; fileRef = 470C646F1328CBF300146FB6 /* s3.amazonaws.com – S3.duck */; };
 		470C647A1328CC0300146FB6 /* storage.clouddrive.com – Cloud Files.duck in CopyFiles */ = {isa = PBXBuildFile; fileRef = 470C64701328CBF300146FB6 /* storage.clouddrive.com – Cloud Files.duck */; };
-		470C647B1328CC0300146FB6 /* svn.cyberduck.ch – WebDAV (HTTP).duck in CopyFiles */ = {isa = PBXBuildFile; fileRef = 470C64711328CBF300146FB6 /* svn.cyberduck.ch – WebDAV (HTTP).duck */; };
 		47124259129AA0F200BC957C /* swift-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 47124257129AA0F200BC957C /* swift-icon.png */; };
 		4712425A129AA0F200BC957C /* swift.icns in Resources */ = {isa = PBXBuildFile; fileRef = 47124258129AA0F200BC957C /* swift.icns */; };
 		4714591713B492CD00F1A9D2 /* libAquaticPrime.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4773D6B00F9C86A7004658BD /* libAquaticPrime.a */; };
@@ -325,7 +324,6 @@
 				470C64781328CC0300146FB6 /* docs.google.com – Google Docs.duck in CopyFiles */,
 				470C64791328CC0300146FB6 /* s3.amazonaws.com – S3.duck in CopyFiles */,
 				470C647A1328CC0300146FB6 /* storage.clouddrive.com – Cloud Files.duck in CopyFiles */,
-				470C647B1328CC0300146FB6 /* svn.cyberduck.ch – WebDAV (HTTP).duck in CopyFiles */,
 				47EBC1311328D01C00E9E6B3 /* mirror.switch.ch – FTP.duck in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -461,7 +459,6 @@
 		470C646E1328CBF300146FB6 /* docs.google.com – Google Docs.duck */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = "docs.google.com – Google Docs.duck"; sourceTree = "<group>"; };
 		470C646F1328CBF300146FB6 /* s3.amazonaws.com – S3.duck */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = "s3.amazonaws.com – S3.duck"; sourceTree = "<group>"; };
 		470C64701328CBF300146FB6 /* storage.clouddrive.com – Cloud Files.duck */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = "storage.clouddrive.com – Cloud Files.duck"; sourceTree = "<group>"; };
-		470C64711328CBF300146FB6 /* svn.cyberduck.ch – WebDAV (HTTP).duck */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = "svn.cyberduck.ch – WebDAV (HTTP).duck"; sourceTree = "<group>"; };
 		470DEC5E125F2CAF00952823 /* ru */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = ru; path = ru.lproj/Prompt.nib; sourceTree = "<group>"; };
 		470DEC5F125F2CAF00952823 /* ru */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = ru; path = ru.lproj/Preferences.nib; sourceTree = "<group>"; };
 		470DEC60125F2CAF00952823 /* ru */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = ru; path = ru.lproj/Main.nib; sourceTree = "<group>"; };
@@ -1750,7 +1747,6 @@
 				470C646E1328CBF300146FB6 /* docs.google.com – Google Docs.duck */,
 				470C646F1328CBF300146FB6 /* s3.amazonaws.com – S3.duck */,
 				470C64701328CBF300146FB6 /* storage.clouddrive.com – Cloud Files.duck */,
-				470C64711328CBF300146FB6 /* svn.cyberduck.ch – WebDAV (HTTP).duck */,
 				47EBC12F1328D00200E9E6B3 /* mirror.switch.ch – FTP.duck */,
 			);
 			path = bookmarks;
