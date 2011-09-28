@@ -107,10 +107,11 @@ public abstract class HttpPath extends Path {
                         response = command.call(entity);
                     }
                     catch(IOException e) {
-                        entry.countDown();
                         exception = e;
                     }
                     finally {
+                        // For zero byte files #writeTo is never called and the entry latch not triggered
+                        entry.countDown();
                         // Continue reading the response
                         exit.countDown();
                         autorelease.operate();

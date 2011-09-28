@@ -19,6 +19,7 @@ package ch.cyberduck.core.http;
  * dkocher@cyberduck.ch
  */
 
+import org.apache.commons.io.output.NullOutputStream;
 import org.apache.http.entity.AbstractHttpEntity;
 import org.apache.log4j.Logger;
 
@@ -77,6 +78,10 @@ public class DelayedHttpEntity extends AbstractHttpEntity {
      * @return The stream to write to after the entry signal was received.
      */
     public OutputStream getStream() {
+        if(null == stream) {
+            // Nothing to write
+            return NullOutputStream.NULL_OUTPUT_STREAM;
+        }
         return stream;
     }
 
