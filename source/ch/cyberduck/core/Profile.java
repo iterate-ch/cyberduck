@@ -31,6 +31,7 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.UUID;
 
 /**
  * @version $Id:$
@@ -199,7 +200,7 @@ public class Profile extends Protocol implements Serializable {
         }
         final byte[] favicon = Base64.decodeBase64(icon);
         final Local file = LocalFactory.createLocal(Preferences.instance().getProperty("tmp.dir"),
-                this.getProvider() + ".ico");
+                UUID.randomUUID().toString() + ".ico");
         try {
             final OutputStream out = file.getOutputStream(false);
             try {
