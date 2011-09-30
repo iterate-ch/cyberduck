@@ -32,7 +32,7 @@ static void* startup(VMLaunchOptions *launchOptions) {
 
     /* default vm args */
     JavaVMInitArgs	vm_args;
-    vm_args.version	= JNI_VERSION_1_4;
+    vm_args.version	= JNI_VERSION_1_6;
     vm_args.options	= launchOptions->options;
     vm_args.nOptions = launchOptions->nOptions;
     vm_args.ignoreUnrecognized	= JNI_TRUE;
