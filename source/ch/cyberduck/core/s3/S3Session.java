@@ -506,7 +506,7 @@ public class S3Session extends CloudSession {
     }
 
     public boolean isMultipartUploadSupported() {
-        if(host.getHostname().equals(Protocol.S3_SSL.getDefaultHostname())) {
+        if(host.getHostname().endsWith(Protocol.S3_SSL.getDefaultHostname())) {
             return Preferences.instance().getBoolean("s3.upload.multipart");
         }
         return false;
@@ -956,7 +956,7 @@ public class S3Session extends CloudSession {
 
     @Override
     public DistributionConfiguration cdn() {
-        if(host.getHostname().equals(Protocol.S3_SSL.getDefaultHostname())) {
+        if(host.getHostname().endsWith(Protocol.S3_SSL.getDefaultHostname())) {
             if(null == cf) {
                 cf = new WebsiteCloudFrontDistributionConfiguration();
             }
