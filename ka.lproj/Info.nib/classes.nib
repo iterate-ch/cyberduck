@@ -72,6 +72,8 @@
 				<string>NSTextField</string>
 				<key>distributionUrlField</key>
 				<string>NSTextField</string>
+				<key>encryptionPopup</key>
+				<string>NSPopUpButton</string>
 				<key>filenameField</key>
 				<string>NSTextField</string>
 				<key>groupField</key>

@@ -32,6 +32,7 @@
         distributionProgress = NSProgressIndicator;
         distributionStatusField = NSTextField;
         distributionUrlField = NSTextField;
+        encryptionPopup = NSPopUpButton;
         filenameField = NSTextField;
         groupField = NSTextField;
         groupr = NSButton;
