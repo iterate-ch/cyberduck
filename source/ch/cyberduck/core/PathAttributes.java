@@ -89,6 +89,11 @@ public class PathAttributes extends Attributes implements Serializable {
     private String storageClass;
 
     /**
+     * Encryption algorithm if set
+     */
+    private String encryption;
+
+    /**
      * Unique identifier for a given version of a file.
      *
      * @see ch.cyberduck.core.s3.S3Session#isVersioningSupported()
@@ -310,6 +315,14 @@ public class PathAttributes extends Attributes implements Serializable {
      */
     public void setStorageClass(String redundancy) {
         this.storageClass = redundancy;
+    }
+
+    public String getEncryption() {
+        return encryption;
+    }
+
+    public void setEncryption(String encryption) {
+        this.encryption = encryption;
     }
 
     /**
