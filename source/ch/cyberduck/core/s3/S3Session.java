@@ -544,6 +544,11 @@ public class S3Session extends CloudSession {
         return storageClasses;
     }
 
+    @Override
+    public List<String> getSupportedEncryptionAlgorithms() {
+        return Arrays.asList("AES256");
+    }
+
     private void setSupportedStorageClasses(List<String> storageClasses) {
         this.storageClasses = storageClasses;
     }
@@ -557,6 +562,7 @@ public class S3Session extends CloudSession {
     /**
      * @return True if the service supports bucket logging.
      */
+    @Override
     public boolean isLoggingSupported() {
         return loggingSupported;
     }

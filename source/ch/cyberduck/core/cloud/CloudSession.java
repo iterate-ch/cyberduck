@@ -23,6 +23,7 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.ssl.AbstractX509TrustManager;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -127,5 +128,15 @@ public abstract class CloudSession extends HttpSession {
      * @return List of redundancy level options. Empty list
      *         no storage options are available.
      */
-    public abstract List<String> getSupportedStorageClasses();
+    public List<String> getSupportedStorageClasses() {
+        return Collections.emptyList();
+    };
+
+    /**
+     * @return List of algorithms. Empty list
+     *         no encryption options are available.
+     */
+    public List<String> getSupportedEncryptionAlgorithms() {
+        return Collections.emptyList();
+    }
 }

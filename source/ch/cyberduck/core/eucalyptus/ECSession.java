@@ -72,6 +72,11 @@ public class ECSession extends S3Session {
     }
 
     @Override
+    public List<String> getSupportedEncryptionAlgorithms() {
+        return Collections.emptyList();
+    }
+
+    @Override
     public boolean isCDNSupported() {
         return false;
     }

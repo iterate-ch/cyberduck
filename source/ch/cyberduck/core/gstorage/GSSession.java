@@ -34,10 +34,7 @@ import org.jets3t.service.impl.rest.XmlResponsesSaxParser;
 import org.jets3t.service.model.S3Object;
 
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 /**
  * Google Storage for Developers is a new service for developers to store and
@@ -76,6 +73,11 @@ public class GSSession extends S3Session {
     @Override
     public List<String> getSupportedStorageClasses() {
         return Arrays.asList(S3Object.STORAGE_CLASS_STANDARD);
+    }
+
+    @Override
+    public List<String> getSupportedEncryptionAlgorithms() {
+        return Collections.emptyList();
     }
 
     @Override

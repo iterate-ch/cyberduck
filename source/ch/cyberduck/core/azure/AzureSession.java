@@ -80,11 +80,6 @@ public class AzureSession extends CloudSession {
         super(h);
     }
 
-    @Override
-    public List<String> getSupportedStorageClasses() {
-        return Collections.emptyList();
-    }
-
     private BlobStorageRest client;
 
     @Override

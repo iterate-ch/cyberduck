@@ -429,9 +429,4 @@ public class CFSession extends CloudSession {
         }
         return cdn;
     }
-
-    @Override
-    public List<String> getSupportedStorageClasses() {
-        return Collections.emptyList();
-    }
 }
