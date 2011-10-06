@@ -1714,16 +1714,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private bool View_ValidateDownloadAs()
         {
-            if (IsMounted() && SelectedPaths.Count == 1)
-            {
-                Path selected = SelectedPath;
-                if (null == selected)
-                {
-                    return false;
-                }
-                return !selected.attributes().isVolume();
-            }
-            return false;
+            return IsMounted() && SelectedPaths.Count == 1;
         }
 
         private void View_DownloadAs()
@@ -1740,16 +1731,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private bool View_ValidateDownload()
         {
-            if (IsMounted() && SelectedPaths.Count > 0)
-            {
-                Path selected = SelectedPath;
-                if (null == selected)
-                {
-                    return false;
-                }
-                return !selected.attributes().isVolume();
-            }
-            return false;
+            return IsMounted() && SelectedPaths.Count > 0;
         }
 
         private bool View_ValidateShowInspector()

@@ -4199,24 +4199,10 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             return this.isMounted();
         }
         else if(action.equals(Foundation.selector("downloadAsButtonClicked:"))) {
-            if(this.isMounted() && this.getSelectionCount() == 1) {
-                final Path selected = this.getSelectedPath();
-                if(null == selected) {
-                    return false;
-                }
-                return !selected.attributes().isVolume();
-            }
-            return false;
+            return this.isMounted() && this.getSelectionCount() == 1;
         }
         else if(action.equals(Foundation.selector("downloadToButtonClicked:")) || action.equals(Foundation.selector("downloadButtonClicked:"))) {
-            if(this.isMounted() && this.getSelectionCount() > 0) {
-                final Path selected = this.getSelectedPath();
-                if(null == selected) {
-                    return false;
-                }
-                return !selected.attributes().isVolume();
-            }
-            return false;
+            return this.isMounted() && this.getSelectionCount() > 0;
         }
         else if(action.equals(Foundation.selector("insideButtonClicked:"))) {
             return this.isMounted() && this.getSelectionCount() > 0;
