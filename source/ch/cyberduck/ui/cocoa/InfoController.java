@@ -337,6 +337,42 @@ public class InfoController extends ToolbarWindowController {
     }
 
     @Outlet
+    private NSPopUpButton encryptionPopup;
+
+    public void setEncryptionPopup(NSPopUpButton b) {
+        this.encryptionPopup = b;
+        this.encryptionPopup.setTarget(this.id());
+        this.encryptionPopup.setAction(Foundation.selector("encryptionPopupClicked:"));
+    }
+
+    @Action
+    public void encryptionPopupClicked(final NSPopUpButton sender) {
+        if(this.toggleS3Settings(false)) {
+            controller.background(new BrowserBackgroundAction(controller) {
+                public void run() {
+                    for(Path next : files) {
+                        next.attributes().setEncryption(null == sender.selectedItem() ? null : sender.selectedItem().representedObject());
+                        // Copy item in place to write new attributes
+                        next.copy(next);
+                    }
+                }
+
+                @Override
+                public void cleanup() {
+                    toggleS3Settings(true);
+                    initS3();
+                }
+
+                @Override
+                public String getActivity() {
+                    return MessageFormat.format(Locale.localizedString("Writing metadata of {0}", "Status"),
+                            this.toString(files));
+                }
+            });
+        }
+    }
+
+    @Outlet
     private NSButton bucketLoggingButton;
 
     public void setBucketLoggingButton(NSButton b) {
@@ -1805,6 +1841,8 @@ public class InfoController extends ToolbarWindowController {
             logging = ((S3Session) session).isLoggingSupported();
             versioning = ((S3Session) session).isVersioningSupported();
         }
+        storageClassPopup.setEnabled(stop && enable);
+        encryptionPopup.setEnabled(stop && enable);
         bucketVersioningButton.setEnabled(stop && enable && versioning);
         bucketMfaButton.setEnabled(stop && enable && versioning
                 && bucketVersioningButton.state() == NSCell.NSOnState);
@@ -1839,10 +1877,20 @@ public class InfoController extends ToolbarWindowController {
         storageClassPopup.itemWithTitle(Locale.localizedString("Unknown")).setEnabled(false);
         storageClassPopup.selectItemWithTitle(Locale.localizedString("Unknown"));
 
+        encryptionPopup.removeAllItems();
+        encryptionPopup.addItemWithTitle(Locale.localizedString("Unknown"));
+        encryptionPopup.itemWithTitle(Locale.localizedString("Unknown")).setEnabled(false);
+        encryptionPopup.addItemWithTitle(Locale.localizedString("None"));
+        encryptionPopup.selectItemWithTitle(Locale.localizedString("Unknown"));
+
         if(this.toggleS3Settings(false)) {
             for(String redundancy : ((CloudSession) controller.getSession()).getSupportedStorageClasses()) {
                 storageClassPopup.addItemWithTitle(Locale.localizedString(redundancy, "S3"));
                 storageClassPopup.lastItem().setRepresentedObject(redundancy);
+            }
+            for(String encryption : ((CloudSession) controller.getSession()).getSupportedEncryptionAlgorithms()) {
+                encryptionPopup.addItemWithTitle(Locale.localizedString(encryption, "S3"));
+                encryptionPopup.lastItem().setRepresentedObject(encryption);
             }
             if(this.numberOfFiles() > 1) {
                 s3PublicUrlField.setStringValue("(" + Locale.localizedString("Multiple files") + ")");
@@ -1856,6 +1904,11 @@ public class InfoController extends ToolbarWindowController {
                 if(StringUtils.isNotEmpty(redundancy)) {
                     storageClassPopup.removeItemWithTitle(Locale.localizedString("Unknown"));
                     storageClassPopup.selectItemWithTitle(Locale.localizedString(redundancy, "S3"));
+                }
+                final String encryption = file.attributes().getEncryption();
+                if(StringUtils.isNotEmpty(encryption)) {
+                    encryptionPopup.removeItemWithTitle(Locale.localizedString("Unknown"));
+                    encryptionPopup.selectItemWithTitle(Locale.localizedString(encryption, "S3"));
                 }
                 if(file.attributes().isFile()) {
                     final S3Path s3 = (S3Path) file;
@@ -2456,7 +2509,7 @@ public class InfoController extends ToolbarWindowController {
                             distributionDefaultRootPopup.selectItemWithTitle(Locale.localizedString("None"));
                         }
                         StringBuilder tooltip = new StringBuilder();
-                        for(Iterator<Path> iter = files.iterator(); iter.hasNext();) {
+                        for(Iterator<Path> iter = files.iterator(); iter.hasNext(); ) {
                             Path f = iter.next();
                             tooltip.append(f.getAbsolute());
                             if(iter.hasNext()) {
