@@ -1919,13 +1919,38 @@ public class PreferencesController extends ToolbarWindowController {
         this.defaultStorageClassPopup.addItemWithTitle(Locale.localizedString(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY, "S3"));
         this.defaultStorageClassPopup.lastItem().setRepresentedObject(S3Object.STORAGE_CLASS_REDUCED_REDUNDANCY);
         this.defaultStorageClassPopup.setTarget(this.id());
-        this.defaultStorageClassPopup.setAction(Foundation.selector("setDefaultStorageClassPopupClicked:"));
+        this.defaultStorageClassPopup.setAction(Foundation.selector("defaultStorageClassPopupClicked:"));
         this.defaultStorageClassPopup.selectItemWithTitle(Locale.localizedString(Preferences.instance().getProperty("s3.storage.class"), "S3"));
     }
 
     @Action
-    public void setDefaultStorageClassPopupClicked(NSPopUpButton sender) {
+    public void defaultStorageClassPopupClicked(NSPopUpButton sender) {
         Preferences.instance().setProperty("s3.storage.class", sender.selectedItem().representedObject());
+    }
+
+    @Outlet
+    private NSPopUpButton defaultEncryptionPopup;
+
+    public void setDefaultEncryptionPopup(NSPopUpButton b) {
+        this.defaultEncryptionPopup = b;
+        this.defaultEncryptionPopup.setAutoenablesItems(false);
+        this.defaultEncryptionPopup.removeAllItems();
+        this.defaultEncryptionPopup.addItemWithTitle(Locale.localizedString("None"));
+        this.defaultEncryptionPopup.addItemWithTitle(Locale.localizedString("AES256", "S3"));
+        this.defaultEncryptionPopup.lastItem().setRepresentedObject("AES256");
+        this.defaultEncryptionPopup.setTarget(this.id());
+        this.defaultEncryptionPopup.setAction(Foundation.selector("defaultEncryptionPopupClicked:"));
+        if(StringUtils.isNotBlank(Preferences.instance().getProperty("s3.encryption.algorithm"))) {
+            this.defaultEncryptionPopup.selectItemWithTitle(Locale.localizedString(Preferences.instance().getProperty("s3.encryption.algorithm"), "S3"));
+        }
+        else {
+            this.defaultEncryptionPopup.selectItemWithTitle(Locale.localizedString("None"));
+        }
+    }
+
+    @Action
+    public void defaultEncryptionPopupClicked(NSPopUpButton sender) {
+        Preferences.instance().setProperty("s3.encryption.algorithm", sender.selectedItem().representedObject());
     }
 
     @Outlet
