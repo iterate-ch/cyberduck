@@ -66,6 +66,8 @@
 				<string>NSPopUpButton</string>
 				<key>defaultEditorCheckbox</key>
 				<string>NSButton</string>
+				<key>defaultEncryptionPopup</key>
+				<string>NSPopUpButton</string>
 				<key>defaultFTPHandlerCombobox</key>
 				<string>NSPopUpButton</string>
 				<key>defaultSFTPHandlerCombobox</key>

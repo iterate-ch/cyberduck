@@ -24,6 +24,7 @@
         defaultBucketLocation = NSPopUpButton;
         defaultDownloadThrottleCombobox = NSPopUpButton;
         defaultEditorCheckbox = NSButton;
+        defaultEncryptionPopup = NSPopUpButton;
         defaultFTPHandlerCombobox = NSPopUpButton;
         defaultSFTPHandlerCombobox = NSPopUpButton;
         defaultStorageClassPopup = NSPopUpButton;
