@@ -24,6 +24,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSBundle;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 import ch.cyberduck.ui.cocoa.foundation.NSMutableDictionary;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 /**
@@ -37,7 +38,12 @@ public class UserDefaultsPortablePreferences extends UserDefaultsPreferences {
     @Override
     public void setProperty(String property, String value) {
         log.info("setProperty:" + property + "," + value);
-        this.dict.setObjectForKey(value, property);
+        if(StringUtils.isNotEmpty(value)) {
+            this.dict.setObjectForKey(value, property);
+        }
+        else {
+            this.deleteProperty(property);
+        }
     }
 
     @Override

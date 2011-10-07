@@ -103,6 +103,9 @@ public class UserDefaultsPreferences extends Preferences {
             // the same key exists in a domain that precedes the application domain in the search list.
             this.props.setObjectForKey(NSString.stringWithString(value), property);
         }
+        else {
+            this.deleteProperty(property);
+        }
     }
 
     @Override
