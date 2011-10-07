@@ -550,6 +550,9 @@ public abstract class Preferences {
          * Default redundancy level
          */
         defaults.put("s3.storage.class", S3Object.STORAGE_CLASS_STANDARD);
+        //defaults.put("s3.encryption.algorithm", "AES256");
+        defaults.put("s3.encryption.algorithm", StringUtils.EMPTY);
+
         /**
          * Validaty for public S3 URLs
          */
