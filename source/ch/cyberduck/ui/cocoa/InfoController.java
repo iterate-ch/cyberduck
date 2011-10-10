@@ -360,6 +360,7 @@ public class InfoController extends ToolbarWindowController {
                 @Override
                 public void cleanup() {
                     toggleS3Settings(true);
+                    initMetadata();
                     initS3();
                 }
 
@@ -1316,6 +1317,7 @@ public class InfoController extends ToolbarWindowController {
             this.initDistribution();
         }
         if(identifier.equals(TOOLBAR_ITEM_S3)) {
+            this.initMetadata();
             this.initS3();
         }
         if(identifier.equals(TOOLBAR_ITEM_METADATA)) {
@@ -1903,10 +1905,6 @@ public class InfoController extends ToolbarWindowController {
                     storageClassPopup.removeItemWithTitle(Locale.localizedString("Unknown"));
                     storageClassPopup.selectItemWithTitle(Locale.localizedString(redundancy, "S3"));
                 }
-                final String encryption = file.attributes().getEncryption();
-                if(StringUtils.isNotEmpty(encryption)) {
-                    encryptionPopup.selectItemWithTitle(Locale.localizedString(encryption, "S3"));
-                }
                 if(file.attributes().isFile()) {
                     final S3Path s3 = (S3Path) file;
                     final AbstractPath.DescriptiveUrl url = s3.toSignedUrl();
@@ -1932,7 +1930,7 @@ public class InfoController extends ToolbarWindowController {
                     }
                 }
             }
-            final String container = getSelected().getContainerName();
+            final Path selected = getSelected();
             controller.background(new BrowserBackgroundAction(controller) {
                 String location = null;
                 boolean logging = false;
@@ -1940,17 +1938,19 @@ public class InfoController extends ToolbarWindowController {
                 boolean versioning = false;
                 boolean mfa = false;
                 List<String> containers = new ArrayList<String>();
+                String encryption = null;
 
                 public void run() {
                     final S3Session s = (S3Session) controller.getSession();
-                    location = s.getLocation(container);
-                    logging = s.isLogging(container);
-                    loggingBucket = s.getLoggingTarget(container);
-                    for(AbstractPath c : getSelected().getContainer().getParent().children()) {
+                    location = s.getLocation(selected.getContainerName());
+                    logging = s.isLogging(selected.getContainerName());
+                    loggingBucket = s.getLoggingTarget(selected.getContainerName());
+                    for(AbstractPath c : selected.getContainer().getParent().children()) {
                         containers.add(c.getName());
                     }
-                    versioning = s.isVersioning(container);
-                    mfa = s.isMultiFactorAuthentication(container);
+                    versioning = s.isVersioning(selected.getContainerName());
+                    mfa = s.isMultiFactorAuthentication(selected.getContainerName());
+                    encryption = selected.attributes().getEncryption();
                 }
 
                 @Override
@@ -1969,7 +1969,7 @@ public class InfoController extends ToolbarWindowController {
                         }
                         else {
                             // Default to write log files to origin bucket
-                            bucketLoggingPopup.selectItemWithTitle(container);
+                            bucketLoggingPopup.selectItemWithTitle(selected.getContainerName());
                         }
                         if(StringUtils.isNotBlank(location)) {
                             bucketLocationField.setStringValue(Locale.localizedString(location, "S3"));
@@ -1977,6 +1977,9 @@ public class InfoController extends ToolbarWindowController {
                         bucketVersioningButton.setState(versioning ? NSCell.NSOnState : NSCell.NSOffState);
                         bucketMfaButton.setEnabled(versioning);
                         bucketMfaButton.setState(mfa ? NSCell.NSOnState : NSCell.NSOffState);
+                        if(StringUtils.isNotBlank(encryption)) {
+                            encryptionPopup.selectItemWithTitle(Locale.localizedString(encryption, "S3"));
+                        }
                     }
                     finally {
                         toggleS3Settings(true);
