@@ -332,6 +332,7 @@ public class S3Path extends CloudPath {
                 for(String key : source.keySet()) {
                     metadata.put(key, source.get(key).toString());
                 }
+                this.attributes().setEncryption(target.getServerSideEncryptionAlgorithm());
                 this.attributes().setMetadata(metadata);
             }
             catch(ServiceException e) {
@@ -606,6 +607,7 @@ public class S3Path extends CloudPath {
         }
         // Storage class
         object.setStorageClass(Preferences.instance().getProperty("s3.storage.class"));
+        object.setServerSideEncryptionAlgorithm(Preferences.instance().getProperty("s3.encryption.algorithm"));
         // Default metadata for new files
         for(String m : Preferences.instance().getList("s3.metadata.default")) {
             if(StringUtils.isBlank(m)) {
@@ -1037,6 +1039,7 @@ public class S3Path extends CloudPath {
                     }
                 }
                 p.attributes().setStorageClass(object.getStorageClass());
+                p.attributes().setEncryption(object.getServerSideEncryptionAlgorithm());
                 if(object instanceof S3Object) {
                     p.attributes().setVersionId(((S3Object) object).getVersionId());
                 }
@@ -1381,6 +1384,9 @@ public class S3Path extends CloudPath {
                     S3Object destination = new S3Object(((S3Path) copy).getKey());
                     // Keep same storage class
                     destination.setStorageClass(this.attributes().getStorageClass());
+                    if(StringUtils.isNotBlank(this.attributes().getStorageClass())) {
+                        destination.setServerSideEncryptionAlgorithm(this.attributes().getEncryption());
+                    }
                     // Apply non standard ACL
                     if(Acl.EMPTY.equals(this.attributes().getAcl())) {
                         this.readAcl();
@@ -1399,6 +1405,7 @@ public class S3Path extends CloudPath {
                                 i.getName(), i.attributes().getType());
                         // Apply storage class of parent directory
                         ((S3Path) i).attributes().setStorageClass(this.attributes().getStorageClass());
+                        ((S3Path) i).attributes().setEncryption(this.attributes().getEncryption());
                         i.copy(destination);
                     }
                 }
