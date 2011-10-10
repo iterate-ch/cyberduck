@@ -1880,8 +1880,10 @@ public class InfoController extends ToolbarWindowController {
         storageClassPopup.selectItemWithTitle(Locale.localizedString("Unknown"));
 
         encryptionPopup.removeAllItems();
+        encryptionPopup.addItemWithTitle(Locale.localizedString("Unknown"));
+        encryptionPopup.itemWithTitle(Locale.localizedString("Unknown")).setEnabled(false);
         encryptionPopup.addItemWithTitle(Locale.localizedString("None"));
-        encryptionPopup.selectItemWithTitle(Locale.localizedString("None"));
+        encryptionPopup.selectItemWithTitle(Locale.localizedString("Unknown"));
 
         if(this.toggleS3Settings(false)) {
             for(String redundancy : ((CloudSession) controller.getSession()).getSupportedStorageClasses()) {
@@ -1905,6 +1907,7 @@ public class InfoController extends ToolbarWindowController {
                     storageClassPopup.removeItemWithTitle(Locale.localizedString("Unknown"));
                     storageClassPopup.selectItemWithTitle(Locale.localizedString(redundancy, "S3"));
                 }
+                encryptionPopup.removeItemWithTitle(Locale.localizedString("Unknown"));
                 if(file.attributes().isFile()) {
                     final S3Path s3 = (S3Path) file;
                     final AbstractPath.DescriptiveUrl url = s3.toSignedUrl();
@@ -1950,7 +1953,9 @@ public class InfoController extends ToolbarWindowController {
                     }
                     versioning = s.isVersioning(selected.getContainerName());
                     mfa = s.isMultiFactorAuthentication(selected.getContainerName());
-                    encryption = selected.attributes().getEncryption();
+                    if(numberOfFiles() == 1) {
+                        encryption = selected.attributes().getEncryption();
+                    }
                 }
 
                 @Override
