@@ -160,6 +160,8 @@ public class S3Path extends CloudPath {
                 final S3Object destination = new S3Object(this.getKey());
                 // Keep same storage class
                 destination.setStorageClass(this.attributes().getStorageClass());
+                // Keep encryption setting
+                destination.setServerSideEncryptionAlgorithm(this.attributes().getEncryption());
                 // Apply non standard ACL
                 if(Acl.EMPTY.equals(this.attributes().getAcl())) {
                     this.readAcl();
@@ -1340,6 +1342,8 @@ public class S3Path extends CloudPath {
                 final S3Object destination = new S3Object(((S3Path) renamed).getKey());
                 // Keep same storage class
                 destination.setStorageClass(this.attributes().getStorageClass());
+                // Keep encryption setting
+                destination.setServerSideEncryptionAlgorithm(this.attributes().getEncryption());
                 // Apply non standard ACL
                 if(Acl.EMPTY.equals(this.attributes().getAcl())) {
                     this.readAcl();
@@ -1384,9 +1388,8 @@ public class S3Path extends CloudPath {
                     S3Object destination = new S3Object(((S3Path) copy).getKey());
                     // Keep same storage class
                     destination.setStorageClass(this.attributes().getStorageClass());
-                    if(StringUtils.isNotBlank(this.attributes().getStorageClass())) {
-                        destination.setServerSideEncryptionAlgorithm(this.attributes().getEncryption());
-                    }
+                    // Keep encryption setting
+                    destination.setServerSideEncryptionAlgorithm(this.attributes().getEncryption());
                     // Apply non standard ACL
                     if(Acl.EMPTY.equals(this.attributes().getAcl())) {
                         this.readAcl();
