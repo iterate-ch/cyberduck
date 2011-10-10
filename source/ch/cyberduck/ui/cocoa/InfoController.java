@@ -1878,10 +1878,8 @@ public class InfoController extends ToolbarWindowController {
         storageClassPopup.selectItemWithTitle(Locale.localizedString("Unknown"));
 
         encryptionPopup.removeAllItems();
-        encryptionPopup.addItemWithTitle(Locale.localizedString("Unknown"));
-        encryptionPopup.itemWithTitle(Locale.localizedString("Unknown")).setEnabled(false);
         encryptionPopup.addItemWithTitle(Locale.localizedString("None"));
-        encryptionPopup.selectItemWithTitle(Locale.localizedString("Unknown"));
+        encryptionPopup.selectItemWithTitle(Locale.localizedString("None"));
 
         if(this.toggleS3Settings(false)) {
             for(String redundancy : ((CloudSession) controller.getSession()).getSupportedStorageClasses()) {
@@ -1907,7 +1905,6 @@ public class InfoController extends ToolbarWindowController {
                 }
                 final String encryption = file.attributes().getEncryption();
                 if(StringUtils.isNotEmpty(encryption)) {
-                    encryptionPopup.removeItemWithTitle(Locale.localizedString("Unknown"));
                     encryptionPopup.selectItemWithTitle(Locale.localizedString(encryption, "S3"));
                 }
                 if(file.attributes().isFile()) {
