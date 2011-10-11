@@ -233,61 +233,40 @@ public abstract class TransferPromptController extends SheetController implement
                     localURLField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
                             p.getLocal().getAbsolute(),
                             TRUNCATE_MIDDLE_ATTRIBUTES));
-                    localURLField.setHidden(false);
-
-                    if(p.getLocal().exists()) {
-                        if(p.getLocal().attributes().getSize() == -1) {
-                            localSizeField.setAttributedStringValue(UNKNOWN_STRING);
-                        }
-                        else {
-                            localSizeField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
-                                    Status.getSizeAsString(p.getLocal().attributes().getSize()),
-                                    TRUNCATE_MIDDLE_ATTRIBUTES));
-                        }
-                        localSizeField.setHidden(false);
-                        if(p.getLocal().attributes().getModificationDate() == -1) {
-                            localModificationField.setAttributedStringValue(UNKNOWN_STRING);
-                        }
-                        else {
-                            localModificationField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
-                                    DateFormatterFactory.instance().getLongFormat(p.getLocal().attributes().getModificationDate()),
-                                    TRUNCATE_MIDDLE_ATTRIBUTES));
-                        }
-                        localModificationField.setHidden(false);
+                    if(p.getLocal().attributes().getSize() == -1) {
+                        localSizeField.setAttributedStringValue(UNKNOWN_STRING);
                     }
                     else {
-                        localSizeField.setStringValue(StringUtils.EMPTY);
-                        localModificationField.setStringValue(StringUtils.EMPTY);
+                        localSizeField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
+                                Status.getSizeAsString(p.getLocal().attributes().getSize()),
+                                TRUNCATE_MIDDLE_ATTRIBUTES));
                     }
-
+                    if(p.getLocal().attributes().getModificationDate() == -1) {
+                        localModificationField.setAttributedStringValue(UNKNOWN_STRING);
+                    }
+                    else {
+                        localModificationField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
+                                DateFormatterFactory.instance().getLongFormat(p.getLocal().attributes().getModificationDate()),
+                                TRUNCATE_MIDDLE_ATTRIBUTES));
+                    }
                     remoteURLField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
                             p.getHost().toURL() + p.getAbsolute(),
                             TRUNCATE_MIDDLE_ATTRIBUTES));
-                    remoteURLField.setHidden(false);
-
-                    if(p.exists()) {
-                        if(p.attributes().getSize() == -1) {
-                            remoteSizeField.setAttributedStringValue(UNKNOWN_STRING);
-                        }
-                        else {
-                            remoteSizeField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
-                                    Status.getSizeAsString(p.attributes().getSize()),
-                                    TRUNCATE_MIDDLE_ATTRIBUTES));
-                        }
-                        remoteSizeField.setHidden(false);
-                        if(p.attributes().getModificationDate() == -1) {
-                            remoteModificationField.setAttributedStringValue(UNKNOWN_STRING);
-                        }
-                        else {
-                            remoteModificationField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
-                                    DateFormatterFactory.instance().getLongFormat(p.attributes().getModificationDate()),
-                                    TRUNCATE_MIDDLE_ATTRIBUTES));
-                        }
-                        remoteModificationField.setHidden(false);
+                    if(p.attributes().getSize() == -1) {
+                        remoteSizeField.setAttributedStringValue(UNKNOWN_STRING);
                     }
                     else {
-                        remoteSizeField.setStringValue(StringUtils.EMPTY);
-                        remoteModificationField.setStringValue(StringUtils.EMPTY);
+                        remoteSizeField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
+                                Status.getSizeAsString(p.attributes().getSize()),
+                                TRUNCATE_MIDDLE_ATTRIBUTES));
+                    }
+                    if(p.attributes().getModificationDate() == -1) {
+                        remoteModificationField.setAttributedStringValue(UNKNOWN_STRING);
+                    }
+                    else {
+                        remoteModificationField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
+                                DateFormatterFactory.instance().getLongFormat(p.attributes().getModificationDate()),
+                                TRUNCATE_MIDDLE_ATTRIBUTES));
                     }
                 }
             }
@@ -412,7 +391,6 @@ public abstract class TransferPromptController extends SheetController implement
 
     public void setRemoteURLField(final NSTextField f) {
         this.remoteURLField = f;
-        this.remoteURLField.setHidden(true);
     }
 
     @Outlet
@@ -420,7 +398,6 @@ public abstract class TransferPromptController extends SheetController implement
 
     public void setRemoteSizeField(final NSTextField f) {
         this.remoteSizeField = f;
-        this.remoteSizeField.setHidden(true);
     }
 
     @Outlet
@@ -428,7 +405,6 @@ public abstract class TransferPromptController extends SheetController implement
 
     public void setRemoteModificationField(final NSTextField f) {
         this.remoteModificationField = f;
-        this.remoteModificationField.setHidden(true);
     }
 
     @Outlet
@@ -436,7 +412,6 @@ public abstract class TransferPromptController extends SheetController implement
 
     public void setLocalURLField(final NSTextField f) {
         this.localURLField = f;
-        this.localURLField.setHidden(true);
     }
 
     @Outlet
@@ -444,7 +419,6 @@ public abstract class TransferPromptController extends SheetController implement
 
     public void setLocalSizeField(final NSTextField f) {
         this.localSizeField = f;
-        this.localSizeField.setHidden(true);
     }
 
     @Outlet
@@ -452,7 +426,6 @@ public abstract class TransferPromptController extends SheetController implement
 
     public void setLocalModificationField(final NSTextField f) {
         this.localModificationField = f;
-        this.localModificationField.setHidden(true);
     }
 
     @Outlet

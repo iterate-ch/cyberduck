@@ -136,59 +136,43 @@ namespace Ch.Cyberduck.Ui.Controller
                 if (null != selected)
                 {
                     View.LocalFileUrl = selected.getLocal().getAbsolute();
-                    if (selected.getLocal().exists())
+                    if (selected.getLocal().attributes().getSize() == -1)
                     {
-                        if (selected.getLocal().attributes().getSize() == -1)
-                        {
-                            View.LocalFileSize = UnknownString;
-                        }
-                        else
-                        {
-                            View.LocalFileSize = Status.getSizeAsString(selected.getLocal().attributes().getSize());
-                        }
-                        if (selected.getLocal().attributes().getModificationDate() == -1)
-                        {
-                            View.LocalFileModificationDate = UnknownString;
-                        }
-                        else
-                        {
-                            View.LocalFileModificationDate =
-                                DateFormatterFactory.instance().getLongFormat(
-                                    selected.getLocal().attributes().getModificationDate());
-                        }
+                        View.LocalFileSize = UnknownString;
                     }
                     else
                     {
-                        View.LocalFileSize = String.Empty;
-                        View.LocalFileModificationDate = String.Empty;
+                        View.LocalFileSize = Status.getSizeAsString(selected.getLocal().attributes().getSize());
+                    }
+                    if (selected.getLocal().attributes().getModificationDate() == -1)
+                    {
+                        View.LocalFileModificationDate = UnknownString;
+                    }
+                    else
+                    {
+                        View.LocalFileModificationDate =
+                            DateFormatterFactory.instance().getLongFormat(
+                                selected.getLocal().attributes().getModificationDate());
                     }
 
                     View.RemoteFileUrl = selected.getHost().toURL() + selected.getAbsolute();
-                    if (selected.exists())
+                    if (selected.attributes().getSize() == -1)
                     {
-                        if (selected.attributes().getSize() == -1)
-                        {
-                            View.RemoteFileSize = UnknownString;
-                        }
-                        else
-                        {
-                            View.RemoteFileSize = Status.getSizeAsString(selected.attributes().getSize());
-                        }
-                        if (selected.attributes().getModificationDate() == -1)
-                        {
-                            View.RemoteFileModificationDate = UnknownString;
-                        }
-                        else
-                        {
-                            View.RemoteFileModificationDate =
-                                DateFormatterFactory.instance().getLongFormat(
-                                    selected.attributes().getModificationDate());
-                        }
+                        View.RemoteFileSize = UnknownString;
                     }
                     else
                     {
-                        View.RemoteFileSize = String.Empty;
-                        View.RemoteFileModificationDate = String.Empty;
+                        View.RemoteFileSize = Status.getSizeAsString(selected.attributes().getSize());
+                    }
+                    if (selected.attributes().getModificationDate() == -1)
+                    {
+                        View.RemoteFileModificationDate = UnknownString;
+                    }
+                    else
+                    {
+                        View.RemoteFileModificationDate =
+                            DateFormatterFactory.instance().getLongFormat(
+                                selected.attributes().getModificationDate());
                     }
                 }
                 else
