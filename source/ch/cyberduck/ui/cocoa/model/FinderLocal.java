@@ -124,7 +124,7 @@ public class FinderLocal extends Local {
     public Local getVolume() {
         for(AbstractPath parent = this.getParent(); !parent.isRoot(); parent = parent.getParent()) {
             if(parent.getParent().getAbsolute().equals("/Volumes")) {
-                return (Local)parent;
+                return (Local) parent;
             }
         }
         return super.getVolume();
@@ -449,7 +449,9 @@ public class FinderLocal extends Local {
      */
     @Override
     public boolean equals(Object o) {
-        if(o instanceof FinderLocal) {
+        // Case insensitive compare returned
+        if(super.equals(o)) {
+            // Now test with inode for case sensitive volumes
             if(!this.exists()) {
                 return super.equals(o);
             }
@@ -459,7 +461,7 @@ public class FinderLocal extends Local {
             }
             return this.attributes().getInode() == other.attributes().getInode();
         }
-        return super.equals(o);
+        return false;
     }
 
     /**
