@@ -1136,12 +1136,12 @@ public abstract class Protocol {
     public static final Protocol GOOGLESTORAGE_SSL = new Protocol() {
         @Override
         public String getName() {
-            return "Google Storage";
+            return "Google Cloud Storage";
         }
 
         @Override
         public String getDescription() {
-            return Locale.localizedString("Google Storage", "S3");
+            return Locale.localizedString("Google Cloud Storage", "S3");
         }
 
         @Override
