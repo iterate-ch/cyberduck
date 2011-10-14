@@ -64,7 +64,7 @@ public class SystemConfigurationReachability implements Reachability {
     }
 
     private String toURL(Host host) {
-        StringBuilder url = new StringBuilder(host.getProtocol().getScheme());
+        StringBuilder url = new StringBuilder(host.getProtocol().getScheme().toString());
         url.append("://");
         url.append(host.getHostname(true));
         url.append(":").append(host.getPort());

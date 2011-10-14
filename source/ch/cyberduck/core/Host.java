@@ -865,7 +865,7 @@ public class Host implements Serializable {
     }
 
     public String toURL(boolean credentials) {
-        StringBuilder url = new StringBuilder(this.getProtocol().getScheme());
+        StringBuilder url = new StringBuilder(this.getProtocol().getScheme().toString());
         url.append("://");
         if(credentials
                 && StringUtils.isNotEmpty(this.getCredentials().getUsername())) {

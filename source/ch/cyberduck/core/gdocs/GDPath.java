@@ -251,7 +251,7 @@ public class GDPath extends Path {
     }
 
     private StringBuilder getHostUrl() {
-        final StringBuilder feed = new StringBuilder(this.getSession().getHost().getProtocol().getScheme()).append("://");
+        final StringBuilder feed = new StringBuilder(this.getSession().getHost().getProtocol().getScheme().toString()).append("://");
         feed.append(this.getSession().getHost().getHostname());
         return feed;
     }

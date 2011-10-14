@@ -111,8 +111,9 @@ public abstract class HttpSession extends SSLSession {
 
             SchemeRegistry registry = new SchemeRegistry();
             // Always register HTTP for possible use with proxy
-            registry.register(new Scheme("http", host.getPort(), PlainSocketFactory.getSocketFactory()));
-            if("https".equals(this.getHost().getProtocol().getScheme())) {
+            registry.register(new Scheme(ch.cyberduck.core.Scheme.http.toString(),
+                    host.getPort(), PlainSocketFactory.getSocketFactory()));
+            if(ch.cyberduck.core.Scheme.https.equals(this.getHost().getProtocol().getScheme())) {
                 org.apache.http.conn.ssl.SSLSocketFactory factory = new SSLSocketFactory(
                         new CustomTrustSSLProtocolSocketFactory(this.getTrustManager()).getSSLContext(),
                         new X509HostnameVerifier() {
@@ -134,16 +135,16 @@ public abstract class HttpSession extends SSLSession {
                             }
                         }
                 );
-                registry.register(new Scheme(host.getProtocol().getScheme(), host.getPort(), factory));
+                registry.register(new Scheme(host.getProtocol().getScheme().toString(), host.getPort(), factory));
             }
             if(Preferences.instance().getBoolean("connection.proxy.enable")) {
                 final Proxy proxy = ProxyFactory.instance();
-                if("https".equals(this.getHost().getProtocol().getScheme())) {
+                if(ch.cyberduck.core.Scheme.https.equals(this.getHost().getProtocol().getScheme())) {
                     if(proxy.isHTTPSProxyEnabled(host)) {
                         ConnRouteParams.setDefaultProxy(params, new HttpHost(proxy.getHTTPSProxyHost(host), proxy.getHTTPSProxyPort(host)));
                     }
                 }
-                if("http".equals(this.getHost().getProtocol().getScheme())) {
+                if(ch.cyberduck.core.Scheme.http.equals(this.getHost().getProtocol().getScheme())) {
                     if(proxy.isHTTPProxyEnabled(host)) {
                         ConnRouteParams.setDefaultProxy(params, new HttpHost(proxy.getHTTPProxyHost(host), proxy.getHTTPProxyPort(host)));
                     }

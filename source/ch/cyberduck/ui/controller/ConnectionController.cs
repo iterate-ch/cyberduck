@@ -299,7 +299,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     return;
                 }
                 Protocol protocol = View.SelectedProtocol;
-                View.Password = KeychainFactory.instance().getPassword(protocol.getScheme(),
+                View.Password = KeychainFactory.instance().getPassword(protocol.getScheme().toString(),
                                                                        Integer.parseInt(View.Port),
                                                                        View.Hostname,
                                                                        View.Username);
@@ -392,7 +392,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             if (!string.IsNullOrEmpty(View.Hostname))
             {
-                String url = View.SelectedProtocol.getScheme() + "://" + View.Username
+                String url = View.SelectedProtocol.getScheme().toString() + "://" + View.Username
                              + "@" + View.Hostname + ":" + View.Port
                              + Path.normalize(View.Path);
                 View.URL = url;

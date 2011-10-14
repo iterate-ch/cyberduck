@@ -3,12 +3,12 @@
 <plist version="1.0">
 <dict>
 	<key>Protocol</key>
-	<string>s3</string>
+	<string>swift</string>
 	<key>Vendor</key>
-	<string>Custom S3</string>
+	<string>Custom Swift</string>
 	<key>Scheme</key>
 	<string>http</string>
 	<key>Description</key>
-	<string>S3 (HTTP)</string>
+	<string>Swift (HTTP)</string>
 </dict>
 </plist>

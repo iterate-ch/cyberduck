@@ -936,7 +936,7 @@ public class MainController extends BundleController implements NSApplication.De
         if(Preferences.instance().getBoolean("defaulthandler.reminder")
                 && Preferences.instance().getInteger("uses") > 0) {
             if(!URLSchemeHandlerConfiguration.instance().isDefaultHandlerForURLScheme(
-                    new String[]{Protocol.FTP.getScheme(), Protocol.FTP_TLS.getScheme(), Protocol.SFTP.getScheme()})) {
+                    new String[]{Protocol.FTP.getScheme().toString(), Protocol.FTP_TLS.getScheme().toString(), Protocol.SFTP.getScheme().toString()})) {
                 final NSAlert alert = NSAlert.alert(
                         Locale.localizedString("Set Cyberduck as default application for FTP and SFTP locations?", "Configuration"),
                         Locale.localizedString("As the default application, Cyberduck will open when you click on FTP or SFTP links in other applications, such as your web browser. You can change this setting in the Preferences later.", "Configuration"),
@@ -953,7 +953,7 @@ public class MainController extends BundleController implements NSApplication.De
                 }
                 if(choice == SheetCallback.DEFAULT_OPTION) {
                     URLSchemeHandlerConfiguration.instance().setDefaultHandlerForURLScheme(
-                            new String[]{Protocol.FTP.getScheme(), Protocol.FTP_TLS.getScheme(), Protocol.SFTP.getScheme()},
+                            new String[]{Protocol.FTP.getScheme().toString(), Protocol.FTP_TLS.getScheme().toString(), Protocol.SFTP.getScheme().toString()},
                             NSBundle.mainBundle().infoDictionary().objectForKey("CFBundleIdentifier").toString()
                     );
                 }

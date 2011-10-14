@@ -1669,14 +1669,14 @@ public class PreferencesController extends ToolbarWindowController {
     }
 
     private void configureDefaultProtocolHandlerCombobox(NSPopUpButton defaultProtocolHandlerCombobox, Protocol protocol) {
-        final String defaultHandler = URLSchemeHandlerConfiguration.instance().getDefaultHandlerForURLScheme(protocol.getScheme());
+        final String defaultHandler = URLSchemeHandlerConfiguration.instance().getDefaultHandlerForURLScheme(protocol.getScheme().toString());
         if(null == defaultHandler) {
             defaultProtocolHandlerCombobox.addItemWithTitle(Locale.localizedString("Unknown"));
             defaultProtocolHandlerCombobox.setEnabled(false);
             return;
         }
         log.debug("Default Protocol Handler for " + protocol + ":" + defaultHandler);
-        final String[] bundleIdentifiers = URLSchemeHandlerConfiguration.instance().getAllHandlersForURLScheme(protocol.getScheme());
+        final String[] bundleIdentifiers = URLSchemeHandlerConfiguration.instance().getAllHandlersForURLScheme(protocol.getScheme().toString());
         for(String bundleIdentifier : bundleIdentifiers) {
             String app = EditorFactory.getApplicationName(bundleIdentifier);
             if(StringUtils.isEmpty(app)) {
@@ -1712,7 +1712,7 @@ public class PreferencesController extends ToolbarWindowController {
     public void defaultFTPHandlerComboboxClicked(NSPopUpButton sender) {
         String bundle = sender.selectedItem().representedObject();
         URLSchemeHandlerConfiguration.instance().setDefaultHandlerForURLScheme(
-                new String[]{Protocol.FTP.getScheme(), Protocol.FTP_TLS.getScheme()}, bundle);
+                new String[]{Protocol.FTP.getScheme().name(), Protocol.FTP_TLS.getScheme().toString()}, bundle);
     }
 
     @Outlet
@@ -1735,7 +1735,7 @@ public class PreferencesController extends ToolbarWindowController {
     public void defaultSFTPHandlerComboboxClicked(NSPopUpButton sender) {
         String bundle = sender.selectedItem().representedObject();
         URLSchemeHandlerConfiguration.instance().setDefaultHandlerForURLScheme(
-                Protocol.SFTP.getScheme(), bundle
+                Protocol.SFTP.getScheme().toString(), bundle
         );
     }
 

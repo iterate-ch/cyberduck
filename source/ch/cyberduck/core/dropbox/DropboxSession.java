@@ -67,7 +67,7 @@ public class DropboxSession extends HttpSession {
         }
         this.fireConnectionWillOpenEvent();
 
-        client = new DropboxClient(this.http(), this.getHost().getProtocol().getScheme(), this.getHost().getPort());
+        client = new DropboxClient(this.http(), this.getHost().getProtocol().getScheme().toString(), this.getHost().getPort());
 
         // Prompt the login credentials first
         this.login();

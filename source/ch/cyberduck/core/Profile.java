@@ -62,6 +62,7 @@ public class Profile extends Protocol implements Serializable {
     public <T> T getAsDictionary() {
         final Serializer dict = SerializerFactory.createSerializer();
         dict.setStringForKey("Protocol", parent.getIdentifier());
+        dict.setStringForKey("Scheme", this.getScheme().toString());
         dict.setStringForKey("Vendor", this.getProvider());
         dict.setStringForKey("Description", this.getDescription());
         dict.setStringForKey("Default Hostname", this.getDefaultHostname());
@@ -88,7 +89,7 @@ public class Profile extends Protocol implements Serializable {
     private String getValue(String key) {
         final String value = dict.stringForKey(key);
         if(StringUtils.isBlank(value)) {
-            log.warn("No value for key:" + key);
+            log.debug("No value for key:" + key);
         }
         return value;
     }
@@ -218,28 +219,22 @@ public class Profile extends Protocol implements Serializable {
     }
 
     @Override
-    public boolean isSecure() {
-        return parent.isSecure();
-    }
-
-    @Override
     public boolean isHostnameConfigurable() {
         return false;
     }
 
     @Override
     public boolean isWebUrlConfigurable() {
-        return parent.isHostnameConfigurable();
+        return parent.isWebUrlConfigurable();
     }
 
     @Override
-    public String getScheme() {
-        return parent.getScheme();
-    }
-
-    @Override
-    public String[] getSchemes() {
-        return parent.getSchemes();
+    public Scheme getScheme() {
+        final String v = this.getValue("Scheme");
+        if(StringUtils.isBlank(v)) {
+            return parent.getScheme();
+        }
+        return Scheme.valueOf(v);
     }
 
     @Override

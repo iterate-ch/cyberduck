@@ -1189,7 +1189,7 @@ public abstract class Path extends AbstractPath implements Serializable {
     public Set<DescriptiveUrl> getURLs() {
         Set<DescriptiveUrl> list = new LinkedHashSet<DescriptiveUrl>();
         list.add(new DescriptiveUrl(this.toURL(), MessageFormat.format(Locale.localizedString("{0} URL"),
-                this.getHost().getProtocol().getScheme().toUpperCase())));
+                this.getHost().getProtocol().getScheme().toString().toUpperCase())));
         list.addAll(this.getHttpURLs());
         return list;
     }

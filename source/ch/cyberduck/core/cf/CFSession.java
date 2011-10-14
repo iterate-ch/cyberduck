@@ -112,7 +112,7 @@ public class CFSession extends CloudSession {
     }
 
     private String getAuthenticationUrl() {
-        StringBuilder authentication = new StringBuilder(host.getProtocol().getScheme()).append("://");
+        StringBuilder authentication = new StringBuilder(host.getProtocol().getScheme().toString()).append("://");
         if(host.getHostname().equals(Protocol.CLOUDFILES.getDefaultHostname())) {
             // Use default authentication server. Rackspace.
             authentication.append("auth.api.rackspacecloud.com");

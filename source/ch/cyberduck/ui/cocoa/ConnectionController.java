@@ -122,13 +122,13 @@ public class ConnectionController extends SheetController {
             final String title = protocol.getDescription();
             this.protocolPopup.addItemWithTitle(title);
             final NSMenuItem item = this.protocolPopup.itemWithTitle(title);
-            item.setRepresentedObject(protocol.getProvider());
+            item.setRepresentedObject(String.valueOf(protocol.hashCode()));
             item.setImage(IconCache.iconNamed(protocol.icon(), 16));
         }
         final Protocol defaultProtocol
                 = ProtocolFactory.forName(Preferences.instance().getProperty("connection.protocol.default"));
         this.protocolPopup.selectItemAtIndex(
-                protocolPopup.indexOfItemWithRepresentedObject(defaultProtocol.getProvider())
+                protocolPopup.indexOfItemWithRepresentedObject(String.valueOf(defaultProtocol.hashCode()))
         );
     }
 
@@ -279,7 +279,7 @@ public class ConnectionController extends SheetController {
     private void hostChanged(final Host host) {
         this.updateField(hostField, host.getHostname());
         this.protocolPopup.selectItemAtIndex(
-                protocolPopup.indexOfItemWithRepresentedObject(host.getProtocol().getProvider())
+                protocolPopup.indexOfItemWithRepresentedObject(String.valueOf(host.getProtocol().hashCode()))
         );
         this.updateField(portField, String.valueOf(host.getPort()));
         this.updateField(usernameField, host.getCredentials().getUsername());
@@ -571,7 +571,7 @@ public class ConnectionController extends SheetController {
                 return;
             }
             final Protocol protocol = ProtocolFactory.forName(protocolPopup.selectedItem().representedObject());
-            this.updateField(this.passField, KeychainFactory.instance().getPassword(protocol.getScheme(),
+            this.updateField(this.passField, KeychainFactory.instance().getPassword(protocol.getScheme().toString(),
                     portField.intValue(),
                     hostField.stringValue(), usernameField.stringValue()));
         }

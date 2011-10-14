@@ -51,7 +51,6 @@ public class ProtocolFactory {
         Protocol.IDISK.register();
 
         Protocol.S3_SSL.register();
-        Protocol.S3.register();
 
         Protocol.GOOGLESTORAGE_SSL.register();
         Protocol.EUCALYPTUS.register();
@@ -85,7 +84,7 @@ public class ProtocolFactory {
     }
 
     /**
-     * @return
+     * @return List of enabled protocols
      */
     public static List<Protocol> getKnownProtocols() {
         return getKnownProtocols(true);
@@ -93,7 +92,7 @@ public class ProtocolFactory {
 
     /**
      * @param filter Filter disabled protocols
-     * @return
+     * @return List of protocols
      */
     public static List<Protocol> getKnownProtocols(boolean filter) {
         List<Protocol> list = new ArrayList<Protocol>(SessionFactory.getRegisteredProtocols());
@@ -113,7 +112,7 @@ public class ProtocolFactory {
     }
 
     /**
-     * @param port
+     * @param port Default port
      * @return The standard protocol for this port number
      */
     public static Protocol getDefaultProtocol(int port) {
@@ -128,12 +127,17 @@ public class ProtocolFactory {
     }
 
     /**
-     * @param identifier
-     * @return
+     * @param identifier Provider name or hash code of protocol
+     * @return Matching protocol or default if no match
      */
     public static Protocol forName(final String identifier) {
         for(Protocol protocol : getKnownProtocols(false)) {
             if(protocol.getProvider().equals(identifier)) {
+                return protocol;
+            }
+        }
+        for(Protocol protocol : getKnownProtocols(false)) {
+            if(String.valueOf(protocol.hashCode()).equals(identifier)) {
                 return protocol;
             }
         }
@@ -143,8 +147,8 @@ public class ProtocolFactory {
     }
 
     /**
-     * @param scheme
-     * @return
+     * @param scheme Protocol scheme
+     * @return Standard protocol for this scheme. This is ambigous
      */
     public static Protocol forScheme(final String scheme) {
         for(Protocol protocol : getKnownProtocols(false)) {
@@ -160,8 +164,8 @@ public class ProtocolFactory {
     }
 
     /**
-     * @param str
-     * @return
+     * @param str Determine if URL can be handleed by a registered protocol
+     * @return True if known URL
      */
     public static boolean isURL(String str) {
         if(StringUtils.isNotBlank(str)) {

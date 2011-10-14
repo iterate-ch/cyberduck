@@ -32,7 +32,7 @@ public abstract class AbstractKeychain {
 
 
     /**
-     * @param host
+     * @param host Hostname
      * @return the password fetched from the keychain or null if it was not found
      */
     public String find(final Host host) {
@@ -57,7 +57,7 @@ public abstract class AbstractKeychain {
             }
         }
         else {
-            p = this.getPassword(host.getProtocol().getScheme(), host.getPort(),
+            p = this.getPassword(host.getProtocol().getScheme().name(), host.getPort(),
                     host.getHostname(), credentials.getUsername());
         }
         if(null == p) {
@@ -71,7 +71,7 @@ public abstract class AbstractKeychain {
     /**
      * Adds the password to the login keychain
      *
-     * @param host
+     * @param host Hostname
      * @see ch.cyberduck.core.Host#getCredentials()
      */
     public void save(final Host host) {
@@ -96,57 +96,60 @@ public abstract class AbstractKeychain {
                     credentials.getPassword());
         }
         else {
-            this.addPassword(host.getProtocol().getScheme(), host.getPort(),
+            this.addPassword(host.getProtocol().getScheme().name(), host.getPort(),
                     host.getHostname(), credentials.getUsername(), credentials.getPassword());
         }
     }
 
     /**
-     * @param protocol
-     * @param serviceName
-     * @param user
-     * @return
+     * @param protocol Protocol scheme
+     * @param port
+     * @param serviceName Hostname
+     * @param user Credentials
+     * @return Password if found or null otherwise
      */
     public abstract String getPassword(String protocol, int port, String serviceName, String user);
 
     /**
-     * @param serviceName
-     * @param user
-     * @return
+     * @param serviceName Hostname
+     * @param user Credentials
+     * @return Password if found or null otherwise
      */
     public abstract String getPassword(String serviceName, String user);
 
     /**
-     * @param serviceName
-     * @param user
-     * @param password
+     * @param serviceName Hostname
+     * @param user Credentials
+     * @param password Password to save for service
      */
     public abstract void addPassword(String serviceName, String user, String password);
 
     /**
-     * @param protocol
-     * @param port
-     * @param serviceName
-     * @param user
-     * @param password
+     * @param protocol Scheme
+     * @param port Port
+     * @param serviceName Hostname
+     * @param user Credentials
+     * @param password Password to save for service
      */
     public abstract void addPassword(String protocol, int port, String serviceName, String user, String password);
 
     /**
+     * @param hostname Hostname
      * @param certs Certificate chain
      * @return True if trusted in Keychain
      */
     public abstract boolean isTrusted(String hostname, X509Certificate[] certs);
 
     /**
-     * @param certificates
-     * @return
+     * @param certificates X.509 certificates
+     * @return False if display is not possible
      */
     public abstract boolean displayCertificates(X509Certificate[] certificates);
 
     /**
      * Prompt user for client certificate
      *
+     * @param issuers
      * @param prompt Display in certificate choose prompt
      * @return Null if no certificate selected
      */

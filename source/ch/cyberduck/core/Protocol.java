@@ -66,9 +66,7 @@ public abstract class Protocol {
      *
      * @return The identifier for this protocol which is the scheme by default
      */
-    public String getIdentifier() {
-        return this.getScheme();
-    }
+    public abstract String getIdentifier();
 
     /**
      * Provider identification
@@ -80,7 +78,7 @@ public abstract class Protocol {
     }
 
     public String getName() {
-        return this.getScheme().toUpperCase();
+        return this.getScheme().name().toUpperCase();
     }
 
     public String favicon() {
@@ -103,31 +101,49 @@ public abstract class Protocol {
     }
 
     /**
-     * @return
+     * @return Human readable description
      */
     public abstract String getDescription();
 
     /**
-     * @return
+     * @return Protocol scheme
      */
-    public abstract String getScheme();
+    public abstract Scheme getScheme();
 
     public String[] getSchemes() {
-        return new String[]{this.getScheme()};
+        return new String[]{this.getScheme().name()};
     }
 
-
     @Override
-    public boolean equals(Object other) {
-        if(other instanceof Protocol) {
-            return ((Protocol) other).getProvider().equals(this.getProvider());
+    public boolean equals(Object o) {
+        if(this == o) {
+            return true;
         }
-        return false;
+        if(o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        Protocol protocol = (Protocol) o;
+
+        if(this.getIdentifier() != null ? !this.getIdentifier().equals(protocol.getIdentifier()) : protocol.getIdentifier() != null) {
+            return false;
+        }
+        if(this.getScheme() != null ? !this.getScheme().equals(protocol.getScheme()) : protocol.getScheme() != null) {
+            return false;
+        }
+        if(this.getProvider() != null ? !this.getProvider().equals(protocol.getProvider()) : protocol.getProvider() != null) {
+            return false;
+        }
+
+        return true;
     }
 
     @Override
     public int hashCode() {
-        return this.getProvider().hashCode();
+        int result = this.getIdentifier() != null ? this.getIdentifier().hashCode() : 0;
+        result = 31 * result + (this.getScheme() != null ? this.getScheme().hashCode() : 0);
+        result = 31 * result + (this.getProvider() != null ? this.getProvider().hashCode() : 0);
+        return result;
     }
 
     @Override
@@ -153,7 +169,7 @@ public abstract class Protocol {
      * @return True if the protocol is inherently secure.
      */
     public boolean isSecure() {
-        return false;
+        return this.getScheme().isSecure();
     }
 
     public boolean isHostnameConfigurable() {
@@ -213,19 +229,19 @@ public abstract class Protocol {
     }
 
     /**
-     * @return
+     * @return Factory to create session instances
      */
     public abstract SessionFactory getSessionFactory();
 
     /**
-     * @return
+     * @return Factory to create path instances
      */
     public abstract PathFactory getPathFactory();
 
     /**
      * Check login credentials for validity for this protocol.
      *
-     * @param credentials
+     * @param credentials Login credentials
      * @return True if username is not a blank string and password is not empty ("") and not null.
      */
     public boolean validate(Credentials credentials) {
@@ -240,6 +256,11 @@ public abstract class Protocol {
 
     public static final Protocol SFTP = new Protocol() {
         @Override
+        public String getIdentifier() {
+            return this.getScheme().name();
+        }
+
+        @Override
         public String getDescription() {
             return Locale.localizedString("SFTP (SSH File Transfer Protocol)");
         }
@@ -250,13 +271,8 @@ public abstract class Protocol {
         }
 
         @Override
-        public String getScheme() {
-            return "sftp";
-        }
-
-        @Override
-        public boolean isSecure() {
-            return true;
+        public Scheme getScheme() {
+            return Scheme.sftp;
         }
 
         @Override
@@ -285,6 +301,11 @@ public abstract class Protocol {
 
     public static final Protocol SCP = new Protocol() {
         @Override
+        public String getIdentifier() {
+            return "scp";
+        }
+
+        @Override
         public String getDescription() {
             return Locale.localizedString("SCP (Secure Copy)");
         }
@@ -295,13 +316,8 @@ public abstract class Protocol {
         }
 
         @Override
-        public String getScheme() {
-            return "scp";
-        }
-
-        @Override
-        public boolean isSecure() {
-            return true;
+        public Scheme getScheme() {
+            return Scheme.sftp;
         }
 
         @Override
@@ -322,6 +338,11 @@ public abstract class Protocol {
 
     public static final Protocol FTP = new Protocol() {
         @Override
+        public String getIdentifier() {
+            return this.getScheme().name();
+        }
+
+        @Override
         public String getDescription() {
             return Locale.localizedString("FTP (File Transfer Protocol)");
         }
@@ -332,8 +353,8 @@ public abstract class Protocol {
         }
 
         @Override
-        public String getScheme() {
-            return "ftp";
+        public Scheme getScheme() {
+            return Scheme.ftp;
         }
 
         @Override
@@ -375,6 +396,11 @@ public abstract class Protocol {
 
     public static final Protocol FTP_TLS = new Protocol() {
         @Override
+        public String getIdentifier() {
+            return this.getScheme().name();
+        }
+
+        @Override
         public String getName() {
             return "FTP-SSL";
         }
@@ -390,13 +416,8 @@ public abstract class Protocol {
         }
 
         @Override
-        public String getScheme() {
-            return "ftps";
-        }
-
-        @Override
-        public boolean isSecure() {
-            return true;
+        public Scheme getScheme() {
+            return Scheme.ftps;
         }
 
         @Override
@@ -462,18 +483,13 @@ public abstract class Protocol {
         }
 
         @Override
-        public String getScheme() {
-            return "https";
+        public Scheme getScheme() {
+            return Scheme.https;
         }
 
         @Override
         public String[] getSchemes() {
-            return new String[]{this.getScheme(), "s3"};
-        }
-
-        @Override
-        public boolean isSecure() {
-            return true;
+            return new String[]{this.getScheme().name(), "s3"};
         }
 
         @Override
@@ -523,88 +539,6 @@ public abstract class Protocol {
         }
     };
 
-    public static final Protocol S3 = new Protocol() {
-        @Override
-        public String getName() {
-            return "S3";
-        }
-
-        @Override
-        public String getDescription() {
-            return Locale.localizedString("S3/HTTP (Amazon Simple Storage Service)", "S3");
-        }
-
-        @Override
-        public String getIdentifier() {
-            return "s3h";
-        }
-
-        @Override
-        public int getDefaultPort() {
-            return 80;
-        }
-
-        @Override
-        public boolean isPortConfigurable() {
-            return false;
-        }
-
-        @Override
-        public String getScheme() {
-            return "http";
-        }
-
-        @Override
-        public String[] getSchemes() {
-            return new String[]{this.getScheme(), "s3"};
-        }
-
-        @Override
-        public String getDefaultHostname() {
-            return Constants.S3_DEFAULT_HOSTNAME;
-        }
-
-        @Override
-        public boolean isWebUrlConfigurable() {
-            return false;
-        }
-
-        @Override
-        public String getUsernamePlaceholder() {
-            return Locale.localizedString("Access Key ID", "S3");
-        }
-
-        @Override
-        public String getPasswordPlaceholder() {
-            return Locale.localizedString("Secret Access Key", "S3");
-        }
-
-        @Override
-        public String disk() {
-            return S3_SSL.disk();
-        }
-
-        @Override
-        public String icon() {
-            return S3_SSL.icon();
-        }
-
-        @Override
-        public String favicon() {
-            return this.icon();
-        }
-
-        @Override
-        public SessionFactory getSessionFactory() {
-            return S3Session.factory();
-        }
-
-        @Override
-        public PathFactory getPathFactory() {
-            return S3Path.factory();
-        }
-    };
-
     public static final Protocol EUCALYPTUS = new Protocol() {
         @Override
         public String getName() {
@@ -632,18 +566,13 @@ public abstract class Protocol {
         }
 
         @Override
-        public String getScheme() {
-            return "https";
+        public Scheme getScheme() {
+            return Scheme.https;
         }
 
         @Override
         public String[] getSchemes() {
-            return new String[]{this.getScheme(), "walrus"};
-        }
-
-        @Override
-        public boolean isSecure() {
-            return true;
+            return new String[]{this.getScheme().name(), "walrus"};
         }
 
         @Override
@@ -694,13 +623,13 @@ public abstract class Protocol {
         }
 
         @Override
-        public String getScheme() {
-            return "http";
+        public Scheme getScheme() {
+            return Scheme.http;
         }
 
         @Override
         public String[] getSchemes() {
-            return new String[]{this.getScheme(), "dav"};
+            return new String[]{this.getScheme().name(), "dav"};
         }
 
         @Override
@@ -751,18 +680,13 @@ public abstract class Protocol {
         }
 
         @Override
-        public String getScheme() {
-            return "https";
-        }
-
-        @Override
-        public boolean isSecure() {
-            return true;
+        public Scheme getScheme() {
+            return Scheme.https;
         }
 
         @Override
         public String[] getSchemes() {
-            return new String[]{this.getScheme(), "davs"};
+            return new String[]{this.getScheme().name(), "davs"};
         }
 
         @Override
@@ -818,18 +742,13 @@ public abstract class Protocol {
         }
 
         @Override
-        public String getScheme() {
-            return "https";
-        }
-
-        @Override
-        public boolean isSecure() {
-            return true;
+        public Scheme getScheme() {
+            return Scheme.https;
         }
 
         @Override
         public String[] getSchemes() {
-            return new String[]{this.getScheme(), "idisk"};
+            return new String[]{this.getScheme().name(), "idisk"};
         }
 
         @Override
@@ -905,18 +824,13 @@ public abstract class Protocol {
         }
 
         @Override
-        public String getScheme() {
-            return "https";
+        public Scheme getScheme() {
+            return Scheme.https;
         }
 
         @Override
         public String[] getSchemes() {
-            return new String[]{this.getScheme(), "mosso", "cloudfiles", "cf"};
-        }
-
-        @Override
-        public boolean isSecure() {
-            return true;
+            return new String[]{this.getScheme().name(), "mosso", "cloudfiles", "cf"};
         }
 
         @Override
@@ -977,18 +891,13 @@ public abstract class Protocol {
         }
 
         @Override
-        public String getScheme() {
-            return "https";
+        public Scheme getScheme() {
+            return Scheme.https;
         }
 
         @Override
         public String[] getSchemes() {
-            return new String[]{this.getScheme(), "swift"};
-        }
-
-        @Override
-        public boolean isSecure() {
-            return true;
+            return new String[]{this.getScheme().name(), "swift"};
         }
 
         @Override
@@ -1054,11 +963,6 @@ public abstract class Protocol {
         }
 
         @Override
-        public boolean isSecure() {
-            return true;
-        }
-
-        @Override
         public boolean isHostnameConfigurable() {
             return false;
         }
@@ -1069,8 +973,8 @@ public abstract class Protocol {
         }
 
         @Override
-        public String getScheme() {
-            return "https";
+        public Scheme getScheme() {
+            return Scheme.https;
         }
 
         @Override
@@ -1160,11 +1064,6 @@ public abstract class Protocol {
         }
 
         @Override
-        public boolean isSecure() {
-            return true;
-        }
-
-        @Override
         public boolean isHostnameConfigurable() {
             return false;
         }
@@ -1182,8 +1081,8 @@ public abstract class Protocol {
         }
 
         @Override
-        public String getScheme() {
-            return "https";
+        public Scheme getScheme() {
+            return Scheme.https;
         }
 
         @Override
@@ -1249,18 +1148,13 @@ public abstract class Protocol {
         }
 
         @Override
-        public boolean isSecure() {
-            return true;
-        }
-
-        @Override
         public String getDefaultHostname() {
             return "blob.core.windows.net";
         }
 
         @Override
-        public String getScheme() {
-            return "https";
+        public Scheme getScheme() {
+            return Scheme.https;
         }
 
         @Override
@@ -1329,11 +1223,6 @@ public abstract class Protocol {
         }
 
         @Override
-        public boolean isSecure() {
-            return true;
-        }
-
-        @Override
         public boolean isHostnameConfigurable() {
             return false;
         }
@@ -1344,8 +1233,8 @@ public abstract class Protocol {
         }
 
         @Override
-        public String getScheme() {
-            return "https";
+        public Scheme getScheme() {
+            return Scheme.https;
         }
 
         @Override

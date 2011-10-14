@@ -1440,7 +1440,7 @@ public class S3Path extends CloudPath {
      */
     @Override
     public String toURL() {
-        return this.toURL(this.getHost().getProtocol().getScheme());
+        return this.toURL(this.getHost().getProtocol().getScheme().toString());
     }
 
     /**
@@ -1450,7 +1450,7 @@ public class S3Path extends CloudPath {
      */
     @Override
     public String toHttpURL() {
-        return this.toURL(Protocol.S3.getScheme());
+        return this.toURL("http");
     }
 
     /**
@@ -1564,8 +1564,8 @@ public class S3Path extends CloudPath {
     public Set<DescriptiveUrl> getHttpURLs() {
         Set<DescriptiveUrl> urls = super.getHttpURLs();
         // Always include HTTP URL
-        urls.add(new DescriptiveUrl(this.toURL(Protocol.S3.getScheme()),
-                MessageFormat.format(Locale.localizedString("{0} URL"), Protocol.S3.getScheme().toUpperCase())));
+        urls.add(new DescriptiveUrl(this.toURL("http"),
+                MessageFormat.format(Locale.localizedString("{0} URL"), "http".toUpperCase())));
         DescriptiveUrl hour = this.toSignedUrl(60 * 60);
         if(StringUtils.isNotBlank(hour.getUrl())) {
             urls.add(hour);
