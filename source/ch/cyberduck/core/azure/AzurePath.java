@@ -714,6 +714,7 @@ public class AzurePath extends CloudPath {
             url.append(this.getSession().getHost().getProtocol().getScheme()).append("://");
             url.append(this.getSession().getHostnameForContainer(this.getContainerName()));
             url.append(this.getAbsolute());
+            return url.toString();
         }
         catch(IOException e) {
             log.warn(e.getMessage());
