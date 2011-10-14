@@ -31,8 +31,10 @@ import org.jets3t.service.acl.Permission;
 import org.jets3t.service.impl.rest.AccessControlListHandler;
 import org.jets3t.service.impl.rest.GSAccessControlListHandler;
 import org.jets3t.service.impl.rest.XmlResponsesSaxParser;
+import org.jets3t.service.model.GSBucketLoggingStatus;
 import org.jets3t.service.model.S3Object;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 
@@ -82,7 +84,37 @@ public class GSSession extends S3Session {
 
     @Override
     public boolean isLoggingSupported() {
-        return false;
+        return true;
+    }
+
+    /**
+     * @param container   The bucket name
+     * @param enabled     True if logging should be toggled on
+     * @param destination Logging bucket name or null to choose container itself as target
+     */
+    @Override
+    public void setLogging(final String container, final boolean enabled, String destination) {
+        if(this.isLoggingSupported()) {
+            try {
+                // Logging target bucket
+                final GSBucketLoggingStatus status = new GSBucketLoggingStatus(
+                        StringUtils.isNotBlank(destination) ? destination : container, null);
+                if(enabled) {
+                    status.setLogfilePrefix(Preferences.instance().getProperty("s3.logging.prefix"));
+                }
+                this.check();
+                this.getClient().setBucketLoggingStatusImpl(container, status);
+            }
+            catch(ServiceException e) {
+                this.error("Cannot write file attributes", e);
+            }
+            catch(IOException e) {
+                this.error("Cannot write file attributes", e);
+            }
+            finally {
+                loggingStatus.remove(container);
+            }
+        }
     }
 
     @Override
@@ -152,16 +184,16 @@ public class GSSession extends S3Session {
     }
 
     @Override
-    public String getLocation(final String container) {
-        return null;
-    }
-
-    @Override
     protected XmlResponsesSaxParser getXmlResponseSaxParser() throws ServiceException {
         return new XmlResponsesSaxParser(configuration, false) {
             @Override
             public AccessControlListHandler parseAccessControlListResponse(InputStream inputStream) throws ServiceException {
                 return this.parseAccessControlListResponse(inputStream, new GSAccessControlListHandler());
+            }
+
+            @Override
+            public BucketLoggingStatusHandler parseLoggingStatusResponse(InputStream inputStream) throws ServiceException {
+                return super.parseLoggingStatusResponse(inputStream, new GSBucketLoggingStatusHandler());
             }
         };
     }

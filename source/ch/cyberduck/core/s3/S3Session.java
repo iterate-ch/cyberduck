@@ -147,6 +147,11 @@ public class S3Session extends CloudSession {
         protected XmlResponsesSaxParser getXmlResponseSaxParser() throws ServiceException {
             return S3Session.this.getXmlResponseSaxParser();
         }
+
+        @Override
+        public void setBucketLoggingStatusImpl(String bucketName, StorageBucketLoggingStatus status) throws ServiceException {
+            super.setBucketLoggingStatusImpl(bucketName, status);
+        }
     }
 
     protected XmlResponsesSaxParser getXmlResponseSaxParser() throws ServiceException {
@@ -342,6 +347,7 @@ public class S3Session extends CloudSession {
      */
     private boolean bucketLocationSupported = true;
 
+    @Override
     public boolean isLocationSupported() {
         return bucketLocationSupported;
     }
@@ -355,6 +361,7 @@ public class S3Session extends CloudSession {
      *
      * @return
      */
+    @Override
     public String getLocation(final String container) {
         if(this.isLocationSupported()) {
             try {
@@ -579,8 +586,8 @@ public class S3Session extends CloudSession {
     /**
      * Cache versioning status result.
      */
-    private Map<String, S3BucketLoggingStatus> loggingStatus
-            = new HashMap<String, S3BucketLoggingStatus>();
+    protected Map<String, StorageBucketLoggingStatus> loggingStatus
+            = new HashMap<String, StorageBucketLoggingStatus>();
 
     private void readLogging(String container) {
         if(!loggingStatus.containsKey(container)) {
@@ -590,7 +597,7 @@ public class S3Session extends CloudSession {
                     return;
                 }
                 this.check();
-                final S3BucketLoggingStatus status
+                final StorageBucketLoggingStatus status
                         = this.getClient().getBucketLoggingStatus(container);
                 loggingStatus.put(container, status);
             }
@@ -608,6 +615,7 @@ public class S3Session extends CloudSession {
      * @param container The bucket name
      * @return True if the bucket logging status is enabled.
      */
+    @Override
     public boolean isLogging(final String container) {
         if(this.isLoggingSupported()) {
             this.readLogging(container);
@@ -622,6 +630,7 @@ public class S3Session extends CloudSession {
      * @param container The bucket name
      * @return Null if bucket logging is not supported
      */
+    @Override
     public String getLoggingTarget(final String container) {
         if(this.isLoggingSupported()) {
             this.readLogging(container);
@@ -638,6 +647,7 @@ public class S3Session extends CloudSession {
      * @param enabled     True if logging should be toggled on
      * @param destination Logging bucket name or null to choose container itself as target
      */
+    @Override
     public void setLogging(final String container, final boolean enabled, String destination) {
         if(this.isLoggingSupported()) {
             try {
@@ -671,6 +681,7 @@ public class S3Session extends CloudSession {
     /**
      * @return True if the service supports object versioning.
      */
+    @Override
     public boolean isVersioningSupported() {
         return versioningSupported;
     }
@@ -680,9 +691,6 @@ public class S3Session extends CloudSession {
         return this.isVersioningSupported();
     }
 
-    /**
-     * @param versioningSupported
-     */
     protected void setVersioningSupported(boolean versioningSupported) {
         this.versioningSupported = versioningSupported;
     }
@@ -695,8 +703,9 @@ public class S3Session extends CloudSession {
 
     /**
      * @param container The bucket name
-     * @return
+     * @return True if enabled
      */
+    @Override
     public boolean isVersioning(final String container) {
         if(this.isVersioningSupported()) {
             if(!versioningStatus.containsKey(container)) {
@@ -725,6 +734,7 @@ public class S3Session extends CloudSession {
      * @param container The bucket name
      * @return True if MFA is required to delete objects in this bucket.
      */
+    @Override
     public boolean isMultiFactorAuthentication(final String container) {
         if(this.isVersioning(container)) {
             return versioningStatus.get(container).isMultiFactorAuthDeleteRequired();
@@ -734,9 +744,10 @@ public class S3Session extends CloudSession {
 
     /**
      * @param container  The bucket name
-     * @param mfa
-     * @param versioning
+     * @param mfa Multi factor authentication
+     * @param versioning True if enabled
      */
+    @Override
     public void setVersioning(final String container, boolean mfa, boolean versioning) {
         if(this.isVersioningSupported()) {
             try {
