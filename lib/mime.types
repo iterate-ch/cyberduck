@@ -1338,6 +1338,7 @@ video/vnd.ms-playready.media.pyv		pyv
 # video/vnd.sealed.swf
 # video/vnd.sealedmedia.softseal.mov
 video/vnd.vivo					viv
+video/webm					webm
 video/x-f4v					f4v
 video/x-fli					fli
 video/x-flv					flv
