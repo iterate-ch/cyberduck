@@ -25,7 +25,6 @@ import ch.cyberduck.core.cloud.CloudPath;
 import ch.cyberduck.core.cloud.CloudSession;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.s3.S3Path;
-import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.ui.DateFormatterFactory;
 import ch.cyberduck.ui.action.*;
 import ch.cyberduck.ui.cocoa.application.*;
@@ -387,7 +386,7 @@ public class InfoController extends ToolbarWindowController {
             controller.background(new BrowserBackgroundAction(controller) {
                 public void run() {
                     final String container = getSelected().getContainerName();
-                    ((S3Session) controller.getSession()).setLogging(container,
+                    ((CloudSession) controller.getSession()).setLogging(container,
                             bucketLoggingButton.state() == NSCell.NSOnState,
                             null == bucketLoggingPopup.selectedItem() ? null : bucketLoggingPopup.selectedItem().representedObject());
                 }
@@ -437,7 +436,7 @@ public class InfoController extends ToolbarWindowController {
             controller.background(new BrowserBackgroundAction(controller) {
                 public void run() {
                     final String container = getSelected().getContainerName();
-                    ((S3Session) controller.getSession()).setVersioning(container,
+                    ((CloudSession) controller.getSession()).setVersioning(container,
                             bucketMfaButton.state() == NSCell.NSOnState,
                             bucketVersioningButton.state() == NSCell.NSOnState);
                 }
@@ -465,7 +464,7 @@ public class InfoController extends ToolbarWindowController {
             controller.background(new BrowserBackgroundAction(controller) {
                 public void run() {
                     final String container = getSelected().getContainerName();
-                    ((S3Session) controller.getSession()).setVersioning(container,
+                    ((CloudSession) controller.getSession()).setVersioning(container,
                             bucketMfaButton.state() == NSCell.NSOnState,
                             bucketVersioningButton.state() == NSCell.NSOnState
                     );
@@ -1342,7 +1341,7 @@ public class InfoController extends ToolbarWindowController {
             }
         }
         else if(itemIdentifier.equals(TOOLBAR_ITEM_S3)) {
-            if(session instanceof S3Session) {
+            if(session instanceof CloudSession) {
                 // Set icon of cloud service provider
                 item.setLabel(session.getHost().getProtocol().getName());
                 item.setImage(IconCache.iconNamed(session.getHost().getProtocol().disk(), 32));
@@ -1391,8 +1390,7 @@ public class InfoController extends ToolbarWindowController {
             if(anonymous) {
                 return false;
             }
-            // Not enabled if not a AWS
-            return session instanceof S3Session;
+            return session instanceof CloudSession;
         }
         if(itemIdentifier.equals(TOOLBAR_ITEM_METADATA)) {
             if(anonymous) {
@@ -1830,8 +1828,7 @@ public class InfoController extends ToolbarWindowController {
     private boolean toggleS3Settings(final boolean stop) {
         this.window().endEditingFor(null);
         final Session session = controller.getSession();
-        // Amazon S3 only
-        boolean enable = session instanceof S3Session;
+        boolean enable = session instanceof CloudSession;
         if(enable) {
             final Credentials credentials = session.getHost().getCredentials();
             enable = !credentials.isAnonymousLogin();
@@ -1840,8 +1837,8 @@ public class InfoController extends ToolbarWindowController {
         boolean versioning = false;
         boolean storageclass = false;
         if(enable) {
-            logging = ((S3Session) session).isLoggingSupported();
-            versioning = ((S3Session) session).isVersioningSupported();
+            logging = ((CloudSession) session).isLoggingSupported();
+            versioning = ((CloudSession) session).isVersioningSupported();
         }
         storageClassPopup.setEnabled(stop && enable);
         encryptionPopup.setEnabled(stop && enable);
@@ -1909,27 +1906,29 @@ public class InfoController extends ToolbarWindowController {
                 }
                 encryptionPopup.removeItemWithTitle(Locale.localizedString("Unknown"));
                 if(file.attributes().isFile()) {
-                    final S3Path s3 = (S3Path) file;
-                    final AbstractPath.DescriptiveUrl url = s3.toSignedUrl();
-                    if(StringUtils.isNotBlank(url.getUrl())) {
-                        s3PublicUrlField.setAttributedStringValue(
-                                HyperlinkAttributedStringFactory.create(
-                                        NSMutableAttributedString.create(url.getUrl(), TRUNCATE_MIDDLE_ATTRIBUTES),
-                                        url.getUrl())
-                        );
-                        s3PublicUrlField.setToolTip(url.getHelp());
-                    }
-                    if(StringUtils.isNotBlank(url.getHelp())) {
-                        s3PublicUrlValidityField.setStringValue(url.getHelp());
-                    }
-                    final AbstractPath.DescriptiveUrl torrent = s3.toTorrentUrl();
-                    if(StringUtils.isNotBlank(torrent.getUrl())) {
-                        s3torrentUrlField.setAttributedStringValue(
-                                HyperlinkAttributedStringFactory.create(
-                                        NSMutableAttributedString.create(torrent.getUrl(), TRUNCATE_MIDDLE_ATTRIBUTES),
-                                        torrent.getUrl())
-                        );
-                        s3torrentUrlField.setToolTip(Locale.localizedString("Open in Web Browser"));
+                    if(file instanceof S3Path) {
+                        final S3Path s3 = (S3Path) file;
+                        final AbstractPath.DescriptiveUrl url = s3.toSignedUrl();
+                        if(StringUtils.isNotBlank(url.getUrl())) {
+                            s3PublicUrlField.setAttributedStringValue(
+                                    HyperlinkAttributedStringFactory.create(
+                                            NSMutableAttributedString.create(url.getUrl(), TRUNCATE_MIDDLE_ATTRIBUTES),
+                                            url.getUrl())
+                            );
+                            s3PublicUrlField.setToolTip(url.getHelp());
+                        }
+                        if(StringUtils.isNotBlank(url.getHelp())) {
+                            s3PublicUrlValidityField.setStringValue(url.getHelp());
+                        }
+                        final AbstractPath.DescriptiveUrl torrent = s3.toTorrentUrl();
+                        if(StringUtils.isNotBlank(torrent.getUrl())) {
+                            s3torrentUrlField.setAttributedStringValue(
+                                    HyperlinkAttributedStringFactory.create(
+                                            NSMutableAttributedString.create(torrent.getUrl(), TRUNCATE_MIDDLE_ATTRIBUTES),
+                                            torrent.getUrl())
+                            );
+                            s3torrentUrlField.setToolTip(Locale.localizedString("Open in Web Browser"));
+                        }
                     }
                 }
             }
@@ -1944,15 +1943,21 @@ public class InfoController extends ToolbarWindowController {
                 String encryption = null;
 
                 public void run() {
-                    final S3Session s = (S3Session) controller.getSession();
-                    location = s.getLocation(selected.getContainerName());
-                    logging = s.isLogging(selected.getContainerName());
-                    loggingBucket = s.getLoggingTarget(selected.getContainerName());
-                    for(AbstractPath c : selected.getContainer().getParent().children()) {
-                        containers.add(c.getName());
+                    final CloudSession s = (CloudSession) controller.getSession();
+                    if(s.isLocationSupported()) {
+                        location = s.getLocation(selected.getContainerName());
                     }
-                    versioning = s.isVersioning(selected.getContainerName());
-                    mfa = s.isMultiFactorAuthentication(selected.getContainerName());
+                    if(s.isLoggingSupported()) {
+                        logging = s.isLogging(selected.getContainerName());
+                        loggingBucket = s.getLoggingTarget(selected.getContainerName());
+                        for(AbstractPath c : getSelected().getContainer().getParent().children()) {
+                            containers.add(c.getName());
+                        }
+                    }
+                    if(s.isVersioningSupported()) {
+                        versioning = s.isVersioning(selected.getContainerName());
+                        mfa = s.isMultiFactorAuthentication(selected.getContainerName());
+                    }
                     if(numberOfFiles() == 1) {
                         encryption = selected.attributes().getEncryption();
                     }
