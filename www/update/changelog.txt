@@ -1,5 +1,7 @@
 4.1.4 [http://trac.cyberduck.ch/milestone/4.1.4]
 - [Feature] Support server side encryption (S3)
+- [Feature] Configure access logs for buckets (Google Cloud Storage)
+- [Bugfix] Performance improvement preparing files for download
 
 4.1.3 [http://trac.cyberduck.ch/milestone/4.1.3]
 - [Bugfix] Freeze after file transfer is complete (#6183)
