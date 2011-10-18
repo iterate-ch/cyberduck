@@ -113,30 +113,27 @@ public abstract class HttpSession extends SSLSession {
             // Always register HTTP for possible use with proxy
             registry.register(new Scheme(ch.cyberduck.core.Scheme.http.toString(),
                     host.getPort(), PlainSocketFactory.getSocketFactory()));
-            if(ch.cyberduck.core.Scheme.https.equals(this.getHost().getProtocol().getScheme())) {
-                org.apache.http.conn.ssl.SSLSocketFactory factory = new SSLSocketFactory(
-                        new CustomTrustSSLProtocolSocketFactory(this.getTrustManager()).getSSLContext(),
-                        new X509HostnameVerifier() {
-                            public void verify(String host, SSLSocket ssl) throws IOException {
-                                log.warn("Hostname verification disabled for:" + host);
-                            }
-
-                            public void verify(String host, X509Certificate cert) throws SSLException {
-                                log.warn("Hostname verification disabled for:" + host);
-                            }
-
-                            public void verify(String host, String[] cns, String[] subjectAlts) throws SSLException {
-                                log.warn("Hostname verification disabled for:" + host);
-                            }
-
-                            public boolean verify(String s, javax.net.ssl.SSLSession sslSession) {
-                                log.warn("Hostname verification disabled for:" + s);
-                                return true;
-                            }
+            registry.register(new Scheme(host.getProtocol().getScheme().toString(), host.getPort(), new SSLSocketFactory(
+                    new CustomTrustSSLProtocolSocketFactory(this.getTrustManager()).getSSLContext(),
+                    new X509HostnameVerifier() {
+                        public void verify(String host, SSLSocket ssl) throws IOException {
+                            log.warn("Hostname verification disabled for:" + host);
                         }
-                );
-                registry.register(new Scheme(host.getProtocol().getScheme().toString(), host.getPort(), factory));
-            }
+
+                        public void verify(String host, X509Certificate cert) throws SSLException {
+                            log.warn("Hostname verification disabled for:" + host);
+                        }
+
+                        public void verify(String host, String[] cns, String[] subjectAlts) throws SSLException {
+                            log.warn("Hostname verification disabled for:" + host);
+                        }
+
+                        public boolean verify(String s, javax.net.ssl.SSLSession sslSession) {
+                            log.warn("Hostname verification disabled for:" + s);
+                            return true;
+                        }
+                    }
+            )));
             if(Preferences.instance().getBoolean("connection.proxy.enable")) {
                 final Proxy proxy = ProxyFactory.instance();
                 if(ch.cyberduck.core.Scheme.https.equals(this.getHost().getProtocol().getScheme())) {

@@ -101,6 +101,7 @@ public class CFSession extends CloudSession {
 
     /**
      * Set connection properties
+     * @throws java.io.IOException If the connection is already canceled
      */
     protected void configure() throws IOException {
         FilesClient client = this.getClient();
