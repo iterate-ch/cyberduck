@@ -10,5 +10,9 @@
 	<string>http</string>
 	<key>Description</key>
 	<string>S3 (HTTP)</string>
+	<key>Default Port</key>
+	<string>80</string>
+	<key>Scheme</key>
+	<string>http</string>
 </dict>
 </plist>
