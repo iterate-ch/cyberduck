@@ -557,7 +557,7 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             View.URL = url;
             View.Port = _host.getPort().ToString();
-            View.PortFieldEnabled = _host.getProtocol().isHostnameConfigurable();
+            View.PortFieldEnabled = _host.getProtocol().isPortConfigurable();
             View.Path = _host.getDefaultPath();
             View.Username = _host.getCredentials().getUsername();
             View.UsernameEnabled = !_host.getCredentials().isAnonymousLogin();

@@ -136,10 +136,10 @@ public class ConnectionController extends SheetController {
         log.debug("protocolSelectionDidChange:" + sender);
         final Protocol protocol = ProtocolFactory.forName(protocolPopup.selectedItem().representedObject());
         portField.setIntValue(protocol.getDefaultPort());
+        portField.setEnabled(protocol.isPortConfigurable());
         if(!protocol.isHostnameConfigurable()) {
             hostField.setStringValue(protocol.getDefaultHostname());
             hostField.setEnabled(false);
-            portField.setEnabled(false);
             pathField.setEnabled(true);
         }
         else {
@@ -157,7 +157,6 @@ public class ConnectionController extends SheetController {
             }
             usernameField.setEnabled(true);
             hostField.setEnabled(true);
-            portField.setEnabled(true);
             pathField.setEnabled(true);
             usernameField.cell().setPlaceholderString(StringUtils.EMPTY);
             passField.cell().setPlaceholderString(StringUtils.EMPTY);

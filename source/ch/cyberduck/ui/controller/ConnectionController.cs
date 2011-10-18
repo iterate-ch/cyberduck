@@ -342,11 +342,11 @@ namespace Ch.Cyberduck.Ui.Controller
             Protocol protocol = View.SelectedProtocol;
 
             View.Port = protocol.getDefaultPort().ToString();
+            View.PortFieldEnabled = protocol.isPortConfigurable();
             if (!protocol.isHostnameConfigurable())
             {
                 View.HostFieldEnabled = false;
                 View.Hostname = protocol.getDefaultHostname();
-                View.PortFieldEnabled = false;
                 View.PathEnabled = true;
             }
             else
@@ -369,7 +369,6 @@ namespace Ch.Cyberduck.Ui.Controller
 
                 View.UsernameEnabled = true;
                 View.HostFieldEnabled = true;
-                View.PortFieldEnabled = true;
                 View.PathEnabled = true;
             }
             View.UsernameLabel = protocol.getUsernamePlaceholder() + ":";

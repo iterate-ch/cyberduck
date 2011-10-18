@@ -789,7 +789,7 @@ public class BookmarkController extends WindowController {
                 HyperlinkAttributedStringFactory.create(NSMutableAttributedString.create(url, TRUNCATE_MIDDLE_ATTRIBUTES), url)
         );
         this.updateField(portField, String.valueOf(host.getPort()));
-        portField.setEnabled(host.getProtocol().isHostnameConfigurable());
+        portField.setEnabled(host.getProtocol().isPortConfigurable());
         this.updateField(pathField, host.getDefaultPath());
         this.updateField(usernameField, host.getCredentials().getUsername());
         usernameField.cell().setPlaceholderString(host.getProtocol().getUsernamePlaceholder());
