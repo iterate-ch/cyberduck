@@ -222,10 +222,6 @@ public class S3Session extends CloudSession {
         configuration.setProperty("s3service.max-thread-count", String.valueOf(1));
     }
 
-    /**
-     * @param bucket
-     * @return
-     */
     @Override
     public String getHostnameForContainer(String bucket) {
         if(configuration.getBoolProperty("s3service.disable-dns-buckets", false)) {
@@ -247,9 +243,10 @@ public class S3Session extends CloudSession {
             = new HashMap<String, StorageBucket>();
 
     /**
-     * @param reload
-     * @return
-     * @throws ServiceException
+     * @param reload Disregard cache
+     * @return List of buckets
+     * @throws ServiceException Error response
+     * @throws IOException      I/O failure
      */
     protected List<StorageBucket> getBuckets(boolean reload) throws IOException, ServiceException {
         if(buckets.isEmpty() || reload) {
@@ -323,9 +320,9 @@ public class S3Session extends CloudSession {
     }
 
     /**
-     * @param bucketname
-     * @return
-     * @throws IOException
+     * @param bucketname Name of bucket
+     * @return Cached bucket
+     * @throws IOException I/O failure
      */
     protected StorageBucket getBucket(final String bucketname) throws IOException {
         try {
@@ -357,9 +354,7 @@ public class S3Session extends CloudSession {
     }
 
     /**
-     * Bucket geographical location
-     *
-     * @return
+     * @return Bucket geographical location
      */
     @Override
     public String getLocation(final String container) {
@@ -436,6 +431,7 @@ public class S3Session extends CloudSession {
     /**
      * Prompt for MFA credentials
      *
+     * @param controller Prompt controller
      * @return MFA one time authentication password.
      */
     protected Credentials mfa(LoginController controller) throws ConnectionCanceledException {
@@ -463,7 +459,7 @@ public class S3Session extends CloudSession {
     /**
      * Check for Invalid Access ID or Invalid Secret Key
      *
-     * @param e
+     * @param e Error response
      * @return True if the error code of the S3 exception is a login failure
      */
     protected boolean isLoginFailure(ServiceException e) {
@@ -744,7 +740,7 @@ public class S3Session extends CloudSession {
 
     /**
      * @param container  The bucket name
-     * @param mfa Multi factor authentication
+     * @param mfa        Multi factor authentication
      * @param versioning True if enabled
      */
     @Override

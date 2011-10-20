@@ -56,9 +56,9 @@ public abstract class Session implements TranscriptListener {
     }
 
     /**
-     * @param <C>
+     * @param <C> Native client type
      * @return The client implementation.
-     * @throws ConnectionCanceledException
+     * @throws ConnectionCanceledException If the connection is alreay closed
      */
     protected abstract <C> C getClient() throws ConnectionCanceledException;
 
@@ -157,16 +157,16 @@ public abstract class Session implements TranscriptListener {
     /**
      * Opens the TCP connection to the server
      *
-     * @throws IOException
-     * @throws LoginCanceledException
+     * @throws IOException            I/O failure
+     * @throws LoginCanceledException Login prompt dismissed with cancel
      */
     protected abstract void connect() throws IOException;
 
     /**
      * Prompt for username and password if not available.
      *
-     * @param login
-     * @throws LoginCanceledException
+     * @param login Prompt
+     * @throws LoginCanceledException Login prompt dismissed with cancel
      */
     protected void prompt(LoginController login) throws LoginCanceledException {
         String username = host.getCredentials().getUsername();
@@ -193,15 +193,15 @@ public abstract class Session implements TranscriptListener {
     /**
      * Attempts to login using the credentials provided from the login controller.
      *
-     * @throws IOException
+     * @throws IOException I/O failure
      */
     protected void login() throws IOException {
         this.login(LoginControllerFactory.instance(this));
     }
 
     /**
-     * @param controller
-     * @throws IOException
+     * @param controller Prompt
+     * @throws IOException I/O failure
      */
     protected void login(LoginController controller) throws IOException {
         this.prompt(controller);
@@ -222,9 +222,9 @@ public abstract class Session implements TranscriptListener {
     /**
      * Warning if credenials are sent plaintext.
      *
-     * @param login
-     * @param credentials
-     * @throws ConnectionCanceledException
+     * @param login       Prompt
+     * @param credentials Login credentials
+     * @throws ConnectionCanceledException If connection should be dropped
      */
     protected void warn(LoginController login, Credentials credentials) throws IOException {
         if(this.isUnsecurewarning()
@@ -246,7 +246,9 @@ public abstract class Session implements TranscriptListener {
     /**
      * Send the authentication credentials to the server. The connection must be opened first.
      *
-     * @throws IOException
+     * @param controller  Prompt
+     * @param credentials Login credentials
+     * @throws IOException            I/O failure
      * @throws LoginCanceledException
      * @see #connect
      */
@@ -265,7 +267,6 @@ public abstract class Session implements TranscriptListener {
     /**
      * @param filesystem Mount as filesystem
      * @return Null if mount fails. Check the error listener for details.
-     * @throws IOException
      */
     protected Path mount(boolean filesystem) {
         this.message(MessageFormat.format(Locale.localizedString("Mounting {0}", "Status"),
@@ -300,6 +301,7 @@ public abstract class Session implements TranscriptListener {
 
     /**
      * @return Home directory
+     * @throws IOException I/O failure
      */
     public Path home() throws IOException {
         final String directory;
@@ -401,7 +403,7 @@ public abstract class Session implements TranscriptListener {
     }
 
     /**
-     * @return
+     * @return True if ACLs are supported
      * @see ch.cyberduck.core.Path#writeAcl(Acl, boolean)
      * @see Path#readAcl()
      */
@@ -444,7 +446,7 @@ public abstract class Session implements TranscriptListener {
     }
 
     /**
-     * @return
+     * @return True if files can be reverted
      */
     public boolean isRevertSupported() {
         return false;
@@ -453,7 +455,7 @@ public abstract class Session implements TranscriptListener {
     /**
      * Send a 'no operation' command
      *
-     * @throws IOException
+     * @throws IOException I/O failure
      */
     protected void noop() throws IOException {
         ;
@@ -478,7 +480,8 @@ public abstract class Session implements TranscriptListener {
     /**
      * Sends an arbitrary command to the server
      *
-     * @param command
+     * @param command Command to send
+     * @throws IOException I/O failure
      * @see #isSendCommandSupported()
      */
     public void sendCommand(String command) throws IOException {
@@ -495,7 +498,8 @@ public abstract class Session implements TranscriptListener {
     /**
      * Create ompressed archive.
      *
-     * @param archive
+     * @param archive Archive format description
+     * @param files   List of files to archive
      */
     public void archive(final Archive archive, final List<Path> files) {
         try {
@@ -514,7 +518,7 @@ public abstract class Session implements TranscriptListener {
     }
 
     /**
-     * @return False
+     * @return True if archiving is supported. Always false
      */
     public boolean isUnarchiveSupported() {
         return false;
@@ -523,7 +527,8 @@ public abstract class Session implements TranscriptListener {
     /**
      * Unpack compressed archive
      *
-     * @param archive
+     * @param archive Archive format description
+     * @param file    File to decompress
      */
     public void unarchive(final Archive archive, Path file) {
         try {
@@ -683,7 +688,7 @@ public abstract class Session implements TranscriptListener {
     /**
      * Log the message to all subscribed transcript listeners
      *
-     * @param message
+     * @param message Log line
      * @see TranscriptListener
      */
     public void log(boolean request, final String message) {
@@ -712,14 +717,14 @@ public abstract class Session implements TranscriptListener {
     }
 
     /**
-     * @return
+     * @return True if symbolic links are supported on UNIX filesystems
      */
     public boolean isCreateSymlinkSupported() {
         return false;
     }
 
     /**
-     * @return
+     * @return List of known ACL users
      */
     public List<Acl.User> getAvailableAclUsers() {
         return Collections.emptyList();
@@ -730,23 +735,25 @@ public abstract class Session implements TranscriptListener {
     }
 
     /**
-     * @param container
-     * @param readable
-     * @param writable  @return
+     * @param container Container name
+     * @param readable  To include read permission in ACL
+     * @param writable  To include write permission ACL
+     * @return Description list
      */
     public Acl getPublicAcl(String container, boolean readable, boolean writable) {
         return Acl.EMPTY;
     }
 
     /**
-     * @return
+     * @return If metadata for files are supported
      */
     public boolean isMetadataSupported() {
         return false;
     }
 
     /**
-     * @return
+     * @return If CDN distribution configuration is supported
+     * @see #cdn()
      */
     public boolean isCDNSupported() {
         return true;
@@ -829,6 +836,7 @@ public abstract class Session implements TranscriptListener {
     /**
      * Roles available for users in a configurable ACL.
      *
+     * @param files List of files
      * @return A list of role names.
      */
     public List<Acl.Role> getAvailableAclRoles(List<Path> files) {
@@ -913,7 +921,7 @@ public abstract class Session implements TranscriptListener {
     }
 
     /**
-     * @param other
+     * @param other Session instance
      * @return true if the other session denotes the same hostname and protocol
      */
     @Override

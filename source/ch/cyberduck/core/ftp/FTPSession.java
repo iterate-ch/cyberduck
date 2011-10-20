@@ -400,9 +400,9 @@ public class FTPSession extends SSLSession {
     /**
      * Propose protocol change if AUTH TLS is available.
      *
-     * @param login
-     * @param credentials
-     * @throws IOException
+     * @param login Prompt
+     * @param credentials Login credentials
+     * @throws IOException I/O failure
      */
     @Override
     protected void warn(LoginController login, Credentials credentials) throws IOException {
