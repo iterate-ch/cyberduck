@@ -123,11 +123,6 @@ public class GSSession extends S3Session {
     }
 
     @Override
-    public boolean isRequesterPaysSupported() {
-        return false;
-    }
-
-    @Override
     public boolean isMultipartUploadSupported() {
         return false;
     }

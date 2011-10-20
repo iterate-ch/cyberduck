@@ -95,9 +95,4 @@ public class ECSession extends S3Session {
     public boolean isLocationSupported() {
         return false;
     }
-
-    @Override
-    public boolean isRequesterPaysSupported() {
-        return false;
-    }
 }

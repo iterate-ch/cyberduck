@@ -817,59 +817,6 @@ public class S3Session extends CloudSession {
         }
     }
 
-    /**
-     * Set to false if permission error response indicates this
-     * feature is not implemented.
-     */
-    private boolean requesterPaysSupported = true;
-
-    public boolean isRequesterPaysSupported() {
-        return requesterPaysSupported;
-    }
-
-    protected void setRequesterPaysSupported(boolean requesterPaysSupported) {
-        this.requesterPaysSupported = requesterPaysSupported;
-    }
-
-    /**
-     * @param container The bucket name
-     * @param enabled
-     */
-    public void setRequesterPays(final String container, boolean enabled) {
-        if(this.isRequesterPaysSupported()) {
-            try {
-                this.check();
-                this.getClient().setRequesterPaysBucket(container, enabled);
-            }
-            catch(ServiceException e) {
-                this.error("Cannot write file attributes", e);
-            }
-            catch(IOException e) {
-                this.error("Cannot write file attributes", e);
-            }
-        }
-    }
-
-    /**
-     * @param container The bucket name
-     * @return
-     */
-    public boolean isRequesterPays(final String container) {
-        if(this.isRequesterPaysSupported()) {
-            try {
-                this.check();
-                return this.getClient().isRequesterPaysBucket(container);
-            }
-            catch(ServiceException e) {
-                this.error("Cannot read container configuration", e);
-            }
-            catch(IOException e) {
-                this.error("Cannot read container configuration", e);
-            }
-        }
-        return false;
-    }
-
     @Override
     public List<Acl.Role> getAvailableAclRoles(List<Path> files) {
         return Arrays.asList(new Acl.Role(org.jets3t.service.acl.Permission.PERMISSION_FULL_CONTROL.toString()),
