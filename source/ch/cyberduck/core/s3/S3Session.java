@@ -152,6 +152,11 @@ public class S3Session extends CloudSession {
         public void setBucketLoggingStatusImpl(String bucketName, StorageBucketLoggingStatus status) throws ServiceException {
             super.setBucketLoggingStatusImpl(bucketName, status);
         }
+
+        @Override
+        public StorageBucketLoggingStatus getBucketLoggingStatusImpl(String bucketName) throws ServiceException {
+            return super.getBucketLoggingStatusImpl(bucketName);
+        }
     }
 
     protected XmlResponsesSaxParser getXmlResponseSaxParser() throws ServiceException {
@@ -594,7 +599,7 @@ public class S3Session extends CloudSession {
                 }
                 this.check();
                 final StorageBucketLoggingStatus status
-                        = this.getClient().getBucketLoggingStatus(container);
+                        = this.getClient().getBucketLoggingStatusImpl(container);
                 loggingStatus.put(container, status);
             }
             catch(ServiceException e) {
