@@ -16,6 +16,8 @@
 // yves@cyberduck.ch
 // 
 
+using System;
+using System.ComponentModel;
 using System.Windows.Forms;
 using Ch.Cyberduck.Core;
 using ch.cyberduck.core.i18n;
@@ -26,10 +28,22 @@ namespace Ch.Cyberduck.Ui.Winforms.Controls
     {
         public ClickLinkLabel()
         {
-            ContextMenuStrip contextMenu = new ContextMenuStrip();
-            ToolStripItem addItem = contextMenu.Items.Add(Locale.localizedString("Copy URL", "Browser"));
-            addItem.Click += (sender, args) => Clipboard.SetText(Text);
-            ContextMenuStrip = contextMenu;
+            if (!DesignMode)
+            {
+                ContextMenuStrip contextMenu = new ContextMenuStrip();
+                ToolStripItem addItem = contextMenu.Items.Add(Locale.localizedString("Copy URL", "Browser"));
+                addItem.Click += (sender, args) => Clipboard.SetText(Text);
+                ContextMenuStrip = contextMenu;
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <see cref="http://stackoverflow.com/questions/34664/designmode-with-controls"/>
+        protected Boolean DesignMode
+        {
+            get { return (LicenseManager.UsageMode == LicenseUsageMode.Designtime); }
         }
 
         protected override void OnLinkClicked(LinkLabelLinkClickedEventArgs e)
