@@ -336,21 +336,22 @@ public class InfoController extends ToolbarWindowController {
     }
 
     @Outlet
-    private NSPopUpButton encryptionPopup;
+    private NSButton encryptionButton;
 
-    public void setEncryptionPopup(NSPopUpButton b) {
-        this.encryptionPopup = b;
-        this.encryptionPopup.setTarget(this.id());
-        this.encryptionPopup.setAction(Foundation.selector("encryptionPopupClicked:"));
+    public void setEncryptionButton(NSButton b) {
+        this.encryptionButton = b;
+        this.encryptionButton.setTarget(this.id());
+        this.encryptionButton.setAction(Foundation.selector("encryptionButtonClicked:"));
     }
 
     @Action
-    public void encryptionPopupClicked(final NSPopUpButton sender) {
+    public void encryptionButtonClicked(final NSButton sender) {
         if(this.toggleS3Settings(false)) {
             controller.background(new BrowserBackgroundAction(controller) {
                 public void run() {
                     for(Path next : files) {
-                        next.attributes().setEncryption(null == sender.selectedItem() ? null : sender.selectedItem().representedObject());
+                        next.attributes().setEncryption(encryptionButton.state() == NSCell.NSOnState ?
+                                ((CloudSession) controller.getSession()).getSupportedEncryptionAlgorithms().iterator().next() : null);
                         // Copy item in place to write new attributes
                         next.copy(next);
                     }
@@ -1824,6 +1825,7 @@ public class InfoController extends ToolbarWindowController {
      * Toggle settings before and after update
      *
      * @param stop Enable controls and stop progress spinner
+     * @return True if progress animation has started and settings are toggled
      */
     private boolean toggleS3Settings(final boolean stop) {
         this.window().endEditingFor(null);
@@ -1836,12 +1838,15 @@ public class InfoController extends ToolbarWindowController {
         boolean logging = false;
         boolean versioning = false;
         boolean storageclass = false;
+        boolean encryption = false;
         if(enable) {
             logging = ((CloudSession) session).isLoggingSupported();
             versioning = ((CloudSession) session).isVersioningSupported();
+            encryption = ((CloudSession) session).getSupportedEncryptionAlgorithms().size() > 0;
+            storageclass = ((CloudSession) session).getSupportedStorageClasses().size() > 1;
         }
-        storageClassPopup.setEnabled(stop && enable);
-        encryptionPopup.setEnabled(stop && enable);
+        storageClassPopup.setEnabled(stop && enable && storageclass);
+        encryptionButton.setEnabled(stop && enable && encryption);
         bucketVersioningButton.setEnabled(stop && enable && versioning);
         bucketMfaButton.setEnabled(stop && enable && versioning
                 && bucketVersioningButton.state() == NSCell.NSOnState);
@@ -1876,20 +1881,10 @@ public class InfoController extends ToolbarWindowController {
         storageClassPopup.itemWithTitle(Locale.localizedString("Unknown")).setEnabled(false);
         storageClassPopup.selectItemWithTitle(Locale.localizedString("Unknown"));
 
-        encryptionPopup.removeAllItems();
-        encryptionPopup.addItemWithTitle(Locale.localizedString("Unknown"));
-        encryptionPopup.itemWithTitle(Locale.localizedString("Unknown")).setEnabled(false);
-        encryptionPopup.addItemWithTitle(Locale.localizedString("None"));
-        encryptionPopup.selectItemWithTitle(Locale.localizedString("Unknown"));
-
         if(this.toggleS3Settings(false)) {
             for(String redundancy : ((CloudSession) controller.getSession()).getSupportedStorageClasses()) {
                 storageClassPopup.addItemWithTitle(Locale.localizedString(redundancy, "S3"));
                 storageClassPopup.lastItem().setRepresentedObject(redundancy);
-            }
-            for(String encryption : ((CloudSession) controller.getSession()).getSupportedEncryptionAlgorithms()) {
-                encryptionPopup.addItemWithTitle(Locale.localizedString(encryption, "S3"));
-                encryptionPopup.lastItem().setRepresentedObject(encryption);
             }
             if(this.numberOfFiles() > 1) {
                 s3PublicUrlField.setStringValue("(" + Locale.localizedString("Multiple files") + ")");
@@ -1904,7 +1899,6 @@ public class InfoController extends ToolbarWindowController {
                     storageClassPopup.removeItemWithTitle(Locale.localizedString("Unknown"));
                     storageClassPopup.selectItemWithTitle(Locale.localizedString(redundancy, "S3"));
                 }
-                encryptionPopup.removeItemWithTitle(Locale.localizedString("Unknown"));
                 if(file.attributes().isFile()) {
                     if(file instanceof S3Path) {
                         final S3Path s3 = (S3Path) file;
@@ -1987,9 +1981,7 @@ public class InfoController extends ToolbarWindowController {
                         bucketVersioningButton.setState(versioning ? NSCell.NSOnState : NSCell.NSOffState);
                         bucketMfaButton.setEnabled(versioning);
                         bucketMfaButton.setState(mfa ? NSCell.NSOnState : NSCell.NSOffState);
-                        if(StringUtils.isNotBlank(encryption)) {
-                            encryptionPopup.selectItemWithTitle(Locale.localizedString(encryption, "S3"));
-                        }
+                        encryptionButton.setState(StringUtils.isNotBlank(encryption) ? NSCell.NSOnState : NSCell.NSOffState);
                     }
                     finally {
                         toggleS3Settings(true);
@@ -2241,7 +2233,8 @@ public class InfoController extends ToolbarWindowController {
     }
 
     /**
-     * @param permission
+     * @param permission UNIX permissions to apply to files
+     * @param recursive  Recursively apply to child of directories
      */
     private void changePermissions(final Permission permission, final boolean recursive) {
         if(this.togglePermissionSettings(false)) {
@@ -2571,7 +2564,7 @@ public class InfoController extends ToolbarWindowController {
 
     /**
      * @param stop Enable controls and stop progress spinner
-     * @return
+     * @return True if progress animation has started and settings are toggled
      */
     private boolean toggleSizeSettings(final boolean stop) {
         this.window().endEditingFor(null);
