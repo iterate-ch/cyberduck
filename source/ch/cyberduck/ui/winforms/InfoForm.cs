@@ -726,6 +726,18 @@ namespace Ch.Cyberduck.Ui.Winforms
             set { bucketLocationLabel.Text = value; }
         }
 
+        public bool Encryption
+        {
+            set { encryptionCheckBox.Checked = value; }
+            get { return encryptionCheckBox.Checked; }
+        }
+
+        public bool EncryptionEnabled
+        {
+            get { return encryptionCheckBox.Enabled; }
+            set { encryptionCheckBox.Enabled = value; }
+        }
+
         public string StorageClass
         {
             get { return (string) storageClassComboBox.SelectedValue; }
@@ -828,6 +840,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public event VoidHandler BucketLoggingCheckboxChanged = delegate { };
         public event VoidHandler BucketLoggingPopupChanged = delegate { };
+        public event VoidHandler EncryptionChanged = delegate { };
         public event VoidHandler StorageClassChanged = delegate { };
         public event VoidHandler BucketVersioningChanged = delegate { };
         public event VoidHandler BucketMfaChanged = delegate { };
@@ -1242,6 +1255,11 @@ namespace Ch.Cyberduck.Ui.Winforms
         private void distributionLoggingComboBox_SelectionChangeCommitted(object sender, EventArgs e)
         {
             DistributionLoggingPopupChanged();
+        }
+
+        private void encryptionCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            EncryptionChanged();
         }
 
         private enum AclColumnName

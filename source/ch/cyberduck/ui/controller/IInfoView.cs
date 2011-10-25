@@ -15,6 +15,7 @@
 // Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
 // 
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -134,6 +135,8 @@ namespace Ch.Cyberduck.Ui.Controller
         bool DistributionInvalidateObjectsEnabled { set; }
 
         string BucketLocation { set; }
+        bool Encryption { set; get; }
+        bool EncryptionEnabled { set; get; }
         string StorageClass { set; get; }
         bool StorageClassEnabled { set; }
         string BucketLoggingPopup { set; get; }
@@ -190,6 +193,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         event VoidHandler BucketLoggingCheckboxChanged;
         event VoidHandler BucketLoggingPopupChanged;
+        event VoidHandler EncryptionChanged;
         event VoidHandler StorageClassChanged;
         event VoidHandler BucketVersioningChanged;
         event VoidHandler BucketMfaChanged;

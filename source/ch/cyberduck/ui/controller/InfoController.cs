@@ -15,25 +15,26 @@
 // Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
 // 
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
 using System.Media;
 using System.Windows.Forms;
-using ch.cyberduck.core;
 using Ch.Cyberduck.Core;
+using Ch.Cyberduck.Ui.Controller.Threading;
+using StructureMap;
+using ch.cyberduck.core;
 using ch.cyberduck.core.cdn;
 using ch.cyberduck.core.cloud;
 using ch.cyberduck.core.s3;
 using ch.cyberduck.ui;
 using ch.cyberduck.ui.action;
 using ch.cyberduck.ui.controller.threading;
-using Ch.Cyberduck.Ui.Controller.Threading;
 using java.lang;
 using java.util;
 using org.apache.log4j;
-using StructureMap;
 using Locale = ch.cyberduck.core.i18n.Locale;
 using Object = System.Object;
 using String = System.String;
@@ -154,6 +155,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     InitDistribution();
                     break;
                 case InfoTab.S3:
+                    InitMetadata();
                     InitS3();
                     break;
                 case InfoTab.Metadata:
@@ -177,7 +179,7 @@ namespace Ch.Cyberduck.Ui.Controller
             Session session = _controller.getSession();
             bool anonymous = session.getHost().getCredentials().isAnonymousLogin();
 
-            if (session is S3Session)
+            if (session is CloudSession)
             {
                 // Set icon of cloud service provider
                 View.ToolbarS3Label = session.getHost().getProtocol().getName();
@@ -231,7 +233,7 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             else
             {
-                View.ToolbarS3Enabled = session is S3Session;
+                View.ToolbarS3Enabled = session is CloudSession;
             }
 
             if (anonymous)
@@ -271,7 +273,9 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 foreach (Path file in _files)
                 {
-                    enable = enable && (file.attributes().isVolume() || file.attributes().isFile() || file.attributes().isPlaceholder());
+                    enable = enable &&
+                             (file.attributes().isVolume() || file.attributes().isFile() ||
+                              file.attributes().isPlaceholder());
                 }
             }
             View.MetadataTableEnabled = stop && enable;
@@ -724,6 +728,7 @@ namespace Ch.Cyberduck.Ui.Controller
             DetachS3Handlers();
             View.BucketLoggingCheckboxChanged += BucketLoggingCheckboxChanged;
             View.BucketLoggingPopupChanged += BucketLoggingPopupChanged;
+            View.EncryptionChanged += EncryptionChanged;
             View.StorageClassChanged += StorageClassChanged;
             View.BucketVersioningChanged += BucketVersioningChanged;
             View.BucketMfaChanged += BucketMfaChanged;
@@ -754,10 +759,19 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
+        private void EncryptionChanged()
+        {
+            if (ToggleS3Settings(false))
+            {
+                _controller.Background(new SetEncryptionBackgroundAction(_controller, this));
+            }
+        }
+
         private void DetachS3Handlers()
         {
             View.BucketLoggingCheckboxChanged -= BucketLoggingCheckboxChanged;
             View.BucketLoggingPopupChanged -= BucketLoggingPopupChanged;
+            View.EncryptionChanged -= EncryptionChanged;
             View.StorageClassChanged -= StorageClassChanged;
             View.BucketVersioningChanged -= BucketVersioningChanged;
             View.BucketMfaChanged -= BucketMfaChanged;
@@ -943,8 +957,8 @@ namespace Ch.Cyberduck.Ui.Controller
         /// <summary>
         /// Write altered permissions to the server
         /// </summary>
-        /// <param name="permission"></param>
-        /// <param name="recursive"></param>
+        /// <param name="permission">UNIX permissions to apply to files</param>
+        /// <param name="recursive">Recursively apply to child of directories</param>
         private void ChangePermissions(Permission permission, bool recursive)
         {
             if (TogglePermissionSettings(false))
@@ -1095,21 +1109,24 @@ namespace Ch.Cyberduck.Ui.Controller
                     }
                     if (file.attributes().isFile())
                     {
-                        S3Path s3 = (S3Path) file;
-                        AbstractPath.DescriptiveUrl url = s3.toSignedUrl();
-                        if (null != url)
+                        if (file is S3Path)
                         {
-                            View.S3PublicUrl = url.getUrl();
-                            View.S3PublicUrlEnabled = true;
-                            View.S3PublicUrlTooltip = url.getUrl();
-                            View.S3PublicUrlValidity = url.getHelp();
-                        }
-                        AbstractPath.DescriptiveUrl torrent = s3.toTorrentUrl();
-                        if (null != torrent)
-                        {
-                            View.S3TorrentUrl = torrent.getUrl();
-                            View.S3TorrentUrlEnabled = true;
-                            View.S3TorrentUrlTooltip = torrent.getUrl();
+                            S3Path s3 = (S3Path) file;
+                            AbstractPath.DescriptiveUrl url = s3.toSignedUrl();
+                            if (null != url)
+                            {
+                                View.S3PublicUrl = url.getUrl();
+                                View.S3PublicUrlEnabled = true;
+                                View.S3PublicUrlTooltip = url.getUrl();
+                                View.S3PublicUrlValidity = url.getHelp();
+                            }
+                            AbstractPath.DescriptiveUrl torrent = s3.toTorrentUrl();
+                            if (null != torrent)
+                            {
+                                View.S3TorrentUrl = torrent.getUrl();
+                                View.S3TorrentUrlEnabled = true;
+                                View.S3TorrentUrlTooltip = torrent.getUrl();
+                            }
                         }
                     }
                 }
@@ -1128,8 +1145,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private bool ToggleS3Settings(bool stop)
         {
             Session session = _controller.getSession();
-            // Amazon S3 only
-            bool enable = session is S3Session;
+            bool enable = session is CloudSession;
             if (enable)
             {
                 Credentials credentials = session.getHost().getCredentials();
@@ -1138,17 +1154,20 @@ namespace Ch.Cyberduck.Ui.Controller
             bool logging = false;
             bool versioning = false;
             bool storageclass = false;
+            bool encryption = false;
             if (enable)
             {
-                logging = ((S3Session) session).isLoggingSupported();
-                versioning = ((S3Session) session).isVersioningSupported();
-                storageclass = ((S3Session) session).getSupportedStorageClasses().size() > 1;
+                logging = ((CloudSession) session).isLoggingSupported();
+                versioning = ((CloudSession) session).isVersioningSupported();
+                encryption = ((CloudSession) session).getSupportedEncryptionAlgorithms().size() > 0;
+                storageclass = ((CloudSession) session).getSupportedStorageClasses().size() > 1;
             }
             View.BucketVersioningEnabled = stop && enable && versioning;
             View.BucketMfaEnabled = stop && enable && versioning && View.BucketVersioning;
             View.BucketLoggingCheckboxEnabled = stop && enable && logging;
             View.BucketLoggingPopupEnabled = stop && enable && logging;
             View.StorageClassEnabled = stop && enable && storageclass;
+            View.EncryptionEnabled = stop && enable && encryption;
 
             if (stop)
             {
@@ -1331,6 +1350,10 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
+        /// <summary>
+        /// </summary>
+        /// <param name="stop">Enable controls and stop progress spinner</param>
+        /// <returns>True if progress animation has started and settings are toggled</returns>
         private bool ToggleSizeSettings(bool stop)
         {
             View.SizeButtonEnabled = false;
@@ -1349,34 +1372,6 @@ namespace Ch.Cyberduck.Ui.Controller
         private void UpdateSize(long size)
         {
             View.FileSize = Status.getSizeAsString(size, true);
-        }
-
-        private class CacheControlBackgroundAction : BrowserBackgroundAction
-        {
-            private readonly string _cache;
-            private readonly List<Path> _files;
-            private readonly InfoController _infoController;
-
-            public CacheControlBackgroundAction(BrowserController browserController, InfoController infoController,
-                                                List<Path> files, string cache) : base(browserController)
-            {
-                _files = files;
-                _cache = cache;
-                _infoController = infoController;
-            }
-
-            public override void run()
-            {
-                foreach (Path file in _files)
-                {
-                    ((S3Path) file).setCacheControl(_cache);
-                }
-            }
-
-            public override void cleanup()
-            {
-                _infoController.ToggleS3Settings(true);
-            }
         }
 
         private class ChecksumBackgroundAction : InfoBackgroundAction
@@ -1613,7 +1608,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private class FetchS3BackgroundAction : BrowserBackgroundAction
         {
-            private readonly String _container;
+            private readonly Path _selected;
             private readonly IList<string> _containers = new List<string>();
             private readonly InfoController _infoController;
             private readonly IInfoView _view;
@@ -1623,28 +1618,42 @@ namespace Ch.Cyberduck.Ui.Controller
             private String _loggingBucket;
             private bool _mfa;
             private bool _versioning;
+            private String _encryption = null;
 
             public FetchS3BackgroundAction(BrowserController browserController, InfoController infoController)
                 : base(browserController)
             {
                 _infoController = infoController;
                 _view = infoController.View;
-                _container = infoController.SelectedPath.getContainerName();
+                _selected = infoController.SelectedPath;
             }
 
             public override void run()
             {
-                S3Session s = (S3Session) BrowserController.getSession();
-                _location = s.getLocation(_container);
-                _logging = s.isLogging(_container);
-                _loggingBucket = s.getLoggingTarget(_container);
-                AttributedList children = _infoController.SelectedPath.getContainer().getParent().children();
-                foreach (AbstractPath c in children)
+                CloudSession s = (CloudSession) BrowserController.getSession();
+                if (s.isLocationSupported())
                 {
-                    _containers.Add(c.getName());
+                    _location = s.getLocation(_selected.getContainerName());
                 }
-                _versioning = s.isVersioning(_container);
-                _mfa = s.isMultiFactorAuthentication(_container);
+                if (s.isLoggingSupported())
+                {
+                    _logging = s.isLogging(_selected.getContainerName());
+                    _loggingBucket = s.getLoggingTarget(_selected.getContainerName());
+                    AttributedList children = _infoController.SelectedPath.getContainer().getParent().children();
+                    foreach (AbstractPath c in children)
+                    {
+                        _containers.Add(c.getName());
+                    }
+                }
+                if (s.isVersioningSupported())
+                {
+                    _versioning = s.isVersioning(_selected.getContainerName());
+                    _mfa = s.isMultiFactorAuthentication(_selected.getContainerName());
+                }
+                if (_infoController.NumberOfFiles == 1)
+                {
+                    _encryption = _selected.attributes().getEncryption();
+                }                
             }
 
             public override void cleanup()
@@ -1663,7 +1672,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     else
                     {
                         // Default to write log files to origin bucket
-                        _view.BucketLoggingPopup = _container;
+                        _view.BucketLoggingPopup = _selected.getContainerName();
                     }
                     if (Utils.IsNotBlank(_location))
                     {
@@ -1672,10 +1681,11 @@ namespace Ch.Cyberduck.Ui.Controller
                     _view.BucketVersioning = _versioning;
                     _view.BucketMfaEnabled = _versioning;
                     _view.BucketMfa = _mfa;
-                    _infoController.ToggleS3Settings(true);
+                    _view.Encryption = Utils.IsNotBlank(_encryption);
                 }
                 finally
                 {
+                    _infoController.ToggleS3Settings(true);
                     _infoController.AttachS3Handlers();
                 }
             }
@@ -2041,9 +2051,10 @@ namespace Ch.Cyberduck.Ui.Controller
 
             public override void run()
             {
-                ((S3Session) BrowserController.getSession()).setLogging(_infoController.SelectedPath.getContainerName(),
-                                                                        _bucketLoggingCheckbox,
-                                                                        _bucketLoggingPopup);
+                ((CloudSession) BrowserController.getSession()).setLogging(
+                    _infoController.SelectedPath.getContainerName(),
+                    _bucketLoggingCheckbox,
+                    _bucketLoggingPopup);
             }
 
             public override void cleanup()
@@ -2079,7 +2090,8 @@ namespace Ch.Cyberduck.Ui.Controller
                 foreach (Path next in _infoController._files)
                 {
                     string container = next.getContainerName();
-                    ((S3Session) BrowserController.getSession()).setVersioning(container, _bucketMfa, _bucketVersioning);
+                    ((CloudSession) BrowserController.getSession()).setVersioning(container, _bucketMfa,
+                                                                                  _bucketVersioning);
                     break;
                 }
             }
@@ -2088,6 +2100,52 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 _infoController.ToggleS3Settings(true);
                 _infoController.InitS3();
+            }
+        }
+
+        private class SetEncryptionBackgroundAction : BrowserBackgroundAction
+        {
+            private readonly BrowserController _controller;
+            private readonly InfoController _infoController;
+            private readonly String _storageClass;
+
+            public SetEncryptionBackgroundAction(BrowserController controller,
+                                                 InfoController infoController) : base(controller)
+            {
+                _infoController = infoController;
+                _controller = controller;
+                _storageClass = _infoController.View.StorageClass;
+            }
+
+            public override void run()
+            {
+                foreach (Path next in _infoController._files)
+                {
+                    if (_infoController.View.Encryption)
+                    {
+                        next.attributes().setEncryption(
+                            (String) ((CloudSession) _controller.getSession()).getSupportedEncryptionAlgorithms().get(0));
+                    }
+                    else
+                    {
+                        next.attributes().setEncryption(null);
+                    }
+                    // Copy item in place to write new attributes
+                    next.copy(next);
+                }
+            }
+
+            public override void cleanup()
+            {
+                _infoController.ToggleS3Settings(true);
+                _infoController.InitMetadata();
+                _infoController.InitS3();
+            }
+
+            public override string getActivity()
+            {
+                return String.Format(Locale.localizedString("Writing metadata of {0}", "Status"),
+                                     toString(Utils.ConvertToJavaList(_infoController.Files)));
             }
         }
 
