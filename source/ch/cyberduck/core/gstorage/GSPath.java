@@ -135,7 +135,7 @@ public class GSPath extends S3Path {
     @Override
     protected AccessControlList convert(Acl acl) throws IOException {
         GSAccessControlList list = new GSAccessControlList();
-        list.setOwner(new GSOwner(acl.getOwner().getIdentifier(), null));
+        // Do not set owner for ACL which is set automatically
         for(Acl.UserAndRole userAndRole : acl.asList()) {
             if(!userAndRole.isValid()) {
                 continue;
