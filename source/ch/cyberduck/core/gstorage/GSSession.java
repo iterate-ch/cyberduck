@@ -27,6 +27,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.jets3t.service.Jets3tProperties;
 import org.jets3t.service.ServiceException;
+import org.jets3t.service.acl.GroupGrantee;
 import org.jets3t.service.acl.Permission;
 import org.jets3t.service.impl.rest.AccessControlListHandler;
 import org.jets3t.service.impl.rest.GSAccessControlListHandler;
@@ -129,12 +130,10 @@ public class GSSession extends S3Session {
 
     @Override
     public List<Acl.User> getAvailableAclUsers() {
-        final List<Acl.User> users = super.getAvailableAclUsers();
-        for(Iterator<Acl.User> iter = users.iterator(); iter.hasNext(); ) {
-            if(iter.next() instanceof Acl.EmailUser) {
-                iter.remove();
-            }
-        }
+        final List<Acl.User> users = new ArrayList<Acl.User>(Arrays.asList(
+                new Acl.CanonicalUser(),
+                new Acl.GroupUser(GroupGrantee.ALL_USERS.getIdentifier(), false))
+        );
         users.add(new Acl.EmailUser() {
             @Override
             public String getPlaceholder() {
