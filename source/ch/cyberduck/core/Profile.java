@@ -220,7 +220,7 @@ public class Profile extends Protocol implements Serializable {
 
     @Override
     public boolean isHostnameConfigurable() {
-        return false;
+        return parent.isHostnameConfigurable();
     }
 
     @Override
