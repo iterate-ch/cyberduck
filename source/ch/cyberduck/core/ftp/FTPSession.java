@@ -436,9 +436,6 @@ public class FTPSession extends SSLSession {
                 this.setUnsecureswitch(false);
             }
         }
-        else {
-            super.warn(login, credentials);
-        }
     }
 
     @Override
