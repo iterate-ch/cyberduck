@@ -575,6 +575,7 @@ public abstract class Preferences {
          * A prefix to apply to log file names
          */
         defaults.put("s3.logging.prefix", "logs/");
+        defaults.put("google.logging.prefix", "log");
         defaults.put("cloudfront.logging.prefix", "logs/");
 
         final int MONTH = 60 * 60 * 24 * 30; //30 days in seconds

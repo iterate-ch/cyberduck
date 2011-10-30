@@ -101,7 +101,7 @@ public class GSSession extends S3Session {
                 final GSBucketLoggingStatus status = new GSBucketLoggingStatus(
                         StringUtils.isNotBlank(destination) ? destination : container, null);
                 if(enabled) {
-                    status.setLogfilePrefix(Preferences.instance().getProperty("s3.logging.prefix"));
+                    status.setLogfilePrefix(Preferences.instance().getProperty("google.logging.prefix"));
                 }
                 this.check();
                 this.getClient().setBucketLoggingStatusImpl(container, status);
