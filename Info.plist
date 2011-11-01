@@ -202,7 +202,7 @@
             <key>StartOnMainThread</key>
             <true/>
             <key>VMOptions</key>
-            <string>-Xmx512m -Djava.library.path=$APP_PACKAGE/Contents/Resources/Java -Djna.library.path=$APP_PACKAGE/Contents/Resources/Java -Djna.nounpack=true -Djava.awt.headless=true -Dsun.jnu.encoding=utf-8 -Dfile.encoding=utf-8 -XX:-UsePerfData -XX:+ReduceSignalUsage -Xincgc -XX:-UseLoopPredicate -XX:-OptimizeStringConcat</string>
+            <string>-Xmx512m -Djava.library.path=$APP_PACKAGE/Contents/Resources/Java -Djna.boot.library.path=$APP_PACKAGE/Contents/Resources/Java -Djna.library.path=$APP_PACKAGE/Contents/Resources/Java -Djna.nounpack=true -Djava.awt.headless=true -Dsun.jnu.encoding=utf-8 -Dfile.encoding=utf-8 -XX:-UsePerfData -XX:+ReduceSignalUsage -Xincgc -XX:-UseLoopPredicate -XX:-OptimizeStringConcat</string>
         </dict>
         <key>NSAppleScriptEnabled</key>
         <false/>
