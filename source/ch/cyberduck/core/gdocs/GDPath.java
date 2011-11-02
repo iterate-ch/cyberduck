@@ -774,10 +774,10 @@ public class GDPath extends Path {
     }
 
     /**
-     * @param query
-     * @return
-     * @throws ServiceException
-     * @throws IOException
+     * @param query Document list query
+     * @return List of documents found
+     * @throws ServiceException Service error
+     * @throws IOException      Transport error
      */
     private AttributedList<Path> list(DocumentQuery query) throws ServiceException, IOException {
         final AttributedList<Path> children = new AttributedList<Path>();
@@ -909,7 +909,7 @@ public class GDPath extends Path {
 
     /**
      * @param type The document type
-     * @return
+     * @return Export format property name or null if unknown document type that supports no conversion
      */
     protected static String getExportFormat(String type) {
         if(type.equals(DocumentEntry.LABEL)) {
@@ -977,8 +977,7 @@ public class GDPath extends Path {
                 if(!Preferences.instance().getBoolean("google.docs.delete.trash")) {
                     feed.append("?delete=true");
                 }
-                this.getSession().getClient().delete(
-                        new URL(feed.toString()), this.attributes().getChecksum());
+                this.getSession().getClient().delete(new URL(feed.toString()));
             }
             catch(ServiceException e) {
                 IOException failure = new IOException(e.getMessage());
@@ -1012,7 +1011,7 @@ public class GDPath extends Path {
                 moved.setTitle(new PlainTextConstruct(renamed.getName()));
                 try {
                     // Move into new folder
-                    this.getSession().getClient().update(new URL(this.getResourceFeed()), moved, this.attributes().getChecksum());
+                    this.getSession().getClient().update(new URL(this.getResourceFeed()), moved);
                 }
                 catch(ServiceException e) {
                     IOException failure = new IOException(e.getMessage());
