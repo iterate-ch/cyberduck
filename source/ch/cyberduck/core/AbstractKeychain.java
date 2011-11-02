@@ -52,6 +52,10 @@ public abstract class AbstractKeychain {
         if(credentials.isPublicKeyAuthentication()) {
             p = this.getPassword(host.getHostname(), credentials.getIdentity().getAbbreviatedPath());
             if(null == p) {
+                // Interoperability with OpenSSH (ssh, ssh-agent, ssh-add)
+                p = this.getPassword("SSH", credentials.getIdentity().getAbsolute());
+            }
+            if(null == p) {
                 // Backward compatibility
                 p = this.getPassword("SSHKeychain", credentials.getIdentity().getAbbreviatedPath());
             }
@@ -103,7 +107,7 @@ public abstract class AbstractKeychain {
 
     /**
      * @param protocol Protocol scheme
-     * @param port
+     * @param port Port
      * @param serviceName Hostname
      * @param user Credentials
      * @return Password if found or null otherwise
@@ -149,7 +153,7 @@ public abstract class AbstractKeychain {
     /**
      * Prompt user for client certificate
      *
-     * @param issuers
+     * @param issuers Distinguished names
      * @param prompt Display in certificate choose prompt
      * @return Null if no certificate selected
      */
