@@ -48,11 +48,6 @@ public class SystemConfigurationProxy extends AbstractProxy implements Proxy {
 
     private static boolean JNI_LOADED = false;
 
-    /**
-     * Load native library extensions
-     *
-     * @return
-     */
     private static boolean loadNative() {
         if(!JNI_LOADED) {
             JNI_LOADED = Native.load("Proxy");
@@ -75,8 +70,8 @@ public class SystemConfigurationProxy extends AbstractProxy implements Proxy {
     }
 
     /**
-     * @param hostname
-     * @return
+     * @param hostname Hostname or CIDR notation
+     * @return True if host is excluded in native proxy configuration
      */
     private boolean isHostExcluded(String hostname) {
         if(!loadNative()) {
@@ -202,63 +197,63 @@ public class SystemConfigurationProxy extends AbstractProxy implements Proxy {
     /**
      * SOCKS proxy setting enabled
      *
-     * @return
+     * @return True if enabled
      */
     public native boolean isSOCKSProxyEnabledNative();
 
     /**
      * SOCKS proxy setting hostname
      *
-     * @return
+     * @return Proxy host
      */
     public native String getSOCKSProxyHostNative();
 
     /**
      * HTTP proxy setting port
      *
-     * @return
+     * @return Proxy port
      */
     public native int getSOCKSProxyPortNative();
 
     /**
      * HTTP proxy setting enabled
      *
-     * @return
+     * @return True if enabled
      */
     public native boolean isHTTPProxyEnabledNative();
 
     /**
      * HTTP proxy setting hostname
      *
-     * @return
+     * @return Proxy host
      */
     public native String getHTTPProxyHostNative();
 
     /**
      * HTTP proxy setting port
      *
-     * @return
+     * @return Proxy port
      */
     public native int getHTTPProxyPortNative();
 
     /**
      * HTTPS proxy setting enabled
      *
-     * @return
+     * @return True if enabled
      */
     public native boolean isHTTPSProxyEnabledNative();
 
     /**
      * HTTPS proxy setting hostname
      *
-     * @return
+     * @return Proxy host
      */
     public native String getHTTPSProxyHostNative();
 
     /**
      * HTTPS proxy setting port
      *
-     * @return
+     * @return Proxy port
      */
     public native int getHTTPSProxyPortNative();
 }
