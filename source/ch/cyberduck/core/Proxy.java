@@ -27,7 +27,7 @@ public interface Proxy {
     /**
      * Configure default proxy settings to connect to host
      *
-     * @param host
+     * @param host Host to connect to
      */
     public void configure(Host host);
 
