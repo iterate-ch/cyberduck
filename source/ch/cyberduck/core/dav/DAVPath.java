@@ -157,6 +157,7 @@ public class DAVPath extends HttpPath {
             this.attributes().setSize(resource.getContentLength());
         }
         this.attributes().setChecksum(resource.getEtag());
+        this.attributes().setETag(resource.getEtag());
     }
 
     @Override

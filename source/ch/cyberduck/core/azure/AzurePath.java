@@ -330,6 +330,7 @@ public class AzurePath extends CloudPath {
                             file.setParent(this);
                             file.attributes().setSize(object.getContentLength());
                             file.attributes().setChecksum(object.getETag());
+                            file.attributes().setETag(object.getETag());
                             file.attributes().setModificationDate(object.getLastModifiedTime().getTime());
                             file.attributes().setOwner(this.attributes().getOwner());
                             if(file.attributes().isDirectory()) {
@@ -410,7 +411,9 @@ public class AzurePath extends CloudPath {
                         this.getName()));
 
                 IBlobContainer container = this.getSession().getContainer(this.getContainerName());
-                attributes().setChecksum(container.getBlobProperties(this.getKey()).getETag());
+                final String checksum = container.getBlobProperties(this.getKey()).getETag();
+                attributes().setChecksum(checksum);
+                attributes().setETag(checksum);
             }
             catch(StorageException e) {
                 this.error("Cannot read file attributes", e);

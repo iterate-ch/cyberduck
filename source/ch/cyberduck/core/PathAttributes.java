@@ -77,9 +77,14 @@ public class PathAttributes extends Attributes implements Serializable {
     private Acl acl = Acl.EMPTY;
 
     /**
-     *
+     * MD5 checksum
      */
     private String checksum;
+
+    /**
+     * ETag header in HTTP
+     */
+    private String etag;
 
     /**
      * Redundany level if available
@@ -301,6 +306,14 @@ public class PathAttributes extends Attributes implements Serializable {
 
     public void setChecksum(String checksum) {
         this.checksum = checksum;
+    }
+
+    public String getETag() {
+        return etag;
+    }
+
+    public void setETag(String etag) {
+        this.etag = etag;
     }
 
     /**

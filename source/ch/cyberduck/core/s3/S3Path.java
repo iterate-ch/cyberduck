@@ -392,6 +392,7 @@ public class S3Path extends CloudPath {
                     log.debug("Setting ETag Header as checksum for:" + this.toString());
                     attributes().setChecksum(details.getETag());
                 }
+                attributes().setETag(details.getETag());
             }
             catch(ServiceException e) {
                 this.error("Cannot read file attributes", e);

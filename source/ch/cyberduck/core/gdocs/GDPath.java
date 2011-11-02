@@ -797,6 +797,7 @@ public class GDPath extends Path {
                 path.setResourceId(entry.getResourceId());
                 // Add unique document ID as checksum
                 path.attributes().setChecksum(entry.getMd5Checksum());
+                path.attributes().setETag(entry.getEtag());
                 if(null != entry.getMediaSource()) {
                     path.attributes().setSize(entry.getMediaSource().getContentLength());
                 }
@@ -848,6 +849,7 @@ public class GDPath extends Path {
                                 // Versioning is enabled if non null.
                                 revision.attributes().setVersionId(revisionEntry.getVersionId());
                                 revision.attributes().setChecksum(revisionEntry.getMd5Checksum());
+                                revision.attributes().setETag(revisionEntry.getEtag());
                                 revision.attributes().setRevision(++i);
                                 revision.attributes().setDuplicate(true);
                                 // Add to listing
@@ -977,7 +979,8 @@ public class GDPath extends Path {
                 if(!Preferences.instance().getBoolean("google.docs.delete.trash")) {
                     feed.append("?delete=true");
                 }
-                this.getSession().getClient().delete(new URL(feed.toString()));
+                this.getSession().getClient().delete(
+                        new URL(feed.toString()), this.attributes().getETag());
             }
             catch(ServiceException e) {
                 IOException failure = new IOException(e.getMessage());
@@ -1011,7 +1014,7 @@ public class GDPath extends Path {
                 moved.setTitle(new PlainTextConstruct(renamed.getName()));
                 try {
                     // Move into new folder
-                    this.getSession().getClient().update(new URL(this.getResourceFeed()), moved);
+                    this.getSession().getClient().update(new URL(this.getResourceFeed()), moved, this.attributes().getETag());
                 }
                 catch(ServiceException e) {
                     IOException failure = new IOException(e.getMessage());

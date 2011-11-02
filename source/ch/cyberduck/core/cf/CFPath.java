@@ -168,8 +168,10 @@ public class CFPath extends CloudPath {
                 this.getSession().message(MessageFormat.format(Locale.localizedString("Compute MD5 hash of {0}", "Status"),
                         this.getName()));
 
-                attributes().setChecksum(
-                        this.getSession().getClient().getObjectMetaData(this.getContainerName(), this.getKey()).getETag());
+                final String checksum = this.getSession().getClient().getObjectMetaData(
+                        this.getContainerName(), this.getKey()).getETag();
+                attributes().setChecksum(checksum);
+                attributes().setETag(checksum);
             }
             catch(HttpException e) {
                 this.error("Cannot read file attributes", e);
