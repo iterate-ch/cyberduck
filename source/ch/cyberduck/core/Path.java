@@ -170,6 +170,7 @@ public abstract class Path extends AbstractPath implements Serializable {
      *
      * @param parent the absolute directory
      * @param name   the file relative to param path
+     * @param type   File type
      */
     protected Path(String parent, String name, int type) {
         this.setPath(parent, name);
@@ -180,6 +181,7 @@ public abstract class Path extends AbstractPath implements Serializable {
      * A remote path where nothing is known about a local equivalent.
      *
      * @param path The absolute path of the remote file
+     * @param type File type
      */
     protected Path(String path, int type) {
         this.setPath(path);
@@ -210,8 +212,8 @@ public abstract class Path extends AbstractPath implements Serializable {
     }
 
     /**
-     * @param parent
-     * @param name
+     * @param parent The parent directory
+     * @param name   The filename
      */
     protected void setPath(Path parent, String name) {
         super.setPath(parent.getAbsolute(), name);
@@ -266,8 +268,6 @@ public abstract class Path extends AbstractPath implements Serializable {
      * @param path     The path to parse
      * @param absolute If the path is absolute
      * @return the normalized path.
-     * @author Adapted from org.apache.webdav
-     * @license http://www.apache.org/licenses/LICENSE-2.0
      */
     public static String normalize(final String path, final boolean absolute) {
         if(null == path) {
@@ -348,14 +348,14 @@ public abstract class Path extends AbstractPath implements Serializable {
     }
 
     /**
-     * @return
+     * @return True if this path denotes a container
      */
     public boolean isContainer() {
         return this.equals(this.getContainer());
     }
 
     /**
-     * @return
+     * @return Default path in bookmark or root delimiter
      */
     public String getContainerName() {
         if(StringUtils.isNotBlank(this.getHost().getDefaultPath())) {
@@ -365,7 +365,7 @@ public abstract class Path extends AbstractPath implements Serializable {
     }
 
     /**
-     * @return
+     * @return Default path or root with volume attributes set
      */
     public Path getContainer() {
         return PathFactory.createPath(this.getSession(), this.getContainerName(),
@@ -493,7 +493,7 @@ public abstract class Path extends AbstractPath implements Serializable {
     /**
      * Accessability for #getSession.cache()
      *
-     * @return
+     * @return The directory listing cache for this session
      */
     @Override
     public Cache<Path> cache() {
@@ -677,7 +677,7 @@ public abstract class Path extends AbstractPath implements Serializable {
      * Create a symbolic link on the server. Creates a link "src" that points
      * to "target".
      *
-     * @param target
+     * @param target Target file of symbolic link
      */
     @Override
     public void symlink(String target) {
@@ -709,7 +709,6 @@ public abstract class Path extends AbstractPath implements Serializable {
 
     /**
      * @return The session this path uses to send commands
-     * @throws ConnectionCanceledException If the connection has been closed already
      */
     public abstract Session getSession();
 
@@ -757,15 +756,17 @@ public abstract class Path extends AbstractPath implements Serializable {
     }
 
     /**
-     * @return
-     * @throws IOException
+     * @return Stream to read from to download file
+     * @throws IOException Read not completed due to a I/O problem
      */
     public InputStream read() throws IOException {
         return this.read(true);
     }
 
     /**
-     * @return
+     * @param check First check the connection is open
+     * @return Stream to read from to download file
+     * @throws IOException Read not completed due to a I/O problem
      */
     public abstract InputStream read(final boolean check) throws IOException;
 
@@ -806,17 +807,22 @@ public abstract class Path extends AbstractPath implements Serializable {
     protected abstract void download(BandwidthThrottle throttle, StreamListener listener, boolean check);
 
     /**
-     * @return
-     * @throws IOException
+     * @return Stream to write to for upload
+     * @throws IOException Open file for writing fails
      */
     public OutputStream write() throws IOException {
         return this.write(true);
     }
 
+    /**
+     * @param check Check for open connection
+     * @return Stream to write to for upload
+     * @throws IOException Open file for writing fails
+     */
     public abstract OutputStream write(final boolean check) throws IOException;
 
     /**
-     *
+     * Write to server
      */
     protected void upload() {
         this.upload(new AbstractStreamListener());
@@ -844,6 +850,13 @@ public abstract class Path extends AbstractPath implements Serializable {
      */
     protected abstract void upload(BandwidthThrottle throttle, StreamListener listener, boolean check);
 
+    /**
+     * @param out      Remote stream
+     * @param in       Local stream
+     * @param throttle The bandwidth limit
+     * @param l        Listener for bytes sent
+     * @throws IOException Write not completed due to a I/O problem
+     */
     protected void upload(OutputStream out, InputStream in, BandwidthThrottle throttle, final StreamListener l) throws IOException {
         this.upload(out, in, throttle, l, status().getCurrent(), -1);
     }
@@ -858,7 +871,8 @@ public abstract class Path extends AbstractPath implements Serializable {
      * @param in       The stream to read from
      * @param throttle The bandwidth limit
      * @param l        The stream listener to notify about bytes received and sent
-     * @param offset
+     * @param offset   Start reading at offset in file
+     * @param limit    Transfer only up to this length
      * @throws IOResumeException           If the input stream fails to skip the appropriate
      *                                     number of bytes
      * @throws IOException                 Write not completed due to a I/O problem
@@ -952,7 +966,7 @@ public abstract class Path extends AbstractPath implements Serializable {
      * @param in       The stream to read from
      * @param out      The stream to write to
      * @param listener The stream listener to notify about bytes received and sent
-     * @param limit
+     * @param limit    Transfer only up to this length
      * @throws IOException                 Write not completed due to a I/O problem
      * @throws ConnectionCanceledException When transfer is interrupted by user setting the
      *                                     status flag to cancel.
@@ -1064,7 +1078,7 @@ public abstract class Path extends AbstractPath implements Serializable {
     }
 
     /**
-     * @param other
+     * @param other Path to compare with
      * @return true if the other path has the same absolute path name
      */
     @Override
@@ -1089,8 +1103,8 @@ public abstract class Path extends AbstractPath implements Serializable {
     /**
      * URL encode a path
      *
-     * @param p
-     * @return
+     * @param p Absolute path
+     * @return URI encoded
      * @see URLEncoder#encode(String, String)
      */
     public static String encode(final String p) {
@@ -1158,7 +1172,7 @@ public abstract class Path extends AbstractPath implements Serializable {
     /**
      * Remove the document root from the path
      *
-     * @param path
+     * @param path Absolute path
      * @return Without any document root path component
      */
     private String getWebPath(String path) {
