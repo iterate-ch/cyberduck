@@ -84,7 +84,8 @@ public class SFTPSession extends Session {
      * If never called before opens a new SFTP subsystem. If called before, the cached
      * SFTP subsystem is returned. May not be used concurrently.
      *
-     * @throws IOException
+     * @return Client instance
+     * @throws IOException If opening SFTP channel fails
      */
     protected SFTPv3Client sftp() throws IOException {
         if(null == SFTP) {
@@ -113,7 +114,8 @@ public class SFTPSession extends Session {
     /**
      * Opens a new, dedicated SCP channel for this SSH session
      *
-     * @throws IOException
+     * @return Client instance
+     * @throws IOException If opening SCP channel fails
      */
     protected SCPClient openScp() throws IOException {
         if(!this.isConnected()) {
@@ -222,9 +224,10 @@ public class SFTPSession extends Session {
     /**
      * Authenticate with public key
      *
-     * @param credentials
+     * @param controller  Login prompt
+     * @param credentials Username and password for private key
      * @return True if authentication succeeded
-     * @throws IOException
+     * @throws IOException Error reading private key
      */
     private boolean loginUsingPublicKeyAuthentication(LoginController controller, final Credentials credentials)
             throws IOException {
@@ -289,9 +292,10 @@ public class SFTPSession extends Session {
     /**
      * Authenticate with plain password.
      *
-     * @param credentials
+     * @param controller  Login prompt
+     * @param credentials Username and password
      * @return True if authentication succeeded
-     * @throws IOException
+     * @throws IOException Login failed or canceled
      */
     private boolean loginUsingPasswordAuthentication(LoginController controller, final Credentials credentials) throws IOException {
         log.debug("loginUsingPasswordAuthentication:" + credentials);
@@ -304,9 +308,10 @@ public class SFTPSession extends Session {
     /**
      * Authenticate using challenge and response method.
      *
-     * @param credentials
+     * @param controller  Login prompt
+     * @param credentials Username and password
      * @return True if authentication succeeded
-     * @throws IOException
+     * @throws IOException Login failed or canceled
      */
     private boolean loginUsingKBIAuthentication(final LoginController controller, final Credentials credentials) throws IOException {
         log.debug("loginUsingKBIAuthentication" +
@@ -400,8 +405,8 @@ public class SFTPSession extends Session {
     }
 
     /**
-     * @param sftp
-     * @throws IOException
+     * @param sftp Check if SFTP channel is connected
+     * @throws IOException If reconnect fails
      */
     private void check(final boolean sftp) throws IOException {
         try {
