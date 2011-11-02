@@ -49,11 +49,6 @@ public class Keychain extends AbstractKeychain {
 
     private static boolean JNI_LOADED = false;
 
-    /**
-     * Load native library extensions
-     *
-     * @return
-     */
     private static boolean loadNative() {
         if(!JNI_LOADED) {
             JNI_LOADED = Native.load("Keychain");
@@ -62,45 +57,46 @@ public class Keychain extends AbstractKeychain {
     }
 
     /**
-     * @param protocol
-     * @param serviceName
-     * @param user
-     * @return
+     * @param protocol    Protocol identifier
+     * @param port        Port number
+     * @param serviceName Hostname
+     * @param user        Username
+     * @return Password or null
      */
     public synchronized native String getInternetPasswordFromKeychain(String protocol, int port, String serviceName, String user);
 
     /**
-     * @param serviceName
-     * @param user
-     * @return
+     * @param serviceName Hostname
+     * @param user        Username
+     * @return Password or null
      */
     public synchronized native String getPasswordFromKeychain(String serviceName, String user);
 
     /**
-     * @param serviceName
-     * @param user
-     * @param password
+     * @param serviceName Hostname
+     * @param user        Username
+     * @param password    Secret
      */
     public synchronized native void addPasswordToKeychain(String serviceName, String user, String password);
 
     /**
-     * @param protocol
-     * @param port
-     * @param serviceName
-     * @param user
-     * @param password
+     * @param protocol    Protocol identifier
+     * @param port        Port number
+     * @param serviceName Hostname
+     * @param user        Username
+     * @param password    Secret
      */
     public synchronized native void addInternetPasswordToKeychain(String protocol, int port, String serviceName, String user, String password);
 
     /**
-     * @param certs
-     * @return
+     * @param certificates Chain of certificates
+     * @return ASN.1 DER encoded
      */
-    private Object[] getEncoded(X509Certificate[] certs) {
-        final Object[] encoded = new Object[certs.length];
+    private Object[] getEncoded(X509Certificate[] certificates) {
+        final Object[] encoded = new Object[certificates.length];
         for(int i = 0; i < encoded.length; i++) {
             try {
-                encoded[i] = certs[i].getEncoded();
+                encoded[i] = certificates[i].getEncoded();
             }
             catch(CertificateEncodingException c) {
                 log.error("Error getting encoded certificate: " + c.getMessage());
@@ -142,26 +138,27 @@ public class Keychain extends AbstractKeychain {
     }
 
     /**
-     * @param certs
-     * @return
+     * @param certificates Chain of certificates
+     * @return True if chain is trusted
      */
     @Override
-    public synchronized boolean isTrusted(String hostname, X509Certificate[] certs) {
+    public synchronized boolean isTrusted(String hostname, X509Certificate[] certificates) {
         if(!loadNative()) {
             return false;
         }
-        return this.isTrustedNative(hostname, this.getEncoded(certs));
+        return this.isTrustedNative(hostname, this.getEncoded(certificates));
     }
 
     /**
-     * @param certificates An array containing byte[] certificates
-     * @return
+     * @param hostname     Hostname that must match common name in certificate
+     * @param certificates An array containing ASN.1 DER encoded certificates
+     * @return True if chain is trusted
      */
     private native boolean isTrustedNative(String hostname, Object[] certificates);
 
     /**
-     * @param certificates
-     * @return
+     * @param certificates Chain of certificates
+     * @return True if certificate was selected. False if prompt is dismissed to close the connection
      */
     @Override
     public synchronized boolean displayCertificates(X509Certificate[] certificates) {
@@ -172,8 +169,8 @@ public class Keychain extends AbstractKeychain {
     }
 
     /**
-     * @param certificates An array containing byte[] certificates
-     * @return
+     * @param certificates An array containing ASN.1 DER encoded certificates
+     * @return True if certificate was selected. False if prompt is dismissed to close the connection
      */
     private native boolean displayCertificatesNative(Object[] certificates);
 
@@ -202,8 +199,9 @@ public class Keychain extends AbstractKeychain {
     }
 
     /**
-     * @param prompt
-     * @return
+     * @param issuers Distinguished names
+     * @param prompt  String to display in prompt
+     * @return Selected certificate
      */
     private native byte[] chooseCertificateNative(String[] issuers, String prompt);
 }
