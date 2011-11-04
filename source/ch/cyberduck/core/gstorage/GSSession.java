@@ -158,6 +158,20 @@ public class GSSession extends S3Session {
     }
 
     @Override
+    public Acl getPublicAcl(String container, boolean readable, boolean writable) {
+        Acl acl = this.getPrivateAcl(container);
+        if(readable) {
+            acl.addAll(new Acl.GroupUser("AllUsers"),
+                    new Acl.Role(org.jets3t.service.acl.Permission.PERMISSION_READ.toString()));
+        }
+        if(writable) {
+            acl.addAll(new Acl.GroupUser("AllUsers"),
+                    new Acl.Role(org.jets3t.service.acl.Permission.PERMISSION_WRITE.toString()));
+        }
+        return acl;
+    }
+
+    @Override
     public List<Acl.Role> getAvailableAclRoles(List<Path> files) {
         List<Acl.Role> roles = new ArrayList<Acl.Role>(Arrays.asList(
                 new Acl.Role(org.jets3t.service.acl.Permission.PERMISSION_FULL_CONTROL.toString()),
