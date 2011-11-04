@@ -27,8 +27,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.jets3t.service.Jets3tProperties;
 import org.jets3t.service.ServiceException;
-import org.jets3t.service.acl.GroupGrantee;
-import org.jets3t.service.acl.Permission;
 import org.jets3t.service.impl.rest.AccessControlListHandler;
 import org.jets3t.service.impl.rest.GSAccessControlListHandler;
 import org.jets3t.service.impl.rest.XmlResponsesSaxParser;
@@ -132,7 +130,8 @@ public class GSSession extends S3Session {
     public List<Acl.User> getAvailableAclUsers() {
         final List<Acl.User> users = new ArrayList<Acl.User>(Arrays.asList(
                 new Acl.CanonicalUser(),
-                new Acl.GroupUser(GroupGrantee.ALL_USERS.getIdentifier(), false))
+                new Acl.GroupUser("AllAuthenticatedUsers", false),
+                new Acl.GroupUser("AllUsers", false))
         );
         users.add(new Acl.EmailUser() {
             @Override
@@ -162,7 +161,7 @@ public class GSSession extends S3Session {
     public List<Acl.Role> getAvailableAclRoles(List<Path> files) {
         List<Acl.Role> roles = new ArrayList<Acl.Role>(Arrays.asList(
                 new Acl.Role(org.jets3t.service.acl.Permission.PERMISSION_FULL_CONTROL.toString()),
-                new Acl.Role(Permission.PERMISSION_READ.toString()))
+                new Acl.Role(org.jets3t.service.acl.Permission.PERMISSION_READ.toString()))
         );
         for(Path file : files) {
             if(file.attributes().isVolume()) {
@@ -170,7 +169,7 @@ public class GSSession extends S3Session {
                 // delete objects in a bucket. This permission also lets a user list the contents of a bucket.
                 // You cannot apply this permission to objects because bucket ACLs control who can upload,
                 // overwrite, and delete objects. Also, you must grant READ permission if you grant WRITE permission.
-                roles.add(new Acl.Role(Permission.PERMISSION_WRITE.toString()));
+                roles.add(new Acl.Role(org.jets3t.service.acl.Permission.PERMISSION_WRITE.toString()));
                 break;
             }
         }
