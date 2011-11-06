@@ -21,17 +21,14 @@ package ch.cyberduck.core;
 /**
  * @version $Id$
  */
-public interface StreamListener
-{
+public interface StreamListener {
     /**
-     *
-     * @param bytes
+     * @param bytes Number of bytes sent
      */
     void bytesSent(long bytes);
 
     /**
-     *
-     * @param bytes
+     * @param bytes Number of bytes retrieved
      */
     void bytesReceived(long bytes);
 }
