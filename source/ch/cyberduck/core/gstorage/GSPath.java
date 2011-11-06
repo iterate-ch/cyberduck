@@ -30,9 +30,15 @@ import ch.cyberduck.core.s3.S3Session;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.jets3t.service.ServiceException;
-import org.jets3t.service.acl.*;
-import org.jets3t.service.acl.gs.*;
-import org.jets3t.service.model.GSOwner;
+import org.jets3t.service.acl.AccessControlList;
+import org.jets3t.service.acl.gs.AllAuthenticatedUsersGrantee;
+import org.jets3t.service.acl.gs.AllUsersGrantee;
+import org.jets3t.service.acl.gs.GSAccessControlList;
+import org.jets3t.service.acl.gs.GroupByDomainGrantee;
+import org.jets3t.service.acl.gs.GroupByEmailAddressGrantee;
+import org.jets3t.service.acl.gs.GroupByIdGrantee;
+import org.jets3t.service.acl.gs.UserByEmailAddressGrantee;
+import org.jets3t.service.acl.gs.UserByIdGrantee;
 
 import java.io.IOException;
 import java.text.MessageFormat;
@@ -129,7 +135,6 @@ public class GSPath extends S3Path {
                     MessageFormat.format(Locale.localizedString("{0} URL"), Locale.localizedString("Authenticated"))));
         }
         return urls;
-
     }
 
     @Override
