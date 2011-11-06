@@ -55,7 +55,7 @@ public abstract class AbstractPath {
     public abstract <T extends AbstractPath> Cache<T> cache();
 
     /**
-     * @return
+     * @return Descriptive features for path
      */
     public abstract Attributes attributes();
 
@@ -104,7 +104,7 @@ public abstract class AbstractPath {
     /**
      * Fetch the directory listing
      *
-     * @return
+     * @return Directory listing from server
      */
     public abstract <T extends AbstractPath> AttributedList<T> list();
 
@@ -179,6 +179,9 @@ public abstract class AbstractPath {
 
     /**
      * Subclasses may override to return a user friendly representation of the name denoting this path.
+     *
+     * @return Name of the file
+     * @see #getName()
      */
     public String getDisplayName() {
         return this.getName();
@@ -228,8 +231,8 @@ public abstract class AbstractPath {
     protected abstract void setPath(String name);
 
     /**
-     * @param directory
-     * @return true if this is a child of <code>p</code> in the path hierarchy
+     * @param directory Parent directory
+     * @return True if this is a child in the path hierarchy of the argument passed
      */
     public boolean isChild(AbstractPath directory) {
         if(directory.attributes().isFile()) {
@@ -272,6 +275,7 @@ public abstract class AbstractPath {
 
     /**
      * #getAbsolute -> target
+     *
      * @param target Where this file should point to
      */
     public abstract void symlink(String target);
@@ -322,8 +326,8 @@ public abstract class AbstractPath {
     public abstract void writeUnixPermission(Permission perm, boolean recursive);
 
     /**
-     * @param created
-     * @param modified
+     * @param created  Creation timestamp of file
+     * @param modified Modification timestamp of file
      * @param accessed @see ch.cyberduck.core.Session#isTimestampSupported()
      */
     public abstract void writeTimestamp(long created, long modified, long accessed);
@@ -349,6 +353,7 @@ public abstract class AbstractPath {
      * Duplicate file
      *
      * @param copy Destination
+     * @return True if copy was written successfully
      */
     public abstract boolean copy(AbstractPath copy);
 
