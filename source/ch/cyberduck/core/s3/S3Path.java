@@ -19,8 +19,19 @@ package ch.cyberduck.core.s3;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AbstractPath;
+import ch.cyberduck.core.Acl;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.ConnectionCanceledException;
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LoginController;
+import ch.cyberduck.core.LoginControllerFactory;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.StreamListener;
 import ch.cyberduck.core.cloud.CloudPath;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
 import ch.cyberduck.core.http.ResponseOutputStream;
@@ -37,11 +48,21 @@ import org.apache.log4j.Logger;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.StorageObjectsChunk;
 import org.jets3t.service.VersionOrDeleteMarkersChunk;
-import org.jets3t.service.acl.*;
-import org.jets3t.service.model.*;
+import org.jets3t.service.acl.AccessControlList;
+import org.jets3t.service.acl.CanonicalGrantee;
+import org.jets3t.service.acl.EmailAddressGrantee;
+import org.jets3t.service.acl.GrantAndPermission;
+import org.jets3t.service.acl.GroupGrantee;
+import org.jets3t.service.model.BaseVersionOrDeleteMarker;
+import org.jets3t.service.model.MultipartPart;
+import org.jets3t.service.model.MultipartUpload;
+import org.jets3t.service.model.S3Object;
+import org.jets3t.service.model.S3Owner;
+import org.jets3t.service.model.S3Version;
+import org.jets3t.service.model.StorageBucket;
+import org.jets3t.service.model.StorageObject;
 import org.jets3t.service.utils.ServiceUtils;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -50,8 +71,23 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TimeZone;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.ThreadFactory;
 
 /**
  * @version $Id$
@@ -120,8 +156,11 @@ public class S3Path extends CloudPath {
     protected StorageObject _details;
 
     /**
-     * @return
-     * @throws ServiceException
+     * Retrieve and cache object details.
+     *
+     * @return Object details
+     * @throws IOException      I/O error
+     * @throws ServiceException Service error
      */
     protected StorageObject getDetails() throws IOException, ServiceException {
         final String container = this.getContainerName();
@@ -181,10 +220,6 @@ public class S3Path extends CloudPath {
         }
     }
 
-    /**
-     * @return The ACL of the bucket or object. Return AccessControlList.REST_CANNED_PRIVATE if
-     *         reading fails.
-     */
     @Override
     public void readAcl() {
         try {
@@ -224,8 +259,8 @@ public class S3Path extends CloudPath {
     }
 
     /**
-     * @param list
-     * @return
+     * @param list ACL from server
+     * @return Editable ACL
      */
     protected Acl convert(final AccessControlList list) {
         if(log.isDebugEnabled()) {
@@ -270,7 +305,7 @@ public class S3Path extends CloudPath {
     /**
      * Implements http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.21
      *
-     * @param expiration
+     * @param expiration Expiration date to set in header
      */
     public void setExpiration(final Date expiration) {
         try {
@@ -638,11 +673,11 @@ public class S3Path extends CloudPath {
     }
 
     /**
-     * @param throttle
-     * @param listener
-     * @param object
-     * @throws IOException
-     * @throws ServiceException
+     * @param throttle Bandwidth throttle
+     * @param listener Callback for bytes sent
+     * @param object   File location
+     * @throws IOException      I/O error
+     * @throws ServiceException Service error
      */
     private void uploadSingle(final BandwidthThrottle throttle, final StreamListener listener, S3Object object)
             throws IOException, ServiceException {
@@ -689,12 +724,11 @@ public class S3Path extends CloudPath {
     }
 
     /**
-     * @param throttle
-     * @param listener
-     * @param object
-     * @throws ConnectionCanceledException
-     * @throws FileNotFoundException
-     * @throws ServiceException
+     * @param throttle Bandwidth throttle
+     * @param listener Callback for bytes sent
+     * @param object   File location
+     * @throws IOException      I/O error
+     * @throws ServiceException Service error
      */
     private void uploadMultipart(final BandwidthThrottle throttle, final StreamListener listener, S3Object object)
             throws IOException, ServiceException {
@@ -1216,11 +1250,10 @@ public class S3Path extends CloudPath {
     /**
      * Convert ACL for writing to service.
      *
-     * @param acl
-     * @return
-     * @throws IOException
+     * @param acl Edited ACL
+     * @return ACL to write to server
      */
-    protected AccessControlList convert(Acl acl) throws IOException {
+    protected AccessControlList convert(Acl acl) {
         AccessControlList list = new AccessControlList();
         list.setOwner(new S3Owner(acl.getOwner().getIdentifier(), acl.getOwner().getDisplayName()));
         for(Acl.UserAndRole userAndRole : acl.asList()) {
@@ -1303,11 +1336,11 @@ public class S3Path extends CloudPath {
     }
 
     /**
-     * @param container
-     * @param key
-     * @param version
-     * @throws ConnectionCanceledException
-     * @throws ServiceException
+     * @param container Bucket
+     * @param key       Filename
+     * @param version   Version ID for versioned object or null
+     * @throws ConnectionCanceledException Authentication canceled for MFA delete
+     * @throws ServiceException            Service error
      */
     private void delete(String container, String key, String version) throws ConnectionCanceledException, ServiceException {
         if(StringUtils.isNotEmpty(version)) {
@@ -1435,7 +1468,7 @@ public class S3Path extends CloudPath {
     }
 
     /**
-     * Overwritten to provide publicy accessible URL of given object
+     * Overwritten to provide publicly accessible URL of given object
      *
      * @return Using scheme from protocol
      */
@@ -1457,8 +1490,8 @@ public class S3Path extends CloudPath {
     /**
      * Properly URI encode and prepend the bucket name.
      *
-     * @param scheme
-     * @return
+     * @param scheme Protocol
+     * @return URL to be displayed in browser
      */
     private String toURL(String scheme) {
         StringBuilder url = new StringBuilder(scheme);
@@ -1495,7 +1528,7 @@ public class S3Path extends CloudPath {
 
     /**
      * @param seconds Expire after seconds elapsed
-     * @return
+     * @return Temporary URL to be displayed in browser
      */
     private DescriptiveUrl toSignedUrl(int seconds) {
         Calendar expiry = Calendar.getInstance();
@@ -1512,7 +1545,8 @@ public class S3Path extends CloudPath {
      * access to an S3 resource (bucket or object)
      * to whoever uses the URL up until the time specified.
      *
-     * @return
+     * @param expiry Validity of URL
+     * @return Temporary URL to be displayed in browser
      */
     public String createSignedUrl(int expiry) {
         if(this.attributes().isFile()) {
@@ -1546,7 +1580,7 @@ public class S3Path extends CloudPath {
      * Generates a URL string that will return a Torrent file for an object in S3,
      * which file can be downloaded and run in a BitTorrent client.
      *
-     * @return
+     * @return Torrent URL
      */
     public DescriptiveUrl toTorrentUrl() {
         if(this.attributes().isFile()) {

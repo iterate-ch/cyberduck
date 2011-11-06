@@ -590,7 +590,7 @@ public abstract class Path extends AbstractPath implements Serializable {
     }
 
     /**
-     *
+     * Read the ACL of the bucket or object
      */
     public void readAcl() {
         throw new UnsupportedOperationException();

@@ -108,13 +108,12 @@ public abstract class CloudPath extends HttpPath {
     }
 
     /**
-     * @return Modifiable HTTP header metatdata key and values
+     * Read modifiable HTTP header metatdata key and values
      */
     public abstract void readMetadata();
 
     /**
      * @param meta Modifiable HTTP header metatdata key and values
-     * @return The updated headers of the object
      */
     public abstract void writeMetadata(Map<String, String> meta);
 

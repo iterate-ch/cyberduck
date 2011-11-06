@@ -40,7 +40,6 @@ import org.jets3t.service.acl.gs.GroupByIdGrantee;
 import org.jets3t.service.acl.gs.UserByEmailAddressGrantee;
 import org.jets3t.service.acl.gs.UserByIdGrantee;
 
-import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.Set;
 
@@ -100,7 +99,7 @@ public class GSPath extends S3Path {
      * Google Storage accounts. To do this, you apply Google account-based ACLs to the object and then
      * you provide users with a URL that is scoped to the object.
      *
-     * @return
+     * @return URL to be displayed in browser
      */
     @Override
     public DescriptiveUrl toAuthenticatedUrl() {
@@ -138,7 +137,7 @@ public class GSPath extends S3Path {
     }
 
     @Override
-    protected AccessControlList convert(Acl acl) throws IOException {
+    protected AccessControlList convert(Acl acl) {
         GSAccessControlList list = new GSAccessControlList();
         // Do not set owner for ACL which is set automatically
         for(Acl.UserAndRole userAndRole : acl.asList()) {
