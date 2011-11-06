@@ -549,9 +549,6 @@ public class CFPath extends CloudPath {
         }
     }
 
-    /**
-     * @return Modifiable HTTP header metatdata key and values
-     */
     @Override
     public void readMetadata() {
         if(attributes().isFile()) {
@@ -646,11 +643,6 @@ public class CFPath extends CloudPath {
             // Copy to different host
             return super.copy(copy);
         }
-    }
-
-    @Override
-    public Set<DescriptiveUrl> getHttpURLs() {
-        return super.getHttpURLs();
     }
 
     /**
