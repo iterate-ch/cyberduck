@@ -102,7 +102,7 @@ public class Status {
      */
     public static String getSizeAsString(double size, boolean plain, boolean bytes) {
         if(-1 == size) {
-            return Locale.localizedString("Unknown size");
+            return Locale.localizedString("--");
         }
         if(size < KILO) {
             return (int) size + (bytes ? " B" : " bit");
