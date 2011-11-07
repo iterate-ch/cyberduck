@@ -73,16 +73,15 @@ public class ThreadPool {
     }
 
     /**
-     * @param command
-     * @throws Exception
+     * @param command Action to run in its own executor thread
      */
     public void execute(final Runnable command) {
         this.getExecutor().execute(command);
     }
 
     /**
-     * @param command
-     * @throws Exception
+     * @param command Action to run in its own executor thread
+     * @return Future result
      */
     public <T> Future<T> execute(final Callable<T> command) {
         return this.getExecutor().submit(command);

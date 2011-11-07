@@ -73,9 +73,7 @@ public interface BackgroundAction<T> extends Runnable, Callable<T> {
     String getActivity();
 
     /**
-     * The synchronization object
-     *
-     * @return
+     * @return The synchronization object
      */
     Object lock();
 

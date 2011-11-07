@@ -32,7 +32,7 @@ public abstract class DefaultMainAction extends MainAction {
     /**
      * No synchronization by default.
      *
-     * @return
+     * @return New object
      */
     @Override
     public Object lock() {

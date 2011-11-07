@@ -35,10 +35,6 @@ public abstract class ActionOperationBatcherFactory extends Factory<ActionOperat
     protected static final Map<Platform, ActionOperationBatcherFactory> factories
             = new HashMap<Platform, ActionOperationBatcherFactory>();
 
-    /**
-     * @param platform
-     * @param f
-     */
     public static void addFactory(Platform platform, ActionOperationBatcherFactory f) {
         factories.put(platform, f);
     }

@@ -78,7 +78,7 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
             Preferences.instance().getInteger("transcript.length");
 
     /**
-     * @param exception
+     * @param exception Service error
      * @see ch.cyberduck.core.ErrorListener
      */
     public void error(final BackgroundException exception) {
@@ -125,7 +125,7 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
     /**
      * Apppend to the transcript. Reset if maximum length has been reached.
      *
-     * @param request
+     * @param request Message was sent to the server
      * @param message @see ch.cyberduck.core.TranscriptListener
      * @see #TRANSCRIPT_MAX_LENGTH
      */

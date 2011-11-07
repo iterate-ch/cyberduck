@@ -51,7 +51,7 @@ public class BackgroundActionRegistry extends AbstractActionRegistry<BackgroundA
     /**
      * Actions addded are automatically removed when canceled or stopped.
      *
-     * @param action
+     * @param action Action to run in background
      * @return True if not already present in the list.
      */
     @Override
