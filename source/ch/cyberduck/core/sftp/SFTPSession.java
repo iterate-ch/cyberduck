@@ -185,6 +185,10 @@ public class SFTPSession extends Session {
         if(credentials.isPublicKeyAuthentication()) {
             if(this.loginUsingPublicKeyAuthentication(controller, credentials)) {
                 this.message(Locale.localizedString("Login successful", "Credentials"));
+                if(BookmarkCollection.defaultCollection().contains(host)) {
+                    // Save private key in bookmark
+                    BookmarkCollection.defaultCollection().collectionItemChanged(host);
+                }
                 return;
             }
         }
