@@ -46,34 +46,34 @@ public class IconCache {
     /**
      * No resizing of the cached image.
      *
-     * @param name
-     * @return
+     * @param name Icon filename with extension
+     * @return Cached icon
      */
     public static NSImage iconNamed(final String name) {
         return IconCache.instance().iconForName(name);
     }
 
     /**
-     * @param name
-     * @param size
-     * @return
+     * @param name Icon filename with extension
+     * @param size Requested size
+     * @return Cached icon
      */
     public static NSImage iconNamed(final String name, Integer size) {
         return IconCache.instance().iconForName(name, size);
     }
 
     /**
-     * @param name
-     * @param width
-     * @param height
-     * @return
+     * @param name   Name to lookup
+     * @param width  Requested size
+     * @param height Requested size
+     * @return Cached icon
      */
     public static NSImage iconNamed(final String name, Integer width, Integer height) {
         return IconCache.instance().iconForName(name, width, height);
     }
 
     /**
-     * @param size
+     * @param size Requested size
      * @return Standard folder icon for this platform
      */
     public static NSImage folderIcon(Integer size) {
@@ -147,8 +147,9 @@ public class IconCache {
     }
 
     /**
-     * @param extension
-     * @return
+     * @param extension File type
+     * @param size      Requested size
+     * @return Cached icon
      */
     public NSImage iconForExtension(String extension, Integer size) {
         NSImage img = this.load(extension, size);
@@ -190,8 +191,9 @@ public class IconCache {
     /**
      * Overlay badge image.
      *
-     * @param badge
-     * @param icon
+     * @param badge Overlay
+     * @param icon  Icon
+     * @return Cached icon
      */
     private NSImage badge(NSImage badge, NSImage icon) {
         NSImage f = NSImage.imageWithSize(icon.size());
@@ -205,17 +207,17 @@ public class IconCache {
     }
 
     /**
-     * @param name
-     * @return
+     * @param name Icon name
+     * @return Cached image
      */
     protected NSImage iconForName(final String name) {
         return this.iconForName(name, null);
     }
 
     /**
-     * @param name
-     * @param size
-     * @return
+     * @param name Icon filename with extension
+     * @param size Requested size
+     * @return Cached image
      * @see #convert(ch.cyberduck.ui.cocoa.application.NSImage, Integer)
      */
     protected NSImage iconForName(final String name, Integer size) {
@@ -225,9 +227,9 @@ public class IconCache {
     /**
      * @param name   When looking for files in the application bundle, it is better (but not required)
      *               to include the filename extension in the name parameter
-     * @param width
-     * @param height
-     * @return
+     * @param width  Requested size
+     * @param height Requested size
+     * @return Cached icon
      * @see NSImage#imageNamed(String)
      * @see #convert(ch.cyberduck.ui.cocoa.application.NSImage, Integer, Integer)
      */
@@ -258,9 +260,9 @@ public class IconCache {
     }
 
     /**
-     * @param item
-     * @param size
-     * @return
+     * @param item File
+     * @param size Requested size
+     * @return Cached icon
      */
     public NSImage iconForPath(final Local item, Integer size) {
         NSImage icon = null;
@@ -282,9 +284,9 @@ public class IconCache {
     }
 
     /**
-     * @param bundleIdentifier
-     * @param size
-     * @return
+     * @param bundleIdentifier Application
+     * @param size             Requested size
+     * @return Cached icon
      */
     public NSImage iconForApplication(final String bundleIdentifier, Integer size) {
         NSImage icon = this.load(bundleIdentifier, size);
@@ -307,9 +309,9 @@ public class IconCache {
     private final NSImage FOLDER_ICON = this.iconForPath(FOLDER_PATH);
 
     /**
-     * @param item
-     * @param size
-     * @return
+     * @param item File
+     * @param size Requested size
+     * @return Cached icon
      */
     public NSImage iconForPath(final Path item, Integer size) {
         return this.iconForPath(item, size, Preferences.instance().getBoolean("browser.markInaccessibleFolders"));
