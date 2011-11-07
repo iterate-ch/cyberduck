@@ -24,7 +24,7 @@ package ch.cyberduck.core;
 public interface ProgressListener {
 
     /**
-     * @param message
+     * @param message Progress message to display in status
      */
     void message(final String message);
 }

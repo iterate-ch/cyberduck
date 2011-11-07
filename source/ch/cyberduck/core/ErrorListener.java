@@ -26,8 +26,7 @@ import ch.cyberduck.core.threading.BackgroundException;
 public interface ErrorListener {
 
     /**
-     *
-     * @param exception
+     * @param exception Error in service
      */
     abstract void error(final BackgroundException exception);
 
