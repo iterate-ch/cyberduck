@@ -202,7 +202,9 @@ public class SFTPPath extends Path {
 
     protected void readAttributes(SFTPv3FileAttributes attributes) {
         if(null != attributes.size) {
-            this.attributes().setSize(attributes.size);
+            if(this.attributes().isFile()) {
+                this.attributes().setSize(attributes.size);
+            }
         }
         String perm = attributes.getOctalPermissions();
         if(null != perm) {

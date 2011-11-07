@@ -18,14 +18,25 @@ package ch.cyberduck.core.ftp;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AbstractPath;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathFactory;
+import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.StreamListener;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.ui.DateFormatterFactory;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.net.ftp.*;
+import org.apache.commons.net.ftp.FTP;
+import org.apache.commons.net.ftp.FTPCommand;
+import org.apache.commons.net.ftp.FTPFile;
+import org.apache.commons.net.ftp.FTPFileEntryParser;
+import org.apache.commons.net.ftp.FTPReply;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -35,7 +46,13 @@ import java.net.SocketTimeoutException;
 import java.text.MessageFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -303,9 +320,6 @@ public class FTPPath extends Path {
      * lang       -- Language of the file name per IANA [11] registry.
      * media-type -- MIME media-type of file contents per IANA registry.
      * charset    -- Character set per IANA registry (if not UTF-8)
-     *
-     * @param response
-     * @return
      */
     protected Map<String, Map<String, String>> parseFacts(String[] response) {
         Map<String, Map<String, String>> files = new HashMap<String, Map<String, String>>();
@@ -315,9 +329,6 @@ public class FTPPath extends Path {
         return files;
     }
 
-    /**
-     * @param line
-     */
     protected Map<String, Map<String, String>> parseFacts(String line) {
         final Pattern p = Pattern.compile("\\s?(\\S+\\=\\S+;)*\\s(.*)");
         final Matcher result = p.matcher(line);
@@ -345,11 +356,6 @@ public class FTPPath extends Path {
 
     /**
      * Parse response of MLSD
-     *
-     * @param children
-     * @param replies
-     * @return
-     * @throws IOException
      */
     protected boolean parseMlsdResponse(final AttributedList<Path> children, List<String> replies)
             throws IOException {
@@ -408,9 +414,6 @@ public class FTPPath extends Path {
                             success = true;
                         }
                     }
-                    if(facts.containsKey("sizd")) {
-                        parsed.attributes().setSize(Long.parseLong(facts.get("sizd")));
-                    }
                     if(facts.containsKey("size")) {
                         parsed.attributes().setSize(Long.parseLong(facts.get("size")));
                     }
@@ -454,13 +457,6 @@ public class FTPPath extends Path {
         return success;
     }
 
-    /**
-     * @param children
-     * @param parser
-     * @param replies
-     * @return
-     * @throws IOException
-     */
     protected boolean parseListResponse(final AttributedList<Path> children, FTPFileEntryParser parser, List<String> replies)
             throws IOException {
         if(null == replies) {
@@ -502,7 +498,9 @@ public class FTPPath extends Path {
                     parsed.attributes().setType(Path.SYMBOLIC_LINK_TYPE | Path.FILE_TYPE);
                     break;
             }
-            parsed.attributes().setSize(f.getSize());
+            if(parsed.attributes().isFile()) {
+                parsed.attributes().setSize(f.getSize());
+            }
             parsed.attributes().setOwner(f.getUser());
             parsed.attributes().setGroup(f.getGroup());
             if(this.getSession().isPermissionSupported(parser)) {
@@ -627,9 +625,6 @@ public class FTPPath extends Path {
 
     /**
      * Parse the timestamp using the MTDM format
-     *
-     * @param timestamp
-     * @return
      */
     public long parseTimestamp(final String timestamp) {
         if(null == timestamp) {
