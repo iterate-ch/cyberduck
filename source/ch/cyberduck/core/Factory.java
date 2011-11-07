@@ -24,9 +24,8 @@ package ch.cyberduck.core;
 public abstract class Factory<T> {
 
     /**
-     *
      * @return A new instance of the type of objects this
-     * factory creates
+     *         factory creates
      */
     protected abstract T create();
 
@@ -34,9 +33,8 @@ public abstract class Factory<T> {
         public abstract String toString();
 
         /**
-         *
-         * @param regex
-         * @return
+         * @param regex Identification string
+         * @return True if plattform identification matches regular expression
          */
         public boolean matches(String regex) {
             return this.toString().matches(regex);
