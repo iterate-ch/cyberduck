@@ -59,7 +59,7 @@ import java.util.Set;
  * @version $Id$
  */
 public abstract class Protocol {
-    protected static Logger log = Logger.getLogger(Protocol.class);
+    private static Logger log = Logger.getLogger(Protocol.class);
 
     /**
      * Must be unique across all available protocols.
