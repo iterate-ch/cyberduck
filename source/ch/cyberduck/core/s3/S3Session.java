@@ -277,7 +277,8 @@ public class S3Session extends CloudSession {
                     bucketname = host.getHostname(true);
                 }
                 if(!this.getClient().isBucketAccessible(bucketname)) {
-                    throw new IOException(Locale.localizedString("Cannot read container configuration", "Error"));
+                    this.error("Cannot read container configuration",
+                            new ServiceException(String.format("Bucket %s not accessible", bucketname)));
                 }
                 S3Bucket bucket = new S3Bucket(bucketname);
                 try {
@@ -295,7 +296,8 @@ public class S3Session extends CloudSession {
                 String bucketname = this.getContainerForHostname(host.getHostname(true));
                 if(StringUtils.isNotEmpty(bucketname)) {
                     if(!this.getClient().isBucketAccessible(bucketname)) {
-                        throw new IOException(Locale.localizedString("Cannot read container configuration", "Error"));
+                        this.error("Cannot read container configuration",
+                                new ServiceException(String.format("Bucket %s not accessible", bucketname)));
                     }
                     S3Bucket bucket = new S3Bucket(bucketname);
                     try {
