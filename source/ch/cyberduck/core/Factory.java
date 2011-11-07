@@ -51,6 +51,11 @@ public abstract class Factory<T> {
         return false;
     }
 
+    @Override
+    public int hashCode() {
+        return this.toString().hashCode();
+    }
+
     public static Platform NATIVE_PLATFORM = new Platform() {
         @Override
         public String toString() {
