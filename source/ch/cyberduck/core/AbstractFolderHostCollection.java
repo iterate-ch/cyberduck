@@ -54,8 +54,8 @@ public abstract class AbstractFolderHostCollection extends AbstractHostCollectio
     }
 
     /**
-     * @param bookmark
-     * @return
+     * @param bookmark Bookmark
+     * @return File for bookmark
      */
     public Local getFile(Host bookmark) {
         return LocalFactory.createLocal(folder, bookmark.getUuid() + ".duck");

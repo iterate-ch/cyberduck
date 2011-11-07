@@ -60,8 +60,8 @@ public abstract class AbstractHostCollection extends Collection<Host> implements
     public abstract String getName();
 
     /**
-     * @param h
-     * @return
+     * @param h Bookmark
+     * @return User comment for bookmark or null
      */
     public String getComment(Host h) {
         if(StringUtils.isNotBlank(h.getComment())) {
@@ -167,7 +167,7 @@ public abstract class AbstractHostCollection extends Collection<Host> implements
     /**
      * Add new bookmark to the collection
      *
-     * @return
+     * @return True if bookmark collection can be extended
      */
     public boolean allowsAdd() {
         return true;
@@ -176,7 +176,7 @@ public abstract class AbstractHostCollection extends Collection<Host> implements
     /**
      * Remove a bookmark from the collection
      *
-     * @return
+     * @return True if bookmarks can be removed
      */
     public boolean allowsDelete() {
         return true;
@@ -185,7 +185,7 @@ public abstract class AbstractHostCollection extends Collection<Host> implements
     /**
      * Edit the bookmark configuration
      *
-     * @return
+     * @return True if bookmarks can be edited
      */
     public boolean allowsEdit() {
         return true;

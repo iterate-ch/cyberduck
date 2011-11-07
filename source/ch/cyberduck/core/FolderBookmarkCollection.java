@@ -41,7 +41,7 @@ public class FolderBookmarkCollection extends AbstractFolderHostCollection {
     private static final String PREFIX = "bookmark.";
 
     /**
-     * @return
+     * @return Singleton instance
      */
     public static FolderBookmarkCollection favoritesCollection() {
         return FAVORITES_COLLECTION;

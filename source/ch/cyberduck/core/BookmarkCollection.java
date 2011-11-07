@@ -35,14 +35,14 @@ public class BookmarkCollection extends AbstractHostCollection {
     private static Logger log = Logger.getLogger(BookmarkCollection.class);
 
     /**
-     * Default bookmark file
+     * Legacy default bookmark file
      */
     private static final BookmarkCollection DEFAULT_COLLECTION = new BookmarkCollection(
             LocalFactory.createLocal(Preferences.instance().getProperty("application.support.path"), "Favorites.plist")
     );
 
     /**
-     * @return
+     * @return Singleton instance
      */
     public static BookmarkCollection defaultCollection() {
         return DEFAULT_COLLECTION;
@@ -54,7 +54,7 @@ public class BookmarkCollection extends AbstractHostCollection {
     }
 
     /**
-     * @param file
+     * @param file Favorites Plist
      */
     public BookmarkCollection(Local file) {
         this.setFile(file);
@@ -68,7 +68,7 @@ public class BookmarkCollection extends AbstractHostCollection {
     /**
      * Will create the parent directory if missing
      *
-     * @param file
+     * @param file Legacy location of bookmarks
      */
     protected void setFile(Local file) {
         this.file = file;
@@ -76,7 +76,7 @@ public class BookmarkCollection extends AbstractHostCollection {
     }
 
     /**
-     * @return
+     * @return Legacy location of bookmarks
      */
     public Local getFile() {
         return this.file;
@@ -217,10 +217,6 @@ public class BookmarkCollection extends AbstractHostCollection {
         return FolderBookmarkCollection.favoritesCollection().containsAll(c);
     }
 
-    /**
-     * Saves this collection of bookmarks in to a file to the users's application support directory
-     * in a plist xml format
-     */
     @Override
     public void save() {
         if(this.isLocked()) {
@@ -231,7 +227,7 @@ public class BookmarkCollection extends AbstractHostCollection {
     }
 
     /**
-     * Deserialize all the bookmarks saved previously in the users's application support directory
+     * Migrate the deprecated bookmarks file to the new format.
      */
     @Override
     public void load() {

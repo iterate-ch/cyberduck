@@ -41,7 +41,7 @@ public class HistoryCollection extends AbstractFolderHostCollection {
     }
 
     /**
-     * @return
+     * @return Singleton instance
      */
     public static HistoryCollection defaultCollection() {
         return HISTORY_COLLECTION;
@@ -66,8 +66,8 @@ public class HistoryCollection extends AbstractFolderHostCollection {
     /**
      * Does not allow duplicate entries.
      *
-     * @param row
-     * @param bookmark
+     * @param row Row number
+     * @param bookmark Bookmark
      */
     @Override
     public void add(int row, Host bookmark) {
@@ -80,8 +80,8 @@ public class HistoryCollection extends AbstractFolderHostCollection {
     /**
      * Does not allow duplicate entries.
      *
-     * @param bookmark
-     * @return
+     * @param bookmark Bookmark
+     * @return Always true
      */
     @Override
     public boolean add(Host bookmark) {
