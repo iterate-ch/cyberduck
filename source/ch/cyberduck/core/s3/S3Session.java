@@ -340,7 +340,7 @@ public class S3Session extends CloudSession {
         catch(ServiceException e) {
             this.error("Cannot read container configuration", e);
         }
-        throw new ConnectionCanceledException("Bucket not found with name:" + bucketname);
+        throw new ConnectionCanceledException(String.format("Bucket not found with name %s", bucketname));
     }
 
     /**
