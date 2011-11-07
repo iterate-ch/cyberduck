@@ -80,7 +80,7 @@ public abstract class AbstractEditor {
     }
 
     /**
-     *
+     * Open file in editor
      */
     protected abstract void edit();
 
@@ -92,8 +92,9 @@ public abstract class AbstractEditor {
             public void run() {
                 // Delete any existing file which might be used by a watch editor already
                 edited.getLocal().delete(Preferences.instance().getBoolean("editor.file.trash"));
-                TransferOptions options = new TransferOptions();
+                final TransferOptions options = new TransferOptions();
                 options.closeSession = false;
+                options.quarantine = false;
                 Transfer download = new DownloadTransfer(edited) {
                     @Override
                     public TransferAction action(final boolean resumeRequested, final boolean reloadRequested) {
@@ -134,10 +135,13 @@ public abstract class AbstractEditor {
     }
 
     /**
-     * @param background
+     * @param background Download transfer
      */
     protected abstract void open(BackgroundAction<Void> background);
 
+    /**
+     * Upload changes to server if checksum of local file has changed since last edit.
+     */
     public void save() {
         BackgroundAction<Void> background = new AbstractBackgroundAction<Void>() {
             public void run() {
@@ -186,7 +190,7 @@ public abstract class AbstractEditor {
     }
 
     /**
-     * @param background
+     * @param background Upload transfer
      */
     protected abstract void save(BackgroundAction<Void> background);
 }

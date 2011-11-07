@@ -107,7 +107,7 @@ public abstract class Transfer implements Serializable {
     private Date timestamp;
 
     /**
-     * @return
+     * @return True if appending to files is supported
      */
     public abstract boolean isResumable();
 
@@ -122,7 +122,7 @@ public abstract class Transfer implements Serializable {
     }
 
     /**
-     * @param items
+     * @param items List of files to add to transfer
      */
     public Transfer(List<Path> items) {
         this.roots = items;
@@ -190,14 +190,14 @@ public abstract class Transfer implements Serializable {
             = Collections.synchronizedSet(new HashSet<TransferListener>());
 
     /**
-     * @param listener
+     * @param listener Callback
      */
     public void addListener(TransferListener listener) {
         listeners.add(listener);
     }
 
     /**
-     * @param listener
+     * @param listener Callback
      */
     public void removeListener(TransferListener listener) {
         listeners.remove(listener);
@@ -269,7 +269,7 @@ public abstract class Transfer implements Serializable {
     protected BandwidthThrottle bandwidth;
 
     /**
-     * @param bytesPerSecond
+     * @param bytesPerSecond Maximum number of bytes to transfer by second
      */
     public void setBandwidth(float bytesPerSecond) {
         log.debug("setBandwidth:" + bytesPerSecond);
@@ -280,7 +280,7 @@ public abstract class Transfer implements Serializable {
     }
 
     /**
-     * @return
+     * @return Creation date of transfer
      */
     public Date getTimestamp() {
         return timestamp;
@@ -339,7 +339,7 @@ public abstract class Transfer implements Serializable {
          * Must only be called exactly once for each file.
          * Must only be called if #accept for the file returns true
          *
-         * @param p
+         * @param p File
          * @see PathFilter#accept(AbstractPath)
          */
         public abstract void prepare(Path p);
@@ -347,13 +347,13 @@ public abstract class Transfer implements Serializable {
         /**
          * Post processing.
          *
-         * @param p
+         * @param p File
          */
         public abstract void complete(Path p);
     }
 
     /**
-     * @param action
+     * @param action Transfer action for duplicate files
      * @return Null if the filter could not be determined and the transfer should be canceled instead
      */
     public TransferFilter filter(final TransferAction action) {
@@ -364,9 +364,9 @@ public abstract class Transfer implements Serializable {
     }
 
     /**
-     * @param resumeRequested
-     * @param reloadRequested
-     * @return
+     * @param resumeRequested Requested resume
+     * @param reloadRequested Requested overwrite
+     * @return Duplicate file strategy from preferences or user selection
      */
     public abstract TransferAction action(final boolean resumeRequested, final boolean reloadRequested);
 
@@ -395,7 +395,7 @@ public abstract class Transfer implements Serializable {
     public abstract AttributedList<Path> children(final Path parent);
 
     /**
-     * @param item
+     * @param item File
      * @return True if the path is not skipped when transferring
      */
     public boolean isIncluded(Path item) {
@@ -403,8 +403,8 @@ public abstract class Transfer implements Serializable {
     }
 
     /**
-     * @param item
-     * @return
+     * @param item File
+     * @return True if file should not be transferred
      */
     public boolean isSkipped(Path item) {
         return false;
@@ -413,7 +413,7 @@ public abstract class Transfer implements Serializable {
     /**
      * Select the path to be included in the transfer
      *
-     * @param item
+     * @param item File
      * @param selected
      */
     public void setSelected(Path item, final boolean selected) {
@@ -433,10 +433,11 @@ public abstract class Transfer implements Serializable {
     private Path _current = null;
 
     /**
-     * @param p
-     * @param filter
+     * @param p File
+     * @param filter Filter to apply to exclude files from transfer
+     * @param options Quarantine option
      */
-    private void transfer(final Path p, final TransferFilter filter) {
+    private void transfer(final Path p, final TransferFilter filter, final TransferOptions options) {
         if(!this.isIncluded(p)) {
             if(log.isInfoEnabled()) {
                 log.info("Not included in transfer:" + p);
@@ -457,7 +458,7 @@ public abstract class Transfer implements Serializable {
             this.fireWillTransferPath(p);
             _current = p;
             // Transfer
-            transfer(p);
+            transfer(p, options);
             if(p.attributes().isFile()) {
                 // Post process of file
                 filter.complete(p);
@@ -478,7 +479,7 @@ public abstract class Transfer implements Serializable {
                 failure = true;
             }
             for(Path child : children) {
-                this.transfer(child, filter);
+                this.transfer(child, filter, options);
                 if(!child.status().isComplete()) {
                     failure = true;
                 }
@@ -496,14 +497,16 @@ public abstract class Transfer implements Serializable {
     /**
      * The actual transfer implementation
      *
-     * @param file
+     *
+     * @param file File
+     * @param options Quarantine option
      * @see ch.cyberduck.core.Path#download()
      * @see ch.cyberduck.core.Path#upload()
      */
-    protected abstract void transfer(final Path file);
+    protected abstract void transfer(final Path file, TransferOptions options);
 
     /**
-     * @param options
+     * @param options Transfer options
      */
     private void transfer(final TransferOptions options) {
         final Session session = this.getSession();
@@ -562,7 +565,7 @@ public abstract class Transfer implements Serializable {
 
         // Transfer all files sequentially
         for(Path next : roots) {
-            this.transfer(next, filter);
+            this.transfer(next, filter, options);
         }
 
         session.cache().setLifecycle(Cache.Lifecycle.INVALIDATED);
@@ -576,8 +579,8 @@ public abstract class Transfer implements Serializable {
     /**
      * To be called before any file is actually transferred
      *
-     * @param p
-     * @param filter
+     * @param p File
+     * @param filter Filter to apply to exclude files from transfer
      */
     private void prepare(Path p, final TransferFilter filter) {
         log.debug("prepare:" + p);
@@ -633,6 +636,7 @@ public abstract class Transfer implements Serializable {
 
     /**
      * Clear all cached values
+     * @param options Transfer options
      */
     protected void clear(final TransferOptions options) {
         log.debug("clear:" + options);
@@ -656,8 +660,8 @@ public abstract class Transfer implements Serializable {
     protected TransferPrompt prompt;
 
     /**
-     * @param prompt
-     * @param options
+     * @param prompt Transfer prompt callback
+     * @param options Transfer options
      */
     public void start(TransferPrompt prompt, final TransferOptions options) {
         if(log.isDebugEnabled()) {

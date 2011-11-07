@@ -28,8 +28,9 @@ import ch.cyberduck.ui.cocoa.foundation.NSEnumerator;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.threading.BrowserBackgroundAction;
 
-import org.apache.log4j.Logger;
 import org.rococoa.Rococoa;
+
+import org.apache.log4j.Logger;
 
 /**
  * @version $Id$
@@ -45,8 +46,9 @@ public abstract class Editor extends AbstractEditor {
     protected String bundleIdentifier;
 
     /**
-     * @param controller
-     * @param bundleIdentifier
+     * @param controller       Browser
+     * @param bundleIdentifier Identifier of editor
+     * @param path             Remote file
      */
     public Editor(BrowserController controller, String bundleIdentifier, Path path) {
         super(path);

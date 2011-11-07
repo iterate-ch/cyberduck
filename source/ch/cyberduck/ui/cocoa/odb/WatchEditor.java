@@ -78,15 +78,17 @@ public class WatchEditor extends Editor implements FileWatcherListener {
     private FileWatcher monitor;
 
     /**
-     * @param c
+     * @param c    Browser
+     * @param path Remote file
      */
     public WatchEditor(BrowserController c, Path path) {
         this(c, path.getLocal().getDefaultApplication(), path);
     }
 
     /**
-     * @param c
-     * @param bundleIdentifier
+     * @param c                Browser
+     * @param bundleIdentifier Editor application
+     * @param path             Remote file
      */
     public WatchEditor(BrowserController c, String bundleIdentifier, Path path) {
         super(c, bundleIdentifier, path);

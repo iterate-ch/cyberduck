@@ -182,7 +182,8 @@ public class DropboxPath extends Path {
     }
 
     @Override
-    protected void download(BandwidthThrottle throttle, StreamListener listener, boolean check) {
+    protected void download(BandwidthThrottle throttle, StreamListener listener,
+                            final boolean check, final boolean quarantine) {
         if(attributes().isFile()) {
             OutputStream out = null;
             InputStream in = null;
@@ -190,7 +191,7 @@ public class DropboxPath extends Path {
                 in = this.read(check);
                 out = this.getLocal().getOutputStream(this.status().isResume());
 
-                this.download(in, out, throttle, listener);
+                this.download(in, out, throttle, listener, quarantine);
             }
             catch(IOException e) {
                 this.error("Download failed", e);

@@ -501,7 +501,7 @@ public class UploadTransfer extends Transfer {
     }
 
     @Override
-    protected void transfer(Path file) {
+    protected void transfer(Path file, TransferOptions options) {
         log.debug("transfer:" + file);
         if(this.getSession().isUnixPermissionsSupported()) {
             if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {

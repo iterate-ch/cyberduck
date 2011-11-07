@@ -888,7 +888,8 @@ public class FTPPath extends Path {
     }
 
     @Override
-    protected void download(final BandwidthThrottle throttle, final StreamListener listener, final boolean check) {
+    protected void download(final BandwidthThrottle throttle, final StreamListener listener,
+                            final boolean check, final boolean quarantine) {
         if(this.attributes().isFile()) {
             try {
                 this.data(new DataConnectionAction() {
@@ -899,7 +900,7 @@ public class FTPPath extends Path {
                         try {
                             in = read(check);
                             out = getLocal().getOutputStream(status().isResume());
-                            download(in, out, throttle, listener);
+                            download(in, out, throttle, listener, quarantine);
                         }
                         finally {
                             IOUtils.closeQuietly(in);

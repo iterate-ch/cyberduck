@@ -320,7 +320,8 @@ public class CFPath extends CloudPath {
     }
 
     @Override
-    protected void download(final BandwidthThrottle throttle, final StreamListener listener, boolean check) {
+    protected void download(final BandwidthThrottle throttle, final StreamListener listener,
+                            final boolean check, final boolean quarantine) {
         if(attributes().isFile()) {
             OutputStream out = null;
             InputStream in = null;
@@ -332,7 +333,7 @@ public class CFPath extends CloudPath {
                 final Status status = this.status();
                 status.setResume(false);
                 out = this.getLocal().getOutputStream(status.isResume());
-                this.download(in, out, throttle, listener);
+                this.download(in, out, throttle, listener, quarantine);
             }
             catch(IOException e) {
                 this.error("Download failed", e);
@@ -412,12 +413,6 @@ public class CFPath extends CloudPath {
         return this.write(check, null);
     }
 
-    /**
-     * @param check
-     * @param md5sum
-     * @return
-     * @throws IOException
-     */
     private ResponseOutputStream<String> write(boolean check, final String md5sum) throws IOException {
         if(check) {
             this.getSession().check();

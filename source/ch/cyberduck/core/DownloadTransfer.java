@@ -478,7 +478,7 @@ public class DownloadTransfer extends Transfer {
     }
 
     @Override
-    protected void transfer(final Path file) {
+    protected void transfer(final Path file, TransferOptions options) {
         log.debug("transfer:" + file);
         final Local local = file.getLocal();
         if(file.attributes().isSymbolicLink() && this.isSymlinkSupported(file)) {
@@ -497,7 +497,7 @@ public class DownloadTransfer extends Transfer {
                 public void bytesReceived(long bytes) {
                     transferred += bytes;
                 }
-            });
+            }, false, options.quarantine);
         }
         else if(file.attributes().isDirectory()) {
             local.mkdir(true);

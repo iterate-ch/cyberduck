@@ -781,7 +781,8 @@ public abstract class Path extends AbstractPath implements Serializable {
      * @param check Check for open connection and open if needed before transfer
      */
     protected void download(final boolean check) {
-        this.download(new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new AbstractStreamListener(), check);
+        this.download(new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new AbstractStreamListener(), check,
+                Preferences.instance().getBoolean("queue.download.quarantine"));
     }
 
     /**
@@ -796,15 +797,17 @@ public abstract class Path extends AbstractPath implements Serializable {
      * @param listener The stream listener to notify about bytes received and sent
      */
     protected void download(BandwidthThrottle throttle, StreamListener listener) {
-        this.download(throttle, listener, false);
+        this.download(throttle, listener, false, Preferences.instance().getBoolean("queue.download.quarantine"));
     }
 
     /**
-     * @param throttle The bandwidth limit
-     * @param listener The stream listener to notify about bytes received and sent
-     * @param check    Check for open connection and open if needed before transfer
+     * @param throttle   The bandwidth limit
+     * @param listener   The stream listener to notify about bytes received and sent
+     * @param check      Check for open connection and open if needed before transfer
+     * @param quarantine Set quarantine flag on downloaded file
      */
-    protected abstract void download(BandwidthThrottle throttle, StreamListener listener, boolean check);
+    protected abstract void download(BandwidthThrottle throttle, StreamListener listener,
+                                     boolean check, boolean quarantine);
 
     /**
      * @return Stream to write to for upload
@@ -899,15 +902,17 @@ public abstract class Path extends AbstractPath implements Serializable {
     /**
      * Will copy from in to out. Does not attempt to skip any bytes from the streams.
      *
-     * @param in       The stream to read from
-     * @param out      The stream to write to
-     * @param throttle The bandwidth limit
-     * @param l        The stream listener to notify about bytes received and sent
+     * @param in         The stream to read from
+     * @param out        The stream to write to
+     * @param throttle   The bandwidth limit
+     * @param l          The stream listener to notify about bytes received and sent
+     * @param quarantine Set quarantine flag
      * @throws IOException                 Write not completed due to a I/O problem
      * @throws ConnectionCanceledException When transfer is interrupted by user setting the
      *                                     status flag to cancel.
      */
-    protected void download(InputStream in, OutputStream out, BandwidthThrottle throttle, final StreamListener l) throws IOException {
+    protected void download(InputStream in, OutputStream out, BandwidthThrottle throttle,
+                            final StreamListener l, final boolean quarantine) throws IOException {
         if(log.isDebugEnabled()) {
             log.debug("download(" + in.toString() + ", " + out.toString());
         }
@@ -922,7 +927,7 @@ public abstract class Path extends AbstractPath implements Serializable {
         // Set the first progress icon
         local.setIcon(0);
 
-        if(Preferences.instance().getBoolean("queue.download.quarantine")) {
+        if(quarantine) {
             // Set quarantine attributes
             local.setQuarantine(this.getHost().toURL(), this.toURL());
         }

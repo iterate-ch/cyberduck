@@ -39,6 +39,12 @@ public class TransferOptions {
     public boolean closeSession = true;
 
     /**
+     * Add quarantine flag to downloaded file
+     */
+    public boolean quarantine =
+            Preferences.instance().getBoolean("queue.download.quarantine");
+
+    /**
      * When set to false, do not invalidate entries in the directory listing cache.
      */
     public Cache.Lifecycle invalidateCache = Cache.Lifecycle.INVALIDATED;

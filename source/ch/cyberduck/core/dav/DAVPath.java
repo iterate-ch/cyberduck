@@ -246,9 +246,6 @@ public class DAVPath extends HttpPath {
         }
     }
 
-    /**
-     * @return Modifiable HTTP header metatdata key and values
-     */
     public void readMetadata() {
         if(attributes().isFile()) {
             try {
@@ -357,14 +354,15 @@ public class DAVPath extends HttpPath {
     }
 
     @Override
-    protected void download(final BandwidthThrottle throttle, final StreamListener listener, final boolean check) {
+    protected void download(final BandwidthThrottle throttle, final StreamListener listener,
+                            final boolean check, final boolean quarantine) {
         if(attributes().isFile()) {
             OutputStream out = null;
             InputStream in = null;
             try {
                 in = this.read(check);
                 out = this.getLocal().getOutputStream(this.status().isResume());
-                this.download(in, out, throttle, listener);
+                this.download(in, out, throttle, listener, quarantine);
             }
             catch(IOException e) {
                 this.error("Download failed", e);

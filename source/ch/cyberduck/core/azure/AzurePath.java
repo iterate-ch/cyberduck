@@ -434,7 +434,8 @@ public class AzurePath extends CloudPath {
     }
 
     @Override
-    protected void download(BandwidthThrottle throttle, StreamListener listener, boolean check) {
+    protected void download(BandwidthThrottle throttle, StreamListener listener,
+                            final boolean check, final boolean quarantine) {
         if(attributes().isFile()) {
             OutputStream out = null;
             InputStream in = null;
@@ -446,7 +447,7 @@ public class AzurePath extends CloudPath {
                 final Status status = this.status();
                 status.setResume(false);
                 out = this.getLocal().getOutputStream(status.isResume());
-                this.download(in, out, throttle, listener);
+                this.download(in, out, throttle, listener, quarantine);
             }
             catch(StorageException e) {
                 this.error("Download failed", e);

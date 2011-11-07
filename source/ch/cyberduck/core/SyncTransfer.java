@@ -341,18 +341,20 @@ public class SyncTransfer extends Transfer {
     }
 
     /**
+     *
      * @param file
+     * @param options
      * @see #compare(Path)
      */
     @Override
-    protected void transfer(final Path file) {
+    protected void transfer(final Path file, TransferOptions options) {
         log.debug("transfer:" + file);
         final Comparison compare = this.compare(file);
         if(compare.equals(COMPARISON_REMOTE_NEWER)) {
-            _delegateDownload.transfer(file);
+            _delegateDownload.transfer(file, options);
         }
         else if(compare.equals(COMPARISON_LOCAL_NEWER)) {
-            _delegateUpload.transfer(file);
+            _delegateUpload.transfer(file, options);
         }
     }
 

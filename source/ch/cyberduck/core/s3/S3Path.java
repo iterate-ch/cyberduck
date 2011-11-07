@@ -508,14 +508,15 @@ public class S3Path extends CloudPath {
     }
 
     @Override
-    protected void download(BandwidthThrottle throttle, final StreamListener listener, final boolean check) {
+    protected void download(BandwidthThrottle throttle, final StreamListener listener,
+                            final boolean check, final boolean quarantine) {
         if(attributes().isFile()) {
             OutputStream out = null;
             InputStream in = null;
             try {
                 in = this.read(check);
                 out = this.getLocal().getOutputStream(this.status().isResume());
-                this.download(in, out, throttle, listener);
+                this.download(in, out, throttle, listener, quarantine);
             }
             catch(IOException e) {
                 this.error("Download failed", e);

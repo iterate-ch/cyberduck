@@ -446,7 +446,8 @@ public class SFTPPath extends Path {
     }
 
     @Override
-    protected void download(BandwidthThrottle throttle, StreamListener listener, final boolean check) {
+    protected void download(BandwidthThrottle throttle, StreamListener listener,
+                            final boolean check, final boolean quarantine) {
         if(this.attributes().isFile()) {
             InputStream in = null;
             OutputStream out = null;
@@ -457,7 +458,7 @@ public class SFTPPath extends Path {
                 this.getSession().sftp().setRequestParallelism(
                         (int) (this.attributes().getSize() / Preferences.instance().getInteger("connection.chunksize")) + 1
                 );
-                this.download(in, out, throttle, listener);
+                this.download(in, out, throttle, listener, quarantine);
             }
             catch(IOException e) {
                 this.error("Download failed", e);

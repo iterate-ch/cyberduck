@@ -470,7 +470,8 @@ public class GDPath extends Path {
     }
 
     @Override
-    protected void download(BandwidthThrottle throttle, StreamListener listener, boolean check) {
+    protected void download(BandwidthThrottle throttle, StreamListener listener,
+                            final boolean check, final boolean quarantine) {
         if(attributes().isFile()) {
             OutputStream out = null;
             InputStream in = null;
@@ -483,7 +484,7 @@ public class GDPath extends Path {
                     throw new IOException("Unable opening data stream");
                 }
                 out = this.getLocal().getOutputStream(this.status().isResume());
-                this.download(in, out, throttle, listener);
+                this.download(in, out, throttle, listener, quarantine);
             }
             catch(IOException e) {
                 this.error("Download failed", e);
