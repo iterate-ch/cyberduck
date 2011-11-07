@@ -373,8 +373,8 @@ public abstract class Transfer implements Serializable {
     /**
      * Lookup the path by reference in the session cache
      *
-     * @param r
-     * @return
+     * @param r Key
+     * @return Lookup from cache
      * @see ch.cyberduck.core.Cache#lookup(PathReference)
      */
     public Path lookup(PathReference r) {
@@ -413,8 +413,8 @@ public abstract class Transfer implements Serializable {
     /**
      * Select the path to be included in the transfer
      *
-     * @param item File
-     * @param selected
+     * @param item     File
+     * @param selected Selected files in transfer prompt
      */
     public void setSelected(Path item, final boolean selected) {
         item.status().setSelected(selected);
@@ -433,8 +433,8 @@ public abstract class Transfer implements Serializable {
     private Path _current = null;
 
     /**
-     * @param p File
-     * @param filter Filter to apply to exclude files from transfer
+     * @param p       File
+     * @param filter  Filter to apply to exclude files from transfer
      * @param options Quarantine option
      */
     private void transfer(final Path p, final TransferFilter filter, final TransferOptions options) {
@@ -497,8 +497,7 @@ public abstract class Transfer implements Serializable {
     /**
      * The actual transfer implementation
      *
-     *
-     * @param file File
+     * @param file    File
      * @param options Quarantine option
      * @see ch.cyberduck.core.Path#download()
      * @see ch.cyberduck.core.Path#upload()
@@ -579,7 +578,7 @@ public abstract class Transfer implements Serializable {
     /**
      * To be called before any file is actually transferred
      *
-     * @param p File
+     * @param p      File
      * @param filter Filter to apply to exclude files from transfer
      */
     private void prepare(Path p, final TransferFilter filter) {
@@ -636,6 +635,7 @@ public abstract class Transfer implements Serializable {
 
     /**
      * Clear all cached values
+     *
      * @param options Transfer options
      */
     protected void clear(final TransferOptions options) {
@@ -660,7 +660,7 @@ public abstract class Transfer implements Serializable {
     protected TransferPrompt prompt;
 
     /**
-     * @param prompt Transfer prompt callback
+     * @param prompt  Transfer prompt callback
      * @param options Transfer options
      */
     public void start(TransferPrompt prompt, final TransferOptions options) {
@@ -740,7 +740,7 @@ public abstract class Transfer implements Serializable {
     }
 
     /**
-     * @return
+     * @return True if transfer has been reset before starting.
      */
     public boolean isReset() {
         return reset;

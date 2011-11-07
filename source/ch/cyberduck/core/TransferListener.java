@@ -49,19 +49,21 @@ public interface TransferListener {
     /**
      * The path part of this transfer will be transferred
      *
-     * @param path
+     * @param path File
      */
     abstract void willTransferPath(Path path);
 
     /**
      * The path part of this transfer has been transferred
      *
-     * @param path
+     * @param path File
      */
     abstract void didTransferPath(Path path);
 
     /**
+     * Bandwidth throttle changed in controller
      *
+     * @param bandwidth Settings
      */
     abstract void bandwidthChanged(BandwidthThrottle bandwidth);
 }
