@@ -72,9 +72,6 @@ public abstract class ToolbarWindowController extends WindowController implement
         // Insert all panels into tab view
         Iterator<String> identifiers = this.getPanelIdentifiers().iterator();
         for(NSView panel : this.getPanels()) {
-//            NSTabViewItem item = NSTabViewItem.itemWithIdentifier(identifiers.next());
-//            item.setView(panel);
-//            tabView.addTabViewItem(item);
             int i = tabView.indexOfTabViewItemWithIdentifier(identifiers.next());
             tabView.tabViewItemAtIndex(i).setView(panel);
         }
@@ -233,10 +230,6 @@ public abstract class ToolbarWindowController extends WindowController implement
         return new NSSize(newSize.width.doubleValue(), window.frame().size.height.doubleValue());
     }
 
-    /**
-     * @param window
-     * @return
-     */
     private double toolbarHeightForWindow(NSWindow window) {
         NSRect windowFrame = NSWindow.contentRectForFrameRect_styleMask(this.window().frame(), this.window().styleMask());
         return windowFrame.size.height.doubleValue() - this.window().contentView().frame().size.height.doubleValue();
@@ -252,17 +245,13 @@ public abstract class ToolbarWindowController extends WindowController implement
     protected double getMinWindowHeight() {
         NSRect contentRect = this.getContentRect();
         //Border top + toolbar
-        final double height = contentRect.size.height.doubleValue()
+        return contentRect.size.height.doubleValue()
                 + 40 + this.toolbarHeightForWindow(this.window());
-//        log.debug("getMinWindowHeight:" + height);
-        return height;
     }
 
     protected double getMinWindowWidth() {
         NSRect contentRect = this.getContentRect();
-        final double width = contentRect.size.width.doubleValue();
-//        log.debug("getMinWindowWidth:" + width);
-        return width;
+        return contentRect.size.width.doubleValue();
     }
 
     private NSRect getContentRect() {
@@ -275,6 +264,5 @@ public abstract class ToolbarWindowController extends WindowController implement
             contentRect = FoundationKitFunctionsLibrary.NSUnionRect(contentRect, subview.frame());
         }
         return contentRect;
-//        return this.window().contentView().frame();
     }
 }
