@@ -40,7 +40,7 @@ import java.text.MessageFormat;
  * @version $Id$
  */
 public class AlertHostKeyController extends MemoryHostKeyVerifier {
-    protected static Logger log = Logger.getLogger(AlertHostKeyController.class);
+    private static Logger log = Logger.getLogger(AlertHostKeyController.class);
 
     public static void register() {
         HostKeyControllerFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
