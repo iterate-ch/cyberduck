@@ -28,7 +28,7 @@ import org.apache.commons.lang.StringUtils;
 public abstract class Attributes {
 
     /**
-     * @return
+     * @return File type
      * @see AbstractPath#FILE_TYPE
      * @see AbstractPath#DIRECTORY_TYPE
      * @see AbstractPath#SYMBOLIC_LINK_TYPE
@@ -127,7 +127,7 @@ public abstract class Attributes {
     }
 
     /**
-     * @param other
+     * @param other Attributes to compare
      * @return True if the checksum matches or the references are equal.
      * @see #getChecksum()
      */
