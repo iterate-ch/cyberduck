@@ -291,7 +291,6 @@ public class PromptLoginController extends AbstractLoginController {
                     credentials.setIdentity(null);
                 }
                 update();
-                // Fix #6233
             }
 
             private void update() {

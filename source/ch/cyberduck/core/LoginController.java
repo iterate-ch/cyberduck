@@ -21,9 +21,7 @@ package ch.cyberduck.core;
 public interface LoginController {
 
     /**
-     * Display warning sheet. Block connection until decision is made.
-     * Using default Continue and Disconnct button.
-     * if disabled permamently.
+     * Display warning sheet. Block connection until decision is made. Using default Continue and Disconnect button.
      *
      * @param title      Title in alert window
      * @param message    Message in alert window
@@ -48,10 +46,10 @@ public interface LoginController {
      * Check the credentials for validity and prompt the user for the password if not found
      * in the login keychain
      *
-     * @param host
+     * @param host   Hostname
      * @param title  The title for the login prompt
      * @param reason The detail message for the login prompt. Any additional information about the domain.
-     * @throws LoginCanceledException
+     * @throws LoginCanceledException When login is canceled and the prompt dismissed
      */
     void check(Host host, String title, String reason) throws LoginCanceledException;
 
@@ -59,11 +57,13 @@ public interface LoginController {
      * Check the credentials for validity and prompt the user for the password if not found
      * in the login keychain
      *
-     * @param host
+     * @param host            Hostname
      * @param title           The title for the login prompt
+     * @param message         Additional message displayed in the password prompt
      * @param enableKeychain  Enable checkbox to save password in keychain
      * @param enablePublicKey Enable public key authentication checkbox
      * @param enableAnonymous Enable anynomous login option checkbox
+     * @throws LoginCanceledException When login is canceled and the prompt dismissed
      */
     void check(final Host host, String title, String message, boolean enableKeychain, boolean enablePublicKey, boolean enableAnonymous) throws LoginCanceledException;
 
@@ -71,8 +71,9 @@ public interface LoginController {
      * Call this to allow the user to reenter the new login credentials.
      * A concrete subclass should display a login prompt.
      *
-     * @param protocol    Used to determine login prompt options.
-     * @param credentials
+     * @param protocol    Used to determine login prompt options. SFTP or other.
+     * @param credentials Credentials that failed login
+     * @throws LoginCanceledException When login is canceled and the prompt dismissed
      */
     void fail(Protocol protocol, Credentials credentials) throws LoginCanceledException;
 
@@ -81,15 +82,16 @@ public interface LoginController {
      * A concrete subclass should display a login prompt.
      *
      * @param protocol    Used to determine login prompt options.
-     * @param credentials
+     * @param credentials Credentials that failed login
      * @param reason      The detail message for the login prompt. Any additional information why the login failed.
+     * @throws LoginCanceledException When login is canceled and the prompt dismissed
      */
     void fail(Protocol protocol, Credentials credentials, String reason) throws LoginCanceledException;
 
     /**
      * Callback upon successful login. Save credentials.
      *
-     * @param host
+     * @param host Hostname
      */
     void success(Host host);
 
@@ -101,7 +103,7 @@ public interface LoginController {
      * @param credentials The credentials to obtain.
      * @param title       The title for the login prompt
      * @param reason      The detail message for the login prompt. Any additional information why the login failed.
-     * @throws LoginCanceledException
+     * @throws LoginCanceledException When login is canceled and the prompt dismissed
      */
     void prompt(Protocol protocol, Credentials credentials, String title, String reason) throws LoginCanceledException;
 
@@ -116,7 +118,7 @@ public interface LoginController {
      * @param enableKeychain  Enable checkbox to save password in keychain
      * @param enablePublicKey Enable public key authentication checkbox
      * @param enableAnonymous Enable anynomous login option checkbox
-     * @throws LoginCanceledException
+     * @throws LoginCanceledException When login is canceled and the prompt dismissed
      */
     void prompt(final Protocol protocol, final Credentials credentials,
                 final String title, final String reason,

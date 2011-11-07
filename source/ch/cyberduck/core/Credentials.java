@@ -156,7 +156,7 @@ public abstract class Credentials {
     /**
      * The path for the private key file to use for public key authentication; e.g. ~/.ssh/id_rsa
      *
-     * @param file
+     * @param file Private key file
      */
     public void setIdentity(Local file) {
         this.identity = file;

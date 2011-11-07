@@ -29,14 +29,6 @@ import org.apache.log4j.Logger;
 public abstract class AbstractLoginController implements LoginController {
     private static Logger log = Logger.getLogger(AbstractLoginController.class);
 
-    /**
-     * Show alert with a Continue and Disconnect option.
-     *
-     * @param title      Title in alert window
-     * @param message    Message in alert window
-     * @param preference Where to save preference if dismissed
-     * @throws LoginCanceledException
-     */
     public void warn(String title, String message, String preference) throws LoginCanceledException {
         this.warn(title, message, Locale.localizedString("Continue", "Credentials"),
                 Locale.localizedString("Disconnect", "Credentials"), preference);
@@ -45,26 +37,12 @@ public abstract class AbstractLoginController implements LoginController {
     public abstract void warn(String title, String message, String continueButton, String disconnectButton, String preference)
             throws LoginCanceledException;
 
-    /**
-     * @param host
-     * @param title   The title for the login prompt
-     * @param message
-     * @throws LoginCanceledException
-     */
     public void check(final Host host, String title, String message)
             throws LoginCanceledException {
         this.check(host, title, message, Preferences.instance().getBoolean("connection.login.useKeychain"),
                 host.getProtocol().equals(Protocol.SFTP), host.getProtocol().isAnonymousConfigurable());
     }
 
-    /**
-     * Check the credentials for validity and prompt the user for the password if not found
-     * in the login keychain
-     *
-     * @param host    See Host#getCredentials
-     * @param message Additional message displayed in the password prompt
-     * @throws LoginCanceledException
-     */
     public void check(final Host host, String title, String message, boolean enableKeychain, boolean enablePublicKey, boolean enableAnonymous)
             throws LoginCanceledException {
 
@@ -136,13 +114,6 @@ public abstract class AbstractLoginController implements LoginController {
         KeychainFactory.instance().save(host);
     }
 
-    /**
-     * Display login failure with a prompt to enter the username and password.
-     *
-     * @param protocol
-     * @param credentials
-     * @throws LoginCanceledException
-     */
     public void fail(Protocol protocol, Credentials credentials)
             throws LoginCanceledException {
         this.prompt(protocol, credentials,
