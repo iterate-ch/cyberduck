@@ -37,7 +37,7 @@ import org.apache.log4j.Logger;
  * @version $Id$
  */
 public class BandwidthThrottle {
-    protected static Logger log = Logger.getLogger(BandwidthThrottle.class);
+    private static Logger log = Logger.getLogger(BandwidthThrottle.class);
 
     /**
      * The number of windows per second.
@@ -51,22 +51,22 @@ public class BandwidthThrottle {
     /**
      * The bytes to send per tick.  Modified by setThrottle.
      */
-    private volatile int _bytesPerTick;
+    private volatile int bytesPerTick;
 
     /**
      * Whether or not we're only allowing bandwidth to be used every other
      * second.
      */
-    private volatile boolean _switching = false;
+    private volatile boolean switching = false;
 
     /**
      * The number of bytes remaining in this window.
      */
-    private int _availableBytes;
+    private int availableBytes;
     /**
      * The system time when the window is reset so more bytes can be sent.
      */
-    private long _nextTickTime;
+    private long nextTickTime;
 
     /**
      * Creates a new bandwidth throttle at the given throttle rate.
@@ -106,7 +106,7 @@ public class BandwidthThrottle {
     /**
      * Bytes per second allowed
      */
-    private float _rate = UNLIMITED;
+    private float rate = UNLIMITED;
 
     /**
      * Sets the throttle to the given throttle rate.  The default windows size
@@ -116,36 +116,35 @@ public class BandwidthThrottle {
      *                       (not milliseconds!)
      */
     public void setRate(float bytesPerSecond) {
-        log.debug("setRate:"+bytesPerSecond);
+        log.debug("setRate:" + bytesPerSecond);
         if(bytesPerSecond < 0) {
-            _rate = UNLIMITED;
+            rate = UNLIMITED;
         }
         else {
-            _rate = bytesPerSecond;
-            _bytesPerTick = (int) (bytesPerSecond / TICKS_PER_SECOND);
+            rate = bytesPerSecond;
+            bytesPerTick = (int) (bytesPerSecond / TICKS_PER_SECOND);
         }
-        if(_switching) {
+        if(switching) {
             this.fixBytesPerTick(true);
         }
     }
 
     /**
-     *
      * @return Transfer rate in bytes per second allowed by this throttle
      */
     public float getRate() {
-        return _rate;
+        return rate;
     }
 
     /**
      * Sets whether or not this throttle is switching bandwidth on/off.
      */
     public void setSwitching(boolean switching) {
-        log.debug("setSwitching:"+switching);
-        if(_switching != switching) {
+        log.debug("setSwitching:" + switching);
+        if(this.switching != switching) {
             fixBytesPerTick(switching);
         }
-        _switching = switching;
+        this.switching = switching;
     }
 
     /**
@@ -154,14 +153,18 @@ public class BandwidthThrottle {
      * reduce or raise the amount of data transferred.
      */
     private void fixBytesPerTick(boolean raise) {
-        int newBytesPerTick = _bytesPerTick;
-        if(raise)
+        int newBytesPerTick = bytesPerTick;
+        if(raise) {
             newBytesPerTick *= 2;
-        else
+        }
+        else {
             newBytesPerTick /= 2;
+        }
         if(newBytesPerTick < 0) // overflowed?
+        {
             newBytesPerTick = Integer.MAX_VALUE;
-        _bytesPerTick = newBytesPerTick;
+        }
+        bytesPerTick = newBytesPerTick;
     }
 
     /**
@@ -173,12 +176,12 @@ public class BandwidthThrottle {
      *         is always greater than one and less than or equal to desired
      */
     synchronized public int request(int desired) {
-        if(UNLIMITED == _rate) {
+        if(UNLIMITED == rate) {
             return desired;
         }
         waitForBandwidth();
-        int result = Math.min(desired, _availableBytes);
-        _availableBytes -= result;
+        int result = Math.min(desired, availableBytes);
+        availableBytes -= result;
         return result;
     }
 
@@ -186,14 +189,15 @@ public class BandwidthThrottle {
      * Waits until data is _availableBytes.
      */
     private void waitForBandwidth() {
-        for(; ;) {
+        for(; ; ) {
             long now = System.currentTimeMillis();
             updateWindow(now);
-            if(_availableBytes != 0)
+            if(availableBytes != 0) {
                 break;
+            }
             try {
-                log.info("Throttling bandwidth for "+(_nextTickTime - now) +" milliseconds");
-                Thread.sleep(_nextTickTime - now);
+                log.info("Throttling bandwidth for " + (nextTickTime - now) + " milliseconds");
+                Thread.sleep(nextTickTime - now);
             }
             catch(InterruptedException e) {
                 log.error(e.getMessage());
@@ -205,17 +209,17 @@ public class BandwidthThrottle {
      * Updates _availableBytes and _nextTickTime if possible.
      */
     private void updateWindow(long now) {
-        if(now >= _nextTickTime) {
-            if(!_switching || ((now / 1000) % 2) == 0) {
-                _availableBytes = _bytesPerTick;
-                _nextTickTime = now + MILLIS_PER_TICK;
+        if(now >= nextTickTime) {
+            if(!switching || ((now / 1000) % 2) == 0) {
+                availableBytes = bytesPerTick;
+                nextTickTime = now + MILLIS_PER_TICK;
             }
             else {
-                _availableBytes = 0;
+                availableBytes = 0;
                 // the next tick time is the time we'll hit
                 // the next second.
                 long diff = 1000 - (now % 1000);
-                _nextTickTime = now + diff;
+                nextTickTime = now + diff;
             }
         }
     }

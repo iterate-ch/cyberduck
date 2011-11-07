@@ -32,16 +32,16 @@ public class ThrottledInputStream extends InputStream {
     /**
      * The delegate.
      */
-    private InputStream _delegate;
+    private InputStream delegate;
 
     /**
      * Limits throughput.
      */
-    private BandwidthThrottle _throttle;
+    private BandwidthThrottle throttle;
 
     public ThrottledInputStream(InputStream delegate, BandwidthThrottle throttle) {
-        this._delegate = delegate;
-        this._throttle = throttle;
+        this.delegate = delegate;
+        this.throttle = throttle;
     }
 
     /**
@@ -51,7 +51,7 @@ public class ThrottledInputStream extends InputStream {
      */
     @Override
     public int read() throws IOException {
-        return _delegate.read();
+        return delegate.read();
     }
 
     /**
@@ -64,11 +64,11 @@ public class ThrottledInputStream extends InputStream {
      */
     @Override
     public int read(byte[] data, int offset, int len) throws IOException {
-        return _delegate.read(data, offset, _throttle.request(len));
+        return delegate.read(data, offset, throttle.request(len));
     }
 
     @Override
     public void close() throws IOException {
-        _delegate.close();
+        delegate.close();
     }
 }

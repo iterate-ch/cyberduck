@@ -25,11 +25,11 @@ public class ThrottledOutputStream extends OutputStream {
     /**
      * The delegate.
      */
-    private OutputStream _delegate;
+    private OutputStream delegate;
     /**
      * Limits throughput.
      */
-    private BandwidthThrottle _throttle;
+    private BandwidthThrottle throttle;
 
     /**
      * Wraps the delegate stream with the given throttle.
@@ -39,8 +39,8 @@ public class ThrottledOutputStream extends OutputStream {
      */
     public ThrottledOutputStream(OutputStream delegate,
                                  BandwidthThrottle throttle) {
-        this._delegate = delegate;
-        this._throttle = throttle;
+        this.delegate = delegate;
+        this.throttle = throttle;
     }
 
     /**
@@ -52,9 +52,9 @@ public class ThrottledOutputStream extends OutputStream {
      */
     @Override
     public void write(final int b) throws IOException {
-        int allow = _throttle.request(1); //Note that _request never returns zero.
+        int allow = throttle.request(1); //Note that _request never returns zero.
         assert (allow == 1);
-        _delegate.write(b);
+        delegate.write(b);
     }
 
     /**
@@ -73,9 +73,9 @@ public class ThrottledOutputStream extends OutputStream {
         //Note that we delegate directly to out.  Do NOT call super.write();
         //that calls this.write() resulting in HALF the throughput.
         while(totalLength > 0) {
-            int length = _throttle.request(totalLength);
+            int length = throttle.request(totalLength);
             assert (length + offset <= data.length);
-            _delegate.write(data, offset, length);
+            delegate.write(data, offset, length);
             totalLength -= length;
             offset += length;
         }
@@ -92,11 +92,11 @@ public class ThrottledOutputStream extends OutputStream {
 
     @Override
     public void flush() throws IOException {
-        _delegate.flush();
+        delegate.flush();
     }
 
     @Override
     public void close() throws IOException {
-        _delegate.close();
+        delegate.close();
     }
 }
