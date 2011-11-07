@@ -26,7 +26,12 @@ import javax.net.ssl.X509KeyManager;
 import javax.net.ssl.X509TrustManager;
 import java.io.IOException;
 import java.net.Socket;
-import java.security.*;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.Principal;
+import java.security.PrivateKey;
+import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
@@ -39,7 +44,7 @@ import java.util.Set;
  * @version $Id$
  */
 public abstract class AbstractX509TrustManager implements X509TrustManager, X509KeyManager {
-    protected static Logger log = Logger.getLogger(AbstractX509TrustManager.class);
+    private static Logger log = Logger.getLogger(AbstractX509TrustManager.class);
 
     /**
      * A set of all X509 certificates accepted by the user that contains
@@ -121,11 +126,6 @@ public abstract class AbstractX509TrustManager implements X509TrustManager, X509
     /**
      * Choose an alias to authenticate the client side of a secure socket given the public key type and the list of
      * certificate issuer authorities recognized by the peer (if any).
-     *
-     * @param keyType
-     * @param issuers
-     * @param socket
-     * @return
      */
     public String chooseClientAlias(String[] keyType, Principal[] issuers, Socket socket) {
         return this.init().chooseClientAlias(keyType, issuers, socket);
@@ -141,9 +141,6 @@ public abstract class AbstractX509TrustManager implements X509TrustManager, X509
 
     /**
      * Returns the certificate chain associated with the given alias.
-     *
-     * @param alias
-     * @return
      */
     public X509Certificate[] getCertificateChain(String alias) {
         return this.init().getCertificateChain(alias);
