@@ -438,6 +438,7 @@ public class S3Session extends CloudSession {
      *
      * @param controller Prompt controller
      * @return MFA one time authentication password.
+     * @throws ConnectionCanceledException Prompt dismissed
      */
     protected Credentials mfa(LoginController controller) throws ConnectionCanceledException {
         Credentials credentials = new Credentials(
@@ -893,9 +894,9 @@ public class S3Session extends CloudSession {
     /**
      * The website endpoint given the location of the bucket.
      *
-     * @param bucket
-     * @param method
-     * @return
+     * @param bucket Bucket name
+     * @param method Website Configuration (HTTP) CDN
+     * @return Website distribution hostname
      */
     private String getWebsiteEndpoint(String bucket, Distribution.Method method) {
         // Geographical location
