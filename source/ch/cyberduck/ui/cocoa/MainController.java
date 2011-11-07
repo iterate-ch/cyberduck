@@ -18,20 +18,69 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.BookmarkCollection;
 import ch.cyberduck.core.Collection;
+import ch.cyberduck.core.DownloadTransfer;
+import ch.cyberduck.core.FolderBookmarkCollection;
+import ch.cyberduck.core.HistoryCollection;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathFactory;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.RendezvousFactory;
+import ch.cyberduck.core.RendezvousListener;
+import ch.cyberduck.core.Session;
+import ch.cyberduck.core.SessionFactory;
+import ch.cyberduck.core.TransferCollection;
+import ch.cyberduck.core.UploadTransfer;
 import ch.cyberduck.core.aquaticprime.License;
 import ch.cyberduck.core.aquaticprime.LicenseFactory;
 import ch.cyberduck.core.i18n.Locale;
-import ch.cyberduck.core.importer.*;
+import ch.cyberduck.core.importer.CrossFtpBookmarkCollection;
+import ch.cyberduck.core.importer.FetchBookmarkCollection;
+import ch.cyberduck.core.importer.FilezillaBookmarkCollection;
+import ch.cyberduck.core.importer.FireFtpBookmarkCollection;
+import ch.cyberduck.core.importer.FlowBookmarkCollection;
+import ch.cyberduck.core.importer.InterarchyBookmarkCollection;
+import ch.cyberduck.core.importer.ThirdpartyBookmarkCollection;
+import ch.cyberduck.core.importer.TransmitBookmarkCollection;
 import ch.cyberduck.core.serializer.HostReaderFactory;
 import ch.cyberduck.core.serializer.ProtocolReaderFactory;
 import ch.cyberduck.core.sparkle.Updater;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.core.threading.DefaultMainAction;
-import ch.cyberduck.ui.cocoa.application.*;
-import ch.cyberduck.ui.cocoa.delegate.*;
-import ch.cyberduck.ui.cocoa.foundation.*;
+import ch.cyberduck.ui.cocoa.application.NSAlert;
+import ch.cyberduck.ui.cocoa.application.NSApplication;
+import ch.cyberduck.ui.cocoa.application.NSButton;
+import ch.cyberduck.ui.cocoa.application.NSCell;
+import ch.cyberduck.ui.cocoa.application.NSColor;
+import ch.cyberduck.ui.cocoa.application.NSFont;
+import ch.cyberduck.ui.cocoa.application.NSMenu;
+import ch.cyberduck.ui.cocoa.application.NSMenuItem;
+import ch.cyberduck.ui.cocoa.application.NSPasteboard;
+import ch.cyberduck.ui.cocoa.application.NSPopUpButton;
+import ch.cyberduck.ui.cocoa.application.NSWindow;
+import ch.cyberduck.ui.cocoa.application.NSWorkspace;
+import ch.cyberduck.ui.cocoa.delegate.ArchiveMenuDelegate;
+import ch.cyberduck.ui.cocoa.delegate.BookmarkMenuDelegate;
+import ch.cyberduck.ui.cocoa.delegate.CopyURLMenuDelegate;
+import ch.cyberduck.ui.cocoa.delegate.EditMenuDelegate;
+import ch.cyberduck.ui.cocoa.delegate.HistoryMenuDelegate;
+import ch.cyberduck.ui.cocoa.delegate.OpenURLMenuDelegate;
+import ch.cyberduck.ui.cocoa.delegate.RendezvousMenuDelegate;
+import ch.cyberduck.ui.cocoa.delegate.URLMenuDelegate;
+import ch.cyberduck.ui.cocoa.foundation.NSAppleEventDescriptor;
+import ch.cyberduck.ui.cocoa.foundation.NSAppleEventManager;
+import ch.cyberduck.ui.cocoa.foundation.NSArray;
+import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
+import ch.cyberduck.ui.cocoa.foundation.NSBundle;
+import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
+import ch.cyberduck.ui.cocoa.foundation.NSNotification;
+import ch.cyberduck.ui.cocoa.foundation.NSNotificationCenter;
+import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.urlhandler.URLSchemeHandlerConfiguration;
 import ch.cyberduck.ui.growl.Growl;
 
@@ -49,7 +98,15 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 import java.text.MessageFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
 /**
@@ -143,9 +200,6 @@ public class MainController extends BundleController implements NSApplication.De
 
     private Updater updater;
 
-    /**
-     *
-     */
     @Action
     public void updateMenuClicked(ID sender) {
         if(null == updater) {
@@ -469,11 +523,6 @@ public class MainController extends BundleController implements NSApplication.De
         }
     }
 
-    /**
-     * @param app
-     * @param filename
-     * @return
-     */
     public boolean application_openFile(NSApplication app, String filename) {
         log.debug("applicationOpenFile:" + filename);
         final Local f = LocalFactory.createLocal(filename);
@@ -570,18 +619,10 @@ public class MainController extends BundleController implements NSApplication.De
         return false;
     }
 
-    /**
-     * @param f
-     * @return
-     */
     private boolean upload(Local f) {
         return this.upload(Collections.singletonList(f));
     }
 
-    /**
-     * @param files
-     * @return
-     */
     private boolean upload(final List<Local> files) {
         // Selected bookmark
         Host open = null;
@@ -683,11 +724,6 @@ public class MainController extends BundleController implements NSApplication.De
         return true;
     }
 
-    /**
-     * @param bookmark
-     * @param files
-     * @param destination
-     */
     private void upload(Host bookmark, List<Local> files, String destination) {
         final Session session = SessionFactory.createSession(bookmark);
         List<Path> roots = new ArrayList<Path>();
@@ -703,10 +739,6 @@ public class MainController extends BundleController implements NSApplication.De
      * returning true if the file is successfully opened, and false otherwise. By design, a
      * file opened through this method is assumed to be temporary its the application's
      * responsibility to remove the file at the appropriate time.
-     *
-     * @param app
-     * @param filename
-     * @return
      */
     public boolean application_openTempFile(NSApplication app, String filename) {
         log.debug("applicationOpenTempFile:" + filename);
@@ -717,9 +749,6 @@ public class MainController extends BundleController implements NSApplication.De
      * Invoked immediately before opening an untitled file. Return false to prevent
      * the application from opening an untitled file; return true otherwise.
      * Note that applicationOpenUntitledFile is invoked if this method returns true.
-     *
-     * @param sender
-     * @return
      */
     public boolean applicationShouldOpenUntitledFile(NSApplication sender) {
         log.debug("applicationShouldOpenUntitledFile");
@@ -736,8 +765,6 @@ public class MainController extends BundleController implements NSApplication.De
 
     /**
      * Mounts the default bookmark if any
-     *
-     * @param controller
      */
     private void openDefaultBookmark(BrowserController controller) {
         String defaultBookmark = Preferences.instance().getProperty("browser.defaultBookmark");
@@ -776,10 +803,6 @@ public class MainController extends BundleController implements NSApplication.De
      * So, you can either implement this method, do nothing, and return false if you do not
      * want anything to happen at all (not recommended), or you can implement this method,
      * handle the event yourself in some custom way, and return false.
-     *
-     * @param app
-     * @param visibleWindowsFound
-     * @return
      */
     public boolean applicationShouldHandleReopen_hasVisibleWindows(NSApplication app, boolean visibleWindowsFound) {
         log.debug("applicationShouldHandleReopen");
@@ -821,8 +844,6 @@ public class MainController extends BundleController implements NSApplication.De
      * this method to perform further initialization. If the user started up the application
      * by double-clicking a file, the delegate receives the applicationOpenFile message before receiving
      * applicationDidFinishLaunching. (applicationWillFinishLaunching is sent before applicationOpenFile.)
-     *
-     * @param notification
      */
     public void applicationDidFinishLaunching(NSNotification notification) {
         if(log.isInfoEnabled()) {
@@ -1083,7 +1104,7 @@ public class MainController extends BundleController implements NSApplication.De
     }
 
     /**
-     * NSService
+     * NSService implementation
      */
     public void serviceUploadFileUrl_(final NSPasteboard pboard, String userData) {
         log.debug("serviceUploadFileUrl_:" + userData);
@@ -1119,7 +1140,7 @@ public class MainController extends BundleController implements NSApplication.De
      * If this method returns false, the application is not terminated,
      * and control returns to the main event loop.
      *
-     * @param app
+     * @param app Application instance
      * @return Return true to allow the application to terminate.
      */
     public NSUInteger applicationShouldTerminate(final NSApplication app) {
@@ -1268,7 +1289,7 @@ public class MainController extends BundleController implements NSApplication.De
     /**
      * Quits the Rendezvous daemon and saves all preferences
      *
-     * @param notification
+     * @param notification Notification name
      */
     public void applicationWillTerminate(NSNotification notification) {
         log.debug("applicationWillTerminate");
@@ -1292,7 +1313,7 @@ public class MainController extends BundleController implements NSApplication.De
     /**
      * Posted when the user has requested a logout or that the machine be powered off.
      *
-     * @param notification
+     * @param notification Notification name
      */
     public void workspaceWillPowerOff(NSNotification notification) {
         log.debug("workspaceWillPowerOff");
@@ -1303,7 +1324,7 @@ public class MainController extends BundleController implements NSApplication.De
      * disable some processing when its user session is switched out, and reenable when that
      * session gets switched back in, for example.
      *
-     * @param notification
+     * @param notification Notification name
      */
     public void workspaceWillLogout(NSNotification notification) {
         log.debug("workspaceWillLogout");
@@ -1328,9 +1349,6 @@ public class MainController extends BundleController implements NSApplication.De
     private static List<BrowserController> browsers
             = new ArrayList<BrowserController>();
 
-    /**
-     * @return
-     */
     public static List<BrowserController> getBrowsers() {
         return browsers;
     }
@@ -1383,9 +1401,6 @@ public class MainController extends BundleController implements NSApplication.De
 
     /**
      * We are not a Windows application. Long live the application wide menu bar.
-     *
-     * @param app
-     * @return
      */
     public boolean applicationShouldTerminateAfterLastWindowClosed(NSApplication app) {
         return false;
