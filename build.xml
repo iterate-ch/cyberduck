@@ -25,7 +25,7 @@
 
     <property file="build.properties"/>
     <property environment="env"/>
-    
+
     <property name="app.name" value="${ant.project.name}"/>
     <property name="debug" value="on"/>
     <property name="home" value="."/>
@@ -45,7 +45,7 @@
     <property name="www" value="${home}/www"/>
     <property name="www.update" value="${www}/update"/>
     <property name="www.help" value="${www}/help"/>
-    
+
     <condition property="platform" value="mac">
         <os family="mac"/>
     </condition>
@@ -78,6 +78,8 @@
     <taskdef name="junit" classname="org.apache.tools.ant.taskdefs.optional.junit.JUnitTask">
         <classpath refid="build.classpath"/>
     </taskdef>
+
+    <taskdef uri="antlib:org.sonar.ant" resource="org/sonar/ant/antlib.xml"/>
 
     <target name="init">
         <echo message="ant version:	  ${ant.version}"/>
@@ -224,5 +226,11 @@
             </fileset>
             <report format="frames" todir="${build.unittests.reports}/html"/>
         </junitreport>
+    </target>
+
+    <target name="sonar" depends="revision">
+        <property name="sonar.sources" value="${source}"/>
+        <property name="sonar.binaries" value="${build.classes}"/>
+        <sonar:sonar key="ch.cyberduck:cyberduck" version="${svn.revision}" xmlns:sonar="antlib:org.sonar.ant"/>
     </target>
 </project>
