@@ -596,18 +596,10 @@ public class InfoController extends ToolbarWindowController {
         this.aclTable.setColumnAutoresizingStyle(NSTableView.NSTableViewUniformColumnAutoresizingStyle);
         this.aclTable.tableColumnWithIdentifier(HEADER_ACL_PERMISSION_COLUMN).setDataCell(aclPermissionCellPrototype);
         this.aclTable.setDataSource((aclTableModel = new ListDataSource() {
-            /**
-             * @param view
-             */
             public NSInteger numberOfRowsInTableView(NSTableView view) {
                 return new NSInteger(acl.size());
             }
 
-            /**
-             * @param view
-             * @param tableColumn
-             * @param row
-             */
             public NSObject tableView_objectValueForTableColumn_row(NSTableView view, NSTableColumn tableColumn,
                                                                     NSInteger row) {
                 if(row.intValue() < acl.size()) {
@@ -863,18 +855,10 @@ public class InfoController extends ToolbarWindowController {
         this.metadataTable.setAllowsMultipleSelection(true);
         this.metadataTable.setColumnAutoresizingStyle(NSTableView.NSTableViewUniformColumnAutoresizingStyle);
         this.metadataTable.setDataSource((metadataTableModel = new ListDataSource() {
-            /**
-             * @param view
-             */
             public NSInteger numberOfRowsInTableView(NSTableView view) {
                 return new NSInteger(metadata.size());
             }
 
-            /**
-             * @param view
-             * @param tableColumn
-             * @param row
-             */
             public NSObject tableView_objectValueForTableColumn_row(NSTableView view, NSTableColumn tableColumn,
                                                                     NSInteger row) {
                 if(row.intValue() < metadata.size()) {
@@ -997,7 +981,7 @@ public class InfoController extends ToolbarWindowController {
     /**
      * Add a custom metadata header. This will be prefixed depending on the service.
      *
-     * @param sender
+     * @param sender Button
      * @see org.jets3t.service.Constants#REST_METADATA_PREFIX
      * @see com.rackspacecloud.client.cloudfiles.FilesConstants#X_OBJECT_META
      */
@@ -1052,7 +1036,7 @@ public class InfoController extends ToolbarWindowController {
     /**
      * Add new metadata row and selects the name column
      *
-     * @param name
+     * @param name Header name
      */
     private void addMetadataItem(String name) {
         this.addMetadataItem(name, StringUtils.EMPTY, false);
@@ -1061,8 +1045,8 @@ public class InfoController extends ToolbarWindowController {
     /**
      * Add new metadata row and selects the value column
      *
-     * @param name
-     * @param value
+     * @param name Header name
+     * @param value Header value
      */
     private void addMetadataItem(String name, String value) {
         this.addMetadataItem(name, value, true);
@@ -1252,7 +1236,7 @@ public class InfoController extends ToolbarWindowController {
         }
 
         /**
-         * @param controller
+         * @param controller Browser
          * @return Null if the browser does not have an Info window.
          */
         public static InfoController get(final BrowserController controller) {
@@ -1271,10 +1255,6 @@ public class InfoController extends ToolbarWindowController {
         }
     };
 
-    /**
-     * @param controller
-     * @param files
-     */
     private InfoController(final BrowserController controller, List<Path> files) {
         this.controller = controller;
         this.controller.addListener(browserWindowListener);
@@ -1461,9 +1441,6 @@ public class InfoController extends ToolbarWindowController {
         return "Info";
     }
 
-    /**
-     * @param files
-     */
     public void setFiles(List<Path> files) {
         if(files.isEmpty()) {
             return;
@@ -1571,10 +1548,7 @@ public class InfoController extends ToolbarWindowController {
         final int count = this.numberOfFiles();
         if(count > 0) {
             Path file = getSelected();
-            // Filename
-            final String filename = this.getName();
-            filenameField.setStringValue(filename);
-            this.window().setTitle(title + " – " + filename);
+            filenameField.setStringValue(this.getName());
             filenameField.setEnabled(1 == count && controller.getSession().isRenameSupported(file));
             // Where
             String path;
