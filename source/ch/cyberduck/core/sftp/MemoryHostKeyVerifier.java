@@ -29,7 +29,7 @@ import java.io.IOException;
  * @version $Id:$
  */
 public abstract class MemoryHostKeyVerifier extends HostKeyController {
-    protected static Logger log = Logger.getLogger(MemoryHostKeyVerifier.class);
+    private static Logger log = Logger.getLogger(MemoryHostKeyVerifier.class);
 
     /**
      * It is a thread safe implementation, therefore, you need only to instantiate one
@@ -63,14 +63,6 @@ public abstract class MemoryHostKeyVerifier extends HostKeyController {
         return false;
     }
 
-    /**
-     * Remember host key.
-     *
-     * @param hostname
-     * @param serverHostKeyAlgorithm
-     * @param serverHostKey
-     * @param always
-     */
     protected void allow(final String hostname, final String serverHostKeyAlgorithm,
                          final byte[] serverHostKey, boolean always) {
         // The following call will ONLY put the key into the memory cache!
@@ -90,13 +82,6 @@ public abstract class MemoryHostKeyVerifier extends HostKeyController {
         }
     }
 
-    /**
-     * Serialize host key to lookup
-     *
-     * @param hostname
-     * @param serverHostKeyAlgorithm
-     * @param serverHostKey
-     */
     protected void save(final String hostname, final String serverHostKeyAlgorithm,
                         final byte[] serverHostKey) {
         throw new UnsupportedOperationException();

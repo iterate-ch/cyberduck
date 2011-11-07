@@ -34,6 +34,9 @@ public abstract class HostKeyController implements ServerHostKeyVerifier {
     protected abstract boolean isUnknownKeyAccepted(final String hostname, final int port, final String serverHostKeyAlgorithm,
                                  final byte[] serverHostKey) throws ConnectionCanceledException;
 
+    /**
+     * @return True if accepted.
+     */
     protected abstract boolean isChangedKeyAccepted(final String hostname, final int port, final String serverHostKeyAlgorithm,
                                  final byte[] serverHostKey) throws ConnectionCanceledException;
 }

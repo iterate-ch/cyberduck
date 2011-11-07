@@ -31,7 +31,7 @@ import org.apache.log4j.Logger;
  * @version $Id:$
  */
 public abstract class PreferencesHostKeyVerifier extends MemoryHostKeyVerifier {
-    protected static Logger log = Logger.getLogger(PreferencesHostKeyVerifier.class);
+    private static Logger log = Logger.getLogger(PreferencesHostKeyVerifier.class);
 
     @Override
     protected boolean isHostKeyDatabaseWritable() {
@@ -49,13 +49,6 @@ public abstract class PreferencesHostKeyVerifier extends MemoryHostKeyVerifier {
         return false;
     }
 
-    /**
-     * Serialize host key to lookup
-     *
-     * @param hostname
-     * @param serverHostKeyAlgorithm
-     * @param serverHostKey
-     */
     @Override
     protected void save(final String hostname, final String serverHostKeyAlgorithm,
                         final byte[] serverHostKey) {
