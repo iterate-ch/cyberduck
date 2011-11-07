@@ -268,7 +268,7 @@ public class Distribution {
 
     /**
      * @param id      Identifier of this distribution
-     * @param origin
+     * @param origin  Server
      * @param method  Kind of distribution
      * @param enabled Deployment Enabled
      * @param url     Where to find this distribution
@@ -285,22 +285,22 @@ public class Distribution {
      * @param enabled Deployment Enabled
      * @param url     Where to find this distribution
      * @param status  Status Message about Deployment Status
-     * @param logging
+     * @param logging Logging status
      */
     public Distribution(String id, String origin, Method method, boolean enabled, String url, String status, boolean logging) {
         this(id, origin, method, enabled, enabled, url, status, new String[]{}, logging);
     }
 
     /**
-     * @param id      Identifier of this distribution
-     * @param origin  Server to fetch original content
-     * @param method  Kind of distribution
-     * @param enabled Deployment Enabled
-     * @param url     Where to find this distribution
-     * @param sslUrl  Where to find this distribution using HTTPS
-     * @param streamingUrl
-     * @param status  Status Message about Deployment Status
-     * @param logging
+     * @param id           Identifier of this distribution
+     * @param origin       Server to fetch original content
+     * @param method       Kind of distribution
+     * @param enabled      Deployment Enabled
+     * @param url          Where to find this distribution
+     * @param sslUrl       Where to find this distribution using HTTPS
+     * @param streamingUrl RTMP URL
+     * @param status       Status Message about Deployment Status
+     * @param logging      Logging status
      */
     public Distribution(String id, String origin, Method method, boolean enabled, String url, String sslUrl, String streamingUrl, String status, boolean logging) {
         this(id, origin, method, enabled, enabled, url, sslUrl, streamingUrl, status, new String[]{}, logging, null, null);
@@ -373,11 +373,11 @@ public class Distribution {
      * @param deployed          Deployment Status is about to be changed
      * @param url               Where to find this distribution
      * @param sslUrl            Where to find this distribution using HTTPS
-     * @param streamingUrl
+     * @param streamingUrl      RTMP URL
      * @param status            Status Message about Deployment Status
      * @param cnames            Multiple CNAME aliases of this distribution
      * @param logging           Logging status
-     * @param loggingContainer
+     * @param loggingContainer  Logging target bucket
      * @param defaultRootObject Index file
      */
     public Distribution(String id, String origin, Method method, boolean enabled, boolean deployed, String url, String sslUrl, String streamingUrl, String status, String[] cnames, boolean logging, String loggingContainer, String defaultRootObject) {
@@ -446,7 +446,7 @@ public class Distribution {
     }
 
     /**
-     * @return
+     * @return True if logging for distribution is enabled
      */
     public boolean isLogging() {
         return logging;
@@ -481,7 +481,7 @@ public class Distribution {
     }
 
     /**
-     * @param file
+     * @param file File in origin container
      * @param base
      * @return
      */
@@ -525,10 +525,8 @@ public class Distribution {
 
 
     /**
-     * Both CNAME and original URL
-     *
-     * @param file
-     * @return
+     * @param file File in origin container
+     * @return Both CNAME and original URL
      */
     public List<AbstractPath.DescriptiveUrl> getURLs(Path file) {
         List<AbstractPath.DescriptiveUrl> urls = this.getCnameURL(file);
@@ -546,8 +544,8 @@ public class Distribution {
     }
 
     /**
-     * @param file
-     * @return
+     * @param file File in origin container
+     * @return CNAME to distribution
      */
     public List<AbstractPath.DescriptiveUrl> getCnameURL(Path file) {
         List<AbstractPath.DescriptiveUrl> urls = new ArrayList<AbstractPath.DescriptiveUrl>();
@@ -634,9 +632,7 @@ public class Distribution {
     }
 
     /**
-     * Distribution method.
-     *
-     * @return
+     * @return Distribution method.
      * @see ch.cyberduck.core.cdn.Distribution#CUSTOM
      * @see ch.cyberduck.core.cdn.Distribution#DOWNLOAD
      * @see ch.cyberduck.core.cdn.Distribution#STREAMING
