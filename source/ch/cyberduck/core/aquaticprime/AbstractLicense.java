@@ -58,11 +58,26 @@ public abstract class AbstractLicense implements License {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if(obj instanceof AbstractLicense) {
-            return this.getFile().equals(((AbstractLicense) obj).getFile());
+    public boolean equals(Object o) {
+        if(this == o) {
+            return true;
         }
-        return super.equals(obj);
+        if(o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        AbstractLicense that = (AbstractLicense) o;
+
+        if(file != null ? !file.equals(that.file) : that.file != null) {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return file != null ? file.hashCode() : 0;
     }
 
     @Override

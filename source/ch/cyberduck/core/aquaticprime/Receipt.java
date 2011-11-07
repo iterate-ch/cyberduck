@@ -29,7 +29,12 @@ import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.bouncycastle.asn1.*;
+import org.bouncycastle.asn1.ASN1Object;
+import org.bouncycastle.asn1.DEREncodable;
+import org.bouncycastle.asn1.DERInteger;
+import org.bouncycastle.asn1.DEROctetString;
+import org.bouncycastle.asn1.DERSequence;
+import org.bouncycastle.asn1.DERSet;
 import org.bouncycastle.cms.CMSProcessable;
 import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.jce.PKCS7SignedData;
@@ -110,7 +115,7 @@ public class Receipt extends AbstractLicense {
     /**
      * Verifies the App Store Receipt
      *
-     * @return
+     * @return False if receipt validation failed.
      */
     public boolean verify() {
         try {
@@ -227,7 +232,7 @@ public class Receipt extends AbstractLicense {
                 }
             }
         }
-        catch(Throwable e) {
+        catch(Exception e) {
             log.error("Unknown receipt validation error:" + e.getMessage());
             // Shutdown if receipt is not valid
             return false;
