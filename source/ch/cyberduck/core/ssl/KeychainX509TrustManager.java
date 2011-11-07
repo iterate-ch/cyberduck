@@ -25,7 +25,14 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.net.Socket;
-import java.security.*;
+import java.security.Key;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+import java.security.Principal;
+import java.security.PrivateKey;
+import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
@@ -39,12 +46,12 @@ import java.util.List;
  * @version $Id$
  */
 public abstract class KeychainX509TrustManager extends AbstractX509TrustManager {
-    protected static Logger log = Logger.getLogger(KeychainX509TrustManager.class);
+    private static Logger log = Logger.getLogger(KeychainX509TrustManager.class);
 
     /**
      * Override if hostname is different depending on the request.
      *
-     * @return
+     * @return Hostname to use when validating server certificate.
      */
     public abstract String getHostname();
 
