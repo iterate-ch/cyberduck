@@ -86,7 +86,7 @@ public class Status {
     }
 
     /**
-     * @param size
+     * @param size  Bytes
      * @param plain Include plain format of bytes
      * @return Formatted size
      */
@@ -95,8 +95,8 @@ public class Status {
     }
 
     /**
-     * @param size
-     * @param bytes  Report file size as bytes or bits.
+     * @param size  Bytes
+     * @param bytes Report file size as bytes or bits.
      * @param plain Include plain format of bytes
      * @return Formatted size
      */
