@@ -38,17 +38,10 @@ public abstract class FilesystemFactory extends Factory<Filesystem> {
     protected static final Map<Factory.Platform, FilesystemFactory> factories
             = new HashMap<Factory.Platform, FilesystemFactory>();
 
-    /**
-     * @param platform
-     * @param f
-     */
     public static void addFactory(Factory.Platform platform, FilesystemFactory f) {
         factories.put(platform, f);
     }
 
-    /**
-     * @return
-     */
     public static Filesystem get() {
         if(!factories.containsKey(NATIVE_PLATFORM)) {
             throw new RuntimeException("No implementation for " + NATIVE_PLATFORM);
