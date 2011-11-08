@@ -68,14 +68,14 @@ public abstract class WindowController extends BundleController implements NSWin
             = Collections.synchronizedSet(new HashSet<WindowListener>());
 
     /**
-     * @param listener
+     * @param listener Callback on window close
      */
     public void addListener(WindowListener listener) {
         listeners.add(listener);
     }
 
     /**
-     * @param listener
+     * @param listener Callback on window close
      */
     public void removeListener(WindowListener listener) {
         listeners.remove(listener);
@@ -107,7 +107,7 @@ public abstract class WindowController extends BundleController implements NSWin
     /**
      * A singleton window is not released when closed and the controller is not invalidated
      *
-     * @return
+     * @return Always false
      * @see #invalidate()
      * @see ch.cyberduck.ui.cocoa.application.NSWindow#setReleasedWhenClosed(boolean)
      */
@@ -126,16 +126,10 @@ public abstract class WindowController extends BundleController implements NSWin
         return window.isVisible();
     }
 
-    /**
-     * @param notification
-     */
     public void windowDidBecomeKey(NSNotification notification) {
         ;
     }
 
-    /**
-     * @param notification
-     */
     public void windowDidResignKey(NSNotification notification) {
         ;
     }
@@ -157,8 +151,6 @@ public abstract class WindowController extends BundleController implements NSWin
 
     /**
      * Override this method if the controller should not be invalidated after its window closes
-     *
-     * @param notification
      */
     public void windowWillClose(NSNotification notification) {
         log.debug("windowWillClose:" + notification);
@@ -186,14 +178,14 @@ public abstract class WindowController extends BundleController implements NSWin
     }
 
     /**
-     * @param toggle
-     * @param open
+     * @param toggle Checkbox
+     * @param select Selected
      */
-    protected void setState(NSButton toggle, boolean open) {
-        if(open) {
+    protected void setState(NSButton toggle, boolean select) {
+        if(select) {
             toggle.performClick(null);
         }
-        toggle.setState(open ? NSCell.NSOnState : NSCell.NSOffState);
+        toggle.setState(select ? NSCell.NSOnState : NSCell.NSOffState);
     }
 
     /**
@@ -207,7 +199,7 @@ public abstract class WindowController extends BundleController implements NSWin
     }
 
     /**
-     * @param alert
+     * @param alert Sheet
      * @return Return code from the dialog if called from background thread.
      */
     @Override
@@ -216,9 +208,9 @@ public abstract class WindowController extends BundleController implements NSWin
     }
 
     /**
-     * @param alert
-     * @param help
-     * @return
+     * @param alert Sheet
+     * @param help  Help URL
+     * @return Button selection
      */
     protected int alert(final NSAlert alert, String help) {
         final int[] response = new int[1];
@@ -233,17 +225,17 @@ public abstract class WindowController extends BundleController implements NSWin
     /**
      * Display alert as sheet to the window of this controller
      *
-     * @param alert
-     * @param callback
+     * @param alert    Sheet
+     * @param callback Dismissed notification
      */
     protected void alert(final NSAlert alert, final SheetCallback callback) {
         this.alert(alert, callback, null);
     }
 
     /**
-     * @param alert
-     * @param callback
-     * @param help
+     * @param alert    Sheet
+     * @param callback Dismissed notification
+     * @param help     Help URL
      */
     protected void alert(final NSAlert alert, final SheetCallback callback, final String help) {
         SheetController c = new AlertController(this, alert) {
@@ -312,9 +304,6 @@ public abstract class WindowController extends BundleController implements NSWin
         openUrl(Preferences.instance().getProperty("website.help"));
     }
 
-    /**
-     * @param view
-     */
     protected void print(NSView view) {
         NSPrintInfo print = NSPrintInfo.sharedPrintInfo();
         print.setOrientation(NSPrintInfo.NSPrintingOrientation.NSLandscapeOrientation);
