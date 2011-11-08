@@ -80,10 +80,10 @@ public abstract class HttpPath extends Path {
     };
 
     /**
-     * @param command
-     * @param <T>
-     * @return
-     * @throws java.io.IOException
+     * @param command Callable writing entity to stream and returning checksum
+     * @param <T>     Type of returned checksum
+     * @return Outputstream to write entity into.
+     * @throws IOException Transport error
      */
     protected <T> ResponseOutputStream<T> write(final DelayedHttpEntityCallable<T> command) throws IOException {
         /**
@@ -129,7 +129,8 @@ public abstract class HttpPath extends Path {
             return new ResponseOutputStream<T>(stream) {
                 /**
                  * Only available after this stream is closed.
-                 * @return
+                 * @return Response from server for upload
+                 * @throws IOException Transport error
                  */
                 @Override
                 public T getResponse() throws IOException {
@@ -139,7 +140,9 @@ public abstract class HttpPath extends Path {
                         exit.await();
                     }
                     catch(InterruptedException e) {
-                        throw new IOException(e.getMessage());
+                        IOException failure = new IOException(e.getMessage());
+                        failure.initCause(e);
+                        throw failure;
                     }
                     if(null != target.getException()) {
                         throw target.getException();
@@ -150,7 +153,9 @@ public abstract class HttpPath extends Path {
         }
         catch(InterruptedException e) {
             log.error("Error waiting for output stream:" + e.getMessage());
-            throw new IOException(e.getMessage());
+            IOException failure = new IOException(e.getMessage());
+            failure.initCause(e);
+            throw failure;
         }
     }
 
