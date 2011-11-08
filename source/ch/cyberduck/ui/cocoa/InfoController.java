@@ -1621,10 +1621,7 @@ public class InfoController extends ToolbarWindowController {
             this.updateField(webUrlField, Locale.localizedString("Unknown"));
             String url = getSelected().toHttpURL();
             if(StringUtils.isNotBlank(url)) {
-                webUrlField.setAttributedStringValue(
-                        HyperlinkAttributedStringFactory.create(
-                                NSMutableAttributedString.create(url, TRUNCATE_MIDDLE_ATTRIBUTES), url)
-                );
+                webUrlField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(url));
                 webUrlField.setToolTip(Locale.localizedString("Open in Web Browser"));
             }
         }
@@ -1879,9 +1876,7 @@ public class InfoController extends ToolbarWindowController {
                         final AbstractPath.DescriptiveUrl url = s3.toSignedUrl();
                         if(StringUtils.isNotBlank(url.getUrl())) {
                             s3PublicUrlField.setAttributedStringValue(
-                                    HyperlinkAttributedStringFactory.create(
-                                            NSMutableAttributedString.create(url.getUrl(), TRUNCATE_MIDDLE_ATTRIBUTES),
-                                            url.getUrl())
+                                    HyperlinkAttributedStringFactory.create(url.getUrl())
                             );
                             s3PublicUrlField.setToolTip(url.getHelp());
                         }
@@ -1891,9 +1886,7 @@ public class InfoController extends ToolbarWindowController {
                         final AbstractPath.DescriptiveUrl torrent = s3.toTorrentUrl();
                         if(StringUtils.isNotBlank(torrent.getUrl())) {
                             s3torrentUrlField.setAttributedStringValue(
-                                    HyperlinkAttributedStringFactory.create(
-                                            NSMutableAttributedString.create(torrent.getUrl(), TRUNCATE_MIDDLE_ATTRIBUTES),
-                                            torrent.getUrl())
+                                    HyperlinkAttributedStringFactory.create(torrent.getUrl())
                             );
                             s3torrentUrlField.setToolTip(Locale.localizedString("Open in Web Browser"));
                         }
@@ -2069,9 +2062,7 @@ public class InfoController extends ToolbarWindowController {
                         final CloudPath.DescriptiveUrl url = file.toAuthenticatedUrl();
                         if(StringUtils.isNotBlank(url.getUrl())) {
                             aclUrlField.setAttributedStringValue(
-                                    HyperlinkAttributedStringFactory.create(
-                                            NSMutableAttributedString.create(url.getUrl(), TRUNCATE_MIDDLE_ATTRIBUTES),
-                                            url.getUrl())
+                                    HyperlinkAttributedStringFactory.create(url.getUrl())
                             );
                             aclUrlField.setToolTip(url.getHelp());
                         }
@@ -2427,9 +2418,7 @@ public class InfoController extends ToolbarWindowController {
 
                         String origin = distribution.getOrigin(getSelected());
                         distributionOriginField.setAttributedStringValue(
-                                HyperlinkAttributedStringFactory.create(
-                                        NSMutableAttributedString.create(origin, TRUNCATE_MIDDLE_ATTRIBUTES),
-                                        origin));
+                                HyperlinkAttributedStringFactory.create(origin));
 
                         final Path file = getSelected();
                         // Concatenate URLs
@@ -2441,8 +2430,7 @@ public class InfoController extends ToolbarWindowController {
                         else {
                             String url = distribution.getURL(file);
                             if(StringUtils.isNotBlank(url)) {
-                                distributionUrlField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(
-                                        NSMutableAttributedString.create(url, TRUNCATE_MIDDLE_ATTRIBUTES), url));
+                                distributionUrlField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(url));
                                 distributionUrlField.setToolTip(Locale.localizedString("CDN URL"));
                             }
                             else {
@@ -2460,8 +2448,7 @@ public class InfoController extends ToolbarWindowController {
                             distributionCnameField.setStringValue(StringUtils.join(cnames, ' '));
                             for(AbstractPath.DescriptiveUrl url : distribution.getCnameURL(file)) {
                                 distributionCnameUrlField.setAttributedStringValue(
-                                        HyperlinkAttributedStringFactory.create(
-                                                NSMutableAttributedString.create(url.getUrl(), TRUNCATE_MIDDLE_ATTRIBUTES), url.getUrl())
+                                        HyperlinkAttributedStringFactory.create(url.getUrl())
                                 );
                                 distributionCnameUrlField.setToolTip(Locale.localizedString("CDN URL"));
                                 // We only support one CNAME URL to be displayed

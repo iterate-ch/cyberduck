@@ -563,12 +563,10 @@ public class TransferController extends WindowController implements NSToolbar.De
             // Draw text fields at the bottom
             String url = transfer.getRoot().toURL();
             urlField.setAttributedStringValue(
-                    HyperlinkAttributedStringFactory.create(NSMutableAttributedString.create(url,
-                            TRUNCATE_MIDDLE_ATTRIBUTES), url));
+                    HyperlinkAttributedStringFactory.create(url));
             if(transfer.numberOfRoots() == 1) {
                 localField.setAttributedStringValue(
-                        HyperlinkAttributedStringFactory.create(NSMutableAttributedString.create(transfer.getRoot().getLocal().getAbsolute(),
-                                TRUNCATE_MIDDLE_ATTRIBUTES), transfer.getRoot().getLocal().toURL()));
+                        HyperlinkAttributedStringFactory.create(transfer.getRoot().getLocal().toURL()));
             }
             else {
                 localField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(Locale.localizedString("Multiple files"),

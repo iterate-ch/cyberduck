@@ -584,8 +584,7 @@ public class ConnectionController extends SheetController {
             final String url = protocol.getScheme() + "://" + usernameField.stringValue()
                     + "@" + hostField.stringValue() + ":" + portField.intValue()
                     + Path.normalize(pathField.stringValue());
-            urlLabel.setAttributedStringValue(HyperlinkAttributedStringFactory.create(
-                    NSMutableAttributedString.create(url, TRUNCATE_MIDDLE_ATTRIBUTES), url));
+            urlLabel.setAttributedStringValue(HyperlinkAttributedStringFactory.create(url));
         }
         else {
             urlLabel.setStringValue(StringUtils.EMPTY);

@@ -786,7 +786,7 @@ public class BookmarkController extends WindowController {
             url = host.toURL();
         }
         urlField.setAttributedStringValue(
-                HyperlinkAttributedStringFactory.create(NSMutableAttributedString.create(url, TRUNCATE_MIDDLE_ATTRIBUTES), url)
+                HyperlinkAttributedStringFactory.create(url)
         );
         this.updateField(portField, String.valueOf(host.getPort()));
         portField.setEnabled(host.getProtocol().isPortConfigurable());
