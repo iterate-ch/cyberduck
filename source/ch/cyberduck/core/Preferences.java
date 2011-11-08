@@ -784,8 +784,8 @@ public abstract class Preferences {
     }
 
     /**
-     * @param property
-     * @return
+     * @param property The property to query.
+     * @return The configured values determined by a whitespace separator.
      */
     public List<String> getList(String property) {
         return Arrays.asList(this.getProperty(property).split("\\p{javaWhitespace}+"));
@@ -878,10 +878,13 @@ public abstract class Preferences {
      * The localizations available in this application bundle
      * sorted by preference by the user.
      *
-     * @return
+     * @return Available locales in application bundle
      */
     public abstract List<String> applicationLocales();
 
+    /**
+     * @return Available locales in system
+     */
     public abstract List<String> systemLocales();
 
     /**

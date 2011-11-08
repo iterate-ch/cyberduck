@@ -210,7 +210,7 @@ public class UserDefaultsPreferences extends Preferences {
     /**
      * Setting default values that must be accessible using [NSUserDefaults standardUserDefaults]
      *
-     * @param property
+     * @param property Initial property name to store default value for.
      */
     private void _init(final String property) {
         if(null == props.objectForKey(property)) {
@@ -260,8 +260,8 @@ public class UserDefaultsPreferences extends Preferences {
     /**
      * Convert collection
      *
-     * @param list
-     * @return
+     * @param list List of properties
+     * @return Collection
      */
     private List<String> toList(NSArray list) {
         if(null == list) {
