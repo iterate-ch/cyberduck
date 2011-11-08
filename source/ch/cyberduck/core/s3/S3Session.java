@@ -39,6 +39,7 @@ import org.apache.log4j.Logger;
 import org.jets3t.service.Jets3tProperties;
 import org.jets3t.service.S3ServiceException;
 import org.jets3t.service.ServiceException;
+import org.jets3t.service.acl.AccessControlList;
 import org.jets3t.service.acl.GroupGrantee;
 import org.jets3t.service.impl.rest.XmlResponsesSaxParser;
 import org.jets3t.service.impl.rest.httpclient.RestS3Service;
@@ -574,11 +575,6 @@ public class S3Session extends CloudSession {
         return !workdir.isRoot();
     }
 
-    /**
-     * Renaming buckets is not currently supported by S3
-     *
-     * @return True if directory placeholder or object
-     */
     @Override
     public boolean isRenameSupported(Path file) {
         return !file.attributes().isVolume();
@@ -859,6 +855,14 @@ public class S3Session extends CloudSession {
                 versioningStatus.remove(container);
             }
         }
+    }
+
+    protected AccessControlList getPrivateCannedAcl() {
+        return AccessControlList.REST_CANNED_PRIVATE;
+    }
+
+    protected AccessControlList getPublicCannedReadAcl() {
+        return AccessControlList.REST_CANNED_PUBLIC_READ;
     }
 
     @Override

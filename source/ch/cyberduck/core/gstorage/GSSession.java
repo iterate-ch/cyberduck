@@ -29,6 +29,8 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.log4j.Logger;
 import org.jets3t.service.Jets3tProperties;
 import org.jets3t.service.ServiceException;
+import org.jets3t.service.acl.AccessControlList;
+import org.jets3t.service.acl.gs.GSAccessControlList;
 import org.jets3t.service.impl.rest.AccessControlListHandler;
 import org.jets3t.service.impl.rest.GSAccessControlListHandler;
 import org.jets3t.service.impl.rest.XmlResponsesSaxParser;
@@ -232,6 +234,16 @@ public class GSSession extends S3Session {
     @Override
     public boolean isMultipartUploadSupported() {
         return false;
+    }
+
+    @Override
+    protected AccessControlList getPrivateCannedAcl() {
+        return GSAccessControlList.REST_CANNED_PRIVATE;
+    }
+
+    @Override
+    protected AccessControlList getPublicCannedReadAcl() {
+        return GSAccessControlList.REST_CANNED_PUBLIC_READ;
     }
 
     @Override

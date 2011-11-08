@@ -1167,21 +1167,18 @@ public class S3Path extends CloudPath {
                     }
                     AccessControlList acl;
                     if(Preferences.instance().getProperty("s3.bucket.acl.default").equals("public-read")) {
-                        acl = AccessControlList.REST_CANNED_PUBLIC_READ;
+                        acl = this.getSession().getPublicCannedReadAcl();
                     }
                     else {
-                        acl = AccessControlList.REST_CANNED_PRIVATE;
+                        acl = this.getSession().getPrivateCannedAcl();
                     }
                     this.getSession().getClient().createBucket(this.getContainerName(), location, acl);
                 }
                 else {
                     S3Object object = new S3Object(this.getKey() + Path.DELIMITER);
                     object.setBucketName(this.getContainerName());
-                    //AccessControlList acl = this.getAccessControlList(new Permission(
-                    //        Preferences.instance().getProperty("queue.upload.permissions.folder.default")));
                     // Set object explicitly to private access by default.
-                    AccessControlList acl = AccessControlList.REST_CANNED_PRIVATE;
-                    object.setAcl(acl);
+                    object.setAcl(this.getSession().getPrivateCannedAcl());
                     object.setContentLength(0);
                     object.setContentType("application/x-directory");
                     this.getSession().getClient().putObject(this.getContainerName(), object);
