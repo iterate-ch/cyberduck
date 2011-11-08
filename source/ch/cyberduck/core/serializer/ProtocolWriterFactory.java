@@ -35,10 +35,6 @@ public abstract class ProtocolWriterFactory extends Factory<Writer<Profile>> {
      */
     protected static final Map<Platform, ProtocolWriterFactory> factories = new HashMap<Platform, ProtocolWriterFactory>();
 
-    /**
-     * @param platform
-     * @param f
-     */
     public static void addFactory(Platform platform, ProtocolWriterFactory f) {
         factories.put(platform, f);
     }

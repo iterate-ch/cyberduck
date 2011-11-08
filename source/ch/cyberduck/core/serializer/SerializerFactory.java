@@ -33,17 +33,10 @@ public abstract class SerializerFactory extends Factory<Serializer> {
      */
     protected static final Map<Factory.Platform, SerializerFactory> factories = new HashMap<Factory.Platform, SerializerFactory>();
 
-    /**
-     * @param platform
-     * @param f
-     */
     public static void addFactory(Factory.Platform platform, SerializerFactory f) {
         factories.put(platform, f);
     }
 
-    /**
-     * @return
-     */
     public static Serializer createSerializer() {
         if(!factories.containsKey(NATIVE_PLATFORM)) {
             throw new RuntimeException("No implementation for " + NATIVE_PLATFORM);

@@ -34,10 +34,6 @@ public abstract class TransferWriterFactory extends Factory<Writer<Transfer>> {
      */
     protected static final Map<Platform, TransferWriterFactory> factories = new HashMap<Platform, TransferWriterFactory>();
 
-    /**
-     * @param platform
-     * @param f
-     */
     public static void addFactory(Factory.Platform platform, TransferWriterFactory f) {
         factories.put(platform, f);
     }

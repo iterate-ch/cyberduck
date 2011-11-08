@@ -34,19 +34,12 @@ public abstract class TransferReaderFactory extends Factory<Reader<Transfer>> {
      */
     protected static final Map<Platform, TransferReaderFactory> factories = new HashMap<Platform, TransferReaderFactory>();
 
-    /**
-     * @param platform
-     * @param f
-     */
     public static void addFactory(Factory.Platform platform, TransferReaderFactory f) {
         factories.put(platform, f);
     }
 
     private static Reader<Transfer> instance;
 
-    /**
-     * @return
-     */
     public static Reader<Transfer> instance() {
         if(null == instance) {
             if(!factories.containsKey(NATIVE_PLATFORM)) {

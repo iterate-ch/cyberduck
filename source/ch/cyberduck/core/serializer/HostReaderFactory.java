@@ -34,19 +34,12 @@ public abstract class HostReaderFactory extends Factory<Reader<Host>> {
      */
     protected static final Map<Platform, HostReaderFactory> factories = new HashMap<Platform, HostReaderFactory>();
 
-    /**
-     * @param platform
-     * @param f
-     */
     public static void addFactory(Factory.Platform platform, HostReaderFactory f) {
         factories.put(platform, f);
     }
 
     private static Reader<Host> instance;
 
-    /**
-     * @return
-     */
     public static Reader<Host> instance() {
         if(null == instance) {
             if(!factories.containsKey(NATIVE_PLATFORM)) {

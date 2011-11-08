@@ -35,19 +35,12 @@ public abstract class ProtocolReaderFactory extends Factory<Reader<Profile>> {
      */
     protected static final Map<Platform, ProtocolReaderFactory> factories = new HashMap<Platform, ProtocolReaderFactory>();
 
-    /**
-     * @param platform
-     * @param f
-     */
     public static void addFactory(Platform platform, ProtocolReaderFactory f) {
         factories.put(platform, f);
     }
 
     private static Reader<Profile> instance;
 
-    /**
-     * @return
-     */
     public static Reader<Profile> instance() {
         if(null == instance) {
             if(!factories.containsKey(NATIVE_PLATFORM)) {
