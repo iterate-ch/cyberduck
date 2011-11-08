@@ -31,8 +31,10 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.AbstractHttpClient;
 import org.apache.http.params.HttpProtocolParams;
+import org.apache.http.protocol.HttpContext;
 import org.apache.log4j.Logger;
 import org.jets3t.service.Jets3tProperties;
 import org.jets3t.service.S3ServiceException;
@@ -43,6 +45,8 @@ import org.jets3t.service.impl.rest.httpclient.RestS3Service;
 import org.jets3t.service.model.*;
 import org.jets3t.service.model.cloudfront.CustomOrigin;
 import org.jets3t.service.security.AWSCredentials;
+import org.jets3t.service.security.OAuth2Credentials;
+import org.jets3t.service.security.OAuth2Tokens;
 import org.jets3t.service.security.ProviderCredentials;
 import org.jets3t.service.utils.RestUtils;
 import org.jets3t.service.utils.ServiceUtils;
@@ -157,6 +161,38 @@ public class S3Session extends CloudSession {
         public StorageBucketLoggingStatus getBucketLoggingStatusImpl(String bucketName) throws ServiceException {
             return super.getBucketLoggingStatusImpl(bucketName);
         }
+
+        @Override
+        public void authorizeHttpRequest(HttpUriRequest httpMethod, HttpContext context)
+                throws Exception {
+            if(authorize(httpMethod, credentials)) {
+                return;
+            }
+            super.authorizeHttpRequest(httpMethod, context);
+        }
+
+        @Override
+        protected boolean isRecoverable403(HttpUriRequest httpRequest, Exception exception) {
+            if(this.credentials instanceof OAuth2Credentials) {
+                OAuth2Tokens tokens;
+                try {
+                    tokens = ((OAuth2Credentials) this.credentials).getOAuth2Tokens();
+                }
+                catch(IOException e) {
+                    return false;
+                }
+                if(tokens != null) {
+                    tokens.expireAccessToken();
+                    return true;
+                }
+            }
+            return super.isRecoverable403(httpRequest, exception);
+        }
+    }
+
+    protected boolean authorize(HttpUriRequest httpMethod, ProviderCredentials credentials)
+            throws IOException, ServiceException {
+        return false;
     }
 
     protected XmlResponsesSaxParser getXmlResponseSaxParser() throws ServiceException {
@@ -413,8 +449,7 @@ public class S3Session extends CloudSession {
     @Override
     protected void login(LoginController controller, Credentials credentials) throws IOException {
         try {
-            this.S3 = new RequestEntityRestStorageService(credentials.isAnonymousLogin() ? null : new AWSCredentials(credentials.getUsername(),
-                    credentials.getPassword()));
+            this.S3 = new RequestEntityRestStorageService(this.getProviderCredentials(controller, credentials));
             for(StorageBucket bucket : this.getBuckets(true)) {
                 if(log.isDebugEnabled()) {
                     log.debug("Bucket:" + bucket);
@@ -435,6 +470,11 @@ public class S3Session extends CloudSession {
         }
     }
 
+    protected ProviderCredentials getProviderCredentials(LoginController controller, final Credentials credentials) {
+        return credentials.isAnonymousLogin() ? null : new AWSCredentials(credentials.getUsername(),
+                credentials.getPassword());
+    }
+
     /**
      * Prompt for MFA credentials
      *
@@ -443,7 +483,7 @@ public class S3Session extends CloudSession {
      * @throws ConnectionCanceledException Prompt dismissed
      */
     protected Credentials mfa(LoginController controller) throws ConnectionCanceledException {
-        Credentials credentials = new Credentials(
+        final Credentials credentials = new Credentials(
                 Preferences.instance().getProperty("s3.mfa.serialnumber"), null, false) {
             @Override
             public String getUsernamePlaceholder() {

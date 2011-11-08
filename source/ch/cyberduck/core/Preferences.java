@@ -578,6 +578,9 @@ public abstract class Preferences {
         defaults.put("google.logging.prefix", "log");
         defaults.put("cloudfront.logging.prefix", "logs/");
 
+        defaults.put("google.storage.oauth.clientid", "996125414232.apps.googleusercontent.com");
+        defaults.put("google.storage.oauth.secret", "YdaFjo2t74-Q0sThsXgeTv3l");
+
         final int MONTH = 60 * 60 * 24 * 30; //30 days in seconds
         defaults.put("s3.cache.seconds", String.valueOf(MONTH));
 
