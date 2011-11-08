@@ -107,7 +107,7 @@ namespace Ch.Cyberduck.Ui.Controller
             _credentials.setUsername(_view.Username);
             if (Utils.IsNotBlank(_credentials.getUsername()))
             {
-                String password = KeychainFactory.instance().getPassword(_protocol.getScheme().toString(),
+                String password = KeychainFactory.instance().getPassword(_protocol.getScheme().name(),
                                                                          _protocol.getDefaultPort(),
                                                                          _protocol.getDefaultHostname(),
                                                                          _credentials.getUsername());
