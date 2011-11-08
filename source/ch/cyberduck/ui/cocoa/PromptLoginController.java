@@ -23,12 +23,16 @@ import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.ui.Controller;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.foundation.*;
+import ch.cyberduck.ui.cocoa.util.HyperlinkAttributedStringFactory;
 
 import org.rococoa.Foundation;
 import org.rococoa.ID;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+
+import java.net.URI;
+import java.net.URISyntaxException;
 
 /**
  * @version $Id$
@@ -182,7 +186,16 @@ public class PromptLoginController extends AbstractLoginController {
 
             public void setTextField(NSTextField textField) {
                 this.textField = textField;
-                this.updateField(this.textField, Locale.localizedString(reason, "Credentials"));
+                this.textField.setAllowsEditingTextAttributes(true);
+                this.textField.setSelectable(true);
+                try {
+                    // For OAuth2
+                    final URI uri = new URI(reason);
+                    this.textField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(reason));
+                }
+                catch(URISyntaxException e) {
+                    this.updateField(this.textField, Locale.localizedString(reason, "Credentials"));
+                }
             }
 
             @Outlet
