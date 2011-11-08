@@ -226,11 +226,6 @@ public class CFSession extends CloudSession {
         return false;
     }
 
-    /**
-     * Renaming is not currently supported
-     *
-     * @return Always false
-     */
     @Override
     public boolean isRenameSupported(Path file) {
         return !file.attributes().isVolume();
