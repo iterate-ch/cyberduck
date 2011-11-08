@@ -903,16 +903,6 @@ namespace Ch.Cyberduck.Ui.Controller
                         // If copying between sessions is supported
                         args.Effect = DragDropEffects.Copy;
                     }
-                    if (DragDropEffects.Move == args.Effect)
-                    {
-                        if (!getSession().isRenameSupported(destination))
-                        {
-                            // Rename is not supported by the target file system
-                            args.Effect = DragDropEffects.None;
-                            args.DropTargetLocation = DropTargetLocation.None;
-                            return;
-                        }
-                    }
                     if (sourcePath.attributes().isDirectory() && sourcePath.equals(destination))
                     {
                         // Do not allow dragging onto myself.
