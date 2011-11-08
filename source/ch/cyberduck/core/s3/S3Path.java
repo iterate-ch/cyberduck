@@ -181,7 +181,7 @@ public class S3Path extends CloudPath {
         }
         if(null == _details) {
             log.warn("Cannot read object details.");
-            S3Object object = new S3Object(this.getKey());
+            StorageObject object = new StorageObject(this.getKey());
             object.setBucketName(this.getContainerName());
             return object;
         }
@@ -551,7 +551,7 @@ public class S3Path extends CloudPath {
                     this.getSession().check();
                 }
 
-                final S3Object object = this.createObjectDetails();
+                final StorageObject object = this.createObjectDetails();
 
                 this.getSession().message(MessageFormat.format(Locale.localizedString("Uploading {0}", "Status"),
                         this.getName()));
@@ -575,8 +575,8 @@ public class S3Path extends CloudPath {
         }
     }
 
-    private S3Object createObjectDetails() throws IOException {
-        S3Object object = new S3Object(this.getKey());
+    private StorageObject createObjectDetails() throws IOException {
+        StorageObject object = new StorageObject(this.getKey());
         object.setContentType(this.getLocal().getMimeType());
         if(Preferences.instance().getBoolean("s3.upload.metadata.md5")) {
             try {
@@ -680,14 +680,14 @@ public class S3Path extends CloudPath {
      * @throws IOException      I/O error
      * @throws ServiceException Service error
      */
-    private void uploadSingle(final BandwidthThrottle throttle, final StreamListener listener, S3Object object)
+    private void uploadSingle(final BandwidthThrottle throttle, final StreamListener listener, StorageObject object)
             throws IOException, ServiceException {
 
         // No Content-Range support
         status().setResume(false);
 
         InputStream in = null;
-        ResponseOutputStream<S3Object> out = null;
+        ResponseOutputStream<StorageObject> out = null;
         MessageDigest digest = null;
         if(!Preferences.instance().getBoolean("s3.upload.metadata.md5")) {
             // Content-MD5 not set. Need to verify ourselves instad of S3
@@ -715,7 +715,7 @@ public class S3Path extends CloudPath {
             IOUtils.closeQuietly(out);
         }
         if(null != digest) {
-            final S3Object part = out.getResponse();
+            final StorageObject part = out.getResponse();
             this.getSession().message(MessageFormat.format(
                     Locale.localizedString("Compute MD5 hash of {0}", "Status"), this.getName()));
             // Obtain locally-calculated MD5 hash.
@@ -731,7 +731,7 @@ public class S3Path extends CloudPath {
      * @throws IOException      I/O error
      * @throws ServiceException Service error
      */
-    private void uploadMultipart(final BandwidthThrottle throttle, final StreamListener listener, S3Object object)
+    private void uploadMultipart(final BandwidthThrottle throttle, final StreamListener listener, StorageObject object)
             throws IOException, ServiceException {
 
         final ThreadFactory threadFactory = new ThreadFactory() {
@@ -882,7 +882,7 @@ public class S3Path extends CloudPath {
                 requestParameters.put("partNumber", String.valueOf(partNumber));
 
                 InputStream in = null;
-                ResponseOutputStream<S3Object> out = null;
+                ResponseOutputStream<StorageObject> out = null;
                 MessageDigest digest = null;
                 try {
                     if(!Preferences.instance().getBoolean("s3.upload.metadata.md5")) {
@@ -901,14 +901,14 @@ public class S3Path extends CloudPath {
                     else {
                         in = new DigestInputStream(getLocal().getInputStream(), digest);
                     }
-                    out = write(false, new S3Object(getKey()), length, requestParameters);
+                    out = write(false, new StorageObject(getKey()), length, requestParameters);
                     upload(out, in, throttle, listener, offset, length);
                 }
                 finally {
                     IOUtils.closeQuietly(in);
                     IOUtils.closeQuietly(out);
                 }
-                final S3Object part = out.getResponse();
+                final StorageObject part = out.getResponse();
                 if(null != digest) {
                     // Obtain locally-calculated MD5 hash
                     String hexMD5 = ServiceUtils.toHex(digest.digest());
@@ -927,13 +927,13 @@ public class S3Path extends CloudPath {
                 Collections.<String, String>emptyMap());
     }
 
-    private ResponseOutputStream<S3Object> write(boolean check, final S3Object part, final long contentLength,
+    private ResponseOutputStream<StorageObject> write(boolean check, final StorageObject part, final long contentLength,
                                                  final Map<String, String> requestParams) throws IOException {
         if(check) {
             this.getSession().check();
         }
-        DelayedHttpEntityCallable<S3Object> command = new DelayedHttpEntityCallable<S3Object>() {
-            public S3Object call(AbstractHttpEntity entity) throws IOException {
+        DelayedHttpEntityCallable<StorageObject> command = new DelayedHttpEntityCallable<StorageObject>() {
+            public StorageObject call(AbstractHttpEntity entity) throws IOException {
                 try {
                     entity.setContentType(new BasicHeader(HttpHeaders.CONTENT_TYPE, getLocal().getMimeType()));
                     getSession().getClient().putObjectWithRequestEntityImpl(getContainerName(), part, entity, requestParams);
@@ -1175,7 +1175,7 @@ public class S3Path extends CloudPath {
                     this.getSession().getClient().createBucket(this.getContainerName(), location, acl);
                 }
                 else {
-                    S3Object object = new S3Object(this.getKey() + Path.DELIMITER);
+                    StorageObject object = new StorageObject(this.getKey() + Path.DELIMITER);
                     object.setBucketName(this.getContainerName());
                     // Set object explicitly to private access by default.
                     object.setAcl(this.getSession().getPrivateCannedAcl());
@@ -1371,7 +1371,7 @@ public class S3Path extends CloudPath {
                 this.getSession().message(MessageFormat.format(Locale.localizedString("Renaming {0} to {1}", "Status"),
                         this.getName(), renamed));
 
-                final S3Object destination = new S3Object(((S3Path) renamed).getKey());
+                final StorageObject destination = new StorageObject(((S3Path) renamed).getKey());
                 // Keep same storage class
                 destination.setStorageClass(this.attributes().getStorageClass());
                 // Keep encryption setting
@@ -1417,7 +1417,7 @@ public class S3Path extends CloudPath {
                         this.getName(), copy));
 
                 if(this.attributes().isFile()) {
-                    S3Object destination = new S3Object(((S3Path) copy).getKey());
+                    StorageObject destination = new StorageObject(((S3Path) copy).getKey());
                     // Keep same storage class
                     destination.setStorageClass(this.attributes().getStorageClass());
                     // Keep encryption setting
