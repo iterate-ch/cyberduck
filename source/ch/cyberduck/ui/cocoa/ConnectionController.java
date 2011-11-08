@@ -570,7 +570,7 @@ public class ConnectionController extends SheetController {
                 return;
             }
             final Protocol protocol = ProtocolFactory.forName(protocolPopup.selectedItem().representedObject());
-            this.updateField(this.passField, KeychainFactory.instance().getPassword(protocol.getScheme().toString(),
+            this.updateField(this.passField, KeychainFactory.instance().getPassword(protocol.getScheme().name(),
                     portField.intValue(),
                     hostField.stringValue(), usernameField.stringValue()));
         }
