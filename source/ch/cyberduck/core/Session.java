@@ -165,12 +165,12 @@ public abstract class Session implements TranscriptListener {
     /**
      * Prompt for username and password if not available.
      *
-     * @param login Prompt
+     * @param controller Prompt
      * @throws LoginCanceledException Login prompt dismissed with cancel
      */
-    protected void prompt(LoginController login) throws LoginCanceledException {
+    protected void prompt(LoginController controller) throws LoginCanceledException {
         String username = host.getCredentials().getUsername();
-        login.check(host, Locale.localizedString("Login with username and password", "Credentials"), null);
+        controller.check(host, Locale.localizedString("Login with username and password", "Credentials"), null);
         if(!StringUtils.equals(username, host.getCredentials().getUsername())) {
             // Changed login credentials
             if(BookmarkCollection.defaultCollection().contains(host)) {

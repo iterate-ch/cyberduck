@@ -32,19 +32,12 @@ public abstract class ProxyFactory extends Factory<Proxy> {
      */
     protected static final Map<Platform, ProxyFactory> factories = new HashMap<Platform, ProxyFactory>();
 
-    /**
-     * @param platform
-     * @param f
-     */
     public static void addFactory(Platform platform, ProxyFactory f) {
         factories.put(platform, f);
     }
 
     private static Proxy proxy;
 
-    /**
-     * @return
-     */
     public static Proxy instance() {
         if(null == proxy) {
             if(!factories.containsKey(NATIVE_PLATFORM)) {

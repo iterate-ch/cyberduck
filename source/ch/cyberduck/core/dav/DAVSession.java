@@ -87,7 +87,7 @@ public class DAVSession extends HttpSession {
     }
 
     @Override
-    protected void prompt(LoginController login) throws LoginCanceledException {
+    protected void prompt(LoginController controller) throws LoginCanceledException {
         // Do not prompt for credentials yet but in the credentials provider
         // below upon request when the given authentication scheme realm is known
     }
@@ -141,8 +141,8 @@ public class DAVSession extends HttpSession {
         /**
          * Append realm message to hostname.
          *
-         * @param authscope
-         * @return
+         * @param authscope Authentication scope with realm and host
+         * @return Authentication message
          */
         public StringBuilder getRealm(AuthScope authscope) {
             final StringBuilder realm = new StringBuilder(authscope.getHost());

@@ -33,19 +33,12 @@ public abstract class GrowlFactory extends Factory<Growl> {
      */
     protected static final Map<Platform, GrowlFactory> factories = new HashMap<Platform, GrowlFactory>();
 
-    /**
-     * @param platform
-     * @param f
-     */
     public static void addFactory(Platform platform, GrowlFactory f) {
         factories.put(platform, f);
     }
 
     private static Growl l;
 
-    /**
-     * @return
-     */
     public static Growl createGrowl() {
         if(null == l) {
             if(!factories.containsKey(NATIVE_PLATFORM)) {

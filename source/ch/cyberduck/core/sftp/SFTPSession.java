@@ -201,7 +201,7 @@ public class SFTPSession extends Session {
             return;
         }
         if(this.getClient().isAuthenticationPartialSuccess()) {
-            Credentials additional = new Credentials(credentials.getUsername(), null, false) {
+            final Credentials additional = new Credentials(credentials.getUsername(), null, false) {
                 @Override
                 public String getUsernamePlaceholder() {
                     return credentials.getUsernamePlaceholder();

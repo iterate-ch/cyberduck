@@ -41,11 +41,6 @@ public class SystemConfigurationReachability implements Reachability {
 
     private static boolean JNI_LOADED = false;
 
-    /**
-     * Load native library extensions
-     *
-     * @return
-     */
     private static boolean loadNative() {
         if(!JNI_LOADED) {
             JNI_LOADED = Native.load("Diagnostics");

@@ -34,10 +34,6 @@ public abstract class LocaleFactory extends Factory<Locale> {
     protected static final Map<Platform, LocaleFactory> factories
             = new HashMap<Platform, LocaleFactory>();
 
-    /**
-     * @param platform
-     * @param f
-     */
     public static void addFactory(Platform platform, LocaleFactory f) {
         factories.put(platform, f);
     }

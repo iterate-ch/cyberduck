@@ -34,10 +34,6 @@ public abstract class QuickLookFactory extends Factory<QuickLookInterface> {
      */
     protected static final Map<Platform, QuickLookFactory> factories = new HashMap<Platform, QuickLookFactory>();
 
-    /**
-     * @param platform
-     * @param f
-     */
     public static void addFactory(Platform platform, QuickLookFactory f) {
         factories.put(platform, f);
     }

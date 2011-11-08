@@ -92,10 +92,5 @@ public class Donation extends AbstractLicense {
         return this.getValue(this.getFile().getAbsolute(), property);
     }
 
-    /**
-     * @param license
-     * @param property
-     * @return
-     */
     private native String getValue(String license, String property);
 }

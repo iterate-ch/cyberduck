@@ -38,19 +38,12 @@ public abstract class RendezvousFactory extends Factory<Rendezvous> {
     protected static final Map<Factory.Platform, RendezvousFactory> factories
             = new HashMap<Factory.Platform, RendezvousFactory>();
 
-    /**
-     * @param platform
-     * @param f
-     */
     public static void addFactory(Factory.Platform platform, RendezvousFactory f) {
         factories.put(platform, f);
     }
 
     private static Rendezvous rendezvous;
 
-    /**
-     * @return
-     */
     public static Rendezvous instance() {
         if(null == rendezvous) {
             if(!factories.containsKey(NATIVE_PLATFORM)) {

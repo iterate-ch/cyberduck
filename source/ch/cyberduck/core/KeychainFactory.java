@@ -32,19 +32,12 @@ public abstract class KeychainFactory extends Factory<AbstractKeychain> {
      */
     protected static final Map<Platform, KeychainFactory> factories = new HashMap<Platform, KeychainFactory>();
 
-    /**
-     * @param platform
-     * @param f
-     */
     public static void addFactory(Platform platform, KeychainFactory f) {
         factories.put(platform, f);
     }
 
     private static AbstractKeychain keychain;
 
-    /**
-     * @return
-     */
     public static AbstractKeychain instance() {
         if(null == keychain) {
             if(!factories.containsKey(NATIVE_PLATFORM)) {

@@ -32,19 +32,12 @@ public abstract class ReachabilityFactory extends Factory<Reachability> {
      */
     protected static final Map<Platform, ReachabilityFactory> factories = new HashMap<Platform, ReachabilityFactory>();
 
-    /**
-     * @param platform
-     * @param f
-     */
     public static void addFactory(Platform platform, ReachabilityFactory f) {
         factories.put(platform, f);
     }
 
     private static Reachability diagnostics;
 
-    /**
-     * @return
-     */
     public static Reachability instance() {
         if(null == diagnostics) {
             if(!factories.containsKey(NATIVE_PLATFORM)) {

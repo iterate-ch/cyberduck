@@ -60,9 +60,6 @@ public abstract class HostKeyControllerFactory extends Factory<HostKeyController
         return factories.get(NATIVE_PLATFORM).create(c);
     }
 
-    /**
-     * @param f
-     */
     public static void addFactory(Platform p, HostKeyControllerFactory f) {
         factories.put(p, f);
     }

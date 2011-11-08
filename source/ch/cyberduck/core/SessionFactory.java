@@ -48,10 +48,6 @@ public abstract class SessionFactory {
         }
     }
 
-    /**
-     * @param h
-     * @return
-     */
     public static Session createSession(Host h) {
         return factories.get(h.getProtocol()).create(h);
     }

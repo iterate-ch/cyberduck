@@ -138,8 +138,8 @@ public class CloudFrontDistributionConfiguration extends HttpSession implements 
     }
 
     @Override
-    protected void prompt(LoginController login) throws LoginCanceledException {
-        login.check(host, this.toString(), null, true, false, false);
+    protected void prompt(LoginController controller) throws LoginCanceledException {
+        controller.check(host, this.toString(), null, true, false, false);
     }
 
     @Override

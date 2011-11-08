@@ -32,10 +32,6 @@ public abstract class LocalFactory extends Factory<Local> {
      */
     protected static final Map<Factory.Platform, LocalFactory> factories = new HashMap<Factory.Platform, LocalFactory>();
 
-    /**
-     * @param platform
-     * @param f
-     */
     public static void addFactory(Factory.Platform platform, LocalFactory f) {
         factories.put(platform, f);
     }

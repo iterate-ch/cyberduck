@@ -35,19 +35,12 @@ public abstract class DateFormatterFactory extends Factory<AbstractDateFormatter
     protected static final Map<Factory.Platform, DateFormatterFactory> factories
             = new HashMap<Factory.Platform, DateFormatterFactory>();
 
-    /**
-     * @param platform
-     * @param f
-     */
     public static void addFactory(Factory.Platform platform, DateFormatterFactory f) {
         factories.put(platform, f);
     }
 
     private static AbstractDateFormatter formatter;
 
-    /**
-     * @return
-     */
     public static AbstractDateFormatter instance() {
         if(null == formatter) {
             if(!factories.containsKey(NATIVE_PLATFORM)) {

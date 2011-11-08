@@ -59,9 +59,6 @@ public abstract class LoginControllerFactory extends Factory<LoginController> {
         return factories.get(NATIVE_PLATFORM).create(c);
     }
 
-    /**
-     * @param f
-     */
     public static void addFactory(Platform p, LoginControllerFactory f) {
         factories.put(p, f);
     }
