@@ -80,7 +80,6 @@ public class GSSession extends S3Session {
         super.configure(hostname);
         Jets3tProperties configuration = super.getProperties();
         configuration.setProperty("s3service.enable-storage-classes", String.valueOf(false));
-        configuration.setProperty("http.protocol.expect-continue", "false");
     }
 
     @Override
@@ -93,7 +92,6 @@ public class GSSession extends S3Session {
             }
             log.debug("Authorizing service request with OAuth2 access token: " + tokens.getAccessToken());
             httpMethod.setHeader("Authorization", "OAuth " + tokens.getAccessToken());
-            httpMethod.setHeader("x-goog-api-version", "2");
             httpMethod.setHeader("x-goog-project-id", this.getHost().getCredentials().getUsername());
             return true;
         }
