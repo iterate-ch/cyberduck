@@ -90,7 +90,9 @@ public class GSSession extends S3Session {
             }
             log.debug("Authorizing service request with OAuth2 access token: " + tokens.getAccessToken());
             httpMethod.setHeader("Authorization", "OAuth " + tokens.getAccessToken());
-            httpMethod.setHeader("x-goog-project-id", this.getHost().getCredentials().getUsername());
+            if(httpMethod.getURI().getHost().equals(this.getHost().getProtocol().getDefaultHostname())) {
+                httpMethod.setHeader("x-goog-project-id", this.getHost().getCredentials().getUsername());
+            }
             return true;
         }
         return false;
