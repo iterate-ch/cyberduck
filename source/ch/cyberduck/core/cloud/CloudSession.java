@@ -23,6 +23,8 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.ssl.AbstractX509TrustManager;
 
+import org.apache.commons.lang.StringUtils;
+
 import java.util.Collections;
 import java.util.List;
 
@@ -111,12 +113,15 @@ public abstract class CloudSession extends HttpSession {
      * @return Generic hostname
      */
     public String getHostnameForContainer(String container) {
+        if(StringUtils.isBlank(container)) {
+            return this.getHost().getHostname(true);
+        }
         return container + "." + this.getHost().getHostname(true);
     }
 
     @Override
     public AbstractX509TrustManager getTrustManager() {
-        return this.getTrustManager(this.getHostnameForContainer(this.getHost().getCredentials().getUsername()));
+        return this.getTrustManager(this.getHostnameForContainer(null));
     }
 
     @Override
