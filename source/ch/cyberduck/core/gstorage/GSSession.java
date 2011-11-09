@@ -44,10 +44,7 @@ import org.jets3t.service.utils.oauth.OAuthConstants;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * Google Storage for Developers is a new service for developers to store and
@@ -147,12 +144,15 @@ public class GSSession extends S3Session {
                         this.getHost().getPort(), OAuthConstants.GSOAuth2_10.Endpoints.Token, "Google OAuth2 Access Token", tokens.getAccessToken());
                 KeychainFactory.instance().addPassword(this.getHost().getProtocol().getScheme().name(),
                         this.getHost().getPort(), OAuthConstants.GSOAuth2_10.Endpoints.Token, "Google OAuth2 Refresh Token", tokens.getRefreshToken());
+
+                // Save expiry
+                Preferences.instance().setProperty("google.storage.oauth.expiry", tokens.getExpiry().getTime());
             }
             else {
                 // Re-use authentication tokens from last use
-                oauth.setOAuth2Tokens(new OAuth2Tokens(acccesstoken, refreshtoken));
+                oauth.setOAuth2Tokens(new OAuth2Tokens(acccesstoken, refreshtoken,
+                        new Date(Preferences.instance().getLong("google.storage.oauth.expiry"))));
             }
-
         }
         else {
             super.prompt(controller);
