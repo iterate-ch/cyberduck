@@ -1878,6 +1878,10 @@ source/ch/cyberduck/core/eucalyptus/ECSession.java -text
 source/ch/cyberduck/core/fs/Filesystem.java -text
 source/ch/cyberduck/core/fs/FilesystemBackgroundAction.java -text
 source/ch/cyberduck/core/fs/FilesystemFactory.java -text
+source/ch/cyberduck/core/fs/fuse/FuseFilesystem.java -text
+source/ch/cyberduck/core/fs/fuse/GMUserFileSystem.java -text
+source/ch/cyberduck/core/fs/fuse/GMUserFileSystemLifecycle.java -text
+source/ch/cyberduck/core/fs/fuse/GMUserFileSystemOperations.java -text
 source/ch/cyberduck/core/ftp/FTPClient.java -text
 source/ch/cyberduck/core/ftp/FTPConnectMode.java -text
 source/ch/cyberduck/core/ftp/FTPException.java -text
