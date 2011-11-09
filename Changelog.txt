@@ -10,6 +10,7 @@ Changelog. Last modified: $Date$
 - [Feature] Interoperability with OpenSSH to read private key from keychain.
 - [Feature] Connect to multiple projects (Google Cloud Storage) (#5955)
 - [Feature] Support OAuth 2.0 Authentication (Google Cloud Storage) (#5955)
+- [Feature] Support US West (Oregon) location (S3)
 - [Bugfix] Performance improvement preparing files for download
 - [Bugfix] ETag mismatch deleting files	(Google Docs) (#6204)
 - [Bugfix] Creating new file (WebDAV) (#6341)
