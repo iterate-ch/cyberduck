@@ -502,7 +502,8 @@ public abstract class Protocol {
             return new HashSet<String>(Arrays.asList(
                     "US",
                     S3Bucket.LOCATION_EUROPE,
-                    S3Bucket.LOCATION_US_WEST,
+                    S3Bucket.LOCATION_US_WEST_NORTHERN_CALIFORNIA,
+                    S3Bucket.LOCATION_US_WEST_OREGON,
                     S3Bucket.LOCATION_ASIA_PACIFIC_SOUTHEAST,
                     S3Bucket.LOCATION_ASIA_PACIFIC_NORTHEAST
             ));
