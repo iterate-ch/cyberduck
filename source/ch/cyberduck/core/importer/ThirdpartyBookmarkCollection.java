@@ -19,10 +19,7 @@ package ch.cyberduck.core.importer;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractHostCollection;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.KeychainFactory;
-import ch.cyberduck.core.Local;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.ui.cocoa.odb.EditorFactory;
 
@@ -37,28 +34,47 @@ import java.text.MessageFormat;
 public abstract class ThirdpartyBookmarkCollection extends AbstractHostCollection {
     private static Logger log = Logger.getLogger(ThirdpartyBookmarkCollection.class);
 
-    /**
-     * Parse the bookmark file.
-     *
-     * @param file Local path.
-     */
-    protected void load(Local file) {
+    @Override
+    public void load() {
+        Local file = this.getFile();
         if(file.exists()) {
             if(log.isInfoEnabled()) {
                 log.info("Found bookmarks file: " + file.getAbsolute());
             }
-            this.parse(file);
+            if(Preferences.instance().getBoolean(this.getConfiguration())) {
+                // Prevously imported
+                String checksum = Preferences.instance().getProperty(this.getConfiguration() + ".checksum");
+                log.debug("Saved prevous checksum:" + checksum);
+                if(StringUtils.isNotBlank(checksum)) {
+                    if(checksum.equals(this.getChecksum())) {
+                        if(log.isInfoEnabled()) {
+                            log.info("Skip already imported bookmarks:" + file.getAbsolute());
+                        }
+                    }
+                    else {
+                        if(log.isInfoEnabled()) {
+                            log.info("Checksum changed for bookmarks file:" + file.getAbsolute());
+                        }
+                        // Should filter existing bookmarks
+                        // this.parse(file);
+                    }
+                }
+            }
+            else {
+                // First import
+                this.parse(file);
+            }
+            // Save last checksum
+            Preferences.instance().setProperty(this.getConfiguration() + ".checksum",
+                    this.getChecksum()
+            );
         }
         else {
             if(log.isInfoEnabled()) {
-                log.info("No bookmarks file at:" + file.getAbsolute());
+                log.info("No bookmarks file:" + file.getAbsolute());
             }
         }
-    }
-
-    @Override
-    public void load() {
-        this.load(this.getFile());
+        // Flag as imported
         super.load();
     }
 
@@ -79,6 +95,18 @@ public abstract class ThirdpartyBookmarkCollection extends AbstractHostCollectio
 
     public String getConfiguration() {
         return "bookmark.import." + this.getBundleIdentifier();
+    }
+
+    /**
+     * @return MD5 sum of bookmark file
+     */
+    public String getChecksum() {
+        if(this.getFile().exists()) {
+            String checksum = this.getFile().attributes().getChecksum();
+            log.debug("Current checksum:" + checksum);
+            return checksum;
+        }
+        return null;
     }
 
     @Override
