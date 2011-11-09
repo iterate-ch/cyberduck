@@ -40,6 +40,7 @@ import org.jets3t.service.security.OAuth2Credentials;
 import org.jets3t.service.security.OAuth2Tokens;
 import org.jets3t.service.security.ProviderCredentials;
 import org.jets3t.service.utils.oauth.OAuthConstants;
+import org.jets3t.service.utils.oauth.OAuthUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -170,8 +171,10 @@ public class GSSession extends S3Session {
             // Project ID needs OAuth2 authentication
             if(null == oauth) {
                 oauth = new OAuth2Credentials(
-                        Preferences.instance().getProperty("google.storage.oauth.clientid"),
-                        Preferences.instance().getProperty("google.storage.oauth.secret"),
+                        new OAuthUtils(http(),
+                                OAuthUtils.OAuthImplementation.GOOGLE_STORAGE_OAUTH2_10,
+                                Preferences.instance().getProperty("google.storage.oauth.clientid"),
+                                Preferences.instance().getProperty("google.storage.oauth.secret")),
                         Preferences.instance().getProperty("application.name"));
             }
             return oauth;
