@@ -79,8 +79,6 @@ public class CloudFrontDistributionConfiguration extends HttpSession implements 
      * Amazon CloudFront Extension
      *
      * @return A cached cloud front service interface
-     * @throws org.jets3t.service.CloudFrontServiceException
-     *          CloudFront failure
      */
     protected CloudFrontService getClient() throws ConnectionCanceledException {
         if(null == client) {
@@ -305,11 +303,10 @@ public class CloudFrontDistributionConfiguration extends HttpSession implements 
      * It usually takes 10 to 15 minutes to complete your invalidation request, depending on
      * the size of your request.
      *
-     * @param origin
-     * @param method
-     * @param files
-     * @param recursive
-     * @throws CloudFrontServiceException
+     * @param origin    Origin server
+     * @param method    Distribution method
+     * @param files     Files to purge
+     * @param recursive Recursivly for folders
      */
     public void invalidate(String origin, ch.cyberduck.core.cdn.Distribution.Method method, List<Path> files, boolean recursive) {
         try {
@@ -346,8 +343,9 @@ public class CloudFrontDistributionConfiguration extends HttpSession implements 
     }
 
     /**
-     * @param files
-     * @return
+     * @param files     Files to purge
+     * @param recursive Recursivly for folders
+     * @return Key to files
      */
     protected List<String> getInvalidationKeys(List<Path> files, boolean recursive) {
         List<String> keys = new ArrayList<String>();
@@ -368,8 +366,9 @@ public class CloudFrontDistributionConfiguration extends HttpSession implements 
     }
 
     /**
-     * @param distribution
-     * @return
+     * @param distribution Configuration
+     * @return Status message from service
+     * @throws IOException Service error
      */
     private String readInvalidationStatus(ch.cyberduck.core.cdn.Distribution distribution) throws IOException {
         try {
@@ -427,12 +426,15 @@ public class CloudFrontDistributionConfiguration extends HttpSession implements 
      * Amazon CloudFront Extension to create a new distribution configuration
      * *
      *
-     * @param enabled Distribution status
-     * @param origin  Name of the container
-     * @param cnames  DNS CNAME aliases for distribution
-     * @param logging Access log configuration
+     * @param enabled           Distribution status
+     * @param method            Distribution method
+     * @param origin            Name of the container
+     * @param cnames            DNS CNAME aliases for distribution
+     * @param logging           Access log configuration
+     * @param defaultRootObject Index file for distribution. Only supported for download and custom origins.
      * @return Distribution configuration
-     * @throws CloudFrontServiceException CloudFront failure details
+     * @throws CloudFrontServiceException  CloudFront failure details
+     * @throws ConnectionCanceledException Authentication canceled
      */
     private org.jets3t.service.model.cloudfront.Distribution createDistribution(boolean enabled,
                                                                                 ch.cyberduck.core.cdn.Distribution.Method method,
@@ -490,11 +492,15 @@ public class CloudFrontDistributionConfiguration extends HttpSession implements 
     /**
      * Amazon CloudFront Extension used to enable or disable a distribution configuration and its CNAMESs
      *
-     * @param enabled Distribution status
-     * @param id      Distribution reference
-     * @param cnames  DNS CNAME aliases for distribution
-     * @param logging Access log configuration
+     * @param enabled           Distribution status
+     * @param method            Distribution method
+     * @param origin            Name of the container
+     * @param id                Distribution reference
+     * @param cnames            DNS CNAME aliases for distribution
+     * @param logging           Access log configuration
+     * @param defaultRootObject Index file for distribution. Only supported for download and custom origins.
      * @throws CloudFrontServiceException CloudFront failure details
+     * @throws IOException                I/O error
      */
     private void updateDistribution(boolean enabled, ch.cyberduck.core.cdn.Distribution.Method method, final String origin,
                                     String id, String[] cnames, LoggingStatus logging, String defaultRootObject)
@@ -546,8 +552,9 @@ public class CloudFrontDistributionConfiguration extends HttpSession implements 
     }
 
     /**
-     * @param origin
-     * @return
+     * @param method Distribution method
+     * @param origin Origin container
+     * @return Match viewer policy
      */
     protected CustomOrigin getCustomOriginConfiguration(ch.cyberduck.core.cdn.Distribution.Method method, String origin) {
 //        int httpPort = 80;
@@ -567,9 +574,9 @@ public class CloudFrontDistributionConfiguration extends HttpSession implements 
      * Amazon CloudFront Extension used to list all configured distributions
      *
      * @param origin Name of the container
-     * @param method
-     * @return All distributions for the given AWS Credentials
+     * @param method Distribution method
      * @throws CloudFrontServiceException CloudFront failure details
+     * @throws IOException                Service error
      */
     private void cache(String origin, ch.cyberduck.core.cdn.Distribution.Method method)
             throws IOException, CloudFrontServiceException {
@@ -650,8 +657,9 @@ public class CloudFrontDistributionConfiguration extends HttpSession implements 
 
     /**
      * @param distribution Distribution configuration
+     * @return Configuration
      * @throws CloudFrontServiceException CloudFront failure details
-     * @returann
+     * @throws IOException                Service error
      */
     private DistributionConfig getDistributionConfig(final org.jets3t.service.model.cloudfront.Distribution distribution)
             throws IOException, CloudFrontServiceException {
@@ -666,6 +674,7 @@ public class CloudFrontDistributionConfiguration extends HttpSession implements 
     /**
      * @param distribution A distribution (the distribution must be disabled and deployed first)
      * @throws CloudFrontServiceException CloudFront failure details
+     * @throws IOException                Service error
      */
     private void deleteDistribution(ch.cyberduck.core.cdn.Distribution distribution)
             throws IOException, CloudFrontServiceException {
