@@ -1882,6 +1882,8 @@ source/ch/cyberduck/core/fs/fuse/FuseFilesystem.java -text
 source/ch/cyberduck/core/fs/fuse/GMUserFileSystem.java -text
 source/ch/cyberduck/core/fs/fuse/GMUserFileSystemLifecycle.java -text
 source/ch/cyberduck/core/fs/fuse/GMUserFileSystemOperations.java -text
+source/ch/cyberduck/core/fs/kfs/KfsFilesystem.java -text
+source/ch/cyberduck/core/fs/kfs/KfsLibrary.java -text
 source/ch/cyberduck/core/ftp/FTPClient.java -text
 source/ch/cyberduck/core/ftp/FTPConnectMode.java -text
 source/ch/cyberduck/core/ftp/FTPException.java -text
