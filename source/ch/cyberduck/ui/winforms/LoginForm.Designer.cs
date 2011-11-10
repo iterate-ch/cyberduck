@@ -36,7 +36,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.loginButton = new System.Windows.Forms.Button();
             this.cancelButton = new System.Windows.Forms.Button();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.labelMessage = new System.Windows.Forms.Label();
+            this.labelMessage = new Ch.Cyberduck.Ui.Winforms.Controls.ClickLinkLabel();
             this.labelUsername = new System.Windows.Forms.Label();
             this.textBoxUsername = new System.Windows.Forms.TextBox();
             this.checkBoxPkAuthentication = new System.Windows.Forms.CheckBox();
@@ -262,7 +262,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         private System.Windows.Forms.CheckBox checkBoxPkAuthentication;
         private System.Windows.Forms.Button loginButton;
         private System.Windows.Forms.Button cancelButton;
-        private System.Windows.Forms.Label labelMessage;
+        private ClickLinkLabel labelMessage;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private EllipsisLabel pkLabel;
         private System.Windows.Forms.OpenFileDialog openFileDialog;

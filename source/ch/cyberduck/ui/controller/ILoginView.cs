@@ -17,7 +17,6 @@
 // 
 using System;
 using System.Drawing;
-using ch.cyberduck.ui.controller;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
