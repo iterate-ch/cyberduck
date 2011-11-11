@@ -81,17 +81,18 @@ public class GSSession extends S3Session {
     }
 
     @Override
-    protected boolean authorize(HttpUriRequest httpMethod, ProviderCredentials credentials)
+    protected boolean authorize(HttpUriRequest request, ProviderCredentials credentials)
             throws IOException, ServiceException {
         if(credentials instanceof OAuth2Credentials) {
+            request.setHeader("x-goog-api-version", "2");
             OAuth2Tokens tokens = ((OAuth2Credentials) credentials).getOAuth2Tokens();
             if(tokens == null) {
                 throw new ServiceException("Cannot authenticate using OAuth2 until initial tokens are provided");
             }
             log.debug("Authorizing service request with OAuth2 access token: " + tokens.getAccessToken());
-            httpMethod.setHeader("Authorization", "OAuth " + tokens.getAccessToken());
-            if(httpMethod.getURI().getHost().equals(this.getHost().getProtocol().getDefaultHostname())) {
-                httpMethod.setHeader("x-goog-project-id", this.getHost().getCredentials().getUsername());
+            request.setHeader("Authorization", "OAuth " + tokens.getAccessToken());
+            if(request.getURI().getHost().equals(this.getHost().getProtocol().getDefaultHostname())) {
+                request.setHeader("x-goog-project-id", this.getHost().getCredentials().getUsername());
             }
             return true;
         }
