@@ -19,7 +19,15 @@ package ch.cyberduck.core.gstorage;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.Acl;
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.KeychainFactory;
+import ch.cyberduck.core.LoginController;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Session;
+import ch.cyberduck.core.SessionFactory;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.s3.S3Session;
 
@@ -45,7 +53,11 @@ import org.jets3t.service.utils.oauth.OAuthUtils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.MessageFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Google Storage for Developers is a new service for developers to store and
@@ -282,16 +294,14 @@ public class GSSession extends S3Session {
     }
 
     @Override
-    public Acl getPublicAcl(String container, boolean readable, boolean writable) {
-        Acl acl = this.getPrivateAcl(container);
+    public Acl getUploadAcl(String container, boolean readable, boolean writable) {
+        final Acl acl = new Acl();
+        // No need to add owner to ACL, Google Storage  will fill in the correct owner automatically
         if(readable) {
             acl.addAll(new Acl.GroupUser("AllUsers"),
                     new Acl.Role(org.jets3t.service.acl.Permission.PERMISSION_READ.toString()));
         }
-        if(writable) {
-            acl.addAll(new Acl.GroupUser("AllUsers"),
-                    new Acl.Role(org.jets3t.service.acl.Permission.PERMISSION_WRITE.toString()));
-        }
+        // Write permission cannot be applied to objects.
         return acl;
     }
 

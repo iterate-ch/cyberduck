@@ -19,7 +19,22 @@ package ch.cyberduck.core.s3;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AbstractPath;
+import ch.cyberduck.core.Acl;
+import ch.cyberduck.core.ConnectionCanceledException;
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.ErrorListener;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LoginController;
+import ch.cyberduck.core.LoginControllerFactory;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathFactory;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.ProgressListener;
+import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.Session;
+import ch.cyberduck.core.SessionFactory;
+import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.cloud.CloudSession;
@@ -43,7 +58,15 @@ import org.jets3t.service.acl.AccessControlList;
 import org.jets3t.service.acl.GroupGrantee;
 import org.jets3t.service.impl.rest.XmlResponsesSaxParser;
 import org.jets3t.service.impl.rest.httpclient.RestS3Service;
-import org.jets3t.service.model.*;
+import org.jets3t.service.model.S3Bucket;
+import org.jets3t.service.model.S3BucketLoggingStatus;
+import org.jets3t.service.model.S3BucketVersioningStatus;
+import org.jets3t.service.model.S3Object;
+import org.jets3t.service.model.StorageBucket;
+import org.jets3t.service.model.StorageBucketLoggingStatus;
+import org.jets3t.service.model.StorageObject;
+import org.jets3t.service.model.StorageOwner;
+import org.jets3t.service.model.WebsiteConfig;
 import org.jets3t.service.model.cloudfront.CustomOrigin;
 import org.jets3t.service.security.AWSCredentials;
 import org.jets3t.service.security.OAuth2Credentials;
@@ -54,7 +77,11 @@ import org.jets3t.service.utils.ServiceUtils;
 
 import java.io.IOException;
 import java.text.MessageFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Connecting to S3 service with plain HTTP.
@@ -906,8 +933,11 @@ public class S3Session extends CloudSession {
         return users;
     }
 
-    @Override
-    public Acl getPrivateAcl(String container) {
+    /**
+     * @param container Bucket name
+     * @return ACL with full control permission for owner of the bucket
+     */
+    protected Acl getPrivateAcl(String container) {
         for(final StorageBucket bucket : buckets.values()) {
             if(bucket.getName().equals(container)) {
                 StorageOwner owner = bucket.getOwner();
@@ -923,9 +953,15 @@ public class S3Session extends CloudSession {
         return new Acl();
     }
 
-    @Override
-    public Acl getPublicAcl(String container, boolean readable, boolean writable) {
-        Acl acl = this.getPrivateAcl(container);
+    /**
+     * @param container Bucket name
+     * @param readable  Enable read permission for anonymous users
+     * @param readable  Enable write permission for anonymous users
+     * @return ACL with full control permission for owner of the bucket plus the read and write permissions
+     *         for anonymous users if enabled.
+     */
+    protected Acl getUploadAcl(String container, boolean readable, boolean writable) {
+        final Acl acl = this.getPrivateAcl(container);
         if(readable) {
             acl.addAll(new Acl.GroupUser(GroupGrantee.ALL_USERS.getIdentifier()),
                     new Acl.Role(org.jets3t.service.acl.Permission.PERMISSION_READ.toString()));

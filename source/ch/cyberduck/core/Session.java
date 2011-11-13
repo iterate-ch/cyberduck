@@ -730,20 +730,6 @@ public abstract class Session implements TranscriptListener {
         return Collections.emptyList();
     }
 
-    public Acl getPrivateAcl(String container) {
-        return Acl.EMPTY;
-    }
-
-    /**
-     * @param container Container name
-     * @param readable  To include read permission in ACL
-     * @param writable  To include write permission ACL
-     * @return Description list
-     */
-    public Acl getPublicAcl(String container, boolean readable, boolean writable) {
-        return Acl.EMPTY;
-    }
-
     /**
      * @return If metadata for files are supported
      */

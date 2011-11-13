@@ -589,6 +589,7 @@ public class S3Path extends CloudPath {
             }
         }
         Acl acl = Acl.EMPTY;
+        final String container = this.getContainerName();
         if(this.exists()) {
             // Do not overwrite ACL for existing file.
             if(this.attributes().getAcl().equals(Acl.EMPTY)) {
@@ -619,7 +620,7 @@ public class S3Path extends CloudPath {
                     log.debug("Skip writing empty permissions for:" + this.toString());
                 }
                 else {
-                    acl = this.getSession().getPublicAcl(this.getContainerName(),
+                    acl = this.getSession().getUploadAcl(container,
                             perm.getOtherPermissions()[Permission.READ],
                             perm.getOtherPermissions()[Permission.WRITE]);
                 }
@@ -629,15 +630,15 @@ public class S3Path extends CloudPath {
             // Owner gets FULL_CONTROL. No one else has access rights (default).
             object.setAcl(AccessControlList.REST_CANNED_PRIVATE);
         }
-        else if(acl.equals(this.getSession().getPrivateAcl(this.getContainerName()))) {
+        else if(acl.equals(this.getSession().getPrivateAcl(container))) {
             // Owner gets FULL_CONTROL. No one else has access rights (default).
             object.setAcl(AccessControlList.REST_CANNED_PRIVATE);
         }
-        else if(acl.equals(this.getSession().getPublicAcl(this.getContainerName(), true, false))) {
+        else if(acl.equals(this.getSession().getUploadAcl(container, true, false))) {
             // Owner gets FULL_CONTROL and the anonymous principal is granted READ access
             object.setAcl(AccessControlList.REST_CANNED_PUBLIC_READ);
         }
-        else if(acl.equals(this.getSession().getPublicAcl(this.getContainerName(), true, true))) {
+        else if(acl.equals(this.getSession().getUploadAcl(container, true, true))) {
             // Owner gets FULL_CONTROL, the anonymous principal is granted READ and WRITE access
             object.setAcl(AccessControlList.REST_CANNED_PUBLIC_READ_WRITE);
         }
