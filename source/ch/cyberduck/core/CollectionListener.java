@@ -19,7 +19,7 @@ package ch.cyberduck.core;
  */
 
 /**
- * @version $Id: CollectionListener.java 1705 2005-12-09 01:28:33Z dkocher $
+ * @version $Id$
  */
 public interface CollectionListener<L> {
 

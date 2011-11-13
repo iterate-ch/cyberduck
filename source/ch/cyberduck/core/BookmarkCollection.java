@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.ListIterator;
 
 /**
- * @version $Id: BookmarkCollection.java 6244 2010-07-04 06:39:24Z dkocher $
+ * @version $Id$
  */
 public class BookmarkCollection extends AbstractHostCollection {
     private static Logger log = Logger.getLogger(BookmarkCollection.class);

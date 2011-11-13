@@ -27,7 +27,7 @@ import ch.cyberduck.core.serializer.Reader;
 import org.apache.log4j.Logger;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public abstract class AbstractFolderHostCollection extends AbstractHostCollection {
     private static Logger log = Logger.getLogger(AbstractFolderHostCollection.class);

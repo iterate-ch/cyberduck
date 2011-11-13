@@ -27,7 +27,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public abstract class RendezvousFactory extends Factory<Rendezvous> {
     private static Logger log = Logger.getLogger(RendezvousFactory.class);

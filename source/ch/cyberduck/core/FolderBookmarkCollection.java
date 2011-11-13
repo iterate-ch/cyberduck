@@ -29,7 +29,7 @@ import java.util.Comparator;
 import java.util.List;
 
 /**
- * @version $Id: HistoryCollection.java 7364 2010-10-19 13:17:08Z yla $
+ * @version $Id$
  */
 public class FolderBookmarkCollection extends AbstractFolderHostCollection {
     private static Logger log = Logger.getLogger(FolderBookmarkCollection.class);

@@ -25,7 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public abstract class LoginControllerFactory extends Factory<LoginController> {
 

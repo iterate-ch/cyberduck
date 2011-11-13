@@ -34,7 +34,7 @@ import java.io.OutputStream;
 import java.util.UUID;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class Profile extends Protocol implements Serializable {
     private static Logger log = Logger.getLogger(Profile.class);

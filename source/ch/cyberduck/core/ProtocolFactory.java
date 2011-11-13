@@ -30,7 +30,7 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class ProtocolFactory {
     private static Logger log = Logger.getLogger(ProtocolFactory.class);

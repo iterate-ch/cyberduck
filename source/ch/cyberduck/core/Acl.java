@@ -23,7 +23,13 @@ import ch.cyberduck.core.i18n.Locale;
 
 import org.apache.commons.lang.StringUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @version $Id$
@@ -55,8 +61,8 @@ public class Acl extends HashMap<Acl.User, Set<Acl.Role>> {
     }
 
     /**
-     * @param user
-     * @param permissions
+     * @param user        Grantee
+     * @param permissions Permissions
      */
     public void addAll(Acl.User user, Acl.Role... permissions) {
         if(this.containsKey(user)) {
@@ -74,7 +80,7 @@ public class Acl extends HashMap<Acl.User, Set<Acl.Role>> {
     }
 
     /**
-     * @return
+     * @return List of users and roles
      */
     public List<UserAndRole> asList() {
         List<UserAndRole> grants = new ArrayList<UserAndRole>();
@@ -87,8 +93,11 @@ public class Acl extends HashMap<Acl.User, Set<Acl.Role>> {
         return grants;
     }
 
+    /**
+     * @return True if a user of role has been edited
+     */
     public boolean isModified() {
-        for(UserAndRole ua: this.asList()) {
+        for(UserAndRole ua : this.asList()) {
             if(ua.getUser().isModified()) {
                 return true;
             }
@@ -160,9 +169,7 @@ public class Acl extends HashMap<Acl.User, Set<Acl.Role>> {
         }
 
         /**
-         * Placeholder string as help text.
-         *
-         * @return
+         * @return Placeholder string as help text.
          */
         public abstract String getPlaceholder();
 

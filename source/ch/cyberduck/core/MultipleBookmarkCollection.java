@@ -22,7 +22,7 @@ package ch.cyberduck.core;
 import org.apache.log4j.Logger;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class MultipleBookmarkCollection extends Collection<FolderBookmarkCollection> implements EditableCollection {
     private static Logger log = Logger.getLogger(FolderBookmarkCollection.class);

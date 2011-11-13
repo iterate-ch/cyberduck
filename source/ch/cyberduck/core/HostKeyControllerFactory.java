@@ -26,7 +26,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public abstract class HostKeyControllerFactory extends Factory<HostKeyController> {
 
@@ -41,6 +41,7 @@ public abstract class HostKeyControllerFactory extends Factory<HostKeyController
             = new HashMap<Platform, HostKeyControllerFactory>();
 
     /**
+     * @param s Connection
      * @return Login controller instance for the current platform.
      */
     public static HostKeyController instance(Session s) {
@@ -51,6 +52,7 @@ public abstract class HostKeyControllerFactory extends Factory<HostKeyController
     }
 
     /**
+     * @param c Browser controller
      * @return Login controller instance for the current platform.
      */
     public static HostKeyController instance(Controller c) {

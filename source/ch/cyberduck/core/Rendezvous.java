@@ -22,7 +22,7 @@ package ch.cyberduck.core;
 import java.util.Iterator;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public interface Rendezvous {
     /**

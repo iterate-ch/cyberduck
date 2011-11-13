@@ -20,7 +20,7 @@ package ch.cyberduck.core;
  */
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public enum Scheme {
     ftp {
