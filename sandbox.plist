@@ -19,7 +19,7 @@
 		<!-- The ability to send Apple events to the specified destination application. Used for ODB editors. -->
 		<array>
 			<!-- Register this application with Growl -->
-			<string>com.Growl.GrowlHelperApp</string>
+			<string>com.growl.growlhelperapp</string>
 			<!-- Open Terminal for current SFTP connection -->
 			<string>com.apple.terminal</string>
 			<string>de.codingmonkeys.subethaedit</string>
