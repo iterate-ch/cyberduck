@@ -873,7 +873,7 @@ public class Host implements Serializable {
             url.append(this.getCredentials().getUsername()).append("@");
         }
         url.append(this.getHostname(true));
-        if(this.getPort() != this.getProtocol().getDefaultPort()) {
+        if(this.getPort() != this.getProtocol().getScheme().getPort()) {
             url.append(":").append(this.getPort());
         }
         return url.toString();

@@ -28,11 +28,21 @@ public enum Scheme {
         public boolean isSecure() {
             return false;
         }
+
+        @Override
+        public int getPort() {
+            return 21;
+        }
     },
     ftps {
         @Override
         public boolean isSecure() {
             return true;
+        }
+
+        @Override
+        public int getPort() {
+            return 21;
         }
     },
     sftp {
@@ -40,11 +50,21 @@ public enum Scheme {
         public boolean isSecure() {
             return true;
         }
+
+        @Override
+        public int getPort() {
+            return 22;
+        }
     },
     http {
         @Override
         public boolean isSecure() {
             return false;
+        }
+
+        @Override
+        public int getPort() {
+            return 80;
         }
     },
     https {
@@ -52,9 +72,16 @@ public enum Scheme {
         public boolean isSecure() {
             return true;
         }
+
+        @Override
+        public int getPort() {
+            return 443;
+        }
     }
 
     ;
 
     public abstract boolean isSecure();
+    
+    public abstract int getPort();
 }

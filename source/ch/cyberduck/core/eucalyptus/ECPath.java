@@ -18,10 +18,15 @@ package ch.cyberduck.core.eucalyptus;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFactory;
+import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.s3.S3Path;
+
+import java.text.MessageFormat;
+import java.util.Set;
 
 /**
  * @version $Id$
@@ -68,5 +73,24 @@ public class ECPath extends S3Path {
 
     protected <T> ECPath(ECSession s, T dict) {
         super(s, dict);
+    }
+
+    @Override
+    public DescriptiveUrl toTorrentUrl() {
+        return new DescriptiveUrl(null, null);
+    }
+
+    @Override
+    protected DescriptiveUrl toSignedUrl(int seconds) {
+        return new DescriptiveUrl(null, null);
+    }
+
+    @Override
+    public Set<DescriptiveUrl> getHttpURLs() {
+        Set<DescriptiveUrl> list = super.getHttpURLs();
+        list.add(new DescriptiveUrl(this.toURL(false),
+                MessageFormat.format(Locale.localizedString("{0} URL"),
+                        this.getHost().getProtocol().getScheme().name().toUpperCase())));
+        return list;
     }
 }

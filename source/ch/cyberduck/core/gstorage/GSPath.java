@@ -111,7 +111,7 @@ public class GSPath extends S3Path {
     }
 
     @Override
-    public DescriptiveUrl toSignedUrl() {
+    protected DescriptiveUrl toSignedUrl(int seconds) {
         return new DescriptiveUrl(null, null);
     }
 

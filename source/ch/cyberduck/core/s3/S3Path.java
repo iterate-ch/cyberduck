@@ -1529,7 +1529,7 @@ public class S3Path extends CloudPath {
      * @param seconds Expire after seconds elapsed
      * @return Temporary URL to be displayed in browser
      */
-    private DescriptiveUrl toSignedUrl(int seconds) {
+    protected DescriptiveUrl toSignedUrl(int seconds) {
         Calendar expiry = Calendar.getInstance();
         expiry.add(Calendar.SECOND, seconds);
         return new DescriptiveUrl(this.createSignedUrl(seconds),
@@ -1547,7 +1547,7 @@ public class S3Path extends CloudPath {
      * @param expiry Validity of URL
      * @return Temporary URL to be displayed in browser
      */
-    public String createSignedUrl(int expiry) {
+    private String createSignedUrl(int expiry) {
         if(this.attributes().isFile()) {
             try {
                 if(this.getSession().getHost().getCredentials().isAnonymousLogin()) {

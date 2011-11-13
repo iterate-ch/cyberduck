@@ -252,7 +252,9 @@ public abstract class Protocol {
     /**
      * @return The default port this protocol connects to
      */
-    public abstract int getDefaultPort();
+    public int getDefaultPort() {
+        return this.getScheme().getPort();
+    }
 
     public static final Protocol SFTP = new Protocol() {
         @Override
@@ -263,11 +265,6 @@ public abstract class Protocol {
         @Override
         public String getDescription() {
             return Locale.localizedString("SFTP (SSH File Transfer Protocol)");
-        }
-
-        @Override
-        public int getDefaultPort() {
-            return 22;
         }
 
         @Override
@@ -311,11 +308,6 @@ public abstract class Protocol {
         }
 
         @Override
-        public int getDefaultPort() {
-            return 22;
-        }
-
-        @Override
         public Scheme getScheme() {
             return Scheme.sftp;
         }
@@ -348,11 +340,6 @@ public abstract class Protocol {
         }
 
         @Override
-        public int getDefaultPort() {
-            return 21;
-        }
-
-        @Override
         public Scheme getScheme() {
             return Scheme.ftp;
         }
@@ -374,7 +361,7 @@ public abstract class Protocol {
 
         /**
          * Allows empty string for password.
-         * @param credentials
+         * @param credentials Login credentials
          * @return True if username is not blank and password is not null
          */
         @Override
@@ -408,11 +395,6 @@ public abstract class Protocol {
         @Override
         public String getDescription() {
             return Locale.localizedString("FTP-SSL (Explicit AUTH TLS)");
-        }
-
-        @Override
-        public int getDefaultPort() {
-            return 21;
         }
 
         @Override
@@ -470,11 +452,6 @@ public abstract class Protocol {
         @Override
         public String getIdentifier() {
             return "s3";
-        }
-
-        @Override
-        public int getDefaultPort() {
-            return 443;
         }
 
         @Override
@@ -619,11 +596,6 @@ public abstract class Protocol {
         }
 
         @Override
-        public int getDefaultPort() {
-            return 80;
-        }
-
-        @Override
         public Scheme getScheme() {
             return Scheme.http;
         }
@@ -676,11 +648,6 @@ public abstract class Protocol {
         }
 
         @Override
-        public int getDefaultPort() {
-            return 443;
-        }
-
-        @Override
         public Scheme getScheme() {
             return Scheme.https;
         }
@@ -730,11 +697,6 @@ public abstract class Protocol {
         @Override
         public String getIdentifier() {
             return "me";
-        }
-
-        @Override
-        public int getDefaultPort() {
-            return 443;
         }
 
         @Override
@@ -815,11 +777,6 @@ public abstract class Protocol {
         }
 
         @Override
-        public int getDefaultPort() {
-            return 443;
-        }
-
-        @Override
         public boolean isPortConfigurable() {
             return false;
         }
@@ -884,11 +841,6 @@ public abstract class Protocol {
         @Override
         public String getIdentifier() {
             return "swift";
-        }
-
-        @Override
-        public int getDefaultPort() {
-            return 443;
         }
 
         @Override
@@ -976,11 +928,6 @@ public abstract class Protocol {
         @Override
         public Scheme getScheme() {
             return Scheme.https;
-        }
-
-        @Override
-        public int getDefaultPort() {
-            return 443;
         }
 
         @Override
@@ -1087,11 +1034,6 @@ public abstract class Protocol {
         }
 
         @Override
-        public int getDefaultPort() {
-            return 443;
-        }
-
-        @Override
         public boolean isPortConfigurable() {
             return false;
         }
@@ -1156,11 +1098,6 @@ public abstract class Protocol {
         @Override
         public Scheme getScheme() {
             return Scheme.https;
-        }
-
-        @Override
-        public int getDefaultPort() {
-            return 443;
         }
 
         @Override
@@ -1236,11 +1173,6 @@ public abstract class Protocol {
         @Override
         public Scheme getScheme() {
             return Scheme.https;
-        }
-
-        @Override
-        public int getDefaultPort() {
-            return 443;
         }
 
         @Override
