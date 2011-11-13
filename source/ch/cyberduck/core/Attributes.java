@@ -125,20 +125,4 @@ public abstract class Attributes {
     public String getRevision() {
         return null;
     }
-
-    /**
-     * @param other Attributes to compare
-     * @return True if the checksum matches or the references are equal.
-     * @see #getChecksum()
-     */
-    @Override
-    public boolean equals(Object other) {
-        if(other instanceof Attributes) {
-            if(StringUtils.isNotBlank(this.getVersionId()) && StringUtils.isNotBlank(((PathAttributes) other).getVersionId())) {
-                // Compare by version ID if e.g. supported by S3
-                return this.getVersionId().equals(((PathAttributes) other).getVersionId());
-            }
-        }
-        return super.equals(other);
-    }
 }

@@ -217,14 +217,14 @@ public class PathAttributes extends Attributes implements Serializable {
     }
 
     /**
-     * @param p
+     * @param p UNIX permissions
      */
     public void setPermission(Permission p) {
         this.permission = p;
     }
 
     /**
-     * @return
+     * @return UNIX permissions
      */
     @Override
     public Permission getPermission() {
@@ -289,7 +289,7 @@ public class PathAttributes extends Attributes implements Serializable {
     }
 
     /**
-     * @return
+     * @return Group owner of file
      */
     @Override
     public String getGroup() {
@@ -380,7 +380,7 @@ public class PathAttributes extends Attributes implements Serializable {
     /**
      * Attribute to mark a file as hidden by default in addition to a filename convention.
      *
-     * @param duplicate
+     * @param duplicate Flag
      */
     public void setDuplicate(boolean duplicate) {
         this.duplicate = duplicate;
@@ -404,7 +404,7 @@ public class PathAttributes extends Attributes implements Serializable {
     }
 
     /**
-     *
+     * Clear all attributes
      */
     public void clear() {
         this.clear(true, true, true, true);
@@ -414,7 +414,7 @@ public class PathAttributes extends Attributes implements Serializable {
      * @param timestamp   Clear modification, creation and last access date
      * @param size        Clear content length
      * @param permissions Clear permissions and ACLs
-     * @param metadata
+     * @param metadata    Clear metadata
      */
     public void clear(boolean timestamp, boolean size, boolean permissions, boolean metadata) {
         if(timestamp) {
@@ -435,23 +435,53 @@ public class PathAttributes extends Attributes implements Serializable {
     }
 
     @Override
-    public boolean equals(Object other) {
-        if(other instanceof PathAttributes) {
-            PathAttributes attr = ((PathAttributes) other);
-            if(this.getType() != attr.getType()) {
-                return false;
-            }
-            else if(this.getSize() != attr.getSize()) {
-                return false;
-            }
-            else if(this.getModificationDate() != attr.getModificationDate()) {
-                return false;
-            }
-            else if(!this.getPermission().equals(attr.getPermission())) {
-                return false;
-            }
+    public boolean equals(Object o) {
+        if(this == o) {
             return true;
         }
-        return super.equals(other);
+        if(o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        if(!super.equals(o)) {
+            return false;
+        }
+
+        PathAttributes that = (PathAttributes) o;
+
+        if(modified != that.modified) {
+            return false;
+        }
+        if(size != that.size) {
+            return false;
+        }
+        if(type != that.type) {
+            return false;
+        }
+        if(checksum != null ? !checksum.equals(that.checksum) : that.checksum != null) {
+            return false;
+        }
+        if(etag != null ? !etag.equals(that.etag) : that.etag != null) {
+            return false;
+        }
+        if(permission != null ? !permission.equals(that.permission) : that.permission != null) {
+            return false;
+        }
+        if(versionId != null ? !versionId.equals(that.versionId) : that.versionId != null) {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = (int) (size ^ (size >>> 32));
+        result = 31 * result + (int) (modified ^ (modified >>> 32));
+        result = 31 * result + type;
+        result = 31 * result + (permission != null ? permission.hashCode() : 0);
+        result = 31 * result + (checksum != null ? checksum.hashCode() : 0);
+        result = 31 * result + (etag != null ? etag.hashCode() : 0);
+        result = 31 * result + (versionId != null ? versionId.hashCode() : 0);
+        return result;
     }
 }
