@@ -38,7 +38,7 @@ public abstract class CommonUnixFTPEntryParser extends ConfigurableFTPFileEntryP
     private static Logger log = Logger.getLogger(CommonUnixFTPEntryParser.class);
 
     /**
-     * @param regex
+     * @param regex Line regular expression
      */
     public CommonUnixFTPEntryParser(String regex) {
         super(regex);

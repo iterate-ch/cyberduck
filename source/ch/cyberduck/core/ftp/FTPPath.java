@@ -119,19 +119,13 @@ public class FTPPath extends Path {
      *
      */
     private abstract static class DataConnectionAction {
-        /**
-         * Implementation
-         *
-         * @return
-         * @throws IOException
-         */
         public abstract boolean run() throws IOException;
     }
 
     /**
-     * @param action
-     * @return
-     * @throws IOException
+     * @param action Action that needs to open a data connection
+     * @return True if action was successful
+     * @throws IOException I/O error
      */
     private boolean data(DataConnectionAction action) throws IOException {
         try {
@@ -158,9 +152,9 @@ public class FTPPath extends Path {
     }
 
     /**
-     * @param action
-     * @return
-     * @throws IOException
+     * @param action Action that needs to open a data connection
+     * @return True if action was successful
+     * @throws IOException I/O error
      */
     private boolean fallback(DataConnectionAction action) throws IOException {
         // Fallback to other connect mode
@@ -320,6 +314,9 @@ public class FTPPath extends Path {
      * lang       -- Language of the file name per IANA [11] registry.
      * media-type -- MIME media-type of file contents per IANA registry.
      * charset    -- Character set per IANA registry (if not UTF-8)
+     *
+     * @param response The "facts" for a file in a reply to a MLSx command
+     * @return Parsed keys and values
      */
     protected Map<String, Map<String, String>> parseFacts(String[] response) {
         Map<String, Map<String, String>> files = new HashMap<String, Map<String, String>>();
@@ -356,9 +353,12 @@ public class FTPPath extends Path {
 
     /**
      * Parse response of MLSD
+     *
+     * @param children List to add parsed lines
+     * @param replies  Lines
+     * @return True if parsing is successful
      */
-    protected boolean parseMlsdResponse(final AttributedList<Path> children, List<String> replies)
-            throws IOException {
+    protected boolean parseMlsdResponse(final AttributedList<Path> children, List<String> replies) {
 
         if(null == replies) {
             // This is an empty directory
@@ -457,8 +457,8 @@ public class FTPPath extends Path {
         return success;
     }
 
-    protected boolean parseListResponse(final AttributedList<Path> children, FTPFileEntryParser parser, List<String> replies)
-            throws IOException {
+    protected boolean parseListResponse(final AttributedList<Path> children,
+                                        FTPFileEntryParser parser, List<String> replies)  {
         if(null == replies) {
             // This is an empty directory
             return false;
@@ -609,7 +609,7 @@ public class FTPPath extends Path {
     private static final SimpleDateFormat tsFormatSeconds =
             new SimpleDateFormat("yyyyMMddHHmmss");
 
-    {
+    static {
         tsFormatSeconds.setTimeZone(TimeZone.getTimeZone("UTC"));
     }
 
@@ -619,12 +619,15 @@ public class FTPPath extends Path {
     private static final SimpleDateFormat tsFormatMilliseconds =
             new SimpleDateFormat("yyyyMMddHHmmss.SSS");
 
-    {
+    static {
         tsFormatMilliseconds.setTimeZone(TimeZone.getTimeZone("UTC"));
     }
 
     /**
      * Parse the timestamp using the MTDM format
+     *
+     * @param timestamp Date string
+     * @return Milliseconds
      */
     public long parseTimestamp(final String timestamp) {
         if(null == timestamp) {
@@ -995,12 +998,12 @@ public class FTPPath extends Path {
             }
 
             @Override
-            public void mark(int readlimit) {
+            public synchronized void mark(int readlimit) {
                 delegate.mark(readlimit);
             }
 
             @Override
-            public void reset() throws IOException {
+            public synchronized void reset() throws IOException {
                 delegate.reset();
             }
 

@@ -132,9 +132,11 @@ public class FTPSession extends SSLSession {
      */
     protected FTPFileEntryParser getFileParser() throws IOException {
         try {
-            if(!this.getTimezone().equals(this.tz)) {
+            if(!this.getTimezone().equals(tz)) {
                 tz = this.getTimezone();
-                log.info("Reset parser to timezone:" + tz);
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Reset parser to timezone %s", tz));
+                }
                 parser = null;
             }
             if(null == parser) {
@@ -144,6 +146,9 @@ public class FTPSession extends SSLSession {
                 }
                 catch(IOException e) {
                     log.warn("SYST command failed:" + e.getMessage());
+                }
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Using timezone %s", tz));
                 }
                 parser = new FTPParserFactory().createFileEntryParser(system, tz);
                 if(parser instanceof Configurable) {

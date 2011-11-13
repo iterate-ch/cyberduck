@@ -28,10 +28,19 @@ import org.apache.commons.net.ftp.FTPSClient;
 import org.apache.log4j.Logger;
 
 import javax.net.ssl.SSLException;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.Socket;
 import java.security.NoSuchAlgorithmException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -60,6 +69,7 @@ public class FTPClient extends FTPSClient {
      *
      * @return string containing server features, or null if no features or not
      *         supported
+     * @throws IOException I/O failure
      */
     public List<String> listFeatures() throws IOException {
         if(features.isEmpty()) {
@@ -75,20 +85,10 @@ public class FTPClient extends FTPSClient {
         return features;
     }
 
-    /**
-     * @param command
-     * @return
-     * @throws IOException
-     */
     public boolean isFeatureSupported(final int command) throws IOException {
         return this.isFeatureSupported(this.getCommand(command));
     }
 
-    /**
-     * @param feature
-     * @return
-     * @throws IOException
-     */
     public boolean isFeatureSupported(final String feature) throws IOException {
         for(String item : this.listFeatures()) {
             if(item.trim().startsWith(feature)) {
@@ -113,25 +113,11 @@ public class FTPClient extends FTPSClient {
         commands.put(PRET, "PRET");
     }
 
-    /**
-     * Take MLSD into account
-     *
-     * @param command
-     * @param args
-     * @return
-     * @throws IOException
-     */
     @Override
     public int sendCommand(int command, String args) throws IOException {
         return super.sendCommand(this.getCommand(command), args);
     }
 
-    /**
-     * Take MLSD into account
-     *
-     * @param command
-     * @return
-     */
     protected String getCommand(int command) {
         String value = commands.get(command);
         if(null == value) {
@@ -170,7 +156,7 @@ public class FTPClient extends FTPSClient {
     }
 
     @Override
-    public void execPROT(String prot) throws SSLException, IOException {
+    public void execPROT(String prot) throws IOException {
         try {
             super.execPROT(prot);
         }
@@ -193,25 +179,10 @@ public class FTPClient extends FTPSClient {
         super.sslNegotiation();
     }
 
-    /**
-     * No argument to command
-     *
-     * @param command
-     * @return
-     * @throws IOException
-     */
     public List<String> list(int command) throws IOException {
         return this.list(command, null);
     }
 
-    /**
-     * Read from the data socket
-     *
-     * @param command
-     * @param pathname
-     * @return
-     * @throws IOException
-     */
     public List<String> list(int command, String pathname) throws IOException {
         this.pret(this.getCommand(command), pathname);
 
@@ -274,8 +245,9 @@ public class FTPClient extends FTPSClient {
     /**
      * http://drftpd.org/index.php/PRET_Specifications
      *
-     * @param file
-     * @throws IOException
+     * @param command Command to execute
+     * @param file    Remote file
+     * @throws IOException I/O failure
      */
     protected void pret(String command, String file) throws IOException {
         if(this.isFeatureSupported(PRET)) {
@@ -286,10 +258,6 @@ public class FTPClient extends FTPSClient {
         }
     }
 
-    /**
-     * @param pathname
-     * @return -1 if unknown
-     */
     public long size(String pathname) throws IOException {
         if(this.isFeatureSupported(SIZE)) {
             if(!this.setFileType(FTPClient.BINARY_FILE_TYPE)) {
