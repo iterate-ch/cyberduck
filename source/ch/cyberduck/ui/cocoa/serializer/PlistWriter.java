@@ -67,7 +67,7 @@ public class PlistWriter<S extends Serializable> implements Writer<S> {
         list.writeToFile(file.getAbsolute());
     }
 
-    public void write(S bookmark, Local file) {
-        bookmark.<NSDictionary>getAsDictionary().writeToFile(file.getAbsolute());
+    public void write(S item, Local file) {
+        item.<NSDictionary>getAsDictionary().writeToFile(file.getAbsolute());
     }
 }

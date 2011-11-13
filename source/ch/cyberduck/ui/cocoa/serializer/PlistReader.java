@@ -67,9 +67,5 @@ public abstract class PlistReader<S extends Serializable> implements Reader<S> {
         return this.deserialize(dict);
     }
 
-    /**
-     * @param dict
-     * @return
-     */
     public abstract S deserialize(NSDictionary dict);
 }
