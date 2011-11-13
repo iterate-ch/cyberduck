@@ -40,6 +40,7 @@ public abstract class LoginControllerFactory extends Factory<LoginController> {
             = new HashMap<Platform, LoginControllerFactory>();
 
     /**
+     * @param s Connection
      * @return Login controller instance for the current platform.
      */
     public static LoginController instance(Session s) {
@@ -50,6 +51,7 @@ public abstract class LoginControllerFactory extends Factory<LoginController> {
     }
 
     /**
+     * @param c Browser of transfer controller
      * @return Login controller instance for the current platform.
      */
     public static LoginController instance(Controller c) {

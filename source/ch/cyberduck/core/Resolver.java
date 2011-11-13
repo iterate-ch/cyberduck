@@ -42,7 +42,7 @@ public class Resolver implements Runnable {
     private InetAddress resolved;
 
     /**
-     * @return
+     * @return True if hostname is resolved to IP address
      */
     public boolean isResolved() {
         return this.resolved != null;
