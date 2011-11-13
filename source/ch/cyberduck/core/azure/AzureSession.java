@@ -19,12 +19,23 @@ package ch.cyberduck.core.azure;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.Acl;
+import ch.cyberduck.core.ConnectionCanceledException;
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LoginController;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Session;
+import ch.cyberduck.core.SessionFactory;
 import ch.cyberduck.core.cloud.CloudSession;
 import ch.cyberduck.core.i18n.Locale;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.http.*;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpEntityEnclosingRequest;
+import org.apache.http.HttpRequest;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
@@ -32,8 +43,17 @@ import org.dom4j.Document;
 import org.dom4j.Element;
 import org.soyatec.windows.azure.authenticate.IAccessPolicy;
 import org.soyatec.windows.azure.authenticate.SharedKeyCredentials;
-import org.soyatec.windows.azure.blob.*;
-import org.soyatec.windows.azure.blob.internal.*;
+import org.soyatec.windows.azure.blob.DateTime;
+import org.soyatec.windows.azure.blob.IBlobContainer;
+import org.soyatec.windows.azure.blob.IBlobProperties;
+import org.soyatec.windows.azure.blob.IContainerAccessControl;
+import org.soyatec.windows.azure.blob.IRetryPolicy;
+import org.soyatec.windows.azure.blob.SharedAccessPermissions;
+import org.soyatec.windows.azure.blob.internal.BlobContainerRest;
+import org.soyatec.windows.azure.blob.internal.BlobProperties;
+import org.soyatec.windows.azure.blob.internal.BlobStorageRest;
+import org.soyatec.windows.azure.blob.internal.ContainerAccessControl;
+import org.soyatec.windows.azure.blob.internal.RetryPolicies;
 import org.soyatec.windows.azure.constants.HeaderValues;
 import org.soyatec.windows.azure.constants.XmlElementNames;
 import org.soyatec.windows.azure.error.StorageErrorCode;
@@ -43,7 +63,12 @@ import org.soyatec.windows.azure.internal.AccessPolicy;
 import org.soyatec.windows.azure.internal.OutParameter;
 import org.soyatec.windows.azure.internal.ResourceUriComponents;
 import org.soyatec.windows.azure.internal.SignedIdentifier;
-import org.soyatec.windows.azure.internal.constants.*;
+import org.soyatec.windows.azure.internal.constants.CompConstants;
+import org.soyatec.windows.azure.internal.constants.HeaderNames;
+import org.soyatec.windows.azure.internal.constants.HttpMethod;
+import org.soyatec.windows.azure.internal.constants.HttpWebResponse;
+import org.soyatec.windows.azure.internal.constants.QueryParams;
+import org.soyatec.windows.azure.internal.constants.XmsVersion;
 import org.soyatec.windows.azure.util.HttpUtilities;
 import org.soyatec.windows.azure.util.NameValueCollection;
 import org.soyatec.windows.azure.util.TimeSpan;
@@ -56,7 +81,12 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.sql.Timestamp;
 import java.text.MessageFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
 
 /**
@@ -181,11 +211,6 @@ public class AzureSession extends CloudSession {
                     getClient().getBase64Key(), lastModified, getClient().getTimeout(), getClient().getRetryPolicy());
         }
 
-        /**
-         * Create a new blob or overwrite an existing blob.
-         *
-         * @throws StorageException
-         */
         public boolean createBlob(BlobProperties blobProperties,
                                   HttpEntity entity)
                 throws StorageException {
@@ -270,11 +295,6 @@ public class AzureSession extends CloudSession {
             return request;
         }
 
-        /**
-         * @param blobName
-         * @return
-         * @throws StorageException
-         */
         public InputStream getBlob(final String blobName)
                 throws StorageException {
             try {
@@ -495,10 +515,6 @@ public class AzureSession extends CloudSession {
         }
     }
 
-    /**
-     * @param reload
-     * @return
-     */
     protected List<AzureContainer> getContainers(boolean reload) throws IOException, StorageServerException {
         if(containers.isEmpty() || reload) {
             containers.clear();
@@ -511,11 +527,6 @@ public class AzureSession extends CloudSession {
         return new ArrayList<AzureContainer>(containers.values());
     }
 
-    /**
-     * @param bucketname
-     * @return
-     * @throws IOException
-     */
     protected AzureContainer getContainer(final String bucketname) throws IOException {
         try {
             for(AzureContainer container : this.getContainers(false)) {
@@ -539,38 +550,11 @@ public class AzureSession extends CloudSession {
     @Override
     public List<Acl.User> getAvailableAclUsers() {
         return Arrays.asList(AzurePath.PUBLIC_ACL.getUser());
-//        List<Acl.User> l = new ArrayList<Acl.User>();
-//        l.add(new Acl.CanonicalUser(StringUtils.EMPTY));
-//        l.add(AzurePath.PUBLIC_ACL.getUser());
-//        return l;
     }
 
-    @Override
-    public Acl getPrivateAcl(String container) {
-        return new Acl();
-    }
-
-    @Override
-    public Acl getPublicAcl(String container, boolean readable, boolean writable) {
-        Acl acl = new Acl();
-        if(readable) {
-            acl.addAll(AzurePath.PUBLIC_ACL.getUser(), AzurePath.PUBLIC_ACL.getRole());
-        }
-        return acl;
-    }
-
-    /**
-     * Valid permissions values are read (r), write (w), delete (d) and list (l).
-     *
-     * @return
-     */
     @Override
     public List<Acl.Role> getAvailableAclRoles(List<Path> files) {
         return Arrays.asList(AzurePath.PUBLIC_ACL.getRole(), AzurePath.PRIVATE_ACL.getRole());
-//        return Arrays.asList(new Acl.Role(SharedAccessPermissions.toString(SharedAccessPermissions.RL)),
-//                new Acl.Role(SharedAccessPermissions.toString(SharedAccessPermissions.RW)),
-//                new Acl.Role(SharedAccessPermissions.toString(SharedAccessPermissions.RWL)),
-//                new Acl.Role(SharedAccessPermissions.toString(SharedAccessPermissions.RWDL)));
     }
 
     @Override
