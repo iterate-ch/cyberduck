@@ -18,7 +18,20 @@ package ch.cyberduck.core.ftp;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.BookmarkCollection;
+import ch.cyberduck.core.ConnectionCanceledException;
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LoginCanceledException;
+import ch.cyberduck.core.LoginController;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathFactory;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.ProxyFactory;
+import ch.cyberduck.core.Session;
+import ch.cyberduck.core.SessionFactory;
 import ch.cyberduck.core.ftp.parser.CompositeFileEntryParser;
 import ch.cyberduck.core.ftp.parser.LaxUnixFTPEntryParser;
 import ch.cyberduck.core.ftp.parser.RumpusFTPEntryParser;
@@ -28,7 +41,11 @@ import ch.cyberduck.core.ssl.SSLSession;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.net.ProtocolCommandEvent;
 import org.apache.commons.net.ProtocolCommandListener;
-import org.apache.commons.net.ftp.*;
+import org.apache.commons.net.ftp.Configurable;
+import org.apache.commons.net.ftp.FTPClientConfig;
+import org.apache.commons.net.ftp.FTPConnectionClosedException;
+import org.apache.commons.net.ftp.FTPFileEntryParser;
+import org.apache.commons.net.ftp.FTPReply;
 import org.apache.commons.net.ftp.parser.NetwareFTPEntryParser;
 import org.apache.commons.net.ftp.parser.ParserInitializationException;
 import org.apache.commons.net.ftp.parser.UnixFTPEntryParser;
@@ -37,7 +54,12 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.text.MessageFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.TimeZone;
 
 /**
  * Opens a connection to the remote server via ftp protocol
@@ -105,8 +127,8 @@ public class FTPSession extends SSLSession {
     private TimeZone tz;
 
     /**
-     * @return
-     * @throws IOException
+     * @return Directory listing parser depending on response for SYST command
+     * @throws IOException Failure initializing parser
      */
     protected FTPFileEntryParser getFileParser() throws IOException {
         try {
@@ -149,6 +171,9 @@ public class FTPSession extends SSLSession {
      * Best guess of available timezones given the offset of the modification
      * date in the directory listing from the UTC timestamp returned from <code>MDTM</code>
      * if available. Result is error prone because of additional daylight saving offsets.
+     *
+     * @param workdir Directory listing
+     * @return Matching timezones
      */
     private List<TimeZone> calculateTimezone(Path workdir) {
         // Determine the server offset from UTC
@@ -207,7 +232,7 @@ public class FTPSession extends SSLSession {
     private Map<FTPFileEntryParser, Boolean> parsers = new HashMap<FTPFileEntryParser, Boolean>(1);
 
     /**
-     * @param p
+     * @param p Parser
      * @return True if the parser will read the file permissions
      */
     protected boolean isPermissionSupported(final FTPFileEntryParser p) {
@@ -327,7 +352,7 @@ public class FTPSession extends SSLSession {
 
     /**
      * @return True if the feaatures AUTH TLS, PBSZ and PROT are supported.
-     * @throws IOException
+     * @throws IOException Error reading FEAT response
      */
     private boolean isTLSSupported() throws IOException {
         return this.getClient().isFeatureSupported("AUTH TLS")
@@ -400,7 +425,7 @@ public class FTPSession extends SSLSession {
     /**
      * Propose protocol change if AUTH TLS is available.
      *
-     * @param login Prompt
+     * @param login       Prompt
      * @param credentials Login credentials
      * @throws IOException I/O failure
      */
