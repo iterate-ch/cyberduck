@@ -44,9 +44,6 @@ public class RendezvousCollection extends AbstractHostCollection {
         this.load();
     }
 
-    /**
-     * @return
-     */
     public static RendezvousCollection defaultCollection() {
         return RENDEZVOUS_COLLECTION;
     }

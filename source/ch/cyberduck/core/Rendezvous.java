@@ -39,6 +39,9 @@ public interface Rendezvous {
 
     void removeListener(RendezvousListener listener);
 
+    /**
+     * @return Number of servcices discovered in network
+     */
     int numberOfServices();
 
     Host getService(int index);

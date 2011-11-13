@@ -22,7 +22,12 @@ import ch.cyberduck.ui.cocoa.foundation.NSAutoreleasePool;
 
 import org.apache.log4j.Logger;
 
-import com.apple.dnssd.*;
+import com.apple.dnssd.BrowseListener;
+import com.apple.dnssd.DNSSD;
+import com.apple.dnssd.DNSSDException;
+import com.apple.dnssd.DNSSDService;
+import com.apple.dnssd.ResolveListener;
+import com.apple.dnssd.TXTRecord;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -85,14 +90,6 @@ public class RendezvousResponder extends AbstractRendezvous
         }
     }
 
-    /**
-     * @param browser
-     * @param flags
-     * @param ifIndex
-     * @param servicename
-     * @param regType
-     * @param domain
-     */
     public void serviceFound(DNSSDService browser, int flags, int ifIndex, String servicename,
                              String regType, String domain) {
         log.debug("serviceFound:" + servicename);
@@ -104,14 +101,6 @@ public class RendezvousResponder extends AbstractRendezvous
         }
     }
 
-    /**
-     * @param browser
-     * @param flags
-     * @param ifIndex
-     * @param serviceName
-     * @param regType
-     * @param domain
-     */
     public void serviceLost(DNSSDService browser, int flags, int ifIndex, String serviceName,
                             String regType, String domain) {
         log.debug("serviceLost:" + serviceName);
@@ -128,24 +117,11 @@ public class RendezvousResponder extends AbstractRendezvous
         }
     }
 
-    /**
-     * @param resolver
-     * @param errorCode
-     */
     public void operationFailed(DNSSDService resolver, int errorCode) {
         log.warn("operationFailed:" + errorCode);
         resolver.stop();
     }
 
-    /**
-     * @param resolver
-     * @param flags
-     * @param ifIndex
-     * @param fullname
-     * @param hostname
-     * @param port
-     * @param txtRecord
-     */
     public void serviceResolved(DNSSDService resolver, int flags, int ifIndex,
                                 final String fullname, final String hostname, int port, TXTRecord txtRecord) {
         log.debug("serviceResolved:" + fullname);
