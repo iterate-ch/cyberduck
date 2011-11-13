@@ -28,7 +28,13 @@ import org.jets3t.service.utils.ServiceUtils;
 
 import com.ibm.icu.text.Normalizer;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Collections;
@@ -93,7 +99,7 @@ public abstract class Local extends AbstractPath {
         /**
          * This is only returning the correct result if the file already exists.
          *
-         * @return
+         * @return File type
          * @see ch.cyberduck.core.Local#exists()
          */
         @Override
@@ -126,7 +132,6 @@ public abstract class Local extends AbstractPath {
         /**
          * This is only returning the correct result if the file already exists.
          *
-         * @return
          * @see ch.cyberduck.core.Local#exists()
          */
         @Override
@@ -137,7 +142,6 @@ public abstract class Local extends AbstractPath {
         /**
          * This is only returning the correct result if the file already exists.
          *
-         * @return
          * @see ch.cyberduck.core.Local#exists()
          */
         @Override
@@ -194,30 +198,30 @@ public abstract class Local extends AbstractPath {
 
 
     /**
-     * @param parent
-     * @param name
+     * @param parent Parent directory
+     * @param name Filename
      */
     public Local(Local parent, String name) {
         this(parent.getAbsolute(), name);
     }
 
     /**
-     * @param parent
-     * @param name
+     * @param parent Parent directory
+     * @param name Filename
      */
     public Local(String parent, String name) {
         this.setPath(parent, name);
     }
 
     /**
-     * @param path
+     * @param path Absolute path
      */
     public Local(String path) {
         this.setPath(path);
     }
 
     /**
-     * @param path
+     * @param path File reference
      */
     public Local(File path) {
         this.setPath(path.getAbsolutePath());

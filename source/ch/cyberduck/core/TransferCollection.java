@@ -61,8 +61,8 @@ public class TransferCollection extends Collection<Transfer> {
     /**
      * Saves the collection after adding the new item
      *
-     * @param row
-     * @param o
+     * @param row Index of collection
+     * @param o   Transfer
      * @see #save()
      */
     @Override
@@ -74,7 +74,7 @@ public class TransferCollection extends Collection<Transfer> {
     /**
      * Does not save the collection after modifiying
      *
-     * @param row
+     * @param row Index in collection
      * @return the element that was removed from the list.
      * @see #save()
      */
@@ -118,7 +118,8 @@ public class TransferCollection extends Collection<Transfer> {
     }
 
     /**
-     * @return
+     * @return Number of transfers in collection that are running
+     * @see ch.cyberduck.core.Transfer#isRunning()
      */
     public int numberOfRunningTransfers() {
         int running = 0;
@@ -136,7 +137,8 @@ public class TransferCollection extends Collection<Transfer> {
     }
 
     /**
-     * @return
+     * @return Number of transfers in collection that are queued
+     * @see ch.cyberduck.core.Transfer#isQueued()
      */
     public int numberOfQueuedTransfers() {
         int queued = 0;

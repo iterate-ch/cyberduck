@@ -517,7 +517,7 @@ public class DownloadTransfer extends Transfer {
     }
 
     /**
-     * @return
+     * @return Open file with default application
      */
     protected boolean shouldOpenWhenComplete() {
         return Preferences.instance().getBoolean("queue.postProcessItemWhenComplete");

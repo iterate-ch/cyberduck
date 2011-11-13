@@ -74,7 +74,7 @@ public abstract class AbstractProxy implements Proxy {
     /**
      * @param wildcard
      * @param hostname
-     * @return
+     * @return True if hostname matches wildcard
      */
     protected boolean matches(String wildcard, String hostname) {
         String host = wildcard.replace("*", ".*").replace("?", ".");

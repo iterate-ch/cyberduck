@@ -24,20 +24,20 @@ import ch.cyberduck.core.Serializable;
 import java.util.Collection;
 
 /**
- * @version $Id:$
+ * @version $Id$
  * @param <S>
  */
 public interface Writer<S extends Serializable> {
 
     /**
-     * @param collection
-     * @param file
+     * @param collection Collection to serialize
+     * @param file Serialized file target
      */
     void write(Collection<S> collection, Local file);
 
     /**
-     * @param bookmark
-     * @param file
+     * @param item Item to serialize
+     * @param file Serialized file target
      */
-    void write(S bookmark, Local file);
+    void write(S item, Local file);
 }

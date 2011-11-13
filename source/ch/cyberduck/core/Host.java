@@ -182,17 +182,17 @@ public class Host implements Serializable {
     }
 
     /**
-     * @param protocol
-     * @param hostname
+     * @param protocol Scheme
+     * @param hostname The hostname of the server
      */
     public Host(Protocol protocol, String hostname) {
         this(protocol, hostname, protocol.getDefaultPort());
     }
 
     /**
-     * @param protocol
-     * @param hostname
-     * @param credentials
+     * @param protocol    Scheme
+     * @param hostname    The hostname of the server
+     * @param credentials Login credentials
      */
     public Host(Protocol protocol, String hostname, Credentials credentials) {
         this(protocol, hostname, protocol.getDefaultPort());
@@ -209,10 +209,10 @@ public class Host implements Serializable {
     }
 
     /**
-     * @param protocol
-     * @param hostname
-     * @param port
-     * @param defaultpath
+     * @param protocol    Scheme
+     * @param hostname    The hostname of the server
+     * @param port        Port number
+     * @param defaultpath Default working directory
      */
     public Host(Protocol protocol, String hostname, int port, String defaultpath) {
         this.setProtocol(protocol);
@@ -384,8 +384,8 @@ public class Host implements Serializable {
     /**
      * Parses URL in the format ftp://username:pass@hostname:portnumber/path/to/file
      *
-     * @param input
-     * @return
+     * @param input URL
+     * @return Bookmark
      */
     public static Host parse(String input) {
         input = input.trim();
@@ -403,7 +403,7 @@ public class Host implements Serializable {
             protocol = ProtocolFactory.forName(
                     Preferences.instance().getProperty("connection.protocol.default"));
         }
-        String username = null;
+        String username;
         String password = null;
         if(protocol.isAnonymousConfigurable()) {
             username = Preferences.instance().getProperty("connection.login.anon.name");
@@ -501,8 +501,8 @@ public class Host implements Serializable {
     }
 
     /**
-     * @param username
-     * @param password
+     * @param username User
+     * @param password Secret
      */
     public void setCredentials(final String username, final String password) {
         credentials.setUsername(username);
@@ -513,20 +513,20 @@ public class Host implements Serializable {
         this.credentials = credentials;
     }
 
-    /**
-     * @return
-     */
     public Credentials getCredentials() {
         return credentials;
     }
 
     /**
-     * @return
+     * @return Credentials to modify CDN configuration
      */
     public Credentials getCdnCredentials() {
         return cdnCredentials;
     }
 
+    /**
+     * @param cdnCredentials Credentials to modify CDN configuration
+     */
     public void setCdnCredentials(Credentials cdnCredentials) {
         this.cdnCredentials = cdnCredentials;
     }
@@ -541,7 +541,7 @@ public class Host implements Serializable {
     }
 
     /**
-     * @return
+     * @return Scheme
      * @see Protocol#FTP
      * @see Protocol#FTP_TLS
      * @see Protocol#SFTP
@@ -593,7 +593,7 @@ public class Host implements Serializable {
     /**
      * Sets a user-given name for this bookmark
      *
-     * @param nickname
+     * @param nickname Custom name
      */
     public void setNickname(String nickname) {
         if(this.getDefaultNickname().equals(nickname)) {
@@ -611,6 +611,7 @@ public class Host implements Serializable {
 
     /**
      * @param punycode Use the ToASCII operation as defined in the IDNA RFC
+     * @return Hostname decoded
      */
     public String getHostname(boolean punycode) {
         if(punycode && Preferences.instance().getBoolean("connection.hostname.idn")) {
@@ -645,7 +646,7 @@ public class Host implements Serializable {
      * Sets the name for this host
      * Also reverts the nickname if no custom nickname is set
      *
-     * @param hostname
+     * @param hostname Server
      */
     public void setHostname(String hostname) {
         log.debug("setHostname:" + hostname);
@@ -673,7 +674,7 @@ public class Host implements Serializable {
     /**
      * The character encoding to be used with this host
      *
-     * @param encoding
+     * @param encoding Control connection encoding
      */
     public void setEncoding(String encoding) {
         log.debug("setEncoding:" + encoding);
@@ -723,7 +724,7 @@ public class Host implements Serializable {
     /**
      * Set a custom download folder instead of queue.download.folder
      *
-     * @param folder
+     * @param folder Absolute path
      */
     public void setDownloadFolder(String folder) {
         log.debug("setDownloadFolder:" + folder);
@@ -733,7 +734,7 @@ public class Host implements Serializable {
     /**
      * The custom folder if any or the default download location
      *
-     * @return
+     * @return Absolute path
      */
     public Local getDownloadFolder() {
         if(null == this.downloadFolder) {
@@ -753,7 +754,7 @@ public class Host implements Serializable {
      * Set a timezone for the remote server different from the local default timezone
      * May be useful to display modification dates of remote files correctly using the local timezone
      *
-     * @param timezone
+     * @param timezone Timezone of server
      */
     public void setTimezone(TimeZone timezone) {
         log.debug("setTimezone:" + timezone);
@@ -768,21 +769,21 @@ public class Host implements Serializable {
     }
 
     /**
-     * @param comment
+     * @param comment Notice
      */
     public void setComment(String comment) {
         this.comment = comment;
     }
 
     /**
-     * @return
+     * @return Notice
      */
     public String getComment() {
         return this.comment;
     }
 
     /**
-     * @return
+     * @return HTTP accessible URL
      */
     public String getWebURL() {
         if(StringUtils.isBlank(webURL)) {
@@ -803,7 +804,7 @@ public class Host implements Serializable {
     }
 
     /**
-     * @return
+     * @return HTTP accessible URL with the same hostname as the server
      */
     public String getDefaultWebURL() {
         return "http://" + this.getHostname();
@@ -827,7 +828,7 @@ public class Host implements Serializable {
     /**
      * Update the time this bookmark was last accessed.
      *
-     * @param timestamp
+     * @param timestamp Date and time
      */
     public void setTimestamp(Date timestamp) {
         this.timestamp = timestamp;
@@ -847,7 +848,7 @@ public class Host implements Serializable {
     }
 
     /**
-     * @return
+     * @return The URL of the remote host including user login hostname and port
      * @see #toURL()
      */
     @Override

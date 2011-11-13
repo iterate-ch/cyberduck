@@ -23,31 +23,31 @@ import ch.cyberduck.core.Serializable;
 import java.util.List;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public interface Serializer {
 
     /**
-     * @param value
-     * @param key
+     * @param value Value for key
+     * @param key   Identifier for value to serialize
      */
     void setStringForKey(String value, String key);
 
     /**
-     * @param value
-     * @param key
+     * @param value Value for key
+     * @param key   Identifier for value to serialize
      */
     void setObjectForKey(Serializable value, String key);
 
     /**
-     * @param value
-     * @param key
+     * @param value Value for key
+     * @param key   Identifier for value to serialize
      */
     <T extends Serializable> void setListForKey(List<T> value, String key);
 
     /**
-     * @param <T>
-     * @return
+     * @param <T> Type of native format
+     * @return Native serialized format
      */
     <T> T getSerialized();
 

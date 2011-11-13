@@ -101,7 +101,7 @@ public class FolderBookmarkCollection extends AbstractFolderHostCollection {
     /**
      * Importer for legacy bookmarks.
      *
-     * @param c
+     * @param c Existing collection
      */
     @Override
     public void load(Collection<Host> c) {

@@ -44,6 +44,11 @@ public abstract class TransferAction {
         return this.toString().equals(other.toString());
     }
 
+    @Override
+    public int hashCode() {
+        return this.toString().hashCode();
+    }
+
     public abstract String getLocalizableString();
 
     public static TransferAction forName(String name) {

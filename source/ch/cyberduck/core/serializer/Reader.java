@@ -23,22 +23,22 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Serializable;
 
 /**
- * @version $Id:$
  * @param <S>
+ * @version $Id$
  */
 public interface Reader<S extends Serializable> {
 
     /**
-     * @param file
-     * @return
+     * @param file Serialized file
+     * @return Deserialized content
      */
     Collection<S> readCollection(Local file);
 
     /**
-     * Read the bookmark from the given file
+     * Read the serialized item from the given file
      *
-     * @param file A valid bookmark dictionary
-     * @return
+     * @param file A valid dictionary
+     * @return Deserialized item
      */
     S read(Local file);
 }

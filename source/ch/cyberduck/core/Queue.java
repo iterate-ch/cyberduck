@@ -96,7 +96,7 @@ public class Queue {
     }
 
     /**
-     * @param t
+     * @param t Transfer to drop from queue
      */
     public void remove(final Transfer t) {
         if(running.remove(t)) {
@@ -110,7 +110,7 @@ public class Queue {
     }
 
     /**
-     *
+     * Resize queue with current setting in preferences.
      */
     public void resize() {
         log.debug("resize");

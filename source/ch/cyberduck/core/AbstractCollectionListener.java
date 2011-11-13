@@ -27,23 +27,14 @@ public abstract class AbstractCollectionListener<L> implements CollectionListene
         ;
     }
 
-    /**
-     * @param item
-     */
     public void collectionItemAdded(L item) {
         ;
     }
 
-    /**
-     * @param item
-     */
     public void collectionItemRemoved(L item) {
         ;
     }
 
-    /**
-     * @param item
-     */
     public void collectionItemChanged(L item) {
         ;
     }

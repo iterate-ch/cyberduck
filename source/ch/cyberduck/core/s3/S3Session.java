@@ -956,7 +956,7 @@ public class S3Session extends CloudSession {
     /**
      * @param container Bucket name
      * @param readable  Enable read permission for anonymous users
-     * @param readable  Enable write permission for anonymous users
+     * @param writable  Enable write permission for anonymous users
      * @return ACL with full control permission for owner of the bucket plus the read and write permissions
      *         for anonymous users if enabled.
      */

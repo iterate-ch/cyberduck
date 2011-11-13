@@ -31,19 +31,12 @@ public abstract class PreferencesFactory extends Factory<Preferences> {
      */
     protected static final Map<Platform, PreferencesFactory> factories = new HashMap<Platform, PreferencesFactory>();
 
-    /**
-     * @param platform
-     * @param f
-     */
     public static void addFactory(Platform platform, PreferencesFactory f) {
         factories.put(platform, f);
     }
 
     private static Preferences l;
 
-    /**
-     * @return
-     */
     public static Preferences createPreferences() {
         if(null == l) {
             if(!factories.containsKey(NATIVE_PLATFORM)) {

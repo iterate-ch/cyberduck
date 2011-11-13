@@ -117,7 +117,7 @@ public class Collection<E> extends ArrayList<E> implements CollectionListener<E>
     }
 
     /**
-     * @param row
+     * @param row Index in collection
      * @return the element that was removed from the list.
      */
     @Override

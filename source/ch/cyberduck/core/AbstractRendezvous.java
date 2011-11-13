@@ -25,7 +25,12 @@ import ch.cyberduck.ui.DateFormatterFactory;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class AbstractRendezvous implements Rendezvous {
@@ -103,7 +108,7 @@ public abstract class AbstractRendezvous implements Rendezvous {
     /**
      * Register a listener to be notified
      *
-     * @param listener
+     * @param listener Callback
      */
     public void addListener(RendezvousListener listener) {
         listeners.add(listener);
@@ -112,7 +117,7 @@ public abstract class AbstractRendezvous implements Rendezvous {
     /**
      * Remove the listener from the notification queue
      *
-     * @param listener
+     * @param listener Callback
      */
     public void removeListener(RendezvousListener listener) {
         listeners.remove(listener);
@@ -135,7 +140,7 @@ public abstract class AbstractRendezvous implements Rendezvous {
     }
 
     /**
-     * @param index
+     * @param index Index in collection
      * @return A nicely formatted informative string
      */
     public String getDisplayedName(int index) {
@@ -176,7 +181,8 @@ public abstract class AbstractRendezvous implements Rendezvous {
 
 
     /**
-     * @param fullname
+     * @param fullname Service name
+     * @param port     Port number
      * @return Null if no protocol can be found for the given Rendezvous service type.
      * @see "http://developer.apple.com/qa/qa2001/qa1312.html"
      */
@@ -198,8 +204,8 @@ public abstract class AbstractRendezvous implements Rendezvous {
     }
 
     /**
-     * @param fullname
-     * @param host
+     * @param fullname Service name
+     * @param host     Bookmark
      */
     protected void add(String fullname, Host host) {
         log.debug("add:" + fullname);

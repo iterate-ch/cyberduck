@@ -20,7 +20,12 @@ package ch.cyberduck.core;
 
 import org.apache.log4j.Logger;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -47,7 +52,7 @@ public class AttributedList<E extends AbstractPath> extends CopyOnWriteArrayList
     }
 
     /**
-     * @param collection
+     * @param collection Default content
      */
     public AttributedList(java.util.Collection<E> collection) {
         this.addAll(collection);
@@ -129,8 +134,8 @@ public class AttributedList<E extends AbstractPath> extends CopyOnWriteArrayList
         }
 
         /**
-         * @param comparator
-         * @param filter
+         * @param comparator Sorting comparator
+         * @param filter     Collection filter
          */
         public Attributes(Comparator<E> comparator, PathFilter filter) {
             this.comparator = comparator;
@@ -154,14 +159,14 @@ public class AttributedList<E extends AbstractPath> extends CopyOnWriteArrayList
         }
 
         /**
-         * @param child
+         * @param child Hidden element
          */
         public void addHidden(E child) {
             hidden.add(child);
         }
 
         /**
-         * @return
+         * @return Hidden elements
          */
         public List<E> getHidden() {
             return hidden;
@@ -181,7 +186,7 @@ public class AttributedList<E extends AbstractPath> extends CopyOnWriteArrayList
         /**
          * Mark cached listing as superseded
          *
-         * @param dirty
+         * @param dirty Flag
          */
         public void setInvalid(boolean dirty) {
             this.invalid = dirty;
@@ -202,7 +207,7 @@ public class AttributedList<E extends AbstractPath> extends CopyOnWriteArrayList
     /**
      * Metadata of the list.
      *
-     * @return
+     * @return File attributes
      */
     public Attributes<E> attributes() {
         return attributes;

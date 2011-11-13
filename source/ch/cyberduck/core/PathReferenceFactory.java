@@ -32,19 +32,10 @@ public abstract class PathReferenceFactory extends Factory<PathReference> {
     protected static final Map<Platform, PathReferenceFactory> factories
             = new HashMap<Platform, PathReferenceFactory>();
 
-    /**
-     * @param platform
-     * @param f
-     */
     public static void addFactory(Platform platform, PathReferenceFactory f) {
         factories.put(platform, f);
     }
 
-    /**
-     * @param param
-     * @param <T>
-     * @return
-     */
     public static <T> PathReference<T> createPathReference(AbstractPath param) {
         if(!factories.containsKey(NATIVE_PLATFORM)) {
             throw new RuntimeException("No implementation for " + NATIVE_PLATFORM);
@@ -52,10 +43,5 @@ public abstract class PathReferenceFactory extends Factory<PathReference> {
         return factories.get(NATIVE_PLATFORM).create(param);
     }
 
-    /**
-     * @param param
-     * @param <T>
-     * @return
-     */
     protected abstract <T> PathReference<T> create(AbstractPath param);
 }

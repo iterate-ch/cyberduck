@@ -26,17 +26,17 @@ public interface CollectionListener<L> {
     void collectionLoaded();
 
     /**
-     * @param item
+     * @param item Item in collection
      */
     void collectionItemAdded(L item);
 
     /**
-     * @param item
+     * @param item Item in collection
      */
     void collectionItemRemoved(L item);
 
     /**
-     * @param item
+     * @param item Item in collection
      */
     void collectionItemChanged(L item);
 }

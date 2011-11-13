@@ -22,7 +22,13 @@ import ch.cyberduck.core.Preferences;
 
 import org.apache.log4j.Logger;
 
-import javax.net.ssl.*;
+import javax.net.ssl.KeyManager;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocket;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509KeyManager;
+import javax.net.ssl.X509TrustManager;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
@@ -87,12 +93,10 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
     }
 
     /**
-     * @param socket
-     * @param protocols
-     * @return
-     * @throws IOException
+     * @param socket    Socket to configure
+     * @param protocols Enabled SSL protocol versions
      */
-    private void configure(Socket socket, String[] protocols) throws IOException {
+    private void configure(Socket socket, String[] protocols) {
         if(socket instanceof SSLSocket) {
             try {
                 log.debug("Configure SSL parameters with protocol:" + Arrays.toString(protocols));
@@ -105,21 +109,15 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
     }
 
     /**
-     * @param f
-     * @return
-     * @throws IOException
+     * @param f Socket factory
+     * @return Configured socket
+     * @throws IOException Error creating socket
      */
     private Socket handshake(SocketGetter f) throws IOException {
         Socket socket = f.create();
-        try {
-            this.configure(socket, ENABLED_SSL_PROTOCOLS.<String>toArray(new String[ENABLED_SSL_PROTOCOLS.size()]));
-            log.debug("handhsake:" + socket);
-            //((SSLSocket) socket).startHandshake();
-        }
-        catch(IOException e) {
-            log.warn("Handshake failed for:" + e.getMessage());
-            throw e;
-        }
+        this.configure(socket, ENABLED_SSL_PROTOCOLS.<String>toArray(new String[ENABLED_SSL_PROTOCOLS.size()]));
+        log.debug("handhsake:" + socket);
+        //((SSLSocket) socket).startHandshake();
         // Handshake succeeded.
         return socket;
     }

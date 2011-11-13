@@ -111,7 +111,7 @@ public abstract class Archive {
     }
 
     /**
-     * @return
+     * @return List of archive types
      */
     public static Archive[] getKnownArchives() {
         return new Archive[]{TAR, TARGZ, TARBZ2, ZIP};
@@ -120,8 +120,8 @@ public abstract class Archive {
     /**
      * Factory
      *
-     * @param name
-     * @return
+     * @param name Identifier
+     * @return Archive description
      */
     public static Archive forName(final String name) {
         if(StringUtils.isNotBlank(name)) {
@@ -143,22 +143,21 @@ public abstract class Archive {
     private String identifier;
 
     /**
-     * @param extension
+     * @param extension Filename extension for archive format
      */
     private Archive(final String extension) {
         this.identifier = extension;
     }
 
     /**
-     * @return
+     * @return Known filename extensions for archive format
      */
-
     public String[] getExtensions() {
         return new String[]{this.getIdentifier()};
     }
 
     /**
-     * @return
+     * @return Archive identifier
      */
     public String getIdentifier() {
         return identifier;
@@ -167,8 +166,8 @@ public abstract class Archive {
     public abstract String getDescription();
 
     /**
-     * @param files
-     * @return
+     * @param files Files
+     * @return Archived path for files
      */
     public Path getArchive(final List<Path> files) {
         if(files.size() == 0) {
@@ -185,8 +184,8 @@ public abstract class Archive {
     }
 
     /**
-     * @param files
-     * @return
+     * @param files Files
+     * @return Expanded filenames
      */
     public List<Path> getExpanded(final List<Path> files) {
         final List<Path> expanded = new ArrayList<Path>();
@@ -199,8 +198,8 @@ public abstract class Archive {
     }
 
     /**
-     * @param files
-     * @return
+     * @param files Files to archive
+     * @return Name of archive
      */
     public String getTitle(final List<Path> files) {
         Path archive = this.getArchive(files);
@@ -211,27 +210,29 @@ public abstract class Archive {
     }
 
     /**
-     * @return
+     * @param files Files to archive
+     * @return Archive command
      */
-    public String getCompressCommand(final List<Path> paths) {
+    public String getCompressCommand(final List<Path> files) {
         StringBuilder archive = new StringBuilder();
-        if(paths.size() == 1) {
-            archive.append(paths.get(0).getAbsolute());
+        if(files.size() == 1) {
+            archive.append(files.get(0).getAbsolute());
         }
         else {
             // Use default filename
-            archive.append(paths.get(0).getParent().getAbsolute()).append(Path.DELIMITER).append("Archive");
+            archive.append(files.get(0).getParent().getAbsolute()).append(Path.DELIMITER).append("Archive");
         }
-        final List<String> files = new ArrayList<String>();
-        for(Path path : paths) {
-            files.add(this.escape(path.getAbsolute()));
+        final List<String> command = new ArrayList<String>();
+        for(Path path : files) {
+            command.add(this.escape(path.getAbsolute()));
         }
         return MessageFormat.format(Preferences.instance().getProperty("archive.command.create." + this.getIdentifier()),
-                this.escape(archive.toString()), StringUtils.join(files, " "));
+                this.escape(archive.toString()), StringUtils.join(command, " "));
     }
 
     /**
-     * @return
+     * @param path Filename
+     * @return Unarchive command
      */
     public String getDecompressCommand(final Path path) {
         return MessageFormat.format(Preferences.instance().getProperty("archive.command.expand." + this.getIdentifier()),
@@ -241,14 +242,15 @@ public abstract class Archive {
     /**
      * Escape blank
      *
-     * @param path
-     * @return
+     * @param path Filename
+     * @return Escaped whitespace in path
      */
     private String escape(String path) {
         return StringUtils.replace(path, " ", "\\ ");
     }
 
     /**
+     * @param filename File extension to match with archive format
      * @return True if a known file extension for compressed archives
      */
     public static boolean isArchive(final String filename) {
