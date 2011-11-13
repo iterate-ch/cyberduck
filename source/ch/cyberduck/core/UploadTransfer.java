@@ -109,7 +109,7 @@ public class UploadTransfer extends Transfer {
                     }
                     while(false);//(upload.exists());
                     if(log.isInfoEnabled()) {
-                        log.info("Changed name to:" + upload.getName());
+                        log.info(String.format("Changed name from %s to %s", filename, upload.getName()));
                     }
                 }
             }
@@ -365,7 +365,7 @@ public class UploadTransfer extends Transfer {
                     file.setPath(parent, proposal);
                 }
                 if(log.isInfoEnabled()) {
-                    log.info("Changed local name to:" + file.getName());
+                    log.info(String.format("Changed local name from %s to %s", filename, file.getName()));
                 }
             }
             if(file.attributes().isFile()) {

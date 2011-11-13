@@ -759,7 +759,7 @@ public class S3Path extends CloudPath {
                     continue;
                 }
                 if(log.isInfoEnabled()) {
-                    log.info("Resume multipart upload:" + upload);
+                    log.info(String.format("Resume multipart upload %s", upload.getUploadId()));
                 }
                 multipart = upload;
                 break;
@@ -780,7 +780,7 @@ public class S3Path extends CloudPath {
 
         List<MultipartPart> completed;
         if(status().isResume()) {
-            log.info("List completed parts of " + multipart.getUploadId());
+            log.info(String.format("List completed parts of %s", multipart.getUploadId()));
             // This operation lists the parts that have been uploaded for a specific multipart upload.
             completed = this.getSession().getClient().multipartListParts(multipart);
         }
@@ -807,7 +807,7 @@ public class S3Path extends CloudPath {
             for(int partNumber = 1; remaining > 0; partNumber++) {
                 boolean skip = false;
                 if(status().isResume()) {
-                    log.info("Determine if part " + partNumber + " can be skipped");
+                    log.info(String.format("Determine if part %d can be skipped", partNumber));
                     for(MultipartPart c : completed) {
                         if(c.getPartNumber().equals(partNumber)) {
                             log.info("Skip completed part number " + partNumber);
@@ -861,7 +861,7 @@ public class S3Path extends CloudPath {
         finally {
             if(!status().isComplete()) {
                 // Cancel all previous parts
-                log.info("Cancel multipart upload:" + multipart.getUploadId());
+                log.info(String.format("Cancel multipart upload %s", multipart.getUploadId()));
                 this.getSession().getClient().multipartAbortUpload(multipart);
             }
         }
@@ -875,7 +875,7 @@ public class S3Path extends CloudPath {
         if(pool.isShutdown()) {
             throw new ConnectionCanceledException();
         }
-        log.info("Submit part to queue:" + partNumber);
+        log.info(String.format("Submit part %d to queue", partNumber));
         return pool.submit(new Callable<MultipartPart>() {
             public MultipartPart call() throws IOException, ServiceException {
                 Map<String, String> requestParameters = new HashMap<String, String>();
@@ -929,7 +929,7 @@ public class S3Path extends CloudPath {
     }
 
     private ResponseOutputStream<StorageObject> write(boolean check, final StorageObject part, final long contentLength,
-                                                 final Map<String, String> requestParams) throws IOException {
+                                                      final Map<String, String> requestParams) throws IOException {
         if(check) {
             this.getSession().check();
         }

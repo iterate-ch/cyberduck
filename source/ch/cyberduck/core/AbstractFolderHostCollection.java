@@ -82,7 +82,7 @@ public abstract class AbstractFolderHostCollection extends AbstractHostCollectio
     @Override
     public void load() {
         if(log.isInfoEnabled()) {
-            log.info("Reloading:" + folder.getAbsolute());
+            log.info(String.format("Reloading %s", folder.getAbsolute()));
         }
         this.lock();
         try {

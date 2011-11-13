@@ -196,7 +196,9 @@ public class BandwidthThrottle {
                 break;
             }
             try {
-                log.info("Throttling bandwidth for " + (nextTickTime - now) + " milliseconds");
+                if(log.isInfoEnabled()) {
+                    log.info(String.format("Throttling bandwidth for %d milliseconds", nextTickTime - now));
+                }
                 Thread.sleep(nextTickTime - now);
             }
             catch(InterruptedException e) {

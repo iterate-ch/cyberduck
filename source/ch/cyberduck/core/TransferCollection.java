@@ -111,7 +111,7 @@ public class TransferCollection extends Collection<Transfer> {
         log.debug("load");
         if(f.exists()) {
             if(log.isInfoEnabled()) {
-                log.info("Found Queue file: " + f.toString());
+                log.info(String.format("Found queue file in %s", f.toString()));
             }
             this.addAll(TransferReaderFactory.instance().readCollection(f));
         }

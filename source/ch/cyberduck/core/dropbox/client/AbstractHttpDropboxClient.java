@@ -128,8 +128,10 @@ public abstract class AbstractHttpDropboxClient {
 
         String token_key = credentials.get("token").toString();
         String token_secret = credentials.get("secret").toString();
-        log.info("Obtained Token Key:" + token_key);
-        log.info("Obtained Token Secret:" + token_secret);
+        if(log.isInfoEnabled()) {
+            log.info(String.format("Obtained Token Key:%s", token_key));
+            log.info(String.format("Obtained Token Secret:%s", token_secret));
+        }
 
         auth = new Authenticator(key, secret,
                 this.getRequestPath("/oauth/request_token"), this.getRequestPath("/oauth/access_token"), this.getRequestPath("/oauth/authorize"),

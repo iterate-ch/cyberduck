@@ -37,7 +37,7 @@ public abstract class AbstractKeychain {
      */
     public String find(final Host host) {
         if(log.isInfoEnabled()) {
-            log.info("Fetching password from Keychain:" + host);
+            log.info(String.format("Fetching password from keychain for %s", host));
         }
         if(StringUtils.isEmpty(host.getHostname())) {
             log.warn("No hostname given");
@@ -66,7 +66,7 @@ public abstract class AbstractKeychain {
         }
         if(null == p) {
             if(log.isInfoEnabled()) {
-                log.info("Password not found in Keychain:" + host);
+                log.info(String.format("Password not found in keychain for %s", host));
             }
         }
         return p;
@@ -93,7 +93,7 @@ public abstract class AbstractKeychain {
             return;
         }
         if(log.isInfoEnabled()) {
-            log.info("Add Password to Keychain:" + host);
+            log.info(String.format("Add password to Keychain for %s", host));
         }
         if(credentials.isPublicKeyAuthentication()) {
             this.addPassword(host.getHostname(), credentials.getIdentity().getAbbreviatedPath(),

@@ -627,12 +627,12 @@ public class Host implements Serializable {
                     // the operation fails with ParseException
                     final String idn = IDNA.convertIDNToASCII(this.hostname, IDNA.DEFAULT).toString();
                     if(log.isInfoEnabled()) {
-                        log.info("IDN hostname for " + this.hostname + ":" + idn);
+                        log.info(String.format("IDN hostname for %s is %s", this.hostname, idn));
                     }
                     this.punycode = idn;
                 }
                 catch(StringPrepParseException e) {
-                    log.error("Cannot convert hostname to IDNA:" + e.getMessage());
+                    log.error(String.format("Cannot convert hostname to IDNA:%s", e.getMessage()));
                 }
             }
             if(StringUtils.isNotEmpty(this.punycode)) {

@@ -206,7 +206,7 @@ public class FTPSession extends SSLSession {
                 // Subtract seconds
                 utc -= utc % 60000;
                 long offset = local - utc;
-                log.info("Calculated UTC offset is " + offset + "ms");
+                log.info(String.format("Calculated UTC offset is %dms", offset));
                 final List<TimeZone> zones = new ArrayList<TimeZone>();
                 if(TimeZone.getTimeZone(Preferences.instance().getProperty("ftp.timezone.default")).getOffset(utc) == offset) {
                     log.info("Offset equals local timezone offset.");
@@ -218,9 +218,9 @@ public class FTPSession extends SSLSession {
                 // the call to TimeZone#getAvailableIDs leads to errorneous results.
                 final String[] timezones = TimeZone.getAvailableIDs((int) offset);
                 for(String timezone : timezones) {
-                    log.info("Matching timezone identifier:" + timezone);
+                    log.info(String.format("Matching timezone identifier %s", timezone));
                     final TimeZone match = TimeZone.getTimeZone(timezone);
-                    log.info("Determined timezone:" + match);
+                    log.info(String.format("Determined timezone %s", match));
                     zones.add(match);
                 }
                 if(zones.isEmpty()) {

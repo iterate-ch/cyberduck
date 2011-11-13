@@ -74,11 +74,11 @@ public class Donation extends AbstractLicense {
         final boolean valid = this.verify(this.getFile().getAbsolute());
         if(valid) {
             if(log.isInfoEnabled()) {
-                log.info("Valid donation key:" + this.getFile().getAbsolute());
+                log.info(String.format("Valid donation key in %s", this.getFile().getAbsolute()));
             }
         }
         else {
-            log.warn("Not a valid donation key:" + this.getFile().getAbsolute());
+            log.warn(String.format("Not a valid donation key in %s", this.getFile().getAbsolute()));
         }
         return valid;
     }

@@ -440,7 +440,7 @@ public abstract class Transfer implements Serializable {
     private void transfer(final Path p, final TransferFilter filter, final TransferOptions options) {
         if(!this.isIncluded(p)) {
             if(log.isInfoEnabled()) {
-                log.info("Not included in transfer:" + p);
+                log.info(String.format("Not included in transfer:%s", p.getAbsolute()));
             }
             p.status().setComplete(true);
             return;
@@ -532,7 +532,7 @@ public abstract class Transfer implements Serializable {
         final TransferAction action = this.action(options.resumeRequested, options.reloadRequested);
         if(action.equals(TransferAction.ACTION_CANCEL)) {
             if(log.isInfoEnabled()) {
-                log.info("Transfer canceled by user:" + this);
+                log.info(String.format("Transfer canceled by user:%s", this));
             }
             this.cancel();
             return;
@@ -589,7 +589,7 @@ public abstract class Transfer implements Serializable {
 
         if(!this.isIncluded(p)) {
             if(log.isInfoEnabled()) {
-                log.info("Not included in transfer:" + p);
+                log.info(String.format("Not included in transfer:%s", p.getAbsolute()));
             }
             return;
         }
@@ -597,7 +597,7 @@ public abstract class Transfer implements Serializable {
         // Only prepare the path it will be actually transferred
         if(filter.accept(p)) {
             if(log.isInfoEnabled()) {
-                log.info("Accepted in transfer:" + p);
+                log.info(String.format("Accepted in transfer:%s", p.getAbsolute()));
             }
             this.getSession().message(MessageFormat.format(Locale.localizedString("Prepare {0}", "Status"), p.getName()));
             filter.prepare(p);

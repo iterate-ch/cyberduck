@@ -89,7 +89,7 @@ public class DownloadTransfer extends Transfer {
                     }
                     while(download.getLocal().exists());
                     if(log.isInfoEnabled()) {
-                        log.info("Changed local name to:" + download.getName());
+                        log.info(String.format("Changed local name from %s to %s", filename, download.getName()));
                     }
                 }
             }
@@ -226,7 +226,7 @@ public class DownloadTransfer extends Transfer {
                             permission.getOwnerPermissions()[Permission.WRITE] = true;
                         }
                         if(log.isInfoEnabled()) {
-                            log.info("Updating permissions:" + file.getLocal() + "," + permission);
+                            log.info(String.format("Updating permissions of %s to %s", file.getLocal(), permission));
                         }
                         file.getLocal().writeUnixPermission(permission, false);
                     }
@@ -235,7 +235,7 @@ public class DownloadTransfer extends Transfer {
                     if(file.attributes().getModificationDate() != -1) {
                         long timestamp = file.attributes().getModificationDate();
                         if(log.isInfoEnabled()) {
-                            log.info("Updating timestamp:" + file.getLocal() + "," + timestamp);
+                            log.info(String.format("Updating timestamp of %s to %d", file.getLocal(), timestamp));
                         }
                         file.getLocal().writeTimestamp(-1, timestamp, -1);
                     }
@@ -354,7 +354,7 @@ public class DownloadTransfer extends Transfer {
                     file.setLocal(LocalFactory.createLocal(parent, proposal));
                 }
                 if(log.isInfoEnabled()) {
-                    log.info("Changed local name to:" + file.getLocal().getName());
+                    log.info(String.format("Changed local name from %s to %s", filename, file.getLocal().getName()));
                 }
             }
             super.prepare(file);

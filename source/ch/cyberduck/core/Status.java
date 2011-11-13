@@ -164,7 +164,7 @@ public class Status {
     public void setComplete(boolean complete) {
         this.complete = complete;
         if(log.isInfoEnabled()) {
-            log.info("Complete:" + complete + "," + this.getCurrent());
+            log.info(String.format("Status set to complete (%s) with %d bytes", complete, this.getCurrent()));
         }
     }
 

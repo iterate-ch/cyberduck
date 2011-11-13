@@ -332,7 +332,7 @@ public class S3Session extends CloudSession {
                         }
                         bucketname = d.getName();
                     }
-                    log.info("Using default path to determine bucket name:" + bucketname);
+                    log.info(String.format("Using default path to determine bucket name %s", bucketname));
                 }
                 if(StringUtils.isEmpty(bucketname)) {
                     log.warn("No bucket name given in hostname " + host.getHostname());

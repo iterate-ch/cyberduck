@@ -615,7 +615,7 @@ public class GDPath extends Path {
                     try {
                         status.execute();
                         final String header = status.getResponseHeader("Range");
-                        log.info("Content-Range reported by server:" + header);
+                        log.info(String.format("Content-Range reported by server:%s", header));
                         final long range = getNextByteIndexFromRangeHeader(header);
                         request.setHeader("Content-Range", (this.status().isResume() ? range : 0)
                                 + "-" + (size - 1)

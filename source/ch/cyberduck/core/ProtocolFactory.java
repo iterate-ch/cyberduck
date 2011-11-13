@@ -76,7 +76,7 @@ public class ProtocolFactory {
                     continue;
                 }
                 if(log.isInfoEnabled()) {
-                    log.info("Adding thirdparty protocol:" + protocol);
+                    log.info(String.format("Adding thirdparty protocol %s", protocol));
                 }
                 protocol.register();
             }

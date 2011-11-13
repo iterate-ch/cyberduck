@@ -432,10 +432,10 @@ public class SFTPPath extends Path {
             final SFTPv3FileHandle handle = this.getSession().sftp().openFileRO(this.getAbsolute());
             in = new SFTPInputStream(handle);
             if(status().isResume()) {
-                log.info("Skipping " + status().getCurrent() + " bytes");
+                log.info(String.format("Skipping %d bytes", status().getCurrent()));
                 final long skipped = in.skip(status().getCurrent());
                 if(skipped < status().getCurrent()) {
-                    throw new IOResumeException("Skipped " + skipped + " bytes instead of " + this.status().getCurrent());
+                    throw new IOResumeException(String.format("Skipped %d bytes instead of %d", skipped, this.status().getCurrent()));
                 }
             }
         }
@@ -538,9 +538,9 @@ public class SFTPPath extends Path {
             OutputStream out = new SFTPOutputStream(handle);
             if(status().isResume()) {
                 long skipped = ((SFTPOutputStream) out).skip(status().getCurrent());
-                log.info("Skipping " + skipped + " bytes");
+                log.info(String.format("Skipping %d bytes", skipped));
                 if(skipped < this.status().getCurrent()) {
-                    throw new IOResumeException("Skipped " + skipped + " bytes instead of " + this.status().getCurrent());
+                    throw new IOResumeException(String.format("Skipped %d bytes instead of %d", skipped, this.status().getCurrent()));
                 }
             }
             return out;

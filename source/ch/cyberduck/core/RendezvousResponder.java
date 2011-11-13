@@ -66,7 +66,7 @@ public class RendezvousResponder extends AbstractRendezvous
         try {
             for(String protocol : this.getServiceTypes()) {
                 if(log.isInfoEnabled()) {
-                    log.info("Adding Rendezvous service listener for " + protocol);
+                    log.info(String.format("Adding Rendezvous service listener for %s", protocol));
                 }
                 this.browsers.put(protocol, DNSSD.browse(protocol, this));
             }
@@ -80,7 +80,7 @@ public class RendezvousResponder extends AbstractRendezvous
     public void quit() {
         for(String protocol : this.getServiceTypes()) {
             if(log.isInfoEnabled()) {
-                log.info("Removing Rendezvous service listener for " + protocol);
+                log.info(String.format("Removing Rendezvous service listener for %s", protocol));
             }
             DNSSDService service = this.browsers.get(protocol);
             if(null == service) {

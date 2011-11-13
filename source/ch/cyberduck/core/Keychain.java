@@ -188,7 +188,7 @@ public class Keychain extends AbstractKeychain {
             CertificateFactory factory = CertificateFactory.getInstance("X.509");
             X509Certificate selected = (X509Certificate) factory.generateCertificate(new ByteArrayInputStream(cert));
             if(log.isDebugEnabled()) {
-                log.info("Selected certificate:" + selected);
+                log.info(String.format("Selected certificate %s", selected));
             }
             return selected;
         }

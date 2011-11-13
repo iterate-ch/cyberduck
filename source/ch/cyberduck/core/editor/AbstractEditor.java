@@ -150,7 +150,7 @@ public abstract class AbstractEditor {
                         Locale.localizedString("Compute MD5 hash of {0}", "Status"), edited.getName()));
                 if(lastchecksum.equals(edited.getLocal().attributes().getChecksum())) {
                     if(log.isInfoEnabled()) {
-                        log.info("File not modified:" + edited.getLocal());
+                        log.info(String.format("File %s not modified", edited.getLocal()));
                     }
                     return;
                 }

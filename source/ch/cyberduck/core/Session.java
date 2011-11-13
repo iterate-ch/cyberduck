@@ -692,7 +692,9 @@ public abstract class Session implements TranscriptListener {
      * @see TranscriptListener
      */
     public void log(boolean request, final String message) {
-        log.info(message);
+        if(log.isInfoEnabled()) {
+            log.info(message);
+        }
         for(TranscriptListener listener : transcriptListeners.toArray(new TranscriptListener[transcriptListeners.size()])) {
             listener.log(request, message);
         }
@@ -847,7 +849,9 @@ public abstract class Session implements TranscriptListener {
      * @see ProgressListener
      */
     public void message(final String message) {
-        log.info(message);
+        if(log.isInfoEnabled()) {
+            log.info(message);
+        }
         for(ProgressListener listener : progressListeners.toArray(new ProgressListener[progressListeners.size()])) {
             listener.message(message);
         }

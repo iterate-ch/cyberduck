@@ -221,7 +221,7 @@ public class Receipt extends AbstractLicense {
                 byte[] result = digest.digest();
                 if(Arrays.equals(result, hash)) {
                     if(log.isInfoEnabled()) {
-                        log.info("Valid receipt for Computer GUID:" + hex);
+                        log.info(String.format("Valid receipt for GUID %s", hex));
                     }
                     this.name = hex;
                 }

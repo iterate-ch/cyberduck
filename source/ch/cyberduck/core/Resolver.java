@@ -129,7 +129,7 @@ public class Resolver implements Runnable {
         try {
             this.resolved = InetAddress.getByName(this.hostname);
             if(log.isInfoEnabled()) {
-                log.info("Resolved " + this.hostname + " to " + this.resolved.getHostAddress());
+                log.info(String.format("Resolved %s to %s", this.hostname, this.resolved.getHostAddress()));
             }
         }
         catch(UnknownHostException e) {

@@ -384,9 +384,9 @@ public class DAVPath extends HttpPath {
                     in = this.getLocal().getInputStream();
                     if(this.status().isResume()) {
                         long skipped = in.skip(this.status().getCurrent());
-                        log.info("Skipping " + skipped + " bytes");
+                        log.info(String.format("Skipping %d bytes", skipped));
                         if(skipped < this.status().getCurrent()) {
-                            throw new IOResumeException("Skipped " + skipped + " bytes instead of " + this.status().getCurrent());
+                            throw new IOResumeException(String.format("Skipped %d bytes instead of %d", skipped, this.status().getCurrent()));
                         }
                     }
                     out = this.write(check);

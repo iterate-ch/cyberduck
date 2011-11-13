@@ -125,7 +125,7 @@ public class CFSession extends CloudSession {
             authentication.append(Preferences.instance().getProperty("cf.authentication.context"));
         }
         if(log.isInfoEnabled()) {
-            log.info("Using authentication URL " + authentication.toString());
+            log.info(String.format("Using authentication URL %s", authentication.toString()));
         }
         return authentication.toString();
     }

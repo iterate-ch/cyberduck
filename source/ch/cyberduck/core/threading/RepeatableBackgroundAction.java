@@ -19,7 +19,12 @@ package ch.cyberduck.core.threading;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.Collection;
+import ch.cyberduck.core.ConnectionCanceledException;
+import ch.cyberduck.core.ErrorListener;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Session;
+import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.ui.growl.Growl;
 
@@ -216,7 +221,7 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
     public void finish() {
         while(this.hasFailed() && this.retry() > 0) {
             if(log.isInfoEnabled()) {
-                log.info("Retry failed background action:" + this);
+                log.info(String.format("Retry failed background action %s", this));
             }
             // This is an automated retry. Wait some time first.
             this.pause();

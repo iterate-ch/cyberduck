@@ -59,12 +59,14 @@ public class Native {
     }
 
     /**
-     * @param name
-     * @return
+     * @param name Library name
+     * @return Path in application bundle
      */
     protected static String getPath(String name) {
         final String lib = NSBundle.mainBundle().resourcePath() + "/Java/lib" + name + ".dylib";
-        log.info("Locating library " + name + " at '" + lib + "'");
+        if(log.isInfoEnabled()) {
+            log.info(String.format("Locating library %s at %s", name, lib));
+        }
         return lib;
     }
 }

@@ -70,7 +70,7 @@ public class DefaultX509TrustManager implements X509TrustManager {
             if(log.isInfoEnabled()) {
                 log.info("Server certificate chain:");
                 for(int i = 0; i < x509Certificates.length; i++) {
-                    log.info("X509Certificate[" + i + "]=" + x509Certificates[i]);
+                    log.info(String.format("X509Certificate[%d]=%s", i, x509Certificates[i]));
                 }
             }
         }

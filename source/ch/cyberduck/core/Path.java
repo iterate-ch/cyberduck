@@ -891,9 +891,11 @@ public abstract class Path extends AbstractPath implements Serializable {
 
         if(offset > 0) {
             long skipped = in.skip(offset);
-            log.info("Skipping " + skipped + " bytes");
+            if(log.isInfoEnabled())  {
+                log.info(String.format("Skipping %d bytes", skipped));
+            }
             if(skipped < status().getCurrent()) {
-                throw new IOResumeException("Skipped " + skipped + " bytes instead of " + status().getCurrent());
+                throw new IOResumeException(String.format("Skipped %d bytes instead of %d", skipped, status().getCurrent()));
             }
         }
         this.transfer(in, new ThrottledOutputStream(out, throttle), l, limit);

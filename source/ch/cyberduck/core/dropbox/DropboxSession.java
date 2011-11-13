@@ -73,8 +73,8 @@ public class DropboxSession extends HttpSession {
         this.login();
 
         if(log.isInfoEnabled()) {
-            Account account = this.getClient().account();
-            log.info("Logged in as " + account.getDisplayName() + "(" + account.getUid() + ")");
+            final Account account = this.getClient().account();
+            log.info(String.format("Logged in as %s(%d)", account.getDisplayName(), account.getUid()));
         }
 
         this.fireConnectionDidOpenEvent();

@@ -72,13 +72,13 @@ public abstract class KeychainX509TrustManager extends AbstractX509TrustManager 
 
         if(Arrays.asList(this.getAcceptedIssuers()).containsAll(Arrays.asList(certs))) {
             if(log.isInfoEnabled()) {
-                log.info("Certificate for " + this.getHostname() + " previously trusted");
+                log.info(String.format("Certificate for %s previously trusted", this.getHostname()));
             }
             return;
         }
         if(KeychainFactory.instance().isTrusted(this.getHostname(), certs)) {
             if(log.isInfoEnabled()) {
-                log.info("Certificate for " + this.getHostname() + " trusted in Keychain");
+                log.info(String.format("Certificate for %s trusted in Keychain", this.getHostname()));
             }
             // We still accept the certificate if we find it in the Keychain
             // regardless of its trust settings. There is currently no way I am
@@ -130,15 +130,15 @@ public abstract class KeychainX509TrustManager extends AbstractX509TrustManager 
             Enumeration<String> aliases = store.aliases();
             while(aliases.hasMoreElements()) {
                 String alias = aliases.nextElement();
-                log.info("Alias in Keychain:" + alias);
+                log.info(String.format("Alias in Keychain %s", alias));
                 if(store.isKeyEntry(alias)) {
-                    log.info("Private key for alias:" + alias);
+                    log.info(String.format("Private key for alias %s", alias));
                     continue;
                 }
                 if(store.isCertificateEntry(alias)) {
                     Certificate cert = store.getCertificate(alias);
                     if(null == cert) {
-                        log.warn("Failed to retrieve certificate for alias:" + alias);
+                        log.warn(String.format("Failed to retrieve certificate for alias %s", alias));
                         continue;
                     }
                     if(cert instanceof X509Certificate) {
@@ -152,16 +152,16 @@ public abstract class KeychainX509TrustManager extends AbstractX509TrustManager 
                     MessageFormat.format(Locale.localizedString("Select the certificate to use when connecting to {0}."), this.getHostname()));
             if(null == cert) {
                 if(log.isInfoEnabled()) {
-                    log.info("No certificate selected for hostname:" + this.getHostname());
+                    log.info(String.format("No certificate selected for hostname %s", this.getHostname()));
                 }
                 return null;
             }
             String alias = store.getCertificateAlias(cert);
-            log.info("Certificate alias choosen:" + alias);
+            log.info(String.format("Certificate alias %s choosen", alias));
             return alias;
         }
         catch(KeyStoreException e) {
-            log.error("Keystore not loaded:" + e.getMessage());
+            log.error(String.format("Keystore not loaded:%s", e.getMessage()));
         }
         return null;
     }

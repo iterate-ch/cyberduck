@@ -29,14 +29,14 @@ public class CompositeFileEntryParser extends FTPFileEntryParserImpl implements 
             if(null != parsed) {
                 return parsed;
             }
-            log.info("Switching parser implementation because "+cachedFtpFileEntryParser+" failed");
+            log.info(String.format("Switching parser implementation because %s failed", cachedFtpFileEntryParser));
             cachedFtpFileEntryParser = null;
         }
         for(FTPFileEntryParser parser : ftpFileEntryParsers) {
             FTPFile matched = parser.parseFTPEntry(listEntry);
             if(matched != null) {
                 cachedFtpFileEntryParser = parser;
-                log.info("Caching " + cachedFtpFileEntryParser + " parser implementation");
+                log.info(String.format("Caching %s parser implementation", cachedFtpFileEntryParser));
                 return matched;
             }
         }

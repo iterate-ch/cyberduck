@@ -203,10 +203,8 @@ public class Cache<E extends AbstractPath> {
      */
     public void clear() {
         if(log.isInfoEnabled()) {
-            log.info("Clearing cache " + this.toString());
+            log.info(String.format("Clearing cache %s", this.toString()));
         }
         _impl.clear();
     }
-
-
 }
