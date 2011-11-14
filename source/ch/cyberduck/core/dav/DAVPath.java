@@ -49,7 +49,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @version $Id: $
+ * @version $Id$
  */
 public class DAVPath extends HttpPath {
     private static Logger log = Logger.getLogger(DAVPath.class);
