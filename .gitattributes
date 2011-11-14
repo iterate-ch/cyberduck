@@ -1838,7 +1838,6 @@ source/ch/cyberduck/core/Utils.cs -text
 source/ch/cyberduck/core/VirtualFileDataObject.cs -text
 source/ch/cyberduck/core/aquaticprime/LicenseImpl.cs -text
 source/ch/cyberduck/core/aquaticprime/LicenseVerifier.cs -text
-source/ch/cyberduck/core/aquaticprime/Receipt.java -text
 source/ch/cyberduck/core/cdn/Distribution.java -text
 source/ch/cyberduck/core/cdn/DistributionConfiguration.java -text
 source/ch/cyberduck/core/cf/CFPath.java -text

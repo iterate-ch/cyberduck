@@ -19,7 +19,11 @@ package ch.cyberduck.core.aquaticprime;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.Factory;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.PathFilter;
+import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.i18n.Locale;
 
 import org.apache.commons.io.FilenameUtils;
@@ -40,17 +44,13 @@ public abstract class LicenseFactory extends Factory<License> {
     protected static final Map<Platform, LicenseFactory> factories
             = new HashMap<Platform, LicenseFactory>();
 
-    /**
-     * @param platform
-     * @param f
-     */
     public static void addFactory(Factory.Platform platform, LicenseFactory f) {
         factories.put(platform, f);
     }
 
     /**
-     * @param file
-     * @return
+     * @param file File to parse
+     * @return License possibly not yet verified depending on the implementation
      */
     protected abstract License open(Local file);
 
@@ -78,7 +78,8 @@ public abstract class LicenseFactory extends Factory<License> {
     }
 
     /**
-     * @return
+     * @param file File to parse
+     * @return Read license from file
      */
     public static License create(Local file) {
         if(!factories.containsKey(NATIVE_PLATFORM)) {
@@ -117,7 +118,15 @@ public abstract class LicenseFactory extends Factory<License> {
 
         @Override
         public boolean equals(Object obj) {
-            return EMPTY_LICENSE == obj;
+            if(obj instanceof License) {
+                return EMPTY_LICENSE == obj;
+            }
+            return false;
+        }
+
+        @Override
+        public int hashCode() {
+            return this.toString().hashCode();
         }
 
         @Override

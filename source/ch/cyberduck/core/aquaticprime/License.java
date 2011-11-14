@@ -30,7 +30,9 @@ public interface License {
     boolean verify();
 
     /**
-     * @return The value of the given property in the license file. Null if no property with the given key.
+     * @param property Key in license file
+     * @return The value of the given property in the license file.
+     *         Null if no property with the given key.
      */
     String getValue(String property);
 
@@ -42,7 +44,7 @@ public interface License {
     String getName();
 
     /**
-     * @return
+     * @return True if this is a receipt from the store
      */
     boolean isReceipt();
 }
