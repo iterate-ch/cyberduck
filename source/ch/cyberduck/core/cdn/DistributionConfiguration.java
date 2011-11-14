@@ -31,6 +31,7 @@ import java.util.List;
 public interface DistributionConfiguration {
 
     /**
+     * @param method Distribution method
      * @return True if configuration is known.
      */
     boolean isCached(Distribution.Method method);
@@ -78,11 +79,12 @@ public interface DistributionConfiguration {
      * Index file for root of container
      *
      * @param method Distribution method
-     * @return
+     * @return True if index file can be specified
      */
     boolean isDefaultRootSupported(Distribution.Method method);
 
     /**
+     * @param method Distribution method
      * @return True if CDN is is configured logging requests to storage
      */
     boolean isLoggingSupported(Distribution.Method method);
@@ -101,7 +103,8 @@ public interface DistributionConfiguration {
     List<Distribution.Method> getMethods();
 
     /**
-     * @param method Distribution method
+     * @param method    Distribution method
+     * @param container Bucket
      * @return Bucket name not fully qualified.
      */
     String getOrigin(Distribution.Method method, String container);
@@ -114,8 +117,8 @@ public interface DistributionConfiguration {
     String toString();
 
     /**
-     * @param method
-     * @return
+     * @param method Distribution method
+     * @return CDN name
      */
     String toString(Distribution.Method method);
 
