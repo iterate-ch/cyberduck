@@ -26,7 +26,7 @@ import ch.cyberduck.core.Preferences;
 import org.apache.log4j.Logger;
 
 /**
- * @version $Id: FilezillaBookmarkCollection.java 7465 2010-11-02 16:28:09Z dkocher $
+ * @version $Id$
  */
 public class CloudberryGoogleBookmarkCollection extends CloudberryBookmarkCollection {
     private static Logger log = Logger.getLogger(CloudberryGoogleBookmarkCollection.class);

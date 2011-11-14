@@ -19,7 +19,11 @@ package ch.cyberduck.core.importer;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AbstractHostCollection;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.KeychainFactory;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.ui.cocoa.odb.EditorFactory;
 
@@ -101,12 +105,10 @@ public abstract class ThirdpartyBookmarkCollection extends AbstractHostCollectio
      * @return MD5 sum of bookmark file
      */
     public String getChecksum() {
-        if(this.getFile().exists()) {
-            String checksum = this.getFile().attributes().getChecksum();
-            log.debug("Current checksum:" + checksum);
-            return checksum;
-        }
-        return null;
+        final Local file = this.getFile();
+        String checksum = file.attributes().getChecksum();
+        log.debug(String.format("Current checksum for %s is %s", file.getAbsolute(), checksum));
+        return checksum;
     }
 
     @Override

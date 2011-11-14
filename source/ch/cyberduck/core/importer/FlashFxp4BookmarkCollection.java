@@ -26,7 +26,7 @@ import ch.cyberduck.core.Preferences;
 import org.apache.log4j.Logger;
 
 /**
- * @version $Id: FlashFxpBookmarkCollection.java 7472 2010-11-03 13:08:09Z dkocher $
+ * @version $Id$
  */
 public class FlashFxp4BookmarkCollection extends FlashFxpBookmarkCollection {
     private static Logger log = Logger.getLogger(FlashFxp4BookmarkCollection.class);

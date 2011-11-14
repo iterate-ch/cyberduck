@@ -25,7 +25,7 @@ import org.apache.log4j.Logger;
 import org.xml.sax.Attributes;
 
 /**
- * @version $Id: FilezillaBookmarkCollection.java 7465 2010-11-02 16:28:09Z dkocher $
+ * @version $Id$
  */
 public class CrossFtpBookmarkCollection extends XmlBookmarkCollection {
     private static Logger log = Logger.getLogger(CrossFtpBookmarkCollection.class);
