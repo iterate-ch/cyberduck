@@ -28,8 +28,10 @@ import org.apache.log4j.Logger;
 import java.io.File;
 import java.text.MessageFormat;
 
+/**
+ * @version $Id$
+ */
 public abstract class AbstractEditor {
-
     private static Logger log = Logger.getLogger(AbstractEditor.class);
 
     /**
