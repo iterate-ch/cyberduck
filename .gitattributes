@@ -1877,9 +1877,6 @@ source/ch/cyberduck/core/importer/CDTransmitImporter.h -text
 source/ch/cyberduck/core/importer/CDTransmitImporter.m -text
 source/ch/cyberduck/core/s3/S3Path.java -text
 source/ch/cyberduck/core/s3/S3Session.java -text
-source/ch/cyberduck/core/sftp/HostKeyController.java -text
-source/ch/cyberduck/core/sftp/MemoryHostKeyVerifier.java -text
-source/ch/cyberduck/core/sftp/PreferencesHostKeyVerifier.java -text
 source/ch/cyberduck/core/sparkle/Updater.java -text
 source/ch/cyberduck/core/ssl/AbstractX509TrustManager.java -text
 source/ch/cyberduck/core/ssl/SSLSession.java -text
