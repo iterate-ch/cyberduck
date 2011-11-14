@@ -48,9 +48,6 @@ public class OutlinePathReference extends PathReference<NSObject> {
     ));
 
 
-    /**
-     * @param path
-     */
     private OutlinePathReference(AbstractPath path) {
         String unique = path.unique();
         if(!cache.containsKey(unique)) {
@@ -60,9 +57,6 @@ public class OutlinePathReference extends PathReference<NSObject> {
         this.hashcode = unique.hashCode();
     }
 
-    /**
-     * @param reference
-     */
     public OutlinePathReference(NSObject reference) {
         this.reference = reference;
         this.hashcode = reference.toString().hashCode();

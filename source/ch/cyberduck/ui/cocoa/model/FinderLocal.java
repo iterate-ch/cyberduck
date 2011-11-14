@@ -230,7 +230,7 @@ public class FinderLocal extends Local {
         }
 
         /**
-         * @param name
+         * @param name File manager attribute name
          * @return Null if no such file or attribute.
          */
         private NSObject getNativeAttribute(String name) {
@@ -411,9 +411,9 @@ public class FinderLocal extends Local {
     /**
      * Write <code>NSFileModificationDate</code>.
      *
-     * @param created
-     * @param modified
-     * @param accessed
+     * @param created  Milliseconds
+     * @param modified Milliseconds
+     * @param accessed Milliseconds
      */
     @Override
     public void writeTimestamp(final long created, final long modified, final long accessed) {
@@ -464,8 +464,8 @@ public class FinderLocal extends Local {
     /**
      * Comparing by inode if the file exists.
      *
-     * @param o
-     * @return
+     * @param o Other file
+     * @return True if Inode is same
      */
     @Override
     public boolean equals(Object o) {
@@ -642,7 +642,7 @@ public class FinderLocal extends Local {
     /**
      * Uses LSGetApplicationForInfo
      *
-     * @param extension
+     * @param extension File extension
      * @return Null if not found
      */
     protected native String applicationForExtension(String extension);
@@ -661,8 +661,8 @@ public class FinderLocal extends Local {
     });
 
     /**
-     * @eturn All of the application bundle identifiers that are capable of handling
-     * the specified content type in the specified roles.
+     * @return All of the application bundle identifiers that are capable of handling
+     *         the specified content type in the specified roles.
      */
     @Override
     public List<String> getDefaultApplications() {
@@ -689,7 +689,7 @@ public class FinderLocal extends Local {
     /**
      * Uses LSCopyAllRoleHandlersForContentType
      *
-     * @param extension
+     * @param extension File extension
      * @return Empty array if none found
      */
     protected native String[] applicationListForExtension(String extension);
