@@ -28,7 +28,13 @@ import org.apache.commons.collections.map.AbstractLinkedMap;
 import org.apache.commons.collections.map.LRUMap;
 import org.apache.log4j.Logger;
 
-import java.util.*;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.TimeZone;
 
 /**
  * @version $Id$
@@ -118,16 +124,10 @@ public class SyncTransfer extends Transfer {
             Preferences.instance().getProperty("queue.sync.action.default")
     );
 
-    /**
-     * @param action
-     */
     public void setTransferAction(TransferAction action) {
         this.action = action;
     }
 
-    /**
-     * @return
-     */
     public TransferAction getAction() {
         return this.action;
     }
@@ -209,7 +209,7 @@ public class SyncTransfer extends Transfer {
             else if(compare.equals(COMPARISON_LOCAL_NEWER)) {
                 _delegateFilterUpload.complete(p);
             }
-            comparisons.remove(p);
+            comparisons.remove(p.<Path>getReference());
             cache.remove(p.getReference());
         }
     };
@@ -253,7 +253,7 @@ public class SyncTransfer extends Transfer {
      * Set the skipped flag on the file attributes if no synchronisation is needed
      * depending on the current action selection to mirror or only download or upload missing files.
      *
-     * @param path
+     * @param path File
      */
     @Override
     public boolean isSkipped(Path path) {
@@ -322,7 +322,7 @@ public class SyncTransfer extends Transfer {
                 path = _delegateDownload.cache().lookup(reference);
             }
             if(null == path) {
-                log.warn("Lookup failed for " + reference + " in cache");
+                log.warn(String.format("Lookup failed for %s in cache", reference));
             }
             return path;
         }
@@ -340,12 +340,6 @@ public class SyncTransfer extends Transfer {
         return TransferAction.ACTION_CALLBACK;
     }
 
-    /**
-     *
-     * @param file
-     * @param options
-     * @see #compare(Path)
-     */
     @Override
     protected void transfer(final Path file, TransferOptions options) {
         log.debug("transfer:" + file);
@@ -456,7 +450,7 @@ public class SyncTransfer extends Transfer {
             if(p.getLocal().exists() && p.exists()) {
                 if(Preferences.instance().getBoolean("queue.sync.compare.hash")) {
                     // MD5/ETag Checksum is supported
-                    Comparison comparison = this.compareHash(p);
+                    Comparison comparison = this.compareChecksum(p);
                     if(!COMPARISON_UNEQUAL.equals(comparison)) {
                         // Decision is available
                         return result = comparison;
@@ -491,10 +485,6 @@ public class SyncTransfer extends Transfer {
         }
     }
 
-    /**
-     * @param p
-     * @return
-     */
     private Comparison compareSize(Path p) {
         if(log.isDebugEnabled()) {
             log.debug("compareSize:" + p);
@@ -521,13 +511,7 @@ public class SyncTransfer extends Transfer {
         return COMPARISON_UNEQUAL;
     }
 
-    /**
-     * Compare MD5 hash of files
-     *
-     * @param p
-     * @return
-     */
-    private Comparison compareHash(Path p) {
+    private Comparison compareChecksum(Path p) {
         if(log.isDebugEnabled()) {
             log.debug("compareHash:" + p);
         }
@@ -550,10 +534,6 @@ public class SyncTransfer extends Transfer {
         return COMPARISON_UNEQUAL;
     }
 
-    /**
-     * @param p
-     * @return
-     */
     private Comparison compareTimestamp(Path p) {
         if(log.isDebugEnabled()) {
             log.debug("compareTimestamp:" + p);
@@ -580,11 +560,6 @@ public class SyncTransfer extends Transfer {
         return COMPARISON_EQUAL;
     }
 
-    /**
-     * @param timestamp
-     * @param precision
-     * @return
-     */
     private Calendar asCalendar(final long timestamp, final int precision) {
         if(log.isDebugEnabled()) {
             log.debug("asCalendar:" + timestamp);
