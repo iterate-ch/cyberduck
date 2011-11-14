@@ -59,7 +59,7 @@ import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 /**
- * @version $Id: HTTPSession.java 7171 2010-10-02 15:06:28Z dkocher $
+ * @version $Id$
  */
 public abstract class HttpSession extends SSLSession {
     private static Logger log = Logger.getLogger(HttpSession.class);
