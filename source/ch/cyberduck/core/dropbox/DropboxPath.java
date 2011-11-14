@@ -38,7 +38,7 @@ import java.util.Collections;
 import java.util.Set;
 
 /**
- * @version $Id: AzurePath.java 7308 2010-10-13 12:24:21Z dkocher $
+ * @version $Id$
  */
 public class DropboxPath extends Path {
     private static Logger log = Logger.getLogger(DropboxPath.class);

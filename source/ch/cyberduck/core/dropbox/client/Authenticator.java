@@ -32,34 +32,19 @@ import oauth.signpost.exception.OAuthException;
 import org.apache.http.HttpRequest;
 import org.apache.log4j.Logger;
 
-import java.io.IOException;
-
 /**
- *
+ * @version $Id$
  */
 public class Authenticator {
     private static Logger log = Logger.getLogger(DropboxClient.class);
 
     private String consumer_key;
     private String consumer_secret;
-    /**
-     *
-     */
+
     private OAuthConsumer consumer;
-    /**
-     *
-     */
+
     private OAuthProvider provider;
 
-    /**
-     * @param consumer_key
-     * @param consumer_secret
-     * @param request_token_url
-     * @param access_token_url
-     * @param authorization_url
-     * @throws IOException
-     * @throws OAuthException
-     */
     public Authenticator(String consumer_key, String consumer_secret, String request_token_url, String access_token_url,
                          String authorization_url, String access_token_key, String access_token_secret) {
         this.consumer_key = consumer_key;
@@ -70,10 +55,6 @@ public class Authenticator {
         this.provider = new DefaultOAuthProvider(request_token_url, access_token_url, authorization_url);
     }
 
-    /**
-     * @param request
-     * @throws OAuthException
-     */
     public void sign(HttpRequest request) throws OAuthException {
         // create a consumer object and configure it with the access
         // token and token secret obtained from the service provider

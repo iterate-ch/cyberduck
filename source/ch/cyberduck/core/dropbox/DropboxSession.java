@@ -30,7 +30,7 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 
 /**
- * @version $Id: AzureSession.java 7323 2010-10-14 12:26:34Z dkocher $
+ * @version $Id$
  */
 public class DropboxSession extends HttpSession {
     private static Logger log = Logger.getLogger(DropboxSession.class);

@@ -42,7 +42,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
+ * @version $Id$
  */
 public class DropboxClient extends AbstractHttpDropboxClient {
     private static Logger log = Logger.getLogger(DropboxClient.class);

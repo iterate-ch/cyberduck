@@ -54,7 +54,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
+ * @version $Id$
  */
 public abstract class AbstractHttpDropboxClient {
     private static Logger log = Logger.getLogger(AbstractHttpDropboxClient.class);
