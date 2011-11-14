@@ -646,8 +646,12 @@ public class S3Path extends CloudPath {
             object.setAcl(this.convert(acl));
         }
         // Storage class
-        object.setStorageClass(Preferences.instance().getProperty("s3.storage.class"));
-        object.setServerSideEncryptionAlgorithm(Preferences.instance().getProperty("s3.encryption.algorithm"));
+        if(StringUtils.isNotBlank(Preferences.instance().getProperty("s3.storage.class"))) {
+            object.setStorageClass(Preferences.instance().getProperty("s3.storage.class"));
+        }
+        if(StringUtils.isNotBlank(Preferences.instance().getProperty("s3.encryption.algorithm"))) {
+            object.setServerSideEncryptionAlgorithm(Preferences.instance().getProperty("s3.encryption.algorithm"));
+        }
         // Default metadata for new files
         for(String m : Preferences.instance().getList("s3.metadata.default")) {
             if(StringUtils.isBlank(m)) {
