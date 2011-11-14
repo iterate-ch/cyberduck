@@ -21,6 +21,9 @@ package ch.cyberduck.core.fs;
 
 import ch.cyberduck.core.Session;
 
+/**
+ * @version $Id$
+ */
 public interface Filesystem {
 
     void mount(Session session);

@@ -40,6 +40,9 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
+/**
+ * @version $Id$
+ */
 public class KfsFilesystem extends ProxyController implements Filesystem {
     private static Logger log = Logger.getLogger(KfsFilesystem.class);
 
