@@ -27,25 +27,29 @@ public interface FileWatcherListener {
 
     /**
      * The files contents changed (also for folders)
-     * @param file
+     *
+     * @param file File that triggered event
      */
     public void fileWritten(Local file);
 
     /**
      * The file has been renamed
-     * @param file
+     *
+     * @param file File that triggered event
      */
     public void fileRenamed(Local file);
 
     /**
      * The file has been removed
-     * @param file
+     *
+     * @param file File that triggered event
      */
     public void fileDeleted(Local file);
 
     /**
+     * The file was created
      *
-     * @param file
+     * @param file File that triggered event
      */
     public void fileCreated(Local file);
 }
