@@ -181,14 +181,16 @@ public abstract class Local extends AbstractPath {
          */
         @Override
         public String getChecksum() {
-            try {
-                return ServiceUtils.toHex(ServiceUtils.computeMD5Hash(Local.this.getInputStream()));
-            }
-            catch(NoSuchAlgorithmException e) {
-                log.error("MD5 failed:" + e.getMessage());
-            }
-            catch(IOException e) {
-                log.error("MD5 failed:" + e.getMessage());
+            if(this.isFile()) {
+                try {
+                    return ServiceUtils.toHex(ServiceUtils.computeMD5Hash(Local.this.getInputStream()));
+                }
+                catch(NoSuchAlgorithmException e) {
+                    log.error("MD5 failed:" + e.getMessage());
+                }
+                catch(IOException e) {
+                    log.error("MD5 failed:" + e.getMessage());
+                }
             }
             return null;
         }
@@ -199,7 +201,7 @@ public abstract class Local extends AbstractPath {
 
     /**
      * @param parent Parent directory
-     * @param name Filename
+     * @param name   Filename
      */
     public Local(Local parent, String name) {
         this(parent.getAbsolute(), name);
@@ -207,7 +209,7 @@ public abstract class Local extends AbstractPath {
 
     /**
      * @param parent Parent directory
-     * @param name Filename
+     * @param name   Filename
      */
     public Local(String parent, String name) {
         this.setPath(parent, name);
