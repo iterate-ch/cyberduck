@@ -30,8 +30,8 @@ public class RepeatableFileInputStream extends org.jets3t.service.io.RepeatableF
     /**
      * Creates a repeatable input stream based on a file.
      *
-     * @param file
-     * @throws java.io.FileNotFoundException
+     * @param file Plain file
+     * @throws FileNotFoundException Invalid file
      */
     public RepeatableFileInputStream(File file) throws FileNotFoundException {
         super(file);

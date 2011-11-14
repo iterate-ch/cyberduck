@@ -21,25 +21,25 @@ package ch.cyberduck.core.serializer;
 import java.util.List;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public interface Deserializer<T> {
 
     /**
-     * @param key
-     * @return
+     * @param key Key name
+     * @return String value for key
      */
     String stringForKey(String key);
 
     /**
-     * @param key
-     * @return
+     * @param key Key name
+     * @return Object value for key
      */
     T objectForKey(String key);
 
     /**
-     * @param key
-     * @return
+     * @param key Key name
+     * @return List values for key
      */
     List<T> listForKey(String key);
 }
