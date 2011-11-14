@@ -21,7 +21,7 @@ package ch.cyberduck.core.ftp.parser;
 import org.apache.commons.net.ftp.FTPFile;
 
 /**
- * @version $Id: StingrayFTPEntryParser.java 3171 2007-07-16 10:30:28Z dkocher $
+ * @version $Id$
  * @see org.apache.commons.net.ftp.parser.UnixFTPEntryParser
  */
 public class RumpusFTPEntryParser extends CommonUnixFTPEntryParser {
