@@ -28,7 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
+ * @version $Id$
  */
 public class PlistDeserializer implements Deserializer<NSDictionary> {
 
