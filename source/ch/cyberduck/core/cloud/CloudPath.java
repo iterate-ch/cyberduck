@@ -62,9 +62,6 @@ public abstract class CloudPath extends HttpPath {
         }
     }
 
-    /**
-     * @return
-     */
     @Override
     public boolean isContainer() {
         return !StringUtils.contains(StringUtils.substring(this.getAbsolute(), 1), this.getPathDelimiter());
