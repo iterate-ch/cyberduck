@@ -85,9 +85,6 @@ public class ConnectionController extends SheetController {
         return true;
     }
 
-    /**
-     * @param parent
-     */
     private ConnectionController(final WindowController parent) {
         super(parent);
     }
@@ -272,9 +269,6 @@ public class ConnectionController extends SheetController {
         }
     }
 
-    /**
-     * @param host
-     */
     private void hostChanged(final Host host) {
         this.updateField(hostField, host.getHostname());
         this.protocolPopup.selectItemAtIndex(

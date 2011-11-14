@@ -85,9 +85,6 @@ public class ErrorController extends BundleController {
         this.loadBundle();
     }
 
-    /**
-     * @return
-     */
     public String getTooltip() {
         return failure.getReadableTitle();
     }

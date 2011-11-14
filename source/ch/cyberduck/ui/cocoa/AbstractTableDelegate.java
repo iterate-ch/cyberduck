@@ -27,9 +27,10 @@ import ch.cyberduck.ui.cocoa.application.NSTableView;
 import ch.cyberduck.ui.cocoa.foundation.NSNotification;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
-import org.apache.log4j.Logger;
 import org.rococoa.ID;
 import org.rococoa.cocoa.foundation.NSInteger;
+
+import org.apache.log4j.Logger;
 
 import java.util.Comparator;
 
@@ -128,48 +129,26 @@ public abstract class AbstractTableDelegate<E> extends ProxyController implement
         this.tableColumnClicked(view, tableColumn);
     }
 
-    /**
-     * @param sender
-     */
     public abstract void tableRowDoubleClicked(final ID sender);
 
-    /**
-     * @param notification
-     */
     public void tableViewSelectionDidChange(NSNotification notification) {
         this.selectionDidChange(notification);
     }
 
-
-    /**
-     * @param notification
-     */
     public void tableViewSelectionIsChanging(NSNotification notification) {
         this.selectionIsChanging(notification);
     }
 
-    /**
-     * @param notification
-     */
     public void outlineViewSelectionDidChange(NSNotification notification) {
         this.selectionDidChange(notification);
     }
 
-    /**
-     * @param notification
-     */
     public void outlineViewSelectionIsChanging(NSNotification notification) {
         this.selectionIsChanging(notification);
     }
 
-    /**
-     * @param notification
-     */
     public abstract void selectionDidChange(NSNotification notification);
 
-    /**
-     * @param notification
-     */
     public void selectionIsChanging(NSNotification notification) {
         ;
     }

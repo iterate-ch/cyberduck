@@ -18,14 +18,37 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Collection;
+import ch.cyberduck.core.DownloadTransfer;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathFactory;
+import ch.cyberduck.core.PathReference;
+import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.Session;
+import ch.cyberduck.core.Status;
+import ch.cyberduck.core.Transfer;
+import ch.cyberduck.core.TransferAction;
+import ch.cyberduck.core.TransferPrompt;
+import ch.cyberduck.core.UploadTransfer;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.ui.DateFormatterFactory;
 import ch.cyberduck.ui.PathPasteboard;
-import ch.cyberduck.ui.cocoa.application.*;
+import ch.cyberduck.ui.cocoa.application.NSApplication;
+import ch.cyberduck.ui.cocoa.application.NSDraggingInfo;
+import ch.cyberduck.ui.cocoa.application.NSDraggingSource;
+import ch.cyberduck.ui.cocoa.application.NSEvent;
 import ch.cyberduck.ui.cocoa.application.NSImage;
+import ch.cyberduck.ui.cocoa.application.NSPasteboard;
+import ch.cyberduck.ui.cocoa.application.NSTableView;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
-import ch.cyberduck.ui.cocoa.foundation.*;
+import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
+import ch.cyberduck.ui.cocoa.foundation.NSFileManager;
 import ch.cyberduck.ui.cocoa.foundation.NSMutableArray;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.foundation.NSString;
@@ -35,7 +58,11 @@ import ch.cyberduck.ui.cocoa.odb.WatchEditor;
 import ch.cyberduck.ui.cocoa.threading.BrowserBackgroundAction;
 
 import org.rococoa.Rococoa;
-import org.rococoa.cocoa.foundation.*;
+import org.rococoa.cocoa.foundation.NSInteger;
+import org.rococoa.cocoa.foundation.NSPoint;
+import org.rococoa.cocoa.foundation.NSRect;
+import org.rococoa.cocoa.foundation.NSSize;
+import org.rococoa.cocoa.foundation.NSUInteger;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -93,7 +120,6 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
      *
      * @param path The directory to fetch the children from
      * @return The cached or newly fetched file listing of the directory
-     * @pre Call from the main thread
      */
     protected AttributedList<Path> children(final Path path) {
         synchronized(isLoadingListingInBackground) {
@@ -227,7 +253,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
     /**
      * Sets whether the use of modifier keys should have an effect on the type of operation performed.
      *
-     * @return
+     * @return Always false
      * @see NSDraggingSource
      */
     public boolean ignoreModifierKeysWhileDragging() {
@@ -256,10 +282,10 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
     }
 
     /**
-     * @param view
+     * @param view        Table
      * @param destination A directory or null to mount an URL
-     * @param info
-     * @return
+     * @param info        Dragging pasteboard
+     * @return True if accepted
      */
     public boolean acceptDrop(NSTableView view, final Path destination, NSDraggingInfo info) {
         log.debug("acceptDrop:" + destination);
@@ -338,11 +364,11 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
     }
 
     /**
-     * @param view
+     * @param view        Table
      * @param destination A directory or null to mount an URL
-     * @param row
-     * @param info
-     * @return
+     * @param row         Index
+     * @param info        Dragging pasteboard
+     * @return Drag operation
      */
     public NSUInteger validateDrop(NSTableView view, Path destination, NSInteger row, NSDraggingInfo info) {
         if(info.draggingPasteboard().availableTypeFromArray(NSArray.arrayWithObject(NSPasteboard.URLPboardType)) != null) {

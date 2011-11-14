@@ -18,7 +18,15 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Collection;
+import ch.cyberduck.core.NullComparator;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathFilter;
+import ch.cyberduck.core.PathReference;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Transfer;
+import ch.cyberduck.core.TransferAction;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.ui.FilenameComparator;
@@ -63,7 +71,7 @@ public abstract class TransferPromptModel extends OutlineDataSource {
 
     /**
      * @param c        The parent window to attach the prompt
-     * @param transfer
+     * @param transfer Transfer
      */
     public TransferPromptModel(TransferPromptController c, final Transfer transfer) {
         this.controller = c;
@@ -80,10 +88,6 @@ public abstract class TransferPromptModel extends OutlineDataSource {
         }
     }
 
-    /**
-     * @param reference
-     * @return
-     */
     protected Path lookup(PathReference reference) {
         return transfer.lookup(reference);
     }
@@ -110,9 +114,7 @@ public abstract class TransferPromptModel extends OutlineDataSource {
     }
 
     /**
-     * The filter to apply to the file listing in the prompt dialog
-     *
-     * @return
+     * @return The filter to apply to the file listing in the prompt dialog
      */
     protected abstract PathFilter<Path> filter();
 
@@ -125,7 +127,7 @@ public abstract class TransferPromptModel extends OutlineDataSource {
      * If no cached listing is available the loading is delayed until the listing is
      * fetched from a background thread
      *
-     * @param path
+     * @param path Folder
      * @return The list of child items for the parent folder. The listing is filtered
      *         using the standard regex exclusion and the additional passed filter
      */
@@ -178,11 +180,6 @@ public abstract class TransferPromptModel extends OutlineDataSource {
             Preferences.instance().getInteger("browser.model.cache.size")
     );
 
-    /**
-     * @param item
-     * @param identifier
-     * @return
-     */
     protected NSObject objectValueForItem(final Path item, final String identifier) {
         final NSObject cached = tableViewCache.get(item, identifier);
         if(null == cached) {

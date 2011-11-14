@@ -42,9 +42,6 @@ import org.apache.log4j.Logger;
 public class MainApplication {
     private static Logger log = Logger.getLogger(MainApplication.class);
 
-    /**
-     * @param arguments
-     */
     public static void main(String[] arguments) {
         final NSAutoreleasePool pool = NSAutoreleasePool.push();
 

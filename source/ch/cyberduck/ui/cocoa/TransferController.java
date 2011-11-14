@@ -19,17 +19,53 @@ package ch.cyberduck.ui.cocoa;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AbstractCollectionListener;
+import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Collection;
+import ch.cyberduck.core.DownloadTransfer;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Queue;
+import ch.cyberduck.core.Session;
+import ch.cyberduck.core.Status;
+import ch.cyberduck.core.SyncTransfer;
+import ch.cyberduck.core.Transfer;
+import ch.cyberduck.core.TransferAdapter;
+import ch.cyberduck.core.TransferCollection;
+import ch.cyberduck.core.TransferListener;
+import ch.cyberduck.core.TransferOptions;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.core.threading.ControllerMainAction;
 import ch.cyberduck.ui.PathPasteboard;
-import ch.cyberduck.ui.cocoa.application.*;
+import ch.cyberduck.ui.cocoa.application.NSAlert;
+import ch.cyberduck.ui.cocoa.application.NSApplication;
+import ch.cyberduck.ui.cocoa.application.NSCell;
+import ch.cyberduck.ui.cocoa.application.NSControl;
+import ch.cyberduck.ui.cocoa.application.NSDrawer;
+import ch.cyberduck.ui.cocoa.application.NSImageView;
+import ch.cyberduck.ui.cocoa.application.NSMenu;
+import ch.cyberduck.ui.cocoa.application.NSMenuItem;
+import ch.cyberduck.ui.cocoa.application.NSPasteboard;
+import ch.cyberduck.ui.cocoa.application.NSPopUpButton;
+import ch.cyberduck.ui.cocoa.application.NSProgressIndicator;
+import ch.cyberduck.ui.cocoa.application.NSStepper;
+import ch.cyberduck.ui.cocoa.application.NSTableColumn;
+import ch.cyberduck.ui.cocoa.application.NSTableView;
+import ch.cyberduck.ui.cocoa.application.NSTextField;
+import ch.cyberduck.ui.cocoa.application.NSToolbar;
+import ch.cyberduck.ui.cocoa.application.NSToolbarItem;
+import ch.cyberduck.ui.cocoa.application.NSView;
+import ch.cyberduck.ui.cocoa.application.NSWindow;
 import ch.cyberduck.ui.cocoa.delegate.AbstractMenuDelegate;
-import ch.cyberduck.ui.cocoa.foundation.*;
+import ch.cyberduck.ui.cocoa.foundation.NSArray;
+import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
+import ch.cyberduck.ui.cocoa.foundation.NSIndexSet;
+import ch.cyberduck.ui.cocoa.foundation.NSNotification;
+import ch.cyberduck.ui.cocoa.foundation.NSNotificationCenter;
+import ch.cyberduck.ui.cocoa.foundation.NSRange;
 import ch.cyberduck.ui.cocoa.threading.AlertRepeatableBackgroundAction;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 import ch.cyberduck.ui.cocoa.util.HyperlinkAttributedStringFactory;
@@ -48,7 +84,12 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.text.MessageFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.StringTokenizer;
 
 /**
  * @version $Id$
@@ -197,7 +238,7 @@ public class TransferController extends WindowController implements NSToolbar.De
     /**
      * Change focus to filter field
      *
-     * @param sender
+     * @param sender Search field
      */
     @Action
     public void searchButtonClicked(final ID sender) {
@@ -393,6 +434,7 @@ public class TransferController extends WindowController implements NSToolbar.De
     }
 
     /**
+     * @param app Singleton
      * @return NSApplication.TerminateLater or NSApplication.TerminateNow depending if there are
      *         running transfers to be checked first
      */
@@ -638,7 +680,7 @@ public class TransferController extends WindowController implements NSToolbar.De
     /**
      * Add this item to the list; select it and scroll the view to make it visible
      *
-     * @param transfer
+     * @param transfer Transfer
      */
     public void addTransfer(final Transfer transfer) {
         final TransferCollection collection = TransferCollection.defaultCollection();
@@ -672,16 +714,16 @@ public class TransferController extends WindowController implements NSToolbar.De
     }
 
     /**
-     * @param transfer
+     * @param transfer Transfer
      */
     public void startTransfer(final Transfer transfer) {
         this.startTransfer(transfer, false, false);
     }
 
     /**
-     * @param transfer
-     * @param resumeRequested
-     * @param reloadRequested
+     * @param transfer        Transfer
+     * @param resumeRequested Resume button clicked
+     * @param reloadRequested Reload button clicked
      */
     private void startTransfer(final Transfer transfer, final boolean resumeRequested, final boolean reloadRequested) {
         if(!TransferCollection.defaultCollection().contains(transfer)) {
@@ -1052,7 +1094,7 @@ public class TransferController extends WindowController implements NSToolbar.De
     @Action
     public void clearButtonClicked(final ID sender) {
         final TransferCollection collection = TransferCollection.defaultCollection();
-        for(Iterator<Transfer> iter = collection.iterator(); iter.hasNext();) {
+        for(Iterator<Transfer> iter = collection.iterator(); iter.hasNext(); ) {
             Transfer transfer = iter.next();
             if(!transfer.isRunning() && transfer.isComplete()) {
                 iter.remove();
@@ -1084,7 +1126,7 @@ public class TransferController extends WindowController implements NSToolbar.De
     /**
      * NSToolbar.Delegate
      *
-     * @param toolbar
+     * @param toolbar Window toolbar
      */
     public NSArray toolbarDefaultItemIdentifiers(NSToolbar toolbar) {
         return NSArray.arrayWithObjects(
@@ -1101,7 +1143,7 @@ public class TransferController extends WindowController implements NSToolbar.De
     /**
      * NSToolbar.Delegate
      *
-     * @param toolbar
+     * @param toolbar Window toolbar
      */
     public NSArray toolbarAllowedItemIdentifiers(NSToolbar toolbar) {
         return NSArray.arrayWithObjects(
@@ -1127,7 +1169,8 @@ public class TransferController extends WindowController implements NSToolbar.De
     }
 
     /**
-     * @param item
+     * @param item Menu item
+     * @return True if enabled
      */
     public boolean validateMenuItem(NSMenuItem item) {
         final Selector action = item.action();
@@ -1152,7 +1195,7 @@ public class TransferController extends WindowController implements NSToolbar.De
     }
 
     /**
-     * @param item
+     * @param item Toolbar item
      */
     public boolean validateToolbarItem(final NSToolbarItem item) {
         return this.validateItem(item.action());
@@ -1161,7 +1204,7 @@ public class TransferController extends WindowController implements NSToolbar.De
     /**
      * Validates menu and toolbar items
      *
-     * @param action
+     * @param action Method target
      * @return true if the item with the identifier should be selectable
      */
     private boolean validateItem(final Selector action) {

@@ -21,7 +21,12 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.ftp.FTPException;
-import ch.cyberduck.ui.cocoa.application.*;
+import ch.cyberduck.ui.cocoa.application.NSButton;
+import ch.cyberduck.ui.cocoa.application.NSImageView;
+import ch.cyberduck.ui.cocoa.application.NSLayoutManager;
+import ch.cyberduck.ui.cocoa.application.NSProgressIndicator;
+import ch.cyberduck.ui.cocoa.application.NSTextField;
+import ch.cyberduck.ui.cocoa.application.NSTextView;
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.foundation.NSRange;
@@ -85,10 +90,6 @@ public class CommandController extends SheetController implements TranscriptList
 
     private Session session;
 
-    /**
-     * @param parent
-     * @param session
-     */
     public CommandController(final WindowController parent, final Session session) {
         super(parent);
         this.session = session;

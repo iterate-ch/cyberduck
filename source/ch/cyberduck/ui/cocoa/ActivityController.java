@@ -22,19 +22,29 @@ import ch.cyberduck.core.AbstractCollectionListener;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.threading.BackgroundActionRegistry;
-import ch.cyberduck.ui.cocoa.application.*;
+import ch.cyberduck.ui.cocoa.application.NSApplication;
+import ch.cyberduck.ui.cocoa.application.NSCell;
+import ch.cyberduck.ui.cocoa.application.NSTableColumn;
+import ch.cyberduck.ui.cocoa.application.NSTableView;
+import ch.cyberduck.ui.cocoa.application.NSView;
+import ch.cyberduck.ui.cocoa.application.NSWindow;
 import ch.cyberduck.ui.cocoa.foundation.NSNotification;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 import ch.cyberduck.ui.cocoa.view.ControllerCell;
 
-import org.apache.log4j.Logger;
 import org.rococoa.ID;
 import org.rococoa.Rococoa;
 import org.rococoa.cocoa.CGFloat;
 import org.rococoa.cocoa.foundation.NSInteger;
 
-import java.util.*;
+import org.apache.log4j.Logger;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * @version $Id$
@@ -132,7 +142,7 @@ public class ActivityController extends WindowController {
 
     private final TableColumnFactory tableColumnsFactory = new TableColumnFactory();
 
-    private static class TableColumnFactory extends HashMap<String,NSTableColumn> {
+    private static class TableColumnFactory extends HashMap<String, NSTableColumn> {
         private NSTableColumn create(String identifier) {
             if(!this.containsKey(identifier)) {
                 this.put(identifier, NSTableColumn.tableColumnWithIdentifier(identifier));
@@ -150,18 +160,10 @@ public class ActivityController extends WindowController {
         this.table = table;
         this.table.setRowHeight(new CGFloat(42));
         this.table.setDataSource((model = new ListDataSource() {
-            /**
-             * @param view
-             */
             public NSInteger numberOfRowsInTableView(NSTableView view) {
                 return new NSInteger(tasks.size());
             }
 
-            /**
-             * @param view
-             * @param tableColumn
-             * @param row
-             */
             public NSObject tableView_objectValueForTableColumn_row(NSTableView view, NSTableColumn tableColumn, NSInteger row) {
                 return null;
             }

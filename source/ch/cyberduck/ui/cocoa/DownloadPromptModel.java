@@ -40,7 +40,7 @@ public class DownloadPromptModel extends TransferPromptModel {
     private PathFilter<Path> filter = new PromptFilter() {
         /**
          *
-         * @param child
+         * @param child File
          * @return True for files that already exist in the download folder
          */
         @Override

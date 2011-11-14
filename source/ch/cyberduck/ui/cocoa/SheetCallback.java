@@ -42,7 +42,7 @@ public interface SheetCallback {
      * Called after the sheet has been dismissed by the user. The return codes are defined in
      * <code>ch.cyberduck.ui.cooca.CDSheetCallback</code>
      *
-     * @param returncode
+     * @param returncode Selected button
      */
     public abstract void callback(final int returncode);
 

@@ -20,7 +20,11 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.Preferences;
-import ch.cyberduck.ui.cocoa.application.*;
+import ch.cyberduck.ui.cocoa.application.NSAlert;
+import ch.cyberduck.ui.cocoa.application.NSButton;
+import ch.cyberduck.ui.cocoa.application.NSPanel;
+import ch.cyberduck.ui.cocoa.application.NSView;
+import ch.cyberduck.ui.cocoa.application.NSWindow;
 import ch.cyberduck.ui.cocoa.foundation.NSEnumerator;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
@@ -39,19 +43,10 @@ public abstract class AlertController extends SheetController {
      */
     protected NSAlert alert;
 
-    /**
-     * @param parent
-     * @param alert
-     */
     public AlertController(final WindowController parent, NSAlert alert) {
         this(parent, alert, NSAlert.NSWarningAlertStyle);
     }
 
-    /**
-     * @param parent
-     * @param alert
-     * @param style
-     */
     public AlertController(final WindowController parent, NSAlert alert, int style) {
         super(parent);
         this.alert = alert;
@@ -100,9 +95,9 @@ public abstract class AlertController extends SheetController {
     /**
      * Message the alert sends to modalDelegate after the user responds but before the sheet is dismissed.
      *
-     * @param alert
-     * @param returnCode
-     * @param contextInfo
+     * @param alert       Alert window
+     * @param returnCode  Button code
+     * @param contextInfo Context
      */
     public void alertDidEnd_returnCode_contextInfo(NSAlert alert, int returnCode, ID contextInfo) {
         this.sheetDidClose_returnCode_contextInfo(alert.window(), returnCode, contextInfo);
@@ -132,7 +127,7 @@ public abstract class AlertController extends SheetController {
     /**
      * When the help button is pressed, the alert delegate (delegate) is first sent a alertShowHelp: message.
      *
-     * @param alert
+     * @param alert Alert window
      * @return True if help request was handled.
      */
     public boolean alertShowHelp(NSAlert alert) {

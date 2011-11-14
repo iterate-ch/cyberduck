@@ -19,11 +19,41 @@ package ch.cyberduck.ui.cocoa;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AbstractCollectionListener;
+import ch.cyberduck.core.BookmarkCollection;
+import ch.cyberduck.core.CollectionListener;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.Status;
+import ch.cyberduck.core.TransferAction;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.sparkle.Updater;
-import ch.cyberduck.ui.cocoa.application.*;
-import ch.cyberduck.ui.cocoa.foundation.*;
+import ch.cyberduck.ui.cocoa.application.NSApplication;
+import ch.cyberduck.ui.cocoa.application.NSButton;
+import ch.cyberduck.ui.cocoa.application.NSCell;
+import ch.cyberduck.ui.cocoa.application.NSColor;
+import ch.cyberduck.ui.cocoa.application.NSFont;
+import ch.cyberduck.ui.cocoa.application.NSMenuItem;
+import ch.cyberduck.ui.cocoa.application.NSOpenPanel;
+import ch.cyberduck.ui.cocoa.application.NSPopUpButton;
+import ch.cyberduck.ui.cocoa.application.NSText;
+import ch.cyberduck.ui.cocoa.application.NSTextView;
+import ch.cyberduck.ui.cocoa.application.NSView;
+import ch.cyberduck.ui.cocoa.application.NSWindow;
+import ch.cyberduck.ui.cocoa.foundation.NSAppleScript;
+import ch.cyberduck.ui.cocoa.foundation.NSArray;
+import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
+import ch.cyberduck.ui.cocoa.foundation.NSBundle;
+import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
+import ch.cyberduck.ui.cocoa.foundation.NSMutableAttributedString;
+import ch.cyberduck.ui.cocoa.foundation.NSNotification;
+import ch.cyberduck.ui.cocoa.foundation.NSNotificationCenter;
+import ch.cyberduck.ui.cocoa.foundation.NSRange;
 import ch.cyberduck.ui.cocoa.model.FinderLocal;
 import ch.cyberduck.ui.cocoa.odb.EditorFactory;
 import ch.cyberduck.ui.cocoa.odb.WatchEditor;
@@ -41,7 +71,12 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.jets3t.service.model.S3Object;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
@@ -1642,11 +1677,6 @@ public class PreferencesController extends ToolbarWindowController {
     @Outlet
     private NSPopUpButton sshTransfersCombobox;
 
-    /**
-     * SSH Transfers (SFTP or SCP)
-     *
-     * @param b
-     */
     public void setSshTransfersCombobox(NSPopUpButton b) {
         this.sshTransfersCombobox = b;
         this.sshTransfersCombobox.setTarget(this.id());
@@ -1695,11 +1725,6 @@ public class PreferencesController extends ToolbarWindowController {
     @Outlet
     private NSPopUpButton defaultFTPHandlerCombobox;
 
-    /**
-     * Protocol Handler FTP
-     *
-     * @param b
-     */
     public void setDefaultFTPHandlerCombobox(NSPopUpButton b) {
         this.defaultFTPHandlerCombobox = b;
         this.defaultFTPHandlerCombobox.setTarget(this.id());
@@ -1718,11 +1743,6 @@ public class PreferencesController extends ToolbarWindowController {
     @Outlet
     private NSPopUpButton defaultSFTPHandlerCombobox;
 
-    /**
-     * Protocol Handler SFTP
-     *
-     * @param b
-     */
     public void setDefaultSFTPHandlerCombobox(NSPopUpButton b) {
         this.defaultSFTPHandlerCombobox = b;
         this.defaultSFTPHandlerCombobox.setTarget(this.id());
@@ -1742,11 +1762,6 @@ public class PreferencesController extends ToolbarWindowController {
     @Outlet
     private NSPopUpButton defaultDownloadThrottleCombobox;
 
-    /**
-     * Download Bandwidth
-     *
-     * @param b
-     */
     public void setDefaultDownloadThrottleCombobox(NSPopUpButton b) {
         this.defaultDownloadThrottleCombobox = b;
         this.defaultDownloadThrottleCombobox.setTarget(this.id());
@@ -1781,11 +1796,6 @@ public class PreferencesController extends ToolbarWindowController {
     @Outlet
     private NSPopUpButton defaultUploadThrottleCombobox;
 
-    /**
-     * Upload Bandwidth
-     *
-     * @param b
-     */
     public void setDefaultUploadThrottleCombobox(NSPopUpButton b) {
         this.defaultUploadThrottleCombobox = b;
         this.defaultUploadThrottleCombobox.setTarget(this.id());

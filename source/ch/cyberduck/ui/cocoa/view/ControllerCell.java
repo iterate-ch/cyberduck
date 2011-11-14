@@ -39,9 +39,5 @@ public abstract class ControllerCell extends NSCell {
 
     public abstract ControllerCell init();
 
-    /**
-     *
-     * @param aImage
-     */
     public abstract void setView(NSView aImage);
 }

@@ -18,7 +18,14 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AbstractCollectionListener;
+import ch.cyberduck.core.Collection;
+import ch.cyberduck.core.DownloadTransfer;
+import ch.cyberduck.core.NullTransferFilter;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Transfer;
+import ch.cyberduck.core.TransferCollection;
+import ch.cyberduck.core.TransferFilter;
 import ch.cyberduck.ui.PathPasteboard;
 import ch.cyberduck.ui.cocoa.application.NSDraggingInfo;
 import ch.cyberduck.ui.cocoa.application.NSPasteboard;
@@ -79,7 +86,7 @@ public class TransferTableDataSource extends ListDataSource {
     private TransferFilter filter = new NullTransferFilter();
 
     /**
-     * @param searchString
+     * @param searchString Filter hostname
      */
     public void setFilter(final String searchString) {
         if(StringUtils.isBlank(searchString)) {
@@ -109,7 +116,7 @@ public class TransferTableDataSource extends ListDataSource {
             return TransferCollection.defaultCollection();
         }
         Collection<Transfer> filtered = new Collection<Transfer>(TransferCollection.defaultCollection());
-        for(Iterator<Transfer> i = filtered.iterator(); i.hasNext();) {
+        for(Iterator<Transfer> i = filtered.iterator(); i.hasNext(); ) {
             if(!filter.accept(i.next())) {
                 //temporarly remove the t from the collection
                 i.remove();
@@ -118,9 +125,6 @@ public class TransferTableDataSource extends ListDataSource {
         return filtered;
     }
 
-    /**
-     * @param view
-     */
     public NSInteger numberOfRowsInTableView(NSTableView view) {
         return new NSInteger(this.getSource().size());
     }
@@ -132,11 +136,6 @@ public class TransferTableDataSource extends ListDataSource {
             Preferences.instance().getInteger("queue.model.cache.size")
     );
 
-    /**
-     * @param view
-     * @param tableColumn
-     * @param row
-     */
     public NSObject tableView_objectValueForTableColumn_row(NSTableView view, NSTableColumn tableColumn, NSInteger row) {
         if(row.intValue() >= this.numberOfRowsInTableView(view).intValue()) {
             return null;
@@ -210,18 +209,10 @@ public class TransferTableDataSource extends ListDataSource {
         return true;
     }
 
-    /**
-     * @param row
-     * @return
-     */
     public ProgressController getController(int row) {
         return this.getController(this.getSource().get(row));
     }
 
-    /**
-     * @param t
-     * @return
-     */
     public ProgressController getController(Transfer t) {
         if(!controllers.containsKey(t)) {
             controllers.put(t, new ProgressController(t));
@@ -233,10 +224,6 @@ public class TransferTableDataSource extends ListDataSource {
         return this.getController(row).isHighlighted();
     }
 
-    /**
-     * @param row
-     * @param highlighted
-     */
     public void setHighlighted(int row, boolean highlighted) {
         this.getController(row).setHighlighted(highlighted);
     }

@@ -18,14 +18,34 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AbstractHostCollection;
+import ch.cyberduck.core.Collection;
+import ch.cyberduck.core.CollectionListener;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostFilter;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathFactory;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.Session;
+import ch.cyberduck.core.SessionFactory;
+import ch.cyberduck.core.Transfer;
+import ch.cyberduck.core.UploadTransfer;
 import ch.cyberduck.core.serializer.HostReaderFactory;
 import ch.cyberduck.core.serializer.HostWriterFactory;
-import ch.cyberduck.ui.cocoa.application.*;
+import ch.cyberduck.ui.cocoa.application.NSApplication;
+import ch.cyberduck.ui.cocoa.application.NSDraggingInfo;
+import ch.cyberduck.ui.cocoa.application.NSDraggingSource;
+import ch.cyberduck.ui.cocoa.application.NSEvent;
 import ch.cyberduck.ui.cocoa.application.NSImage;
+import ch.cyberduck.ui.cocoa.application.NSPasteboard;
+import ch.cyberduck.ui.cocoa.application.NSTableColumn;
+import ch.cyberduck.ui.cocoa.application.NSTableView;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
-import ch.cyberduck.ui.cocoa.foundation.*;
+import ch.cyberduck.ui.cocoa.foundation.NSIndexSet;
 import ch.cyberduck.ui.cocoa.foundation.NSMutableArray;
 import ch.cyberduck.ui.cocoa.foundation.NSMutableDictionary;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
@@ -34,7 +54,11 @@ import ch.cyberduck.ui.cocoa.foundation.NSURL;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 
 import org.rococoa.Rococoa;
-import org.rococoa.cocoa.foundation.*;
+import org.rococoa.cocoa.foundation.NSInteger;
+import org.rococoa.cocoa.foundation.NSPoint;
+import org.rococoa.cocoa.foundation.NSRect;
+import org.rococoa.cocoa.foundation.NSSize;
+import org.rococoa.cocoa.foundation.NSUInteger;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -133,7 +157,7 @@ public class BookmarkTableDataSource extends ListDataSource {
     /**
      * Display only a subset of all bookmarks
      *
-     * @param filter
+     * @param filter Filter for bookmarks
      */
     public void setFilter(HostFilter filter) {
         this.filter = filter;
@@ -269,7 +293,7 @@ public class BookmarkTableDataSource extends ListDataSource {
     /**
      * Sets whether the use of modifier keys should have an effect on the type of operation performed.
      *
-     * @return
+     * @return Always false
      * @see NSDraggingSource
      */
     @Override

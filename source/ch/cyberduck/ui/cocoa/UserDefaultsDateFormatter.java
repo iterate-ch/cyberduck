@@ -124,7 +124,7 @@ public class UserDefaultsDateFormatter extends AbstractDateFormatter implements 
      * Date represented as NSDateFormatter.kCFDateFormatterShortStyle
      *
      * @param milliseconds Milliseconds since January 1, 1970, 00:00:00 GMT
-     * @param natural
+     * @param natural      Use natural language
      * @return A short format string or "Unknown" if there is a problem converting the time to a string
      */
     public synchronized String getShortFormat(final long milliseconds, boolean natural) {
@@ -140,9 +140,9 @@ public class UserDefaultsDateFormatter extends AbstractDateFormatter implements 
     /**
      * Date represented as NSDateFormatter.kCFDateFormatterMediumStyle
      *
-     * @param milliseconds
-     * @param natural
-     * @return
+     * @param milliseconds Milliseconds since January 1, 1970, 00:00:00 GMT
+     * @param natural      Use natural language
+     * @return A medium format string or "Unknown" if there is a problem converting the time to a string
      */
     public synchronized String getMediumFormat(final long milliseconds, boolean natural) {
         if(-1 == milliseconds) {
@@ -158,7 +158,7 @@ public class UserDefaultsDateFormatter extends AbstractDateFormatter implements 
      * Date represented as NSDateFormatter.kCFDateFormatterLongStyle
      *
      * @param milliseconds Milliseconds since January 1, 1970, 00:00:00 GMT
-     * @param natural
+     * @param natural      Use natural language
      * @return A long format string or "Unknown" if there is a problem converting the time to a string
      */
     public synchronized String getLongFormat(final long milliseconds, boolean natural) {
