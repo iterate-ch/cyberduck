@@ -36,7 +36,7 @@ public abstract class BrowserComparator implements Comparator<Path> {
      * @param ascending The items should be sorted in a ascending manner.
      *                  Usually this means lower numbers first or natural language sorting
      *                  for alphabetic comparators
-     * @param second
+     * @param second    Second level comparator
      */
     public BrowserComparator(boolean ascending, BrowserComparator second) {
         this.ascending = ascending;
@@ -48,7 +48,7 @@ public abstract class BrowserComparator implements Comparator<Path> {
     }
 
     /**
-     * @param object
+     * @param object Other comparator
      * @return True if the same identifier and ascending boolean value
      * @see #getIdentifier()
      * @see #isAscending()
@@ -62,6 +62,13 @@ public abstract class BrowserComparator implements Comparator<Path> {
             }
         }
         return false;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = (ascending ? 1 : 0);
+        result = 31 * result + (second != null ? second.hashCode() : 0);
+        return result;
     }
 
     public int compare(Path p1, Path p2) {
