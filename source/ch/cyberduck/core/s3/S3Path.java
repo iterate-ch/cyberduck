@@ -531,12 +531,14 @@ public class S3Path extends CloudPath {
     /**
      * Default size threshold for when to use multipart uploads.
      */
-    private static final long DEFAULT_MULTIPART_UPLOAD_THRESHOLD = 5 * 1024 * 1024;
+    private static final long DEFAULT_MULTIPART_UPLOAD_THRESHOLD =
+            Preferences.instance().getLong("s3.upload.multipart.threshold");
 
     /**
      * Default minimum part size for upload parts.
      */
-    private static final int DEFAULT_MINIMUM_UPLOAD_PART_SIZE = 5 * 1024 * 1024;
+    private static final int DEFAULT_MINIMUM_UPLOAD_PART_SIZE =
+            Preferences.instance().getInteger("s3.upload.multipart.size");
 
     /**
      * The maximum allowed parts in a multipart upload.

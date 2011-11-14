@@ -571,6 +571,9 @@ public abstract class Preferences {
         defaults.put("s3.upload.metadata.md5", String.valueOf(false));
         defaults.put("s3.upload.multipart", String.valueOf(true));
         defaults.put("s3.upload.multipart.concurency", String.valueOf(5));
+        defaults.put("s3.upload.multipart.threshold", String.valueOf(5 * 1024 * 1024));
+        defaults.put("s3.upload.multipart.size", String.valueOf(5 * 1024 * 1024));
+
         /**
          * A prefix to apply to log file names
          */
