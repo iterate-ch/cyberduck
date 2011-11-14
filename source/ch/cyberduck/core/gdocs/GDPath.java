@@ -183,7 +183,7 @@ public class GDPath extends Path {
      */
     public String getExportUri() {
         if(StringUtils.isBlank(exportUri)) {
-            log.warn("Refetching Export URI for " + this.toString());
+            log.warn(String.format("Refetching Export URI for %s", this.toString()));
             AttributedList<AbstractPath> l = this.getParent().children();
             if(l.contains(this.getReference())) {
                 exportUri = ((GDPath) l.get(this.getReference())).getExportUri();
@@ -207,7 +207,7 @@ public class GDPath extends Path {
 
     public String getResourceId() {
         if(StringUtils.isBlank(resourceId)) {
-            log.warn("Refetching Resource ID for " + this.toString());
+            log.warn(String.format("Refetching Resource ID for %s", this.toString()));
             AttributedList<AbstractPath> l = this.getParent().children();
             if(l.contains(this.getReference())) {
                 resourceId = ((GDPath) l.get(this.getReference())).getResourceId();
@@ -327,7 +327,7 @@ public class GDPath extends Path {
                             new Acl.Role(role.getValue()));
                 }
                 else {
-                    log.warn("Unsupported scope:" + type);
+                    log.warn(String.format("Unsupported scope:%s", type));
                 }
             }
             this.attributes().setAcl(acl);
@@ -382,7 +382,7 @@ public class GDPath extends Path {
                     }
                 }
                 if(null == scope) {
-                    log.warn("Unsupported scope:" + user);
+                    log.warn(String.format("Unsupported scope:%s", user));
                     continue;
                 }
                 for(Acl.Role role : acl.get(user)) {

@@ -254,7 +254,7 @@ public abstract class Local extends AbstractPath {
 
     @Override
     public void symlink(String target) {
-        log.warn("Touching file instead of creating symbolic link:" + this);
+        log.warn(String.format("Touching file instead of creating symbolic link for %s", this.getAbsolute()));
         this.touch();
     }
 
@@ -300,7 +300,7 @@ public abstract class Local extends AbstractPath {
         }
         else {
             if(!new File(path).delete()) {
-                log.warn("Delete failed:" + this.getAbsolute());
+                log.warn(String.format("Delete %s failed", this.getAbsolute()));
             }
         }
     }
@@ -445,7 +445,7 @@ public abstract class Local extends AbstractPath {
     @Override
     public void writeTimestamp(long created, long modified, long accessed) {
         if(!new File(path).setLastModified(modified)) {
-            log.warn("Write modification date failed:" + this.getAbsolute());
+            log.warn(String.format("Write modification date failed for %s", this.getAbsolute()));
         }
     }
 
@@ -455,14 +455,14 @@ public abstract class Local extends AbstractPath {
     @Override
     public void rename(AbstractPath renamed) {
         if(!new File(path).renameTo(new File(renamed.getAbsolute()))) {
-            log.warn("Rename failed:" + renamed.getAbsolute());
+            log.warn(String.format("Rename failed for %s", renamed.getAbsolute()));
         }
     }
 
     @Override
     public boolean copy(AbstractPath copy) {
         if(copy.equals(this)) {
-            log.warn(this.getName() + " and " + copy.getName() + " are identical. Not copied.");
+            log.warn(String.format("%s and %s are identical. Not copied.", this.getName(), copy.getName()));
             return false;
         }
         FileInputStream in = null;

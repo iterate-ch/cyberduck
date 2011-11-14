@@ -234,7 +234,7 @@ public class DAVSession extends HttpSession {
                     final AuthState authstate = (AuthState) context.getAttribute(
                             ClientContext.TARGET_AUTH_STATE);
                     if(null == authstate) {
-                        log.warn("No auth state available in context:" + context);
+                        log.warn(String.format("No auth state available in context:%s", context));
                     }
                     else {
                         // Reset false credentials

@@ -137,7 +137,7 @@ public class DownloadTransfer extends Transfer {
             }
             Local volume = file.getLocal().getVolume();
             if(!volume.exists()) {
-                log.warn("Volume not mounted:" + volume.getAbsolute());
+                log.warn(String.format("Volume %s not mounted", volume.getAbsolute()));
                 return false;
             }
             return true;

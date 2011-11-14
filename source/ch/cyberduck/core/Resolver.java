@@ -103,7 +103,7 @@ public class Resolver implements Runnable {
             if(this.hasFailed()) {
                 throw this.exception;
             }
-            log.warn("Canceled resolving " + this.hostname);
+            log.warn(String.format("Canceled resolving %s", this.hostname));
             throw new ResolveCanceledException();
         }
         return this.resolved;
@@ -133,7 +133,7 @@ public class Resolver implements Runnable {
             }
         }
         catch(UnknownHostException e) {
-            log.warn("Failed resolving " + this.hostname);
+            log.warn(String.format("Failed resolving %s", this.hostname));
             this.exception = e;
         }
         finally {

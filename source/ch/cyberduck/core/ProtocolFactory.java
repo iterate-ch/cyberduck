@@ -121,7 +121,7 @@ public class ProtocolFactory {
                 return protocol;
             }
         }
-        log.warn("Cannot find default protocol for port:" + port);
+        log.warn(String.format("Cannot find default protocol for port %d", port));
         return forName(
                 Preferences.instance().getProperty("connection.protocol.default"));
     }

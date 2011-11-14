@@ -75,7 +75,7 @@ public abstract class AbstractHostCollection extends Collection<Host> implements
         List<Host> temporary = new ArrayList<Host>();
         for(Host host : c) {
             if(temporary.contains(host)) {
-                log.warn("Reset UUID of duplicate in collection:" + host);
+                log.warn(String.format("Reset UUID of duplicate in collection for %s", host));
                 host.setUuid(null);
             }
             temporary.add(host);
@@ -86,7 +86,7 @@ public abstract class AbstractHostCollection extends Collection<Host> implements
     @Override
     public boolean add(Host host) {
         if(this.contains(host)) {
-            log.warn("Reset UUID of duplicate in collection:" + host);
+            log.warn(String.format("Reset UUID of duplicate in collection for %s", host));
             host.setUuid(null);
         }
         return super.add(host);
@@ -95,7 +95,7 @@ public abstract class AbstractHostCollection extends Collection<Host> implements
     @Override
     public void add(int row, Host host) {
         if(this.contains(host)) {
-            log.warn("Reset UUID of duplicate in collection:" + host);
+            log.warn(String.format("Reset UUID of duplicate in collection for %s", host));
             host.setUuid(null);
         }
         super.add(row, host);

@@ -47,7 +47,7 @@ public abstract class RendezvousFactory extends Factory<Rendezvous> {
     public static Rendezvous instance() {
         if(null == rendezvous) {
             if(!factories.containsKey(NATIVE_PLATFORM)) {
-                log.warn("No implementation for " + NATIVE_PLATFORM);
+                log.warn(String.format("No implementation for %s", NATIVE_PLATFORM));
                 return new Rendezvous() {
                     public void init() {
                         ;

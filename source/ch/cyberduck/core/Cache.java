@@ -81,7 +81,7 @@ public class Cache<E extends AbstractPath> {
                 }
                 return (E) path;
             }
-            log.warn("Lookup failed for " + reference + " in cache");
+            log.warn(String.format("Lookup failed for %s in cache", reference));
             return null;
         }
     }
@@ -117,7 +117,7 @@ public class Cache<E extends AbstractPath> {
     public AttributedList<E> get(PathReference reference) {
         final AttributedList<E> children = this.get(reference, null, null);
         if(null == children) {
-            log.warn("No cache for " + reference);
+            log.warn(String.format("No cache for %s", reference));
             return AttributedList.emptyList();
         }
         return children;
@@ -138,7 +138,7 @@ public class Cache<E extends AbstractPath> {
     public AttributedList<E> get(PathReference reference, Comparator<E> comparator, PathFilter<E> filter) {
         AttributedList<E> children = _impl.get(reference);
         if(null == children) {
-            log.warn("No cache for " + reference);
+            log.warn(String.format("No cache for %s", reference));
             return AttributedList.emptyList();
         }
         boolean needsSorting = false;

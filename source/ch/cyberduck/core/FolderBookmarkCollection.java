@@ -76,7 +76,7 @@ public class FolderBookmarkCollection extends AbstractFolderHostCollection {
         List<Host> temporary = new ArrayList<Host>();
         for(Host host : c) {
             if(temporary.contains(host)) {
-                log.warn("Reset UUID of duplicate in collection:" + host);
+                log.warn(String.format("Reset UUID of duplicate in collection for %s", host));
                 host.setUuid(null);
             }
             temporary.add(host);

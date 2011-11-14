@@ -128,7 +128,7 @@ public class CloudFrontDistributionConfiguration extends HttpSession implements 
             }
         }
         catch(CloudFrontServiceException e) {
-            log.warn("Invalid CloudFront account:" + e.getMessage());
+            log.warn(String.format("Invalid account:%s", e.getMessage()));
             this.message(Locale.localizedString("Login failed", "Credentials"));
             controller.fail(host.getProtocol(), credentials);
             this.login();

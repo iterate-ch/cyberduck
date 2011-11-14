@@ -103,7 +103,7 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
                 ((SSLSocket) socket).setEnabledProtocols(protocols);
             }
             catch(Exception e) {
-                log.warn("Failed to configure SSL parameters:" + e.getMessage());
+                log.warn(String.format("Failed to configure SSL parameters:%s", e.getMessage()));
             }
         }
     }

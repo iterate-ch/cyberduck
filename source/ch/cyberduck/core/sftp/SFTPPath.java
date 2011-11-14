@@ -213,10 +213,10 @@ public class SFTPPath extends Path {
                 this.attributes().setPermission(new Permission(Integer.parseInt(octal.substring(octal.length() - 4))));
             }
             catch(IndexOutOfBoundsException e) {
-                log.warn("Failure parsing mode:" + e.getMessage());
+                log.warn(String.format("Failure parsing mode:%s", e.getMessage()));
             }
             catch(NumberFormatException e) {
-                log.warn("Failure parsing mode:" + e.getMessage());
+                log.warn(String.format("Failure parsing mode:%s", e.getMessage()));
             }
         }
         if(null != attributes.uid) {
@@ -247,7 +247,7 @@ public class SFTPPath extends Path {
                 }
             }
             catch(IOException e) {
-                log.warn("Cannot read symbolic link target of " + this.getAbsolute() + ":" + e.getMessage());
+                log.warn(String.format("Cannot read symbolic link target of %s:%s", this.getAbsolute(), e.getMessage()));
                 this.attributes().setType(Path.FILE_TYPE);
             }
         }

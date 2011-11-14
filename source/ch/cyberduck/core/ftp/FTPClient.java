@@ -95,7 +95,7 @@ public class FTPClient extends FTPSClient {
                 return true;
             }
         }
-        log.warn("No " + feature + " support");
+        log.warn(String.format("No %s support", feature));
         return false;
     }
 
@@ -273,7 +273,7 @@ public class FTPClient extends FTPSClient {
                         return Long.parseLong(matcher.group());
                     }
                     catch(NumberFormatException ex) {
-                        log.warn("Failed to parse reply:" + status);
+                        log.warn(String.format("Failed to parse reply:%s", status));
                     }
                 }
             }

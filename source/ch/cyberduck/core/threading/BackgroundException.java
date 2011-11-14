@@ -66,7 +66,7 @@ public class BackgroundException extends Exception {
                 this.message = MessageFormat.format(StringUtils.chomp(message), path.getName());
             }
             catch(IllegalArgumentException e) {
-                log.warn("Error parsing message format:" + e.getMessage());
+                log.warn(String.format("Error parsing message with format %s", e.getMessage()));
                 this.message = StringUtils.chomp(message);
             }
         }

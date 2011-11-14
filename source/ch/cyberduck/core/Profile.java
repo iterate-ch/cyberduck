@@ -154,7 +154,7 @@ public class Profile extends Protocol implements Serializable {
             return Integer.valueOf(v);
         }
         catch(NumberFormatException e) {
-            log.warn("Port is not a number:" + e.getMessage());
+            log.warn(String.format("Port %s is not a number", e.getMessage()));
         }
         return parent.getDefaultPort();
     }

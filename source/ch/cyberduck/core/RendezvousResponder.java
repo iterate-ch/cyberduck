@@ -118,7 +118,7 @@ public class RendezvousResponder extends AbstractRendezvous
     }
 
     public void operationFailed(DNSSDService resolver, int errorCode) {
-        log.warn("operationFailed:" + errorCode);
+        log.warn(String.format("Operation failed with error code %d", errorCode));
         resolver.stop();
     }
 

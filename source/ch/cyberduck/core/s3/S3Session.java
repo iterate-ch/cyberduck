@@ -335,7 +335,7 @@ public class S3Session extends CloudSession {
                     log.info(String.format("Using default path to determine bucket name %s", bucketname));
                 }
                 if(StringUtils.isEmpty(bucketname)) {
-                    log.warn("No bucket name given in hostname " + host.getHostname());
+                    log.warn(String.format("No bucket name given in hostname %s", host.getHostname()));
                     // Rewrite endpoint to default S3 endpoint
                     this.configure(host.getProtocol().getDefaultHostname());
                     bucketname = host.getHostname(true);
@@ -916,7 +916,7 @@ public class S3Session extends CloudSession {
         for(final StorageBucket container : buckets.values()) {
             final StorageOwner owner = container.getOwner();
             if(null == owner) {
-                log.warn("Owner not known for container " + container);
+                log.warn(String.format("Owner not known for container %s", container));
                 continue;
             }
             final Acl.CanonicalUser user = new Acl.CanonicalUser(owner.getId(), owner.getDisplayName(), false) {
@@ -942,14 +942,14 @@ public class S3Session extends CloudSession {
             if(bucket.getName().equals(container)) {
                 StorageOwner owner = bucket.getOwner();
                 if(null == owner) {
-                    log.warn("Owner not known for container " + container);
+                    log.warn(String.format("Owner not known for container %s", container));
                     continue;
                 }
                 return new Acl(new Acl.CanonicalUser(owner.getId()),
                         new Acl.Role(org.jets3t.service.acl.Permission.PERMISSION_FULL_CONTROL.toString()));
             }
         }
-        log.warn("No such container:" + container);
+        log.warn(String.format("No such container:%s", container));
         return new Acl();
     }
 

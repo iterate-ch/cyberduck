@@ -538,7 +538,7 @@ public class AzureSession extends CloudSession {
         catch(StorageServerException e) {
             this.error("Cannot read file attributes", e);
         }
-        log.warn("Bucket not found with name:" + bucketname);
+        log.warn(String.format("Bucket not found with name %s", bucketname));
         return new AzureContainer("$root", null);
     }
 

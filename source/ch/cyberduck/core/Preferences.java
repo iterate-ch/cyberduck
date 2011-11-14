@@ -781,7 +781,7 @@ public abstract class Preferences {
     public String getDefault(String property) {
         String value = defaults.get(property);
         if(null == value) {
-            log.warn("No property with key '" + property + "'");
+            log.warn(String.format("No property with key '%s'", property));
         }
         return value;
     }

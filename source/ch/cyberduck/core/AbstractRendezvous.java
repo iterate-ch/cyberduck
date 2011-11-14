@@ -166,7 +166,7 @@ public abstract class AbstractRendezvous implements Rendezvous {
     protected void add(String fullname, String hostname, int port, String user, String password, String path) {
         final Protocol protocol = this.getProtocol(fullname, port);
         if(null == protocol) {
-            log.warn("Unknown service type:" + fullname);
+            log.warn(String.format("Unknown service type for %s", fullname));
             return;
         }
         final Host host = new Host(protocol, hostname, port);
@@ -199,7 +199,7 @@ public abstract class AbstractRendezvous implements Rendezvous {
         if(fullname.contains(SERVICE_TYPE_WEBDAV_TLS)) {
             return Protocol.WEBDAV_SSL;
         }
-        log.warn("Cannot find service type in:" + fullname);
+        log.warn(String.format("Cannot find service type in %s", fullname));
         return null;
     }
 

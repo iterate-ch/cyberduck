@@ -242,7 +242,7 @@ public abstract class Path extends AbstractPath implements Serializable {
             this.parent = parent;
         }
         else {
-            log.warn("Attempt to set invalid parent directory:" + parent);
+            log.warn(String.format("Attempt to set invalid parent directory %s", parent));
         }
     }
 
@@ -472,7 +472,7 @@ public abstract class Path extends AbstractPath implements Serializable {
             @Override
             public boolean add(Path path) {
                 if(!path.isChild(Path.this)) {
-                    log.warn("Skip adding child to directory listing:" + path);
+                    log.warn(String.format("Skip adding child %s to directory listing", path));
                     return false;
                 }
                 return super.add(path);
@@ -681,7 +681,7 @@ public abstract class Path extends AbstractPath implements Serializable {
      */
     @Override
     public void symlink(String target) {
-        log.warn("Touching file instead of creating symbolic link:" + this);
+        log.warn(String.format("Touching file instead of creating symbolic link for %s", this));
         this.touch();
     }
 

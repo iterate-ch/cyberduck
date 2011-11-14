@@ -173,7 +173,7 @@ public abstract class KeychainX509TrustManager extends AbstractX509TrustManager 
             List<X509Certificate> result = new ArrayList<X509Certificate>();
             Certificate[] chain = store.getCertificateChain(alias);
             if(null == chain) {
-                log.warn("No certificate chain for alias:" + alias);
+                log.warn(String.format("No certificate chain for alias %s", alias));
             }
             else {
                 for(Certificate cert : chain) {
@@ -183,7 +183,7 @@ public abstract class KeychainX509TrustManager extends AbstractX509TrustManager 
                 }
             }
             if(result.isEmpty()) {
-                log.warn("No certificate chain for alias:" + alias);
+                log.warn(String.format("No certificate chain for alias %s", alias));
                 Certificate cert = store.getCertificate(alias);
                 if(cert instanceof X509Certificate) {
                     result.add((X509Certificate) cert);
@@ -217,7 +217,7 @@ public abstract class KeychainX509TrustManager extends AbstractX509TrustManager 
         catch(UnrecoverableKeyException e) {
             log.error(e.getMessage());
         }
-        log.warn("No private key for alias:" + alias);
+        log.warn(String.format("No private key for alias %s", alias));
         return null;
     }
 }

@@ -223,7 +223,7 @@ public class AttributedList<E extends AbstractPath> extends CopyOnWriteArrayList
     public boolean add(E path) {
         final AbstractPath previous = references.put(path.getReference(), path);
         if(null != previous) {
-            log.warn("Replacing " + previous + " with " + path + " in file listing.");
+            log.warn(String.format("Replacing %s with %s in file listing.", previous, path));
         }
         return super.add(path);
     }
@@ -233,7 +233,7 @@ public class AttributedList<E extends AbstractPath> extends CopyOnWriteArrayList
         for(E path : c) {
             final AbstractPath previous = references.put(path.getReference(), path);
             if(null != previous) {
-                log.warn("Replacing " + previous + " with " + path + " in file listing.");
+                log.warn(String.format("Replacing %s with %s in file listing.", previous, path));
             }
         }
         return super.addAll(c);

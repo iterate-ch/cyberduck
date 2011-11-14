@@ -121,7 +121,7 @@ public class CFPath extends CloudPath {
                 return this.getSession().getClient().containerExists(this.getName());
             }
             catch(HttpException e) {
-                log.warn("Container does not exist:" + this.getName());
+                log.warn(String.format("Container %s does not exist", this.getName()));
                 return false;
             }
             catch(ConnectionCanceledException e) {
@@ -424,22 +424,22 @@ public class CFPath extends CloudPath {
         // Default metadata for new files
         for(String m : Preferences.instance().getList("cf.metadata.default")) {
             if(StringUtils.isBlank(m)) {
-                log.warn("Invalid header " + m);
+                log.warn(String.format("Invalid header %s", m));
                 continue;
             }
             if(!m.contains("=")) {
-                log.warn("Invalid header " + m);
+                log.warn(String.format("Invalid header %s", m));
                 continue;
             }
             int split = m.indexOf('=');
             String name = m.substring(0, split);
             if(StringUtils.isBlank(name)) {
-                log.warn("Missing key in " + m);
+                log.warn(String.format("Missing key in %s", m));
                 continue;
             }
             String value = m.substring(split + 1);
             if(StringUtils.isEmpty(value)) {
-                log.warn("Missing value in " + m);
+                log.warn(String.format("Missing value in %s", m));
                 continue;
             }
             metadata.put(name, value);
