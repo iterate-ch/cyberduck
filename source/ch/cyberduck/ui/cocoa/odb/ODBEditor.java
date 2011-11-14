@@ -82,10 +82,6 @@ public class ODBEditor extends Editor {
         return INSTALLED_ODB_EDITORS;
     }
 
-    /**
-     * @param c
-     * @param bundleIdentifier
-     */
     public ODBEditor(BrowserController c, String bundleIdentifier, final Path path) {
         super(c, bundleIdentifier, path);
     }
@@ -108,7 +104,7 @@ public class ODBEditor extends Editor {
             return;
         }
         if(!this.edit(edited.getLocal().getAbsolute(), edited.toURL(), bundleIdentifier)) {
-            log.warn("Edit failed for:" + edited.getLocal().getAbsolute());
+            log.warn(String.format("Edit failed for:%s", edited.getLocal().getAbsolute()));
         }
     }
 
@@ -118,7 +114,8 @@ public class ODBEditor extends Editor {
      *
      * @param local            Absolute path on the local file system
      * @param url              The remote URL
-     * @param bundleIdentifier
+     * @param bundleIdentifier Application bundle identifier
+     * @return False if opening editor fails
      */
     private native boolean edit(String local, String url, String bundleIdentifier);
 

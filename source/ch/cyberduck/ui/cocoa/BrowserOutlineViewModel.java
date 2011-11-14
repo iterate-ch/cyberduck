@@ -129,7 +129,7 @@ public class BrowserOutlineViewModel extends BrowserTableDataSource implements N
         }
         final AttributedList<Path> children = this.children(path);
         if(index.intValue() >= children.size()) {
-            log.warn("Index " + index + " out of bound for " + item);
+            log.warn(String.format("Index %s out of bound for %s", index, item));
             return null;
         }
         return children.get(index.intValue()).<NSObject>getReference().unique();

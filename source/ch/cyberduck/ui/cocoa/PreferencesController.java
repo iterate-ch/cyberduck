@@ -1864,7 +1864,7 @@ public class PreferencesController extends ToolbarWindowController {
         String feed = Preferences.instance().getProperty("SUFeedURL");
         NSInteger selected = this.updateFeedPopup.menu().indexOfItemWithRepresentedObject(feed);
         if(-1 == selected.intValue()) {
-            log.warn("Invalid feed setting:" + feed);
+            log.warn(String.format("Invalid feed setting:%s", feed));
             this.updateFeedPopup.selectItemAtIndex(this.updateFeedPopup.menu().indexOfItemWithRepresentedObject(
                     Preferences.instance().getProperty("update.feed.release")));
         }

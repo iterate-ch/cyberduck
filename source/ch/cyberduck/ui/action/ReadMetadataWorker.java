@@ -74,7 +74,7 @@ public abstract class ReadMetadataWorker extends Worker<Map<String, String>> {
                 // For example md5-hash
                 if(updated.containsKey(key)) {
                     if(!metadata.get(key).equals(updated.get(key))) {
-                        log.info("Nullify " + key + " from metadata because value is not equal for selected files.");
+                        log.info(String.format("Nullify %s from metadata because value is not equal for selected files.", key));
                         updated.put(key, null);
                         continue;
                     }
@@ -88,7 +88,7 @@ public abstract class ReadMetadataWorker extends Worker<Map<String, String>> {
                 continue;
             }
             // Not all files selected have this metadata. Remove for editing.
-            log.info("Remove " + key + " from metadata not available for all selected files.");
+            log.info(String.format("Remove %s from metadata not available for all selected files.", key));
             updated.remove(key);
         }
         return updated;

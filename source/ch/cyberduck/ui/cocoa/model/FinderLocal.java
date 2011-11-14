@@ -18,12 +18,26 @@ package ch.cyberduck.ui.cocoa.model;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AbstractPath;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.Native;
+import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.threading.DefaultMainAction;
 import ch.cyberduck.ui.cocoa.IconCache;
 import ch.cyberduck.ui.cocoa.ProxyController;
 import ch.cyberduck.ui.cocoa.application.NSWorkspace;
-import ch.cyberduck.ui.cocoa.foundation.*;
+import ch.cyberduck.ui.cocoa.foundation.NSArray;
+import ch.cyberduck.ui.cocoa.foundation.NSBundle;
+import ch.cyberduck.ui.cocoa.foundation.NSDate;
+import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
+import ch.cyberduck.ui.cocoa.foundation.NSDistributedNotificationCenter;
+import ch.cyberduck.ui.cocoa.foundation.NSFileManager;
+import ch.cyberduck.ui.cocoa.foundation.NSNotification;
+import ch.cyberduck.ui.cocoa.foundation.NSNumber;
+import ch.cyberduck.ui.cocoa.foundation.NSObject;
+import ch.cyberduck.ui.cocoa.foundation.NSString;
 
 import org.rococoa.Rococoa;
 import org.rococoa.cocoa.foundation.NSUInteger;
@@ -34,7 +48,11 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @version $Id$
@@ -422,12 +440,14 @@ public class FinderLocal extends Local {
             final Local file = this;
             new ProxyController().invoke(new DefaultMainAction() {
                 public void run() {
-                    log.debug("Move " + file + " to Trash");
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Move %s to Trash", file));
+                    }
                     if(!NSWorkspace.sharedWorkspace().performFileOperation(
                             NSWorkspace.RecycleOperation,
                             file.getParent().getAbsolute(), StringUtils.EMPTY,
                             NSArray.arrayWithObject(file.getName()))) {
-                        log.warn("Failed to move " + file.getAbsolute() + " to Trash");
+                        log.warn(String.format("Failed to move %s to Trash", file.getAbsolute()));
                     }
                 }
             });

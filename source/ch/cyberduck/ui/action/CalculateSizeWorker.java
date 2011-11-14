@@ -55,9 +55,10 @@ public abstract class CalculateSizeWorker extends Worker<Long> {
 
     /**
      * Calculates recursively the size of this path if a directory
+     * Potentially lengthy operation
      *
+     * @param p Directory or file
      * @return The size of the file or the sum of all containing files if a directory
-     * @warn Potentially lengthy operation
      */
     private long calculateSize(final AbstractPath p) {
         long size = 0;
@@ -76,6 +77,8 @@ public abstract class CalculateSizeWorker extends Worker<Long> {
 
     /**
      * Incremental update with latest size value.
+     *
+     * @param size Current known size
      */
     protected abstract void update(long size);
 

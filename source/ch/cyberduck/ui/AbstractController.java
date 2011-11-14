@@ -18,7 +18,13 @@ package ch.cyberduck.ui;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.threading.*;
+import ch.cyberduck.core.threading.ActionOperationBatcher;
+import ch.cyberduck.core.threading.ActionOperationBatcherFactory;
+import ch.cyberduck.core.threading.BackgroundAction;
+import ch.cyberduck.core.threading.BackgroundActionRegistry;
+import ch.cyberduck.core.threading.ControllerMainAction;
+import ch.cyberduck.core.threading.MainAction;
+import ch.cyberduck.core.threading.ThreadPool;
 
 import org.apache.log4j.Logger;
 
@@ -117,19 +123,13 @@ public abstract class AbstractController implements Controller {
         };
         final Future<T> future = ThreadPool.instance().execute(command);
         if(log.isInfoEnabled()) {
-            log.info("Scheduled background runnable for execution:" + runnable);
+            log.info(String.format("Scheduled background runnable %s for execution", runnable));
         }
         return future;
     }
 
-    /**
-     *
-     */
     private static ScheduledExecutorService timerPool;
 
-    /**
-     * @return
-     */
     public static ScheduledExecutorService getTimerPool() {
         if(null == timerPool) {
             timerPool = Executors.newScheduledThreadPool(1);

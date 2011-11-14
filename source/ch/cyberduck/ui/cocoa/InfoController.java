@@ -2148,7 +2148,7 @@ public class InfoController extends ToolbarWindowController {
                 }
             }
         }
-        log.warn("Invalid octal field input:" + octalField.stringValue());
+        log.warn(String.format("Invalid octal field input %s", octalField.stringValue()));
         return null;
     }
 

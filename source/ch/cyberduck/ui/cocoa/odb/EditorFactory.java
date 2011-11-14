@@ -128,7 +128,7 @@ public class EditorFactory {
             // Use application determined by launch services using file system notifications
             return defaultApplication;
         }
-        log.warn("No editor for file type " + file.getExtension());
+        log.warn(String.format("No editor for file type %s", file.getExtension()));
         return defaultEditor();
     }
 
@@ -136,9 +136,6 @@ public class EditorFactory {
      * @return All statically registered but possibly not installed editors
      */
     public static Map<String, String> getSupportedEditors() {
-        if(log.isTraceEnabled()) {
-            log.trace("getSupportedEditors");
-        }
         Map<String, String> supported = new HashMap<String, String>();
         if(Preferences.instance().getBoolean("editor.odb.enable")) {
             supported.putAll(ODBEditor.getSupportedEditors());
@@ -247,7 +244,7 @@ public class EditorFactory {
                     else {
                         final NSObject bundlename = dict.objectForKey("CFBundleName");
                         if(null == bundlename) {
-                            log.warn("No CFBundleName for " + bundleIdentifier);
+                            log.warn(String.format("No CFBundleName for %s", bundleIdentifier));
                         }
                         else {
                             name = bundlename.toString();
@@ -259,7 +256,7 @@ public class EditorFactory {
                 }
             }
             else {
-                log.warn("Cannot determine installation path for " + bundleIdentifier);
+                log.warn(String.format("Cannot determine installation path for %s", bundleIdentifier));
             }
             applicationNameCache.put(bundleIdentifier, name);
         }

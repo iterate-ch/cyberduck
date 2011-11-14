@@ -1009,7 +1009,7 @@ public class TransferController extends WindowController implements NSToolbar.De
             for(Path i : transfer.getRoots()) {
                 Local l = i.getLocal();
                 if(!l.open()) {
-                    log.warn("Error opening file:" + l.getAbsolute());
+                    log.warn(String.format("Error opening file %s", l.getAbsolute()));
                 }
             }
         }

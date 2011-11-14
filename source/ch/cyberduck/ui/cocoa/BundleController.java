@@ -52,14 +52,14 @@ public abstract class BundleController extends ProxyController {
 
     protected void loadBundle(final String bundleName) {
         if(awaked) {
-            log.warn("Bundle " + bundleName + " already loaded");
+            log.warn(String.format("Bundle %s already loaded", bundleName));
             return;
         }
         if(log.isInfoEnabled()) {
-            log.info("Loading bundle " + bundleName);
+            log.info(String.format("Loading bundle %s", bundleName));
         }
         if(!NSBundle.loadNibNamed(bundleName, this.id())) {
-            log.fatal("Couldn't load " + bundleName + ".nib");
+            log.fatal(String.format("Couldn't load %s.nib", bundleName));
             return;
         }
         if(!awaked) {
@@ -97,7 +97,7 @@ public abstract class BundleController extends ProxyController {
     /**
      * Open URL with default web browser.
      *
-     * @param url
+     * @param url HTTP URL
      */
     public static void openUrl(String url) {
         if(StringUtils.isNotBlank(url)) {

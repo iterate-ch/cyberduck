@@ -50,12 +50,16 @@ public abstract class Growl {
 
                         @Override
                         public void notify(String title, String description) {
-                            log.info(description);
+                            if(log.isInfoEnabled()) {
+                                log.info(description);
+                            }
                         }
 
                         @Override
                         public void notifyWithImage(String title, String description, String image) {
-                            log.info(description);
+                            if(log.isInfoEnabled()) {
+                                log.info(description);
+                            }
                         }
                     };
                 }

@@ -139,7 +139,7 @@ public class IconCache {
 
     private NSImage load(String key, Integer size) {
         if(!cache.containsKey(key)) {
-            log.debug("No cached image for " + key);
+            log.debug(String.format("No cached image for %s", key));
             return null;
         }
         final Map<Integer, NSImage> versions = cache.get(key);
@@ -243,7 +243,7 @@ public class IconCache {
                 image = NSImage.imageNamed(name);
             }
             if(null == image) {
-                log.warn("No icon named " + name);
+                log.warn(String.format("No icon named %s", name));
                 this.put(name, null, width);
             }
             else {
@@ -365,7 +365,7 @@ public class IconCache {
 
     public NSImage convert(NSImage icon, Integer width, Integer height) {
         if(null == width || null == height) {
-            log.info("Return default size for " + icon.name());
+            log.info(String.format("Return default size for %s", icon.name()));
             return icon;
         }
         icon.setSize(new NSSize(width, height));

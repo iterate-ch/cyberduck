@@ -318,7 +318,7 @@ public abstract class WindowController extends BundleController implements NSWin
 
     public void printOperationDidRun_success_contextInfo(NSPrintOperation op, boolean success, ID contextInfo) {
         if(!success) {
-            log.warn("Printing failed:" + contextInfo);
+            log.warn(String.format("Printing failed for context %s", contextInfo));
         }
     }
 }

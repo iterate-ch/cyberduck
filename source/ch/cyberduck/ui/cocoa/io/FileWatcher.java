@@ -80,7 +80,7 @@ public class FileWatcher {
                         }
                         for(WatchEvent<?> event : key.pollEvents()) {
                             WatchEvent.Kind<?> kind = event.kind();
-                            log.info("Detected file system event: " + kind);
+                            log.info(String.format("Detected file system event %s", kind));
                             if(kind == OVERFLOW) {
                                 continue;
                             }
@@ -127,10 +127,6 @@ public class FileWatcher {
     private Set<FileWatcherListener> listeners
             = Collections.synchronizedSet(new HashSet<FileWatcherListener>());
 
-    /**
-     * @param listener
-     * @throws IOException
-     */
     public void addListener(final FileWatcherListener listener) {
         listeners.add(listener);
     }
