@@ -34,6 +34,7 @@ public interface Controller {
      * Will return immediatly but not run the runnable before the lock of the runnable is acquired.
      *
      * @param runnable The runnable to execute in a secondary Thread
+     * @return Future result
      * @see java.lang.Thread
      * @see ch.cyberduck.core.threading.BackgroundAction#lock()
      */
@@ -56,8 +57,7 @@ public interface Controller {
     public void invoke(final MainAction runnable, final boolean wait);
 
     /**
-     * 
-     * @return
+     * @return True if is thread zero
      */
     public boolean isMainThread();
 }
