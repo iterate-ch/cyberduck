@@ -42,6 +42,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+/**
+ * @version $Id:$
+ */
 public abstract class AlertRepeatableBackgroundAction extends RepeatableBackgroundAction {
     private static Logger log = Logger.getLogger(AlertRepeatableBackgroundAction.class);
 
