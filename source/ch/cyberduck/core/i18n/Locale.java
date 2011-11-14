@@ -24,17 +24,17 @@ package ch.cyberduck.core.i18n;
 public abstract class Locale {
 
     /**
-     * @param key
-     * @return
+     * @param key English variant
+     * @return Localized from default table
      */
     public static String localizedString(final String key) {
         return localizedString(key, "Localizable");
     }
 
     /**
-     * @param key
+     * @param key   English variant
      * @param table The identifier of the table to lookup the string in. Could be a file.
-     * @return
+     * @return Localized from table
      */
     public static String localizedString(final String key, final String table) {
         return LocaleFactory.instance().get(key, table);
