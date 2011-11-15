@@ -5,7 +5,7 @@ Building Cyberduck (Mac & Windows)
 Prerequisites
 -------------
 
-- Java 1.5.0 SDK in ~/.bin/1.5.0 or edit the jdk.home property in build.xml for a different JDK in /System/Library/Frameworks/JavaVM.framework/Versions
+- Java 1.5.0 SDK or later
 - Apache Ant 1.7.1 or later
 	http://ant.apache.org/
 - Copy Ant libraries from <cyberduck-source>/lib/ext to ~/.ant/lib/*.jar
