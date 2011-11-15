@@ -177,14 +177,6 @@ public abstract class Credentials {
         return protocol.validate(this);
     }
 
-    /**
-     * Reset credentials.
-     */
-    public void clear() {
-        user = null;
-        password = null;
-    }
-
     public abstract String getUsernamePlaceholder();
 
     public abstract String getPasswordPlaceholder();
