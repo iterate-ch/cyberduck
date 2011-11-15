@@ -420,10 +420,10 @@ public class BookmarkTableDataSource extends ListDataSource {
                 }
             }
             if(!roots.isEmpty()) {
-                final Transfer q = new UploadTransfer(roots);
+                final Transfer t = new UploadTransfer(roots);
                 // If anything has been added to the queue, then process the queue
-                if(q.numberOfRoots() > 0) {
-                    TransferController.instance().startTransfer(q);
+                if(t.numberOfRoots() > 0) {
+                    TransferController.instance().startTransfer(t);
                 }
             }
             return true;
