@@ -65,10 +65,12 @@ public class PathPasteboard extends Collection<Path> implements Pasteboard<Path>
     }
 
     /**
-     * @param session
+     * Factory to create a pasteboard for a session
+     *
+     * @param session Session instance
      * @return Pasteboard for a given session
      */
-    public static PathPasteboard getPasteboard(Session session) {
+    public static PathPasteboard getPasteboard(final Session session) {
         if(!instances.containsKey(session)) {
             instances.put(session, new PathPasteboard(session));
         }
@@ -76,7 +78,7 @@ public class PathPasteboard extends Collection<Path> implements Pasteboard<Path>
     }
 
     /**
-     * @return
+     * @return All available pasteboards
      */
     public static List<PathPasteboard> allPasteboards() {
         return new ArrayList<PathPasteboard>(instances.values());
@@ -93,17 +95,19 @@ public class PathPasteboard extends Collection<Path> implements Pasteboard<Path>
     }
 
     /**
-     * @return
+     * @return Content of pasteboard with a new session
      */
     public List<Path> copy() {
         return this.copy(SessionFactory.createSession(session.getHost()));
     }
 
     /**
-     * @param session
-     * @return
+     * Get content of pasteboard with a given session
+     *
+     * @param session Session to use
+     * @return Content of pasteboard
      */
-    public List<Path> copy(Session session) {
+    public List<Path> copy(final Session session) {
         List<Path> content = new ArrayList<Path>();
         for(Path path : this) {
             content.add(PathFactory.createPath(session, path.getAsDictionary()));
