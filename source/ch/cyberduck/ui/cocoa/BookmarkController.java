@@ -18,12 +18,41 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AbstractCollectionListener;
+import ch.cyberduck.core.BookmarkCollection;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.ftp.FTPConnectMode;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
-import ch.cyberduck.ui.cocoa.application.*;
-import ch.cyberduck.ui.cocoa.foundation.*;
+import ch.cyberduck.ui.cocoa.application.NSButton;
+import ch.cyberduck.ui.cocoa.application.NSCell;
+import ch.cyberduck.ui.cocoa.application.NSColor;
+import ch.cyberduck.ui.cocoa.application.NSControl;
+import ch.cyberduck.ui.cocoa.application.NSFont;
+import ch.cyberduck.ui.cocoa.application.NSImage;
+import ch.cyberduck.ui.cocoa.application.NSMenuItem;
+import ch.cyberduck.ui.cocoa.application.NSOpenPanel;
+import ch.cyberduck.ui.cocoa.application.NSPanel;
+import ch.cyberduck.ui.cocoa.application.NSPopUpButton;
+import ch.cyberduck.ui.cocoa.application.NSText;
+import ch.cyberduck.ui.cocoa.application.NSTextField;
+import ch.cyberduck.ui.cocoa.application.NSTextFieldCell;
+import ch.cyberduck.ui.cocoa.application.NSTextView;
+import ch.cyberduck.ui.cocoa.application.NSWindow;
+import ch.cyberduck.ui.cocoa.foundation.NSArray;
+import ch.cyberduck.ui.cocoa.foundation.NSData;
+import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
+import ch.cyberduck.ui.cocoa.foundation.NSEnumerator;
+import ch.cyberduck.ui.cocoa.foundation.NSNotification;
+import ch.cyberduck.ui.cocoa.foundation.NSNotificationCenter;
+import ch.cyberduck.ui.cocoa.foundation.NSObject;
+import ch.cyberduck.ui.cocoa.foundation.NSURL;
 import ch.cyberduck.ui.cocoa.util.HyperlinkAttributedStringFactory;
 
 import org.rococoa.Foundation;
@@ -35,7 +64,13 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.spearce.jgit.transport.OpenSshConfig;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.TimeZone;
 
 /**
  * @version $Id$
@@ -334,7 +369,7 @@ public class BookmarkController extends WindowController {
 
     private static final TimeZone UTC = TimeZone.getTimeZone("UTC");
 
-    private static final String TIMEZONE_ID_PREFIXES =
+    private static final String TIMEZONE_CONTINENT_PREFIXES =
             "^(Africa|America|Asia|Atlantic|Australia|Europe|Indian|Pacific)/.*";
 
     public void setTimezonePopup(NSPopUpButton timezonePopup) {
@@ -342,26 +377,26 @@ public class BookmarkController extends WindowController {
         this.timezonePopup.setTarget(this.id());
         this.timezonePopup.setAction(Foundation.selector("timezonePopupClicked:"));
         this.timezonePopup.removeAllItems();
-        {
-            this.timezonePopup.addItemWithTitle(UTC.getID());
-        }
-        this.timezonePopup.menu().addItem(NSMenuItem.separatorItem());
         final List<String> timezones = Arrays.asList(TimeZone.getAvailableIDs());
+        this.timezonePopup.addItemWithTitle(UTC.getID());
+        this.timezonePopup.lastItem().setRepresentedObject(UTC.getID());
+        this.timezonePopup.menu().addItem(NSMenuItem.separatorItem());
         Collections.sort(timezones, new Comparator<String>() {
             public int compare(String o1, String o2) {
                 return TimeZone.getTimeZone(o1).getID().compareTo(TimeZone.getTimeZone(o2).getID());
             }
         });
         for(String tz : timezones) {
-            if(tz.matches(TIMEZONE_ID_PREFIXES)) {
-                this.timezonePopup.addItemWithTitle(TimeZone.getTimeZone(tz).getID());
+            if(tz.matches(TIMEZONE_CONTINENT_PREFIXES)) {
+                this.timezonePopup.addItemWithTitle(String.format("%s", tz));
+                this.timezonePopup.lastItem().setRepresentedObject(tz);
             }
         }
     }
 
     @Action
     public void timezonePopupClicked(NSPopUpButton sender) {
-        String selected = sender.selectedItem().title();
+        String selected = sender.selectedItem().representedObject();
         if(selected.equals(AUTO)) {
             host.setTimezone(null);
         }
