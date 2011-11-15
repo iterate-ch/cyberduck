@@ -57,7 +57,8 @@ public class CreateFileController extends FileController {
     protected void createFile(final Path workdir, final String filename, final boolean edit) {
         final BrowserController c = (BrowserController) parent;
         c.background(new BrowserBackgroundAction(c) {
-            final Path file = PathFactory.createPath(this.getSession(), workdir.getAbsolute(), filename, Path.FILE_TYPE);
+            final Path file = PathFactory.createPath(c.getSession(), workdir.getAbsolute(),
+                    filename, Path.FILE_TYPE);
 
             public void run() {
                 file.touch();

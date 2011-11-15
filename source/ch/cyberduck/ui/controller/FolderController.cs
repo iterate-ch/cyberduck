@@ -57,7 +57,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 _workdir = workdir;
                 _filename = filename;
-                _folder = PathFactory.createPath(getSession(), _workdir.getAbsolute(), _filename,
+                _folder = PathFactory.createPath(controller.getSession(), _workdir.getAbsolute(), _filename,
                                                  AbstractPath.DIRECTORY_TYPE);
             }
 

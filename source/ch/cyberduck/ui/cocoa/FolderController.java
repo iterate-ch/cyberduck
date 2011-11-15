@@ -55,7 +55,7 @@ public class FolderController extends FileController {
     protected void createFolder(final Path workdir, final String filename) {
         final BrowserController c = (BrowserController) parent;
         c.background(new BrowserBackgroundAction(c) {
-            final Path folder = PathFactory.createPath(this.getSession(), workdir.getAbsolute(),
+            final Path folder = PathFactory.createPath(c.getSession(), workdir.getAbsolute(),
                     filename, Path.DIRECTORY_TYPE);
 
             public void run() {
