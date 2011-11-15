@@ -18,12 +18,19 @@ package ch.cyberduck.core.sftp;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AbstractPath;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathFactory;
+import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.StreamListener;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.IOResumeException;
 import ch.cyberduck.ui.DateFormatterFactory;
-import ch.ethz.ssh2.*;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
@@ -33,6 +40,15 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.MessageFormat;
 import java.util.List;
+
+import ch.ethz.ssh2.SCPClient;
+import ch.ethz.ssh2.SFTPException;
+import ch.ethz.ssh2.SFTPInputStream;
+import ch.ethz.ssh2.SFTPOutputStream;
+import ch.ethz.ssh2.SFTPv3Client;
+import ch.ethz.ssh2.SFTPv3DirectoryEntry;
+import ch.ethz.ssh2.SFTPv3FileAttributes;
+import ch.ethz.ssh2.SFTPv3FileHandle;
 
 /**
  * @version $Id$
@@ -498,42 +514,13 @@ public class SFTPPath extends Path {
         final String mode = Preferences.instance().getProperty("ssh.transfer");
         if(mode.equals(Protocol.SFTP.getIdentifier())) {
             SFTPv3FileHandle handle;
-            try {
-                SFTPv3FileAttributes attr = new SFTPv3FileAttributes();
-                if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
-                    int t = (int) (this.attributes().getModificationDate() / 1000);
-                    // We must both set the accessed and modified time. See AttribFlags.SSH_FILEXFER_ATTR_V3_ACMODTIME
-                    attr.atime = t;
-                    attr.mtime = t;
-                }
-                if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
-                    // We do set the permissions here as otherwise we might have an empty mask for
-                    // interrupted file transfers
-                    attr.permissions = Integer.parseInt(this.attributes().getPermission().getOctalString(), 8);
-                }
-                if(status().isResume() && this.exists()) {
-                    handle = this.getSession().sftp().openFile(this.getAbsolute(),
-                            SFTPv3Client.SSH_FXF_WRITE | SFTPv3Client.SSH_FXF_APPEND, attr);
-                }
-                else {
-                    handle = this.getSession().sftp().openFile(this.getAbsolute(),
-                            SFTPv3Client.SSH_FXF_CREAT | SFTPv3Client.SSH_FXF_TRUNC | SFTPv3Client.SSH_FXF_WRITE, attr);
-                }
+            if(status().isResume() && this.exists()) {
+                handle = this.getSession().sftp().openFile(this.getAbsolute(),
+                        SFTPv3Client.SSH_FXF_WRITE | SFTPv3Client.SSH_FXF_APPEND, null);
             }
-            catch(SFTPException ignore) {
-                // We might not be able to change the attributes if we are
-                // not the owner of the file; but then we still want to proceed as we
-                // might have group write privileges
-                log.warn(ignore.getMessage());
-
-                if(status().isResume() && this.exists()) {
-                    handle = this.getSession().sftp().openFile(this.getAbsolute(),
-                            SFTPv3Client.SSH_FXF_WRITE | SFTPv3Client.SSH_FXF_APPEND, null);
-                }
-                else {
-                    handle = this.getSession().sftp().openFile(this.getAbsolute(),
-                            SFTPv3Client.SSH_FXF_CREAT | SFTPv3Client.SSH_FXF_TRUNC | SFTPv3Client.SSH_FXF_WRITE, null);
-                }
+            else {
+                handle = this.getSession().sftp().openFile(this.getAbsolute(),
+                        SFTPv3Client.SSH_FXF_CREAT | SFTPv3Client.SSH_FXF_TRUNC | SFTPv3Client.SSH_FXF_WRITE, null);
             }
             OutputStream out = new SFTPOutputStream(handle);
             if(status().isResume()) {
