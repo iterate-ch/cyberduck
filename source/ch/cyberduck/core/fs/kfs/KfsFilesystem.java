@@ -232,7 +232,7 @@ public class KfsFilesystem extends ProxyController implements Filesystem {
                         final Path file = PathFactory.createPath(session, path, Path.FILE_TYPE);
                         file.status().setResume(false);
                         try {
-                            final InputStream in = file.read();
+                            final InputStream in = file.read(true);
                             try {
                                 long total = 0;
                                 byte[] chunk = new byte[length.intValue()];
