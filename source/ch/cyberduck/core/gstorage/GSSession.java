@@ -294,7 +294,7 @@ public class GSSession extends S3Session {
     }
 
     @Override
-    public Acl getUploadAcl(String container, boolean readable, boolean writable) {
+    public Acl getUploadAcl(String container, boolean readable) {
         final Acl acl = new Acl();
         // No need to add owner to ACL, Google Storage  will fill in the correct owner automatically
         if(readable) {

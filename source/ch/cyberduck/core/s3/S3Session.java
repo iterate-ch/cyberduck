@@ -954,21 +954,17 @@ public class S3Session extends CloudSession {
     }
 
     /**
+     *
      * @param container Bucket name
      * @param readable  Enable read permission for anonymous users
-     * @param writable  Enable write permission for anonymous users
      * @return ACL with full control permission for owner of the bucket plus the read and write permissions
      *         for anonymous users if enabled.
      */
-    protected Acl getUploadAcl(String container, boolean readable, boolean writable) {
+    protected Acl getUploadAcl(String container, boolean readable) {
         final Acl acl = this.getPrivateAcl(container);
         if(readable) {
             acl.addAll(new Acl.GroupUser(GroupGrantee.ALL_USERS.getIdentifier()),
                     new Acl.Role(org.jets3t.service.acl.Permission.PERMISSION_READ.toString()));
-        }
-        if(writable) {
-            acl.addAll(new Acl.GroupUser(GroupGrantee.ALL_USERS.getIdentifier()),
-                    new Acl.Role(org.jets3t.service.acl.Permission.PERMISSION_WRITE.toString()));
         }
         return acl;
     }

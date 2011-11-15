@@ -623,8 +623,8 @@ public class S3Path extends CloudPath {
                 }
                 else {
                     acl = this.getSession().getUploadAcl(container,
-                            perm.getOtherPermissions()[Permission.READ],
-                            perm.getOtherPermissions()[Permission.WRITE]);
+                            perm.getOtherPermissions()[Permission.READ]
+                    );
                 }
             }
         }
@@ -636,13 +636,9 @@ public class S3Path extends CloudPath {
             // Owner gets FULL_CONTROL. No one else has access rights (default).
             object.setAcl(AccessControlList.REST_CANNED_PRIVATE);
         }
-        else if(acl.equals(this.getSession().getUploadAcl(container, true, false))) {
+        else if(acl.equals(this.getSession().getUploadAcl(container, true))) {
             // Owner gets FULL_CONTROL and the anonymous principal is granted READ access
             object.setAcl(AccessControlList.REST_CANNED_PUBLIC_READ);
-        }
-        else if(acl.equals(this.getSession().getUploadAcl(container, true, true))) {
-            // Owner gets FULL_CONTROL, the anonymous principal is granted READ and WRITE access
-            object.setAcl(AccessControlList.REST_CANNED_PUBLIC_READ_WRITE);
         }
         else {
             object.setAcl(this.convert(acl));
