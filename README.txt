@@ -27,7 +27,9 @@ Windows
 Compiling
 ---------
 
-- Type 'ant' for executing the default 'build' target. Depending on the platform, build-mac.xml or build-windows.xml is included respectively for native compilation. On Windows, run 'ant dll' initially.
+- On Windows, run 'ant dll' initially.
+- Type 'ant' for executing the default 'build' target. Depending on the platform, build-mac.xml or build-windows.xml
+is included respectively for native compilation.
 
 Tagged Releases
 ---------------
