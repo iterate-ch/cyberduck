@@ -604,7 +604,14 @@ namespace Ch.Cyberduck.Ui.Controller
                 options.resumeRequested = _resume;
                 // Do not invalidate cache entries during file transfers
                 options.invalidateCache = Cache.Lifecycle.FOREVER;
-                _transfer.start(TransferPromptController.Create(_controller, _transfer), options);
+                _transfer.start(new LazyTransferPrompt(), options);
+            }
+
+            private class LazyTransferPrompt : TransferPrompt
+            {
+                public TransferAction prompt() {
+                    return TransferPromptController.Create(_controller, _transfer);
+                }
             }
 
             public override void finish()

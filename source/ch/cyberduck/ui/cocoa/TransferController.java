@@ -19,22 +19,7 @@ package ch.cyberduck.ui.cocoa;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractCollectionListener;
-import ch.cyberduck.core.Cache;
-import ch.cyberduck.core.Collection;
-import ch.cyberduck.core.DownloadTransfer;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.Queue;
-import ch.cyberduck.core.Session;
-import ch.cyberduck.core.Status;
-import ch.cyberduck.core.SyncTransfer;
-import ch.cyberduck.core.Transfer;
-import ch.cyberduck.core.TransferAdapter;
-import ch.cyberduck.core.TransferCollection;
-import ch.cyberduck.core.TransferListener;
-import ch.cyberduck.core.TransferOptions;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
@@ -786,7 +771,11 @@ public class TransferController extends WindowController implements NSToolbar.De
                 options.reloadRequested = reload;
                 options.resumeRequested = resume;
                 options.invalidateCache = Cache.Lifecycle.FOREVER;
-                transfer.start(TransferPromptController.create(TransferController.this, transfer), options);
+                transfer.start(new TransferPrompt() {
+                    public TransferAction prompt() {
+                        return TransferPromptController.create(TransferController.this, transfer).prompt();
+                    }
+                }, options);
             }
 
             @Override
