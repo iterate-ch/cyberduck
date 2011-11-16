@@ -279,7 +279,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private bool View_ValidateReloadEvent()
         {
-            return ValidateToolbarItem(transfer => !transfer.isRunning());
+            return ValidateToolbarItem(transfer => (transfer.isReloadable() && !transfer.isRunning()));
         }
 
         /// <summary>
@@ -632,9 +632,9 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
             }
 
-            protected override Session getSession()
+            protected override Session getSessions()
             {
-                return _transfer.getSession();
+                return _transfer.getSessions();
             }
 
             public override void pause()

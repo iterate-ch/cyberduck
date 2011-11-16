@@ -71,6 +71,8 @@ import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 import ch.cyberduck.ui.cocoa.util.HyperlinkAttributedStringFactory;
 import ch.cyberduck.ui.cocoa.view.ControllerCell;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
 import org.rococoa.Rococoa;
@@ -79,9 +81,6 @@ import org.rococoa.cocoa.CGFloat;
 import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSSize;
 import org.rococoa.cocoa.foundation.NSUInteger;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -813,8 +812,8 @@ public class TransferController extends WindowController implements NSToolbar.De
             }
 
             @Override
-            public Session getSession() {
-                return transfer.getSession();
+            public List<Session> getSessions() {
+                return transfer.getSessions();
             }
 
             @Override
@@ -1218,8 +1217,14 @@ public class TransferController extends WindowController implements NSToolbar.De
                 }
             });
         }
-        if(action.equals(Foundation.selector("reloadButtonClicked:"))
-                || action.equals(Foundation.selector("deleteButtonClicked:"))) {
+        if(action.equals(Foundation.selector("reloadButtonClicked:"))) {
+            return this.validate(new TransferToolbarValidator() {
+                public boolean validate(Transfer transfer) {
+                    return transfer.isReloadable() && !transfer.isRunning();
+                }
+            });
+        }
+        if(action.equals(Foundation.selector("deleteButtonClicked:"))) {
             return this.validate(new TransferToolbarValidator() {
                 public boolean validate(Transfer transfer) {
                     return !transfer.isRunning();
