@@ -19,7 +19,11 @@ package ch.cyberduck.ui;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.Collection;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathFactory;
+import ch.cyberduck.core.Session;
+import ch.cyberduck.core.SessionFactory;
 
 import org.apache.log4j.Logger;
 
