@@ -165,7 +165,7 @@ public abstract class TransferPromptModel extends OutlineDataSource {
 
                     @Override
                     public Object lock() {
-                        return transfer.getSession();
+                        return transfer.getSessions().iterator().next();
                     }
                 });
             }
