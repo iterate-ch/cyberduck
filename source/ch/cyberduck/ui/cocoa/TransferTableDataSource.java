@@ -103,7 +103,9 @@ public class TransferTableDataSource extends ListDataSource {
                         return true;
                     }
                     for(Session s: transfer.getSessions()) {
-                       return s.getHost().getHostname().toLowerCase().contains(searchString.toLowerCase());
+                       if(s.getHost().getHostname().toLowerCase().contains(searchString.toLowerCase())) {
+                           return true;
+                       };
                     }
                     return false;
                 }
