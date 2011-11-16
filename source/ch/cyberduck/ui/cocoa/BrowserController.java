@@ -19,7 +19,6 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.*;
-import ch.cyberduck.core.Collection;
 import ch.cyberduck.core.aquaticprime.LicenseFactory;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
@@ -29,16 +28,12 @@ import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.ui.PathPasteboard;
 import ch.cyberduck.ui.cocoa.application.*;
-import ch.cyberduck.ui.cocoa.application.NSImage;
-import ch.cyberduck.ui.cocoa.delegate.*;
+import ch.cyberduck.ui.cocoa.delegate.ArchiveMenuDelegate;
+import ch.cyberduck.ui.cocoa.delegate.CopyURLMenuDelegate;
+import ch.cyberduck.ui.cocoa.delegate.EditMenuDelegate;
+import ch.cyberduck.ui.cocoa.delegate.OpenURLMenuDelegate;
+import ch.cyberduck.ui.cocoa.delegate.URLMenuDelegate;
 import ch.cyberduck.ui.cocoa.foundation.*;
-import ch.cyberduck.ui.cocoa.foundation.NSArray;
-import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
-import ch.cyberduck.ui.cocoa.foundation.NSNotification;
-import ch.cyberduck.ui.cocoa.foundation.NSNotificationCenter;
-import ch.cyberduck.ui.cocoa.foundation.NSObject;
-import ch.cyberduck.ui.cocoa.foundation.NSRange;
-import ch.cyberduck.ui.cocoa.foundation.NSString;
 import ch.cyberduck.ui.cocoa.model.OutlinePathReference;
 import ch.cyberduck.ui.cocoa.odb.Editor;
 import ch.cyberduck.ui.cocoa.odb.EditorFactory;
@@ -52,20 +47,29 @@ import ch.cyberduck.ui.cocoa.view.BookmarkCell;
 import ch.cyberduck.ui.cocoa.view.OutlineCell;
 import ch.cyberduck.ui.growl.Growl;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
 import org.rococoa.Rococoa;
 import org.rococoa.Selector;
 import org.rococoa.cocoa.CGFloat;
-import org.rococoa.cocoa.foundation.*;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.rococoa.cocoa.foundation.NSInteger;
+import org.rococoa.cocoa.foundation.NSPoint;
+import org.rococoa.cocoa.foundation.NSRect;
+import org.rococoa.cocoa.foundation.NSSize;
+import org.rococoa.cocoa.foundation.NSUInteger;
 
 import java.io.File;
 import java.security.cert.X509Certificate;
 import java.text.MessageFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -2221,19 +2225,10 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         final Map<Path, Path> normalized = this.checkHierarchy(selected);
         this.checkOverwrite(normalized.values(), new BrowserBackgroundAction(this) {
             public void run() {
-                Iterator<Path> sourcesIter = normalized.keySet().iterator();
-                Iterator<Path> destinationsIter = normalized.values().iterator();
-                while(sourcesIter.hasNext()) {
-                    if(this.isCanceled()) {
-                        break;
-                    }
-                    final Path source = sourcesIter.next();
-                    final Path destination = destinationsIter.next();
-                    source.copy(destination);
-                    if(!isConnected()) {
-                        break;
-                    }
-                }
+                CopyTransfer copy = new CopyTransfer(normalized);
+                TransferOptions options = new TransferOptions();
+                options.closeSession = false;
+                copy.start(null, options);
             }
 
             @Override
@@ -2395,6 +2390,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     /**
      * Prunes the map of selected files. Files which are a child of an already included directory
      * are removed from the returned map.
+     *
      * @param selected Selected files and folders in browser
      * @return Pruned list with child entries of parent folders removed
      */
@@ -2886,76 +2882,49 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     }
 
     /**
-     * @param transfer Upload
-     * @param workdir  Will reload the data for this directory in the browser after the
-     *                 transfer completes
-     * @see #transfer(Transfer)
-     */
-    protected void transfer(final Transfer transfer, final Path workdir) {
-        final TransferListener l;
-        transfer.addListener(l = new TransferAdapter() {
-            @Override
-            public void transferDidEnd() {
-                if(isMounted()) {
-                    workdir.invalidate();
-                    if(!transfer.isCanceled()) {
-                        invoke(new WindowMainAction(BrowserController.this) {
-                            public void run() {
-                                reloadData(true);
-                            }
-
-                            @Override
-                            public boolean isValid() {
-                                return super.isValid() && BrowserController.this.isConnected();
-                            }
-                        });
-                    }
-                }
-            }
-        });
-        this.addListener(new WindowListener() {
-            public void windowWillClose() {
-                transfer.removeListener(l);
-            }
-        });
-        this.transfer(transfer);
-    }
-
-    /**
      * Trasnfers the files either using the queue or using the browser session if #connection.pool.max is 1
      *
-     * @param transfer Transfer
-     * @see TransferController
+     * @param transfer Transfer Operation
      */
     protected void transfer(final Transfer transfer) {
-        this.transfer(transfer, this.getSession().getMaxConnections() == 1);
+        this.transfer(transfer, null);
+    }
+
+    /**
+     * @param transfer Transfer Operation
+     * @param destination  Will reload the data for this directory in the browser after the
+     *                 transfer completes
+     */
+    protected void transfer(final Transfer transfer, final Path destination) {
+        this.transfer(transfer, destination, this.getSession().getMaxConnections() == 1);
+    }
+
+    /**
+     * @param transfer             Transfer Operation
+     * @param destination              Will reload the data for this directory in the browser after the
+     *                             transfer completes
+     * @param useBrowserConnection Transfer in browser session
+     */
+    protected void transfer(final Transfer transfer, final Path destination, final boolean useBrowserConnection) {
+        this.transfer(transfer, destination, useBrowserConnection, new TransferPrompt() {
+            public TransferAction prompt() {
+                return TransferPromptController.create(BrowserController.this, transfer).prompt();
+            }
+        });
     }
 
     /**
      * @param transfer             Transfer
      * @param useBrowserConnection Transfer in browser session
-     */
-    protected void transfer(final Transfer transfer, final boolean useBrowserConnection) {
-        this.transfer(transfer, useBrowserConnection, TransferPromptController.create(this, transfer));
-    }
-
-    /**
-     * @param transfer Transfer
-     * @param prompt   Callback for overwrite action
-     */
-    protected void transfer(final Transfer transfer, final TransferPrompt prompt) {
-        this.transfer(transfer, this.getSession().getMaxConnections() == 1, prompt);
-    }
-
-    /**
-     * @param transfer             Transfer
-     * @param useBrowserConnection Transfer in browser session
+     * @param destination              Will reload the data for this directory in the browser after the
+     *                             transfer completes
      * @param prompt               Callback for overwrite action
      */
-    protected void transfer(final Transfer transfer, boolean useBrowserConnection, final TransferPrompt prompt) {
+    protected void transfer(final Transfer transfer, final Path destination, boolean useBrowserConnection,
+                            final TransferPrompt prompt) {
         if(useBrowserConnection) {
-            final TransferListener l;
-            transfer.addListener(l = new TransferAdapter() {
+            final TransferListener status;
+            transfer.addListener(status = new TransferAdapter() {
                 private Speedometer meter = new Speedometer(transfer);
 
                 /**
@@ -2991,9 +2960,25 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                     meter.reset();
                 }
             });
-            this.addListener(new WindowListener() {
-                public void windowWillClose() {
-                    transfer.removeListener(l);
+            final TransferListener reload;
+            transfer.addListener(reload = new TransferAdapter() {
+                @Override
+                public void transferDidEnd() {
+                    if(destination != null && isMounted()) {
+                        destination.invalidate();
+                        if(!transfer.isCanceled()) {
+                            invoke(new WindowMainAction(BrowserController.this) {
+                                public void run() {
+                                    reloadData(true);
+                                }
+
+                                @Override
+                                public boolean isValid() {
+                                    return super.isValid() && BrowserController.this.isConnected();
+                                }
+                            });
+                        }
+                    }
                 }
             });
             this.background(new BrowserBackgroundAction(this) {
@@ -3005,6 +2990,13 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 }
 
                 @Override
+                public void finish() {
+                    super.finish();
+                    transfer.removeListener(status);
+                    transfer.removeListener(reload);
+                }
+
+                @Override
                 public void cancel() {
                     transfer.cancel();
                     super.cancel();
@@ -3013,6 +3005,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 @Override
                 public void cleanup() {
                     updateStatusLabel();
+                    super.cleanup();
                 }
 
                 @Override

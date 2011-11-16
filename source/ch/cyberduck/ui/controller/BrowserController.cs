@@ -2189,7 +2189,17 @@ namespace Ch.Cyberduck.Ui.Controller
         /// <param name="transfer"></param>
         public void transfer(Transfer transfer)
         {
-            this.transfer(transfer, getSession().getMaxConnections() == 1);
+            this.transfer(transfer, null);
+        }
+
+
+        /// <summary>
+        /// Will reload the data for this directory in the browser after the transfer completes
+        /// </summary>
+        /// <param name="transfer"></param>
+        /// <param name="destination"></param>
+        public void transfer(Transfer transfer, Path destination) {
+            this.transfer(transfer, destination, getSession().getMaxConnections() == 1);
         }
 
         /// <summary>
@@ -2197,42 +2207,42 @@ namespace Ch.Cyberduck.Ui.Controller
         /// </summary>
         /// <param name="transfer"></param>
         /// <param name="useBrowserConnection"></param>
-        public void transfer(Transfer transfer, bool useBrowserConnection)
+        param void transfer(Transfer transfer, Path destination, bool useBrowserConnection)
         {
-            this.transfer(transfer, useBrowserConnection, TransferPromptController.Create(this, transfer));
+            this.transfer(transfer, destination, useBrowserConnection, new LazyTransferPrompt(this, transfer), null);
         }
 
-        /// <summary>
-        /// Will reload the data for this directory in the browser after the transfer completes
-        /// </summary>
-        /// <param name="transfer"></param>
-        /// <param name="destination"></param>
-        public void transfer(Transfer transfer, Path destination)
+        private class LazyTransferPrompt : TransferPrompt
         {
-            ReloadTransferAdapter transferAdapter = new ReloadTransferAdapter(this, transfer, destination, true);
-            transfer.addListener(transferAdapter);
-            this.transfer(transfer);
+            private readonly BrowserController _controller;
+            private readonly Transfer _transfer;
+
+            public LazyTransferPrompt(BrowserController controller, Transfer transfer)
+            {
+                _transfer = transfer;
+                _controller = controller;
+            }
+
+            public TransferAction prompt()
+            {
+                return TransferPromptController.Create(_controller, _transfer).prompt();
+            }
         }
 
-        protected void transfer(Transfer transfer, bool useBrowserConnection, TransferPrompt prompt)
+        public void transfer(Transfer transfer, Path destination, bool useBrowserConnection, TransferPrompt prompt)
         {
+            ReloadTransferAdapter reload = new ReloadTransferAdapter(this, transfer, destination);
+            transfer.addListener(reload);
             if (useBrowserConnection)
             {
-                TransferAdapter transferAdapter = new TransferAdapter(this, transfer);
-                transfer.addListener(transferAdapter);
-                //todo hmm, bleiben hier nicht alle Transfer aktiv (gc kann nicht abräumen wegen delegate)???
-                //todo Memory Leak?
-                //todo mit dko anschauen, auch Überladung transfer(Transfer transfer, Path workdir)
-                //View.ViewClosedEvent += delegate { Transfer.removeListener(transferAdapter); };
-
-                //Versuch 1 das Leak zu beseitigen
+                ProgressTransferAdapter status = new ProgressTransferAdapter(this, transfer);
+                transfer.addListener(status);
                 CallbackDelegate callback = delegate
                                                 {
-                                                    Log.debug(
-                                                        "Callback (TransferBrowserBackgrounAction) invoked, removing transferAdapter listener");
-                                                    transfer.removeListener(transferAdapter);
+                                                    transfer.removeListener(status);
+                                                    transfer.removeListener(reload);
                                                 };
-                Background(new TransferBrowserBackgrounAction(this, prompt, transfer, callback));
+                Background(new TransferBrowserBackgroundAction(this, prompt, transfer, callback));
             }
             else
             {
@@ -3361,21 +3371,10 @@ namespace Ch.Cyberduck.Ui.Controller
 
             public override void run()
             {
-                foreach (KeyValuePair<Path, Path> pair in _normalized)
-                {
-                    if (isCanceled())
-                    {
-                        break;
-                    }
-                    Path source = pair.Key;
-                    Path destination = pair.Value;
-
-                    source.copy(destination);
-                    if (!BrowserController.IsConnected())
-                    {
-                        break;
-                    }
-                }
+                CopyTransfer copy = new CopyTransfer(_normalized);
+                TransferOptions options = new TransferOptions();
+                options.closeSession = false;
+                copy.start(null, options);
             }
 
             public override void cleanup()
@@ -3542,25 +3541,22 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
-        internal class ReloadTransferAdapter : ch.cyberduck.core.TransferAdapter
+        internal class ReloadTransferAdapter : TransferAdapter
         {
             private readonly BrowserController _controller;
             private readonly Path _destination;
-            private readonly bool _removeListener;
             private readonly Transfer _transfer;
 
-            public ReloadTransferAdapter(BrowserController controller, Transfer transfer, Path destination,
-                                         bool removeListener)
+            public ReloadTransferAdapter(BrowserController controller, Transfer transfer, Path destination)
             {
                 _controller = controller;
                 _transfer = transfer;
                 _destination = destination;
-                _removeListener = removeListener;
             }
 
             public override void transferDidEnd()
             {
-                if (_controller.IsMounted())
+                if (_destination != null && _controller.IsMounted())
                 {
                     _destination.invalidate();
                     if (!_transfer.isCanceled())
@@ -3568,7 +3564,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         _controller.invoke(new ReloadAction(_controller, _destination));
                     }
                 }
-                if (_removeListener) _transfer.removeListener(this);
+                _transfer.removeListener(this);
             }
 
             private class ReloadAction : WindowMainAction
@@ -3678,7 +3674,7 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
-        internal class TransferAdapter : ch.cyberduck.core.TransferAdapter
+        internal class ProgressTransferAdapter : TransferAdapter
         {
             private const long Delay = 0;
             private const long Period = 500; //in milliseconds
@@ -3686,7 +3682,7 @@ namespace Ch.Cyberduck.Ui.Controller
             private readonly Speedometer _meter;
             private readonly Timer _timer;
 
-            public TransferAdapter(BrowserController controller, Transfer transfer)
+            public ProgressTransferAdapter(BrowserController controller, Transfer transfer)
             {
                 _meter = new Speedometer(transfer);
                 _controller = controller;
@@ -3734,16 +3730,16 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
-        private class TransferBrowserBackgrounAction : BrowserBackgroundAction
+        private class TransferBrowserBackgroundAction : BrowserBackgroundAction
         {
             private readonly CallbackDelegate _callback;
             private readonly TransferPrompt _prompt;
             private readonly Transfer _transfer;
 
-            public TransferBrowserBackgrounAction(BrowserController controller,
-                                                  TransferPrompt prompt,
-                                                  Transfer transfer,
-                                                  CallbackDelegate callback)
+            public TransferBrowserBackgroundAction(BrowserController controller,
+                                                   TransferPrompt prompt,
+                                                   Transfer transfer,
+                                                   CallbackDelegate callback)
                 : base(controller)
             {
                 _prompt = prompt;
@@ -3760,11 +3756,18 @@ namespace Ch.Cyberduck.Ui.Controller
                 _transfer.start(_prompt, options);
             }
 
+            public override void finish()
+            {
+                _callback();
+                base.finish();
+            }
+
             public override void cleanup()
             {
                 Log.debug("cleanup: " + getActivity());
                 BrowserController.UpdateStatusLabel();
                 _callback();
+                base.cleanup();
             }
 
             public override void cancel()
