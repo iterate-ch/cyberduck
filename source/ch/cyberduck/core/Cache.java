@@ -181,16 +181,15 @@ public class Cache<E extends AbstractPath> {
 
     /**
      * @param reference Reference to the path in cache.
-     * @param children
-     * @return
+     * @param children  Cached directory listing
+     * @return Previous cached version
      */
     public AttributedList<E> put(PathReference reference, AttributedList<E> children) {
         return _impl.put(reference, children);
     }
 
     /**
-     *
-     * @param reference
+     * @param reference Path reference
      */
     public void invalidate(PathReference reference) {
         if(lifecycle.equals(Cache.Lifecycle.INVALIDATED)) {
