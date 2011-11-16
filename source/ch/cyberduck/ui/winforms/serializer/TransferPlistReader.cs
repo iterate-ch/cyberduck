@@ -60,8 +60,6 @@ namespace Ch.Cyberduck.Ui.Winforms.Serializer
                         return new SyncTransfer(dictNode, session);
                     case Transfer.KIND_COPY:
                         return new CopyTransfer(dictNode, session);
-                    case Transfer.KIND_MOVE:
-                        return new MoveTransfer(dictNode, session);
                 }
                 Log.error("Unknown transfer:" + kind);
             }
