@@ -34,10 +34,10 @@
     <property name="app.resources" value="${app.contents}/Resources"/>
     <property name="app.java" value="${app.resources}/Java"/>
     <property name="app.runtime" value="${app.java}/Runtime.jdk"/>
-    <!--<property name="app.runtime.lib" value="@executable_path/../Resources/Java/Runtime.jdk/Contents/Home/jre/lib/i386/server/libjvm.dylib"/>-->
     <property name="app.runtime.lib"
               value="@executable_path/../Resources/Java/Runtime.jdk/Contents/Home/jre/lib/server/libjvm.dylib"/>
-    <!--<property name="app.runtime.lib" value="/System/Library/Frameworks/JavaVM.framework/Versions/A/JavaVM"/>-->
+    <!--<property name="app.runtime.lib"-->
+              <!--value="@executable_path/../Resources/Java/Runtime.jdk/Contents/Home/lib/server/libjvm.dylib"/>-->
     <property name="app.runtime.properties.key" value="Runtime"/>
     <property name="app.runtime.system.min" value="10.5"/>
 
@@ -48,7 +48,11 @@
     <property name="apple.appstub"
               location="/System/Library/Frameworks/JavaVM.framework/Resources/MacOS/JavaApplicationStub"/>
 
-    <property name="jvm.runtime" value="${user.home}/Library/Java/JavaVirtualMachines/1.7.0.20.0-b06.jdk"/>
+    <property name="jvm.runtime.home" value="${user.home}/Library/Java/JavaVirtualMachines/1.7.0.20.0-b06.jdk"/>
+    <!--<property name="jvm.runtime.home" value="${lib}/1.7.0.jdk"/>-->
+    <property name="jvm.runtime.bundle.home" value="Contents/Home"/>
+    <property name="jvm.runtime.bundle.lib" value="Contents/Home/jre/lib"/>
+    <!--<property name="jvm.runtime.bundle.lib" value="Contents/Home/lib"/>-->
 
     <property name="codesign.certificate" value="Cyberduck Code Signing Certificate"/>
     <property name="codesign.keychain" value="${user.home}/Library/Keychains/codesign.keychain"/>
@@ -221,40 +225,42 @@
     </target>
 
     <target name="copy-runtime">
+        <echo message="Copy runtime from ${jvm.runtime.home}..."/>
         <copy todir="${app.runtime}" preservelastmodified="true">
-            <fileset followsymlinks="false" dir="${jvm.runtime}">
+            <fileset followsymlinks="false" dir="${jvm.runtime.home}">
                 <exclude name="Contents/MacOS/**"/>
-                <exclude name="Contents/Home/bin/**"/>
-                <exclude name="Contents/Home/jre/bin/**"/>
-                <exclude name="Contents/Home/include/**"/>
-                <exclude name="Contents/Home/demo/**"/>
-                <exclude name="Contents/Home/sample/**"/>
-                <exclude name="Contents/Home/lib/**"/>
-                <exclude name="Contents/Home/man/**"/>
-                <exclude name="Contents/Home/src.zip"/>
-                <exclude name="Contents/Home/jre/lib/applet/**"/>
-                <exclude name="Contents/Home/jre/lib/servicetag/**"/>
-                <exclude name="Contents/Home/jre/lib/images/**"/>
-                <exclude name="Contents/Home/jre/lib/i386/xawt/**"/>
-                <exclude name="Contents/Home/jre/lib/i386/client/**"/>
-                <exclude name="Contents/Home/jre/lib/xawt/**"/>
-                <exclude name="Contents/Home/jre/lib/lwawt/**"/>
-                <exclude name="Contents/Home/jre/lib/client/**"/>
-                <exclude name="Contents/Home/jre/lib/headless/**"/>
-                <exclude name="Contents/Home/jre/lib/jli/**"/>
-                <exclude name="Contents/Home/jre/lib/management/**"/>
-                <exclude name="Contents/Home/jre/lib/cmm/**"/>
-                <exclude name="Contents/Home/jre/lib/JObjC.jar"/>
-                <exclude name="Contents/Home/jre/lib/libJObjC.dylib"/>
-                <exclude name="Contents/Home/jre/lib/libsplashscreen.dylib"/>
-                <exclude name="Contents/Home/jre/lib/libfontmanager.dylib"/>
-                <exclude name="Contents/Home/jre/lib/libawt.dylib"/>
-                <exclude name="Contents/Home/jre/lib/libjawt.dylib"/>
-                <exclude name="Contents/Home/jre/lib/libhprof.dylib"/>
-                <exclude name="Contents/Home/jre/lib/libinstrument.dylib"/>
-                <exclude name="Contents/Home/jre/lib/libjsound.dylib"/>
-                <exclude name="Contents/Home/jre/lib/liblaf.dylib"/>
-                <exclude name="Contents/Home/jre/lib/libjava_crw_demo.dylib"/>
+                <exclude name="Contents/Resources/**"/>
+                <exclude name="${jvm.runtime.bundle.home}/bin/**"/>
+                <exclude name="${jvm.runtime.bundle.home}/jre/bin/**"/>
+                <exclude name="${jvm.runtime.bundle.home}/include/**"/>
+                <exclude name="${jvm.runtime.bundle.home}/demo/**"/>
+                <exclude name="${jvm.runtime.bundle.home}/sample/**"/>
+                <exclude name="${jvm.runtime.bundle.home}/lib/**"/>
+                <exclude name="${jvm.runtime.bundle.home}/man/**"/>
+                <exclude name="${jvm.runtime.bundle.home}/src.zip"/>
+                <exclude name="${jvm.runtime.bundle.lib}/applet/**"/>
+                <exclude name="${jvm.runtime.bundle.lib}/servicetag/**"/>
+                <exclude name="${jvm.runtime.bundle.lib}/images/**"/>
+                <exclude name="${jvm.runtime.bundle.lib}/i386/xawt/**"/>
+                <exclude name="${jvm.runtime.bundle.lib}/i386/client/**"/>
+                <exclude name="${jvm.runtime.bundle.lib}/xawt/**"/>
+                <exclude name="${jvm.runtime.bundle.lib}/lwawt/**"/>
+                <exclude name="${jvm.runtime.bundle.lib}/client/**"/>
+                <exclude name="${jvm.runtime.bundle.lib}/headless/**"/>
+                <exclude name="${jvm.runtime.bundle.lib}/jli/**"/>
+                <exclude name="${jvm.runtime.bundle.lib}/management/**"/>
+                <exclude name="${jvm.runtime.bundle.lib}/cmm/**"/>
+                <exclude name="${jvm.runtime.bundle.lib}/JObjC.jar"/>
+                <exclude name="${jvm.runtime.bundle.lib}/libJObjC.dylib"/>
+                <exclude name="${jvm.runtime.bundle.lib}/libsplashscreen.dylib"/>
+                <exclude name="${jvm.runtime.bundle.lib}/libfontmanager.dylib"/>
+                <exclude name="${jvm.runtime.bundle.lib}/libawt.dylib"/>
+                <exclude name="${jvm.runtime.bundle.lib}/libjawt.dylib"/>
+                <exclude name="${jvm.runtime.bundle.lib}/libhprof.dylib"/>
+                <exclude name="${jvm.runtime.bundle.lib}/libinstrument.dylib"/>
+                <exclude name="${jvm.runtime.bundle.lib}/libjsound.dylib"/>
+                <exclude name="${jvm.runtime.bundle.lib}/liblaf.dylib"/>
+                <exclude name="${jvm.runtime.bundle.lib}/libjava_crw_demo.dylib"/>
             </fileset>
         </copy>
         <echo message="Change dynamic shared library install names..."/>
