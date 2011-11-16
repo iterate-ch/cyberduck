@@ -18,6 +18,9 @@
 using ch.cyberduck.core;
 using ch.cyberduck.core.threading;
 
+using java.util.Collections;
+using java.util.List;
+
 namespace Ch.Cyberduck.Ui.Controller.Threading
 {
     public abstract class BrowserBackgroundAction : AlertRepeatableBackgroundAction
@@ -29,14 +32,9 @@ namespace Ch.Cyberduck.Ui.Controller.Threading
 
         public BrowserController BrowserController { get; private set; }
 
-        protected override Session getSession()
+        protected override List getSessions()
         {
-            return BrowserController.getSession();
-        }
-
-        public override object @lock()
-        {
-            return getSession();
+            return Collections.singletonList(BrowserController.getSession());
         }
 
         public override bool prepare()
