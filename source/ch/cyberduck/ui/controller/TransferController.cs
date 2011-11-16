@@ -604,13 +604,23 @@ namespace Ch.Cyberduck.Ui.Controller
                 options.resumeRequested = _resume;
                 // Do not invalidate cache entries during file transfers
                 options.invalidateCache = Cache.Lifecycle.FOREVER;
-                _transfer.start(new LazyTransferPrompt(), options);
+                _transfer.start(new LazyTransferPrompt(_controller, _transfer), options);
             }
 
             private class LazyTransferPrompt : TransferPrompt
             {
-                public TransferAction prompt() {
-                    return TransferPromptController.Create(_controller, _transfer);
+                private readonly TransferController _controller;
+                private readonly Transfer _transfer;
+
+                public LazyTransferPrompt(TransferController controller, Transfer transfer) 
+                {
+                    _transfer = transfer;
+                    _controller = controller;
+                }
+
+                public TransferAction prompt()
+                {
+                    return TransferPromptController.Create(_controller, _transfer).prompt();
                 }
             }
 
@@ -639,7 +649,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
             }
 
-            protected override Session getSessions()
+            protected override java.util.List getSessions()
             {
                 return _transfer.getSessions();
             }

@@ -116,10 +116,6 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 View.TransferDirection = TransferDirection.Upload;
             }
-            else if (_transfer is MoveTransfer)
-            {
-                View.TransferDirection = TransferDirection.Upload;
-            }
             else if (_transfer is SyncTransfer)
             {
                 View.TransferDirection = TransferDirection.Sync;

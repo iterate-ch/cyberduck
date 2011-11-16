@@ -15,11 +15,8 @@
 // Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
 // 
-using ch.cyberduck.core;
-using ch.cyberduck.core.threading;
 
-using java.util.Collections;
-using java.util.List;
+using java.util;
 
 namespace Ch.Cyberduck.Ui.Controller.Threading
 {

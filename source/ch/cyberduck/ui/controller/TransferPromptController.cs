@@ -19,6 +19,7 @@ using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
 using ch.cyberduck.core;
+using Ch.Cyberduck.Core;
 using ch.cyberduck.core.i18n;
 using ch.cyberduck.ui;
 using ch.cyberduck.ui.controller;
@@ -68,7 +69,7 @@ namespace Ch.Cyberduck.Ui.Controller
             AsyncDelegate wireAction = delegate
                                            {
                                                _progressListener = new StatusLabelProgressListener(this);
-                                               for(Session s: Transfer.getSessions()) {
+                                               foreach(Session s in Utils.ConvertFromJavaList<Session>(Transfer.getSessions())) {
                                                    s.addProgressListener(_progressListener);
                                                }
 
@@ -116,7 +117,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         protected override void Invalidate()
         {
-            for(Session s: Transfer.getSessions()) {
+            foreach(Session s in Utils.ConvertFromJavaList<Session>(Transfer.getSessions())) {
                 s.removeProgressListener(_progressListener);
             }
         }
@@ -217,9 +218,9 @@ namespace Ch.Cyberduck.Ui.Controller
             actions.Add(TransferAction.ACTION_RENAME, TransferAction.ACTION_RENAME.getLocalizableString());
             actions.Add(TransferAction.ACTION_SKIP, TransferAction.ACTION_SKIP.getLocalizableString());
 
-            boolean renameSupported = true;
-            for(Session s: Transfer.getSessions()) {
-                if(!s.isRenameSupported(transfer.getRoot())) {
+            bool renameSupported = true;
+            foreach(Session s in Utils.ConvertFromJavaList<Session>(Transfer.getSessions())) {
+                if(!s.isRenameSupported(Transfer.getRoot())) {
                     renameSupported = false;
                     break;
                 }

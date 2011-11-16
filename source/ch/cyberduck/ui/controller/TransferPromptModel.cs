@@ -203,7 +203,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
             public override object @lock()
             {
-                return _transfer.getSession().iterator().next();
+                return _transfer.getSessions().iterator().next();
             }
 
             public override bool prepare()

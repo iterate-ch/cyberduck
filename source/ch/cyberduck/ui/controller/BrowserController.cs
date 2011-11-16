@@ -2189,7 +2189,7 @@ namespace Ch.Cyberduck.Ui.Controller
         /// <param name="transfer"></param>
         public void transfer(Transfer transfer)
         {
-            this.transfer(transfer, transfer.getSession().getMaxConnections() == 1);
+            this.transfer(transfer, getSession().getMaxConnections() == 1);
         }
 
         /// <summary>
