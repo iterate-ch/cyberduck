@@ -68,20 +68,19 @@ namespace Ch.Cyberduck.Ui.Controller
                                                                                  _isLoadingListingInBackground));
                 }
                 list = path.cache().get(path.getReference(), _controller.FilenameComparator, _controller.FilenameFilter);
-                /*
-            if (list.size() == 0)
-            {
-                yield return
-                    new TreePathReference(PathFactory.createPath(_controller.getSession(), "Loading...",
-                                                                 AbstractPath.FILE_TYPE));
-            }
-            else
-            {*/
+//                if (list.size() == 0)
+//                {
+//                    yield return
+//                        new TreePathReference(PathFactory.createPath(_controller.getSession(), "Loading...",
+//                                                                     AbstractPath.FILE_TYPE));
+//                }
+//                else
+//                {
                 for (int i = 0; i < list.size(); i++)
                 {
                     yield return new TreePathReference((Path) list.get(i));
                 }
-                //}
+//                }
                 yield break;
             }
         }
