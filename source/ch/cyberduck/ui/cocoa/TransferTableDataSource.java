@@ -23,6 +23,7 @@ import ch.cyberduck.core.Collection;
 import ch.cyberduck.core.DownloadTransfer;
 import ch.cyberduck.core.NullTransferFilter;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.Transfer;
 import ch.cyberduck.core.TransferCollection;
 import ch.cyberduck.core.TransferFilter;
@@ -86,7 +87,7 @@ public class TransferTableDataSource extends ListDataSource {
     private TransferFilter filter = new NullTransferFilter();
 
     /**
-     * @param searchString Filter hostname
+     * @param searchString Filter hostname or file
      */
     public void setFilter(final String searchString) {
         if(StringUtils.isBlank(searchString)) {
@@ -98,8 +99,13 @@ public class TransferTableDataSource extends ListDataSource {
             this.filter = new TransferFilter() {
                 public boolean accept(Transfer transfer) {
                     // Match for pathnames and hostname
-                    return transfer.getName().toLowerCase().contains(searchString.toLowerCase())
-                            || transfer.getSession().getHost().getHostname().toLowerCase().contains(searchString.toLowerCase());
+                    if(transfer.getName().toLowerCase().contains(searchString.toLowerCase())) {
+                        return true;
+                    }
+                    for(Session s: transfer.getSessions()) {
+                       return s.getHost().getHostname().toLowerCase().contains(searchString.toLowerCase());
+                    }
+                    return false;
                 }
             };
         }
