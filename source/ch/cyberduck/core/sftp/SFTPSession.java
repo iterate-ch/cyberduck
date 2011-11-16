@@ -19,12 +19,7 @@ package ch.cyberduck.core.sftp;
  */
 
 import ch.cyberduck.core.*;
-import ch.cyberduck.core.Session;
 import ch.cyberduck.core.i18n.Locale;
-import ch.ethz.ssh2.*;
-import ch.ethz.ssh2.channel.ChannelClosedException;
-import ch.ethz.ssh2.crypto.PEMDecoder;
-import ch.ethz.ssh2.crypto.PEMDecryptException;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -32,7 +27,23 @@ import org.apache.log4j.Logger;
 import org.kohsuke.putty.PuTTYKey;
 import org.spearce.jgit.transport.OpenSshConfig;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.CharArrayWriter;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.StringReader;
+
+import ch.ethz.ssh2.Connection;
+import ch.ethz.ssh2.ConnectionMonitor;
+import ch.ethz.ssh2.InteractiveCallback;
+import ch.ethz.ssh2.PacketListener;
+import ch.ethz.ssh2.SCPClient;
+import ch.ethz.ssh2.SFTPv3Client;
+import ch.ethz.ssh2.StreamGobbler;
+import ch.ethz.ssh2.channel.ChannelClosedException;
+import ch.ethz.ssh2.crypto.PEMDecoder;
+import ch.ethz.ssh2.crypto.PEMDecryptException;
 
 /**
  * @version $Id$
@@ -153,6 +164,10 @@ public class SFTPSession extends Session {
         if(!this.getClient().isAuthenticationComplete()) {
             throw new LoginCanceledException();
         }
+
+        // Make sure subsystem is available
+        final SFTPv3Client subsystem = this.sftp();
+
         this.fireConnectionDidOpenEvent();
     }
 
@@ -405,14 +420,6 @@ public class SFTPSession extends Session {
 
     @Override
     public void check() throws IOException {
-        this.check(true);
-    }
-
-    /**
-     * @param sftp Check if SFTP channel is connected
-     * @throws IOException If reconnect fails
-     */
-    private void check(final boolean sftp) throws IOException {
         try {
             super.check();
         }
@@ -421,20 +428,19 @@ public class SFTPSession extends Session {
             this.interrupt();
             this.connect();
         }
-        if(sftp) {
-            if(!this.sftp().isConnected()) {
+        SFTPv3Client subsystem = this.sftp();
+        if(!subsystem.isConnected()) {
+            this.interrupt();
+            this.connect();
+        }
+        else {
+            try {
+                subsystem.canonicalPath(".");
+            }
+            catch(IOException e) {
+                log.warn(e.getMessage());
                 this.interrupt();
                 this.connect();
-            }
-            else {
-                try {
-                    this.sftp().canonicalPath(".");
-                }
-                catch(IOException e) {
-                    log.warn(e.getMessage());
-                    this.interrupt();
-                    this.connect();
-                }
             }
         }
     }

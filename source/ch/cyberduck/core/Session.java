@@ -36,7 +36,12 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.text.MessageFormat;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @version $Id$
@@ -290,7 +295,7 @@ public abstract class Session implements TranscriptListener {
             return directory;
         }
         catch(IOException e) {
-            // Connect failed
+            log.warn("Connection failed:" + e.getMessage());
             return null;
         }
         finally {
