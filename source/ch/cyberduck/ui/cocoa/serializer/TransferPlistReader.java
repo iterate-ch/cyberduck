@@ -55,6 +55,10 @@ public class TransferPlistReader extends PlistReader<Transfer> {
                     return new UploadTransfer(dict, s);
                 case Transfer.KIND_SYNC:
                     return new SyncTransfer(dict, s);
+                case Transfer.KIND_COPY:
+                    return new CopyTransfer(dict, s);
+                case Transfer.KIND_MOVE:
+                    return new MoveTransfer(dict, s);
             }
         }
         log.error("Unknown transfer:" + kindObj);
