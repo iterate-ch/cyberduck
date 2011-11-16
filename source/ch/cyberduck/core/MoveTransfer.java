@@ -30,26 +30,22 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 /**
- * @version $Id$
+ * @version $Id:$
  */
-public class CopyTransfer extends Transfer {
-    private static Logger log = Logger.getLogger(CopyTransfer.class);
+public class MoveTransfer extends Transfer {
+    private static Logger log = Logger.getLogger(MoveTransfer.class);
 
     private Map<Path, Path> files = Collections.emptyMap();
 
-    private Session destination;
-
-    public CopyTransfer(Map<Path, Path> files) {
+    public MoveTransfer(Map<Path, Path> files) {
         super(new ArrayList<Path>(files.keySet()));
         this.files = files;
-        this.destination = files.values().iterator().next().getSession();
     }
 
-    public <T> CopyTransfer(T dict, Session s) {
+    public <T> MoveTransfer(T dict, Session s) {
         super(dict, s);
     }
 
@@ -72,17 +68,8 @@ public class CopyTransfer extends Transfer {
     @Override
     public <T> T getAsDictionary() {
         final Serializer dict = super.getSerializer();
-        dict.setStringForKey(String.valueOf(Transfer.KIND_COPY), "Kind");
+        dict.setStringForKey(String.valueOf(Transfer.KIND_MOVE), "Kind");
         return dict.<T>getSerialized();
-    }
-
-    @Override
-    public List<Session> getSessions() {
-        final ArrayList<Session> sessions = new ArrayList<Session>(super.getSessions());
-        if(destination != null) {
-            sessions.add(destination);
-        }
-        return sessions;
     }
 
     /**
@@ -122,11 +109,17 @@ public class CopyTransfer extends Transfer {
     }
 
     @Override
+    public AttributedList<Path> children(Path parent) {
+        // Move operation on parent directory will move all children already
+        return AttributedList.emptyList();
+    }
+
+    @Override
     public TransferAction action(boolean resumeRequested, boolean reloadRequested) {
         return TransferAction.ACTION_OVERWRITE;
     }
 
-    private final class CopyTransferFilter extends TransferFilter {
+    private final class MoveTransferFilter extends TransferFilter {
         public boolean accept(final Path source) {
             final Path destination = files.get(source);
             if(destination.attributes().isDirectory()) {
@@ -139,21 +132,14 @@ public class CopyTransfer extends Transfer {
         }
 
         @Override
-        public void prepare(Path source) {
+        public void prepare(final Path source) {
             if(source.attributes().isFile()) {
                 source.status().setResume(false);
-            }
-            if(source.attributes().getSize() == -1) {
-                // Read file size
-                source.readSize();
             }
             if(source.attributes().isFile()) {
                 final long length = source.attributes().getSize();
                 // Download
                 source.status().setLength(length);
-                size += length;
-                // Upload
-                files.get(source).status().setLength(length);
                 size += length;
             }
             final Path destination = files.get(source);
@@ -170,47 +156,32 @@ public class CopyTransfer extends Transfer {
         }
     }
 
-    private final TransferFilter COPY_FILTER = new CopyTransferFilter();
+    private final TransferFilter MOVE_FILTER = new MoveTransferFilter();
 
     @Override
     public TransferFilter filter(final TransferAction action) {
         log.debug("filter:" + action);
         if(action.equals(TransferAction.ACTION_OVERWRITE)) {
-            return COPY_FILTER;
+            return MOVE_FILTER;
         }
         return super.filter(action);
     }
 
     @Override
-    public AttributedList<Path> children(Path source) {
-        return source.children();
-    }
-
-    @Override
-    protected void transfer(Path source, TransferOptions options) {
-        final Path destination = files.get(source);
-        source.copy(destination, bandwidth, new AbstractStreamListener() {
-            @Override
-            public void bytesReceived(long bytes) {
-                transferred += bytes;
-            }
-
-            @Override
-            public void bytesSent(long bytes) {
-                transferred += bytes;
-            }
-        });
+    protected void transfer(Path file, TransferOptions options) {
+        final Path destination = files.get(file);
+        file.rename(destination);
     }
 
     @Override
     public String getName() {
-        return MessageFormat.format(Locale.localizedString("Copying {0} to {1}", "Status"),
+        return MessageFormat.format(Locale.localizedString("Renaming {0} to {1}", "Status"),
                 files.keySet().iterator().next().getName(), files.values().iterator().next().getName());
     }
 
     @Override
     public String getStatus() {
-        return this.isComplete() ? "Copy complete" : "Transfer incomplete";
+        return this.isComplete() ? "Move complete" : "Transfer incomplete";
     }
 
     @Override
