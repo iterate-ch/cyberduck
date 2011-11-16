@@ -143,7 +143,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void SetStatusText()
         {
-            View.StatusText = _transfer.isRunning() ? "" : _transfer.getStatus();
+            View.StatusText = _transfer.isRunning() ? "" : Locale.localizedString(_transfer.getStatus(), "Status");
         }
 
         private void SetProgressText()

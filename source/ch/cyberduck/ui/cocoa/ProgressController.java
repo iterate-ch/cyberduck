@@ -19,6 +19,7 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.threading.DefaultMainAction;
 import ch.cyberduck.ui.DateFormatterFactory;
@@ -213,7 +214,7 @@ public class ProgressController extends BundleController {
 
     private void setStatusText() {
         statusField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
-                transfer.isRunning() ? StringUtils.EMPTY : transfer.getStatus(),
+                transfer.isRunning() ? StringUtils.EMPTY : Locale.localizedString(transfer.getStatus(), "Status"),
                 TRUNCATE_MIDDLE_ATTRIBUTES));
     }
 
