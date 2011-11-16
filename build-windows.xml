@@ -23,9 +23,6 @@
 
 <project name="Cyberduck for Windows" basedir="." xmlns:dn="antlib:org.apache.ant.dotnet">
 
-    <!-- the following path needs to be set appropriately -->
-    <property name="ikvm.home" value="C:/workspace/ikvm-0.46.0.1"/>
-
     <!-- try to detect the process architecture (32/64bit) -->
     <condition property="programFiles" value="${env.ProgramFiles(x86)}">
         <available file="${env.ProgramFiles(x86)}"/>
@@ -40,7 +37,6 @@
     <property name="nsis.home" value="${programFiles}/NSIS"/>
     <property name="winsdk.home" value="${programFiles}/Microsoft SDKs/Windows/v7.0A/Bin"/>
     <property name="wybuild.home" value="${programFiles}/wyBuild"/>
-    <property name="wyupdate.home" value="c:/workspace/wyupdate-read-only"/>
 
     <taskdef resource="net/sf/antcontrib/antcontrib.properties"/>
     <taskdef name="ikvmc" classname="net.ikvm.ant.IkvmcTask"/>

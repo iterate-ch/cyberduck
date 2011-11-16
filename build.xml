@@ -24,6 +24,8 @@
 <project name="Cyberduck" default="build" basedir=".">
 
     <property file="build.properties"/>
+    <property file="tools.properties"/>
+
     <property environment="env"/>
 
     <property name="app.name" value="${ant.project.name}"/>
