@@ -82,7 +82,11 @@ namespace Ch.Cyberduck.Ui.Controller
             SetStatusText();
             SetRootPaths();
 
-            _transfer.getSession().addProgressListener(new TransferProgressListener(this));
+            ICollection<Session> sessions =
+                Utils.ConvertFromJavaList<Session>(_transfer.getSessions());
+            foreach (Session s in sessions) {
+                s.addProgressListener(new TransferProgressListener(this));
+            }
             _transfer.addListener(new TransferAdapter(this));
         }
 
@@ -105,6 +109,14 @@ namespace Ch.Cyberduck.Ui.Controller
                 View.TransferDirection = TransferDirection.Download;
             }
             else if (_transfer is UploadTransfer)
+            {
+                View.TransferDirection = TransferDirection.Upload;
+            }
+            else if (_transfer is CopyTransfer)
+            {
+                View.TransferDirection = TransferDirection.Upload;
+            }
+            else if (_transfer is MoveTransfer)
             {
                 View.TransferDirection = TransferDirection.Upload;
             }
@@ -135,30 +147,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void SetStatusText()
         {
-            StringBuilder b = new StringBuilder();
-            if (!_transfer.isRunning())
-            {
-                View.TransferStatus = _transfer.isComplete() ? TransferStatus.Complete : TransferStatus.Incomplete;
-                if (_transfer is DownloadTransfer)
-                {
-                    b.Append(_transfer.isComplete()
-                                 ? Locale.localizedString("Download complete", "Growl")
-                                 : Locale.localizedString("Transfer incomplete", "Status"));
-                }
-                if (_transfer is UploadTransfer)
-                {
-                    b.Append(_transfer.isComplete()
-                                 ? Locale.localizedString("Upload complete", "Growl")
-                                 : Locale.localizedString("Transfer incomplete", "Status"));
-                }
-                if (_transfer is SyncTransfer)
-                {
-                    b.Append(_transfer.isComplete()
-                                 ? Locale.localizedString("Synchronization complete", "Growl")
-                                 : Locale.localizedString("Transfer incomplete", "Status"));
-                }
-            }
-            View.StatusText = b.ToString();
+            View.StatusText = _transfer.isRunning() ? "" : _transfer.getStatus();
         }
 
         private void SetProgressText()

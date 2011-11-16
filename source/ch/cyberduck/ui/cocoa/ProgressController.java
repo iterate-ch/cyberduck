@@ -19,7 +19,6 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.*;
-import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.threading.DefaultMainAction;
 import ch.cyberduck.ui.DateFormatterFactory;
@@ -73,7 +72,9 @@ public class ProgressController extends BundleController {
 
     @Override
     protected void invalidate() {
-        transfer.getSession().removeProgressListener(pl);
+        for(Session s : transfer.getSessions()) {
+            s.removeProgressListener(pl);
+        }
         transfer.removeListener(tl);
         filesPopup.menu().setDelegate(null);
         super.invalidate();
@@ -86,7 +87,7 @@ public class ProgressController extends BundleController {
 
     private void init() {
         this.loadBundle();
-        this.transfer.addListener(this.tl = new TransferAdapter() {
+        this.transfer.addListener(tl = new TransferAdapter() {
             /**
              * Timer to update the progress indicator
              */
@@ -99,7 +100,7 @@ public class ProgressController extends BundleController {
             public void transferWillStart() {
                 invoke(new DefaultMainAction() {
                     public void run() {
-                        transfer.getSession().addProgressListener(pl = new ProgressListener() {
+                        pl = new ProgressListener() {
                             public void message(final String message) {
                                 messageText = message;
                                 invoke(new DefaultMainAction() {
@@ -108,7 +109,10 @@ public class ProgressController extends BundleController {
                                     }
                                 });
                             }
-                        });
+                        };
+                        for(Session s : transfer.getSessions()) {
+                            s.addProgressListener(pl);
+                        }
                         progressBar.setHidden(false);
                         progressBar.setIndeterminate(true);
                         progressBar.startAnimation(null);
@@ -123,7 +127,9 @@ public class ProgressController extends BundleController {
             public void transferDidEnd() {
                 invoke(new DefaultMainAction() {
                     public void run() {
-                        transfer.getSession().removeProgressListener(pl);
+                        for(Session s : transfer.getSessions()) {
+                            s.removeProgressListener(pl);
+                        }
                         progressBar.stopAnimation(null);
                         progressBar.setIndeterminate(true);
                         progressBar.setHidden(true);
@@ -206,23 +212,8 @@ public class ProgressController extends BundleController {
     }
 
     private void setStatusText() {
-        StringBuilder b = new StringBuilder();
-        if(!transfer.isRunning()) {
-            if(transfer instanceof DownloadTransfer) {
-                b.append(transfer.isComplete() ? Locale.localizedString("Download complete", "Growl") :
-                        Locale.localizedString("Transfer incomplete", "Status"));
-            }
-            if(transfer instanceof UploadTransfer) {
-                b.append(transfer.isComplete() ? Locale.localizedString("Upload complete", "Growl") :
-                        Locale.localizedString("Transfer incomplete", "Status"));
-            }
-            if(transfer instanceof SyncTransfer) {
-                b.append(transfer.isComplete() ? Locale.localizedString("Synchronization complete", "Growl") :
-                        Locale.localizedString("Transfer incomplete", "Status"));
-            }
-        }
         statusField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
-                b.toString(),
+                transfer.isRunning() ? StringUtils.EMPTY : transfer.getStatus(),
                 TRUNCATE_MIDDLE_ATTRIBUTES));
     }
 
@@ -379,15 +370,7 @@ public class ProgressController extends BundleController {
 
     public void setIconImageView(final NSImageView iconImageView) {
         this.iconImageView = iconImageView;
-        if(transfer instanceof DownloadTransfer) {
-            iconImageView.setImage(IconCache.iconNamed("arrowDown.tiff", 32));
-        }
-        else if(transfer instanceof UploadTransfer) {
-            iconImageView.setImage(IconCache.iconNamed("arrowUp.tiff", 32));
-        }
-        else if(transfer instanceof SyncTransfer) {
-            iconImageView.setImage(IconCache.iconNamed("sync.tiff", 32));
-        }
+        this.iconImageView.setImage(IconCache.iconNamed(transfer.getImage(), 32));
     }
 
     /**
