@@ -47,6 +47,11 @@ public class Status {
     private long current = 0;
 
     /**
+     * Content length
+     */
+    private long length;
+
+    /**
      * Indiciating wheter the transfer has been cancled by the user.
      */
     private boolean canceled;
@@ -202,6 +207,14 @@ public class Status {
 
     public void addCurrent(long transferred) {
         this.current += transferred;
+    }
+
+    public long getLength() {
+        return length;
+    }
+
+    public void setLength(long length) {
+        this.length = length;
     }
 
     /**

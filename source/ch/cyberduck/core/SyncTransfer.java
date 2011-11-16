@@ -88,11 +88,6 @@ public class SyncTransfer extends Transfer {
     }
 
     @Override
-    public float getBandwidth() {
-        return BandwidthThrottle.UNLIMITED;
-    }
-
-    @Override
     public String getName() {
         return this.getRoot().getName() + " \u2194 " /*left-right arrow*/ + this.getRoot().getLocal().getName();
     }
@@ -109,6 +104,11 @@ public class SyncTransfer extends Transfer {
     @Override
     public boolean isResumable() {
         return _delegateDownload.isResumable() && _delegateUpload.isResumable();
+    }
+
+    @Override
+    public boolean isReloadable() {
+        return true;
     }
 
     @Override
@@ -230,7 +230,9 @@ public class SyncTransfer extends Transfer {
 
     @Override
     public AttributedList<Path> children(final Path parent) {
-        log.debug("children:" + parent);
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Children for %s", parent));
+        }
         final Set<Path> children = new HashSet<Path>();
         if(parent.exists()) {
             children.addAll(_delegateDownload.children(parent));
@@ -335,7 +337,7 @@ public class SyncTransfer extends Transfer {
 
     @Override
     public TransferAction action(final boolean resumeRequested, final boolean reloadRequested) {
-        log.debug("action:" + resumeRequested + "," + reloadRequested);
+        log.debug(String.format("Resume=%s,Reload=%s", resumeRequested, reloadRequested));
         // Always prompt for synchronization
         return TransferAction.ACTION_CALLBACK;
     }
@@ -355,7 +357,7 @@ public class SyncTransfer extends Transfer {
     @Override
     protected void fireTransferDidEnd() {
         if(this.isReset() && this.isComplete() && !this.isCanceled()) {
-            Growl.instance().notify("Synchronization complete", getName());
+            Growl.instance().notify("Synchronization complete", this.getName());
         }
         super.fireTransferDidEnd();
     }
@@ -583,5 +585,16 @@ public class SyncTransfer extends Transfer {
         }
         c.clear(Calendar.HOUR);
         return c;
+    }
+
+    @Override
+    public String getStatus() {
+        return this.isComplete() ? Locale.localizedString("Synchronization complete", "Growl") :
+                Locale.localizedString("Transfer incomplete", "Status");
+    }
+
+    @Override
+    public String getImage() {
+        return "sync.tiff";
     }
 }

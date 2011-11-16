@@ -60,7 +60,7 @@ public class DownloadTransfer extends Transfer {
             if(!this.check()) {
                 return;
             }
-            this.getSession().message(MessageFormat.format(Locale.localizedString("Prepare {0}", "Status"), download.getName()));
+            session.message(MessageFormat.format(Locale.localizedString("Prepare {0}", "Status"), download.getName()));
             boolean duplicate = false;
             for(Iterator<Path> iter = normalized.iterator(); iter.hasNext(); ) {
                 Path n = iter.next();
@@ -119,9 +119,6 @@ public class DownloadTransfer extends Transfer {
                 Preferences.instance().getFloat("queue.download.bandwidth.bytes"));
     }
 
-    /**
-     *
-     */
     private abstract class DownloadTransferFilter extends TransferFilter {
         public boolean accept(Path file) {
             if(file.attributes().isSymbolicLink()) {
@@ -163,6 +160,7 @@ public class DownloadTransfer extends Transfer {
                 }
             }
             if(file.attributes().isFile()) {
+                final long length;
                 if(file.attributes().isSymbolicLink()) {
                     if(!DownloadTransfer.this.isSymlinkSupported(file)) {
                         // A server will resolve the symbolic link when the file is requested.
@@ -170,16 +168,19 @@ public class DownloadTransfer extends Transfer {
                         if(target.attributes().getSize() == -1) {
                             target.readSize();
                         }
-                        size += target.attributes().getSize();
+                        length = target.attributes().getSize();
                     }
                     else {
                         // No file size increase for symbolic link to be created locally
+                        length = 0;
                     }
                 }
                 else {
                     // Read file size
-                    size += file.attributes().getSize();
+                    length = file.attributes().getSize();
                 }
+                file.status().setLength(length);
+                size += length;
                 if(file.status().isResume()) {
                     transferred += file.getLocal().attributes().getSize();
                 }
@@ -192,8 +193,6 @@ public class DownloadTransfer extends Transfer {
 
         /**
          * Update timestamp and permission
-         *
-         * @param file
          */
         @Override
         public void complete(Path file) {
@@ -269,7 +268,7 @@ public class DownloadTransfer extends Transfer {
     @Override
     public AttributedList<Path> children(final Path parent) {
         if(log.isDebugEnabled()) {
-            log.debug("children:" + parent);
+            log.debug(String.format("Children for %s", parent));
         }
         if(parent.attributes().isSymbolicLink()
                 && this.isSymlinkSupported(parent)) {
@@ -328,8 +327,7 @@ public class DownloadTransfer extends Transfer {
                 final boolean resume = file.getLocal().exists()
                         && file.getLocal().attributes().getSize() > 0;
                 file.status().setResume(resume);
-                long skipped = file.getLocal().attributes().getSize();
-                file.status().setCurrent(skipped);
+                file.status().setCurrent(file.getLocal().attributes().getSize());
             }
             super.prepare(file);
         }
@@ -446,7 +444,7 @@ public class DownloadTransfer extends Transfer {
 
     @Override
     public TransferAction action(final boolean resumeRequested, final boolean reloadRequested) {
-        log.debug("action:" + resumeRequested + "," + reloadRequested);
+        log.debug(String.format("Resume=%s,Reload=%s", resumeRequested, reloadRequested));
         if(resumeRequested) {
             // Force resume
             return TransferAction.ACTION_RESUME;
@@ -507,7 +505,7 @@ public class DownloadTransfer extends Transfer {
     @Override
     protected void fireTransferDidEnd() {
         if(this.isReset() && this.isComplete() && !this.isCanceled() && !(this.getTransferred() == 0)) {
-            Growl.instance().notify("Download complete", getName());
+            Growl.instance().notify("Download complete", this.getName());
             if(this.shouldOpenWhenComplete()) {
                 this.getRoot().getLocal().open();
             }
@@ -525,6 +523,22 @@ public class DownloadTransfer extends Transfer {
 
     @Override
     public boolean isResumable() {
-        return getSession().isDownloadResumable();
+        return session.isDownloadResumable();
+    }
+
+    @Override
+    public boolean isReloadable() {
+        return true;
+    }
+
+    @Override
+    public String getStatus() {
+        return this.isComplete() ? Locale.localizedString("Download complete", "Growl") :
+                Locale.localizedString("Transfer incomplete", "Status");
+    }
+
+    @Override
+    public String getImage() {
+        return "arrowDown.tiff";
     }
 }

@@ -76,7 +76,7 @@ public class UploadTransfer extends Transfer {
             if(!this.check()) {
                 return;
             }
-            this.getSession().message(MessageFormat.format(Locale.localizedString("Prepare {0}", "Status"), upload.getName()));
+            session.message(MessageFormat.format(Locale.localizedString("Prepare {0}", "Status"), upload.getName()));
             boolean duplicate = false;
             for(Iterator<Path> iter = normalized.iterator(); iter.hasNext(); ) {
                 Path n = iter.next();
@@ -122,9 +122,6 @@ public class UploadTransfer extends Transfer {
         this.setRoots(normalized);
     }
 
-    /**
-     *
-     */
     private abstract class UploadTransferFilter extends TransferFilter {
         public boolean accept(final Path file) {
             if(!file.getLocal().exists()) {
@@ -159,7 +156,9 @@ public class UploadTransfer extends Transfer {
                 }
                 else {
                     // Read file size
-                    size += file.getLocal().attributes().getSize();
+                    final long length = file.getLocal().attributes().getSize();
+                    file.status().setLength(length);
+                    size += length;
                     if(file.status().isResume()) {
                         transferred += file.attributes().getSize();
                     }
@@ -178,10 +177,10 @@ public class UploadTransfer extends Transfer {
         @Override
         public void complete(Path file) {
             if(!file.status().isCanceled()) {
-                if(getSession().isAclSupported()) {
+                if(session.isAclSupported()) {
                     ; // Currently handled in S3 only.
                 }
-                if(getSession().isUnixPermissionsSupported()) {
+                if(session.isUnixPermissionsSupported()) {
                     if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
                         Permission permission = file.attributes().getPermission();
                         if(!Permission.EMPTY.equals(permission)) {
@@ -231,7 +230,7 @@ public class UploadTransfer extends Transfer {
         @Override
         public void clear() {
             super.clear();
-            getSession().cache().clear();
+            session.cache().clear();
         }
     };
 
@@ -243,7 +242,7 @@ public class UploadTransfer extends Transfer {
     @Override
     public AttributedList<Path> children(final Path parent) {
         if(log.isDebugEnabled()) {
-            log.debug("children:" + parent);
+            log.debug(String.format("Children for %s", parent));
         }
         if(parent.getLocal().attributes().isSymbolicLink()
                 && this.isSymlinkSupported(parent)) {
@@ -261,9 +260,9 @@ public class UploadTransfer extends Transfer {
                 final AttributedList<Path> children = new AttributedList<Path>();
                 for(AbstractPath child : parent.getLocal().children(exclusionRegexFilter)) {
                     final Local local = LocalFactory.createLocal(child.getAbsolute());
-                    Path upload = PathFactory.createPath(getSession(), parent.getAbsolute(), local);
+                    Path upload = PathFactory.createPath(session, parent.getAbsolute(), local);
                     if(upload.exists()) {
-                        upload = this.getSession().cache().lookup(upload.getReference());
+                        upload = session.cache().lookup(upload.getReference());
                         upload.setLocal(local);
                     }
                     children.add(upload);
@@ -276,7 +275,12 @@ public class UploadTransfer extends Transfer {
 
     @Override
     public boolean isResumable() {
-        return this.getSession().isUploadResumable();
+        return session.isUploadResumable();
+    }
+
+    @Override
+    public boolean isReloadable() {
+        return true;
     }
 
     private final TransferFilter OVERWRITE_FILTER = new UploadTransferFilter() {
@@ -308,6 +312,7 @@ public class UploadTransfer extends Transfer {
         @Override
         public boolean accept(final Path file) {
             if(file.attributes().isDirectory()) {
+                // Do not attempt to create a directory that already exists
                 if(file.exists()) {
                     return false;
                 }
@@ -466,7 +471,7 @@ public class UploadTransfer extends Transfer {
 
     @Override
     public TransferAction action(final boolean resumeRequested, final boolean reloadRequested) {
-        log.debug("action:" + resumeRequested + "," + reloadRequested);
+        log.debug(String.format("Resume=%s,Reload=%s", resumeRequested, reloadRequested));
         if(resumeRequested) {
             // Force resume
             return TransferAction.ACTION_RESUME;
@@ -488,7 +493,7 @@ public class UploadTransfer extends Transfer {
             return false;
         }
         // Create symbolic link only if supported by the host
-        if(this.getSession().isCreateSymlinkSupported()) {
+        if(session.isCreateSymlinkSupported()) {
             final AbstractPath target = file.getLocal().getSymlinkTarget();
             // Only create symbolic link if target is included in the upload
             for(Path root : roots) {
@@ -503,7 +508,7 @@ public class UploadTransfer extends Transfer {
     @Override
     protected void transfer(Path file, TransferOptions options) {
         log.debug("transfer:" + file);
-        if(this.getSession().isUnixPermissionsSupported()) {
+        if(session.isUnixPermissionsSupported()) {
             if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
                 if(file.exists()) {
                     // Do not overwrite permissions for existing file.
@@ -575,8 +580,19 @@ public class UploadTransfer extends Transfer {
     @Override
     protected void fireTransferDidEnd() {
         if(this.isReset() && this.isComplete() && !this.isCanceled() && !(this.getTransferred() == 0)) {
-            Growl.instance().notify("Upload complete", getName());
+            Growl.instance().notify("Upload complete", this.getName());
         }
         super.fireTransferDidEnd();
+    }
+
+    @Override
+    public String getStatus() {
+        return this.isComplete() ? Locale.localizedString("Upload complete", "Growl") :
+                Locale.localizedString("Transfer incomplete", "Status");
+    }
+
+    @Override
+    public String getImage() {
+        return "arrowUp.tiff";
     }
 }

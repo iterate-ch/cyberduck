@@ -26,7 +26,6 @@ import ch.cyberduck.core.serializer.Serializer;
 import ch.cyberduck.core.serializer.SerializerFactory;
 import ch.cyberduck.ui.growl.Growl;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
@@ -50,7 +49,7 @@ public abstract class Transfer implements Serializable {
     protected double size = 0;
 
     /**
-     * The number bytes already transferred of the ifles in the <code>queue</code>
+     * The number bytes already transferred of the files in the <code>queue</code>
      */
     protected double transferred = 0;
 
@@ -64,6 +63,8 @@ public abstract class Transfer implements Serializable {
     public static final int KIND_DOWNLOAD = 0;
     public static final int KIND_UPLOAD = 1;
     public static final int KIND_SYNC = 2;
+    public static final int KIND_COPY = 3;
+    public static final int KIND_MOVE = 4;
 
     protected Transfer() {
         ;
@@ -94,7 +95,7 @@ public abstract class Transfer implements Serializable {
         return queued;
     }
 
-    private Session session;
+    protected Session session;
 
     /**
      * The transfer has been reset
@@ -110,6 +111,12 @@ public abstract class Transfer implements Serializable {
      * @return True if appending to files is supported
      */
     public abstract boolean isResumable();
+
+    public abstract boolean isReloadable();
+
+    public abstract String getStatus();
+
+    public abstract String getImage();
 
     /**
      * Create a transfer with a single root which can
@@ -147,25 +154,25 @@ public abstract class Transfer implements Serializable {
         if(rootsObj != null) {
             roots = new Collection<Path>();
             for(Object rootDict : rootsObj) {
-                roots.add(PathFactory.createPath(this.session, rootDict));
+                roots.add(PathFactory.createPath(session, rootDict));
             }
         }
         Object sizeObj = dict.stringForKey("Size");
         if(sizeObj != null) {
-            this.size = Double.parseDouble(sizeObj.toString());
+            size = Double.parseDouble(sizeObj.toString());
         }
         Object timestampObj = dict.stringForKey("Timestamp");
         if(timestampObj != null) {
-            this.timestamp = new Date(Long.parseLong(timestampObj.toString()));
+            timestamp = new Date(Long.parseLong(timestampObj.toString()));
         }
         Object currentObj = dict.stringForKey("Current");
         if(currentObj != null) {
-            this.transferred = Double.parseDouble(currentObj.toString());
+            transferred = Double.parseDouble(currentObj.toString());
         }
         this.init();
         Object bandwidthObj = dict.stringForKey("Bandwidth");
         if(bandwidthObj != null) {
-            this.bandwidth.setRate(Float.parseFloat(bandwidthObj.toString()));
+            bandwidth.setRate(Float.parseFloat(bandwidthObj.toString()));
         }
     }
 
@@ -173,7 +180,7 @@ public abstract class Transfer implements Serializable {
 
     public Serializer getSerializer() {
         final Serializer dict = SerializerFactory.createSerializer();
-        dict.setObjectForKey(this.getSession().getHost(), "Host");
+        dict.setObjectForKey(session.getHost(), "Host");
         dict.setListForKey(this.roots, "Roots");
         dict.setStringForKey(String.valueOf(this.getSize()), "Size");
         dict.setStringForKey(String.valueOf(this.getTransferred()), "Current");
@@ -219,9 +226,10 @@ public abstract class Transfer implements Serializable {
         if(log.isDebugEnabled()) {
             log.debug("fireTransferQueued:" + this);
         }
-        final Session session = this.getSession();
-        Growl.instance().notify("Transfer queued", session.getHost().getHostname());
-        session.message(Locale.localizedString("Maximum allowed connections exceeded. Waiting", "Status"));
+        for(Session s : this.getSessions()) {
+            Growl.instance().notify("Transfer queued", s.getHost().getHostname());
+            s.message(Locale.localizedString("Maximum allowed connections exceeded. Waiting", "Status"));
+        }
         queued = true;
         for(TransferListener listener : listeners.toArray(new TransferListener[listeners.size()])) {
             listener.transferQueued();
@@ -266,7 +274,8 @@ public abstract class Transfer implements Serializable {
     /**
      * In Bytes per second
      */
-    protected BandwidthThrottle bandwidth;
+    protected BandwidthThrottle bandwidth
+            = new BandwidthThrottle(BandwidthThrottle.UNLIMITED);
 
     /**
      * @param bytesPerSecond Maximum number of bytes to transfer by second
@@ -316,20 +325,12 @@ public abstract class Transfer implements Serializable {
      */
     protected abstract void normalize();
 
-    public Session getSession() {
-        return this.session;
+    public List<Session> getSessions() {
+        return Collections.singletonList(this.session);
     }
 
-    /**
-     * @return The concatenation of the local filenames of all roots
-     * @see #getRoots()
-     */
     public String getName() {
-        String name = StringUtils.EMPTY;
-        for(Path next : this.roots) {
-            name = name + next.getLocal().getName() + " ";
-        }
-        return name;
+        return this.getRoot().getName();
     }
 
     protected abstract static class TransferFilter implements PathFilter<Path> {
@@ -437,7 +438,7 @@ public abstract class Transfer implements Serializable {
      * @param filter  Filter to apply to exclude files from transfer
      * @param options Quarantine option
      */
-    private void transfer(final Path p, final TransferFilter filter, final TransferOptions options) {
+    protected void transfer(final Path p, final TransferFilter filter, final TransferOptions options) {
         if(!this.isIncluded(p)) {
             if(log.isInfoEnabled()) {
                 log.info(String.format("Not included in transfer:%s", p.getAbsolute()));
@@ -508,25 +509,20 @@ public abstract class Transfer implements Serializable {
      * @param options Transfer options
      */
     private void transfer(final TransferOptions options) {
-        final Session session = this.getSession();
-
-        try {
-            log.debug("Checking connnection");
-            // We manually open the connection here first as otherwise
-            // every transfer will try again if it should fail
-            session.check();
-        }
-        catch(IOException e) {
-            log.warn(e.getMessage());
-            return;
+        for(Session s : this.getSessions()) {
+            if(!this.open(s)) {
+                return;
+            }
         }
 
         if(!this.check()) {
             return;
         }
 
-        // Do not invalidate cache entries during file transfers
-        session.cache().setLifecycle(options.invalidateCache);
+        for(Session s : this.getSessions()) {
+            // Do not invalidate cache entries during file transfers
+            s.cache().setLifecycle(options.invalidateCache);
+        }
 
         // Determine the filter to match files against
         final TransferAction action = this.action(options.resumeRequested, options.reloadRequested);
@@ -563,15 +559,42 @@ public abstract class Transfer implements Serializable {
         }
 
         // Transfer all files sequentially
-        for(Path next : roots) {
-            this.transfer(next, filter, options);
+        this.transfer(filter, options);
+
+        for(Session s : this.getSessions()) {
+            s.cache().setLifecycle(Cache.Lifecycle.INVALIDATED);
         }
 
-        session.cache().setLifecycle(Cache.Lifecycle.INVALIDATED);
-
         this.clear(options);
+
         if(options.closeSession) {
-            session.close();
+            for(Session s : this.getSessions()) {
+                this.close(s);
+            }
+        }
+    }
+
+    protected void close(Session session) {
+        session.close();
+    }
+
+    protected boolean open(Session session) {
+        try {
+            log.debug("Checking connnection");
+            // We manually open the connection here first as otherwise
+            // every transfer will try again if it should fail
+            session.check();
+        }
+        catch(IOException e) {
+            log.warn(e.getMessage());
+            return false;
+        }
+        return true;
+    }
+
+    protected void transfer(final TransferFilter filter, final TransferOptions options) {
+        for(Path next : roots) {
+            this.transfer(next, filter, options);
         }
     }
 
@@ -599,7 +622,7 @@ public abstract class Transfer implements Serializable {
             if(log.isInfoEnabled()) {
                 log.info(String.format("Accepted in transfer:%s", p.getAbsolute()));
             }
-            this.getSession().message(MessageFormat.format(Locale.localizedString("Prepare {0}", "Status"), p.getName()));
+            session.message(MessageFormat.format(Locale.localizedString("Prepare {0}", "Status"), p.getName()));
             filter.prepare(p);
         }
 
@@ -619,18 +642,19 @@ public abstract class Transfer implements Serializable {
         if(log.isDebugEnabled()) {
             log.debug("check:" + this);
         }
-        boolean connected = this.getSession().isConnected();
-        if(!connected) {
-            // Bail out if no more connected
-            log.warn("Disconnected transfer in progress:" + this);
+        // Bail out if canceled
+        if(this.isCanceled()) {
+            log.warn("Canceled transfer in progress:" + this);
             return false;
         }
-        // Bail out if canceled
-        boolean canceled = this.isCanceled();
-        if(canceled) {
-            log.warn("Canceled transfer in progress:" + this);
+        for(Session s : this.getSessions()) {
+            if(!s.isConnected()) {
+                // Bail out if no more connected
+                log.warn("Disconnected transfer in progress:" + this);
+                return false;
+            }
         }
-        return !canceled;
+        return true;
     }
 
     /**
@@ -651,7 +675,7 @@ public abstract class Transfer implements Serializable {
      * @see Session#cache()
      */
     public Cache<Path> cache() {
-        return this.getSession().cache();
+        return session.cache();
     }
 
     /**
@@ -697,7 +721,9 @@ public abstract class Transfer implements Serializable {
         if(log.isDebugEnabled()) {
             log.debug("interrupt:" + this);
         }
-        this.getSession().interrupt();
+        for(Session s : this.getSessions()) {
+            s.interrupt();
+        }
     }
 
     /**
@@ -771,10 +797,6 @@ public abstract class Transfer implements Serializable {
      */
     public double getSize() {
         return size;
-    }
-
-    public void setSize(double size) {
-        this.size = size;
     }
 
     /**
