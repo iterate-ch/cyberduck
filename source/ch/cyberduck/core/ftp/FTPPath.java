@@ -929,7 +929,7 @@ public class FTPPath extends Path {
             }
             else {
                 getSession().getClient().setRestartOffset(
-                        status().isResume() ? getLocal().attributes().getSize() : 0);
+                        status().isResume() ? status().getCurrent() : 0);
             }
         }
         final InputStream delegate = getSession().getClient().retrieveFileStream(getAbsolute());
@@ -1059,8 +1059,8 @@ public class FTPPath extends Path {
             throw new FTPException(getSession().getClient().getReplyString());
         }
         if(status().isResume()) {
-            return getSession().getClient().appendFileStream(getAbsolute());
+            return getSession().getClient().appendFileStream(this.getAbsolute());
         }
-        return getSession().getClient().storeFileStream(getAbsolute());
+        return getSession().getClient().storeFileStream(this.getAbsolute());
     }
 }

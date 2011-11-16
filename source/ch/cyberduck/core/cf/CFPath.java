@@ -48,7 +48,10 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.MessageFormat;
 import java.text.ParseException;
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Rackspace Cloud Files Implementation
@@ -465,7 +468,7 @@ public class CFPath extends CloudPath {
             }
 
             public long getContentLength() {
-                return getLocal().attributes().getSize() - status().getCurrent();
+                return status().getLength() - status().getCurrent();
             }
         };
         return this.write(command);
@@ -589,54 +592,55 @@ public class CFPath extends CloudPath {
 
     @Override
     public void rename(AbstractPath renamed) {
-        if(this.copy(renamed)) {
+        try {
+            this._copy(renamed, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new AbstractStreamListener());
             this.delete();
+        }
+        catch(HttpException e) {
+            this.error("Cannot rename {0}", e);
+        }
+        catch(IOException e) {
+            this.error("Cannot rename {0}", e);
         }
     }
 
     @Override
-    public boolean copy(AbstractPath copy) {
+    public void copy(AbstractPath copy, BandwidthThrottle throttle, StreamListener listener) {
         if(((Path) copy).getSession().equals(this.getSession())) {
             // Copy on same server
             try {
-                this.getSession().check();
-                this.getSession().message(MessageFormat.format(Locale.localizedString("Copying {0} to {1}", "Status"),
-                        this.getName(), copy));
-
-                if(this.attributes().isFile()) {
-                    String destination = ((CFPath) copy).getKey();
-                    final String etag = this.getSession().getClient().copyObject(this.getContainerName(), this.getKey(),
-                            ((CFPath) copy).getContainerName(), destination);
-                    return StringUtils.isNotBlank(etag);
-                }
-                else if(this.attributes().isDirectory()) {
-                    for(AbstractPath i : this.children()) {
-                        if(!this.getSession().isConnected()) {
-                            break;
-                        }
-                        CFPath destination = (CFPath) PathFactory.createPath(this.getSession(), copy.getAbsolute(),
-                                i.getName(), i.attributes().getType());
-                        i.copy(destination);
-                    }
-                }
-                return true;
+                this._copy(copy, throttle, listener);
             }
             catch(HttpException e) {
-                this.error("Cannot copy {0}");
-                return false;
+                this.error("Cannot copy {0}", e);
             }
             catch(IOException e) {
-                this.error("Cannot copy {0}");
-                return false;
-            }
-            finally {
-                // The directory listing is no more current
-                copy.getParent().invalidate();
+                this.error("Cannot copy {0}", e);
             }
         }
         else {
             // Copy to different host
-            return super.copy(copy);
+            super.copy(copy, throttle, listener);
+        }
+    }
+
+    private void _copy(AbstractPath copy, BandwidthThrottle throttle, StreamListener listener)
+            throws IOException, HttpException {
+        try {
+            this.getSession().check();
+            this.getSession().message(MessageFormat.format(Locale.localizedString("Copying {0} to {1}", "Status"),
+                    this.getName(), copy));
+
+            if(this.attributes().isFile()) {
+                String destination = ((CFPath) copy).getKey();
+                this.getSession().getClient().copyObject(this.getContainerName(), this.getKey(),
+                        ((CFPath) copy).getContainerName(), destination);
+                this.status().setComplete(true);
+            }
+        }
+        finally {
+            // The directory listing is no more current
+            copy.getParent().invalidate();
         }
     }
 

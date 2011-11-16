@@ -303,7 +303,7 @@ public class DAVPath extends HttpPath {
     }
 
     @Override
-    public boolean copy(AbstractPath copy) {
+    public void copy(AbstractPath copy, BandwidthThrottle throttle, StreamListener listener) {
         if(((Path) copy).getSession().equals(this.getSession())) {
             // Copy on same server
             try {
@@ -313,22 +313,14 @@ public class DAVPath extends HttpPath {
 
                 if(attributes().isFile()) {
                     this.getSession().getClient().copy(this.toURL(), copy.toURL());
+                    this.status().setComplete(true);
                 }
                 else if(this.attributes().isDirectory()) {
                     copy.mkdir();
-                    for(AbstractPath i : this.children()) {
-                        if(!this.getSession().isConnected()) {
-                            break;
-                        }
-                        i.copy(PathFactory.createPath(this.getSession(), copy.getAbsolute(),
-                                i.getName(), i.attributes().getType()));
-                    }
                 }
-                return true;
             }
             catch(IOException e) {
-                this.error("Cannot copy {0}");
-                return false;
+                this.error("Cannot copy {0}", e);
             }
             finally {
                 // The directory listing is no more current
@@ -337,7 +329,7 @@ public class DAVPath extends HttpPath {
         }
         else {
             // Copy to different host
-            return super.copy(copy);
+            super.copy(copy, throttle, listener);
         }
     }
 
@@ -417,8 +409,8 @@ public class DAVPath extends HttpPath {
         if(status.isResume()) {
             headers.put(HttpHeaders.CONTENT_RANGE, "bytes "
                     + status.getCurrent()
-                    + "-" + (this.getLocal().attributes().getSize() - 1)
-                    + "/" + this.getLocal().attributes().getSize()
+                    + "-" + (status.getLength() - 1)
+                    + "/" + status.getLength()
             );
         }
         headers.put(HTTP.EXPECT_DIRECTIVE, HTTP.EXPECT_CONTINUE);
@@ -454,7 +446,7 @@ public class DAVPath extends HttpPath {
             }
 
             public long getContentLength() {
-                return getLocal().attributes().getSize() - status().getCurrent();
+                return status().getLength() - status().getCurrent();
             }
         };
         return this.write(command);

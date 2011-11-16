@@ -559,7 +559,7 @@ public class S3Path extends CloudPath {
                         this.getName()));
 
                 if(this.getSession().isMultipartUploadSupported()
-                        && this.getLocal().attributes().getSize() > DEFAULT_MULTIPART_UPLOAD_THRESHOLD) {
+                        && status().getLength() > DEFAULT_MULTIPART_UPLOAD_THRESHOLD) {
                     this.uploadMultipart(throttle, listener, object);
                 }
                 else {
@@ -709,7 +709,7 @@ public class S3Path extends CloudPath {
             else {
                 in = new DigestInputStream(this.getLocal().getInputStream(), digest);
             }
-            out = this.write(false, object, getLocal().attributes().getSize() - status().getCurrent(),
+            out = this.write(false, object, status().getLength() - status().getCurrent(),
                     Collections.<String, String>emptyMap());
             this.upload(out, in, throttle, listener);
         }
@@ -800,10 +800,10 @@ public class S3Path extends CloudPath {
         try {
             List<Future<MultipartPart>> parts = new ArrayList<Future<MultipartPart>>();
 
-            final long defaultPartSize = Math.max((this.getLocal().attributes().getSize() / MAXIMUM_UPLOAD_PARTS),
+            final long defaultPartSize = Math.max((status().getLength() / MAXIMUM_UPLOAD_PARTS),
                     DEFAULT_MINIMUM_UPLOAD_PART_SIZE);
 
-            long remaining = this.getLocal().attributes().getSize();
+            long remaining = status().getLength();
             long marker = 0;
 
             for(int partNumber = 1; remaining > 0; partNumber++) {
@@ -926,7 +926,7 @@ public class S3Path extends CloudPath {
 
     @Override
     public OutputStream write(boolean check) throws IOException {
-        return this.write(check, this.createObjectDetails(), getLocal().attributes().getSize() - status().getCurrent(),
+        return this.write(check, this.createObjectDetails(), this.status().getLength() - this.status().getCurrent(),
                 Collections.<String, String>emptyMap());
     }
 
@@ -1411,7 +1411,7 @@ public class S3Path extends CloudPath {
     }
 
     @Override
-    public boolean copy(AbstractPath copy) {
+    public void copy(AbstractPath copy, BandwidthThrottle throttle, StreamListener listener) {
         if(((Path) copy).getSession().equals(this.getSession())) {
             // Copy on same server
             try {
@@ -1433,29 +1433,14 @@ public class S3Path extends CloudPath {
                     // Copying object applying the metadata of the original
                     this.getSession().getClient().copyObject(this.getContainerName(), this.getKey(),
                             ((S3Path) copy).getContainerName(), destination, false);
+                    this.status().setComplete(true);
                 }
-                else if(this.attributes().isDirectory()) {
-                    for(AbstractPath i : this.children()) {
-                        if(!this.getSession().isConnected()) {
-                            break;
-                        }
-                        S3Path destination = (S3Path) PathFactory.createPath(this.getSession(), copy.getAbsolute(),
-                                i.getName(), i.attributes().getType());
-                        // Apply storage class of parent directory
-                        ((S3Path) i).attributes().setStorageClass(this.attributes().getStorageClass());
-                        ((S3Path) i).attributes().setEncryption(this.attributes().getEncryption());
-                        i.copy(destination);
-                    }
-                }
-                return true;
             }
             catch(ServiceException e) {
-                this.error("Cannot copy {0}");
-                return false;
+                this.error("Cannot copy {0}", e);
             }
             catch(IOException e) {
-                this.error("Cannot copy {0}");
-                return false;
+                this.error("Cannot copy {0}", e);
             }
             finally {
                 // The directory listing is no more current
@@ -1464,7 +1449,7 @@ public class S3Path extends CloudPath {
         }
         else {
             // Copy to different host
-            return super.copy(copy);
+            super.copy(copy, throttle, listener);
         }
     }
 

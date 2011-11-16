@@ -440,7 +440,8 @@ public abstract class Path extends AbstractPath implements Serializable {
     }
 
     /**
-     * @return
+     * Transfer status
+     * @return Current cached file transfer status
      */
     public Status status() {
         if(null == status) {
@@ -756,14 +757,6 @@ public abstract class Path extends AbstractPath implements Serializable {
     }
 
     /**
-     * @return Stream to read from to download file
-     * @throws IOException Read not completed due to a I/O problem
-     */
-    public InputStream read() throws IOException {
-        return this.read(true);
-    }
-
-    /**
      * @param check First check the connection is open
      * @return Stream to read from to download file
      * @throws IOException Read not completed due to a I/O problem
@@ -810,14 +803,8 @@ public abstract class Path extends AbstractPath implements Serializable {
                                      boolean check, boolean quarantine);
 
     /**
-     * @return Stream to write to for upload
-     * @throws IOException Open file for writing fails
-     */
-    public OutputStream write() throws IOException {
-        return this.write(true);
-    }
-
-    /**
+     *
+     *
      * @param check Check for open connection
      * @return Stream to write to for upload
      * @throws IOException Open file for writing fails
@@ -891,7 +878,7 @@ public abstract class Path extends AbstractPath implements Serializable {
 
         if(offset > 0) {
             long skipped = in.skip(offset);
-            if(log.isInfoEnabled())  {
+            if(log.isInfoEnabled()) {
                 log.info(String.format("Skipping %d bytes", skipped));
             }
             if(skipped < status().getCurrent()) {
@@ -913,7 +900,7 @@ public abstract class Path extends AbstractPath implements Serializable {
      * @throws ConnectionCanceledException When transfer is interrupted by user setting the
      *                                     status flag to cancel.
      */
-    protected void download(InputStream in, OutputStream out, BandwidthThrottle throttle,
+    protected void download(final InputStream in, final OutputStream out, final BandwidthThrottle throttle,
                             final StreamListener l, final boolean quarantine) throws IOException {
         if(log.isDebugEnabled()) {
             log.debug("download(" + in.toString() + ", " + out.toString());
@@ -978,7 +965,8 @@ public abstract class Path extends AbstractPath implements Serializable {
      * @throws ConnectionCanceledException When transfer is interrupted by user setting the
      *                                     status flag to cancel.
      */
-    private void transfer(InputStream in, OutputStream out, StreamListener listener, final long limit) throws IOException {
+    private void transfer(final InputStream in, final OutputStream out,
+                          final StreamListener listener, final long limit) throws IOException {
         byte[] chunk = new byte[CHUNKSIZE];
         long bytesTransferred = 0;
         while(!status().isCanceled()) {
@@ -1011,56 +999,32 @@ public abstract class Path extends AbstractPath implements Serializable {
     }
 
     /**
-     * Default implementation using a temporary file on localhost as an intermediary
-     * with a download and upload transfer.
-     *
      * @param copy Destination
      */
     @Override
-    public boolean copy(final AbstractPath copy) {
-        final Local local = LocalFactory.createLocal(Preferences.instance().getProperty("tmp.dir"),
-                copy.getName());
-        TransferOptions options = new TransferOptions();
-        options.closeSession = false;
+    public void copy(AbstractPath copy) {
+        this.copy(copy, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new AbstractStreamListener());
+    }
+
+    /**
+     * Default implementation using a temporary file on localhost as an intermediary
+     * with a download and upload transfer.
+     *
+     * @param copy     Destination
+     * @param throttle The bandwidth limit
+     * @param listener Callback
+     */
+    public void copy(final AbstractPath copy, final BandwidthThrottle throttle, final StreamListener listener) {
         try {
-            this.setLocal(local);
-            DownloadTransfer download = new DownloadTransfer(this);
-            download.addListener(new TransferAdapter() {
-                @Override
-                public void transferDidEnd() {
-                    Path.this.getSession().message(Locale.localizedString("Download complete", "Growl"));
-                }
-            });
-            download.start(new TransferPrompt() {
-                public TransferAction prompt() {
-                    return TransferAction.ACTION_OVERWRITE;
-                }
-            }, options);
-            if(download.isComplete()) {
-                ((Path) copy).setLocal(local);
-                UploadTransfer upload = new UploadTransfer(((Path) copy));
-                upload.addListener(new TransferAdapter() {
-                    @Override
-                    public void transferDidEnd() {
-                        Path.this.getSession().message(Locale.localizedString("Upload complete", "Growl"));
-                    }
-                });
-                upload.start(new TransferPrompt() {
-                    public TransferAction prompt() {
-                        return TransferAction.ACTION_OVERWRITE;
-                    }
-                }, options);
-                return upload.isComplete();
-            }
-            else {
-                this.error("Cannot copy {0}");
-                return false;
-            }
+            this.getSession().message(MessageFormat.format(Locale.localizedString("Copying {0}", "Status"),
+                    this.getName()));
+            this.transfer(this.read(false), ((Path)copy).write(false), listener, -1);
+        }
+        catch(IOException e) {
+            this.error("Cannot copy {0}", e);
         }
         finally {
             copy.getParent().invalidate();
-            this.setLocal(null);
-            local.delete();
         }
     }
 

@@ -311,7 +311,7 @@ public class DropboxPath extends Path {
     }
 
     @Override
-    public boolean copy(AbstractPath copy) {
+    public void copy(AbstractPath copy, BandwidthThrottle throttle, StreamListener listener) {
         if(((Path) copy).getSession().equals(this.getSession())) {
             // Copy on same server
             try {
@@ -322,20 +322,9 @@ public class DropboxPath extends Path {
                 if(attributes().isFile()) {
                     this.getSession().getClient().copy(this.getAbsolute(), copy.getAbsolute());
                 }
-                else if(this.attributes().isDirectory()) {
-                    for(AbstractPath i : this.children()) {
-                        if(!this.getSession().isConnected()) {
-                            break;
-                        }
-                        i.copy(PathFactory.createPath(this.getSession(), copy.getAbsolute(),
-                                i.getName(), i.attributes().getType()));
-                    }
-                }
-                return true;
             }
             catch(IOException e) {
-                this.error("Cannot copy {0}");
-                return false;
+                this.error("Cannot copy {0}", e);
             }
             finally {
                 // The directory listing is no more current
@@ -344,7 +333,7 @@ public class DropboxPath extends Path {
         }
         else {
             // Copy to different host
-            return super.copy(copy);
+            super.copy(copy, throttle, listener);
         }
     }
 

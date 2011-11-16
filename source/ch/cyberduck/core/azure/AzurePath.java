@@ -509,7 +509,7 @@ public class AzurePath extends CloudPath {
              * @return The ETag returned by the server for the uploaded object
              */
             public Boolean call(AbstractHttpEntity entity) throws IOException {
-                AzureSession.AzureContainer container = null;
+                AzureSession.AzureContainer container;
                 container = getSession().getContainer(getContainerName());
                 final BlobProperties properties = new BlobProperties(getKey());
                 properties.setContentType(getLocal().getMimeType());
@@ -543,7 +543,7 @@ public class AzurePath extends CloudPath {
             }
 
             public long getContentLength() {
-                return getLocal().attributes().getSize() - status().getCurrent();
+                return status().getLength() - status().getCurrent();
             }
         };
         return this.write(command);
@@ -669,7 +669,7 @@ public class AzurePath extends CloudPath {
     }
 
     @Override
-    public boolean copy(AbstractPath copy) {
+    public void copy(AbstractPath copy, BandwidthThrottle throttle, StreamListener listener) {
         if(((Path) copy).getSession().equals(this.getSession())) {
             // Copy on same server
             if(attributes().isFile()) {
@@ -681,28 +681,20 @@ public class AzurePath extends CloudPath {
                 try {
                     this.getSession().getContainer(this.getContainerName()).copyBlob(((AzurePath) copy).getContainerName(),
                             ((AzurePath) copy).getKey(), this.getKey(), metadata, null);
+                    this.status().setComplete(true);
                 }
                 catch(IOException e) {
-                    this.error("Cannot copy {0}");
-                    return false;
+                    this.error("Cannot copy {0}", e);
+                }
+                finally {
+                    // The directory listing is no more current
+                    copy.getParent().invalidate();
                 }
             }
-            else if(this.attributes().isDirectory()) {
-                for(AbstractPath i : this.children()) {
-                    if(!this.getSession().isConnected()) {
-                        break;
-                    }
-                    i.copy(PathFactory.createPath(this.getSession(), copy.getAbsolute(),
-                            i.getName(), i.attributes().getType()));
-                }
-            }
-            // The directory listing is no more current
-            copy.getParent().invalidate();
-            return true;
         }
         else {
             // Copy to different host
-            return super.copy(copy);
+            super.copy(copy, throttle, listener);
         }
     }
 

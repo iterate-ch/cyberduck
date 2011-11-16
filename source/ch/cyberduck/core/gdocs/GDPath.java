@@ -547,7 +547,6 @@ public class GDPath extends Path {
         }
         try {
             final String mime = this.getLocal().getMimeType();
-            final long size = this.getLocal().attributes().getSize();
 
             DocumentListEntry document;
             if(this.exists()) {
@@ -588,7 +587,7 @@ public class GDPath extends Path {
             }
             // Initialize a resumable media upload request.
             session.setHeader(GDataProtocol.Header.X_UPLOAD_CONTENT_TYPE, mime);
-            session.setHeader(GDataProtocol.Header.X_UPLOAD_CONTENT_LENGTH, Long.toString(size));
+            session.setHeader(GDataProtocol.Header.X_UPLOAD_CONTENT_LENGTH, Long.toString(status().getLength()));
             final URL location;
             try {
                 this.getSession().getClient().writeRequestData(session, document);
@@ -601,7 +600,7 @@ public class GDPath extends Path {
             final Service.GDataRequest request;
             request = this.getSession().getClient().createRequest(Service.GDataRequest.RequestType.UPDATE,
                     location, new ContentType(mime));
-            request.setHeader("Content-Length", String.valueOf(size));
+            request.setHeader("Content-Length", String.valueOf(status().getLength()));
             if(this.exists()) {
                 if(this.status().isResume()) {
                     // Querying the status of an incomplete upload
@@ -611,15 +610,15 @@ public class GDPath extends Path {
                     // if you receive an HTTP 503 response from the server, you can query the
                     // current status of the upload by issuing an empty PUT request on the unique upload URI
                     status.setHeader("Content-Length", String.valueOf(0));
-                    status.setHeader("Content-Range", "bytes" + " " + "*/" + size);
+                    status.setHeader("Content-Range", "bytes" + " " + "*/" + status().getLength());
                     try {
                         status.execute();
                         final String header = status.getResponseHeader("Range");
                         log.info(String.format("Content-Range reported by server:%s", header));
                         final long range = getNextByteIndexFromRangeHeader(header);
                         request.setHeader("Content-Range", (this.status().isResume() ? range : 0)
-                                + "-" + (size - 1)
-                                + "/" + size
+                                + "-" + (status().getLength() - 1)
+                                + "/" + status().getLength()
                         );
                     }
                     catch(ServiceException e) {

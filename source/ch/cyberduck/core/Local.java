@@ -462,10 +462,10 @@ public abstract class Local extends AbstractPath {
     }
 
     @Override
-    public boolean copy(AbstractPath copy) {
+    public void copy(AbstractPath copy) {
         if(copy.equals(this)) {
             log.warn(String.format("%s and %s are identical. Not copied.", this.getName(), copy.getName()));
-            return false;
+            return;
         }
         FileInputStream in = null;
         FileOutputStream out = null;
@@ -473,11 +473,9 @@ public abstract class Local extends AbstractPath {
             in = new FileInputStream(new File(path));
             out = new FileOutputStream(copy.getAbsolute());
             IOUtils.copy(in, out);
-            return true;
         }
         catch(IOException e) {
             log.error(e.getMessage());
-            return false;
         }
         finally {
             IOUtils.closeQuietly(in);

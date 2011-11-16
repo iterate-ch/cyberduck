@@ -454,8 +454,12 @@ public class SFTPPath extends Path {
                     throw new IOResumeException(String.format("Skipped %d bytes instead of %d", skipped, this.status().getCurrent()));
                 }
             }
+            // No parallel requests if the file size is smaller than the buffer.
+            this.getSession().sftp().setRequestParallelism(
+                    (int) (this.status().getLength() / Preferences.instance().getInteger("connection.chunksize")) + 1
+            );
         }
-        if(Preferences.instance().getProperty("ssh.transfer").equals(Protocol.SCP.getIdentifier())) {
+        else if(Preferences.instance().getProperty("ssh.transfer").equals(Protocol.SCP.getIdentifier())) {
             SCPClient scp = this.getSession().openScp();
             scp.setCharset(this.getSession().getEncoding());
             in = scp.get(this.getAbsolute());
@@ -472,10 +476,6 @@ public class SFTPPath extends Path {
             try {
                 in = this.read(check);
                 out = this.getLocal().getOutputStream(this.status().isResume());
-                // No parallel requests if the file size is smaller than the buffer.
-                this.getSession().sftp().setRequestParallelism(
-                        (int) (this.attributes().getSize() / Preferences.instance().getInteger("connection.chunksize")) + 1
-                );
                 this.download(in, out, throttle, listener, quarantine);
             }
             catch(IOException e) {
@@ -522,7 +522,7 @@ public class SFTPPath extends Path {
                 handle = this.getSession().sftp().openFile(this.getAbsolute(),
                         SFTPv3Client.SSH_FXF_CREAT | SFTPv3Client.SSH_FXF_TRUNC | SFTPv3Client.SSH_FXF_WRITE, null);
             }
-            OutputStream out = new SFTPOutputStream(handle);
+            final OutputStream out = new SFTPOutputStream(handle);
             if(status().isResume()) {
                 long skipped = ((SFTPOutputStream) out).skip(status().getCurrent());
                 log.info(String.format("Skipping %d bytes", skipped));
@@ -530,12 +530,16 @@ public class SFTPPath extends Path {
                     throw new IOResumeException(String.format("Skipped %d bytes instead of %d", skipped, this.status().getCurrent()));
                 }
             }
+            // No parallel requests if the file size is smaller than the buffer.
+            this.getSession().sftp().setRequestParallelism(
+                    (int) (this.status().getLength() / Preferences.instance().getInteger("connection.chunksize")) + 1
+            );
             return out;
         }
         else if(mode.equals(Protocol.SCP.getIdentifier())) {
             SCPClient scp = this.getSession().openScp();
             scp.setCharset(this.getSession().getEncoding());
-            return scp.put(this.getName(), this.getLocal().attributes().getSize(),
+            return scp.put(this.getName(), status().getLength(),
                     this.getParent().getAbsolute(),
                     "0" + this.attributes().getPermission().getOctalString());
         }
@@ -550,11 +554,6 @@ public class SFTPPath extends Path {
             try {
                 in = this.getLocal().getInputStream();
                 out = this.write(check);
-
-                // No parallel requests if the file size is smaller than the buffer.
-                this.getSession().sftp().setRequestParallelism(
-                        (int) (this.attributes().getSize() / Preferences.instance().getInteger("connection.chunksize")) + 1
-                );
                 this.upload(out, in, throttle, listener);
                 // The directory listing is no more current
                 this.getParent().invalidate();

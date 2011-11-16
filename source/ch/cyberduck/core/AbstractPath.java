@@ -352,10 +352,9 @@ public abstract class AbstractPath {
     /**
      * Duplicate file
      *
-     * @param copy Destination
-     * @return True if copy was written successfully
+     * @param copy     Destination
      */
-    public abstract boolean copy(AbstractPath copy);
+    public abstract void copy(AbstractPath copy);
 
     public static class DescriptiveUrl {
         private String url = StringUtils.EMPTY;
