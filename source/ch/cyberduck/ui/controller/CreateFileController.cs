@@ -60,7 +60,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 _workdir = workdir;
                 _filename = filename;
                 _edit = edit;
-                _file = PathFactory.createPath(getSession(),
+                _file = PathFactory.createPath(controller.getSession(),
                                                _workdir.getAbsolute(),
                                                _filename, Path.FILE_TYPE);
             }
