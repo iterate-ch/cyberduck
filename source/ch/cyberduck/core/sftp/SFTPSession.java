@@ -424,12 +424,13 @@ public class SFTPSession extends Session {
             super.check();
         }
         catch(ChannelClosedException e) {
-            log.warn(e.getMessage());
+            log.warn("Connection already closed:" + e.getMessage());
             this.interrupt();
             this.connect();
         }
         SFTPv3Client subsystem = this.sftp();
         if(!subsystem.isConnected()) {
+            log.warn("Connection to subsystem already closed");
             this.interrupt();
             this.connect();
         }
@@ -438,7 +439,7 @@ public class SFTPSession extends Session {
                 subsystem.canonicalPath(".");
             }
             catch(IOException e) {
-                log.warn(e.getMessage());
+                log.warn("Connection already closed:" + e.getMessage());
                 this.interrupt();
                 this.connect();
             }
