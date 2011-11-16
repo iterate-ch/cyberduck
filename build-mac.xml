@@ -58,6 +58,7 @@
     <property name="codesign.keychain" value="${user.home}/Library/Keychains/codesign.keychain"/>
     <property name="codesign.entitlements" value="${home}/sandbox.plist"/>
     <property name="codesign.arg" value=""/>
+    <!--<property name="codesign.arg" value="- -entitlements ${codesign.entitlements}"/>-->
 
     <property name="installer.certificate" value="3rd Party Mac Developer Installer: David Kocher"/>
     <property name="installer.keychain" value="${user.home}/Library/Keychains/codesign.keychain"/>
