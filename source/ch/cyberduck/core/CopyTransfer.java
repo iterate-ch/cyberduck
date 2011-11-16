@@ -121,7 +121,7 @@ public class CopyTransfer extends Transfer {
         return TransferAction.ACTION_OVERWRITE;
     }
 
-    private class CopyTransferFilter extends TransferFilter {
+    private final class CopyTransferFilter extends TransferFilter {
         public boolean accept(final Path source) {
             final Path destination = files.get(source);
             if(destination.attributes().isDirectory()) {
