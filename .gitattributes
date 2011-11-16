@@ -1819,6 +1819,7 @@ source/ch/cyberduck/Cyberduck.sln -text
 source/ch/cyberduck/ResourcesBundle.Designer.cs -text
 source/ch/cyberduck/ResourcesBundle.resx -text
 source/ch/cyberduck/core/Commands.cs -text
+source/ch/cyberduck/core/CopyTransfer.java -text
 source/ch/cyberduck/core/CrashReporter.cs -text
 source/ch/cyberduck/core/DragDropLib.cs -text
 source/ch/cyberduck/core/GlobalKeyboardHook.cs -text

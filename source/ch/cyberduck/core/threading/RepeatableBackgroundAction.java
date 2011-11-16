@@ -149,10 +149,11 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
 
     @Override
     public boolean prepare() {
-        final Session session = this.getSession();
-        if(session != null) {
-            session.addErrorListener(this);
-            session.addTranscriptListener(this);
+        for(Session session : this.getSessions()) {
+            if(session != null) {
+                session.addErrorListener(this);
+                session.addTranscriptListener(this);
+            }
         }
         // Clear the transcript and exceptions
         transcript = new StringBuilder();
@@ -162,9 +163,9 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
     /**
      * To be overriden in concrete subclass
      *
-     * @return The session if any
+     * @return The session if any or null if invalid
      */
-    protected abstract Session getSession();
+    protected abstract List<Session> getSessions();
 
     /**
      * The number of times a new connection attempt should be made. Takes into
@@ -233,13 +234,14 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
                 this.run();
             }
         }
-        final Session session = this.getSession();
-        if(session != null) {
-            // It is important _not_ to do this in #cleanup as otherwise
-            // the listeners are still registered when the next BackgroundAction
-            // is already running
-            session.removeTranscriptListener(this);
-            session.removeErrorListener(this);
+        for(Session session : this.getSessions()) {
+            if(session != null) {
+                // It is important _not_ to do this in #cleanup as otherwise
+                // the listeners are still registered when the next BackgroundAction
+                // is already running
+                session.removeTranscriptListener(this);
+                session.removeErrorListener(this);
+            }
         }
         super.finish();
     }
@@ -269,9 +271,10 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
                     this.cancel();
                     return;
                 }
-                final Session session = getSession();
-                if(session != null) {
-                    session.message(MessageFormat.format(pattern, delay--, RepeatableBackgroundAction.this.retry()));
+                for(Session session : getSessions()) {
+                    if(session != null) {
+                        session.message(MessageFormat.format(pattern, delay--, RepeatableBackgroundAction.this.retry()));
+                    }
                 }
             }
 
@@ -307,14 +310,15 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
      */
     @Override
     public Object lock() {
-        return this.getSession();
+        return this.getSessions().iterator().next();
     }
 
     @Override
     public String toString() {
-        final Session session = this.getSession();
-        if(session != null) {
-            return session.getHost().getHostname();
+        for(Session session : this.getSessions()) {
+            if(session != null) {
+                return session.getHost().getHostname();
+            }
         }
         return Locale.localizedString("Unknown");
     }

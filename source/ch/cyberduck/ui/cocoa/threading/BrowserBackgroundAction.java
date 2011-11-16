@@ -20,14 +20,16 @@ package ch.cyberduck.ui.cocoa.threading;
  */
 
 import ch.cyberduck.core.Session;
-import ch.cyberduck.core.threading.BackgroundActionRegistry;
 import ch.cyberduck.ui.cocoa.BrowserController;
+
+import java.util.Collections;
+import java.util.List;
 
 /**
  * @version $Id$
  */
 public abstract class BrowserBackgroundAction extends AlertRepeatableBackgroundAction {
-    
+
     private BrowserController controller;
 
     public BrowserBackgroundAction(BrowserController controller) {
@@ -40,8 +42,8 @@ public abstract class BrowserBackgroundAction extends AlertRepeatableBackgroundA
     }
 
     @Override
-    public Session getSession() {
-        return controller.getSession();
+    public List<Session> getSessions() {
+        return Collections.singletonList(controller.getSession());
     }
 
     @Override
@@ -58,7 +60,9 @@ public abstract class BrowserBackgroundAction extends AlertRepeatableBackgroundA
     @Override
     public void cancel() {
         if(this.isRunning()) {
-            this.getSession().interrupt();
+            for(Session s : this.getSessions()) {
+                s.interrupt();
+            }
         }
         super.cancel();
     }
@@ -76,8 +80,10 @@ public abstract class BrowserBackgroundAction extends AlertRepeatableBackgroundA
 
     @Override
     public boolean isCanceled() {
-        if(null == this.getSession()) {
-            return true;
+        for(Session s : this.getSessions()) {
+            if(null == s) {
+                return true;
+            }
         }
         return super.isCanceled();
     }
