@@ -29,7 +29,7 @@ import org.apache.log4j.Logger;
 import java.util.*;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class CopyTransfer extends Transfer {
     private static Logger log = Logger.getLogger(CopyTransfer.class);
@@ -202,17 +202,8 @@ public class CopyTransfer extends Transfer {
     }
 
     @Override
-    protected void fireTransferDidEnd() {
-        if(this.isReset() && this.isComplete() && !this.isCanceled() && !(this.getTransferred() == 0)) {
-            Growl.instance().notify("Copy complete", this.getName());
-        }
-        super.fireTransferDidEnd();
-    }
-
-    @Override
     public String getStatus() {
-        return this.isComplete() ? Locale.localizedString("Copy complete", "Growl") :
-                Locale.localizedString("Transfer incomplete", "Status");
+        return this.isComplete() ? "Copy complete" : "Transfer incomplete";
     }
 
     @Override

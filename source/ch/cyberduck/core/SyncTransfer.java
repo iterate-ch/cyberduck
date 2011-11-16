@@ -355,14 +355,6 @@ public class SyncTransfer extends Transfer {
     }
 
     @Override
-    protected void fireTransferDidEnd() {
-        if(this.isReset() && this.isComplete() && !this.isCanceled()) {
-            Growl.instance().notify("Synchronization complete", this.getName());
-        }
-        super.fireTransferDidEnd();
-    }
-
-    @Override
     protected void clear(final TransferOptions options) {
         _delegateDownload.clear(options);
         _delegateUpload.clear(options);
@@ -589,8 +581,7 @@ public class SyncTransfer extends Transfer {
 
     @Override
     public String getStatus() {
-        return this.isComplete() ? Locale.localizedString("Synchronization complete", "Growl") :
-                Locale.localizedString("Transfer incomplete", "Status");
+        return this.isComplete() ? "Synchronization complete" : "Transfer incomplete";
     }
 
     @Override

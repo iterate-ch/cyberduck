@@ -250,6 +250,9 @@ public abstract class Transfer implements Serializable {
         if(log.isDebugEnabled()) {
             log.debug("fireTransferDidEnd:" + this);
         }
+        if(this.isReset() && this.isComplete() && !this.isCanceled() && !(this.getTransferred() == 0)) {
+            Growl.instance().notify(this.getStatus(), this.getName());
+        }
         running = false;
         queued = false;
         timestamp = new Date();

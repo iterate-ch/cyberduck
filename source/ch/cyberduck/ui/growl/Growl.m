@@ -108,7 +108,7 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_ui_growl_GrowlNative_notifyWithImage(
 
 - (void)notifyGrowl:(NSString *)title withDescription:(NSString *)description withImage:(NSImage *) image
 {
-    [GrowlApplicationBridge notifyWithTitle:NSLocalizedStringFromTable(title, @"Growl", @"Growl Notification")
+    [GrowlApplicationBridge notifyWithTitle:NSLocalizedStringFromTable(title, @"Status", @"Growl Notification")
                                 description:description
                            notificationName:title
                                    iconData:[image TIFFRepresentation]
@@ -119,7 +119,7 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_ui_growl_GrowlNative_notifyWithImage(
 
 - (void)notifyGrowl:(NSString *)title withDescription:(NSString *)description
 {
-    [GrowlApplicationBridge notifyWithTitle:NSLocalizedStringFromTable(title, @"Growl", @"Growl Notification")
+    [GrowlApplicationBridge notifyWithTitle:NSLocalizedStringFromTable(title, @"Status", @"Growl Notification")
                                 description:description
                            notificationName:title
                                    iconData:nil

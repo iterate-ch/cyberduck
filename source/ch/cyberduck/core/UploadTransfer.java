@@ -578,17 +578,8 @@ public class UploadTransfer extends Transfer {
     }
 
     @Override
-    protected void fireTransferDidEnd() {
-        if(this.isReset() && this.isComplete() && !this.isCanceled() && !(this.getTransferred() == 0)) {
-            Growl.instance().notify("Upload complete", this.getName());
-        }
-        super.fireTransferDidEnd();
-    }
-
-    @Override
     public String getStatus() {
-        return this.isComplete() ? Locale.localizedString("Upload complete", "Growl") :
-                Locale.localizedString("Transfer incomplete", "Status");
+        return this.isComplete() ? "Upload complete" : "Transfer incomplete";
     }
 
     @Override

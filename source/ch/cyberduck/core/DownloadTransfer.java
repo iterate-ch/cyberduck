@@ -505,7 +505,6 @@ public class DownloadTransfer extends Transfer {
     @Override
     protected void fireTransferDidEnd() {
         if(this.isReset() && this.isComplete() && !this.isCanceled() && !(this.getTransferred() == 0)) {
-            Growl.instance().notify("Download complete", this.getName());
             if(this.shouldOpenWhenComplete()) {
                 this.getRoot().getLocal().open();
             }
@@ -533,8 +532,7 @@ public class DownloadTransfer extends Transfer {
 
     @Override
     public String getStatus() {
-        return this.isComplete() ? Locale.localizedString("Download complete", "Growl") :
-                Locale.localizedString("Transfer incomplete", "Status");
+        return this.isComplete() ? "Download complete" : "Transfer incomplete";
     }
 
     @Override
