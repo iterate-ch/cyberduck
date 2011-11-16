@@ -81,7 +81,9 @@ public abstract class TransferPromptController extends SheetController implement
 
     @Override
     public void awakeFromNib() {
-        transfer.getSession().addProgressListener(l);
+        for(Session s: transfer.getSessions()) {
+            s.addProgressListener(l);
+        }
         this.reloadData();
         if(browserView.numberOfRows().intValue() > 0) {
             browserView.selectRowIndexes(NSIndexSet.indexSetWithIndex(new NSInteger(0)), false);
@@ -93,7 +95,9 @@ public abstract class TransferPromptController extends SheetController implement
 
     @Override
     public void invalidate() {
-        transfer.getSession().removeProgressListener(l);
+        for(Session s: transfer.getSessions()) {
+            s.removeProgressListener(l);
+        }
         browserView.setDataSource(null);
         browserView.setDelegate(null);
         browserModel.invalidate();
@@ -115,22 +119,13 @@ public abstract class TransferPromptController extends SheetController implement
         }
     };
 
-    /**
-     *
-     */
     protected TransferAction action
             = TransferAction.forName(Preferences.instance().getProperty("queue.prompt.action.default"));
 
-    /**
-     * @return
-     */
     public TransferAction getAction() {
         return action;
     }
 
-    /**
-     *
-     */
     protected Transfer transfer;
 
     public void callback(final int returncode) {
@@ -180,7 +175,7 @@ public abstract class TransferPromptController extends SheetController implement
         }
     }
 
-    // setting appearance attributes
+    // Setting appearance attributes
     final NSLayoutManager layoutManager = NSLayoutManager.layoutManager();
 
     /**
@@ -452,13 +447,21 @@ public abstract class TransferPromptController extends SheetController implement
 
         final TransferAction defaultAction
                 = TransferAction.forName(Preferences.instance().getProperty("queue.prompt.action.default"));
+        
+        boolean renameSupported = true;
+        for(Session s: transfer.getSessions()) {
+            if(!s.isRenameSupported(transfer.getRoot())) {
+                renameSupported = false;
+                break;
+            }
+        }
 
         final TransferAction[] actions = new TransferAction[]{
                 transfer.isResumable() ? TransferAction.ACTION_RESUME : null,
                 TransferAction.ACTION_OVERWRITE,
                 TransferAction.ACTION_RENAME,
                 TransferAction.ACTION_SKIP,
-                transfer.getSession().isRenameSupported(transfer.getRoot()) ? TransferAction.ACTION_RENAME_EXISTING : null};
+                renameSupported ? TransferAction.ACTION_RENAME_EXISTING : null};
 
         for(TransferAction action : actions) {
             if(null == action) {

@@ -67,8 +67,10 @@ namespace Ch.Cyberduck.Ui.Controller
 
             AsyncDelegate wireAction = delegate
                                            {
-                                               Transfer.getSession().addProgressListener(
-                                                   _progressListener = new StatusLabelProgressListener(this));
+                                               _progressListener = new StatusLabelProgressListener(this);
+                                               for(Session s: Transfer.getSessions()) {
+                                                   s.addProgressListener(_progressListener);
+                                               }
 
                                                View.ToggleDetailsEvent += View_ToggleDetailsEvent;
                                                View.DetailsVisible = Preferences.instance().getBoolean(
@@ -114,7 +116,9 @@ namespace Ch.Cyberduck.Ui.Controller
 
         protected override void Invalidate()
         {
-            Transfer.getSession().removeProgressListener(_progressListener);
+            for(Session s: Transfer.getSessions()) {
+                s.removeProgressListener(_progressListener);
+            }
         }
 
         public void UpdateStatusLabel()
@@ -212,7 +216,15 @@ namespace Ch.Cyberduck.Ui.Controller
             actions.Add(TransferAction.ACTION_OVERWRITE, TransferAction.ACTION_OVERWRITE.getLocalizableString());
             actions.Add(TransferAction.ACTION_RENAME, TransferAction.ACTION_RENAME.getLocalizableString());
             actions.Add(TransferAction.ACTION_SKIP, TransferAction.ACTION_SKIP.getLocalizableString());
-            if (Transfer.getSession().isRenameSupported(Transfer.getRoot()))
+
+            boolean renameSupported = true;
+            for(Session s: Transfer.getSessions()) {
+                if(!s.isRenameSupported(transfer.getRoot())) {
+                    renameSupported = false;
+                    break;
+                }
+            }
+            if (renameSupported)
             {
                 actions.Add(TransferAction.ACTION_RENAME_EXISTING, TransferAction.ACTION_RENAME_EXISTING.getLocalizableString());
             }
@@ -234,7 +246,6 @@ namespace Ch.Cyberduck.Ui.Controller
                 parent.Invoke(delegate { promptController = new DownloadPromptController(parent, transfer); }, true);
                 return promptController;
             }
-
             if (transfer is UploadTransfer)
             {
                 parent.Invoke(delegate { promptController = new UploadPromptController(parent, transfer); }, true);
