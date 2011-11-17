@@ -2397,9 +2397,6 @@ public class InfoController extends ToolbarWindowController {
                         distributionLoggingButton.setEnabled(distribution.isEnabled());
                         distributionLoggingButton.setState(distribution.isLogging() ? NSCell.NSOnState : NSCell.NSOffState);
                         final List<String> containers = distribution.getContainers();
-                        if(!containers.isEmpty()) {
-                            distributionLoggingPopup.removeAllItems();
-                        }
                         for(String c : containers) {
                             // Populate with list of available logging targets
                             distributionLoggingPopup.addItemWithTitle(c);
@@ -2414,6 +2411,9 @@ public class InfoController extends ToolbarWindowController {
                             if(distributionLoggingPopup.itemWithTitle(container) != null) {
                                 distributionLoggingPopup.selectItemWithTitle(container);
                             }
+                        }
+                        if(null == distributionLoggingPopup.selectedItem()) {
+                            distributionLoggingPopup.selectItemWithTitle(Locale.localizedString("None"));
                         }
 
                         String origin = distribution.getOrigin(getSelected());
