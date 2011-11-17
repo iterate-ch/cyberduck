@@ -740,7 +740,7 @@ public abstract class Preferences {
         defaults.put("ssh.publickey", "ssh-rsa");
         defaults.put("ssh.compression", "none"); //zlib
 
-        defaults.put("ssh.authentication.publikey.default.enable", String.valueOf(true));
+        defaults.put("ssh.authentication.publickey.default.enable", String.valueOf(true));
         defaults.put("ssh.authentication.publickey.default.rsa", "~/.ssh/id_rsa");
         defaults.put("ssh.authentication.publickey.default.dsa", "~/.ssh/id_dsa");
 

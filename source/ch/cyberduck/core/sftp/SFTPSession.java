@@ -200,10 +200,6 @@ public class SFTPSession extends Session {
         if(credentials.isPublicKeyAuthentication()) {
             if(this.loginUsingPublicKeyAuthentication(controller, credentials)) {
                 this.message(Locale.localizedString("Login successful", "Credentials"));
-                if(BookmarkCollection.defaultCollection().contains(host)) {
-                    // Save private key in bookmark
-                    BookmarkCollection.defaultCollection().collectionItemChanged(host);
-                }
                 return;
             }
         }
@@ -238,6 +234,45 @@ public class SFTPSession extends Session {
         this.message(Locale.localizedString("Login failed", "Credentials"));
         controller.fail(host.getProtocol(), credentials);
         this.login();
+    }
+
+    @Override
+    protected void prompt(LoginController controller) throws IOException {
+        final Credentials credentials = host.getCredentials();
+        if(StringUtils.isNotBlank(credentials.getUsername())) {
+            if(!credentials.isPublicKeyAuthentication()) {
+                // No custom public key authentication configuration
+                if(Preferences.instance().getBoolean("ssh.authentication.publickey.default.enable")) {
+                    final Local rsa = LocalFactory.createLocal(Preferences.instance().getProperty("ssh.authentication.publickey.default.rsa"));
+                    if(rsa.exists()) {
+                        log.info("Do not prompt for credentials. Trying default key:" + rsa);
+                        credentials.setIdentity(rsa);
+                        if(this.loginUsingPublicKeyAuthentication(controller, credentials)) {
+                            this.message(Locale.localizedString("Login successful", "Credentials"));
+                            return;
+                        }
+                        else {
+                            // Revert
+                            credentials.setIdentity(null);
+                        }
+                    }
+                    final Local dsa = LocalFactory.createLocal(Preferences.instance().getProperty("ssh.authentication.publickey.default.dsa"));
+                    if(dsa.exists()) {
+                        log.info("Do not prompt for credentials. Trying default key:" + dsa);
+                        credentials.setIdentity(dsa);
+                        if(this.loginUsingPublicKeyAuthentication(controller, credentials)) {
+                            this.message(Locale.localizedString("Login successful", "Credentials"));
+                            return;
+                        }
+                        else {
+                            // Revert
+                            credentials.setIdentity(null);
+                        }
+                    }
+                }
+            }
+        }
+        super.prompt(controller);
     }
 
     /**
@@ -301,8 +336,15 @@ public class SFTPSession extends Session {
                         return this.loginUsingPublicKeyAuthentication(controller, credentials);
                     }
                 }
-                return this.getClient().authenticateWithPublicKey(credentials.getUsername(),
+                final boolean success = this.getClient().authenticateWithPublicKey(credentials.getUsername(),
                         privatekey.toCharArray(), credentials.getPassword());
+                if(success) {
+                    if(BookmarkCollection.defaultCollection().contains(host)) {
+                        // Save private key in bookmark
+                        BookmarkCollection.defaultCollection().collectionItemChanged(host);
+                    }
+                }
+                return success;
             }
         }
         return false;
