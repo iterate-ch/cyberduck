@@ -250,6 +250,7 @@ public class SFTPSession extends Session {
                         super.prompt(controller);
                         if(this.loginUsingPublicKeyAuthentication(controller, credentials)) {
                             this.message(Locale.localizedString("Login successful", "Credentials"));
+                            return;
                         }
                         else {
                             // Revert
@@ -263,6 +264,7 @@ public class SFTPSession extends Session {
                         super.prompt(controller);
                         if(this.loginUsingPublicKeyAuthentication(controller, credentials)) {
                             this.message(Locale.localizedString("Login successful", "Credentials"));
+                            return;
                         }
                         else {
                             // Revert
@@ -272,9 +274,7 @@ public class SFTPSession extends Session {
                 }
             }
         }
-        else {
-            super.prompt(controller);
-        }
+        super.prompt(controller);
     }
 
     /**
