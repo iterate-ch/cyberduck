@@ -33,8 +33,8 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import com.ibm.icu.text.Normalizer;
-
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -49,6 +49,8 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
+
+import com.ibm.icu.text.Normalizer;
 
 /**
  * @version $Id$
@@ -441,6 +443,7 @@ public abstract class Path extends AbstractPath implements Serializable {
 
     /**
      * Transfer status
+     *
      * @return Current cached file transfer status
      */
     public Status status() {
@@ -803,8 +806,6 @@ public abstract class Path extends AbstractPath implements Serializable {
                                      boolean check, boolean quarantine);
 
     /**
-     *
-     *
      * @param check Check for open connection
      * @return Stream to write to for upload
      * @throws IOException Open file for writing fails
@@ -967,32 +968,38 @@ public abstract class Path extends AbstractPath implements Serializable {
      */
     private void transfer(final InputStream in, final OutputStream out,
                           final StreamListener listener, final long limit) throws IOException {
-        byte[] chunk = new byte[CHUNKSIZE];
-        long bytesTransferred = 0;
-        while(!status().isCanceled()) {
-            int read = in.read(chunk, 0, CHUNKSIZE);
-            listener.bytesReceived(read);
-            if(-1 == read) {
-                log.debug("End of file reached");
-                // End of file
-                status().setComplete(true);
-                break;
-            }
-            out.write(chunk, 0, read);
-            listener.bytesSent(read);
-            status().addCurrent(read);
-            bytesTransferred += read;
-            if(limit == bytesTransferred) {
-                log.debug("Limit reached reading from stream:" + limit);
-                // Part reached
-                if(0 == in.available()) {
+        final BufferedInputStream bi = new BufferedInputStream(in);
+        final BufferedOutputStream bo = new BufferedOutputStream(out);
+        try {
+            byte[] chunk = new byte[CHUNKSIZE];
+            long bytesTransferred = 0;
+            while(!status().isCanceled()) {
+                int read = bi.read(chunk, 0, CHUNKSIZE);
+                listener.bytesReceived(read);
+                if(-1 == read) {
+                    log.debug("End of file reached");
                     // End of file
                     status().setComplete(true);
+                    break;
                 }
-                break;
+                bo.write(chunk, 0, read);
+                listener.bytesSent(read);
+                status().addCurrent(read);
+                bytesTransferred += read;
+                if(limit == bytesTransferred) {
+                    log.debug("Limit reached reading from stream:" + limit);
+                    // Part reached
+                    if(0 == bi.available()) {
+                        // End of file
+                        status().setComplete(true);
+                    }
+                    break;
+                }
             }
         }
-        out.flush();
+        finally {
+            bo.flush();
+        }
         if(status().isCanceled()) {
             throw new ConnectionCanceledException("Interrupted transfer");
         }
@@ -1018,7 +1025,7 @@ public abstract class Path extends AbstractPath implements Serializable {
         try {
             this.getSession().message(MessageFormat.format(Locale.localizedString("Copying {0}", "Status"),
                     this.getName()));
-            this.transfer(this.read(false), ((Path)copy).write(false), listener, -1);
+            this.transfer(this.read(false), ((Path) copy).write(false), listener, -1);
         }
         catch(IOException e) {
             this.error("Cannot copy {0}", e);
