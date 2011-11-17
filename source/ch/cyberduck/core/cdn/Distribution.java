@@ -412,7 +412,7 @@ public class Distribution {
     /**
      * Origin server to fetch original content. S3 bucket or custom host.
      *
-     * @param file
+     * @param file File in origin container
      * @return Origin URL of specific file.
      */
     public String getOrigin(Path file) {
@@ -473,8 +473,8 @@ public class Distribution {
     }
 
     /**
-     * @param file
-     * @return
+     * @param file File in origin container
+     * @return URL to file in distribution
      */
     public String getURL(Path file) {
         return this.getURL(file, this.getURL());
@@ -482,8 +482,8 @@ public class Distribution {
 
     /**
      * @param file File in origin container
-     * @param base
-     * @return
+     * @param base Distribution URL
+     * @return URL to file in distribution
      */
     private String getURL(Path file, String base) {
         if(StringUtils.isEmpty(base)) {
