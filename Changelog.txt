@@ -11,9 +11,11 @@ Changelog. Last modified: $Date$
 - [Feature] Connect to multiple projects (Google Cloud Storage) (#5955)
 - [Feature] Support OAuth 2.0 Authentication (Google Cloud Storage) (#5955)
 - [Feature] Support US West (Oregon) location (S3)
+- [Feature] Try public key authentication login with default keys from OpenSSH (SFTP) (#3982)
 - [Bugfix] Performance improvement preparing files for download
 - [Bugfix] ETag mismatch deleting files	(Google Docs) (#6204)
 - [Bugfix] Creating new file (WebDAV) (#6341)
+- [Bugfix] No error message when SFTP subsystem is disabled (SFTP) (#5902)
 
 4.1.3 [http://trac.cyberduck.ch/milestone/4.1.3]
 - [Bugfix] Freeze after file transfer is complete (#6183)
