@@ -18,24 +18,7 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Collection;
-import ch.cyberduck.core.DownloadTransfer;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LocalFactory;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathFactory;
-import ch.cyberduck.core.PathReference;
-import ch.cyberduck.core.Permission;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.ProtocolFactory;
-import ch.cyberduck.core.Session;
-import ch.cyberduck.core.Status;
-import ch.cyberduck.core.Transfer;
-import ch.cyberduck.core.TransferAction;
-import ch.cyberduck.core.TransferPrompt;
-import ch.cyberduck.core.UploadTransfer;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.ui.DateFormatterFactory;
 import ch.cyberduck.ui.PathPasteboard;
@@ -57,15 +40,14 @@ import ch.cyberduck.ui.cocoa.model.OutlinePathReference;
 import ch.cyberduck.ui.cocoa.odb.WatchEditor;
 import ch.cyberduck.ui.cocoa.threading.BrowserBackgroundAction;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.rococoa.Rococoa;
 import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSPoint;
 import org.rococoa.cocoa.foundation.NSRect;
 import org.rococoa.cocoa.foundation.NSSize;
 import org.rococoa.cocoa.foundation.NSUInteger;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 
 import java.text.MessageFormat;
 import java.util.HashMap;
@@ -316,9 +298,9 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                                 LocalFactory.createLocal(elements.objectAtIndex(new NSUInteger(i)).toString()));
                         roots.add(p);
                     }
-                    final Transfer q = new UploadTransfer(roots);
-                    if(q.numberOfRoots() > 0) {
-                        controller.transfer(q, destination);
+                    final Transfer t = new UploadTransfer(roots);
+                    if(t.numberOfRoots() > 0) {
+                        controller.transfer(t, destination);
                     }
                     return true;
                 }
@@ -330,21 +312,24 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                 if(pasteboard.isEmpty()) {
                     continue;
                 }
-                // Explicit copy requested by user.
-                boolean duplicate = info.draggingSourceOperationMask().intValue() == NSDraggingInfo.NSDragOperationCopy.intValue();
-                if(!pasteboard.getSession().equals(controller.getSession())) {
-                    // Drag to browser windows with different session
-                    duplicate = true;
-                }
-                if(duplicate) {
-                    // The file should be duplicated
+                if(info.draggingSourceOperationMask().intValue() == NSDraggingInfo.NSDragOperationCopy.intValue()
+                        || !pasteboard.getSession().equals(controller.getSession())) {
+                    // Drag to browser windows with different session or explicit copy requested by user.
+                    final Session target = controller.getTransferSession(true);
                     final Map<Path, Path> files = new HashMap<Path, Path>();
-                    for(Path next : pasteboard) {
-                        final Path copy = PathFactory.createPath(controller.getSession(),
+                    for(Path next : pasteboard.copy()) {
+                        final Path copy = PathFactory.createPath(target,
                                 destination.getAbsolute(), next.getName(), next.attributes().getType());
                         files.put(next, copy);
                     }
-                    controller.duplicatePaths(files, false);
+                    if(pasteboard.getSession().equals(controller.getSession())) {
+                        controller.duplicatePaths(files);
+                    }
+                    else {
+                        // Drag to browser windows with different session. Remote copy
+                        CopyTransfer copy = new CopyTransfer(files);
+                        controller.transfer(copy, destination, false);
+                    }
                 }
                 else {
                     // The file should be renamed
@@ -565,7 +550,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
             };
             if(dock) {
                 // Drag to application icon in dock.
-                controller.transfer(transfer, new TransferPrompt() {
+                controller.transfer(transfer, null, true, new TransferPrompt() {
                     public TransferAction prompt() {
                         return TransferAction.ACTION_OVERWRITE;
                     }

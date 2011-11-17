@@ -26,6 +26,8 @@ import ch.cyberduck.core.sftp.SFTPSession;
 import ch.cyberduck.core.ssl.SSLSession;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.core.threading.BackgroundAction;
+import ch.cyberduck.core.threading.DefaultMainAction;
+import ch.cyberduck.core.threading.MainAction;
 import ch.cyberduck.ui.PathPasteboard;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.delegate.ArchiveMenuDelegate;
@@ -2210,45 +2212,20 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     /**
      * @param source      The original file to duplicate
      * @param destination The destination of the duplicated file
-     * @param edit        Open the duplicated file in the external editor
      */
-    protected void duplicatePath(final Path source, final Path destination, boolean edit) {
-        this.duplicatePaths(Collections.singletonMap(source, destination), edit);
+    protected void duplicatePath(final Path source, final Path destination) {
+        this.duplicatePaths(Collections.singletonMap(source, destination));
     }
 
     /**
      * @param selected A map with the original files as the key and the destination
      *                 files as the value
-     * @param edit     Open the duplicated files in the external editor
      */
-    protected void duplicatePaths(final Map<Path, Path> selected, final boolean edit) {
-        final Map<Path, Path> normalized = this.checkHierarchy(selected);
-        this.checkOverwrite(normalized.values(), new BrowserBackgroundAction(this) {
+    protected void duplicatePaths(final Map<Path, Path> selected) {
+        this.checkOverwrite(selected.values(), new DefaultMainAction() {
             public void run() {
-                CopyTransfer copy = new CopyTransfer(normalized);
-                TransferOptions options = new TransferOptions();
-                options.closeSession = false;
-                copy.start(null, options);
-            }
-
-            @Override
-            public void cleanup() {
-                for(Path duplicate : normalized.values()) {
-                    if(edit) {
-                        Editor editor = EditorFactory.createEditor(BrowserController.this, duplicate);
-                        editor.open();
-                    }
-                    if(duplicate.getName().charAt(0) == '.') {
-                        setShowHiddenFiles(true);
-                    }
-                }
-                reloadData(new ArrayList<Path>(normalized.values()));
-            }
-
-            @Override
-            public String getActivity() {
-                return MessageFormat.format(Locale.localizedString("Copying {0} to {1}", "Status"),
-                        normalized.keySet().iterator().next().getName(), normalized.values().iterator().next().getName());
+                CopyTransfer copy = new CopyTransfer(selected);
+                transfer(copy, workdir, true);
             }
         });
     }
@@ -2266,33 +2243,10 @@ public class BrowserController extends WindowController implements NSToolbar.Del
      *                 files as the value
      */
     protected void renamePaths(final Map<Path, Path> selected) {
-        final Map<Path, Path> normalized = this.checkHierarchy(selected);
-        this.checkMove(normalized.values(), new BrowserBackgroundAction(this) {
+        this.checkMove(selected.values(), new DefaultMainAction() {
             public void run() {
-                Iterator<Path> originalIterator = normalized.keySet().iterator();
-                Iterator<Path> renamedIterator = normalized.values().iterator();
-                while(originalIterator.hasNext()) {
-                    if(this.isCanceled()) {
-                        break;
-                    }
-                    final Path original = originalIterator.next();
-                    final Path renamed = renamedIterator.next();
-                    original.rename(renamed);
-                    if(!isConnected()) {
-                        break;
-                    }
-                }
-            }
-
-            @Override
-            public void cleanup() {
-                reloadData(new ArrayList<Path>(normalized.values()));
-            }
-
-            @Override
-            public String getActivity() {
-                return MessageFormat.format(Locale.localizedString("Renaming {0} to {1}", "Status"),
-                        normalized.keySet().iterator().next().getName(), normalized.values().iterator().next().getName());
+                MoveTransfer move = new MoveTransfer(selected);
+                transfer(move, workdir, true);
             }
         });
     }
@@ -2303,7 +2257,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
      * @param selected The files to check for existance
      * @param action   Action to execute after confirmation
      */
-    private void checkOverwrite(final java.util.Collection<Path> selected, final BackgroundAction<Boolean> action) {
+    private void checkOverwrite(final java.util.Collection<Path> selected, final MainAction action) {
         if(selected.size() > 0) {
             StringBuilder alertText = new StringBuilder(
                     Locale.localizedString("A file with the same name already exists. Do you want to replace the existing file?"));
@@ -2334,13 +2288,13 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 this.alert(alert, new SheetCallback() {
                     public void callback(final int returncode) {
                         if(returncode == DEFAULT_OPTION) {
-                            BrowserController.this.background(action);
+                            action.run();
                         }
                     }
                 });
             }
             else {
-                this.background(action);
+                action.run();
             }
         }
     }
@@ -2351,7 +2305,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
      * @param selected The files to check for existance
      * @param action   Action to execute after confirmation
      */
-    private void checkMove(final java.util.Collection<Path> selected, final BackgroundAction<Boolean> action) {
+    private void checkMove(final java.util.Collection<Path> selected, final MainAction action) {
         if(selected.size() > 0) {
             if(Preferences.instance().getBoolean("browser.confirmMove")) {
                 StringBuilder alertText = new StringBuilder(
@@ -2385,42 +2339,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 this.checkOverwrite(selected, action);
             }
         }
-    }
-
-    /**
-     * Prunes the map of selected files. Files which are a child of an already included directory
-     * are removed from the returned map.
-     *
-     * @param selected Selected files and folders in browser
-     * @return Pruned list with child entries of parent folders removed
-     */
-    protected Map<Path, Path> checkHierarchy(final Map<Path, Path> selected) {
-        final Map<Path, Path> normalized = new HashMap<Path, Path>();
-        Iterator<Path> sourcesIter = selected.keySet().iterator();
-        Iterator<Path> destinationsIter = selected.values().iterator();
-        while(sourcesIter.hasNext()) {
-            Path f = sourcesIter.next();
-            Path r = destinationsIter.next();
-            boolean duplicate = false;
-            for(Iterator<Path> normalizedIter = normalized.keySet().iterator(); normalizedIter.hasNext(); ) {
-                Path n = normalizedIter.next();
-                if(f.isChild(n)) {
-                    // The selected file is a child of a directory
-                    // already included for deletion
-                    duplicate = true;
-                    break;
-                }
-                if(n.isChild(f)) {
-                    // Remove the previously added file as it is a child
-                    // of the currently evaluated file
-                    normalizedIter.remove();
-                }
-            }
-            if(!duplicate) {
-                normalized.put(f, r);
-            }
-        }
-        return normalized;
     }
 
     /**
@@ -2891,9 +2809,9 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     }
 
     /**
-     * @param transfer Transfer Operation
-     * @param destination  Will reload the data for this directory in the browser after the
-     *                 transfer completes
+     * @param transfer    Transfer Operation
+     * @param destination Will reload the data for this directory in the browser after the
+     *                    transfer completes
      */
     protected void transfer(final Transfer transfer, final Path destination) {
         this.transfer(transfer, destination, this.getSession().getMaxConnections() == 1);
@@ -2901,7 +2819,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
     /**
      * @param transfer             Transfer Operation
-     * @param destination              Will reload the data for this directory in the browser after the
+     * @param destination          Will reload the data for this directory in the browser after the
      *                             transfer completes
      * @param useBrowserConnection Transfer in browser session
      */
@@ -2916,7 +2834,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     /**
      * @param transfer             Transfer
      * @param useBrowserConnection Transfer in browser session
-     * @param destination              Will reload the data for this directory in the browser after the
+     * @param destination          Will reload the data for this directory in the browser after the
      *                             transfer completes
      * @param prompt               Callback for overwrite action
      */
@@ -3242,7 +3160,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 this.renamePaths(files);
             }
             if(pasteboard.isCopy()) {
-                this.duplicatePaths(files, false);
+                this.duplicatePaths(files);
             }
         }
     }
@@ -3338,21 +3256,24 @@ public class BrowserController extends WindowController implements NSToolbar.Del
      */
     private void archiveClicked(final Archive archive) {
         final List<Path> selected = this.getSelectedPaths();
-        this.checkOverwrite(Collections.singletonList(archive.getArchive(selected)), new BrowserBackgroundAction(this) {
-
+        this.checkOverwrite(Collections.singletonList(archive.getArchive(selected)), new DefaultMainAction() {
             public void run() {
-                session.archive(archive, selected);
-            }
+                background(new BrowserBackgroundAction(BrowserController.this) {
+                    public void run() {
+                        session.archive(archive, selected);
+                    }
 
-            @Override
-            public void cleanup() {
-                // Update Selection
-                reloadData(Collections.singletonList(archive.getArchive(selected)));
-            }
+                    @Override
+                    public void cleanup() {
+                        // Update Selection
+                        reloadData(Collections.singletonList(archive.getArchive(selected)));
+                    }
 
-            @Override
-            public String getActivity() {
-                return archive.getCompressCommand(selected);
+                    @Override
+                    public String getActivity() {
+                        return archive.getCompressCommand(selected);
+                    }
+                });
             }
         });
     }
@@ -3365,25 +3286,28 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             if(null == archive) {
                 continue;
             }
-            this.checkOverwrite(archive.getExpanded(Collections.singletonList(selected)), new BrowserBackgroundAction(this) {
+            this.checkOverwrite(archive.getExpanded(Collections.singletonList(selected)), new DefaultMainAction() {
                 public void run() {
-                    session.unarchive(archive, selected);
-                }
+                    background(new BrowserBackgroundAction(BrowserController.this) {
+                        public void run() {
+                            session.unarchive(archive, selected);
+                        }
 
-                @Override
-                public void cleanup() {
-                    expanded.addAll(archive.getExpanded(Collections.singletonList(selected)));
-                    // Update Selection
-                    reloadData(expanded);
-                }
+                        @Override
+                        public void cleanup() {
+                            expanded.addAll(archive.getExpanded(Collections.singletonList(selected)));
+                            // Update Selection
+                            reloadData(expanded);
+                        }
 
-                @Override
-                public String getActivity() {
-                    return archive.getDecompressCommand(selected);
+                        @Override
+                        public String getActivity() {
+                            return archive.getDecompressCommand(selected);
+                        }
+                    });
                 }
             });
         }
-        ;
     }
 
     /**

@@ -973,15 +973,24 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
                 if (dropargs.Effect == DragDropEffects.Copy)
                 {
-                    // The file should be duplicated
+                    Session target = getTransferSession();
                     foreach (TreePathReference reference in dropargs.SourceModels)
                     {
                         Path next = reference.Unique;
-                        Path copy = PathFactory.createPath(getSession(), destination.getAbsolute(), next.getName(),
-                                                           next.attributes().getType());
-                        files.Add(next, copy);
+                        Path renamed = PathFactory.createPath(target, destination.getAbsolute(), next.getName(),
+                                                              next.attributes().getType());
+                        files.Add(next, renamed);
                     }
-                    DuplicatePaths(files, false);
+                    //todo detect other browser window
+                    if(false) {
+                        // Remote copy
+                        CopyTransfer copy = new CopyTransfer(files);
+                        controller.transfer(copy, destination, false);
+                    }
+                    else {
+                        // The file should be duplicated
+                        DuplicatePaths(files);
+                    }
                 }
             }
         }
@@ -2807,8 +2816,7 @@ namespace Ch.Cyberduck.Ui.Controller
         /// </param>
         protected internal void RenamePaths(IDictionary<Path, Path> selected)
         {
-            IDictionary<Path, Path> normalized = CheckHierarchy(selected);
-            CheckMove(normalized.Values, new RenameAction(this, normalized));
+            CheckMove(selected.Values, new RenameAction(selected));
         }
 
         /// <summary>
@@ -2816,7 +2824,7 @@ namespace Ch.Cyberduck.Ui.Controller
         /// </summary>
         /// <param name="selected">The files to check for existance</param>
         /// <param name="action"></param>
-        private void CheckMove(ICollection<Path> selected, BackgroundAction action)
+        private void CheckMove(ICollection<Path> selected, MainAction action)
         {
             if (selected.Count > 0)
             {
@@ -2965,7 +2973,7 @@ namespace Ch.Cyberduck.Ui.Controller
         /// </summary>
         /// <param name="selected">The files to check for existance</param>
         /// <param name="action"></param>
-        private void CheckOverwrite(ICollection<Path> selected, BackgroundAction action)
+        private void CheckOverwrite(ICollection<Path> selected, MainAction action)
         {
             if (selected.Count > 0)
             {
@@ -3004,62 +3012,14 @@ namespace Ch.Cyberduck.Ui.Controller
                                                  true);
                     if (r == DialogResult.OK)
                     {
-                        background(action);
+                        action.run();
                     }
                 }
                 else
                 {
-                    background(action);
+                        action.run();
                 }
             }
-        }
-
-        /// <summary>
-        /// Prunes the map of selected files. Files which are a child of
-        /// an already included directory are removed from the returned map.
-        /// </summary>
-        /// <param name="selected"></param>
-        /// <returns></returns>
-        protected IDictionary<Path, Path> CheckHierarchy(IDictionary<Path, Path> selected)
-        {
-            IDictionary<Path, Path> normalized = new Dictionary<Path, Path>();
-            foreach (KeyValuePair<Path, Path> keyValuePair in selected)
-            {
-                Path f = keyValuePair.Key;
-                Path r = keyValuePair.Value;
-                bool duplicate = false;
-
-                // Temporary list that holds the keys which have to be removed after looping.
-                // There is no direct way in C# to remove an item from a dictionary while looping.
-                IList<Path> removals = new List<Path>();
-
-                ICollection<Path> keys = normalized.Keys;
-                foreach (Path n in keys)
-                {
-                    if (f.isChild(n))
-                    {
-                        // The selected file is a child of a directory
-                        // already included for deletion
-                        duplicate = true;
-                        break;
-                    }
-                    if (n.isChild(f))
-                    {
-                        // Remove the previously added file as it is a child
-                        // of the currently evaluated file
-                        removals.Add(n);
-                    }
-                }
-                foreach (Path remove in removals)
-                {
-                    normalized.Remove(remove);
-                }
-                if (!duplicate)
-                {
-                    normalized.Add(f, r);
-                }
-            }
-            return normalized;
         }
 
         /// <summary>
@@ -3067,21 +3027,18 @@ namespace Ch.Cyberduck.Ui.Controller
         /// </summary>
         /// <param name="source">The original file to duplicate</param>
         /// <param name="destination">The destination of the duplicated file</param>
-        /// <param name="edit">Open the duplicated file in the external editor</param>
-        protected internal void DuplicatePath(Path source, Path destination, bool edit)
+        protected internal void DuplicatePath(Path source, Path destination)
         {
-            DuplicatePaths(new Dictionary<Path, Path> {{source, destination}}, edit);
+            DuplicatePaths(new Dictionary<Path, Path> {{source, destination}});
         }
 
         /// <summary>
         ///
         /// </summary>
         /// <param name="selected">A dictionary with the original files as the key and the destination files as the value</param>
-        /// <param name="edit">Open the duplicated files in the external editor</param>
-        protected internal void DuplicatePaths(IDictionary<Path, Path> selected, bool edit)
+        protected internal void DuplicatePaths(IDictionary<Path, Path> selected)
         {
-            IDictionary<Path, Path> normalized = CheckHierarchy(selected);
-            CheckMove(normalized.Values, new DuplicateFileAction(this, normalized, edit));
+            CheckMove(selected.Values, new DuplicateFileAction(selected));
         }
 
         /// <summary>
@@ -3357,55 +3314,19 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
-        private class DuplicateFileAction : BrowserBackgroundAction
+        private class DuplicateFileAction : DefaultMainAction
         {
-            private readonly bool _edit;
             private readonly IDictionary<Path, Path> _normalized;
 
-            public DuplicateFileAction(BrowserController controller, IDictionary<Path, Path> normalized, bool edit)
-                : base(controller)
+            public DuplicateFileAction(IDictionary<Path, Path> normalized)
             {
                 _normalized = normalized;
-                _edit = edit;
             }
 
             public override void run()
             {
                 CopyTransfer copy = new CopyTransfer(_normalized);
-                TransferOptions options = new TransferOptions();
-                options.closeSession = false;
-                copy.start(null, options);
-            }
-
-            public override void cleanup()
-            {
-                List<TreePathReference> selected = new List<TreePathReference>();
-                foreach (Path duplicate in _normalized.Values)
-                {
-                    if (_edit)
-                    {
-                        Editor editor = EditorFactory.createEditor(BrowserController, duplicate);
-                        editor.open();
-                    }
-                    if (duplicate.getName()[0] == '.')
-                    {
-                        BrowserController.ShowHiddenFiles = true;
-                    }
-                    selected.Add(new TreePathReference(duplicate));
-                }
-                BrowserController.RefreshParentPaths(_normalized.Values, selected);
-            }
-
-            public override string getActivity()
-            {
-                string sourceName = null;
-                string destName = null;
-                foreach (KeyValuePair<Path, Path> pair in _normalized)
-                {
-                    sourceName = pair.Key.getName();
-                    destName = pair.Value.getName();
-                }
-                return string.Format(Locale.localizedString("Copying {0} to {1}", "Status"), sourceName, destName);
+                transfer(copy, Workdir, true);
             }
         }
 
@@ -3589,58 +3510,19 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
-        private class RenameAction : BrowserBackgroundAction
+        private class RenameAction : DefaultMainAction
         {
             private readonly IDictionary<Path, Path> _normalized;
 
-            public RenameAction(BrowserController controller, IDictionary<Path, Path> normalized)
-                : base(controller)
+            public RenameAction(IDictionary<Path, Path> normalized)
             {
                 _normalized = normalized;
             }
 
             public override void run()
             {
-                foreach (KeyValuePair<Path, Path> pair in _normalized)
-                {
-                    if (isCanceled())
-                    {
-                        break;
-                    }
-                    Path original = pair.Key;
-                    Path renamed = pair.Value;
-
-                    original.rename(renamed);
-                    if (!BrowserController.IsConnected())
-                    {
-                        break;
-                    }
-                }
-            }
-
-            public override void cleanup()
-            {
-                List<TreePathReference> selected = new List<TreePathReference>();
-                foreach (KeyValuePair<Path, Path> pair in _normalized)
-                {
-                    selected.Add(new TreePathReference(pair.Value));
-                }
-                List<Path> paths = new List<Path>();
-                paths.AddRange(_normalized.Keys);
-                paths.AddRange(_normalized.Values);
-                BrowserController.RefreshParentPaths(paths, selected);
-            }
-
-            public override string getActivity()
-            {
-                string sourceName = null;
-                string destName = null;
-                foreach (KeyValuePair<Path, Path> pair in _normalized)
-                {
-                    sourceName = pair.Key.getName();
-                    destName = pair.Value.getName();
-                }
-                return string.Format(Locale.localizedString("Renaming {0} to {1}", "Status"), sourceName, destName);
+                MoveTransfer move = new MoveTransfer(_normalized);
+                transfer(move, Workdir, true);
             }
         }
 
