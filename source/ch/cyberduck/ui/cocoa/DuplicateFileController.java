@@ -21,10 +21,10 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.ui.DateFormatterFactory;
 import ch.cyberduck.ui.cocoa.application.NSAlert;
-import ch.cyberduck.ui.cocoa.odb.EditorFactory;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
@@ -41,7 +41,7 @@ public class DuplicateFileController extends FileController {
                 Locale.localizedString("Duplicate File", "Duplicate"),
                 Locale.localizedString("Enter the name for the new file:", "Duplicate"),
                 Locale.localizedString("Duplicate", "Duplicate"),
-                EditorFactory.defaultEditor() != null ? Locale.localizedString("Edit", "Duplicate") : null,
+                null,
                 Locale.localizedString("Cancel", "Duplicate")
         ));
         alert.setIcon(IconCache.instance().iconForExtension(this.getSelected().getExtension(), 64));
@@ -55,10 +55,7 @@ public class DuplicateFileController extends FileController {
 
     public void callback(final int returncode) {
         if(returncode == DEFAULT_OPTION) {
-            this.duplicateFile(this.getSelected(), filenameField.stringValue(), false);
-        }
-        else if(returncode == ALTERNATE_OPTION) {
-            this.duplicateFile(this.getSelected(), filenameField.stringValue(), true);
+            this.duplicateFile(this.getSelected(), filenameField.stringValue());
         }
     }
 
@@ -67,9 +64,10 @@ public class DuplicateFileController extends FileController {
         return this.getSelected().getParent();
     }
 
-    private void duplicateFile(final Path selected, final String filename, final boolean edit) {
-        final Path duplicate = PathFactory.createPath(this.getSession(),
+    private void duplicateFile(final Path selected, final String filename) {
+        final Session target = ((BrowserController)parent).getTransferSession(true);
+        final Path duplicate = PathFactory.createPath(target,
                 selected.getParent().getAbsolute(), filename, selected.attributes().getType());
-        ((BrowserController) parent).duplicatePath(selected, duplicate, edit);
+        ((BrowserController) parent).duplicatePath(selected, duplicate);
     }
 }
