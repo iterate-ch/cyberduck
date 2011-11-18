@@ -62,19 +62,15 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 if (DialogResult.OK == result)
                 {
-                    DuplicateFile(BrowserController.SelectedPath, View.InputText, false);
-                }
-                if (DialogResult.Yes == result)
-                {
-                    DuplicateFile(BrowserController.SelectedPath, View.InputText, true);
+                    DuplicateFile(BrowserController.SelectedPath, View.InputText);
                 }
             }
         }
 
-        private void DuplicateFile(Path selected, String filename, bool edit)
+        private void DuplicateFile(Path selected, String filename)
         {
             Path duplicate = PathFactory.createPath(BrowserController.getTransferSession(true), selected.getParent().getAbsolute(), filename, selected.attributes().getType());
-            BrowserController.DuplicatePath(selected, duplicate, edit);
+            BrowserController.DuplicatePath(selected, duplicate);
         }
     }
 }

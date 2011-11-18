@@ -15,7 +15,6 @@
 // Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
 // 
-using System.Windows.Forms;
 using ch.cyberduck.core.i18n;
 using Ch.Cyberduck.Ui.Controller;
 
@@ -28,27 +27,11 @@ namespace Ch.Cyberduck.Ui.Winforms
             InitializeComponent();
 
             Text = Locale.localizedString("Duplicate File", "Duplicate");
-            Button cancelBtn = new Button
-                                   {
-                                       AutoSize = true,
-                                       Size = cancelButton.Size,
-                                       TabIndex = 5,
-                                       Text = Locale.localizedString("Cancel", "Duplicate"),
-                                       UseVisualStyleBackColor = true,
-                                       Anchor = cancelButton.Anchor
-                                   };
-            tableLayoutPanel.Controls.Add(cancelBtn, 1, 2);
-            tableLayoutPanel.RowStyles[0].Height = 20F;
 
             pictureBox.Width = 32;
             label.Text = Locale.localizedString("Enter the name for the new file:", "Duplicate");
             okButton.Text = Locale.localizedString("Duplicate", "Duplicate");
-
-            // cancelButton is the 'Edit' button now
-            cancelButton.DialogResult = DialogResult.Yes;
-            cancelButton.Text = Locale.localizedString("Edit", "Duplicate");
-
-            CancelButton = cancelBtn;
+            cancelButton.Text = Locale.localizedString("Cancel", "Duplicate");
         }
     }
 }
