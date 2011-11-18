@@ -456,25 +456,17 @@ namespace Ch.Cyberduck.Ui.Controller
             }
 
             string tempFile = System.IO.Path.GetTempFileName();
-            try
-            {
-                TextWriter tw = new StreamWriter(tempFile);
-                tw.WriteLine(String.Format("cd {0} && exec $SHELL", workdir));
-                tw.Close();
+            TextWriter tw = new StreamWriter(tempFile);
+            tw.WriteLine(String.Format("cd {0} && exec $SHELL", workdir));
+            tw.Close();
 
-                String ssh = String.Format(Preferences.instance().getProperty("terminal.command.ssh.args"),
-                                           identity ? "-i " + host.getCredentials().getIdentity().getAbsolute() : "",
-                                           host.getCredentials().getUsername(),
-                                           host.getHostname(),
-                                           Convert.ToString(host.getPort()), tempFile);
+            String ssh = String.Format(Preferences.instance().getProperty("terminal.command.ssh.args"),
+                                        identity ? "-i " + host.getCredentials().getIdentity().getAbsolute() : "",
+                                        host.getCredentials().getUsername(),
+                                        host.getHostname(),
+                                        Convert.ToString(host.getPort()), tempFile);
 
-                Utils.StartProcess(Preferences.instance().getProperty("terminal.command.ssh"), ssh);
-            }
-            finally
-            {
-                //Utils.StartProcess is asynchronous means that the tempFile is already deleted most of time
-                //File.Delete(tempFile);
-            }
+            Utils.StartProcess(Preferences.instance().getProperty("terminal.command.ssh"), ssh);
         }
 
         private void View_SetComparator(BrowserComparator comparator)
@@ -981,16 +973,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                                               next.attributes().getType());
                         files.Add(next, renamed);
                     }
-                    //todo detect other browser window
-                    if(false) {
-                        // Remote copy
-                        CopyTransfer copy = new CopyTransfer(files);
-                        controller.transfer(copy, destination, false);
-                    }
-                    else {
-                        // The file should be duplicated
-                        DuplicatePaths(files);
-                    }
+                    DuplicatePaths(files, dropargs.ListView == View.Browser);
                 }
             }
         }
@@ -1587,8 +1570,10 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     continue;
                 }
-                CheckOverwrite(Utils.ConvertFromJavaList<Path>(archive.getExpanded(new ArrayList {selected})),
-                               new UnarchiveAction(this, archive, selected, expanded));
+                if(CheckOverwrite(Utils.ConvertFromJavaList<Path>(archive.getExpanded(new ArrayList {selected}))))
+                {
+                    this.background(new UnarchiveAction(this, archive, selected, expanded));
+                }
             }
         }
 
@@ -1620,8 +1605,9 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             Archive archive = Archive.forName(createArchiveEventArgs.ArchiveName);
             List<Path> selected = SelectedPaths;
-            CheckOverwrite(new List<Path> {archive.getArchive(Utils.ConvertToJavaList(selected))},
-                           new CreateArchiveAction(this, archive, selected));
+            if(CheckOverwrite(new List<Path> {archive.getArchive(Utils.ConvertToJavaList(selected))})) {
+                this.background(new CreateArchiveAction(this, archive, selected));
+            }
         }
 
         private bool View_ValidateDelete()
@@ -2201,7 +2187,6 @@ namespace Ch.Cyberduck.Ui.Controller
             this.transfer(transfer, null);
         }
 
-
         /// <summary>
         /// Will reload the data for this directory in the browser after the transfer completes
         /// </summary>
@@ -2215,10 +2200,11 @@ namespace Ch.Cyberduck.Ui.Controller
         ///
         /// </summary>
         /// <param name="transfer"></param>
+        /// <param name="destination"></param>
         /// <param name="useBrowserConnection"></param>
-        param void transfer(Transfer transfer, Path destination, bool useBrowserConnection)
+        public void transfer(Transfer transfer, Path destination, bool useBrowserConnection)
         {
-            this.transfer(transfer, destination, useBrowserConnection, new LazyTransferPrompt(this, transfer), null);
+            this.transfer(transfer, destination, useBrowserConnection, new LazyTransferPrompt(this, transfer));
         }
 
         private class LazyTransferPrompt : TransferPrompt
@@ -2237,7 +2223,13 @@ namespace Ch.Cyberduck.Ui.Controller
                 return TransferPromptController.Create(_controller, _transfer).prompt();
             }
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="transfer"></param>
+        /// <param name="destination"></param>
+        /// <param name="useBrowserConnection"></param>
+        /// <param name="prompt"></param>
         public void transfer(Transfer transfer, Path destination, bool useBrowserConnection, TransferPrompt prompt)
         {
             ReloadTransferAdapter reload = new ReloadTransferAdapter(this, transfer, destination);
@@ -2264,12 +2256,12 @@ namespace Ch.Cyberduck.Ui.Controller
         ///
         /// </summary>
         /// <returns>The session to be used for file transfers. Null if not mounted</returns>
-        protected Session getTransferSession()
+        public Session getTransferSession()
         {
             return getTransferSession(false);
         }
 
-        protected Session getTransferSession(bool force)
+        public Session getTransferSession(bool force)
         {
             if (!IsMounted())
             {
@@ -2816,7 +2808,10 @@ namespace Ch.Cyberduck.Ui.Controller
         /// </param>
         protected internal void RenamePaths(IDictionary<Path, Path> selected)
         {
-            CheckMove(selected.Values, new RenameAction(selected));
+            if(CheckMove(selected.Values))  {
+                MoveTransfer move = new MoveTransfer(Utils.ConvertToJavaMap(selected));
+                transfer(move, Workdir, true);
+            }
         }
 
         /// <summary>
@@ -2824,7 +2819,7 @@ namespace Ch.Cyberduck.Ui.Controller
         /// </summary>
         /// <param name="selected">The files to check for existance</param>
         /// <param name="action"></param>
-        private void CheckMove(ICollection<Path> selected, MainAction action)
+        private bool CheckMove(ICollection<Path> selected)
         {
             if (selected.Count > 0)
             {
@@ -2854,14 +2849,15 @@ namespace Ch.Cyberduck.Ui.Controller
                                                  true);
                     if (r == DialogResult.OK)
                     {
-                        CheckOverwrite(selected, action);
+                        return CheckOverwrite(selected);
                     }
                 }
                 else
                 {
-                    CheckOverwrite(selected, action);
+                    return CheckOverwrite(selected);
                 }
             }
+            return false;
         }
 
         /// <summary>
@@ -2972,8 +2968,7 @@ namespace Ch.Cyberduck.Ui.Controller
         /// Displays a warning dialog about already existing files
         /// </summary>
         /// <param name="selected">The files to check for existance</param>
-        /// <param name="action"></param>
-        private void CheckOverwrite(ICollection<Path> selected, MainAction action)
+        private bool CheckOverwrite(ICollection<Path> selected)
         {
             if (selected.Count > 0)
             {
@@ -3012,14 +3007,15 @@ namespace Ch.Cyberduck.Ui.Controller
                                                  true);
                     if (r == DialogResult.OK)
                     {
-                        action.run();
+                        return true;
                     }
                 }
                 else
                 {
-                        action.run();
+                    return true;
                 }
             }
+            return false;
         }
 
         /// <summary>
@@ -3029,16 +3025,20 @@ namespace Ch.Cyberduck.Ui.Controller
         /// <param name="destination">The destination of the duplicated file</param>
         protected internal void DuplicatePath(Path source, Path destination)
         {
-            DuplicatePaths(new Dictionary<Path, Path> {{source, destination}});
+            DuplicatePaths(new Dictionary<Path, Path> {{source, destination}}, true);
         }
 
         /// <summary>
         ///
         /// </summary>
         /// <param name="selected">A dictionary with the original files as the key and the destination files as the value</param>
-        protected internal void DuplicatePaths(IDictionary<Path, Path> selected)
+        ///<param name="browser"></param>
+        protected internal void DuplicatePaths(IDictionary<Path, Path> selected, bool browser)
         {
-            CheckMove(selected.Values, new DuplicateFileAction(selected));
+            if(CheckMove(selected.Values)) {
+                CopyTransfer copy = new CopyTransfer(Utils.ConvertToJavaMap(selected));
+                transfer(copy, Workdir, true);
+            }
         }
 
         /// <summary>
@@ -3314,22 +3314,6 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
-        private class DuplicateFileAction : DefaultMainAction
-        {
-            private readonly IDictionary<Path, Path> _normalized;
-
-            public DuplicateFileAction(IDictionary<Path, Path> normalized)
-            {
-                _normalized = normalized;
-            }
-
-            public override void run()
-            {
-                CopyTransfer copy = new CopyTransfer(_normalized);
-                transfer(copy, Workdir, true);
-            }
-        }
-
         private class EncodingBrowserBackgroundAction : BrowserBackgroundAction
         {
             private readonly string _encoding;
@@ -3507,22 +3491,6 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     ((BrowserController) Controller).RefreshObject(_p, true);
                 }
-            }
-        }
-
-        private class RenameAction : DefaultMainAction
-        {
-            private readonly IDictionary<Path, Path> _normalized;
-
-            public RenameAction(IDictionary<Path, Path> normalized)
-            {
-                _normalized = normalized;
-            }
-
-            public override void run()
-            {
-                MoveTransfer move = new MoveTransfer(_normalized);
-                transfer(move, Workdir, true);
             }
         }
 

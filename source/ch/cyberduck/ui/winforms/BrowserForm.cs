@@ -687,6 +687,11 @@ namespace Ch.Cyberduck.Ui.Winforms
             browser.Focus();
         }
 
+        public ObjectListView Browser
+        {
+            get { return browser; }
+        }
+
         public TreeListView.ChildrenGetterDelegate ModelChildrenGetterDelegate
         {
             set { browser.ChildrenGetter = value; }

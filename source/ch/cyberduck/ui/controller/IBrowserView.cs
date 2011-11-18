@@ -36,6 +36,7 @@ namespace Ch.Cyberduck.Ui.Controller
     public interface IBrowserView : IBookmarkManagerView
     {
         BrowserView CurrentView { set; get; }
+        ObjectListView Browser { get; }
 
         string WindowTitle { set; }
         string StatusLabel { set; }
