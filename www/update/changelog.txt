@@ -1,4 +1,4 @@
-4.1.4 [http://trac.cyberduck.ch/milestone/4.1.4]
+4.2 [http://trac.cyberduck.ch/milestone/4.2]
 - [Feature] Drag files between browser windows to copy files from server to server
 - [Feature] Support server side encryption (S3)
 - [Feature] Configure access logs for buckets (Google Cloud Storage)
