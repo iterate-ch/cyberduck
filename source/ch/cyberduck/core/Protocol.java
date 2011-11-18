@@ -1050,7 +1050,7 @@ public abstract class Protocol {
 
         @Override
         public String getUsernamePlaceholder() {
-            return Locale.localizedString("Access Key", "S3");
+            return String.format("%s/x-goog-project-id", Locale.localizedString("Access Key", "S3"));
         }
 
         @Override
