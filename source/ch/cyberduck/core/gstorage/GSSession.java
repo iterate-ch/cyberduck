@@ -103,9 +103,6 @@ public class GSSession extends S3Session {
             }
             log.debug("Authorizing service request with OAuth2 access token: " + tokens.getAccessToken());
             request.setHeader("Authorization", "OAuth " + tokens.getAccessToken());
-            if(request.getURI().getHost().equals(this.getHost().getProtocol().getDefaultHostname())) {
-                request.setHeader("x-goog-project-id", this.getHost().getCredentials().getUsername());
-            }
             return true;
         }
         return false;
@@ -114,7 +111,7 @@ public class GSSession extends S3Session {
     @Override
     protected void prompt(LoginController controller) throws IOException {
         final Credentials credentials = this.getHost().getCredentials();
-        final ProviderCredentials provider = this.getProviderCredentials(controller, credentials);
+        final ProviderCredentials provider = this.getProviderCredentials(credentials);
         if(provider instanceof OAuth2Credentials) {
             final OAuth2Credentials oauth = (OAuth2Credentials) provider;
             final String acccesstoken = KeychainFactory.instance().getPassword(this.getHost().getProtocol().getScheme().name(),
@@ -178,7 +175,7 @@ public class GSSession extends S3Session {
     private OAuth2Credentials oauth;
 
     @Override
-    protected ProviderCredentials getProviderCredentials(final LoginController controller, final Credentials credentials) {
+    protected ProviderCredentials getProviderCredentials(final Credentials credentials) {
         if(credentials.isAnonymousLogin()) {
             return null;
         }
@@ -194,7 +191,7 @@ public class GSSession extends S3Session {
             }
             return oauth;
         }
-        return super.getProviderCredentials(controller, credentials);
+        return super.getProviderCredentials(credentials);
     }
 
     @Override
@@ -361,6 +358,14 @@ public class GSSession extends S3Session {
     @Override
     protected String getRestMetadataPrefix() {
         return "x-goog-meta-";
+    }
+
+    @Override
+    protected String getProjectId() {
+        if(this.getProviderCredentials(host.getCredentials()) instanceof OAuth2Credentials) {
+            return host.getCredentials().getUsername();
+        }
+        return null;
     }
 
     @Override

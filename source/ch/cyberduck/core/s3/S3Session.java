@@ -19,22 +19,7 @@ package ch.cyberduck.core.s3;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractPath;
-import ch.cyberduck.core.Acl;
-import ch.cyberduck.core.ConnectionCanceledException;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.ErrorListener;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.LoginController;
-import ch.cyberduck.core.LoginControllerFactory;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathFactory;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.ProgressListener;
-import ch.cyberduck.core.Protocol;
-import ch.cyberduck.core.Session;
-import ch.cyberduck.core.SessionFactory;
-import ch.cyberduck.core.TranscriptListener;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.cloud.CloudSession;
@@ -79,6 +64,7 @@ import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -216,6 +202,25 @@ public class S3Session extends CloudSession {
             }
             return super.isRecoverable403(httpRequest, exception);
         }
+
+        @Override
+        protected StorageBucket createBucketImpl(String bucketName, String location,
+                                                 AccessControlList acl) throws ServiceException {
+            if(StringUtils.isNotBlank(getProjectId())) {
+                return super.createBucketImpl(bucketName, location, acl,
+                        Collections.<String, Object>singletonMap("x-goog-project-id", getProjectId()));
+            }
+            return super.createBucketImpl(bucketName, location, acl);
+        }
+
+        @Override
+        protected StorageBucket[] listAllBucketsImpl() throws ServiceException {
+            if(StringUtils.isNotBlank(getProjectId())) {
+                return super.listAllBucketsImpl(
+                        Collections.<String, Object>singletonMap("x-goog-project-id", getProjectId()));
+            }
+            return super.listAllBucketsImpl();
+        }
     }
 
     protected boolean authorize(HttpUriRequest httpMethod, ProviderCredentials credentials)
@@ -246,6 +251,10 @@ public class S3Session extends CloudSession {
      */
     protected String getRestMetadataPrefix() {
         return "x-amz-meta-";
+    }
+
+    protected String getProjectId() {
+        return null;
     }
 
     @Override
@@ -477,7 +486,7 @@ public class S3Session extends CloudSession {
     @Override
     protected void login(LoginController controller, Credentials credentials) throws IOException {
         try {
-            this.S3 = new RequestEntityRestStorageService(this.getProviderCredentials(controller, credentials));
+            this.S3 = new RequestEntityRestStorageService(this.getProviderCredentials(credentials));
             for(StorageBucket bucket : this.getBuckets(true)) {
                 if(log.isDebugEnabled()) {
                     log.debug("Bucket:" + bucket);
@@ -498,7 +507,7 @@ public class S3Session extends CloudSession {
         }
     }
 
-    protected ProviderCredentials getProviderCredentials(LoginController controller, final Credentials credentials) {
+    protected ProviderCredentials getProviderCredentials(final Credentials credentials) {
         return credentials.isAnonymousLogin() ? null : new AWSCredentials(credentials.getUsername(),
                 credentials.getPassword());
     }
@@ -954,7 +963,6 @@ public class S3Session extends CloudSession {
     }
 
     /**
-     *
      * @param container Bucket name
      * @param readable  Enable read permission for anonymous users
      * @return ACL with full control permission for owner of the bucket plus the read and write permissions
