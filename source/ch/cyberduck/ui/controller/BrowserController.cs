@@ -973,7 +973,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                                               next.attributes().getType());
                         files.Add(next, renamed);
                     }
-                    DuplicatePaths(files, dropargs.ListView == View.Browser);
+                    DuplicatePaths(files, dropargs.SourceListView == dropargs.ListView);
                 }
             }
         }
@@ -3037,7 +3037,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             if(CheckMove(selected.Values)) {
                 CopyTransfer copy = new CopyTransfer(Utils.ConvertToJavaMap(selected));
-                transfer(copy, Workdir, true);
+                transfer(copy, Workdir, browser);
             }
         }
 
