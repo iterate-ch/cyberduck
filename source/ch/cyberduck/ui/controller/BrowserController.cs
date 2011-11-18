@@ -951,29 +951,32 @@ namespace Ch.Cyberduck.Ui.Controller
             if (null != destination)
             {
                 IDictionary<Path, Path> files = new Dictionary<Path, Path>();
-                if (dropargs.Effect == DragDropEffects.Move)
-                {
-                    // The file should be renamed
-                    foreach (TreePathReference reference in dropargs.SourceModels)
-                    {
-                        Path next = reference.Unique;
-                        Path renamed = PathFactory.createPath(getSession(), destination.getAbsolute(), next.getName(),
-                                                              next.attributes().getType());
-                        files.Add(next, renamed);
-                    }
-                    RenamePaths(files);
-                }
                 if (dropargs.Effect == DragDropEffects.Copy)
                 {
+                    // Drag to browser windows with different session or explicit copy requested by user.
                     Session target = getTransferSession();
                     foreach (TreePathReference reference in dropargs.SourceModels)
                     {
-                        Path next = reference.Unique;
+                        Session source = SessionFactory.createSession(reference.Unique.getSession().getHost());
+                        Path next = PathFactory.createPath(source, reference.Unique.getAsDictionary());
                         Path renamed = PathFactory.createPath(target, destination.getAbsolute(), next.getName(),
                                                               next.attributes().getType());
                         files.Add(next, renamed);
                     }
                     DuplicatePaths(files, dropargs.SourceListView == dropargs.ListView);
+                }
+                if (dropargs.Effect == DragDropEffects.Move)
+                {
+                    Session session = getSession();
+                    // The file should be renamed
+                    foreach (TreePathReference reference in dropargs.SourceModels)
+                    {
+                        Path next = PathFactory.createPath(session, reference.Unique.getAsDictionary());
+                        Path renamed = PathFactory.createPath(session, destination.getAbsolute(), next.getName(),
+                                                              next.attributes().getType());
+                        files.Add(next, renamed);
+                    }
+                    RenamePaths(files);
                 }
             }
         }
