@@ -42,18 +42,24 @@
     <taskdef name="ikvmc" classname="net.ikvm.ant.IkvmcTask"/>
 
     <target name="version" depends="revision">
+        <!-- remove any non-digits (e.g. a trailing M) from the current revision -->
+        <propertyregex property="svn.revision.stripped"
+                       input="${svn.revision}"
+                       regexp="([\d]+).*"
+                       select="\1"/>
+
         <propertyregex property="minor"
                        input="${cyberduck.version.minor}.0"
                        regexp="(\d)([\w\d]*)\.(\d)(\.\d)?"
                        select="\1.\3"/>
 
         <property name="version"
-                  value="${cyberduck.version.major}.${minor}.${svn.revision}"/>
+                  value="${cyberduck.version.major}.${minor}.${svn.revision.stripped}"/>
         <property name="shortversion"
-                  value="${cyberduck.version.major}.${cyberduck.version.minor} (${svn.revision})"/>
+                  value="${cyberduck.version.major}.${cyberduck.version.minor} (${svn.revision.stripped})"/>
         <!-- pattern = "[revision] ([major].[minor])" -->
         <property name="updaterversion"
-                  value="${svn.revision} (${cyberduck.version.major}.${cyberduck.version.minor})"/>
+                  value="${svn.revision.stripped} (${cyberduck.version.major}.${cyberduck.version.minor})"/>
     </target>
 
     <target name="build" depends="version, archive">
