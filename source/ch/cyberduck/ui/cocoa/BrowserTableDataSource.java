@@ -322,14 +322,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                                 destination.getAbsolute(), next.getName(), next.attributes().getType());
                         files.put(next, copy);
                     }
-                    if(pasteboard.getSession().equals(controller.getSession())) {
-                        controller.duplicatePaths(files);
-                    }
-                    else {
-                        // Drag to browser windows with different session. Remote copy
-                        CopyTransfer copy = new CopyTransfer(files);
-                        controller.transfer(copy, destination, false);
-                    }
+                    controller.duplicatePaths(files, pasteboard.getSession().equals(controller.getSession()));
                 }
                 else {
                     // The file should be renamed
