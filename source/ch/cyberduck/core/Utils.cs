@@ -171,6 +171,23 @@ namespace Ch.Cyberduck.Core
         }
 
         /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="K"></typeparam>
+        /// <typeparam name="V"></typeparam>
+        /// <param name="dictionary"></param>
+        /// <returns></returns>
+        public static Map ConvertToJavaMap<K,V>(IDictionary<K,V> dictionary)
+        {
+            Map javaMap = new HashMap();
+            foreach (KeyValuePair<K, V> pair in dictionary)
+            {
+                javaMap.put(pair.Key, pair.Value);
+            }
+            return javaMap;
+        }
+
+        /// <summary>
         /// Convert a generic IEnumerable to a java list
         /// </summary>
         /// <typeparam name="T"></typeparam>
@@ -276,23 +293,6 @@ namespace Ch.Cyberduck.Core
                 if (null != cmd && LocalFactory.createLocal(cmd).exists())
                 {
                     return cmd;
-                }
-            }
-            return null;
-        }
-
-        /// <summary>
-        /// Extract open command
-        /// </summary>
-        /// <param name="root">expected substructure is shell/open/command</param>
-        /// <returns>null if not found</returns>
-        private static string GetOpenCommand2(RegistryKey root)
-        {
-            using (var editSk = root.OpenSubKey("shell\\open\\command"))
-            {
-                if (null != editSk)
-                {
-                    return (string) editSk.GetValue("");
                 }
             }
             return null;
