@@ -595,6 +595,12 @@ namespace Ch.Cyberduck.Ui.Winforms
             set { defaultBucketLocationCombobox.SelectedValue = value; }
         }
 
+        public string DefaultEncryption
+        {
+            get { return (string) defaultEncryptionComboBox.SelectedValue; }
+            set { defaultEncryptionComboBox.SelectedValue = value; }
+        }
+
         public float DefaultDownloadThrottle
         {
             get { return (float) defaultDownloadThrottleCombobox.SelectedValue; }
@@ -709,6 +715,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         public event VoidHandler UploadSkipRegexDefaultEvent = delegate { };
         public event VoidHandler SshTransferChangedEvent = delegate { };
         public event VoidHandler DefaultBucketLocationChangedEvent = delegate { };
+        public event VoidHandler DefaultEncryptionChangedEvent = delegate { };
         public event VoidHandler DefaultDownloadThrottleChangedEvent = delegate { };
         public event VoidHandler DefaultUploadThrottleChangedEvent = delegate { };
         public event VoidHandler ConnectionTimeoutChangedEvent = delegate { };
@@ -875,6 +882,13 @@ namespace Ch.Cyberduck.Ui.Winforms
             defaultStorageClassComboBox.DataSource = classes;
             defaultStorageClassComboBox.ValueMember = "Key";
             defaultStorageClassComboBox.DisplayMember = "Value";
+        }
+
+        public void PopulateDefaultEncryption(IList<KeyValuePair<string, string>> algorithms)
+        {
+            defaultEncryptionComboBox.DataSource = algorithms;
+            defaultEncryptionComboBox.ValueMember = "Key";
+            defaultEncryptionComboBox.DisplayMember = "Value";
         }
 
         public void PopulateDefaultDownloadThrottleList(IList<KeyValuePair<float, string>> throttles)
@@ -1476,6 +1490,11 @@ namespace Ch.Cyberduck.Ui.Winforms
         private void alwaysUseDefaultEditorCheckBox_CheckedChanged(object sender, EventArgs e)
         {
             AlwaysUseDefaultEditorChangedEvent();
+        }
+
+        private void defaultEncryptionComboBox_SelectionChangeCommitted(object sender, EventArgs e)
+        {
+            DefaultEncryptionChangedEvent();
         }
     }
 }

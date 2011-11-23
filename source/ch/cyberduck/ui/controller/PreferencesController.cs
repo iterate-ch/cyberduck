@@ -42,6 +42,8 @@ namespace Ch.Cyberduck.Ui.Controller
         private static readonly KeyValueIconTriple<Host, string> NoneBookmark =
             new KeyValueIconTriple<Host, string>(null, Locale.localizedString("None"), null);
 
+        private static readonly String NullString = "null";
+
         private static readonly string UseBrowserSession = Locale.localizedString("Use browser connection");
         private static readonly string UseQueueSession = Locale.localizedString("Open new connection");
         private static PreferencesController _instance;
@@ -134,6 +136,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
             View.DefaultBucketLocationChangedEvent += View_DefaultBucketLocationChangedEvent;
             View.DefaultStorageClassChangedEvent += View_DefaultStorageClassChangedEvent;
+            View.DefaultEncryptionChangedEvent += View_DefaultEncryptionChangedEvent;
 
             #endregion
 
@@ -203,6 +206,12 @@ namespace Ch.Cyberduck.Ui.Controller
             Host selected = View.DefaultBookmark;
             PopulateBookmarks();
             SelectDefaultBookmark(selected);
+        }
+
+        private void View_DefaultEncryptionChangedEvent()
+        {
+            Preferences.instance().setProperty("s3.encryption.algorithm",
+                                               NullString.Equals(View.DefaultEncryption) ? null : View.DefaultEncryption);
         }
 
         private void View_AlwaysUseDefaultEditorChangedEvent()
@@ -977,6 +986,9 @@ namespace Ch.Cyberduck.Ui.Controller
             View.DefaultBucketLocation = Preferences.instance().getProperty("s3.location");
             PopulateDefaultStorageClasses();
             View.DefaultStorageClass = Preferences.instance().getProperty("s3.storage.class");
+            PopulateDefaultEncryption();
+            String algorithm = Preferences.instance().getProperty("s3.encryption.algorithm");
+            View.DefaultEncryption = Utils.IsNotBlank(algorithm) ? algorithm : NullString;
 
             #endregion
 
@@ -1022,6 +1034,14 @@ namespace Ch.Cyberduck.Ui.Controller
             }
 
             #endregion
+        }
+
+        private void PopulateDefaultEncryption()
+        {
+            IList<KeyValuePair<string, string>> algorithms = new List<KeyValuePair<string, string>>();
+            algorithms.Add(new KeyValuePair<string, string>(NullString, Locale.localizedString("None")));
+            algorithms.Add(new KeyValuePair<string, string>("AES256", Locale.localizedString("AES256", "S3")));
+            View.PopulateDefaultEncryption(algorithms);
         }
 
         private void PopulateFeeds()

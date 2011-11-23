@@ -94,6 +94,7 @@ namespace Ch.Cyberduck.Ui.Controller
         string SshTransfer { set; get; }
         string DefaultBucketLocation { set; get; }
         string DefaultStorageClass { set; get; }
+        string DefaultEncryption { set; get; }
 
         float DefaultDownloadThrottle { set; get; }
         float DefaultUploadThrottle { set; get; }
@@ -202,6 +203,7 @@ namespace Ch.Cyberduck.Ui.Controller
         event VoidHandler SshTransferChangedEvent;
         event VoidHandler DefaultBucketLocationChangedEvent;
         event VoidHandler DefaultStorageClassChangedEvent;
+        event VoidHandler DefaultEncryptionChangedEvent;
 
         event VoidHandler DefaultDownloadThrottleChangedEvent;
         event VoidHandler DefaultUploadThrottleChangedEvent;
@@ -223,6 +225,7 @@ namespace Ch.Cyberduck.Ui.Controller
         void PopulateSshTransfers(List<string> transfers);
         void PopulateDefaultBucketLocations(IList<KeyValuePair<string, string>> locations);
         void PopulateDefaultStorageClasses(IList<KeyValuePair<string, string>> classes);
+        void PopulateDefaultEncryption(IList<KeyValuePair<string, string>> algorithms);
         void PopulateDefaultDownloadThrottleList(IList<KeyValuePair<float, string>> throttles);
         void PopulateDefaultUploadThrottleList(IList<KeyValuePair<float, string>> throttles);
         void PopulateUpdateFeeds(IList<KeyValuePair<string, string>> feeds);
