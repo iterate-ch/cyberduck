@@ -120,11 +120,6 @@ public abstract class CloudSession extends HttpSession {
     }
 
     @Override
-    public AbstractX509TrustManager getTrustManager() {
-        return this.getTrustManager(this.getHostnameForContainer(null));
-    }
-
-    @Override
     public boolean isMetadataSupported() {
         return true;
     }
