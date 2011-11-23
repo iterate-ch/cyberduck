@@ -186,12 +186,12 @@ public class PromptLoginController extends AbstractLoginController {
 
             public void setTextField(NSTextField textField) {
                 this.textField = textField;
-                this.textField.setAllowsEditingTextAttributes(true);
-                this.textField.setSelectable(true);
                 try {
                     // For OAuth2
                     final URI uri = new URI(reason);
                     this.textField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(reason));
+                    this.textField.setAllowsEditingTextAttributes(true);
+                    this.textField.setSelectable(true);
                 }
                 catch(URISyntaxException e) {
                     this.updateField(this.textField, Locale.localizedString(reason, "Credentials"));
