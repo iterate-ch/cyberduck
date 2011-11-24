@@ -48,8 +48,8 @@
     <property name="apple.appstub"
               location="/System/Library/Frameworks/JavaVM.framework/Resources/MacOS/JavaApplicationStub"/>
 
-    <property name="jvm.runtime.home" value="${user.home}/Library/Java/JavaVirtualMachines/1.7.0.20.0-b06.jdk"/>
-    <!--<property name="jvm.runtime.home" value="${lib}/1.7.0.jdk"/>-->
+    <property name="jvm.runtime.home" value="${lib}/1.7.0.20.0-b06-internal.jdk"/>
+    <!--<property name="jvm.runtime.home" value="${lib}/1.7.0.21.0-b17-b218.jdk"/>-->
     <property name="jvm.runtime.bundle.home" value="Contents/Home"/>
     <property name="jvm.runtime.bundle.lib" value="Contents/Home/jre/lib"/>
     <!--<property name="jvm.runtime.bundle.lib" value="Contents/Home/lib"/>-->
@@ -228,41 +228,7 @@
     <target name="copy-runtime">
         <echo message="Copy runtime from ${jvm.runtime.home}..."/>
         <copy todir="${app.runtime}" preservelastmodified="true">
-            <fileset followsymlinks="false" dir="${jvm.runtime.home}">
-                <exclude name="Contents/MacOS/**"/>
-                <exclude name="Contents/Resources/**"/>
-                <exclude name="${jvm.runtime.bundle.home}/bin/**"/>
-                <exclude name="${jvm.runtime.bundle.home}/jre/bin/**"/>
-                <exclude name="${jvm.runtime.bundle.home}/include/**"/>
-                <exclude name="${jvm.runtime.bundle.home}/demo/**"/>
-                <exclude name="${jvm.runtime.bundle.home}/sample/**"/>
-                <exclude name="${jvm.runtime.bundle.home}/lib/**"/>
-                <exclude name="${jvm.runtime.bundle.home}/man/**"/>
-                <exclude name="${jvm.runtime.bundle.home}/src.zip"/>
-                <exclude name="${jvm.runtime.bundle.lib}/applet/**"/>
-                <exclude name="${jvm.runtime.bundle.lib}/servicetag/**"/>
-                <exclude name="${jvm.runtime.bundle.lib}/images/**"/>
-                <exclude name="${jvm.runtime.bundle.lib}/i386/xawt/**"/>
-                <exclude name="${jvm.runtime.bundle.lib}/i386/client/**"/>
-                <exclude name="${jvm.runtime.bundle.lib}/xawt/**"/>
-                <exclude name="${jvm.runtime.bundle.lib}/lwawt/**"/>
-                <exclude name="${jvm.runtime.bundle.lib}/client/**"/>
-                <exclude name="${jvm.runtime.bundle.lib}/headless/**"/>
-                <exclude name="${jvm.runtime.bundle.lib}/jli/**"/>
-                <exclude name="${jvm.runtime.bundle.lib}/management/**"/>
-                <exclude name="${jvm.runtime.bundle.lib}/cmm/**"/>
-                <exclude name="${jvm.runtime.bundle.lib}/JObjC.jar"/>
-                <exclude name="${jvm.runtime.bundle.lib}/libJObjC.dylib"/>
-                <exclude name="${jvm.runtime.bundle.lib}/libsplashscreen.dylib"/>
-                <exclude name="${jvm.runtime.bundle.lib}/libfontmanager.dylib"/>
-                <exclude name="${jvm.runtime.bundle.lib}/libawt.dylib"/>
-                <exclude name="${jvm.runtime.bundle.lib}/libjawt.dylib"/>
-                <exclude name="${jvm.runtime.bundle.lib}/libhprof.dylib"/>
-                <exclude name="${jvm.runtime.bundle.lib}/libinstrument.dylib"/>
-                <exclude name="${jvm.runtime.bundle.lib}/libjsound.dylib"/>
-                <exclude name="${jvm.runtime.bundle.lib}/liblaf.dylib"/>
-                <exclude name="${jvm.runtime.bundle.lib}/libjava_crw_demo.dylib"/>
-            </fileset>
+            <fileset followsymlinks="false" dir="${jvm.runtime.home}"/>
         </copy>
         <echo message="Change dynamic shared library install names..."/>
         <apply executable="/usr/bin/install_name_tool" failonerror="true"
