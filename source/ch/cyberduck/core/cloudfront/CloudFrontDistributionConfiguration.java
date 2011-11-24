@@ -96,7 +96,7 @@ public class CloudFrontDistributionConfiguration extends HttpSession implements 
 
 
     @Override
-    protected void login() throw§s IOException {
+    protected void login() throws IOException {
         this.login(login);
     }
 
