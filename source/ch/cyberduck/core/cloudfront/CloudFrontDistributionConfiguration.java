@@ -41,7 +41,7 @@ import java.util.*;
 /**
  * Amazon CloudFront CDN configuration.
  *
- * @version $Id:$
+ * @version $Id$
  */
 public class CloudFrontDistributionConfiguration extends HttpSession implements DistributionConfiguration {
     private static Logger log = Logger.getLogger(CloudFrontDistributionConfiguration.class);
@@ -61,18 +61,12 @@ public class CloudFrontDistributionConfiguration extends HttpSession implements 
     public CloudFrontDistributionConfiguration(LoginController parent, Credentials credentials,
                                                ErrorListener error, ProgressListener progress,
                                                TranscriptListener transcript) {
-        // Configure with the same host as S3 to get the same credentials from the keychain.
-        super(new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname(), credentials));
+        super(new Host(Protocol.S3_SSL, "cloudfront.amazonaws.com", credentials));
         this.login = parent;
         this.addErrorListener(error);
         this.addProgressListener(progress);
         this.addTranscriptListener(transcript);
         this.clear();
-    }
-
-    @Override
-    public AbstractX509TrustManager getTrustManager() {
-        return this.getTrustManager("cloudfront.amazonaws.com");
     }
 
     /**
@@ -102,7 +96,7 @@ public class CloudFrontDistributionConfiguration extends HttpSession implements 
 
 
     @Override
-    protected void login() throws IOException {
+    protected void login() throw§s IOException {
         this.login(login);
     }
 
@@ -128,7 +122,7 @@ public class CloudFrontDistributionConfiguration extends HttpSession implements 
             }
         }
         catch(CloudFrontServiceException e) {
-            log.warn(String.format("Invalid account:%s", e.getMessage()));
+            log.warn(String.format("Invalid account: %s", e.getMessage()));
             this.message(Locale.localizedString("Login failed", "Credentials"));
             controller.fail(host.getProtocol(), credentials);
             this.login();
@@ -137,7 +131,16 @@ public class CloudFrontDistributionConfiguration extends HttpSession implements 
 
     @Override
     protected void prompt(LoginController controller) throws LoginCanceledException {
-        controller.check(host, this.toString(), null, true, false, false);
+        // Configure with the same host as S3 to get the same credentials from the keychain.
+        controller.check(new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname(),
+                host.getCredentials()), this.toString(), null, true, false, false);
+    }
+
+    @Override
+    protected void login(LoginController controller) throws IOException {
+        super.login(controller);
+        controller.success(new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname(),
+                host.getCredentials()));
     }
 
     @Override
@@ -404,7 +407,8 @@ public class CloudFrontDistributionConfiguration extends HttpSession implements 
 
     protected List<String> getContainers(ch.cyberduck.core.cdn.Distribution.Method method) {
         // List S3 containers
-        final Session session = SessionFactory.createSession(host);
+        final Session session = SessionFactory.createSession(
+                new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname(), host.getCredentials()));
         if(session.getHost().getCredentials().validate(session.getHost().getProtocol())) {
             List<String> buckets = new ArrayList<String>();
             for(Path bucket : session.mount().list()) {
