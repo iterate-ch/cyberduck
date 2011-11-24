@@ -279,6 +279,9 @@
       <DependentUpon>ConnectionForm.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="ui\winforms\controls\ClickLinkLabel.resx">
+      <DependentUpon>ClickLinkLabel.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="ui\winforms\controls\TransferControl.resx">
       <DependentUpon>TransferControl.cs</DependentUpon>
       <SubType>Designer</SubType>
