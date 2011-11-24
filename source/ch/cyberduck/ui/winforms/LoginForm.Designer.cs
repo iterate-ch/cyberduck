@@ -36,7 +36,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.loginButton = new System.Windows.Forms.Button();
             this.cancelButton = new System.Windows.Forms.Button();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.labelMessage = new Ch.Cyberduck.Ui.Winforms.Controls.ClickLinkLabel();
             this.labelUsername = new System.Windows.Forms.Label();
             this.textBoxUsername = new System.Windows.Forms.TextBox();
             this.checkBoxPkAuthentication = new System.Windows.Forms.CheckBox();
@@ -46,6 +45,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.pkLabel = new Ch.Cyberduck.Ui.Winforms.Controls.EllipsisLabel();
             this.diskPictureBox = new System.Windows.Forms.PictureBox();
             this.checkBoxSavePassword = new System.Windows.Forms.CheckBox();
+            this.labelMessageLabel = new System.Windows.Forms.Label();
+            this.labelMessageLink = new Ch.Cyberduck.Ui.Winforms.Controls.ClickLinkLabel();
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.diskPictureBox)).BeginInit();
             this.SuspendLayout();
@@ -83,7 +84,6 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel1.Controls.Add(this.labelMessage, 1, 0);
             this.tableLayoutPanel1.Controls.Add(this.cancelButton, 4, 6);
             this.tableLayoutPanel1.Controls.Add(this.labelUsername, 1, 1);
             this.tableLayoutPanel1.Controls.Add(this.textBoxUsername, 2, 1);
@@ -95,6 +95,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.tableLayoutPanel1.Controls.Add(this.loginButton, 3, 6);
             this.tableLayoutPanel1.Controls.Add(this.diskPictureBox, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.checkBoxSavePassword, 0, 6);
+            this.tableLayoutPanel1.Controls.Add(this.labelMessageLabel, 1, 3);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
@@ -111,33 +112,21 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.tableLayoutPanel1.Size = new System.Drawing.Size(498, 238);
             this.tableLayoutPanel1.TabIndex = 10;
             // 
-            // labelMessage
-            // 
-            this.tableLayoutPanel1.SetColumnSpan(this.labelMessage, 4);
-            this.labelMessage.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.labelMessage.Location = new System.Drawing.Point(92, 10);
-            this.labelMessage.Margin = new System.Windows.Forms.Padding(0);
-            this.labelMessage.Name = "labelMessage";
-            this.labelMessage.Size = new System.Drawing.Size(396, 35);
-            this.labelMessage.TabIndex = 9;
-            this.labelMessage.Text = "label1";
-            // 
             // labelUsername
             // 
             this.labelUsername.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.labelUsername.AutoSize = true;
-            this.labelUsername.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F);
-            this.labelUsername.Location = new System.Drawing.Point(95, 52);
+            this.labelUsername.Location = new System.Drawing.Point(100, 52);
             this.labelUsername.Name = "labelUsername";
-            this.labelUsername.Size = new System.Drawing.Size(68, 15);
+            this.labelUsername.Size = new System.Drawing.Size(63, 15);
             this.labelUsername.TabIndex = 0;
             this.labelUsername.Text = "Username:";
             this.labelUsername.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
             // textBoxUsername
             // 
-            this.textBoxUsername.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.textBoxUsername.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.tableLayoutPanel1.SetColumnSpan(this.textBoxUsername, 3);
             this.textBoxUsername.Location = new System.Drawing.Point(169, 48);
             this.textBoxUsername.Name = "textBoxUsername";
@@ -182,8 +171,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             // textBoxPassword
             // 
-            this.textBoxPassword.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.textBoxPassword.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.tableLayoutPanel1.SetColumnSpan(this.textBoxPassword, 3);
             this.textBoxPassword.Location = new System.Drawing.Point(169, 77);
             this.textBoxPassword.Name = "textBoxPassword";
@@ -194,8 +183,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             // pkLabel
             // 
-            this.pkLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.pkLabel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.pkLabel.AutoSize = true;
             this.tableLayoutPanel1.SetColumnSpan(this.pkLabel, 3);
             this.pkLabel.Location = new System.Drawing.Point(186, 153);
@@ -230,6 +219,27 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.checkBoxSavePassword.UseVisualStyleBackColor = true;
             this.checkBoxSavePassword.CheckedChanged += new System.EventHandler(this.checkBoxSavePassword_CheckedChanged);
             // 
+            // labelMessageLabel
+            // 
+            this.labelMessageLabel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.labelMessageLabel.Location = new System.Drawing.Point(95, 103);
+            this.labelMessageLabel.Name = "labelMessageLabel";
+            this.labelMessageLabel.Size = new System.Drawing.Size(68, 25);
+            this.labelMessageLabel.TabIndex = 12;
+            this.labelMessageLabel.Text = "label1";
+            // 
+            // labelMessageLink
+            // 
+            this.labelMessageLink.AutoEllipsis = true;
+            this.labelMessageLink.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.labelMessageLink.Location = new System.Drawing.Point(92, 10);
+            this.labelMessageLink.Margin = new System.Windows.Forms.Padding(0);
+            this.labelMessageLink.Name = "labelMessageLink";
+            this.labelMessageLink.Size = new System.Drawing.Size(396, 35);
+            this.labelMessageLink.TabIndex = 9;
+            this.labelMessageLink.TabStop = true;
+            this.labelMessageLink.Text = "label1";
+            // 
             // LoginForm
             // 
             this.AcceptButton = this.loginButton;
@@ -262,10 +272,11 @@ namespace Ch.Cyberduck.Ui.Winforms
         private System.Windows.Forms.CheckBox checkBoxPkAuthentication;
         private System.Windows.Forms.Button loginButton;
         private System.Windows.Forms.Button cancelButton;
-        private ClickLinkLabel labelMessage;
+        private ClickLinkLabel labelMessageLink;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private EllipsisLabel pkLabel;
         private System.Windows.Forms.OpenFileDialog openFileDialog;
         private System.Windows.Forms.PictureBox diskPictureBox;
+        private System.Windows.Forms.Label labelMessageLabel;
     }
 }

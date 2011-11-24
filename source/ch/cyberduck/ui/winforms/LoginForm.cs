@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2011 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -15,12 +15,13 @@
 // Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
 // 
+
 using System;
 using System.Drawing;
 using System.Media;
 using System.Windows.Forms;
-using ch.cyberduck.core.i18n;
 using Ch.Cyberduck.Ui.Controller;
+using ch.cyberduck.core.i18n;
 
 namespace Ch.Cyberduck.Ui.Winforms
 {
@@ -31,7 +32,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             InitializeComponent();
 
             openFileDialog.Title = Locale.localizedString("Select the private key in PEM or PuTTY format", "Credentials");
-            labelMessage.Font = DefaultFontBold;
+            labelMessageLink.Font = DefaultFontBold;
 
             //todo localization
             openFileDialog.Filter = "Private Key Files (*.pem;*.crt;*.ppk)|*.pem;*.crt;*.ppk|All Files (*.*)|*.*";
@@ -55,7 +56,28 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public string Message
         {
-            set { labelMessage.Text = value; }
+            set
+            {
+                labelMessageLabel.Visible = false;
+                labelMessageLink.Visible = false;
+                tableLayoutPanel1.Controls.Remove(labelMessageLink);
+                tableLayoutPanel1.Controls.Remove(labelMessageLabel);
+                try
+                {
+                    new Uri(value);
+                    tableLayoutPanel1.Controls.Add(labelMessageLink, 1, 0);
+                    tableLayoutPanel1.SetColumnSpan(labelMessageLink, 4);
+                    labelMessageLink.Visible = true;
+                    labelMessageLink.Text = value;
+                }
+                catch (UriFormatException)
+                {
+                    tableLayoutPanel1.Controls.Add(labelMessageLabel, 1, 0);
+                    tableLayoutPanel1.SetColumnSpan(labelMessageLabel, 4);
+                    labelMessageLabel.Visible = true;
+                    labelMessageLabel.Text = value;
+                }
+            }
         }
 
         public string Username
