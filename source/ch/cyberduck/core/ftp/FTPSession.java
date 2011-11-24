@@ -338,7 +338,7 @@ public class FTPSession extends SSLSession {
                 protocols.add(protocol.trim());
             }
             client.setEnabledProtocols(protocols.toArray(new String[protocols.size()]));
-            client.setTrustManager(host.getProtocol().isSecure() ? this.getTrustManager() : null);
+            client.setTrustManager(host.getProtocol().isSecure() ? this.getTrustManager(host.getHostname()) : null);
         }
     }
 

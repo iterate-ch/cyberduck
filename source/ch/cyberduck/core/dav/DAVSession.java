@@ -80,7 +80,6 @@ public class DAVSession extends HttpSession {
         this.fireConnectionWillOpenEvent();
 
         this.DAV = new SardineImpl(this.http());
-
         this.login();
 
         this.fireConnectionDidOpenEvent();
@@ -158,7 +157,6 @@ public class DAVSession extends HttpSession {
 
     @Override
     protected void login(final LoginController controller, final Credentials credentials) throws IOException {
-        final AbstractHttpClient client = this.http();
         if(credentials.validate(host.getProtocol())) {
             // Enable preemptive authentication. See HttpState#setAuthenticationPreemptive
             this.getClient().setCredentials(credentials.getUsername(), credentials.getPassword());
@@ -213,6 +211,7 @@ public class DAVSession extends HttpSession {
                 }
             }
         };
+        AbstractHttpClient client = this.http();
         client.setCredentialsProvider(provider);
         client.addRequestInterceptor(new HttpRequestInterceptor() {
             public void process(HttpRequest request, HttpContext context) throws HttpException, IOException {

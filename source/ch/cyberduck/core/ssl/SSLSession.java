@@ -39,10 +39,10 @@ public abstract class SSLSession extends Session {
     protected Map<String, AbstractX509TrustManager> trust
             = new HashMap<String, AbstractX509TrustManager>();
 
-    public AbstractX509TrustManager getTrustManager() {
-        return this.getTrustManager(host.getHostname());
-    }
-
+    /**
+     * @param hostname Target hostname used for hostname validation in certificate trust verification
+     * @return Trust manager backed by keychain
+     */
     public AbstractX509TrustManager getTrustManager(final String hostname) {
         if(!trust.containsKey(hostname)) {
             trust.put(hostname, new KeychainX509TrustManager() {

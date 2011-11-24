@@ -56,6 +56,8 @@ import javax.net.ssl.SSLSocket;
 import java.io.IOException;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -68,7 +70,8 @@ public abstract class HttpSession extends SSLSession {
         super(h);
     }
 
-    private AbstractHttpClient http;
+    private Map<String, AbstractHttpClient> clients
+            = new HashMap<String, AbstractHttpClient>();
 
     /**
      * Create new HTTP client with default configuration and custom trust manager.
@@ -76,7 +79,11 @@ public abstract class HttpSession extends SSLSession {
      * @return A new instance of a default HTTP client.
      */
     protected AbstractHttpClient http() {
-        if(null == http) {
+        return this.http(host.getHostname());
+    }
+
+    protected AbstractHttpClient http(final String hostname) {
+        if(!clients.containsKey(hostname)) {
             final HttpParams params = new BasicHttpParams();
 
             HttpProtocolParams.setVersion(params, org.apache.http.HttpVersion.HTTP_1_1);
@@ -115,7 +122,7 @@ public abstract class HttpSession extends SSLSession {
                     PlainSocketFactory.getSocketFactory()));
             registry.register(new Scheme(ch.cyberduck.core.Scheme.https.toString(), host.getPort(),
                     new SSLSocketFactory(
-                            new CustomTrustSSLProtocolSocketFactory(this.getTrustManager()).getSSLContext(),
+                            new CustomTrustSSLProtocolSocketFactory(this.getTrustManager(hostname)).getSSLContext(),
                             new X509HostnameVerifier() {
                                 public void verify(String host, SSLSocket ssl) throws IOException {
                                     log.warn("Hostname verification disabled for:" + host);
@@ -158,14 +165,15 @@ public abstract class HttpSession extends SSLSession {
                             Preferences.instance().getInteger("http.connections.total"));
                 }
             };
-            http = new DefaultHttpClient(manager, params);
+            AbstractHttpClient http = new DefaultHttpClient(manager, params);
             this.configure(http);
+            clients.put(hostname, http);
         }
-        return http;
+        return clients.get(hostname);
     }
 
     protected void configure(AbstractHttpClient client) {
-        http.addRequestInterceptor(new HttpRequestInterceptor() {
+        client.addRequestInterceptor(new HttpRequestInterceptor() {
             public void process(final HttpRequest request, final HttpContext context) throws HttpException, IOException {
                 log(true, request.getRequestLine().toString());
                 for(Header header : request.getAllHeaders()) {
@@ -173,7 +181,7 @@ public abstract class HttpSession extends SSLSession {
                 }
             }
         });
-        http.addResponseInterceptor(new HttpResponseInterceptor() {
+        client.addResponseInterceptor(new HttpResponseInterceptor() {
             public void process(final HttpResponse response, final HttpContext context) throws HttpException, IOException {
                 log(false, response.getStatusLine().toString());
                 for(Header header : response.getAllHeaders()) {
@@ -190,14 +198,14 @@ public abstract class HttpSession extends SSLSession {
     @Override
     public void close() {
         try {
-            // When HttpClient instance is no longer needed, shut down the connection manager to ensure
-            // immediate deallocation of all system resources
-            if(null != http) {
+            for(AbstractHttpClient http : clients.values()) {
+                // When HttpClient instance is no longer needed, shut down the connection manager to ensure
+                // immediate deallocation of all system resources
                 http.getConnectionManager().shutdown();
             }
         }
         finally {
-            http = null;
+            clients.clear();
         }
     }
 }
