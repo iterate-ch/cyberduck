@@ -773,8 +773,14 @@ public class S3Path extends CloudPath {
 
             // Initiate multipart upload with metadata
             Map<String, Object> metadata = object.getModifiableMetadata();
-            metadata.put(this.getSession().getClient().getRestHeaderPrefix() + "storage-class",
-                    Preferences.instance().getProperty("s3.storage.class"));
+            if(StringUtils.isNotBlank(Preferences.instance().getProperty("s3.storage.class"))) {
+                metadata.put(this.getSession().getClient().getRestHeaderPrefix() + "storage-class",
+                        Preferences.instance().getProperty("s3.storage.class"));
+            }
+            if(StringUtils.isNotBlank(Preferences.instance().getProperty("s3.encryption.algorithm"))) {
+                metadata.put(this.getSession().getClient().getRestHeaderPrefix() + "server-side-encryption",
+                        Preferences.instance().getProperty("s3.encryption.algorithm"));
+            }
 
             multipart = this.getSession().getClient().multipartStartUpload(
                     this.getContainerName(), this.getKey(), metadata);
