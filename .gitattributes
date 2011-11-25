@@ -75,7 +75,9 @@ bookmarks/docs.google.com[!!-~]–[!!-~]Google[!!-~]Docs.duck -text
 bookmarks/mirror.switch.ch[!!-~]–[!!-~]FTP.duck -text
 bookmarks/s3.amazonaws.com[!!-~]–[!!-~]S3.duck -text
 bookmarks/storage.clouddrive.com[!!-~]–[!!-~]Cloud[!!-~]Files.duck -text
-/build-mac.xml -text
+/build-mac.xml svneol=native#text/xml
+/build-windows.xml svneol=native#text/xml
+/build.xml svneol=native#text/xml
 ca.lproj/Alert.nib/classes.nib -text
 ca.lproj/Alert.nib/info.nib -text
 ca.lproj/Alert.nib/keyedobjects.nib -text
@@ -2275,7 +2277,7 @@ sl.lproj/ServicesMenu.strings -text svneol=unset#text/utf-16
 sl.lproj/Status.strings -text svneol=unset#text/utf-16
 sl.lproj/Transfer.strings -text svneol=unset#text/utf-16
 source/ch/cyberduck/App.config -text
-source/ch/cyberduck/Cyberduck.csproj -text
+source/ch/cyberduck/Cyberduck.csproj svneol=native#text/xml
 source/ch/cyberduck/Cyberduck.sln -text
 source/ch/cyberduck/ResourcesBundle.Designer.cs -text
 source/ch/cyberduck/ResourcesBundle.resx -text
