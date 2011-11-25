@@ -3527,12 +3527,14 @@ namespace Ch.Cyberduck.Ui.Controller
             private readonly BrowserController _controller;
             private readonly Speedometer _meter;
             private readonly Timer _timer;
+            private readonly Transfer _transfer;
 
             public ProgressTransferAdapter(BrowserController controller, Transfer transfer)
             {
                 _meter = new Speedometer(transfer);
                 _controller = controller;
                 _timer = new Timer(timerCallback, null, Timeout.Infinite, Period);
+                _transfer = transfer;
             }
 
             private void timerCallback(object state)
