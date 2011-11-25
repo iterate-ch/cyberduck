@@ -654,6 +654,10 @@ namespace Ch.Cyberduck.Ui.Controller
                 return _transfer.getSessions();
             }
 
+            public override String getActivity() {
+                return _transfer.getName();
+            }
+
             public override void pause()
             {
                 _transfer.fireTransferQueued();
