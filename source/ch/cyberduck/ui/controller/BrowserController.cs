@@ -2235,18 +2235,11 @@ namespace Ch.Cyberduck.Ui.Controller
         /// <param name="prompt"></param>
         public void transfer(Transfer transfer, Path destination, bool useBrowserConnection, TransferPrompt prompt)
         {
-            ReloadTransferAdapter reload = new ReloadTransferAdapter(this, transfer, destination);
-            transfer.addListener(reload);
+            transfer.addListener(new ReloadTransferAdapter(this, transfer, destination));
             if (useBrowserConnection)
             {
-                ProgressTransferAdapter status = new ProgressTransferAdapter(this, transfer);
-                transfer.addListener(status);
-                CallbackDelegate callback = delegate
-                                                {
-                                                    transfer.removeListener(status);
-                                                    transfer.removeListener(reload);
-                                                };
-                Background(new TransferBrowserBackgroundAction(this, prompt, transfer, callback));
+                transfer.addListener(new ProgressTransferAdapter(this, transfer));
+                Background(new TransferBrowserBackgroundAction(this, prompt, transfer));
             }
             else
             {
@@ -3564,6 +3557,11 @@ namespace Ch.Cyberduck.Ui.Controller
                 _meter.reset();
             }
 
+            public override void transferDidEnd()
+            {
+                _transfer.removeListener(this);
+            }
+
             internal class ProgressTimerRunnable : Runnable
             {
                 private readonly BrowserController _controller;
@@ -3585,19 +3583,16 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private class TransferBrowserBackgroundAction : BrowserBackgroundAction
         {
-            private readonly CallbackDelegate _callback;
             private readonly TransferPrompt _prompt;
             private readonly Transfer _transfer;
 
             public TransferBrowserBackgroundAction(BrowserController controller,
                                                    TransferPrompt prompt,
-                                                   Transfer transfer,
-                                                   CallbackDelegate callback)
+                                                   Transfer transfer)
                 : base(controller)
             {
                 _prompt = prompt;
                 _transfer = transfer;
-                _callback = callback;
             }
 
             public override void run()
@@ -3609,17 +3604,10 @@ namespace Ch.Cyberduck.Ui.Controller
                 _transfer.start(_prompt, options);
             }
 
-            public override void finish()
-            {
-                _callback();
-                base.finish();
-            }
-
             public override void cleanup()
             {
                 Log.debug("cleanup: " + getActivity());
                 BrowserController.UpdateStatusLabel();
-                _callback();
                 base.cleanup();
             }
 

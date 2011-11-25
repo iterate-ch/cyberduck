@@ -2842,9 +2842,30 @@ public class BrowserController extends WindowController implements NSToolbar.Del
      */
     protected void transfer(final Transfer transfer, final Path destination, boolean browser,
                             final TransferPrompt prompt) {
+        final TransferListener reload;
+        transfer.addListener(new TransferAdapter() {
+            @Override
+            public void transferDidEnd() {
+                if(destination != null && isMounted()) {
+                    destination.invalidate();
+                    if(!transfer.isCanceled()) {
+                        invoke(new WindowMainAction(BrowserController.this) {
+                            public void run() {
+                                reloadData(true);
+                            }
+
+                            @Override
+                            public boolean isValid() {
+                                return super.isValid() && BrowserController.this.isConnected();
+                            }
+                        });
+                    }
+                }
+                transfer.removeListener(this);
+            }
+        });
         if(browser) {
-            final TransferListener status;
-            transfer.addListener(status = new TransferAdapter() {
+            transfer.addListener(new TransferAdapter() {
                 private Speedometer meter = new Speedometer(transfer);
 
                 /**
@@ -2879,26 +2900,10 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 public void bandwidthChanged(BandwidthThrottle bandwidth) {
                     meter.reset();
                 }
-            });
-            final TransferListener reload;
-            transfer.addListener(reload = new TransferAdapter() {
+
                 @Override
                 public void transferDidEnd() {
-                    if(destination != null && isMounted()) {
-                        destination.invalidate();
-                        if(!transfer.isCanceled()) {
-                            invoke(new WindowMainAction(BrowserController.this) {
-                                public void run() {
-                                    reloadData(true);
-                                }
-
-                                @Override
-                                public boolean isValid() {
-                                    return super.isValid() && BrowserController.this.isConnected();
-                                }
-                            });
-                        }
-                    }
+                    transfer.removeListener(this);
                 }
             });
             this.background(new BrowserBackgroundAction(this) {
@@ -2907,13 +2912,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                     options.closeSession = false;
                     options.invalidateCache = Cache.Lifecycle.FOREVER;
                     transfer.start(prompt, options);
-                }
-
-                @Override
-                public void finish() {
-                    super.finish();
-                    transfer.removeListener(status);
-                    transfer.removeListener(reload);
                 }
 
                 @Override
