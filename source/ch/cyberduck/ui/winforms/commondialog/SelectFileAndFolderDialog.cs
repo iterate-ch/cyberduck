@@ -722,15 +722,22 @@ namespace Ch.Cyberduck.Ui.Winforms.Commondialog
 
                         /* #5841 On Windows XP when changing the folder 'newFolder' contains the selected directory twice (e.g. c:\temp\i386\i386) 
                            HACK
-                         */
+                         */                        
                         if (!Directory.Exists(newFolder))
                         {
-                            String lastPart = System.IO.Path.GetFileName(newFolder);
-                            String parent = Directory.GetParent(newFolder).FullName;
-                            String parentFile = System.IO.Path.GetFileName(parent);
-                            if (lastPart.Equals(parentFile))
+                            try
                             {
-                                m_currentFolder = parent;
+                                String lastPart = System.IO.Path.GetFileName(newFolder);
+                                String parent = Directory.GetParent(newFolder).FullName;
+                                String parentFile = System.IO.Path.GetFileName(parent);
+                                if (lastPart.Equals(parentFile))
+                                {
+                                    m_currentFolder = parent;
+                                }
+                            }
+                            catch (Exception)
+                            {
+                                //ignore   
                             }
                         }
                         IntPtr fileNameCombo =
