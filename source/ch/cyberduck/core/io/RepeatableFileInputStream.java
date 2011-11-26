@@ -36,9 +36,4 @@ public class RepeatableFileInputStream extends org.jets3t.service.io.RepeatableF
     public RepeatableFileInputStream(File file) throws FileNotFoundException {
         super(file);
     }
-
-    @Override
-    public long skip(long bytes) throws IOException {
-        return this.getWrappedInputStream().skip(bytes);
-    }
 }
