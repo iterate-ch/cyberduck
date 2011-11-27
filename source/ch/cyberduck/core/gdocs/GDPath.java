@@ -793,6 +793,10 @@ public class GDPath extends Path {
                 path.setParent(this);
                 path.setDocumentType(type);
                 // Download URL
+                if(null == entry.getContent()) {
+                    log.warn(String.format("Missing content in entry %s", entry.getTitle().getPlainText()));
+                    continue;
+                }
                 path.setExportUri(((OutOfLineContent) entry.getContent()).getUri());
                 // Link to Google Docs Editor
                 path.setDocumentUri(entry.getDocumentLink().getHref());
