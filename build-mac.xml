@@ -254,10 +254,6 @@
     </target>
 
     <target name="codesign">
-        <echo message="Code signing application bundle with entitlements ${codesign.arg}..."/>
-        <exec executable="/usr/bin/codesign" spawn="false" failonerror="true">
-            <arg line="--force --sign '${codesign.certificate}' --keychain ${codesign.keychain} ${codesign.arg} -v ${app.bundle}"/>
-        </exec>
         <echo message="Code signing ${app.java}/*.dylib with entitlements ${codesign.arg}..."/>
         <apply executable="/usr/bin/codesign" failonerror="true"
                type="file"
@@ -288,6 +284,10 @@
             </fileset>
             <srcfile/>
         </apply>
+        <echo message="Code signing application bundle with entitlements ${codesign.arg}..."/>
+        <exec executable="/usr/bin/codesign" spawn="false" failonerror="true">
+            <arg line="--force --sign '${codesign.certificate}' --keychain ${codesign.keychain} ${codesign.arg} -v ${app.bundle}"/>
+        </exec>
     </target>
 
     <target name="tar">
