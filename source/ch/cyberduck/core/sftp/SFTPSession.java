@@ -247,7 +247,6 @@ public class SFTPSession extends Session {
                     if(rsa.exists()) {
                         log.info("Do not prompt for credentials. Trying default key:" + rsa);
                         credentials.setIdentity(rsa);
-                        super.prompt(controller);
                         if(this.loginUsingPublicKeyAuthentication(controller, credentials)) {
                             this.message(Locale.localizedString("Login successful", "Credentials"));
                             return;
@@ -261,7 +260,6 @@ public class SFTPSession extends Session {
                     if(dsa.exists()) {
                         log.info("Do not prompt for credentials. Trying default key:" + dsa);
                         credentials.setIdentity(dsa);
-                        super.prompt(controller);
                         if(this.loginUsingPublicKeyAuthentication(controller, credentials)) {
                             this.message(Locale.localizedString("Login successful", "Credentials"));
                             return;
