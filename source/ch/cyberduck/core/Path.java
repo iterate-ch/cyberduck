@@ -30,6 +30,7 @@ import ch.cyberduck.core.serializer.Serializer;
 import ch.cyberduck.core.serializer.SerializerFactory;
 
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -1022,15 +1023,19 @@ public abstract class Path extends AbstractPath implements Serializable {
      * @param listener Callback
      */
     public void copy(final AbstractPath copy, final BandwidthThrottle throttle, final StreamListener listener) {
+        InputStream in = null;
+        OutputStream out = null;
         try {
             this.getSession().message(MessageFormat.format(Locale.localizedString("Copying {0}", "Status"),
                     this.getName()));
-            this.transfer(this.read(false), ((Path) copy).write(false), listener, -1);
+            this.transfer(in = this.read(false), out = ((Path) copy).write(false), listener, -1);
         }
         catch(IOException e) {
             this.error("Cannot copy {0}", e);
         }
         finally {
+            IOUtils.closeQuietly(in);
+            IOUtils.closeQuietly(out);
             copy.getParent().invalidate();
         }
     }
