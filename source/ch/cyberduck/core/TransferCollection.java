@@ -132,7 +132,6 @@ public class TransferCollection extends Collection<Transfer> {
                 running++;
             }
         }
-        log.debug("numberOfRunningTransfers:" + running);
         return running;
     }
 
@@ -151,7 +150,6 @@ public class TransferCollection extends Collection<Transfer> {
                 queued++;
             }
         }
-        log.debug("numberOfQueuedTransfers:" + queued);
         return queued;
     }
 
