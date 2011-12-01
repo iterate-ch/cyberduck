@@ -23,7 +23,6 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.i18n.Locale;
-import ch.cyberduck.core.ssl.AbstractX509TrustManager;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.client.HttpClient;
@@ -221,7 +220,7 @@ public class CloudFrontDistributionConfiguration extends HttpSession implements 
             if(logging) {
                 if(this.isLoggingSupported(method)) {
                     final String loggingDestination = StringUtils.isNotBlank(loggingBucket) ?
-                            ServiceUtils.generateS3HostnameForBucket(loggingBucket, false, this.getHost().getHostname(true)) : origin;
+                            ServiceUtils.generateS3HostnameForBucket(loggingBucket, false, Protocol.S3_SSL.getDefaultHostname()) : origin;
                     loggingStatus = new LoggingStatus(loggingDestination,
                             Preferences.instance().getProperty("cloudfront.logging.prefix"));
                 }
@@ -628,11 +627,11 @@ public class CloudFrontDistributionConfiguration extends HttpSession implements 
         final String loggingTarget;
         if(null == distributionConfig.getLoggingStatus()) {
             loggingTarget = ServiceUtils.findBucketNameInHostname(d.getOrigin().getDnsName(),
-                    this.getHost().getHostname(true));
+                    Protocol.S3_SSL.getDefaultHostname());
         }
         else {
             loggingTarget = ServiceUtils.findBucketNameInHostname(distributionConfig.getLoggingStatus().getBucket(),
-                    this.getHost().getHostname(true));
+                    Protocol.S3_SSL.getDefaultHostname());
         }
         final ch.cyberduck.core.cdn.Distribution distribution = new ch.cyberduck.core.cdn.Distribution(
                 d.getId(),
