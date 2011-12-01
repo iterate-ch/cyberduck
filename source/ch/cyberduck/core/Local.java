@@ -446,6 +446,9 @@ public abstract class Local extends AbstractPath {
 
     @Override
     public void writeTimestamp(long created, long modified, long accessed) {
+        if(modified < 0) {
+            return;
+        }
         if(!new File(path).setLastModified(modified)) {
             log.warn(String.format("Write modification date failed for %s", this.getAbsolute()));
         }
