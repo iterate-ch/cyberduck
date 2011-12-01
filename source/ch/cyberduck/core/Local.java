@@ -26,8 +26,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.jets3t.service.utils.ServiceUtils;
 
-import com.ibm.icu.text.Normalizer;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -39,6 +37,8 @@ import java.net.MalformedURLException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Collections;
 import java.util.List;
+
+import com.ibm.icu.text.Normalizer;
 
 /**
  * @version $Id$
@@ -226,7 +226,13 @@ public abstract class Local extends AbstractPath {
      * @param path File reference
      */
     public Local(File path) {
-        this.setPath(path.getAbsolutePath());
+        try {
+            this.setPath(path.getCanonicalPath());
+        }
+        catch(IOException e) {
+            log.warn("Error getting canonical path:" + e.getMessage());
+            this.setPath(path.getAbsolutePath());
+        }
     }
 
     @Override
