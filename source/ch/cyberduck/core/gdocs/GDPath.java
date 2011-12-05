@@ -792,11 +792,11 @@ public class GDPath extends Path {
                         FolderEntry.LABEL.equals(type) ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
                 path.setParent(this);
                 path.setDocumentType(type);
-                // Download URL
-                if(null == entry.getContent()) {
+                if(!(entry.getContent() instanceof OutOfLineContent)) {
                     log.warn(String.format("Missing content in entry %s", entry.getTitle().getPlainText()));
                     continue;
                 }
+                // Download URL
                 path.setExportUri(((OutOfLineContent) entry.getContent()).getUri());
                 // Link to Google Docs Editor
                 path.setDocumentUri(entry.getDocumentLink().getHref());
@@ -845,6 +845,10 @@ public class GDPath extends Path {
                                         FolderEntry.LABEL.equals(type) ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
                                 revision.setParent(this);
                                 revision.setDocumentType(type);
+                                if(!(revisionEntry.getContent() instanceof OutOfLineContent)) {
+                                    log.warn(String.format("Missing content in revision entry %s", revisionEntry.getTitle().getPlainText()));
+                                    continue;
+                                }
                                 revision.setExportUri(((OutOfLineContent) revisionEntry.getContent()).getUri());
                                 final long size = ((OutOfLineContent) revisionEntry.getContent()).getLength();
                                 if(size > 0) {
