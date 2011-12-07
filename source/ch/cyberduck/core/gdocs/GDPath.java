@@ -482,9 +482,6 @@ public class GDPath extends Path {
                     this.getSession().check();
                 }
                 in = this.read(check);
-                if(null == in) {
-                    throw new IOException("Unable opening data stream");
-                }
                 out = this.getLocal().getOutputStream(this.status().isResume());
                 this.download(in, out, throttle, listener, quarantine);
             }
