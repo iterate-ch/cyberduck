@@ -80,7 +80,7 @@ public class FileWatcher {
                         }
                         for(WatchEvent<?> event : key.pollEvents()) {
                             WatchEvent.Kind<?> kind = event.kind();
-                            log.info(String.format("Detected file system event %s", kind));
+                            log.info(String.format("Detected file system event %s", kind.name()));
                             if(kind == OVERFLOW) {
                                 continue;
                             }
@@ -103,9 +103,12 @@ public class FileWatcher {
                                         l.fileCreated(f);
                                     }
                                 }
+                                else {
+                                    log.debug(String.format("Ignored file system event %s for %s", kind.name(), f));
+                                }
                             }
                             else {
-                                log.debug("Ignored file system event for " + f);
+                                log.debug(String.format("Ignored file system event for unknown file %s", f));
                             }
                         }
                         // Reset the key -- this step is critical to receive further watch events.
