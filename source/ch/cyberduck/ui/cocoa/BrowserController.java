@@ -2577,7 +2577,8 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         this.deletePaths(this.getSelectedPaths());
     }
 
-    private static String lastSelectedDownloadDirectory = null;
+    private static String lastSelectedDownloadDirectory = 
+            Preferences.instance().getProperty("queue.download.folder");
 
     private NSOpenPanel downloadToPanel;
 
