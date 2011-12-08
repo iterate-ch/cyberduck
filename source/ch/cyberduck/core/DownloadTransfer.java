@@ -22,7 +22,6 @@ import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.serializer.Serializer;
 import ch.cyberduck.ui.DateFormatterFactory;
-import ch.cyberduck.ui.growl.Growl;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
