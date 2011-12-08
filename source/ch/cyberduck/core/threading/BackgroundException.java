@@ -82,12 +82,19 @@ public class BackgroundException extends Exception {
      */
     @Override
     public Throwable getCause() {
-        Throwable cause = super.getCause();
+        final Throwable cause = super.getCause();
         if(null == cause) {
             return this;
         }
-        while(cause.getCause() != null && StringUtils.isNotBlank(cause.getCause().getMessage())) {
-            cause = cause.getCause();
+        Throwable root = cause.getCause();
+        if(null == root) {
+            return cause;
+        }
+        while(root.getCause() != null) {
+            root = root.getCause();
+        }
+        if(StringUtils.isNotBlank(root.getMessage())) {
+            return root;
         }
         return cause;
     }
