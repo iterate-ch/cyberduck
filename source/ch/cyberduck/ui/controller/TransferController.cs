@@ -637,7 +637,6 @@ namespace Ch.Cyberduck.Ui.Controller
                     if (Preferences.instance().getBoolean("queue.removeItemWhenComplete"))
                     {
                         TransferCollection.defaultCollection().remove(_transfer);
-                        TransferCollection.defaultCollection().save();
                     }
                     if (Preferences.instance().getBoolean("queue.orderBackOnStop"))
                     {
@@ -647,6 +646,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         }
                     }
                 }
+                TransferCollection.defaultCollection().save();
             }
 
             protected override java.util.List getSessions()

@@ -790,7 +790,6 @@ public class TransferController extends WindowController implements NSToolbar.De
                 if(transfer.isComplete() && !transfer.isCanceled() && transfer.isReset()) {
                     if(Preferences.instance().getBoolean("queue.removeItemWhenComplete")) {
                         collection.remove(transfer);
-                        collection.save();
                     }
                     if(Preferences.instance().getBoolean("queue.orderBackOnStop")) {
                         if(!(collection.numberOfRunningTransfers() > 0)) {
@@ -798,6 +797,7 @@ public class TransferController extends WindowController implements NSToolbar.De
                         }
                     }
                 }
+                collection.save();
             }
 
             @Override
