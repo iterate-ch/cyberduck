@@ -132,11 +132,7 @@ public class OpenSshConfig {
         if(h.hostName == null) {
             h.hostName = hostName;
         }
-        if(h.user == null) {
-//            h.user = DefaultSshSessionFactory.userName();
-        }
         if(h.port == 0) {
-//            h.port = DefaultSshSessionFactory.SSH_PORT;
             h.port = -1;
         }
         h.patternsApplied = true;
