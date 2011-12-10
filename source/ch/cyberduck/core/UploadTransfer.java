@@ -149,9 +149,7 @@ public class UploadTransfer extends Transfer {
                         final AbstractPath target = file.getLocal().getSymlinkTarget();
                         size += target.attributes().getSize();
                     }
-                    else {
-                        // No file size increase for symbolic link to be created on the server
-                    }
+                    // No file size increase for symbolic link to be created on the server
                 }
                 else {
                     // Read file size
