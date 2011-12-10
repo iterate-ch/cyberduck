@@ -43,7 +43,7 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public abstract class AlertRepeatableBackgroundAction extends RepeatableBackgroundAction {
     private static Logger log = Logger.getLogger(AlertRepeatableBackgroundAction.class);
@@ -118,10 +118,6 @@ public abstract class AlertRepeatableBackgroundAction extends RepeatableBackgrou
                         openUrl(site.toString());
                     }
                 };
-                if(this.hasTranscript()) {
-                    // Display custom multiple file alert
-                    //c.setAccessoryView(alert.getTranscriptView());
-                }
                 c.beginSheet();
             }
             else {
