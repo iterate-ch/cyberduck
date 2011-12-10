@@ -64,7 +64,7 @@ public class Permission implements Serializable {
 
         @Override
         public String toString() {
-            return Locale.localizedString("Unknown");
+            return Locale.localizedString("--");
         }
     };
 
