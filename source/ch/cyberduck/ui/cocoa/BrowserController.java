@@ -4229,9 +4229,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 }
             }
         }
-        else if(identifier.equals(TOOLBAR_QUICKLOOK)) {
-            // Not called because custom view is set
-        }
         return validateItem(item.action());
     }
 
