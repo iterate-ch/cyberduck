@@ -58,15 +58,13 @@ public abstract class AbstractLoginController implements LoginController {
                 if(Preferences.instance().getBoolean("connection.login.useKeychain")) {
                     String saved = KeychainFactory.instance().find(host);
                     if(StringUtils.isBlank(saved)) {
-                        if(credentials.isPublicKeyAuthentication()) {
-                            // We decide later if the key is encrypted and a password must be known to decrypt.
-                        }
-                        else {
+                        if(!credentials.isPublicKeyAuthentication()) {
                             reason.append(Locale.localizedString(
                                     "No login credentials could be found in the Keychain", "Credentials")).append(".");
                             this.prompt(host.getProtocol(), credentials, title, reason.toString(),
                                     enableKeychain, enablePublicKey, enableAnonymous);
                         }
+                        // We decide later if the key is encrypted and a password must be known to decrypt.
                     }
                     else {
                         credentials.setPassword(saved);
@@ -75,15 +73,13 @@ public abstract class AbstractLoginController implements LoginController {
                     }
                 }
                 else {
-                    if(credentials.isPublicKeyAuthentication()) {
-                        // We decide later if the key is encrypted and a password must be known to decrypt.
-                    }
-                    else {
+                    if(!credentials.isPublicKeyAuthentication()) {
                         reason.append(Locale.localizedString(
                                 "The use of the Keychain is disabled in the Preferences", "Credentials")).append(".");
                         this.prompt(host.getProtocol(), credentials, title, reason.toString(),
                                 enableKeychain, enablePublicKey, enableAnonymous);
                     }
+                    // We decide later if the key is encrypted and a password must be known to decrypt.
                 }
             }
             else {
