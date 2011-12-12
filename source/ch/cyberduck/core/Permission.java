@@ -59,7 +59,10 @@ public class Permission implements Serializable {
 
         @Override
         public boolean equals(Object o) {
-            return o == this;
+            if(o instanceof Permission) {
+                return o == this;
+            }
+            return false;
         }
 
         @Override
@@ -172,7 +175,7 @@ public class Permission implements Serializable {
     }
 
     /**
-     * @param p
+     * @param p Array of users and their permissions
      */
     private void init(boolean[][] p) {
         this.owner[READ] = p[OWNER][READ];
@@ -391,6 +394,7 @@ public class Permission implements Serializable {
     }
 
     /**
+     * @param permissions Array of permissions
      * @return 0 = no permissions whatsoever; this person cannot read, write, or execute the file
      *         1 = execute only
      *         2 = write only
