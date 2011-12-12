@@ -1,3 +1,6 @@
+4.2.1 [http://trac.cyberduck.ch/milestone/4.2.1]
+- [Bugfix] Edited files not uploaded (#6399)
+
 4.2 [http://trac.cyberduck.ch/milestone/4.2]
 - [Feature] Drag files between browser windows to copy files from server to server
 - [Feature] Support server side encryption (S3)
