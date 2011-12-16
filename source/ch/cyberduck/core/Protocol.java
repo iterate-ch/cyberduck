@@ -481,8 +481,9 @@ public abstract class Protocol {
                     S3Bucket.LOCATION_EUROPE,
                     S3Bucket.LOCATION_US_WEST_NORTHERN_CALIFORNIA,
                     S3Bucket.LOCATION_US_WEST_OREGON,
-                    S3Bucket.LOCATION_ASIA_PACIFIC_SOUTHEAST,
-                    S3Bucket.LOCATION_ASIA_PACIFIC_NORTHEAST
+                    S3Bucket.LOCATION_ASIA_PACIFIC_SINGAPORE,
+                    S3Bucket.LOCATION_ASIA_PACIFIC_TOKYO,
+                    S3Bucket.LOCATION_SOUTH_AMERICA_EAST
             ));
         }
 

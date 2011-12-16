@@ -978,7 +978,11 @@ public class S3Session extends CloudSession {
     }
 
     /**
-     * The website endpoint given the location of the bucket.
+     * The website endpoint given the location of the bucket. When you configure a bucket as
+     * a website, the website is available via the region-specific website endpoint.
+     * The website endpoint you use must be in the same region that your bucket resides.
+     * These website endpoints are different than the REST API endpoints (see Request
+     * Endpoints). Amazon S3 supports the following website endpoint.
      *
      * @param bucket Bucket name
      * @param method Website Configuration (HTTP) CDN
@@ -989,14 +993,23 @@ public class S3Session extends CloudSession {
         final String location = this.getLocation(bucket);
         // US Standard
         String endpoint = "s3-website-us-east-1.amazonaws.com";
-        if("EU".equals(location)) {
+        if(S3Bucket.LOCATION_EUROPE.equals(location)) {
             endpoint = "s3-website-eu-west-1.amazonaws.com";
         }
-        else if("us-west-1".equals(location)) {
+        else if(S3Bucket.LOCATION_US_WEST_NORTHERN_CALIFORNIA.equals(location)) {
             endpoint = "s3-website-us-west-1.amazonaws.com";
         }
-        else if("ap-southeast-1".equals(location)) {
+        else if(S3Bucket.LOCATION_US_WEST_OREGON.equals(location)) {
+            endpoint = "s3-website-us-west-2.amazonaws.com";
+        }
+        else if(S3Bucket.LOCATION_ASIA_PACIFIC_SINGAPORE.equals(location)) {
             endpoint = "s3-website-ap-southeast-1.amazonaws.com";
+        }
+        else if(S3Bucket.LOCATION_ASIA_PACIFIC_TOKYO.equals(location)) {
+            endpoint = "s3-website-ap-northeast-1.amazonaws.com";
+        }
+        else if(S3Bucket.LOCATION_SOUTH_AMERICA_EAST.equals(location)) {
+            endpoint = "s3-website-sa-east-1.amazonaws.com";
         }
         return bucket + "." + endpoint;
     }
