@@ -18,6 +18,7 @@
 "us-west-2" = "US West (Oregon)";
 "ap-southeast-1" = "Azija, Pacifik (Singapur)";
 "ap-northeast-1" = "Asia Pacific (Tokyo)";
+"sa-east-1" = "South America (Sao Paulo)";
 
 /* Delivery methods including streaming protocols. */ 
 "Download (HTTP)" = "Prenos (HTTP) CDN";
