@@ -159,7 +159,11 @@
     </target>
 
     <target name="distribution-mas" depends="timestamp">
-        <antcall target="copy-runtime"/>
+        <antcall target="copy-runtime">
+            <!-- Enable sandbox environment with -entitlements ${codesign.entitlements} -->
+            <param name="codesign.arg" value=""/>
+            <param name="codesign.certificate" value="3rd Party Mac Developer Application: David Kocher"/>
+        </antcall>
 
         <replace dir="${app.bundle}" summary="true" encoding="UTF-8">
             <include name="**/Info.plist"/>
