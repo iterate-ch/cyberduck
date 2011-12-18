@@ -1,5 +1,11 @@
+4.2.2 [http://trac.cyberduck.ch/milestone/4.2.2]
+- [Feature] Bucket location in South America (Sao Paulo) Region (S3)
+- [Feature] Multi-Object Delete (S3)
+
 4.2.1 [http://trac.cyberduck.ch/milestone/4.2.1]
 - [Bugfix] Edited files not uploaded (#6399)
+- [Bugfix] Content-Type not set to proper MIME type of file on upload (WebDAV) (#6433)
+- [Bugfix] Transfer status not saved (#6430)
 
 4.2 [http://trac.cyberduck.ch/milestone/4.2]
 - [Feature] Drag files between browser windows to copy files from server to server
