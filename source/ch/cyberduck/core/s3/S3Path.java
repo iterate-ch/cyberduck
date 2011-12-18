@@ -1325,7 +1325,9 @@ public class S3Path extends CloudPath {
                 this.getSession().message(MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),
                         this.getName()));
 
-                this.delete(container, files);
+                if(!files.isEmpty()) {
+                    this.delete(container, files);
+                }
 
                 if(this.isContainer()) {
                     // Finally delete bucket itself
