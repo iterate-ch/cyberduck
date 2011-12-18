@@ -1312,16 +1312,25 @@ public class S3Path extends CloudPath {
                     if(!this.getSession().isConnected()) {
                         break;
                     }
-                    // Because we normalize paths and remove a trailing delimiter we add it here again as the
-                    // default directory placeholder formats has the format `/placeholder/' as a key.
-                    files.add(new ObjectKeyAndVersion(((S3Path) child).getKey() + Path.DELIMITER,
-                            child.attributes().getVersionId()));
-                    // Always returning 204 even if the key does not exist.
-                    // Fallback to legacy directory placeholders with metadata instead of key with trailing delimiter
-                    files.add(new ObjectKeyAndVersion(((S3Path) child).getKey(),
-                            child.attributes().getVersionId()));
-                    // AWS does not return 404 for non-existing keys
+                    if(child.attributes().isDirectory()) {
+                        child.delete();
+                    }
+                    else {
+                        files.add(new ObjectKeyAndVersion(((S3Path) child).getKey(),
+                                child.attributes().getVersionId()));
+                    }
                 }
+
+                // Because we normalize paths and remove a trailing delimiter we add it here again as the
+                // default directory placeholder formats has the format `/placeholder/' as a key.
+                files.add(new ObjectKeyAndVersion(this.getKey() + Path.DELIMITER,
+                        this.attributes().getVersionId()));
+                // Always returning 204 even if the key does not exist.
+                // Fallback to legacy directory placeholders with metadata instead of key with trailing delimiter
+                files.add(new ObjectKeyAndVersion(this.getKey(),
+                        this.attributes().getVersionId()));
+                // AWS does not return 404 for non-existing keys
+
                 this.getSession().message(MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),
                         this.getName()));
 
