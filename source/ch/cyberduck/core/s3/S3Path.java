@@ -61,6 +61,7 @@ import org.jets3t.service.model.S3Owner;
 import org.jets3t.service.model.S3Version;
 import org.jets3t.service.model.StorageBucket;
 import org.jets3t.service.model.StorageObject;
+import org.jets3t.service.model.container.ObjectKeyAndVersion;
 import org.jets3t.service.utils.ServiceUtils;
 
 import java.io.IOException;
@@ -1302,33 +1303,33 @@ public class S3Path extends CloudPath {
             if(attributes().isFile()) {
                 this.getSession().message(MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),
                         this.getName()));
-                this.delete(container, this.getKey(), this.attributes().getVersionId());
+                this.delete(container, Collections.singletonList(
+                        new ObjectKeyAndVersion(this.getKey(), this.attributes().getVersionId())));
             }
             else if(attributes().isDirectory()) {
+                List<ObjectKeyAndVersion> files = new ArrayList<ObjectKeyAndVersion>();
                 for(AbstractPath child : this.children()) {
                     if(!this.getSession().isConnected()) {
                         break;
                     }
-                    child.delete();
+                    // Because we normalize paths and remove a trailing delimiter we add it here again as the
+                    // default directory placeholder formats has the format `/placeholder/' as a key.
+                    files.add(new ObjectKeyAndVersion(((S3Path) child).getKey() + Path.DELIMITER,
+                            child.attributes().getVersionId()));
+                    // Always returning 204 even if the key does not exist.
+                    // Fallback to legacy directory placeholders with metadata instead of key with trailing delimiter
+                    files.add(new ObjectKeyAndVersion(((S3Path) child).getKey(),
+                            child.attributes().getVersionId()));
+                    // AWS does not return 404 for non-existing keys
                 }
                 this.getSession().message(MessageFormat.format(Locale.localizedString("Deleting {0}", "Status"),
                         this.getName()));
+
+                this.delete(container, files);
+
                 if(this.isContainer()) {
+                    // Finally delete bucket itself
                     this.getSession().getClient().deleteBucket(container);
-                }
-                else {
-                    try {
-                        // Because we normalize paths and remove a trailing delimiter we add it here again as the
-                        // default directory placeholder formats has the format `/placeholder/' as a key.
-                        this.delete(container, this.getKey() + Path.DELIMITER, this.attributes().getVersionId());
-                        // Always returning 204 even if the key does not exist.
-                        // Fallback to legacy directory placeholders with metadata instead of key with trailing delimiter
-                        this.delete(container, this.getKey(), attributes().getVersionId());
-                    }
-                    catch(ServiceException e) {
-                        // AWS might change their mind and return 404 at some point for non-existing keys
-                        log.warn("Delete failed:" + e.getMessage());
-                    }
                 }
             }
             // The directory listing is no more current
@@ -1344,27 +1345,24 @@ public class S3Path extends CloudPath {
 
     /**
      * @param container Bucket
-     * @param key       Filename
-     * @param version   Version ID for versioned object or null
+     * @param keys      Key and version ID for versioned object or null
      * @throws ConnectionCanceledException Authentication canceled for MFA delete
      * @throws ServiceException            Service error
      */
-    private void delete(String container, String key, String version) throws ConnectionCanceledException, ServiceException {
-        if(StringUtils.isNotEmpty(version)) {
-            if(this.getSession().isMultiFactorAuthentication(container)) {
-                LoginController c = LoginControllerFactory.instance(this.getSession());
-                final Credentials credentials = this.getSession().mfa(c);
-                this.getSession().getClient().deleteVersionedObjectWithMFA(version,
-                        credentials.getUsername(),
-                        credentials.getPassword(),
-                        container, key);
-            }
-            else {
-                this.getSession().getClient().deleteVersionedObject(version, container, key);
-            }
+    private void delete(String container, List<ObjectKeyAndVersion> keys) throws ConnectionCanceledException, ServiceException {
+        if(this.getSession().isMultiFactorAuthentication(container)) {
+            LoginController c = LoginControllerFactory.instance(this.getSession());
+            final Credentials credentials = this.getSession().mfa(c);
+            this.getSession().getClient().deleteMultipleObjectsWithMFA(container,
+                    keys.toArray(new ObjectKeyAndVersion[keys.size()]),
+                    credentials.getUsername(),
+                    credentials.getPassword(),
+                    true);
         }
         else {
-            this.getSession().getClient().deleteObject(this.getContainerName(), key);
+            this.getSession().getClient().deleteMultipleObjects(container,
+                    keys.toArray(new ObjectKeyAndVersion[keys.size()]),
+                    true);
         }
     }
 
