@@ -847,10 +847,11 @@ public class MainController extends BundleController implements NSApplication.De
      */
     public void applicationDidFinishLaunching(NSNotification notification) {
         if(log.isInfoEnabled()) {
-            log.info("Running Java " + System.getProperty("java.version") + " on " + System.getProperty("os.arch"));
-            log.info("Available localizations:" + NSBundle.mainBundle().localizations());
-            log.info("Current locale:" + java.util.Locale.getDefault());
-            log.info("Native library path:" + System.getProperty("java.library.path"));
+            log.info(String.format("Running version %s", NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleVersion").toString()));
+            log.info(String.format("Running Java %s on %s", System.getProperty("java.version"), System.getProperty("os.arch")));
+            log.info(String.format("Available localizations:%s", NSBundle.mainBundle().localizations()));
+            log.info(String.format("Current locale:%s", java.util.Locale.getDefault()));
+            log.info(String.format("Native library path:%s", System.getProperty("java.library.path")));
         }
         if(Preferences.instance().getBoolean("browser.openUntitled")) {
             MainController.newDocument();
