@@ -365,7 +365,7 @@ public class IconCache {
 
     public NSImage convert(NSImage icon, Integer width, Integer height) {
         if(null == width || null == height) {
-            log.info(String.format("Return default size for %s", icon.name()));
+            log.debug(String.format("Return default size for %s", icon.name()));
             return icon;
         }
         icon.setSize(new NSSize(width, height));
