@@ -35,8 +35,6 @@ import ch.cyberduck.core.gdocs.GDSession;
 import ch.cyberduck.core.gstorage.GSPath;
 import ch.cyberduck.core.gstorage.GSSession;
 import ch.cyberduck.core.i18n.Locale;
-import ch.cyberduck.core.idisk.IDiskPath;
-import ch.cyberduck.core.idisk.IDiskSession;
 import ch.cyberduck.core.s3.S3Path;
 import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.sftp.SFTPPath;
@@ -681,83 +679,6 @@ public abstract class Protocol {
         @Override
         public PathFactory getPathFactory() {
             return DAVPath.factory();
-        }
-    };
-
-    public static final Protocol IDISK = new Protocol() {
-        @Override
-        public String getName() {
-            return "MobileMe";
-        }
-
-        @Override
-        public String getDescription() {
-            return Locale.localizedString("MobileMe iDisk (WebDAV)");
-        }
-
-        @Override
-        public String getIdentifier() {
-            return "me";
-        }
-
-        @Override
-        public boolean isPortConfigurable() {
-            return false;
-        }
-
-        @Override
-        public Scheme getScheme() {
-            return Scheme.https;
-        }
-
-        @Override
-        public String[] getSchemes() {
-            return new String[]{this.getScheme().name(), "idisk"};
-        }
-
-        @Override
-        public boolean isHostnameConfigurable() {
-            return false;
-        }
-
-        @Override
-        public String getDefaultHostname() {
-            return "idisk.me.com";
-        }
-
-        @Override
-        public boolean isWebUrlConfigurable() {
-            return false;
-        }
-
-        @Override
-        public boolean isAnonymousConfigurable() {
-            return false;
-        }
-
-        @Override
-        public String disk() {
-            return WEBDAV_SSL.disk();
-        }
-
-        @Override
-        public String icon() {
-            return "NSDotMac";
-        }
-
-        @Override
-        public String getUsernamePlaceholder() {
-            return Locale.localizedString("MobileMe Member Name", "IDisk");
-        }
-
-        @Override
-        public SessionFactory getSessionFactory() {
-            return IDiskSession.factory();
-        }
-
-        @Override
-        public PathFactory getPathFactory() {
-            return IDiskPath.factory();
         }
     };
 
