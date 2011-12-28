@@ -48,8 +48,6 @@ public class ProtocolFactory {
         Protocol.WEBDAV.register();
         Protocol.WEBDAV_SSL.register();
 
-        Protocol.IDISK.register();
-
         Protocol.S3_SSL.register();
 
         Protocol.GOOGLESTORAGE_SSL.register();

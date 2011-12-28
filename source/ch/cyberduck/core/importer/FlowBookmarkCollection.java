@@ -108,12 +108,10 @@ public class FlowBookmarkCollection extends ThirdpartyBookmarkCollection {
                             case 1:
                                 host.setProtocol(Protocol.SFTP);
                                 break;
-                            case 2:
-                                host.setProtocol(Protocol.IDISK);
-                                break;
                             case 3:
                                 host.setProtocol(Protocol.S3_SSL);
                                 break;
+                            case 2:
                             case 4:
                                 if(host.getPort() == Protocol.WEBDAV_SSL.getDefaultPort()) {
                                     host.setProtocol(Protocol.WEBDAV_SSL);

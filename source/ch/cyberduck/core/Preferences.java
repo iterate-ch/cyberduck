@@ -205,7 +205,6 @@ public abstract class Preferences {
         defaults.put("protocol." + Protocol.SFTP + ".enable", String.valueOf(true));
         defaults.put("protocol." + Protocol.WEBDAV + ".enable", String.valueOf(true));
         defaults.put("protocol." + Protocol.WEBDAV_SSL + ".enable", String.valueOf(true));
-        defaults.put("protocol." + Protocol.IDISK + ".enable", String.valueOf(true));
         defaults.put("protocol." + Protocol.S3_SSL + ".enable", String.valueOf(true));
         defaults.put("protocol." + Protocol.GOOGLESTORAGE_SSL + ".enable", String.valueOf(true));
         defaults.put("protocol." + Protocol.EUCALYPTUS + ".enable", String.valueOf(true));
