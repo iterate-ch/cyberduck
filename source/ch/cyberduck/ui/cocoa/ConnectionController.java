@@ -161,16 +161,6 @@ public class ConnectionController extends SheetController {
         hostField.cell().setPlaceholderString(protocol.getDefaultHostname());
         usernameField.cell().setPlaceholderString(protocol.getUsernamePlaceholder());
         passField.cell().setPlaceholderString(protocol.getPasswordPlaceholder());
-        if(protocol.equals(Protocol.IDISK)) {
-            final String member = Preferences.instance().getProperty("iToolsMember");
-            if(StringUtils.isNotEmpty(member)) {
-                // Account name configured in System Preferences
-                usernameField.setStringValue(member);
-                usernameField.setEnabled(false);
-                pathField.setStringValue(String.valueOf(Path.DELIMITER) + member);
-                pathField.setEnabled(false);
-            }
-        }
         connectmodePopup.setEnabled(protocol.isConnectModeConfigurable());
         if(!protocol.isEncodingConfigurable()) {
             encodingPopup.selectItemWithTitle(DEFAULT);

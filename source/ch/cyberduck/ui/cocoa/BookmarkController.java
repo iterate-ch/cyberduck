@@ -117,14 +117,6 @@ public class BookmarkController extends WindowController {
         if(!selected.isWebUrlConfigurable()) {
             host.setWebURL(null);
         }
-        if(selected.equals(Protocol.IDISK)) {
-            final String member = Preferences.instance().getProperty("iToolsMember");
-            if(StringUtils.isNotEmpty(member)) {
-                // Account name configured in System Preferences
-                host.getCredentials().setUsername(member);
-                host.setDefaultPath(String.valueOf(Path.DELIMITER) + member);
-            }
-        }
         host.setProtocol(selected);
         this.readOpenSshConfiguration();
         this.itemChanged();
