@@ -315,9 +315,6 @@ public class DAVPath extends HttpPath {
                     this.getSession().getClient().copy(this.toURL(), copy.toURL());
                     this.status().setComplete(true);
                 }
-                else if(this.attributes().isDirectory()) {
-                    copy.mkdir();
-                }
             }
             catch(IOException e) {
                 this.error("Cannot copy {0}", e);

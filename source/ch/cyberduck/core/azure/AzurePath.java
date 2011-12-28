@@ -672,24 +672,24 @@ public class AzurePath extends CloudPath {
     public void copy(AbstractPath copy, BandwidthThrottle throttle, StreamListener listener) {
         if(((Path) copy).getSession().equals(this.getSession())) {
             // Copy on same server
-            if(attributes().isFile()) {
-                final NameValueCollection metadata = new NameValueCollection();
-                if(this.attributes().getMetadata().isEmpty()) {
-                    this.readMetadata();
-                }
-                metadata.putAll(this.attributes().getMetadata());
-                try {
+            try {
+                if(attributes().isFile()) {
+                    final NameValueCollection metadata = new NameValueCollection();
+                    if(this.attributes().getMetadata().isEmpty()) {
+                        this.readMetadata();
+                    }
+                    metadata.putAll(this.attributes().getMetadata());
                     this.getSession().getContainer(this.getContainerName()).copyBlob(((AzurePath) copy).getContainerName(),
                             ((AzurePath) copy).getKey(), this.getKey(), metadata, null);
                     this.status().setComplete(true);
                 }
-                catch(IOException e) {
-                    this.error("Cannot copy {0}", e);
-                }
-                finally {
-                    // The directory listing is no more current
-                    copy.getParent().invalidate();
-                }
+            }
+            catch(IOException e) {
+                this.error("Cannot copy {0}", e);
+            }
+            finally {
+                // The directory listing is no more current
+                copy.getParent().invalidate();
             }
         }
         else {

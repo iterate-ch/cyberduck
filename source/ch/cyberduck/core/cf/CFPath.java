@@ -593,7 +593,7 @@ public class CFPath extends CloudPath {
     @Override
     public void rename(AbstractPath renamed) {
         try {
-            this._copy(renamed, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new AbstractStreamListener());
+            this._copy(renamed);
             this.delete();
         }
         catch(HttpException e) {
@@ -609,7 +609,7 @@ public class CFPath extends CloudPath {
         if(((Path) copy).getSession().equals(this.getSession())) {
             // Copy on same server
             try {
-                this._copy(copy, throttle, listener);
+                this._copy(copy);
             }
             catch(HttpException e) {
                 this.error("Cannot copy {0}", e);
@@ -624,7 +624,7 @@ public class CFPath extends CloudPath {
         }
     }
 
-    private void _copy(AbstractPath copy, BandwidthThrottle throttle, StreamListener listener)
+    private void _copy(AbstractPath copy)
             throws IOException, HttpException {
         try {
             this.getSession().check();

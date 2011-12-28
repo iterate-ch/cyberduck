@@ -1028,7 +1028,9 @@ public abstract class Path extends AbstractPath implements Serializable {
         try {
             this.getSession().message(MessageFormat.format(Locale.localizedString("Copying {0}", "Status"),
                     this.getName()));
-            this.transfer(in = this.read(false), out = ((Path) copy).write(false), listener, -1);
+            if(this.attributes().isFile()) {
+                this.transfer(in = this.read(false), out = ((Path) copy).write(false), listener, -1);
+            }
         }
         catch(IOException e) {
             this.error("Cannot copy {0}", e);

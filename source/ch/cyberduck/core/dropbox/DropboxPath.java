@@ -321,6 +321,7 @@ public class DropboxPath extends Path {
 
                 if(attributes().isFile()) {
                     this.getSession().getClient().copy(this.getAbsolute(), copy.getAbsolute());
+                    this.status().setComplete(true);
                 }
             }
             catch(IOException e) {
