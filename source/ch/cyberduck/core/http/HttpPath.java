@@ -32,7 +32,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ThreadFactory;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public abstract class HttpPath extends Path {
     private static Logger log = Logger.getLogger(HttpPath.class);
@@ -56,11 +56,9 @@ public abstract class HttpPath extends Path {
     private abstract class FutureHttpResponse<T> implements Runnable {
 
         IOException exception;
-
         T response;
 
         public IOException getException() {
-
             return exception;
         }
 
