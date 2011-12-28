@@ -29,17 +29,13 @@ import java.io.OutputStream;
 import java.util.concurrent.CountDownLatch;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
-public class DelayedHttpEntity extends AbstractHttpEntity {
+public abstract class DelayedHttpEntity extends AbstractHttpEntity {
     private static Logger log = Logger.getLogger(DelayedHttpEntity.class);
 
-    private CountDownLatch entry;
-
-    /**
-     *
-     */
-    private long contentLength = -1;
+    private final CountDownLatch entry;
+    private final CountDownLatch exit = new CountDownLatch(1);
 
     /**
      * @param entry Signal when stream is ready
@@ -61,14 +57,7 @@ public class DelayedHttpEntity extends AbstractHttpEntity {
         return false;
     }
 
-    public long getContentLength() {
-        // Content length not known in adavance
-        return contentLength;
-    }
-
-    public void setContentLength(long contentLength) {
-        this.contentLength = contentLength;
-    }
+    public abstract long getContentLength();
 
     public InputStream getContent() throws IOException, IllegalStateException {
         throw new UnsupportedOperationException("No content here");
@@ -86,7 +75,6 @@ public class DelayedHttpEntity extends AbstractHttpEntity {
     }
 
     public void writeTo(final OutputStream out) throws IOException {
-        final CountDownLatch exit = new CountDownLatch(1);
         try {
             stream = new OutputStream() {
                 @Override
@@ -124,7 +112,7 @@ public class DelayedHttpEntity extends AbstractHttpEntity {
         finally {
             entry.countDown();
         }
-        // Wait for signal when content has been writen to the pipe
+        // Wait for signal when content has been written to the pipe
         try {
             exit.await();
         }
