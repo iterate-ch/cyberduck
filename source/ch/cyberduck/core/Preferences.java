@@ -650,6 +650,11 @@ public abstract class Preferences {
         defaults.put("webdav.ntlm.workstation", StringUtils.EMPTY);
 
         /**
+         * Enable Expect-Continue handshake
+         */
+        defaults.put("webdav.expect-continue", String.valueOf(true));
+
+        /**
          * Maximum concurrent connections to the same host
          * Unlimited by default
          */

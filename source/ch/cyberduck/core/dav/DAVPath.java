@@ -410,7 +410,9 @@ public class DAVPath extends HttpPath {
                     + "/" + status.getLength()
             );
         }
-        headers.put(HTTP.EXPECT_DIRECTIVE, HTTP.EXPECT_CONTINUE);
+        if(Preferences.instance().getBoolean("webdav.expect-continue")) {
+            headers.put(HTTP.EXPECT_DIRECTIVE, HTTP.EXPECT_CONTINUE);
+        }
         try {
             return this.write(check, headers);
         }
