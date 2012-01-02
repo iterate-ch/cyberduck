@@ -249,7 +249,7 @@ public class CFPath extends CloudPath {
                     List<FilesObject> list;
                     do {
                         list = this.getSession().getClient().listObjectsStartingWith(this.getContainerName(),
-                                this.isContainer() ? StringUtils.EMPTY : this.getKey() + Path.DELIMITER, null, -1, marker, Path.DELIMITER);
+                                this.isContainer() ? StringUtils.EMPTY : this.getKey() + Path.DELIMITER, null, limit, marker, Path.DELIMITER);
                         for(FilesObject object : list) {
                             final Path file = PathFactory.createPath(this.getSession(), this.getContainerName(), object.getName(),
                                     "application/directory".equals(object.getMimeType()) ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
