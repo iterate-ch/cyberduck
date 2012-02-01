@@ -113,8 +113,6 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
         Socket socket = f.create();
         this.configure(socket, ENABLED_SSL_PROTOCOLS.<String>toArray(new String[ENABLED_SSL_PROTOCOLS.size()]));
         log.debug("handhsake:" + socket);
-        //((SSLSocket) socket).startHandshake();
-        // Handshake succeeded.
         return socket;
     }
 
@@ -190,9 +188,5 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
                 return factory.createSocket(socket, host, port, autoClose);
             }
         });
-    }
-
-    public ServerSocket createServerSocket(int port) throws IOException {
-        return context.getServerSocketFactory().createServerSocket(port);
     }
 }
