@@ -214,14 +214,6 @@ public class CFSession extends CloudSession {
      * @return No Content-Range support
      */
     @Override
-    public boolean isDownloadResumable() {
-        return false;
-    }
-
-    /**
-     * @return No Content-Range support
-     */
-    @Override
     public boolean isUploadResumable() {
         return false;
     }

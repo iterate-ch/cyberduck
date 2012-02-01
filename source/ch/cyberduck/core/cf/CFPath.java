@@ -313,6 +313,10 @@ public class CFPath extends CloudPath {
             this.getSession().check();
         }
         try {
+            if(this.status().isResume()) {
+                return this.getSession().getClient().getObjectAsRangedStream(this.getContainerName(), this.getKey(),
+                        this.status().getCurrent(), this.status().getLength());
+            }
             return this.getSession().getClient().getObjectAsStream(this.getContainerName(), this.getKey());
         }
         catch(HttpException e) {
@@ -333,9 +337,7 @@ public class CFPath extends CloudPath {
                 if(null == in) {
                     throw new IOException("Unable opening data stream");
                 }
-                final Status status = this.status();
-                status.setResume(false);
-                out = this.getLocal().getOutputStream(status.isResume());
+                out = this.getLocal().getOutputStream(this.status().isResume());
                 this.download(in, out, throttle, listener, quarantine);
             }
             catch(IOException e) {
