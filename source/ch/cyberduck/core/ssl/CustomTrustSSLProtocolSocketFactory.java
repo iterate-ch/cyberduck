@@ -60,10 +60,6 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
         }
     }
 
-    public List<String> getEnabledProtocols() {
-        return ENABLED_SSL_PROTOCOLS;
-    }
-
     /**
      * @param trust Verifiying trusts in system settings
      */
