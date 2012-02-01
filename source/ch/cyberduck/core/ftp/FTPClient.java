@@ -27,14 +27,15 @@ import org.apache.commons.net.ftp.FTPReply;
 import org.apache.commons.net.ftp.FTPSClient;
 import org.apache.log4j.Logger;
 
+import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLException;
+import javax.net.ssl.SSLSocketFactory;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -45,13 +46,16 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class FTPClient extends FTPSClient {
     private static Logger log = Logger.getLogger(FTPSession.class);
 
-    public FTPClient() throws NoSuchAlgorithmException {
-        super("TLS", false);
+    private SSLSocketFactory sslSocketFactory;
+
+    public FTPClient(SSLSocketFactory f, SSLContext c) {
+        super(false, c);
+        this.sslSocketFactory = f;
     }
 
     /**
@@ -159,6 +163,9 @@ public class FTPClient extends FTPSClient {
     public void execPROT(String prot) throws IOException {
         try {
             super.execPROT(prot);
+            if("P".equals(prot)) {
+                setSocketFactory(sslSocketFactory);
+            }
         }
         catch(SSLException e) {
             if("P".equals(prot)) {

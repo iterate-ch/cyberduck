@@ -23,6 +23,7 @@ import ch.cyberduck.core.ftp.parser.CompositeFileEntryParser;
 import ch.cyberduck.core.ftp.parser.LaxUnixFTPEntryParser;
 import ch.cyberduck.core.ftp.parser.RumpusFTPEntryParser;
 import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
 import ch.cyberduck.core.ssl.SSLSession;
 
 import org.apache.commons.lang.StringUtils;
@@ -39,7 +40,6 @@ import org.apache.commons.net.ftp.parser.UnixFTPEntryParser;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -338,7 +338,6 @@ public class FTPSession extends SSLSession {
                 protocols.add(protocol.trim());
             }
             client.setEnabledProtocols(protocols.toArray(new String[protocols.size()]));
-            client.setTrustManager(host.getProtocol().isSecure() ? this.getTrustManager(host.getHostname()) : null);
         }
     }
 
@@ -359,21 +358,17 @@ public class FTPSession extends SSLSession {
         }
         this.fireConnectionWillOpenEvent();
 
-        try {
-            this.FTP = new FTPClient();
-        }
-        catch(NoSuchAlgorithmException e) {
-            IOException failure = new IOException(e.getMessage());
-            failure.initCause(e);
-            throw failure;
-        }
+        final CustomTrustSSLProtocolSocketFactory f
+                = new CustomTrustSSLProtocolSocketFactory(this.getTrustManager(this.getHost().getHostname(true)));
+
+        this.FTP = new
+				FTPClient(f, f.getSSLContext());
+
         this.configure(this.getClient());
         this.getClient().connect(host.getHostname(true), host.getPort());
         if(!this.isConnected()) {
             throw new ConnectionCanceledException();
         }
-        // Connect inits defaults
-        this.configure(this.getClient());
         this.login();
 
         if(this.getHost().getProtocol().isSecure()) {
