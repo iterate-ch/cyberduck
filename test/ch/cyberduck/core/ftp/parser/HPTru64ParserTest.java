@@ -18,44 +18,34 @@ package ch.cyberduck.core.ftp.parser;
  *  dkocher@cyberduck.ch
  */
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.ftp.FTPParserFactory;
 
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPFileEntryParser;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.util.Calendar;
+
+import static org.junit.Assert.*;
 
 /**
  * @version $Id$
  */
 public class HPTru64ParserTest extends AbstractTestCase {
 
-    public HPTru64ParserTest(String name) {
-        super(name);
-    }
-
     private FTPFileEntryParser parser;
 
-
-    @Override
-    public void setUp() {
-        super.setUp();
+    @Before
+    public void conigure() {
         this.parser = new FTPParserFactory().createFileEntryParser("UNIX");
-    }
-
-    @Override
-    public void tearDown() throws Exception {
-        super.tearDown();
     }
 
     /**
      * http://trac.cyberduck.ch/ticket/2246
-     *
-     * @throws Exception
      */
+    @Test
     public void testParse() throws Exception {
         FTPFile parsed;
 
@@ -75,9 +65,5 @@ public class HPTru64ParserTest extends AbstractTestCase {
                 "-rw-r--r--   1 ToysPKG  advertise24809879 Jun 25 10:54 TRU-Warning Guide Master CD.sitx"
         );
         assertNull(parsed);
-    }
-
-    public static Test suite() {
-        return new TestSuite(FreeboxFTPEntryParserTest.class);
     }
 }

@@ -18,28 +18,21 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
+import org.junit.Before;
+import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 public class AttributesTest extends AbstractTestCase {
-    public AttributesTest(String name) {
-        super(name);
-    }
 
     private PathAttributes attributes;
 
-    @Override
-    public void setUp() {
-        super.setUp();
+    @Before
+    public void configure() {
         this.attributes = new PathAttributes();
     }
 
-    @Override
-    public void tearDown() throws Exception {
-        super.tearDown();
-        this.attributes = null;
-    }
-
+    @Test
     public void testClone() throws Exception {
         PathAttributes clone = new PathAttributes(attributes.getAsDictionary());
 
@@ -47,14 +40,7 @@ public class AttributesTest extends AbstractTestCase {
         assertEquals(clone.getModificationDate(), attributes.getModificationDate());
     }
 
-    public void testGetAsDictionary() throws Exception {
-        ;
-    }
-
-    public void testSetGetSize() throws Exception {
-        ;
-    }
-
+    @Test
     public void testSetGetType() throws Exception {
         attributes.setType(Path.FILE_TYPE | Path.SYMBOLIC_LINK_TYPE);
         assertTrue(attributes.isFile());
@@ -64,17 +50,5 @@ public class AttributesTest extends AbstractTestCase {
         assertFalse(attributes.isFile());
         assertTrue(attributes.isSymbolicLink());
         assertTrue(attributes.isDirectory());
-    }
-
-    public void testSetGetOwner() throws Exception {
-        ;
-    }
-
-    public void testSetGetGroup() throws Exception {
-        ;
-    }
-
-    public static Test suite() {
-        return new TestSuite(AttributesTest.class);
     }
 }

@@ -19,15 +19,17 @@ package ch.cyberduck.core;
  * dkocher@cyberduck.ch
  */
 
+import org.junit.Test;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 /**
  * @version $Id:$
  */
 public class ProxyTest extends AbstractTestCase {
 
-    public ProxyTest(String name) {
-        super(name);
-    }
-
+    @Test
     public void testWildcard() {
         AbstractProxy p = new AbstractProxy() {
             public boolean usePassiveFTP() {

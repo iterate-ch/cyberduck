@@ -18,20 +18,22 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import org.junit.Test;
+
+import static org.junit.Assert.*;
+
 /**
  * @version $Id$
  */
 public class HostTest extends AbstractTestCase {
 
-    public HostTest(String name) {
-        super(name);
-    }
-
+    @Test
     public void testParseURLEmpty() {
         Host h = Host.parse("");
         assertTrue(h.getHostname().equals(Preferences.instance().getProperty("connection.hostname.default")));
     }
 
+    @Test
     public void testParseURLFull() {
         {
             String url = "sftp://user:pass@hostname/path/to/file";
@@ -76,6 +78,7 @@ public class HostTest extends AbstractTestCase {
         }
     }
 
+    @Test
     public void testParseURLWithPortNumber() {
         {
             String url = "sftp://user:pass@hostname:999/path/to/file";
@@ -115,6 +118,7 @@ public class HostTest extends AbstractTestCase {
         }
     }
 
+    @Test
     public void testParseURLWithUsername() {
         {
             String url = "sftp://user@hostname/path/to/file";
@@ -148,6 +152,7 @@ public class HostTest extends AbstractTestCase {
         }
     }
 
+    @Test
     public void testParseURLWithoutProtocol() {
         {
             String url = "user@hostname/path/to/file";
@@ -172,6 +177,7 @@ public class HostTest extends AbstractTestCase {
         }
     }
 
+    @Test
     public void testParseWithTwoKlammeraffen() {
         {
             String url = "user@name@hostname";
@@ -195,6 +201,7 @@ public class HostTest extends AbstractTestCase {
         }
     }
 
+    @Test
     public void testParseURLWithDefaultPath() {
         {
             String url = "user@hostname/path/to/file";
@@ -208,6 +215,7 @@ public class HostTest extends AbstractTestCase {
         }
     }
 
+    @Test
     public void testWebURL() {
         {
             Host host = new Host("test");
@@ -216,6 +224,7 @@ public class HostTest extends AbstractTestCase {
         }
     }
 
+    @Test
     public void testAbsoluteDocumentRoot() {
         {
             Host host = new Host("localhost");
@@ -228,6 +237,7 @@ public class HostTest extends AbstractTestCase {
         }
     }
 
+    @Test
     public void testRelativeDocumentRoot() {
         {
             Host host = new Host("localhost");
@@ -240,6 +250,7 @@ public class HostTest extends AbstractTestCase {
         }
     }
 
+    @Test
     public void testDefaultPathRoot() {
         {
             Host host = new Host("localhost");

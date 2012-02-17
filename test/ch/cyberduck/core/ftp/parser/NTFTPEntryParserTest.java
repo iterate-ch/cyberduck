@@ -15,17 +15,19 @@
  */
 package ch.cyberduck.core.ftp.parser;
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.ftp.FTPParserFactory;
 
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPFileEntryParser;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
+
+import static org.junit.Assert.*;
 
 public class NTFTPEntryParserTest extends AbstractTestCase {
 
@@ -61,29 +63,23 @@ public class NTFTPEntryParserTest extends AbstractTestCase {
                     "07-10-07  07:32PM       <DIR>          vacatures"
             };
 
-    /**
-     * @see junit.framework.TestCase#TestCase(String)
-     */
-    public NTFTPEntryParserTest(String name) {
-        super(name);
-    }
-
     private FTPFileEntryParser parser;
     private SimpleDateFormat df;
 
-    @Override
-    public void setUp() {
-        super.setUp();
+    @Before
+    public void configure() {
         this.parser = new FTPParserFactory().createFileEntryParser("WINDOWS");
         this.df = new SimpleDateFormat("EEE MMM dd HH:mm:ss yyyy", Locale.US);
     }
 
+    @Test
     public void testParse() throws Exception {
         for(String sample : samples) {
             assertNotNull(sample, parser.parseFTPEntry(sample));
         }
     }
 
+    @Test
     public void testParseFieldsOnDirectory() throws Exception {
         FTPFile parsed = parser.parseFTPEntry("12-05-96  05:03PM       <DIR>          absoft2");
         assertNotNull("Could not parse entry.", parsed);
@@ -99,6 +95,7 @@ public class NTFTPEntryParserTest extends AbstractTestCase {
         assertEquals("123456", parsed.getName());
     }
 
+    @Test
     public void testParseFieldsOnFile() throws Exception {
         FTPFile parsed = parser.parseFTPEntry(
                 "05-22-97  12:08AM                  5000000000 AUTOEXEC.BAK");
@@ -110,12 +107,14 @@ public class NTFTPEntryParserTest extends AbstractTestCase {
         assertEquals(5000000000l, parsed.getSize());
     }
 
+    @Test
     public void testDirectoryBeginningWithNumber() throws Exception {
         FTPFile parsed = parser.parseFTPEntry("12-03-96  06:38AM       <DIR>          123xyz");
         assertNotNull(parsed);
         assertEquals("name", "123xyz", parsed.getName());
     }
 
+    @Test
     public void testDirectoryBeginningWithNumberFollowedBySpaces() throws Exception {
         FTPFile parsed = parser.parseFTPEntry(
                 "12-03-96  06:38AM       <DIR>          123 xyz");
@@ -127,6 +126,7 @@ public class NTFTPEntryParserTest extends AbstractTestCase {
         assertEquals("123 abc xyz", parsed.getName());
     }
 
+    @Test
     public void testElectic() throws Exception {
         FTPFile parsed = parser.parseFTPEntry(
                 "09-04-06  11:28AM                  149 gearkommandon with spaces.txt");
@@ -136,9 +136,5 @@ public class NTFTPEntryParserTest extends AbstractTestCase {
         assertEquals(Calendar.SEPTEMBER, parsed.getTimestamp().get(Calendar.MONTH));
         assertEquals(4, parsed.getTimestamp().get(Calendar.DAY_OF_MONTH));
         assertEquals(2006, parsed.getTimestamp().get(Calendar.YEAR));
-    }
-
-    public static Test suite() {
-        return new TestSuite(NTFTPEntryParserTest.class);
     }
 }

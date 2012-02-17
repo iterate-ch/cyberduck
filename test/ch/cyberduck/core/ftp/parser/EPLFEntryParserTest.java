@@ -8,21 +8,21 @@ import ch.cyberduck.core.ftp.FTPParserFactory;
 
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPFileEntryParser;
+import org.junit.Before;
+import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 public class EPLFEntryParserTest extends AbstractTestCase {
 
-    public EPLFEntryParserTest(String name) {
-        super(name);
-    }
-
     private FTPFileEntryParser parser;
 
-    @Override
-    public void setUp() {
-        super.setUp();
+    @Before
+    public void conigure() {
         this.parser = new FTPParserFactory().createFileEntryParser("UNIX");
     }
 
+    @Test
     public void testStandardBinls() {
         // Legacy test.
         // Just to make sure we don't break the standard parser.
@@ -43,6 +43,7 @@ public class EPLFEntryParserTest extends AbstractTestCase {
 //        assertEquals("rwxrwxr-x (775)", parsed.getPermission().toString());
     }
 
+    @Test
     public void testReadonlyFile() {
         FTPFile parsed = parser.parseFTPEntry("+m825718503,r,s280,\tdjb.html\r\n");
 
@@ -64,6 +65,7 @@ public class EPLFEntryParserTest extends AbstractTestCase {
 //        assertEquals("permissions", "r--r--r-- (444)", parsed.attributes.getPermission().toString());
     }
 
+    @Test
     public void testReadonlyDirectory() {
         FTPFile parsed = parser.parseFTPEntry("+m825718503,/,\t514");
 
@@ -85,6 +87,7 @@ public class EPLFEntryParserTest extends AbstractTestCase {
 //        assertEquals("permissions", "r-xr-xr-x (555)", parsed.getPermission().toString());
     }
 
+    @Test
     public void testSpecifiedPermissionsOverrideStandardDirPermissions() {
         FTPFile parsed = parser.parseFTPEntry("+up153,/,\t514");
         assertTrue(parsed.isDirectory());
@@ -93,6 +96,7 @@ public class EPLFEntryParserTest extends AbstractTestCase {
 //        assertEquals("--xr-x-wx (153)", parsed.getPermission().toString());
     }
 
+    @Test
     public void testSpecifiedPermissionsDoesntRemoveDirTag() {
         FTPFile parsed = parser.parseFTPEntry("+/,up153,\t514");
         assertTrue(parsed.isDirectory());
@@ -101,6 +105,7 @@ public class EPLFEntryParserTest extends AbstractTestCase {
 //        assertEquals("--xr-x-wx (153)", parsed.getPermission().toString());
     }
 
+    @Test
     public void testSpecifiedPermissionsOverrideStandardFilePermissions() {
         FTPFile parsed = parser.parseFTPEntry("+up153,r,\tmyfile");
         assertFalse(parsed.isDirectory());
@@ -108,11 +113,13 @@ public class EPLFEntryParserTest extends AbstractTestCase {
         assertTrue(parsed.isFile());
     }
 
+    @Test
     public void testHideUnreadableFilesAndDirs() {
         // Missing both 'r' (may be RETRed) and '/' (may be CWDed) fact.
         assertNull(parser.parseFTPEntry("+m825718503,\tuseless"));
     }
 
+    @Test
     public void testEmptyFacts() {
         // The following EPLF entries are all malformed, but we try to ignore the errors.
         long millis = 825718503;
@@ -141,11 +148,13 @@ public class EPLFEntryParserTest extends AbstractTestCase {
 //        assertEquals("permissions", "--------- (000)", parsed.getPermission().toString());
     }
 
+    @Test
     public void testNoFacts() {
         // We know nothing but the name of the mystery file, which essentially means a RETR or CWD is futile.
         assertNull(parser.parseFTPEntry("+\tMysteryFile"));
     }
 
+    @Test
     public void testAFewNotVeryInterestingFiles() {
         assertNull(parser.parseFTPEntry("+/,\t."));
         assertNull(parser.parseFTPEntry("+/,\t.."));
@@ -153,6 +162,7 @@ public class EPLFEntryParserTest extends AbstractTestCase {
         assertNull(parser.parseFTPEntry("+\t\r\n"));
     }
 
+    @Test
     public void testMissingNameSeparator() {
         assertNull(parser.parseFTPEntry("+r,s1234,  notabinfront\r\n"));
     }

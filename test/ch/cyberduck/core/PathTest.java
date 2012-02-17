@@ -18,24 +18,13 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 
 public class PathTest extends AbstractTestCase {
-    public PathTest(String name) {
-        super(name);
-    }
 
-    @Override
-    public void setUp() {
-        super.setUp();
-    }
-
-    @Override
-    public void tearDown() throws Exception {
-        super.tearDown();
-    }
-
+    @Test
     public void testNormalize() throws Exception {
         Path path = PathFactory.createPath(SessionFactory.createSession(new Host("localhost")),
                 "/path/to/remove/..", Path.DIRECTORY_TYPE);
@@ -69,6 +58,7 @@ public class PathTest extends AbstractTestCase {
         assertEquals(Path.normalize("/absolute/path", false), "/absolute/path");
     }
 
+    @Test
     public void testName() throws Exception {
         {
             Path path = PathFactory.createPath(SessionFactory.createSession(new Host("localhost")),
@@ -84,6 +74,7 @@ public class PathTest extends AbstractTestCase {
         }
     }
 
+    @Test
     public void test1067() throws Exception {
         Path path = PathFactory.createPath(SessionFactory.createSession(new Host("localhost")),
                 "\\\\directory", Path.DIRECTORY_TYPE);
@@ -91,11 +82,8 @@ public class PathTest extends AbstractTestCase {
         assertEquals("/", path.getParent().getAbsolute());
     }
 
+    @Test
     public void test972() throws Exception {
         assertEquals("//home/path", Path.normalize("//home/path"));
-    }
-
-    public static Test suite() {
-        return new TestSuite(PathTest.class);
     }
 }

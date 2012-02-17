@@ -19,37 +19,31 @@ package ch.cyberduck.core.ftp;
  * dkocher@cyberduck.ch
  */
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathFactory;
+import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.SessionFactory;
 
 import org.apache.commons.net.ftp.FTPFileEntryParser;
+import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.TimeZone;
 
+import static org.junit.Assert.*;
+
 /**
  * @version $Id$
  */
 public class FTPPathTest extends AbstractTestCase {
 
-    public FTPPathTest(String name) {
-        super(name);
-    }
-
-    @Override
-    public void setUp() {
-        super.setUp();
-    }
-
-    @Override
-    public void tearDown() throws Exception {
-        super.tearDown();
-    }
-
-    public void test3243() throws Exception {
+    @Test
+    public void test3243() {
         FTPFileEntryParser parser = new FTPParserFactory().createFileEntryParser("UNIX");
 
         FTPPath path = (FTPPath) PathFactory.createPath(SessionFactory.createSession(new Host(Protocol.FTP, "localhost")),
@@ -65,7 +59,8 @@ public class FTPPathTest extends AbstractTestCase {
         assertTrue(list.isEmpty());
     }
 
-    public void testParseSymbolicLink() throws Exception {
+    @Test
+    public void testParseSymbolicLink() {
         FTPFileEntryParser parser = new FTPParserFactory().createFileEntryParser("UNIX");
 
         FTPPath path = (FTPPath) PathFactory.createPath(SessionFactory.createSession(new Host(Protocol.FTP, "localhost")),
@@ -82,7 +77,8 @@ public class FTPPathTest extends AbstractTestCase {
 
     }
 
-    public void test3763() throws Exception {
+    @Test
+    public void test3763() {
         FTPFileEntryParser parser = new FTPParserFactory().createFileEntryParser("UNIX");
 
         FTPPath path = (FTPPath) PathFactory.createPath(SessionFactory.createSession(new Host(Protocol.FTP, "localhost")),
@@ -99,7 +95,8 @@ public class FTPPathTest extends AbstractTestCase {
 
     }
 
-    public void testMlsd() throws Exception {
+    @Test
+    public void testMlsd() {
         final AttributedList<Path> children = new AttributedList<Path>();
 
         FTPPath path = (FTPPath) PathFactory.createPath(SessionFactory.createSession(new Host(Protocol.FTP, "localhost")),
@@ -121,7 +118,8 @@ public class FTPPathTest extends AbstractTestCase {
         assertTrue(children.get(2).attributes().isDirectory());
     }
 
-    public void testMlsdCdir() throws Exception {
+    @Test
+    public void testMlsdCdir() {
         FTPPath path = (FTPPath) PathFactory.createPath(SessionFactory.createSession(new Host(Protocol.FTP, "localhost")),
                 "/www", Path.DIRECTORY_TYPE);
 
@@ -147,7 +145,8 @@ public class FTPPathTest extends AbstractTestCase {
         }
     }
 
-    public void testMlsdPdir() throws Exception {
+    @Test
+    public void testMlsdPdir() {
         final AttributedList<Path> children = new AttributedList<Path>();
 
         FTPPath path = (FTPPath) PathFactory.createPath(SessionFactory.createSession(new Host(Protocol.FTP, "localhost")),
@@ -162,7 +161,8 @@ public class FTPPathTest extends AbstractTestCase {
         assertEquals(0, children.size());
     }
 
-    public void testMlsdDirInvalid() throws Exception {
+    @Test
+    public void testMlsdDirInvalid() {
         final AttributedList<Path> children = new AttributedList<Path>();
 
         FTPPath path = (FTPPath) PathFactory.createPath(SessionFactory.createSession(new Host(Protocol.FTP, "localhost")),
@@ -177,7 +177,7 @@ public class FTPPathTest extends AbstractTestCase {
         assertEquals(0, children.size());
     }
 
-    public void testSkipParentDir() throws Exception {
+    public void testSkipParentDir() {
         final AttributedList<Path> children = new AttributedList<Path>();
 
         FTPPath path = (FTPPath) PathFactory.createPath(SessionFactory.createSession(new Host(Protocol.FTP, "localhost")),
@@ -195,7 +195,8 @@ public class FTPPathTest extends AbstractTestCase {
         assertEquals("ftpd.c", children.get(0).getName());
     }
 
-    public void testSize() throws Exception {
+    @Test
+    public void testSize() {
         final AttributedList<Path> children = new AttributedList<Path>();
 
         FTPPath path = (FTPPath) PathFactory.createPath(SessionFactory.createSession(new Host(Protocol.FTP, "localhost")),
@@ -211,7 +212,8 @@ public class FTPPathTest extends AbstractTestCase {
         assertEquals(34589, children.get(0).attributes().getSize());
     }
 
-    public void testTimestamp() throws Exception {
+    @Test
+    public void testTimestamp() {
         final AttributedList<Path> children = new AttributedList<Path>();
 
         FTPPath path = (FTPPath) PathFactory.createPath(SessionFactory.createSession(new Host(Protocol.FTP, "localhost")),
@@ -230,7 +232,8 @@ public class FTPPathTest extends AbstractTestCase {
         assertEquals(date.getTime().getTime(), children.get(0).attributes().getModificationDate());
     }
 
-    public void testBrokenMlsd() throws Exception {
+    @Test
+    public void testBrokenMlsd() {
         FTPPath path = (FTPPath) PathFactory.createPath(SessionFactory.createSession(new Host(Protocol.FTP, "localhost")),
                 "/Dummies_Infoblaetter", Path.DIRECTORY_TYPE);
 
@@ -268,7 +271,8 @@ public class FTPPathTest extends AbstractTestCase {
         }
     }
 
-    public void testParseMlsdMode() throws Exception {
+    @Test
+    public void testParseMlsdMode() {
         FTPPath path = (FTPPath) PathFactory.createPath(SessionFactory.createSession(new Host(Protocol.FTP, "localhost")),
                 "/www", Path.DIRECTORY_TYPE);
 
@@ -296,7 +300,8 @@ public class FTPPathTest extends AbstractTestCase {
         }
     }
 
-    public void testParseMlsdSymbolic() throws Exception {
+    @Test
+    public void testParseMlsdSymbolic() {
         FTPPath path = (FTPPath) PathFactory.createPath(SessionFactory.createSession(new Host(Protocol.FTP, "localhost")),
                 "/www", Path.DIRECTORY_TYPE);
 
@@ -309,11 +314,12 @@ public class FTPPathTest extends AbstractTestCase {
             boolean success = path.parseMlsdResponse(children, Arrays.asList(replies));
             assertTrue(success);
             assertEquals(1, children.size());
-            assertEquals("/foobar", children.get(0).getSymlinkTarget());
+            assertEquals("/foobar", children.get(0).getSymlinkTarget().getAbsolute());
         }
     }
 
-    public void testParseAbsolutePaths() throws Exception {
+    @Test
+    public void testParseAbsolutePaths() {
         FTPPath path = (FTPPath) PathFactory.createPath(SessionFactory.createSession(new Host(Protocol.FTP, "localhost")),
                 "/data/FTP_pub", Path.DIRECTORY_TYPE);
 
@@ -332,7 +338,8 @@ public class FTPPathTest extends AbstractTestCase {
         }
     }
 
-    public void testParseHardlinkCountBadFormat() throws Exception {
+    @Test
+    public void testParseHardlinkCountBadFormat() {
         FTPPath path = (FTPPath) PathFactory.createPath(SessionFactory.createSession(new Host(Protocol.FTP, "localhost")),
                 "/store/public/brain", Path.DIRECTORY_TYPE);
 
@@ -349,9 +356,5 @@ public class FTPPathTest extends AbstractTestCase {
             assertEquals("unsorted", children.get(0).getName());
             assertEquals("/store/public/brain", children.get(0).getParent().getAbsolute());
         }
-    }
-
-    public static Test suite() {
-        return new TestSuite(FTPPathTest.class);
     }
 }

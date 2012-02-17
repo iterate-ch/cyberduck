@@ -18,39 +18,31 @@ package ch.cyberduck.core.ftp.parser;
  *  dkocher@cyberduck.ch
  */
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.ftp.FTPParserFactory;
 
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPFileEntryParser;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.util.Calendar;
+
+import static org.junit.Assert.*;
 
 /**
  * @version $Id$
  */
 public class TrellixFTPEntryParserTest extends AbstractTestCase {
 
-    public TrellixFTPEntryParserTest(String name) {
-        super(name);
-    }
-
     private FTPFileEntryParser parser;
 
-
-    @Override
-    public void setUp() {
-        super.setUp();
+    @Before
+    public void configure() {
         this.parser = new FTPParserFactory().createFileEntryParser("Trellix FTP Server 1.0 (Linux|Unix|Windows)");
     }
 
-    @Override
-    public void tearDown() throws Exception {
-        super.tearDown();
-    }
-
+    @Test
     public void testParse() throws Exception {
         FTPFile parsed;
 
@@ -73,9 +65,5 @@ public class TrellixFTPEntryParserTest extends AbstractTestCase {
         assertFalse(parsed.hasPermission(FTPFile.USER_ACCESS, FTPFile.EXECUTE_PERMISSION));
         assertFalse(parsed.hasPermission(FTPFile.GROUP_ACCESS, FTPFile.EXECUTE_PERMISSION));
         assertFalse(parsed.hasPermission(FTPFile.WORLD_ACCESS, FTPFile.EXECUTE_PERMISSION));
-    }
-
-    public static Test suite() {
-        return new TestSuite(TrellixFTPEntryParserTest.class);
     }
 }

@@ -18,40 +18,32 @@ package ch.cyberduck.core.ftp.parser;
  *  dkocher@cyberduck.ch
  */
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.ftp.FTPParserFactory;
 
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPFileEntryParser;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.util.Calendar;
+
+import static org.junit.Assert.*;
 
 /**
  * @version $Id$
  */
 public class FreeboxFTPEntryParserTest extends AbstractTestCase {
 
-    public FreeboxFTPEntryParserTest(String name) {
-        super(name);
-    }
-
     private FTPFileEntryParser parser;
 
-
-    @Override
-    public void setUp() {
-        super.setUp();
+    @Before
+    public void conigure() {
         this.parser = new FTPParserFactory().createFileEntryParser("MACOS");
     }
 
-    @Override
-    public void tearDown() throws Exception {
-        super.tearDown();
-    }
-
-    public void testParse() throws Exception {
+    @Test
+    public void testParse() {
         FTPFile parsed;
 
 
@@ -93,9 +85,5 @@ public class FreeboxFTPEntryParserTest extends AbstractTestCase {
         );
         assertNotNull(parsed);
         assertEquals("France 3 national - 19-05-2007 18h15 1h05m.ts", parsed.getName());
-    }
-
-    public static Test suite() {
-        return new TestSuite(FreeboxFTPEntryParserTest.class);
     }
 }

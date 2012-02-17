@@ -18,45 +18,36 @@ package ch.cyberduck.core.ftp.parser;
  *  dkocher@cyberduck.ch
  */
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.ftp.FTPParserFactory;
 
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPFileEntryParser;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.util.Calendar;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * @version $Id$
  */
 public class NetwareFTPEntryParserTest extends AbstractTestCase {
 
-    public NetwareFTPEntryParserTest(String name) {
-        super(name);
-    }
-
     private FTPFileEntryParser parser;
 
-
-    @Override
-    public void setUp() {
-        super.setUp();
+    @Before
+    public void conigure() {
         this.parser = new FTPParserFactory().createFileEntryParser("NETWARE  Type : L8");
-    }
-
-    @Override
-    public void tearDown() throws Exception {
-        super.tearDown();
     }
 
     /**
      * #1996
-     *
-     * @throws Exception
      */
-    public void testDateYearParser() throws Exception {
+    @Test
+    public void testDateYearParser() {
         FTPFile parsed;
 
         parsed = parser.parseFTPEntry(
@@ -84,10 +75,9 @@ public class NetwareFTPEntryParserTest extends AbstractTestCase {
 
     /**
      * #5573
-     *
-     * @throws Exception
      */
-    public void testListingWithAbsolutePaths() throws Exception {
+    @Test
+    public void testListingWithAbsolutePaths() {
         FTPFile parsed;
 
         parsed = parser.parseFTPEntry(
@@ -96,9 +86,5 @@ public class NetwareFTPEntryParserTest extends AbstractTestCase {
         assertNotNull(parsed);
         assertEquals(parsed.getName(), "/data/FTP_pub/WelcomeTo_PeakFTP");
         assertEquals(FTPFile.FILE_TYPE, parsed.getType());
-    }
-
-    public static Test suite() {
-        return new TestSuite(NetwareFTPEntryParserTest.class);
     }
 }

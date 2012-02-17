@@ -19,39 +19,32 @@ package ch.cyberduck.core.ftp.parser;
  * dkocher@cyberduck.ch
  */
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.ftp.FTPParserFactory;
 
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPFileEntryParser;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.util.Calendar;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * @version $Id$
  */
 public class MicrosoftFTPEntryParserTest extends AbstractTestCase {
 
-    public MicrosoftFTPEntryParserTest(String name) {
-        super(name);
-    }
-
     private FTPFileEntryParser parser;
 
-
-    @Override
-    public void setUp() {
-        super.setUp();
+    @Before
+    public void configure() {
         this.parser = new FTPParserFactory().createFileEntryParser("Windows_NT version 5.0");
     }
 
-    @Override
-    public void tearDown() throws Exception {
-        super.tearDown();
-    }
-
+    @Test
     public void testParse() throws Exception {
         FTPFile parsed;
 
@@ -66,9 +59,5 @@ public class MicrosoftFTPEntryParserTest extends AbstractTestCase {
         assertEquals(2006, parsed.getTimestamp().get(Calendar.YEAR));
         assertEquals(Calendar.DECEMBER, parsed.getTimestamp().get(Calendar.MONTH));
         assertEquals(4, parsed.getTimestamp().get(Calendar.DAY_OF_MONTH));
-    }
-
-    public static Test suite() {
-        return new TestSuite(MicrosoftFTPEntryParserTest.class);
     }
 }

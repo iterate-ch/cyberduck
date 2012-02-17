@@ -18,39 +18,31 @@ package ch.cyberduck.core.ftp.parser;
  *  dkocher@cyberduck.ch
  */
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.ftp.FTPParserFactory;
 
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPFileEntryParser;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.util.Calendar;
+
+import static org.junit.Assert.*;
 
 /**
  * @version $Id$
  */
 public class RumpusFTPEntryParserTest extends AbstractTestCase {
 
-    public RumpusFTPEntryParserTest(String name) {
-        super(name);
-    }
-
     private FTPFileEntryParser parser;
 
-
-    @Override
-    public void setUp() {
-        super.setUp();
+    @Before
+    public void configure() {
         this.parser = new FTPParserFactory().createFileEntryParser("MACOS");
     }
 
-    @Override
-    public void tearDown() throws Exception {
-        super.tearDown();
-    }
-
+    @Test
     public void testParse() throws Exception {
         FTPFile parsed;
 
@@ -109,6 +101,7 @@ public class RumpusFTPEntryParserTest extends AbstractTestCase {
         assertFalse(parsed.hasPermission(FTPFile.WORLD_ACCESS, FTPFile.EXECUTE_PERMISSION));
     }
 
+    @Test
     public void testUnknownSystIdentifier() throws Exception {
         this.parser = new FTPParserFactory().createFileEntryParser("Digital Domain FTP");
 
@@ -134,7 +127,4 @@ public class RumpusFTPEntryParserTest extends AbstractTestCase {
         assertEquals(FTPFile.DIRECTORY_TYPE, parsed.getType());
     }
 
-    public static Test suite() {
-        return new TestSuite(RumpusFTPEntryParserTest.class);
-    }
 }

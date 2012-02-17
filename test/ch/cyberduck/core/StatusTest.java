@@ -18,24 +18,13 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
 
 public class StatusTest extends AbstractTestCase {
-    public StatusTest(String name) {
-        super(name);
-    }
 
-    @Override
-    public void setUp() {
-        super.setUp();
-    }
-
-    @Override
-    public void tearDown() throws Exception {
-        super.tearDown();
-    }
-
+    @Test
     public void testGetSizeAsString() throws Exception {
         assertEquals("1.0 KB", Status.getSizeAsString(1024));
         assertEquals("1.5 KB", Status.getSizeAsString(1500));
@@ -45,18 +34,7 @@ public class StatusTest extends AbstractTestCase {
         assertEquals("375.3 MB", Status.getSizeAsString(393495974));
     }
 
-    public void testSetComplete() throws Exception {
-        ;
-    }
-
-    public void testSetCanceled() throws Exception {
-        ;
-    }
-
-    public void testSetGetCurrent() throws Exception {
-        ;
-    }
-
+    @Test
     public void testSetResume() throws Exception {
         Status status = new Status();
         status.setCurrent(1024);
@@ -64,9 +42,5 @@ public class StatusTest extends AbstractTestCase {
         assertEquals(1024, status.getCurrent());
         status.setResume(false);
         assertEquals(0, status.getCurrent());
-    }
-
-    public static Test suite() {
-        return new TestSuite(StatusTest.class);
     }
 }

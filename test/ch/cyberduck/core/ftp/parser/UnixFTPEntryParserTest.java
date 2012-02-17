@@ -18,37 +18,24 @@ package ch.cyberduck.core.ftp.parser;
  *  dkocher@cyberduck.ch
  */
 
-import junit.framework.Test;
-import junit.framework.TestSuite;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.ftp.FTPParserFactory;
 
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPFileEntryParser;
+import org.junit.Test;
 
 import java.util.Calendar;
+
+import static org.junit.Assert.*;
 
 /**
  * @version $Id$
  */
 public class UnixFTPEntryParserTest extends AbstractTestCase {
 
-    public UnixFTPEntryParserTest(String name) {
-        super(name);
-    }
-
-
-    @Override
-    public void setUp() {
-        super.setUp();
-    }
-
-    @Override
-    public void tearDown() throws Exception {
-        super.tearDown();
-    }
-
-    public void testParseTimestamp() throws Exception {
+    @Test
+    public void testParseTimestamp() {
         FTPFileEntryParser parser = new FTPParserFactory().createFileEntryParser("UNIX");
 
         FTPFile parsed;
@@ -79,7 +66,7 @@ public class UnixFTPEntryParserTest extends AbstractTestCase {
         assertEquals(23, parsed.getTimestamp().get(Calendar.DAY_OF_MONTH));
     }
 
-    public void testParseFTPEntryExpected() throws Exception {
+    public void testParseFTPEntryExpected() {
         FTPFileEntryParser parser = new FTPParserFactory().createFileEntryParser("UNIX");
 
         FTPFile parsed;
@@ -101,6 +88,7 @@ public class UnixFTPEntryParserTest extends AbstractTestCase {
     /**
      * http://trac.cyberduck.ch/ticket/1066
      */
+    @Test
     public void testParseNameWithBeginningWhitespace() {
         FTPFileEntryParser parser = new FTPParserFactory().createFileEntryParser("UNIX");
 
@@ -115,6 +103,7 @@ public class UnixFTPEntryParserTest extends AbstractTestCase {
     /**
      * http://trac.cyberduck.ch/ticket/1118
      */
+    @Test
     public void testParseNameWithEndingWhitespace() {
         FTPFileEntryParser parser = new FTPParserFactory().createFileEntryParser("UNIX");
 
@@ -129,9 +118,10 @@ public class UnixFTPEntryParserTest extends AbstractTestCase {
     /**
      * http://trac.cyberduck.ch/ticket/1076
      *
-     * @throws Exception
+     * @
      */
-    public void testSizeWithIndicator() throws Exception {
+    @Test
+    public void testSizeWithIndicator() {
         FTPFileEntryParser parser = new FTPParserFactory().createFileEntryParser("UNIX");
 
         FTPFile parsed;
@@ -174,7 +164,8 @@ public class UnixFTPEntryParserTest extends AbstractTestCase {
         assertEquals(7, parsed.getTimestamp().get(Calendar.DAY_OF_MONTH));
     }
 
-    public void testCurrentYear() throws Exception {
+    @Test
+    public void testCurrentYear() {
         FTPFileEntryParser parser = new FTPParserFactory().createFileEntryParser("UNIX");
 
         FTPFile parsed;
@@ -192,10 +183,9 @@ public class UnixFTPEntryParserTest extends AbstractTestCase {
 
     /**
      * http://trac.cyberduck.ch/ticket/143
-     *
-     * @throws Exception
      */
-    public void testLeadingWhitespace() throws Exception {
+    @Test
+    public void testLeadingWhitespace() {
         FTPFileEntryParser parser = new FTPParserFactory().createFileEntryParser("UNIX");
 
         FTPFile parsed;
@@ -238,7 +228,8 @@ public class UnixFTPEntryParserTest extends AbstractTestCase {
         assertEquals(2006, parsed.getTimestamp().get(Calendar.YEAR));
     }
 
-    public void testLowerCaseMonths() throws Exception {
+    @Test
+    public void testLowerCaseMonths() {
         FTPFileEntryParser parser = new FTPParserFactory().createFileEntryParser("UNIX");
 
         FTPFile parsed;
@@ -255,7 +246,8 @@ public class UnixFTPEntryParserTest extends AbstractTestCase {
         assertEquals(21, parsed.getTimestamp().get(Calendar.DAY_OF_MONTH));
     }
 
-    public void testUpperCaseMonths() throws Exception {
+    @Test
+    public void testUpperCaseMonths() {
         FTPFileEntryParser parser = new FTPParserFactory().createFileEntryParser("UNIX");
 
         FTPFile parsed;
@@ -271,7 +263,8 @@ public class UnixFTPEntryParserTest extends AbstractTestCase {
         assertEquals(21, parsed.getTimestamp().get(Calendar.DAY_OF_MONTH));
     }
 
-    public void testSolarisAcl() throws Exception {
+    @Test
+    public void testSolarisAcl() {
         FTPFileEntryParser parser = new FTPParserFactory().createFileEntryParser("UNIX");
 
         FTPFile parsed;
@@ -289,7 +282,7 @@ public class UnixFTPEntryParserTest extends AbstractTestCase {
         assertEquals(12, parsed.getTimestamp().get(Calendar.DAY_OF_MONTH));
     }
 
-    public void testUnknownTimestampFormat() throws Exception {
+    public void testUnknownTimestampFormat() {
         FTPFileEntryParser parser = new FTPParserFactory().createFileEntryParser("UNIX");
 
         FTPFile parsed;
@@ -330,7 +323,8 @@ public class UnixFTPEntryParserTest extends AbstractTestCase {
         assertEquals(parsed.getSize(), 34524204);
     }
 
-    public void testLeapYear() throws Exception {
+    @Test
+    public void testLeapYear() {
         FTPFileEntryParser parser = new FTPParserFactory().createFileEntryParser("UNIX");
 
         FTPFile parsed;
@@ -342,7 +336,8 @@ public class UnixFTPEntryParserTest extends AbstractTestCase {
         assertNotNull(parsed.getTimestamp());
     }
 
-    public void testCarriageReturn() throws Exception {
+    @Test
+    public void testCarriageReturn() {
         FTPFileEntryParser parser = new FTPParserFactory().createFileEntryParser("UNIX");
 
         FTPFile parsed;
@@ -355,7 +350,8 @@ public class UnixFTPEntryParserTest extends AbstractTestCase {
         assertEquals("Icon\r", parsed.getName());
     }
 
-    public void testSetuid() throws Exception {
+    @Test
+    public void testSetuid() {
         FTPFileEntryParser parser = new FTPParserFactory().createFileEntryParser("UNIX");
 
         FTPFile parsed;
@@ -373,7 +369,8 @@ public class UnixFTPEntryParserTest extends AbstractTestCase {
         assertFalse(parsed.hasPermission(FTPFile.USER_ACCESS, FTPFile.EXECUTE_PERMISSION));
     }
 
-    public void testSetgid() throws Exception {
+    @Test
+    public void testSetgid() {
         FTPFileEntryParser parser = new FTPParserFactory().createFileEntryParser("UNIX");
 
         FTPFile parsed;
@@ -391,7 +388,8 @@ public class UnixFTPEntryParserTest extends AbstractTestCase {
         assertFalse(parsed.hasPermission(FTPFile.GROUP_ACCESS, FTPFile.EXECUTE_PERMISSION));
     }
 
-    public void testStickyBit() throws Exception {
+    @Test
+    public void testStickyBit() {
         FTPFileEntryParser parser = new FTPParserFactory().createFileEntryParser("UNIX");
 
         FTPFile parsed;
@@ -409,7 +407,8 @@ public class UnixFTPEntryParserTest extends AbstractTestCase {
         assertFalse(parsed.hasPermission(FTPFile.WORLD_ACCESS, FTPFile.EXECUTE_PERMISSION));
     }
 
-    public void testWindowsNTSystem() throws Exception {
+    @Test
+    public void testWindowsNTSystem() {
         FTPFileEntryParser parser = new FTPParserFactory().createFileEntryParser("Windows_NT version 5.0");
 
         FTPFile parsed;
@@ -438,10 +437,5 @@ public class UnixFTPEntryParserTest extends AbstractTestCase {
         assertEquals(Calendar.JANUARY, parsed.getTimestamp().get(Calendar.MONTH));
         assertEquals(22, parsed.getTimestamp().get(Calendar.DAY_OF_MONTH));
         assertEquals(2009, parsed.getTimestamp().get(Calendar.YEAR));
-
-    }
-
-    public static Test suite() {
-        return new TestSuite(UnixFTPEntryParserTest.class);
     }
 }
