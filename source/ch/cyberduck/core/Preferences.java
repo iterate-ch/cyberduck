@@ -798,7 +798,7 @@ public abstract class Preferences {
      * @return The configured values determined by a whitespace separator.
      */
     public List<String> getList(String property) {
-        return Arrays.asList(this.getProperty(property).split("\\p{javaWhitespace}+"));
+        return Arrays.asList(this.getProperty(property).split("(?<!\\\\)\\p{javaWhitespace}+"));
     }
 
     /**
