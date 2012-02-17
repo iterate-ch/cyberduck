@@ -205,7 +205,7 @@
         </manifest>
     </target>
 
-    <target name="test" depends="compile" description="Runs all test cases and generate report">
+    <target name="test" depends="build" description="Runs all test cases and generate report">
         <javac debug="${debug}"
                encoding="utf-8"
                deprecation="off"
@@ -223,6 +223,7 @@
                     <include name="**/*Test.class"/>
                 </fileset>
             </batchtest>
+            <sysproperty key="java.library.path" value="${lib}"/>
         </junit>
         <junitreport todir="${build.unittests.reports}/html">
             <fileset dir="${build.unittests.reports}">
