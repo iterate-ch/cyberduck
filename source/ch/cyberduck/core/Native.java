@@ -29,7 +29,7 @@ public class Native {
     private static Logger log = Logger.getLogger(Native.class);
 
     private Native() {
-        ;
+        //
     }
 
     private static final Object lock = new Object();
@@ -37,7 +37,7 @@ public class Native {
     /**
      * Load native library extensions
      *
-     * @return
+     * @return False if loading library failed
      */
     public static boolean load(String library) {
         synchronized(lock) {
