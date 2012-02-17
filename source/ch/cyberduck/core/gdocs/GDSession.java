@@ -90,12 +90,12 @@ public class GDSession extends SSLSession {
 
         @Override
         public void flush() {
-            ;
+            //
         }
 
         @Override
         public void close() throws SecurityException {
-            ;
+            //
         }
     };
 
@@ -298,12 +298,6 @@ public class GDSession extends SSLSession {
      *
      */
     protected class CustomTrustGoogleAuthTokenFactory extends GoogleAuthTokenFactory {
-
-        /**
-         * @param service
-         * @param serviceName
-         * @param ua
-         */
         public CustomTrustGoogleAuthTokenFactory(GoogleService service, String serviceName, String ua) {
             super(serviceName, ua, "https", "www.google.com", service);
         }
