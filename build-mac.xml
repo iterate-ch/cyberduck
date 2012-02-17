@@ -68,9 +68,11 @@
     <property name="spotlight" value="${home}/Spotlight Importer"/>
     <property name="build.spotlight" value="${spotlight}/build/${configuration}"/>
 
+    <property name="sdk.version" value="macosx10.7"/>
+
     <target name="spotlight">
-        <exec dir="${spotlight}" executable="/usr/bin/xcodebuild" spawn="false" failonerror="true">
-            <arg line="-project 'Spotlight Importer.xcodeproj' -configuration ${configuration}"/>
+        <exec dir="${spotlight}" executable="/usr/bin/xcrun" spawn="false" failonerror="true">
+            <arg line="-sdk ${sdk.version} xcodebuild -project 'Spotlight Importer.xcodeproj' -configuration ${configuration}"/>
         </exec>
         <copy todir="${app.spotlight}">
             <fileset dir="${build.spotlight}">
@@ -96,8 +98,8 @@
                 <include name="*.dylib"/>
             </fileset>
         </copy>
-        <exec dir="${home}" executable="/usr/bin/xcodebuild" spawn="false" failonerror="true">
-            <arg line="-project ${app.name}.xcodeproj -configuration ${configuration} -target app"/>
+        <exec dir="${home}" executable="/usr/bin/xcrun" spawn="false" failonerror="true">
+            <arg line="-sdk ${sdk.version} xcodebuild -project ${app.name}.xcodeproj -configuration ${configuration} -target app"/>
         </exec>
         <copy todir="${app.java}">
             <fileset dir="${build.deploy}">
