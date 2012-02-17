@@ -1666,7 +1666,7 @@ lib/dom4j-1.6.1.jar -text
 lib/ext/ant-contrib-1.0b3.jar -text
 lib/ext/ant-dotnet-1.0.jar -text
 lib/ext/ant-ikvmc.0.5.jar -text
-lib/ext/junit-4.6.jar -text
+lib/ext/junit-4.8.2.jar -text
 lib/ext/nunit.framework.dll -text
 lib/ext/sonar-ant-task-1.2.jar -text
 lib/ganymed-ssh-2-260.jar -text
