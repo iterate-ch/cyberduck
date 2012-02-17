@@ -4,7 +4,7 @@
  *	$Revision$
  *	$Date$
  *
- *  Copyright (c) 2005-2010 David Kocher. All rights reserved.
+ *  Copyright (c) 2005-2012 David Kocher. All rights reserved.
  *  http://cyberduck.ch/
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -47,6 +47,8 @@
     <property name="www" value="${home}/www"/>
     <property name="www.update" value="${www}/update"/>
     <property name="www.help" value="${www}/help"/>
+
+    <property name="sonar.host" value="sonar.cyberduck.ch"/>
 
     <condition property="platform" value="mac">
         <os family="mac"/>
@@ -233,6 +235,9 @@
     <target name="sonar" depends="revision">
         <property name="sonar.sources" value="${source}"/>
         <property name="sonar.binaries" value="${build.classes}"/>
+        <property name="sonar.jdbc.driver" value="com.mysql.jdbc.Driver"/>
+        <property name="sonar.jdbc.url" value="jdbc:mysql://${sonar.host}:3306/sonar?useUnicode=true&amp;characterEncoding=utf8"/>
+		<property name="sonar.host.url" value="http://${sonar.host}/" />
         <sonar:sonar key="ch.cyberduck:cyberduck" version="${svn.revision}" xmlns:sonar="antlib:org.sonar.ant"/>
     </target>
 </project>
