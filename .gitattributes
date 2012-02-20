@@ -696,7 +696,6 @@ id.lproj/S3.strings -text svneol=unset#text/utf-16
 id.lproj/ServicesMenu.strings -text svneol=unset#text/utf-16
 id.lproj/Status.strings -text svneol=unset#text/utf-16
 id.lproj/Transfer.strings -text svneol=unset#text/utf-16
-img/NSDotMac.png -text
 img/add.tiff -text svneol=unset#image/tiff
 img/addPressed.tiff -text svneol=unset#image/tiff
 img/advanced.tiff -text
