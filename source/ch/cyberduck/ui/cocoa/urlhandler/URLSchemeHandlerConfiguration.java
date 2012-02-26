@@ -21,15 +21,12 @@ package ch.cyberduck.ui.cocoa.urlhandler;
 import ch.cyberduck.core.Native;
 import ch.cyberduck.ui.cocoa.foundation.NSBundle;
 
-import org.apache.log4j.Logger;
-
 /**
  * A wrapper for the handler functions in ApplicationServices.h
  *
  * @version $Id$
  */
 public class URLSchemeHandlerConfiguration {
-    private static Logger log = Logger.getLogger(URLSchemeHandlerConfiguration.class);
 
     private static URLSchemeHandlerConfiguration instance;
 
