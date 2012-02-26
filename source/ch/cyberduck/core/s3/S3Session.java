@@ -632,10 +632,6 @@ public class S3Session extends CloudSession {
         return Arrays.asList("AES256");
     }
 
-    private void setSupportedStorageClasses(List<String> storageClasses) {
-        this.storageClasses = storageClasses;
-    }
-
     /**
      * Set to false if permission error response indicates this
      * feature is not implemented.
