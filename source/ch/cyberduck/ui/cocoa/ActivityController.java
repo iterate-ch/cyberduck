@@ -33,6 +33,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 import ch.cyberduck.ui.cocoa.view.ControllerCell;
 
+import org.apache.log4j.Logger;
 import org.rococoa.ID;
 import org.rococoa.Rococoa;
 import org.rococoa.cocoa.CGFloat;
@@ -48,6 +49,7 @@ import java.util.Map;
  * @version $Id$
  */
 public class ActivityController extends WindowController {
+    private static Logger log = Logger.getLogger(ActivityController.class);
 
     private static ActivityController instance = null;
 
@@ -77,7 +79,9 @@ public class ActivityController extends WindowController {
         super.invalidate();
     }
 
-    private final AbstractCollectionListener<BackgroundAction> backgroundActionListener = new AbstractCollectionListener<BackgroundAction>() {
+    private final AbstractCollectionListener<BackgroundAction> backgroundActionListener
+            = new AbstractCollectionListener<BackgroundAction>() {
+
         @Override
         public void collectionItemAdded(final BackgroundAction action) {
             invoke(new WindowMainAction(ActivityController.this) {
