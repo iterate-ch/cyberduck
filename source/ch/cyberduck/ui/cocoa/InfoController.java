@@ -823,7 +823,7 @@ public class InfoController extends ToolbarWindowController {
     /**
      *
      */
-    private static class Header implements Comparable<Header> {
+    private static final class Header implements Comparable<Header> {
         private String name;
         private String value;
 
@@ -1225,7 +1225,7 @@ public class InfoController extends ToolbarWindowController {
         return Preferences.instance().getBoolean("browser.info.isInspector");
     }
 
-    public static class Factory {
+    public static final class Factory {
         private static Map<BrowserController, InfoController> open
                 = new HashMap<BrowserController, InfoController>();
 
