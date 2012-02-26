@@ -24,11 +24,10 @@ import ch.cyberduck.ui.cocoa.foundation.NSNotificationCenter;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.foundation.NSThread;
 
+import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
 import org.rococoa.Rococoa;
-
-import org.apache.log4j.Logger;
 
 /**
  * @version $Id$
@@ -77,14 +76,6 @@ public class ProxyController extends AbstractController {
         if(id != null) {
             NSNotificationCenter.defaultCenter().removeObserver(id);
         }
-    }
-
-    @Override
-    protected void finalize() throws java.lang.Throwable {
-        if(log.isTraceEnabled()) {
-            log.trace("finalize:" + this.toString());
-        }
-        super.finalize();
     }
 
     /**
