@@ -20,8 +20,6 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.ui.DateFormatterFactory;
 
-import org.apache.log4j.Logger;
-
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -30,7 +28,6 @@ import java.util.Date;
  * @version $Id$
  */
 public class HistoryCollection extends AbstractFolderHostCollection {
-    private static Logger log = Logger.getLogger(HistoryCollection.class);
 
     private static final HistoryCollection HISTORY_COLLECTION = new HistoryCollection(
             LocalFactory.createLocal(Preferences.instance().getProperty("application.support.path"), "History")

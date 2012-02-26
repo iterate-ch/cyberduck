@@ -26,7 +26,7 @@ import java.util.Iterator;
 /**
  * @version $Id$
  */
-public class RendezvousCollection extends AbstractHostCollection {
+public final class RendezvousCollection extends AbstractHostCollection {
 
     private static RendezvousCollection RENDEZVOUS_COLLECTION
             = new RendezvousCollection();
