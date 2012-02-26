@@ -22,5 +22,5 @@ package ch.cyberduck.core;
  * @version $Id$
  */
 public interface PathFilter<E extends AbstractPath> {
-    abstract boolean accept(E file);
+    boolean accept(E file);
 }

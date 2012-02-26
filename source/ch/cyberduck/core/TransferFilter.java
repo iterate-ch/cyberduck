@@ -22,5 +22,5 @@ package ch.cyberduck.core;
  * @version $Id$
  */
 public interface TransferFilter {
-    public abstract boolean accept(Transfer transfer);
+    boolean accept(Transfer transfer);
 }
