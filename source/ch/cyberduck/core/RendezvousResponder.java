@@ -41,8 +41,6 @@ public class RendezvousResponder extends AbstractRendezvous
 
     private Map<String, DNSSDService> browsers;
 
-    private static RendezvousResponder instance = null;
-
     public static void register() {
         RendezvousFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
     }
@@ -53,8 +51,6 @@ public class RendezvousResponder extends AbstractRendezvous
             return new RendezvousResponder();
         }
     }
-
-    private static final Object lock = new Object();
 
     private RendezvousResponder() {
         log.debug("Rendezvous");
