@@ -35,6 +35,10 @@ import java.util.List;
 public class ProtocolFactory {
     private static Logger log = Logger.getLogger(ProtocolFactory.class);
 
+    private ProtocolFactory() {
+        super();
+    }
+
     /**
      *
      */
