@@ -23,7 +23,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.http.HttpPath;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 
 import java.util.Map;
 import java.util.Set;
@@ -32,7 +31,6 @@ import java.util.Set;
  * @version $Id$
  */
 public abstract class CloudPath extends HttpPath {
-    private static Logger log = Logger.getLogger(CloudPath.class);
 
     public <T> CloudPath(T dict) {
         super(dict);
