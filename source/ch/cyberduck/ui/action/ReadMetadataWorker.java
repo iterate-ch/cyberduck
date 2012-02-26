@@ -20,7 +20,7 @@ package ch.cyberduck.ui.action;
  */
 
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.cloud.CloudPath;
+import ch.cyberduck.core.http.HttpPath;
 import ch.cyberduck.core.i18n.Locale;
 
 import org.apache.log4j.Logger;
@@ -66,7 +66,7 @@ public abstract class ReadMetadataWorker extends Worker<Map<String, String>> {
         for(Path next : files) {
             // Reading HTTP headers custom metadata
             if(next.attributes().getMetadata().isEmpty()) {
-                ((CloudPath) next).readMetadata();
+                ((HttpPath) next).readMetadata();
             }
             final Map<String, String> metadata = next.attributes().getMetadata();
             for(String key : metadata.keySet()) {

@@ -28,6 +28,7 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ThreadFactory;
 
@@ -156,6 +157,16 @@ public abstract class HttpPath extends Path {
             throw failure;
         }
     }
+
+    /**
+     * Read modifiable HTTP header metatdata key and values
+     */
+    public abstract void readMetadata();
+
+    /**
+     * @param meta Modifiable HTTP header metatdata key and values
+     */
+    public abstract void writeMetadata(Map<String, String> meta);
 
     @Override
     public String toURL() {

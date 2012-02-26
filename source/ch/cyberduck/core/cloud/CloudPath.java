@@ -102,16 +102,6 @@ public abstract class CloudPath extends HttpPath {
         return null;
     }
 
-    /**
-     * Read modifiable HTTP header metatdata key and values
-     */
-    public abstract void readMetadata();
-
-    /**
-     * @param meta Modifiable HTTP header metatdata key and values
-     */
-    public abstract void writeMetadata(Map<String, String> meta);
-
     @Override
     public Set<DescriptiveUrl> getURLs() {
         // Storage URL is not accessible

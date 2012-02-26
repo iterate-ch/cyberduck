@@ -21,6 +21,7 @@ package ch.cyberduck.ui.action;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.cloud.CloudPath;
+import ch.cyberduck.core.http.HttpPath;
 import ch.cyberduck.core.i18n.Locale;
 
 import org.apache.commons.lang.StringUtils;
@@ -76,7 +77,7 @@ public abstract class WriteMetadataWorker extends Worker<Map<String, String>> {
                 }
                 return metadata;
             }
-            ((CloudPath) next).writeMetadata(updated);
+            ((HttpPath) next).writeMetadata(updated);
         }
         return metadata;
     }
