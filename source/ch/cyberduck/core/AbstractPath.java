@@ -22,7 +22,6 @@ import ch.cyberduck.core.i18n.Locale;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 import org.jets3t.service.utils.Mimetypes;
 
 import java.util.Comparator;
@@ -31,7 +30,6 @@ import java.util.Comparator;
  * @version $Id$
  */
 public abstract class AbstractPath {
-    private static Logger log = Logger.getLogger(AbstractPath.class);
 
     /**
      * Shortcut for the home directory
