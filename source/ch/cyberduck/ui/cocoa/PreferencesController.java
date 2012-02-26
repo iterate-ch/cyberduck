@@ -312,14 +312,6 @@ public class PreferencesController extends ToolbarWindowController {
         super.awakeFromNib();
     }
 
-    private static final String TRANSFERMODE_AUTO = Locale.localizedString("Auto");
-    private static final String TRANSFERMODE_BINARY = Locale.localizedString("Binary");
-    private static final String TRANSFERMODE_ASCII = Locale.localizedString("ASCII");
-
-    private static final String UNIX_LINE_ENDINGS = Locale.localizedString("Unix Line Endings (LF)");
-    private static final String MAC_LINE_ENDINGS = Locale.localizedString("Mac Line Endings (CR)");
-    private static final String WINDOWS_LINE_ENDINGS = Locale.localizedString("Windows Line Endings (CRLF)");
-
     // ----------------------------------------------------------
     // Outlets
     // ----------------------------------------------------------
@@ -477,10 +469,10 @@ public class PreferencesController extends ToolbarWindowController {
     private NSButton openUntitledBrowserCheckbox;
 
     public void setOpenUntitledBrowserCheckbox(NSButton b) {
-        this.defaultEditorCheckbox = b;
-        this.defaultEditorCheckbox.setTarget(this.id());
-        this.defaultEditorCheckbox.setAction(Foundation.selector("openUntitledBrowserCheckboxClicked:"));
-        this.defaultEditorCheckbox.setState(Preferences.instance().getBoolean("browser.openUntitled") ? NSCell.NSOnState : NSCell.NSOffState);
+        this.openUntitledBrowserCheckbox = b;
+        this.openUntitledBrowserCheckbox.setTarget(this.id());
+        this.openUntitledBrowserCheckbox.setAction(Foundation.selector("openUntitledBrowserCheckboxClicked:"));
+        this.openUntitledBrowserCheckbox.setState(Preferences.instance().getBoolean("browser.openUntitled") ? NSCell.NSOnState : NSCell.NSOffState);
     }
 
     @Action
