@@ -18,7 +18,13 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.ProgressListener;
+import ch.cyberduck.core.Session;
+import ch.cyberduck.core.Speedometer;
+import ch.cyberduck.core.Transfer;
+import ch.cyberduck.core.TransferAdapter;
+import ch.cyberduck.core.TransferListener;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.threading.DefaultMainAction;
@@ -26,13 +32,15 @@ import ch.cyberduck.ui.DateFormatterFactory;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.delegate.AbstractMenuDelegate;
 import ch.cyberduck.ui.cocoa.delegate.TransferMenuDelegate;
-import ch.cyberduck.ui.cocoa.foundation.*;
-
-import org.rococoa.Foundation;
-import org.rococoa.cocoa.foundation.NSInteger;
+import ch.cyberduck.ui.cocoa.foundation.NSArray;
+import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
+import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
+import ch.cyberduck.ui.cocoa.foundation.NSNotification;
+import ch.cyberduck.ui.cocoa.foundation.NSNotificationCenter;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.rococoa.Foundation;
+import org.rococoa.cocoa.foundation.NSInteger;
 
 import java.util.Date;
 import java.util.concurrent.ScheduledFuture;
@@ -42,7 +50,6 @@ import java.util.concurrent.TimeUnit;
  * @version $Id$
  */
 public class ProgressController extends BundleController {
-    private static Logger log = Logger.getLogger(ProgressController.class);
 
     /**
      *

@@ -26,7 +26,6 @@ import ch.cyberduck.ui.cocoa.application.NSProgressIndicator;
 import ch.cyberduck.ui.cocoa.application.NSTextField;
 import ch.cyberduck.ui.cocoa.application.NSView;
 
-import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
 
@@ -34,7 +33,6 @@ import org.rococoa.ID;
  * @version $Id$
  */
 public class TaskController extends BundleController {
-    private static Logger log = Logger.getLogger(TaskController.class);
 
     @Outlet
     private NSTextField name;

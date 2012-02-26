@@ -26,14 +26,30 @@ import ch.cyberduck.core.cloud.CloudSession;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.s3.S3Path;
 import ch.cyberduck.ui.DateFormatterFactory;
-import ch.cyberduck.ui.action.*;
+import ch.cyberduck.ui.action.CalculateSizeWorker;
+import ch.cyberduck.ui.action.ChecksumWorker;
+import ch.cyberduck.ui.action.ReadAclWorker;
+import ch.cyberduck.ui.action.ReadMetadataWorker;
+import ch.cyberduck.ui.action.ReadPermissionWorker;
+import ch.cyberduck.ui.action.ReadSizeWorker;
+import ch.cyberduck.ui.action.WriteAclWorker;
+import ch.cyberduck.ui.action.WriteMetadataWorker;
+import ch.cyberduck.ui.action.WritePermissionWorker;
 import ch.cyberduck.ui.cocoa.application.*;
-import ch.cyberduck.ui.cocoa.foundation.*;
+import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
+import ch.cyberduck.ui.cocoa.foundation.NSIndexSet;
+import ch.cyberduck.ui.cocoa.foundation.NSMutableAttributedString;
+import ch.cyberduck.ui.cocoa.foundation.NSNotification;
+import ch.cyberduck.ui.cocoa.foundation.NSNotificationCenter;
+import ch.cyberduck.ui.cocoa.foundation.NSObject;
+import ch.cyberduck.ui.cocoa.foundation.NSString;
 import ch.cyberduck.ui.cocoa.threading.BrowserBackgroundAction;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 import ch.cyberduck.ui.cocoa.threading.WorkerBackgroundAction;
 import ch.cyberduck.ui.cocoa.util.HyperlinkAttributedStringFactory;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
 import org.rococoa.Selector;
@@ -41,12 +57,16 @@ import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSPoint;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.TimeZone;
 
 /**
  * @version $Id$
@@ -1999,11 +2019,6 @@ public class InfoController extends ToolbarWindowController {
         final Session session = controller.getSession();
         final Credentials credentials = session.getHost().getCredentials();
         boolean enable = !credentials.isAnonymousLogin() && session.isMetadataSupported();
-        if(enable) {
-            for(Path file : files) {
-                enable = enable && (file.attributes().isFile() || file.attributes().isPlaceholder());
-            }
-        }
         metadataTable.setEnabled(stop && enable);
         metadataAddButton.setEnabled(stop && enable);
         boolean selection = metadataTable.selectedRowIndexes().count().intValue() > 0;

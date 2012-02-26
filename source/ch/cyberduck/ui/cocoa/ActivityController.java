@@ -38,8 +38,6 @@ import org.rococoa.Rococoa;
 import org.rococoa.cocoa.CGFloat;
 import org.rococoa.cocoa.foundation.NSInteger;
 
-import org.apache.log4j.Logger;
-
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -50,7 +48,6 @@ import java.util.Map;
  * @version $Id$
  */
 public class ActivityController extends WindowController {
-    private static Logger log = Logger.getLogger(ActivityController.class);
 
     private static ActivityController instance = null;
 
