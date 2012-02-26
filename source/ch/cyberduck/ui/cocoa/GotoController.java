@@ -83,11 +83,6 @@ public class GotoController extends AlertController {
     }
 
     @Override
-    public void beginSheet() {
-        super.beginSheet();
-    }
-
-    @Override
     protected void focus() {
         // Focus accessory view.
         folderCombobox.selectText(null);
