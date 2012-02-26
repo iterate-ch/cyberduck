@@ -23,7 +23,6 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.i18n.Locale;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 
 import java.text.MessageFormat;
 
@@ -33,7 +32,6 @@ import java.text.MessageFormat;
  * @version $Id$
  */
 public abstract class AbstractLicense implements License {
-    private static Logger log = Logger.getLogger(AbstractLicense.class);
 
     private Local file;
 
