@@ -122,12 +122,4 @@ public class PathPasteboard extends Collection<Path> implements Pasteboard<Path>
     public void delete() {
         instances.remove(session);
     }
-
-    /**
-     * Remove content from clipboard
-     */
-    @Override
-    public void clear() {
-        super.clear();
-    }
 }
