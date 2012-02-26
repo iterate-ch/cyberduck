@@ -1,7 +1,5 @@
 package ch.cyberduck.core.io;
 
-import org.apache.log4j.Logger;
-
 import java.io.IOException;
 import java.io.OutputStream;
 

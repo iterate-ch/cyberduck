@@ -18,8 +18,6 @@ package ch.cyberduck.core.io;
  *  dkocher@cyberduck.ch
  */
 
-import org.apache.log4j.Logger;
-
 import java.io.IOException;
 import java.io.InputStream;
 
