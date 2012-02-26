@@ -38,7 +38,7 @@ public class EPLFFTPEntryParser extends FTPFileEntryParserImpl {
         if(!entry.startsWith("+")) {
             return null;
         }
-        int indexOfTab = entry.indexOf("\t");
+        int indexOfTab = entry.indexOf('\t');
         if(indexOfTab == -1) {
             return null;
         }
@@ -59,7 +59,7 @@ public class EPLFFTPEntryParser extends FTPFileEntryParserImpl {
         int endFacts = startName - 2; // first char of name -> tab -> end of last fact.
         EPLFEntryParserContext factContext = new EPLFEntryParserContext(file);
         for(i = 1; i < endFacts; i++) {
-            int factEnd = entry.indexOf(",", i);
+            int factEnd = entry.indexOf(',', i);
             String fact = entry.substring(i, factEnd);
             factContext.handleFact(fact);
             i = factEnd;
