@@ -18,7 +18,13 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.ConnectionCanceledException;
+import ch.cyberduck.core.HostKeyControllerFactory;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.sftp.HostKeyController;
 import ch.cyberduck.core.sftp.MemoryHostKeyVerifier;
@@ -26,13 +32,14 @@ import ch.cyberduck.ui.Controller;
 import ch.cyberduck.ui.cocoa.application.NSAlert;
 import ch.cyberduck.ui.cocoa.application.NSCell;
 import ch.cyberduck.ui.cocoa.foundation.NSAutoreleasePool;
-import ch.ethz.ssh2.KnownHosts;
 
 import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
 import java.text.MessageFormat;
+
+import ch.ethz.ssh2.KnownHosts;
 
 /**
  * Using known_hosts from OpenSSH to store accepted host keys.
@@ -188,7 +195,7 @@ public class AlertHostKeyController extends MemoryHostKeyVerifier {
 
     @Override
     public boolean verifyServerHostKey(final String hostname, final int port, final String serverHostKeyAlgorithm,
-                                       final byte[] serverHostKey) throws Exception {
+                                       final byte[] serverHostKey) throws IOException {
         final NSAutoreleasePool pool = NSAutoreleasePool.push();
         try {
             return super.verifyServerHostKey(hostname, port, serverHostKeyAlgorithm, serverHostKey);
