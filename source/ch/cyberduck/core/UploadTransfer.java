@@ -347,12 +347,6 @@ public class UploadTransfer extends Transfer {
 
     private final TransferFilter RENAME_FILTER = new UploadTransferFilter() {
         @Override
-        public boolean accept(final Path p) {
-            // Rename every file
-            return super.accept(p);
-        }
-
-        @Override
         public void prepare(final Path file) {
             if(file.exists()) {
                 final String parent = file.getParent().getAbsolute();
