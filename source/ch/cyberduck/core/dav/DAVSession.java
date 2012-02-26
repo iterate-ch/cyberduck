@@ -289,4 +289,9 @@ public class DAVSession extends HttpSession {
     public boolean isWriteTimestampSupported() {
         return false;
     }
+
+    @Override
+    public boolean isMetadataSupported() {
+        return true;
+    }
 }
