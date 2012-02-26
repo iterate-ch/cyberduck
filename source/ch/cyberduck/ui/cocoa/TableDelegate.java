@@ -26,13 +26,13 @@ import java.util.Comparator;
  * @version $Id$
  */
 public interface TableDelegate<E> {
-    abstract void enterKeyPressed(final ID sender);
+    void enterKeyPressed(final ID sender);
 
-    abstract void deleteKeyPressed(final ID sender);
+    void deleteKeyPressed(final ID sender);
 
-    abstract boolean isSortedAscending();
+    boolean isSortedAscending();
 
-    abstract Comparator<E> getSortingComparator();
+    Comparator<E> getSortingComparator();
 
-    public String tooltip(E object);
+    String tooltip(E object);
 }

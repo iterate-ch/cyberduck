@@ -44,6 +44,5 @@ public interface SheetCallback {
      *
      * @param returncode Selected button
      */
-    public abstract void callback(final int returncode);
-
+    void callback(final int returncode);
 }

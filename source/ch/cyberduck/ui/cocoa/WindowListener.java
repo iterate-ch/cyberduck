@@ -26,5 +26,5 @@ public interface WindowListener {
     /**
      * Sent after NSWindow.WindowWillCloseNotification is fired for this window
      */
-    abstract void windowWillClose();
+    void windowWillClose();
 }
