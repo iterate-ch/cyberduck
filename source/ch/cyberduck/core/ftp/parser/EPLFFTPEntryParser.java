@@ -96,12 +96,7 @@ public class EPLFFTPEntryParser extends FTPFileEntryParserImpl {
         }
 
         private boolean hasFact(String factId) {
-            if(facts.containsKey(factId)) {
-                return true;
-            }
-            else {
-                return false;
-            }
+            return facts.containsKey(factId);
         }
 
         protected void handleFact(String fact) {
