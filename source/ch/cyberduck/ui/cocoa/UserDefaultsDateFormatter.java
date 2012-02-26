@@ -28,13 +28,10 @@ import ch.cyberduck.ui.cocoa.foundation.NSLocale;
 
 import org.rococoa.Foundation;
 
-import org.apache.log4j.Logger;
-
 /**
  * @version $Id$
  */
 public class UserDefaultsDateFormatter extends AbstractDateFormatter implements DateFormatter {
-    private static Logger log = Logger.getLogger(UserDefaultsDateFormatter.class);
 
     public static void register() {
         DateFormatterFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
