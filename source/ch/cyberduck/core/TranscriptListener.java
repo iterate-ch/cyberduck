@@ -27,5 +27,5 @@ public interface TranscriptListener {
      * @param request Outgoing transcript
      * @param message Data
      */
-    abstract void log(boolean request, String message);
+    void log(boolean request, String message);
 }

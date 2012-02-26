@@ -20,7 +20,6 @@ import ch.cyberduck.core.io.BandwidthThrottle;
  *  dkocher@cyberduck.ch
  */
 
-
 /**
  * @version $Id$
  */
@@ -29,41 +28,41 @@ public interface TransferListener {
     /**
      * The transfers are about to start transfering
      */
-    abstract void transferWillStart();
+    void transferWillStart();
 
     /**
      * The transfer is paused and waits for other transfers to finish first
      */
-    abstract void transferQueued();
+    void transferQueued();
 
     /**
      * The transfer has a slot in the queue allocated
      */
-    abstract void transferResumed();
+    void transferResumed();
 
     /**
      * All transfers did end
      */
-    abstract void transferDidEnd();
+    void transferDidEnd();
 
     /**
      * The path part of this transfer will be transferred
      *
      * @param path File
      */
-    abstract void willTransferPath(Path path);
+    void willTransferPath(Path path);
 
     /**
      * The path part of this transfer has been transferred
      *
      * @param path File
      */
-    abstract void didTransferPath(Path path);
+    void didTransferPath(Path path);
 
     /**
      * Bandwidth throttle changed in controller
      *
      * @param bandwidth Settings
      */
-    abstract void bandwidthChanged(BandwidthThrottle bandwidth);
+    void bandwidthChanged(BandwidthThrottle bandwidth);
 }

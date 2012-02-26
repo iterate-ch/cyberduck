@@ -27,10 +27,10 @@ public interface RendezvousListener {
      * @param identifier Full service name
      * @param host       Bookmark
      */
-    abstract void serviceResolved(String identifier, Host host);
+    void serviceResolved(String identifier, Host host);
 
     /**
      * @param servicename The full service domain name, in the form &lt;servicename&gt;.&lt;protocol&gt;.&lt;domain&gt;.
      */
-    abstract void serviceLost(String servicename);
+    void serviceLost(String servicename);
 }

@@ -26,20 +26,20 @@ public interface ConnectionListener {
     /**
      * The remote connection will be opened next
      */
-    abstract void connectionWillOpen();
+    void connectionWillOpen();
 
     /**
      * The remote connection has been opened successfully
      */
-    abstract void connectionDidOpen();
+    void connectionDidOpen();
 
     /**
      * The remote connection is about to be closed
      */
-    abstract void connectionWillClose();
+    void connectionWillClose();
 
     /**
      * The remote connection has been closed
      */
-    abstract void connectionDidClose();
+    void connectionDidClose();
 }

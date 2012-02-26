@@ -21,9 +21,9 @@ package ch.cyberduck.core.threading;
  * @version $Id$
  */
 public interface BackgroundActionListener {
-    abstract void start(BackgroundAction action);
+    void start(BackgroundAction action);
 
-    abstract void cancel(BackgroundAction action);
+    void cancel(BackgroundAction action);
 
-    abstract void stop(BackgroundAction action);
+    void stop(BackgroundAction action);
 }

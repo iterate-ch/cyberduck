@@ -28,6 +28,6 @@ public interface ErrorListener {
     /**
      * @param exception Error in service
      */
-    abstract void error(final BackgroundException exception);
+    void error(final BackgroundException exception);
 
 }
