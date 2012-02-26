@@ -19,7 +19,13 @@ package ch.cyberduck.core.fs.kfs;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AbstractPath;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathFactory;
+import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.fs.Filesystem;
 import ch.cyberduck.core.fs.FilesystemBackgroundAction;
 import ch.cyberduck.core.fs.FilesystemFactory;
@@ -30,9 +36,6 @@ import ch.cyberduck.ui.cocoa.model.OutlinePathReference;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 
-import com.sun.jna.Pointer;
-import com.sun.jna.ptr.PointerByReference;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -40,10 +43,13 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
+import com.sun.jna.Pointer;
+import com.sun.jna.ptr.PointerByReference;
+
 /**
  * @version $Id$
  */
-public class KfsFilesystem extends ProxyController implements Filesystem {
+public final class KfsFilesystem extends ProxyController implements Filesystem {
     private static Logger log = Logger.getLogger(KfsFilesystem.class);
 
     public static void register() {

@@ -19,7 +19,13 @@ package ch.cyberduck.core.fs.fuse;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AbstractPath;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathFactory;
+import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.fs.Filesystem;
 import ch.cyberduck.core.fs.FilesystemBackgroundAction;
 import ch.cyberduck.core.fs.FilesystemFactory;
@@ -29,15 +35,11 @@ import ch.cyberduck.ui.cocoa.ProxyController;
 import ch.cyberduck.ui.cocoa.foundation.*;
 import ch.cyberduck.ui.cocoa.model.OutlinePathReference;
 
+import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
 import org.rococoa.Rococoa;
 import org.rococoa.cocoa.foundation.NSError;
-
-import org.apache.log4j.Logger;
-
-import com.sun.jna.IntegerType;
-import com.sun.jna.Pointer;
 
 import java.io.IOException;
 import java.text.MessageFormat;
@@ -45,10 +47,13 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
+import com.sun.jna.IntegerType;
+import com.sun.jna.Pointer;
+
 /**
  * @version $Id$
  */
-public class FuseFilesystem extends ProxyController implements Filesystem {
+public final class FuseFilesystem extends ProxyController implements Filesystem {
     private static Logger log = Logger.getLogger(FuseFilesystem.class);
 
     public static void register() {
