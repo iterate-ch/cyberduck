@@ -371,11 +371,8 @@ public class SyncTransfer extends Transfer {
     /**
      *
      */
-    public static class Comparison {
-        @Override
-        public boolean equals(Object other) {
-            return super.equals(other);
-        }
+    public static interface Comparison {
+        ;
     }
 
     /**
