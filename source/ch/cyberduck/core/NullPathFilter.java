@@ -29,6 +29,11 @@ public class NullPathFilter<E extends AbstractPath> implements PathFilter<E> {
 
     @Override
     public boolean equals(Object object) {
-        return object instanceof NullPathFilter;
+        return object.getClass().equals(NullPathFilter.class);
+    }
+
+    @Override
+    public int hashCode() {
+        return this.getClass().hashCode();
     }
 }

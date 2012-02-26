@@ -31,6 +31,11 @@ public class NullComparator<V> implements Comparator<V> {
 
     @Override
     public boolean equals(Object object) {
-        return object instanceof NullComparator;
+        return object.getClass().equals(NullComparator.class);
+    }
+
+    @Override
+    public int hashCode() {
+        return this.getClass().hashCode();
     }
 }
