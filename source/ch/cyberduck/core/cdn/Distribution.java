@@ -362,7 +362,7 @@ public class Distribution {
      * @param defaultRootObject Index file
      */
     public Distribution(String id, String origin, Method method, boolean enabled, boolean deployed, String url, String status, String[] cnames, boolean logging, String defaultRootObject) {
-        this(id, origin, method, enabled, deployed, url, null, null, status, cnames, logging, null, null);
+        this(id, origin, method, enabled, deployed, url, null, null, status, cnames, logging, null, defaultRootObject);
     }
 
     /**
