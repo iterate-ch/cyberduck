@@ -44,6 +44,10 @@ import java.util.Map;
 public class EditorFactory {
     private static Logger log = Logger.getLogger(EditorFactory.class);
 
+    private EditorFactory() {
+        super();
+    }
+
     /**
      * @param c
      * @param path

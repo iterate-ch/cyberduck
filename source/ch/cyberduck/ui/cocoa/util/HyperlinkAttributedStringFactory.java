@@ -26,9 +26,8 @@ import ch.cyberduck.ui.cocoa.foundation.NSMutableAttributedString;
 import ch.cyberduck.ui.cocoa.foundation.NSNumber;
 import ch.cyberduck.ui.cocoa.foundation.NSRange;
 
-import org.rococoa.cocoa.foundation.NSUInteger;
-
 import org.apache.commons.lang.StringUtils;
+import org.rococoa.cocoa.foundation.NSUInteger;
 
 /**
  * From http://developer.apple.com/qa/qa2006/qa1487.html
@@ -36,6 +35,10 @@ import org.apache.commons.lang.StringUtils;
  * @version $Id$
  */
 public class HyperlinkAttributedStringFactory {
+
+    private HyperlinkAttributedStringFactory() {
+        super();
+    }
 
     /**
      * @param hyperlink URL
