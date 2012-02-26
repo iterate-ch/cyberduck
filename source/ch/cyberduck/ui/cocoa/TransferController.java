@@ -25,25 +25,7 @@ import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.core.threading.ControllerMainAction;
 import ch.cyberduck.ui.PathPasteboard;
-import ch.cyberduck.ui.cocoa.application.NSAlert;
-import ch.cyberduck.ui.cocoa.application.NSApplication;
-import ch.cyberduck.ui.cocoa.application.NSCell;
-import ch.cyberduck.ui.cocoa.application.NSControl;
-import ch.cyberduck.ui.cocoa.application.NSDrawer;
-import ch.cyberduck.ui.cocoa.application.NSImageView;
-import ch.cyberduck.ui.cocoa.application.NSMenu;
-import ch.cyberduck.ui.cocoa.application.NSMenuItem;
-import ch.cyberduck.ui.cocoa.application.NSPasteboard;
-import ch.cyberduck.ui.cocoa.application.NSPopUpButton;
-import ch.cyberduck.ui.cocoa.application.NSProgressIndicator;
-import ch.cyberduck.ui.cocoa.application.NSStepper;
-import ch.cyberduck.ui.cocoa.application.NSTableColumn;
-import ch.cyberduck.ui.cocoa.application.NSTableView;
-import ch.cyberduck.ui.cocoa.application.NSTextField;
-import ch.cyberduck.ui.cocoa.application.NSToolbar;
-import ch.cyberduck.ui.cocoa.application.NSToolbarItem;
-import ch.cyberduck.ui.cocoa.application.NSView;
-import ch.cyberduck.ui.cocoa.application.NSWindow;
+import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.delegate.AbstractMenuDelegate;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
@@ -1290,6 +1272,6 @@ public class TransferController extends WindowController implements NSToolbar.De
     }
 
     private interface TransferToolbarValidator {
-        public boolean validate(Transfer transfer);
+        boolean validate(Transfer transfer);
     }
 }
