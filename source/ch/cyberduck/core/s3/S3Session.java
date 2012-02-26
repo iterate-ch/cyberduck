@@ -985,10 +985,9 @@ public class S3Session extends CloudSession {
      * Endpoints). Amazon S3 supports the following website endpoint.
      *
      * @param bucket Bucket name
-     * @param method Website Configuration (HTTP) CDN
      * @return Website distribution hostname
      */
-    private String getWebsiteEndpoint(String bucket, Distribution.Method method) {
+    private String getWebsiteEndpoint(String bucket) {
         // Geographical location
         final String location = this.getLocation(bucket);
         // US Standard
@@ -1082,7 +1081,7 @@ public class S3Session extends CloudSession {
                 return S3Session.this.getHostnameForContainer(container);
             }
             if(method.equals(Distribution.WEBSITE_CDN)) {
-                return S3Session.this.getWebsiteEndpoint(container, method);
+                return S3Session.this.getWebsiteEndpoint(container);
             }
             return super.getOrigin(method, container);
         }
@@ -1097,7 +1096,7 @@ public class S3Session extends CloudSession {
             if(method.equals(Distribution.WEBSITE)) {
                 final String bucket = S3Session.this.getContainerForHostname(origin);
                 // Website Endpoint URL
-                final String url = method.getProtocol() + S3Session.this.getWebsiteEndpoint(bucket, method);
+                final String url = method.getProtocol() + S3Session.this.getWebsiteEndpoint(bucket);
                 if(!distributionStatus.get(method).containsKey(origin)) {
                     try {
                         S3Session.this.check();
