@@ -22,17 +22,18 @@ import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.SyncTransfer;
 import ch.cyberduck.core.Transfer;
 import ch.cyberduck.core.TransferAction;
-import ch.cyberduck.ui.cocoa.application.*;
+import ch.cyberduck.ui.cocoa.application.NSOutlineView;
+import ch.cyberduck.ui.cocoa.application.NSPopUpButton;
+import ch.cyberduck.ui.cocoa.application.NSTableColumn;
+import ch.cyberduck.ui.cocoa.application.NSText;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
 
 /**
  * @version $Id$
  */
 public class SyncPromptController extends TransferPromptController {
-    private static Logger log = Logger.getLogger(SyncPromptController.class);
 
     public SyncPromptController(final WindowController parent, final Transfer transfer) {
         super(parent, transfer);

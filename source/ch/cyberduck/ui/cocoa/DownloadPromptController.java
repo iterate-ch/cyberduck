@@ -21,13 +21,10 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.core.Transfer;
 import ch.cyberduck.core.TransferAction;
 
-import org.apache.log4j.Logger;
-
 /**
  * @version $Id$
  */
 public class DownloadPromptController extends TransferPromptController {
-    private static Logger log = Logger.getLogger(DownloadPromptController.class);
 
     public DownloadPromptController(final WindowController parent, Transfer transfer) {
         super(parent, transfer);
