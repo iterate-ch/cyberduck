@@ -20,7 +20,6 @@ import java.io.OutputStream;
  * @version $Id$
  */
 public class ThrottledOutputStream extends OutputStream {
-    private static Logger log = Logger.getLogger(ThrottledOutputStream.class);
 
     /**
      * The delegate.

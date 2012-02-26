@@ -27,7 +27,6 @@ import java.io.InputStream;
  * @version $Id$
  */
 public class ThrottledInputStream extends InputStream {
-    private static Logger log = Logger.getLogger(ThrottledInputStream.class);
 
     /**
      * The delegate.
