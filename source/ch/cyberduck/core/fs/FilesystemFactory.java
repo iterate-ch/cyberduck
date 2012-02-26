@@ -21,16 +21,13 @@ package ch.cyberduck.core.fs;
 
 import ch.cyberduck.core.Factory;
 
-import org.apache.log4j.Logger;
-
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public abstract class FilesystemFactory extends Factory<Filesystem> {
-    private static Logger log = Logger.getLogger(FilesystemFactory.class);
 
     /**
      * Registered factories

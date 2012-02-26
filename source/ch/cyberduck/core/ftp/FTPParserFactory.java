@@ -19,12 +19,21 @@ package ch.cyberduck.core.ftp;
  */
 
 import ch.cyberduck.core.ftp.parser.CompositeFileEntryParser;
-import ch.cyberduck.core.ftp.parser.*;
+import ch.cyberduck.core.ftp.parser.EPLFFTPEntryParser;
+import ch.cyberduck.core.ftp.parser.LaxUnixFTPEntryParser;
+import ch.cyberduck.core.ftp.parser.RumpusFTPEntryParser;
+import ch.cyberduck.core.ftp.parser.TrellixFTPEntryParser;
+import ch.cyberduck.core.ftp.parser.UnitreeFTPEntryParser;
 
 import org.apache.commons.net.ftp.FTPClientConfig;
 import org.apache.commons.net.ftp.FTPFileEntryParser;
-import org.apache.commons.net.ftp.parser.*;
-import org.apache.log4j.Logger;
+import org.apache.commons.net.ftp.parser.FTPFileEntryParserFactory;
+import org.apache.commons.net.ftp.parser.MVSFTPEntryParser;
+import org.apache.commons.net.ftp.parser.NTFTPEntryParser;
+import org.apache.commons.net.ftp.parser.NetwareFTPEntryParser;
+import org.apache.commons.net.ftp.parser.OS2FTPEntryParser;
+import org.apache.commons.net.ftp.parser.OS400FTPEntryParser;
+import org.apache.commons.net.ftp.parser.ParserInitializationException;
 
 import java.util.TimeZone;
 
@@ -32,7 +41,6 @@ import java.util.TimeZone;
  * @version $Id$
  */
 public class FTPParserFactory implements FTPFileEntryParserFactory {
-    private static Logger log = Logger.getLogger(FTPParserFactory.class);
 
     public FTPFileEntryParser createFileEntryParser(String system, TimeZone timezone) throws ParserInitializationException {
         if(null != system) {
