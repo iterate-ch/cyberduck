@@ -19,14 +19,14 @@ package ch.cyberduck.core.sftp;
  * dkocher@cyberduck.ch
  */
 
-import ch.ethz.ssh2.KnownHosts;
-
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
 
+import ch.ethz.ssh2.KnownHosts;
+
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public abstract class MemoryHostKeyVerifier extends HostKeyController {
     private static Logger log = Logger.getLogger(MemoryHostKeyVerifier.class);
@@ -49,7 +49,7 @@ public abstract class MemoryHostKeyVerifier extends HostKeyController {
     }
 
     public boolean verifyServerHostKey(final String hostname, final int port, final String serverHostKeyAlgorithm,
-                                       final byte[] serverHostKey) throws Exception {
+                                       final byte[] serverHostKey) throws IOException {
         int result = this.getDatabase().verifyHostkey(hostname, serverHostKeyAlgorithm, serverHostKey);
         if(KnownHosts.HOSTKEY_IS_OK == result) {
             return true; // We are happy

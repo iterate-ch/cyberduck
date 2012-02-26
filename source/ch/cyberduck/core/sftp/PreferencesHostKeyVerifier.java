@@ -21,17 +21,15 @@ package ch.cyberduck.core.sftp;
 
 import ch.cyberduck.core.ConnectionCanceledException;
 import ch.cyberduck.core.Preferences;
-import ch.ethz.ssh2.crypto.Base64;
 
-import org.apache.log4j.Logger;
+import ch.ethz.ssh2.crypto.Base64;
 
 /**
  * Saving accepted host keys in preferences as Base64 encoded strings.
  *
- * @version $Id:$
+ * @version $Id$
  */
 public abstract class PreferencesHostKeyVerifier extends MemoryHostKeyVerifier {
-    private static Logger log = Logger.getLogger(PreferencesHostKeyVerifier.class);
 
     @Override
     protected boolean isHostKeyDatabaseWritable() {
