@@ -31,7 +31,7 @@ import java.util.List;
 /**
  * @version $Id$
  */
-public class DeprecatedQuickLook extends AbstractQuickLook {
+public final class DeprecatedQuickLook extends AbstractQuickLook {
     private static Logger log = Logger.getLogger(DeprecatedQuickLook.class);
 
     public static void register() {
@@ -51,15 +51,12 @@ public class DeprecatedQuickLook extends AbstractQuickLook {
         Native.load("QuickLook");
     }
 
-    /**
-     * @param files
-     */
     private native void selectNative(String[] files);
 
     /**
      * Add this files to the Quick Look Preview shared window
      *
-     * @param files
+     * @param files Selected files
      */
     @Override
     public void select(Collection<Local> files) {

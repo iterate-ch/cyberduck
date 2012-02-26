@@ -33,7 +33,7 @@ import java.util.List;
 /**
  * @version $Id$
  */
-public class QuartzQuickLook extends AbstractQuickLook {
+public final class QuartzQuickLook extends AbstractQuickLook {
     private static Logger log = Logger.getLogger(QuartzQuickLook.class);
 
     public static void register() {
