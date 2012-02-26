@@ -25,15 +25,11 @@ import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import org.rococoa.ID;
 import org.rococoa.ObjCClass;
 
-import org.apache.log4j.Logger;
-
 /**
  * @version $Id:$
  */
 public abstract class Updater extends NSObject {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("SUUpdater", _Class.class);
-
-    private static Logger log = Logger.getLogger(Updater.class);
 
     public static Updater create() {
         return CLASS.alloc().init();
