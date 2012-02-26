@@ -29,7 +29,7 @@ import java.security.cert.X509Certificate;
 /**
  * @version $Id$
  */
-public class Keychain extends AbstractKeychain {
+public final class Keychain extends AbstractKeychain {
     private static Logger log = Logger.getLogger(Keychain.class);
 
     public static void register() {

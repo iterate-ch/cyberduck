@@ -25,7 +25,7 @@ import org.apache.log4j.Logger;
 /**
  * @version $Id$
  */
-public class Native {
+public final class Native {
     private static Logger log = Logger.getLogger(Native.class);
 
     private Native() {
@@ -37,6 +37,7 @@ public class Native {
     /**
      * Load native library extensions
      *
+     * @param library Library name
      * @return False if loading library failed
      */
     public static boolean load(String library) {
