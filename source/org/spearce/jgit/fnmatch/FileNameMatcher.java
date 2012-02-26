@@ -37,15 +37,15 @@
 
 package org.spearce.jgit.fnmatch;
 
+import org.spearce.jgit.errors.InvalidPatternException;
+import org.spearce.jgit.errors.NoClosingBracketException;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.spearce.jgit.errors.InvalidPatternException;
-import org.spearce.jgit.errors.NoClosingBracketException;
 
 /**
  * This class can be used to match filenames against fnmatch like patterns. It
@@ -301,7 +301,7 @@ public class FileNameMatcher {
 			// We save future effort if we don't add these heads again.
 			// This is the case with the heads "a" and "*" of "a*b" which
 			// both can return the list ["*","b"]
-			if (headsToAdd != lastAddedHeads) {
+			if (!headsToAdd.equals(lastAddedHeads)) {
 				newHeads.addAll(headsToAdd);
 				lastAddedHeads = headsToAdd;
 			}
