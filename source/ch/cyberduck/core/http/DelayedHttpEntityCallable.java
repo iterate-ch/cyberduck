@@ -24,10 +24,10 @@ import org.apache.http.entity.AbstractHttpEntity;
 import java.io.IOException;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public interface DelayedHttpEntityCallable<T> {
-    public T call(AbstractHttpEntity entity) throws IOException;
+    T call(AbstractHttpEntity entity) throws IOException;
 
     long getContentLength();
 }
