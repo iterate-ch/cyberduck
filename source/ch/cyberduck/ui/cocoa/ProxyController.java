@@ -121,7 +121,7 @@ public class ProxyController extends AbstractController {
                 //Defer to main thread
                 Foundation.runOnMainThread(runnable, wait);
             }
-            catch(Throwable e) {
+            catch(Exception e) {
                 log.error("Exception running task on main thread:" + e.getMessage(), e);
             }
         }
