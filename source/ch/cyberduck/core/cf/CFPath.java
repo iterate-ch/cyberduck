@@ -18,7 +18,15 @@ package ch.cyberduck.core.cf;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AbstractPath;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.ConnectionCanceledException;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathFactory;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Status;
+import ch.cyberduck.core.StreamListener;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cloud.CloudPath;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
@@ -35,11 +43,6 @@ import org.jets3t.service.utils.ServiceUtils;
 import org.w3c.util.DateParser;
 import org.w3c.util.InvalidDateException;
 
-import com.rackspacecloud.client.cloudfiles.FilesContainerInfo;
-import com.rackspacecloud.client.cloudfiles.FilesNotFoundException;
-import com.rackspacecloud.client.cloudfiles.FilesObject;
-import com.rackspacecloud.client.cloudfiles.FilesObjectMetaData;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -52,6 +55,11 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import com.rackspacecloud.client.cloudfiles.FilesContainerInfo;
+import com.rackspacecloud.client.cloudfiles.FilesNotFoundException;
+import com.rackspacecloud.client.cloudfiles.FilesObject;
+import com.rackspacecloud.client.cloudfiles.FilesObjectMetaData;
 
 /**
  * Rackspace Cloud Files Implementation
@@ -334,9 +342,6 @@ public class CFPath extends CloudPath {
             InputStream in = null;
             try {
                 in = this.read(check);
-                if(null == in) {
-                    throw new IOException("Unable opening data stream");
-                }
                 out = this.getLocal().getOutputStream(this.status().isResume());
                 this.download(in, out, throttle, listener, quarantine);
             }
