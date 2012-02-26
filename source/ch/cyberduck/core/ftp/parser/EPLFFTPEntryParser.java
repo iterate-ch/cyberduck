@@ -24,7 +24,8 @@ import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPFileEntryParserImpl;
 
 import java.util.Calendar;
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @version $Id$
@@ -73,12 +74,12 @@ public class EPLFFTPEntryParser extends FTPFileEntryParserImpl {
     }
 
     private static class EPLFEntryParserContext {
-        private Hashtable<String, String> facts;
+        private Map<String, String> facts;
         private FTPFile file = null;
 
         public EPLFEntryParserContext(FTPFile f) {
             super();
-            this.facts = new Hashtable<String, String>();
+            this.facts = new HashMap<String, String>();
             this.file = f;
         }
 
@@ -143,17 +144,15 @@ public class EPLFFTPEntryParser extends FTPFileEntryParserImpl {
             if(fact.charAt(0) == 'm') {
                 String timeString = fact.substring(1);
                 facts.put("m", timeString);
-                long secsSince1970 = 0;
+                long secsSince1970;
                 try {
-                    Long stamp = Long.valueOf(timeString);
-                    secsSince1970 = stamp.longValue();
+                    secsSince1970 = Long.valueOf(timeString);
                     Calendar calendar = Calendar.getInstance();
                     calendar.setTimeInMillis(secsSince1970 * 1000);
                     file.setTimestamp(calendar);
                 }
                 catch(NumberFormatException ignored) {
                 }
-                return;
             }
         }
 
