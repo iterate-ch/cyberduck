@@ -25,13 +25,13 @@ public interface Serializable {
 
     /**
      * @param <T> The serialized object type
-     * @return
+     * @return Native dictionary format
      */
     <T> T getAsDictionary();
 
     /**
-     * @param serialized
+     * @param serialized Native dictionary format
      * @param <T>        The serialized object type
      */
-    public <T> void init(T serialized);
+    <T> void init(T serialized);
 }
