@@ -29,33 +29,32 @@ public interface QuickLookInterface {
 
     /**
      * Does not open QuickLook panel but only changes the selection.
+     *
      * @param files Display these files in QuickLook panel
      */
-    public void select(Collection<Local> files);
+    void select(Collection<Local> files);
 
     /**
-     *
      * @return QuickLook implementation found.
      */
-    public boolean isAvailable();
+    boolean isAvailable();
 
     /**
-     *
      * @return QuickLook panel is visible
      */
-    public boolean isOpen();
+    boolean isOpen();
 
-    public void willBeginQuickLook();
+    void willBeginQuickLook();
 
     /**
      * Open QuickLook panel
      */
-    public void open();
+    void open();
 
     /**
      * Close QuickLook panel if any
      */
-    public void close();
+    void close();
 
-    public void didEndQuickLook();
+    void didEndQuickLook();
 }
