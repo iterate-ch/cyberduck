@@ -94,7 +94,7 @@ public class UploadTransfer extends Transfer {
                     final String filename = upload.getName();
                     String proposal;
                     int no = 0;
-                    int index = filename.lastIndexOf(".");
+                    int index = filename.lastIndexOf('.');
                     do {
                         no++;
                         if(index != -1 && index != 0) {
