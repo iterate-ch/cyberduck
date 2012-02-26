@@ -29,7 +29,7 @@ public interface Proxy {
      *
      * @param host Host to connect to
      */
-    public void configure(Host host);
+    void configure(Host host);
 
     /**
      * @return True if PASV should be used by default
