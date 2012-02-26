@@ -22,7 +22,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.ftp.FTPException;
 import ch.cyberduck.core.i18n.Locale;
-import ch.ethz.ssh2.SFTPException;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.StatusLine;
@@ -31,13 +30,14 @@ import org.jets3t.service.CloudFrontServiceException;
 import org.jets3t.service.ServiceException;
 import org.soyatec.windows.azure.error.StorageServerException;
 
-import com.googlecode.sardine.impl.SardineException;
-import com.rackspacecloud.client.cloudfiles.FilesException;
-
 import java.io.IOException;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.text.MessageFormat;
+
+import ch.ethz.ssh2.SFTPException;
+import com.googlecode.sardine.impl.SardineException;
+import com.rackspacecloud.client.cloudfiles.FilesException;
 
 /**
  * @version $Id$
@@ -221,20 +221,38 @@ public class BackgroundException extends Exception {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if(obj instanceof BackgroundException) {
-            BackgroundException other = (BackgroundException) obj;
-            if(!this.getSession().equals(other.getSession())) {
-                return false;
-            }
-            if(null == this.getPath() || null == other.getPath()) {
-                return this.getCause().getMessage().equals(other.getCause().getMessage());
-            }
-            if(!this.getPath().equals(other.getPath())) {
-                return false;
-            }
-            return this.getCause().getMessage().equals(other.getCause().getMessage());
+    public boolean equals(Object o) {
+        if(this == o) {
+            return true;
         }
-        return super.equals(obj);
+        if(o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        BackgroundException that = (BackgroundException) o;
+
+        if(this.getCause() != null ? !this.getCause().equals(that.getCause()) : that.getCause() != null) {
+            return false;
+        }
+        if(message != null ? !message.equals(that.message) : that.message != null) {
+            return false;
+        }
+        if(path != null ? !path.equals(that.path) : that.path != null) {
+            return false;
+        }
+        if(session != null ? !session.equals(that.session) : that.session != null) {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = message != null ? message.hashCode() : 0;
+        result = 31 * result + (path != null ? path.hashCode() : 0);
+        result = 31 * result + (session != null ? session.hashCode() : 0);
+        result = 31 * result + (this.getCause() != null ? this.getCause().hashCode() : 0);
+        return result;
     }
 }
