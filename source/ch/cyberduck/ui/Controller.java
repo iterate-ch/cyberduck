@@ -38,7 +38,7 @@ public interface Controller {
      * @see java.lang.Thread
      * @see ch.cyberduck.core.threading.BackgroundAction#lock()
      */
-    public <T> Future<T> background(final BackgroundAction<T> runnable);
+    <T> Future<T> background(final BackgroundAction<T> runnable);
 
     /**
      * Run on main thread. Caller thread is blocked until the selector on the main thread is called.
@@ -46,7 +46,7 @@ public interface Controller {
      * @param runnable The action to execute
      * @see #invoke(ch.cyberduck.core.threading.MainAction, boolean)
      */
-    public void invoke(final MainAction runnable);
+    void invoke(final MainAction runnable);
 
     /**
      * Run on main thread.
@@ -54,10 +54,10 @@ public interface Controller {
      * @param runnable The action to execute
      * @param wait     Block calling thread
      */
-    public void invoke(final MainAction runnable, final boolean wait);
+    void invoke(final MainAction runnable, final boolean wait);
 
     /**
      * @return True if is thread zero
      */
-    public boolean isMainThread();
+    boolean isMainThread();
 }
