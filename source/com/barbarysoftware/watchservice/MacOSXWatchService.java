@@ -1,14 +1,23 @@
 package com.barbarysoftware.watchservice;
 
-import com.barbarysoftware.jna.*;
-import com.sun.jna.NativeLong;
-import com.sun.jna.Pointer;
-
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import com.barbarysoftware.jna.CFArrayRef;
+import com.barbarysoftware.jna.CFIndex;
+import com.barbarysoftware.jna.CFRunLoopRef;
+import com.barbarysoftware.jna.CFStringRef;
+import com.barbarysoftware.jna.CarbonAPI;
+import com.barbarysoftware.jna.FSEventStreamRef;
+import com.sun.jna.NativeLong;
+import com.sun.jna.Pointer;
 
 /**
  * This class contains the bulk of my implementation of the Watch Service API.
@@ -117,7 +126,7 @@ class MacOSXWatchService extends AbstractWatchService {
     }
 
 
-    private static class MacOSXWatchKey extends AbstractWatchKey {
+    private static final class MacOSXWatchKey extends AbstractWatchKey {
         private final AtomicBoolean cancelled = new AtomicBoolean(false);
         private final boolean reportCreateEvents;
         private final boolean reportModifyEvents;
@@ -166,7 +175,7 @@ class MacOSXWatchService extends AbstractWatchService {
         }
     }
 
-    private static class Callback implements CarbonAPI.FSEventStreamCallback {
+    private static final class Callback implements CarbonAPI.FSEventStreamCallback {
         private final MacOSXWatchKey watchKey;
         private final Map<File, Long> lastModifiedMap;
 

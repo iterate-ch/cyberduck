@@ -25,10 +25,10 @@
 
 package com.barbarysoftware.watchservice;
 
+import java.io.IOException;
+
 import edu.emory.mathcs.backport.java.util.concurrent.LinkedBlockingDeque;
 import edu.emory.mathcs.backport.java.util.concurrent.TimeUnit;
-
-import java.io.IOException;
 
 /**
  * Base implementation class for watch services.
@@ -87,7 +87,7 @@ abstract class AbstractWatchService extends WatchService {
      * the watch service is closed.
      */
     private void checkKey(WatchKey key) {
-        if(key == CLOSE_KEY) {
+        if(CLOSE_KEY.equals(key)) {
             // re-queue in case there are other threads blocked in take/poll
             enqueueKey(key);
         }
