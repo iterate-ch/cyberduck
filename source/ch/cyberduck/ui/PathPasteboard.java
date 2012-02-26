@@ -25,8 +25,6 @@ import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.SessionFactory;
 
-import org.apache.log4j.Logger;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -36,7 +34,6 @@ import java.util.Map;
  * @version $Id$
  */
 public class PathPasteboard extends Collection<Path> implements Pasteboard<Path> {
-    private static Logger log = Logger.getLogger(PathPasteboard.class);
 
     private static Map<Session, PathPasteboard> instances = new HashMap<Session, PathPasteboard>() {
         @Override
