@@ -23,13 +23,10 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Preferences;
 
-import org.apache.log4j.Logger;
-
 /**
  * @version $Id$
  */
 public class FlashFxp3BookmarkCollection extends FlashFxpBookmarkCollection {
-    private static Logger log = Logger.getLogger(FlashFxp3BookmarkCollection.class);
 
     @Override
     public String getBundleIdentifier() {

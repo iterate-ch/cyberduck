@@ -23,13 +23,10 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Preferences;
 
-import org.apache.log4j.Logger;
-
 /**
  * @version $Id$
  */
 public class CloudberryAzureBookmarkCollection extends CloudberryBookmarkCollection {
-    private static Logger log = Logger.getLogger(CloudberryAzureBookmarkCollection.class);
 
     @Override
     public String getBundleIdentifier() {
