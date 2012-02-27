@@ -752,10 +752,6 @@ public abstract class Session implements TranscriptListener {
         return true;
     }
 
-    protected Credentials getCdnCredentials() {
-        return host.getCdnCredentials();
-    }
-
     /**
      * Delegating CloudFront requests.
      */
@@ -929,6 +925,13 @@ public abstract class Session implements TranscriptListener {
                     && host.getProtocol().equals(((Session) other).getHost().getProtocol());
         }
         return super.equals(other);
+    }
+    
+    @Override
+    public int hashCode() {
+        int result = host.getHostname() != null ? host.getHostname().hashCode() : 0;
+        result = 31 * result + (host.getProtocol() != null ? host.getProtocol().hashCode() : 0);
+        return result;
     }
 
     public String toString() {
