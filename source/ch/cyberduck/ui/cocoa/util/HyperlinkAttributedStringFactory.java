@@ -34,7 +34,7 @@ import org.rococoa.cocoa.foundation.NSUInteger;
  *
  * @version $Id$
  */
-public class HyperlinkAttributedStringFactory {
+public final class HyperlinkAttributedStringFactory {
 
     private HyperlinkAttributedStringFactory() {
         super();
