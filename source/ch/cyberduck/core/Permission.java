@@ -140,7 +140,7 @@ public class Permission implements Serializable {
         this(Permission.EMPTY_MASK);
     }
 
-    public Permission(Permission p) {
+    public Permission(final Permission p) {
         this.init(p.getMask());
     }
 
@@ -148,11 +148,11 @@ public class Permission implements Serializable {
      * @param symbolic the access string to parse the permissions from.
      *                 Must be something between --------- and rwxrwxrwx
      */
-    public Permission(String symbolic) {
+    public Permission(final String symbolic) {
         this.init(symbolic);
     }
 
-    private void init(String symbolic) {
+    private void init(final String symbolic) {
         if(symbolic.length() != 9) {
             log.error("Invalid mask:" + symbolic);
             throw new NumberFormatException("Must be a nine digit string");
@@ -166,25 +166,20 @@ public class Permission implements Serializable {
      * @param p A 3*3 boolean array representing read, write and execute permissions
      *          by owner, group and others. (1,1) is the owner's read permission
      */
-    public Permission(boolean[][] p) {
-        this.init(Arrays.copyOf(p, p.length));
-    }
+    public Permission(final boolean[][] p) {
+        final boolean[][] set = Arrays.copyOf(p, p.length);
 
-    /**
-     * @param p Array of users and their permissions
-     */
-    private void init(boolean[][] p) {
-        this.owner[READ] = p[OWNER][READ];
-        this.owner[WRITE] = p[OWNER][WRITE];
-        this.owner[EXECUTE] = p[OWNER][EXECUTE];
+        this.owner[READ] = set[OWNER][READ];
+        this.owner[WRITE] = set[OWNER][WRITE];
+        this.owner[EXECUTE] = set[OWNER][EXECUTE];
 
-        this.group[READ] = p[GROUP][READ];
-        this.group[WRITE] = p[GROUP][WRITE];
-        this.group[EXECUTE] = p[GROUP][EXECUTE];
+        this.group[READ] = set[GROUP][READ];
+        this.group[WRITE] = set[GROUP][WRITE];
+        this.group[EXECUTE] = set[GROUP][EXECUTE];
 
-        this.other[READ] = p[OTHER][READ];
-        this.other[WRITE] = p[OTHER][WRITE];
-        this.other[EXECUTE] = p[OTHER][EXECUTE];
+        this.other[READ] = set[OTHER][READ];
+        this.other[WRITE] = set[OTHER][WRITE];
+        this.other[EXECUTE] = set[OTHER][EXECUTE];
     }
 
     /**
@@ -211,7 +206,7 @@ public class Permission implements Serializable {
      *
      * @param number The permissions as a 4 digit octal number
      */
-    public Permission(int number) {
+    public Permission(final int number) {
         String octal = String.valueOf(number);
         StringBuilder sb = new StringBuilder();
         int leadingZeros = 4 - octal.length();
