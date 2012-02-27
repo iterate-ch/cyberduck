@@ -29,6 +29,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -274,7 +275,8 @@ public class Distribution {
      * @param url     Where to find this distribution
      * @param status  Status Message about Deployment Status
      */
-    public Distribution(String id, String origin, Method method, boolean enabled, String url, String status) {
+    public Distribution(String id, String origin, Method method, boolean enabled,
+                        String url, String status) {
         this(id, origin, method, enabled, url, status, new String[]{});
     }
 
@@ -287,7 +289,8 @@ public class Distribution {
      * @param status  Status Message about Deployment Status
      * @param logging Logging status
      */
-    public Distribution(String id, String origin, Method method, boolean enabled, String url, String status, boolean logging) {
+    public Distribution(String id, String origin, Method method, boolean enabled,
+                        String url, String status, boolean logging) {
         this(id, origin, method, enabled, enabled, url, status, new String[]{}, logging);
     }
 
@@ -302,8 +305,10 @@ public class Distribution {
      * @param status       Status Message about Deployment Status
      * @param logging      Logging status
      */
-    public Distribution(String id, String origin, Method method, boolean enabled, String url, String sslUrl, String streamingUrl, String status, boolean logging) {
-        this(id, origin, method, enabled, enabled, url, sslUrl, streamingUrl, status, new String[]{}, logging, null, null);
+    public Distribution(String id, String origin, Method method, boolean enabled,
+                        String url, String sslUrl, String streamingUrl, String status, boolean logging) {
+        this(id, origin, method, enabled, enabled, url, sslUrl, streamingUrl, status, new String[]{},
+                logging, null, null);
     }
 
 
@@ -316,7 +321,8 @@ public class Distribution {
      * @param status  Status Message about Deployment Status
      * @param cnames  Multiple CNAME aliases of this distribution
      */
-    public Distribution(String id, String origin, Method method, boolean enabled, String url, String status, String[] cnames) {
+    public Distribution(String id, String origin, Method method, boolean enabled,
+                        String url, String status, String[] cnames) {
         this(id, origin, method, enabled, enabled, url, status, cnames);
     }
 
@@ -330,7 +336,8 @@ public class Distribution {
      * @param status   Status Message about Deployment Status
      * @param cnames   Multiple CNAME aliases of this distribution
      */
-    public Distribution(String id, String origin, Method method, boolean enabled, boolean deployed, String url, String status, String[] cnames) {
+    public Distribution(String id, String origin, Method method, boolean enabled, boolean deployed,
+                        String url, String status, String[] cnames) {
         this(id, origin, method, enabled, deployed, url, status, cnames, false);
     }
 
@@ -345,7 +352,8 @@ public class Distribution {
      * @param cnames   Multiple CNAME aliases of this distribution
      * @param logging  Logging status
      */
-    public Distribution(String id, String origin, Method method, boolean enabled, boolean deployed, String url, String status, String[] cnames, boolean logging) {
+    public Distribution(String id, String origin, Method method, boolean enabled, boolean deployed, String url,
+                        String status, String[] cnames, boolean logging) {
         this(id, origin, method, enabled, deployed, url, status, cnames, logging, null);
     }
 
@@ -361,7 +369,8 @@ public class Distribution {
      * @param logging           Logging status
      * @param defaultRootObject Index file
      */
-    public Distribution(String id, String origin, Method method, boolean enabled, boolean deployed, String url, String status, String[] cnames, boolean logging, String defaultRootObject) {
+    public Distribution(String id, String origin, Method method, boolean enabled, boolean deployed, String url,
+                        String status, String[] cnames, boolean logging, String defaultRootObject) {
         this(id, origin, method, enabled, deployed, url, null, null, status, cnames, logging, null, defaultRootObject);
     }
 
@@ -380,7 +389,9 @@ public class Distribution {
      * @param loggingContainer  Logging target bucket
      * @param defaultRootObject Index file
      */
-    public Distribution(String id, String origin, Method method, boolean enabled, boolean deployed, String url, String sslUrl, String streamingUrl, String status, String[] cnames, boolean logging, String loggingContainer, String defaultRootObject) {
+    public Distribution(String id, String origin, Method method, boolean enabled, boolean deployed, String url,
+                        String sslUrl, String streamingUrl, String status, String[] cnames,
+                        boolean logging, String loggingContainer, String defaultRootObject) {
         this.id = id;
         this.origin = origin;
         this.enabled = enabled;
@@ -389,7 +400,7 @@ public class Distribution {
         this.sslUrl = sslUrl;
         this.streamingUrl = streamingUrl;
         this.status = status;
-        this.cnames = cnames;
+        this.cnames = Arrays.copyOf(cnames, cnames.length);
         this.logging = logging;
         this.loggingContainer = loggingContainer;
         this.method = method;
