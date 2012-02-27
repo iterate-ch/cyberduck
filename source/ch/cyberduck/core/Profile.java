@@ -60,16 +60,16 @@ public class Profile extends Protocol implements Serializable {
     }
 
     public <T> T getAsDictionary() {
-        final Serializer dict = SerializerFactory.createSerializer();
-        dict.setStringForKey("Protocol", parent.getIdentifier());
-        dict.setStringForKey("Scheme", this.getScheme().toString());
-        dict.setStringForKey("Vendor", this.getProvider());
-        dict.setStringForKey("Description", this.getDescription());
-        dict.setStringForKey("Default Hostname", this.getDefaultHostname());
-        dict.setStringForKey("Default Port", String.valueOf(this.getDefaultPort()));
-        dict.setStringForKey("Username Placeholder", this.getUsernamePlaceholder());
-        dict.setStringForKey("Password Placeholder", this.getPasswordPlaceholder());
-        return dict.<T>getSerialized();
+        final Serializer serializer = SerializerFactory.createSerializer();
+        serializer.setStringForKey("Protocol", parent.getIdentifier());
+        serializer.setStringForKey("Scheme", this.getScheme().toString());
+        serializer.setStringForKey("Vendor", this.getProvider());
+        serializer.setStringForKey("Description", this.getDescription());
+        serializer.setStringForKey("Default Hostname", this.getDefaultHostname());
+        serializer.setStringForKey("Default Port", String.valueOf(this.getDefaultPort()));
+        serializer.setStringForKey("Username Placeholder", this.getUsernamePlaceholder());
+        serializer.setStringForKey("Password Placeholder", this.getPasswordPlaceholder());
+        return serializer.<T>getSerialized();
     }
 
     public Protocol getProtocol() {

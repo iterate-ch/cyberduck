@@ -38,9 +38,6 @@ public class Permission implements Serializable {
 
     private static final int EMPTY_MASK = 0;
 
-    /**
-     *
-     */
     public static final Permission EMPTY = new Permission() {
         @Override
         public boolean isExecutable() {
@@ -369,20 +366,20 @@ public class Permission implements Serializable {
      * @return The unix access permissions
      */
     public String getMask() {
-        String owner = this.getSymbolicMode(this.getOwnerPermissions());
-        String group = this.getSymbolicMode(this.getGroupPermissions());
-        String other = this.getSymbolicMode(this.getOtherPermissions());
-        return owner + group + other;
+        String u = this.getSymbolicMode(this.getOwnerPermissions());
+        String g = this.getSymbolicMode(this.getGroupPermissions());
+        String o = this.getSymbolicMode(this.getOtherPermissions());
+        return u + g + o;
     }
 
     /**
      * @return The unix equivalent octal access code like 777
      */
     public String getOctalString() {
-        String owner = String.valueOf(this.getNumber(this.getOwnerPermissions()));
-        String group = String.valueOf(this.getNumber(this.getGroupPermissions()));
-        String other = String.valueOf(this.getNumber(this.getOtherPermissions()));
-        return owner + group + other;
+        String u = String.valueOf(this.getNumber(this.getOwnerPermissions()));
+        String g = String.valueOf(this.getNumber(this.getGroupPermissions()));
+        String o = String.valueOf(this.getNumber(this.getOtherPermissions()));
+        return u + g + o;
     }
 
     /**
