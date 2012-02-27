@@ -28,24 +28,14 @@ import ch.cyberduck.core.threading.DefaultMainAction;
 import ch.cyberduck.ui.cocoa.IconCache;
 import ch.cyberduck.ui.cocoa.ProxyController;
 import ch.cyberduck.ui.cocoa.application.NSWorkspace;
-import ch.cyberduck.ui.cocoa.foundation.NSArray;
-import ch.cyberduck.ui.cocoa.foundation.NSBundle;
-import ch.cyberduck.ui.cocoa.foundation.NSDate;
-import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
-import ch.cyberduck.ui.cocoa.foundation.NSDistributedNotificationCenter;
-import ch.cyberduck.ui.cocoa.foundation.NSFileManager;
-import ch.cyberduck.ui.cocoa.foundation.NSNotification;
-import ch.cyberduck.ui.cocoa.foundation.NSNumber;
-import ch.cyberduck.ui.cocoa.foundation.NSObject;
-import ch.cyberduck.ui.cocoa.foundation.NSString;
-
-import org.rococoa.Rococoa;
-import org.rococoa.cocoa.foundation.NSUInteger;
+import ch.cyberduck.ui.cocoa.foundation.*;
 
 import org.apache.commons.collections.map.AbstractLinkedMap;
 import org.apache.commons.collections.map.LRUMap;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.rococoa.Rococoa;
+import org.rococoa.cocoa.foundation.NSUInteger;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -482,6 +472,11 @@ public class FinderLocal extends Local {
             return this.attributes().getInode() == other.attributes().getInode();
         }
         return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return Long.valueOf(this.attributes().getInode()).hashCode();
     }
 
     /**

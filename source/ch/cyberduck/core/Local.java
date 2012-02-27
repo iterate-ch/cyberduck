@@ -494,15 +494,12 @@ public abstract class Local extends AbstractPath {
 
     @Override
     public int hashCode() {
-        return new File(path).getAbsolutePath().hashCode();
+        return this.getAbsolute().hashCode();
     }
 
     /**
      * Compares the two files using their path with a string comparision ignoring case.
      * Implementations should override this depending on the case sensitivity of the file system.
-     *
-     * @param o
-     * @return
      */
     @Override
     public boolean equals(Object o) {
