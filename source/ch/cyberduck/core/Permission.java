@@ -55,11 +55,18 @@ public class Permission implements Serializable {
         }
 
         @Override
-        public boolean equals(Object o) {
-            if(o instanceof Permission) {
-                return o == this;
-            }
-            return false;
+        public boolean[] getOwnerPermissions() {
+            return new boolean[]{false, false, false};
+        }
+
+        @Override
+        public boolean[] getGroupPermissions() {
+            return new boolean[]{false, false, false};
+        }
+
+        @Override
+        public boolean[] getOtherPermissions() {
+            return new boolean[]{false, false, false};
         }
 
         @Override
