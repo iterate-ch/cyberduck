@@ -1,12 +1,13 @@
 package org.kohsuke.putty;
 
-import ch.ethz.ssh2.crypto.PEMDecryptException;
-
 import java.io.ByteArrayInputStream;
 import java.io.DataInput;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.util.Arrays;
+
+import ch.ethz.ssh2.crypto.PEMDecryptException;
 
 /**
  * Parses the putty key bit vector, which is an encoded sequence
@@ -18,7 +19,7 @@ public class KeyReader {
     private final DataInput di;
 
     public KeyReader(byte[] key) {
-        this.di = new DataInputStream(new ByteArrayInputStream(key));
+        this.di = new DataInputStream(new ByteArrayInputStream(Arrays.copyOf(key, key.length)));
     }
 
     /**
@@ -48,9 +49,6 @@ public class KeyReader {
         }
     }
 
-    /**
-     * Reads the next integer.
-     */
     public BigInteger readInt() throws PEMDecryptException {
         return new BigInteger(read());
     }
