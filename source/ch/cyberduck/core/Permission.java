@@ -136,11 +136,6 @@ public class Permission implements Serializable {
         this(Permission.EMPTY_MASK);
     }
 
-    /**
-     * Copy
-     *
-     * @param p
-     */
     public Permission(Permission p) {
         this.init(p.getMask());
     }
@@ -153,9 +148,6 @@ public class Permission implements Serializable {
         this.init(symbolic);
     }
 
-    /**
-     * @param symbolic
-     */
     private void init(String symbolic) {
         if(symbolic.length() != 9) {
             log.error("Invalid mask:" + symbolic);
@@ -171,7 +163,7 @@ public class Permission implements Serializable {
      *          by owner, group and others. (1,1) is the owner's read permission
      */
     public Permission(boolean[][] p) {
-        this.init(p);
+        this.init(Arrays.copyOf(p, p.length));
     }
 
     /**
