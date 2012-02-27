@@ -24,9 +24,6 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.ui.cocoa.BundleController;
 import ch.cyberduck.ui.cocoa.application.NSEvent;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,7 +31,6 @@ import java.util.List;
  * @version $Id:$
  */
 public abstract class OpenURLMenuDelegate extends URLMenuDelegate {
-    private static Logger log = Logger.getLogger(OpenURLMenuDelegate.class);
 
     @Override
     protected String getKeyEquivalent() {
@@ -49,12 +45,6 @@ public abstract class OpenURLMenuDelegate extends URLMenuDelegate {
     @Override
     protected abstract List<Path> getSelected();
 
-    /**
-     * Only select URLs with http://
-     *
-     * @param selected
-     * @return
-     */
     @Override
     protected List<AbstractPath.DescriptiveUrl> getURLs(Path selected) {
         return new ArrayList<AbstractPath.DescriptiveUrl>(selected.getHttpURLs());

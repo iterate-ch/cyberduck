@@ -29,15 +29,12 @@ import org.rococoa.Foundation;
 import org.rococoa.Selector;
 import org.rococoa.cocoa.foundation.NSInteger;
 
-import org.apache.log4j.Logger;
-
 import java.util.List;
 
 /**
  * @version $Id$
  */
 public class TransferMenuDelegate extends AbstractMenuDelegate {
-    private static Logger log = Logger.getLogger(TransferMenuDelegate.class);
 
     /**
      *

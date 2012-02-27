@@ -26,12 +26,10 @@ import ch.cyberduck.ui.cocoa.application.NSMenu;
 import ch.cyberduck.ui.cocoa.application.NSMenuItem;
 import ch.cyberduck.ui.cocoa.odb.EditorFactory;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.rococoa.Foundation;
 import org.rococoa.Selector;
 import org.rococoa.cocoa.foundation.NSInteger;
-
-import org.apache.commons.lang.ObjectUtils;
-import org.apache.log4j.Logger;
 
 import java.util.Map;
 
@@ -39,7 +37,6 @@ import java.util.Map;
  * @version $Id$
  */
 public abstract class EditMenuDelegate extends AbstractMenuDelegate {
-    private static Logger log = Logger.getLogger(EditMenuDelegate.class);
 
     /**
      * Last selected extension
@@ -64,7 +61,7 @@ public abstract class EditMenuDelegate extends AbstractMenuDelegate {
     /**
      * Caching last selected extension to build menu.
      *
-     * @return
+     * @return True if menu is built.
      */
     @Override
     protected boolean isPopulated() {

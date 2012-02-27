@@ -33,13 +33,12 @@ import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
 import org.rococoa.Selector;
 import org.rococoa.cocoa.foundation.NSInteger;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -77,10 +76,6 @@ public abstract class URLMenuDelegate extends AbstractMenuDelegate {
         return new NSInteger(urls * 2);
     }
 
-    /**
-     * @param selected
-     * @return
-     */
     protected abstract List<AbstractPath.DescriptiveUrl> getURLs(Path selected);
 
     @Override
