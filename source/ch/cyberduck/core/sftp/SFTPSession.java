@@ -62,7 +62,7 @@ public class SFTPSession extends Session {
         return new Factory();
     }
 
-    private Connection SSH;
+    private Connection connection;
 
     public SFTPSession(Host h) {
         super(h);
@@ -70,10 +70,10 @@ public class SFTPSession extends Session {
 
     @Override
     protected Connection getClient() throws ConnectionCanceledException {
-        if(null == SSH) {
+        if(null == connection) {
             throw new ConnectionCanceledException();
         }
-        return SSH;
+        return connection;
     }
 
     @Override
@@ -89,7 +89,7 @@ public class SFTPSession extends Session {
         return false;
     }
 
-    private SFTPv3Client SFTP;
+    private SFTPv3Client client;
 
     /**
      * If never called before opens a new SFTP subsystem. If called before, the cached
@@ -99,7 +99,7 @@ public class SFTPSession extends Session {
      * @throws IOException If opening SFTP channel fails
      */
     protected SFTPv3Client sftp() throws IOException {
-        if(null == SFTP) {
+        if(null == client) {
             if(!this.isConnected()) {
                 throw new ConnectionCanceledException();
             }
@@ -107,7 +107,7 @@ public class SFTPSession extends Session {
                 throw new LoginCanceledException();
             }
             this.message(Locale.localizedString("Starting SFTP subsystem", "Status"));
-            SFTP = new SFTPv3Client(this.getClient(), new PacketListener() {
+            client = new SFTPv3Client(this.getClient(), new PacketListener() {
                 public void read(String packet) {
                     SFTPSession.this.log(false, packet);
                 }
@@ -117,9 +117,9 @@ public class SFTPSession extends Session {
                 }
             });
             this.message(Locale.localizedString("SFTP subsystem ready", "Status"));
-            SFTP.setCharset(this.getEncoding());
+            client.setCharset(this.getEncoding());
         }
-        return SFTP;
+        return client;
     }
 
     /**
@@ -147,8 +147,8 @@ public class SFTPSession extends Session {
         }
         this.fireConnectionWillOpenEvent();
 
-        SSH = new Connection(this.getHostname(), host.getPort(), this.getUserAgent());
-        SSH.addConnectionMonitor(new ConnectionMonitor() {
+        connection = new Connection(this.getHostname(), host.getPort(), this.getUserAgent());
+        connection.addConnectionMonitor(new ConnectionMonitor() {
             public void connectionLost(Throwable reason) {
                 log.warn(String.format("Connection lost:%s", (null == reason) ? "Unknown" : reason.getMessage()));
                 interrupt();
@@ -428,8 +428,8 @@ public class SFTPSession extends Session {
     public void close() {
         try {
             this.fireConnectionWillCloseEvent();
-            if(SFTP != null) {
-                SFTP.close();
+            if(client != null) {
+                client.close();
             }
             this.getClient().close();
         }
@@ -437,8 +437,8 @@ public class SFTPSession extends Session {
             log.warn(e.getMessage());
         }
         finally {
-            SFTP = null;
-            SSH = null;
+            client = null;
+            connection = null;
             this.fireConnectionDidCloseEvent();
         }
     }
@@ -454,8 +454,8 @@ public class SFTPSession extends Session {
             log.warn(e.getMessage());
         }
         finally {
-            SFTP = null;
-            SSH = null;
+            client = null;
+            connection = null;
             this.fireConnectionDidCloseEvent();
         }
     }

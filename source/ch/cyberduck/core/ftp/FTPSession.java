@@ -67,8 +67,12 @@ public class FTPSession extends SSLSession {
         return new Factory();
     }
 
-    private FTPClient FTP;
-    protected FTPFileEntryParser parser;
+    private FTPClient client;
+
+    /**
+     * Listing parser
+     */
+    private FTPFileEntryParser parser;
 
     public FTPSession(Host h) {
         super(h);
@@ -76,10 +80,10 @@ public class FTPSession extends SSLSession {
 
     @Override
     protected FTPClient getClient() throws ConnectionCanceledException {
-        if(null == FTP) {
+        if(null == client) {
             throw new ConnectionCanceledException();
         }
-        return FTP;
+        return client;
     }
 
     @Override
@@ -264,10 +268,10 @@ public class FTPSession extends SSLSession {
             log.error("IO Error: " + e.getMessage());
         }
         finally {
-            if(null != FTP) {
-                FTP.removeProtocolCommandListener(listener);
+            if(null != client) {
+                client.removeProtocolCommandListener(listener);
             }
-            FTP = null;
+            client = null;
             this.fireConnectionDidCloseEvent();
         }
     }
@@ -282,10 +286,10 @@ public class FTPSession extends SSLSession {
             log.error(e.getMessage());
         }
         finally {
-            if(null != FTP) {
-                FTP.removeProtocolCommandListener(listener);
+            if(null != client) {
+                client.removeProtocolCommandListener(listener);
             }
-            FTP = null;
+            client = null;
             this.fireConnectionDidCloseEvent();
         }
     }
@@ -361,7 +365,7 @@ public class FTPSession extends SSLSession {
         final CustomTrustSSLProtocolSocketFactory f
                 = new CustomTrustSSLProtocolSocketFactory(this.getTrustManager(this.getHost().getHostname(true)));
 
-        this.FTP = new
+        this.client = new
 				FTPClient(f, f.getSSLContext());
 
         this.configure(this.getClient());

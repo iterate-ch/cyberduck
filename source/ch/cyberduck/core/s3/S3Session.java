@@ -88,7 +88,7 @@ public class S3Session extends CloudSession {
         return new Factory();
     }
 
-    private RequestEntityRestStorageService S3;
+    private RequestEntityRestStorageService client;
 
     protected S3Session(Host h) {
         super(h);
@@ -96,10 +96,10 @@ public class S3Session extends CloudSession {
 
     @Override
     protected RequestEntityRestStorageService getClient() throws ConnectionCanceledException {
-        if(null == S3) {
+        if(null == client) {
             throw new ConnectionCanceledException();
         }
-        return S3;
+        return client;
     }
 
     /**
@@ -486,7 +486,7 @@ public class S3Session extends CloudSession {
     @Override
     protected void login(LoginController controller, Credentials credentials) throws IOException {
         try {
-            this.S3 = new RequestEntityRestStorageService(this.getProviderCredentials(credentials));
+            this.client = new RequestEntityRestStorageService(this.getProviderCredentials(credentials));
             for(StorageBucket bucket : this.getBuckets(true)) {
                 if(log.isDebugEnabled()) {
                     log.debug("Bucket:" + bucket);
@@ -567,7 +567,7 @@ public class S3Session extends CloudSession {
         }
         finally {
             // No logout required
-            S3 = null;
+            client = null;
             this.fireConnectionDidCloseEvent();
         }
     }

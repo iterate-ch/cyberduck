@@ -19,12 +19,25 @@ package ch.cyberduck.core.dav;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.ConnectionCanceledException;
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LoginCanceledException;
+import ch.cyberduck.core.LoginController;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Session;
+import ch.cyberduck.core.SessionFactory;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.i18n.Locale;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.http.*;
+import org.apache.http.HttpConnection;
+import org.apache.http.HttpException;
+import org.apache.http.HttpRequest;
+import org.apache.http.HttpRequestInterceptor;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpResponseInterceptor;
+import org.apache.http.HttpStatus;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.AuthState;
 import org.apache.http.auth.NTCredentials;
@@ -37,9 +50,9 @@ import org.apache.http.protocol.ExecutionContext;
 import org.apache.http.protocol.HttpContext;
 import org.apache.log4j.Logger;
 
-import com.googlecode.sardine.impl.SardineImpl;
-
 import java.io.IOException;
+
+import com.googlecode.sardine.impl.SardineImpl;
 
 /**
  * @version $Id$
@@ -58,7 +71,7 @@ public class DAVSession extends HttpSession {
         return new Factory();
     }
 
-    private SardineImpl DAV;
+    private SardineImpl client;
 
     public DAVSession(Host h) {
         super(h);
@@ -66,10 +79,10 @@ public class DAVSession extends HttpSession {
 
     @Override
     protected SardineImpl getClient() throws ConnectionCanceledException {
-        if(null == DAV) {
+        if(null == client) {
             throw new ConnectionCanceledException();
         }
-        return DAV;
+        return client;
     }
 
     @Override
@@ -79,7 +92,7 @@ public class DAVSession extends HttpSession {
         }
         this.fireConnectionWillOpenEvent();
 
-        this.DAV = new SardineImpl(this.http());
+        this.client = new SardineImpl(this.http());
         this.login();
 
         this.fireConnectionDidOpenEvent();
@@ -275,7 +288,7 @@ public class DAVSession extends HttpSession {
         }
         finally {
             // No logout required
-            DAV = null;
+            client = null;
             this.fireConnectionDidCloseEvent();
         }
     }

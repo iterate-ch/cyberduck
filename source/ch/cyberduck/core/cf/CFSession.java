@@ -19,7 +19,15 @@ package ch.cyberduck.core.cf;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.ConnectionCanceledException;
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LoginController;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.Session;
+import ch.cyberduck.core.SessionFactory;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.cloud.CloudSession;
@@ -31,15 +39,19 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpException;
 import org.apache.log4j.Logger;
 
-import com.rackspacecloud.client.cloudfiles.FilesCDNContainer;
-import com.rackspacecloud.client.cloudfiles.FilesClient;
-import com.rackspacecloud.client.cloudfiles.FilesException;
-
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.MessageFormat;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import com.rackspacecloud.client.cloudfiles.FilesCDNContainer;
+import com.rackspacecloud.client.cloudfiles.FilesClient;
+import com.rackspacecloud.client.cloudfiles.FilesException;
 
 /**
  * Rackspace Cloud Files Implementation
@@ -63,7 +75,7 @@ public class CFSession extends CloudSession {
     /**
      * Cloudfiles
      */
-    private FilesClient CF;
+    private FilesClient client;
 
     /**
      * Limelight
@@ -76,10 +88,10 @@ public class CFSession extends CloudSession {
 
     @Override
     protected FilesClient getClient() throws ConnectionCanceledException {
-        if(null == CF) {
+        if(null == client) {
             throw new ConnectionCanceledException();
         }
-        return CF;
+        return client;
     }
 
     @Override
@@ -87,7 +99,7 @@ public class CFSession extends CloudSession {
         if(this.isConnected()) {
             return;
         }
-        this.CF = new FilesClient(this.http(), null, null, null, null, this.timeout());
+        this.client = new FilesClient(this.http(), null, null, null, null, this.timeout());
         this.fireConnectionWillOpenEvent();
 
         // Configure for authentication URL
@@ -205,7 +217,7 @@ public class CFSession extends CloudSession {
         }
         finally {
             // No logout required
-            CF = null;
+            client = null;
             this.fireConnectionDidCloseEvent();
         }
     }
