@@ -1,7 +1,13 @@
 package ch.cyberduck.core.ftp.parser;
 
-import org.apache.commons.net.ftp.*;
+import org.apache.commons.net.ftp.Configurable;
+import org.apache.commons.net.ftp.FTPClientConfig;
+import org.apache.commons.net.ftp.FTPFile;
+import org.apache.commons.net.ftp.FTPFileEntryParser;
+import org.apache.commons.net.ftp.FTPFileEntryParserImpl;
 import org.apache.log4j.Logger;
+
+import java.util.List;
 
 /**
  * This implementation allows to pack some FileEntryParsers together
@@ -15,10 +21,10 @@ import org.apache.log4j.Logger;
 public class CompositeFileEntryParser extends FTPFileEntryParserImpl implements Configurable {
     private static Logger log = Logger.getLogger(CompositeFileEntryParser.class);
 
-    private final FTPFileEntryParser[] ftpFileEntryParsers;
+    private final List<? extends FTPFileEntryParser> ftpFileEntryParsers;
     private FTPFileEntryParser cachedFtpFileEntryParser;
 
-    public CompositeFileEntryParser(FTPFileEntryParser[] ftpFileEntryParsers) {
+    public CompositeFileEntryParser(List<? extends FTPFileEntryParser> ftpFileEntryParsers) {
         this.cachedFtpFileEntryParser = null;
         this.ftpFileEntryParsers = ftpFileEntryParsers;
     }
