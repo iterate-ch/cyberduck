@@ -28,9 +28,6 @@ import org.apache.commons.lang.CharUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import com.ibm.icu.text.IDNA;
-import com.ibm.icu.text.StringPrepParseException;
-
 import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.URLDecoder;
@@ -38,6 +35,9 @@ import java.net.UnknownHostException;
 import java.util.Date;
 import java.util.TimeZone;
 import java.util.UUID;
+
+import com.ibm.icu.text.IDNA;
+import com.ibm.icu.text.StringPrepParseException;
 
 /**
  * @version $Id$
@@ -892,7 +892,7 @@ public class Host implements Serializable {
 
     @Override
     public int hashCode() {
-        return this.toURL().hashCode();
+        return this.getUuid().hashCode();
     }
 
     public boolean isReachable() {
