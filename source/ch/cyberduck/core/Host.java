@@ -789,8 +789,8 @@ public class Host implements Serializable {
         if(StringUtils.isBlank(webURL)) {
             return this.getDefaultWebURL();
         }
-        final String protocol = "^http(s)?://.*$";
-        if(!webURL.matches(protocol)) {
+        final String regex = "^http(s)?://.*$";
+        if(!webURL.matches(regex)) {
             webURL = "http://" + webURL;
         }
         return webURL;
