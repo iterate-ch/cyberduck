@@ -19,19 +19,7 @@ package ch.cyberduck.core.s3;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractPath;
-import ch.cyberduck.core.Acl;
-import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.ConnectionCanceledException;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LoginController;
-import ch.cyberduck.core.LoginControllerFactory;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathFactory;
-import ch.cyberduck.core.Permission;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.StreamListener;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.cloud.CloudPath;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
 import ch.cyberduck.core.http.ResponseOutputStream;
@@ -72,17 +60,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TimeZone;
+import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -845,15 +823,11 @@ public class S3Path extends CloudPath {
                 catch(InterruptedException e) {
                     log.error("Part upload failed:" + e.getMessage());
                     status().setComplete(false);
-                    // Cancel future tasks
-                    pool.shutdown();
                     throw new ConnectionCanceledException(e.getMessage());
                 }
                 catch(ExecutionException e) {
                     log.warn("Part upload failed:" + e.getMessage());
                     status().setComplete(false);
-                    // Cancel future tasks
-                    pool.shutdown();
                     if(e.getCause() instanceof ServiceException) {
                         throw (ServiceException) e.getCause();
                     }
@@ -873,6 +847,8 @@ public class S3Path extends CloudPath {
                 log.info(String.format("Cancel multipart upload %s", multipart.getUploadId()));
                 this.getSession().getClient().multipartAbortUpload(multipart);
             }
+            // Cancel future tasks
+            pool.shutdown();
         }
     }
 
@@ -1021,11 +997,12 @@ public class S3Path extends CloudPath {
                                         Preferences.instance().getInteger("s3.listing.chunksize"),
                                         priorLastKey, priorLastVersionId, true);
                                 children.addAll(this.listVersions(container, Arrays.asList(chunk.getItems())));
+                                priorLastKey = chunk.getNextKeyMarker();
+                                priorLastVersionId = chunk.getNextVersionIdMarker();
                             }
                             while(priorLastKey != null);
                         }
                     }
-
                 }
             }
             catch(ServiceException e) {
