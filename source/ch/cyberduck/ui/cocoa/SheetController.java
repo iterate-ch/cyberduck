@@ -19,12 +19,15 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.threading.ControllerMainAction;
-import ch.cyberduck.ui.cocoa.application.*;
-
-import org.rococoa.Foundation;
-import org.rococoa.ID;
+import ch.cyberduck.ui.cocoa.application.AppKitFunctionsLibrary;
+import ch.cyberduck.ui.cocoa.application.NSApplication;
+import ch.cyberduck.ui.cocoa.application.NSButton;
+import ch.cyberduck.ui.cocoa.application.NSPanel;
+import ch.cyberduck.ui.cocoa.application.NSWindow;
 
 import org.apache.log4j.Logger;
+import org.rococoa.Foundation;
+import org.rococoa.ID;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -78,8 +81,10 @@ public abstract class SheetController extends WindowController implements SheetC
     /**
      * Translate return codes from sheet selection
      *
-     * @param selected
-     * @return
+     * @param selected Button pressed
+     * @return Sheet callback constant
+     * @see SheetCallback#DEFAULT_OPTION
+     * @see SheetCallback#CANCEL_OPTION
      */
     protected int getCallbackOption(NSButton selected) {
         if(selected.tag() == NSPanel.NSOKButton) {
@@ -125,21 +130,6 @@ public abstract class SheetController extends WindowController implements SheetC
      */
     protected boolean validateInput() {
         return true;
-    }
-
-    /**
-     * @param returncode
-     * @param context
-     */
-    protected void callback(final int returncode, ID context) {
-        this.returncode = returncode;
-        this.callback(returncode);
-        synchronized(parent.window()) {
-            parent.window().notify();
-        }
-        if(!this.isSingleton()) {
-            this.invalidate();
-        }
     }
 
     /**
@@ -197,13 +187,20 @@ public abstract class SheetController extends WindowController implements SheetC
      * sends the returncode to the callback implementation. Also invalidates this controller to be
      * garbage collected and notifies the lock object
      *
-     * @param sheet
+     * @param sheet       Sheet window
      * @param returncode  Identifier for the button clicked by the user
      * @param contextInfo Not used
      */
     public void sheetDidClose_returnCode_contextInfo(final NSWindow sheet, final int returncode, ID contextInfo) {
         sheet.orderOut(null);
-        this.callback(returncode, contextInfo);
+        this.returncode = returncode;
+        this.callback(returncode);
+        synchronized(parent.window()) {
+            parent.window().notify();
+        }
+        if(!this.isSingleton()) {
+            this.invalidate();
+        }
         sheetRegistry.remove(this);
     }
 
