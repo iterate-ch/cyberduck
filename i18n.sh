@@ -58,8 +58,6 @@ init() {
 	cp $base_language/Error.strings $language/
 	cp $base_language/Credentials.strings $language/
 	cp $base_language/Configuration.strings $language/
-	cp $base_language/IDisk.strings $language/
-	cp $base_language/Growl.strings $language/
 	cp $base_language/S3.strings $language/
 	cp $base_language/Mosso.strings $language/
 	cp $base_language/Keychain.strings $language/
