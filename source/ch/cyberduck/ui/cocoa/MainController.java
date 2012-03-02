@@ -18,24 +18,8 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.BookmarkCollection;
-import ch.cyberduck.core.Collection;
-import ch.cyberduck.core.DownloadTransfer;
-import ch.cyberduck.core.FolderBookmarkCollection;
-import ch.cyberduck.core.HistoryCollection;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LocalFactory;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathFactory;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.Protocol;
-import ch.cyberduck.core.RendezvousFactory;
-import ch.cyberduck.core.RendezvousListener;
-import ch.cyberduck.core.Session;
-import ch.cyberduck.core.SessionFactory;
-import ch.cyberduck.core.TransferCollection;
-import ch.cyberduck.core.UploadTransfer;
+import ch.cyberduck.core.*;
+import ch.cyberduck.core.aquaticprime.Donation;
 import ch.cyberduck.core.aquaticprime.License;
 import ch.cyberduck.core.aquaticprime.LicenseFactory;
 import ch.cyberduck.core.i18n.Locale;
@@ -84,15 +68,14 @@ import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.urlhandler.URLSchemeHandlerConfiguration;
 import ch.cyberduck.ui.growl.Growl;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
 import org.rococoa.Rococoa;
 import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSRect;
 import org.rococoa.cocoa.foundation.NSUInteger;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -537,43 +520,45 @@ public class MainController extends BundleController implements NSApplication.De
             }
             else if("cyberducklicense".equals(f.getExtension())) {
                 final License l = LicenseFactory.create(f);
-                if(l.verify()) {
-                    final NSAlert alert = NSAlert.alert(
-                            l.toString(),
-                            Locale.localizedString("Thanks for your support! Your contribution helps to further advance development to make Cyberduck even better.", "License")
-                                    + "\n\n"
-                                    + Locale.localizedString("Your donation key has been copied to the Application Support folder.", "License"),
-                            Locale.localizedString("Continue", "License"), //default
-                            null, //other
-                            null);
-                    alert.setAlertStyle(NSAlert.NSInformationalAlertStyle);
-                    if(this.alert(alert) == SheetCallback.DEFAULT_OPTION) {
-                        f.copy(LocalFactory.createLocal(Preferences.instance().getProperty("application.support.path"), f.getName()));
-                        for(BrowserController c : MainController.getBrowsers()) {
-                            c.removeDonateWindowTitle();
+                if(l instanceof Donation) {
+                    if(l.verify()) {
+                        final NSAlert alert = NSAlert.alert(
+                                l.toString(),
+                                Locale.localizedString("Thanks for your support! Your contribution helps to further advance development to make Cyberduck even better.", "License")
+                                        + "\n\n"
+                                        + Locale.localizedString("Your donation key has been copied to the Application Support folder.", "License"),
+                                Locale.localizedString("Continue", "License"), //default
+                                null, //other
+                                null);
+                        alert.setAlertStyle(NSAlert.NSInformationalAlertStyle);
+                        if(this.alert(alert) == SheetCallback.DEFAULT_OPTION) {
+                            f.copy(LocalFactory.createLocal(Preferences.instance().getProperty("application.support.path"), f.getName()));
+                            for(BrowserController c : MainController.getBrowsers()) {
+                                c.removeDonateWindowTitle();
+                            }
+                            this.updateLicenseMenu();
                         }
-                        this.updateLicenseMenu();
                     }
-                }
-                else {
-                    final NSAlert alert = NSAlert.alert(
-                            Locale.localizedString("Not a valid donation key", "License"),
-                            Locale.localizedString("This donation key does not appear to be valid.", "License"),
-                            Locale.localizedString("Continue", "License"), //default
-                            null, //other
-                            null);
-                    alert.setAlertStyle(NSAlert.NSWarningAlertStyle);
-                    alert.setShowsHelp(true);
-                    alert.setDelegate(new ProxyController() {
-                        public boolean alertShowHelp(NSAlert alert) {
-                            StringBuilder site = new StringBuilder(Preferences.instance().getProperty("website.help"));
-                            site.append("/").append("faq");
-                            openUrl(site.toString());
-                            return true;
-                        }
+                    else {
+                        final NSAlert alert = NSAlert.alert(
+                                Locale.localizedString("Not a valid donation key", "License"),
+                                Locale.localizedString("This donation key does not appear to be valid.", "License"),
+                                Locale.localizedString("Continue", "License"), //default
+                                null, //other
+                                null);
+                        alert.setAlertStyle(NSAlert.NSWarningAlertStyle);
+                        alert.setShowsHelp(true);
+                        alert.setDelegate(new ProxyController() {
+                            public boolean alertShowHelp(NSAlert alert) {
+                                StringBuilder site = new StringBuilder(Preferences.instance().getProperty("website.help"));
+                                site.append("/").append("faq");
+                                openUrl(site.toString());
+                                return true;
+                            }
 
-                    }.id());
-                    this.alert(alert);
+                        }.id());
+                        this.alert(alert);
+                    }
                 }
                 return true;
             }
