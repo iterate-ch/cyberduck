@@ -27,7 +27,7 @@ import java.text.MessageFormat;
 import java.util.List;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public abstract class WritePermissionWorker extends Worker<Permission> {
 

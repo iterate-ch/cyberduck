@@ -29,7 +29,7 @@ import java.text.MessageFormat;
 import java.util.List;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public abstract class WriteAclWorker extends Worker<Acl> {
     private static Logger log = Logger.getLogger(WriteAclWorker.class);

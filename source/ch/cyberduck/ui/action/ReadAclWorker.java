@@ -28,7 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public abstract class ReadAclWorker extends Worker<List<Acl.UserAndRole>> {
 

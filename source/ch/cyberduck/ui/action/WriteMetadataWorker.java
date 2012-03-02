@@ -33,7 +33,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public abstract class WriteMetadataWorker extends Worker<Map<String, String>> {
     private static Logger log = Logger.getLogger(WriteMetadataWorker.class);

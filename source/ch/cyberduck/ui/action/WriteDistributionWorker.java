@@ -27,7 +27,7 @@ import java.text.MessageFormat;
 import java.util.List;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public abstract class WriteDistributionWorker extends Worker<Distribution> {
 

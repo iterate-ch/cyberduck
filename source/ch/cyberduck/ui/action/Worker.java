@@ -25,7 +25,7 @@ import ch.cyberduck.core.i18n.Locale;
 import java.util.List;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public abstract class Worker<T> {
 
