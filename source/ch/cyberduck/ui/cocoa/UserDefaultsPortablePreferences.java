@@ -53,7 +53,9 @@ public class UserDefaultsPortablePreferences extends UserDefaultsPreferences {
 
     @Override
     protected void load() {
-        Local f = LocalFactory.createLocal(NSBundle.mainBundle().objectForInfoDictionaryKey("application.preferences.path").toString());
+        super.load();
+        final Local f = LocalFactory.createLocal(
+                NSBundle.mainBundle().objectForInfoDictionaryKey("application.preferences.path").toString());
         if(f.exists()) {
             log.info("Found preferences file: " + f.toString());
             this.dict = NSMutableDictionary.dictionary();
