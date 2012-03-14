@@ -18,8 +18,6 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.azure.AzurePath;
-import ch.cyberduck.core.azure.AzureSession;
 import ch.cyberduck.core.cf.CFPath;
 import ch.cyberduck.core.cf.CFSession;
 import ch.cyberduck.core.dav.DAVPath;
@@ -44,7 +42,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.jets3t.service.Constants;
 import org.jets3t.service.model.S3Bucket;
-import org.soyatec.windows.azure.authenticate.Base64;
 
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
@@ -993,76 +990,6 @@ public abstract class Protocol {
         @Override
         public PathFactory getPathFactory() {
             return GSPath.factory();
-        }
-    };
-
-    public static final Protocol AZURE_SSL = new Protocol() {
-        @Override
-        public String getName() {
-            return "Azure";
-        }
-
-        @Override
-        public String getDescription() {
-            return "Windows Azure Cloud Storage";
-        }
-
-        @Override
-        public String getIdentifier() {
-            return "azure";
-        }
-
-        @Override
-        public String getDefaultHostname() {
-            return "blob.core.windows.net";
-        }
-
-        @Override
-        public Scheme getScheme() {
-            return Scheme.https;
-        }
-
-        @Override
-        public boolean isWebUrlConfigurable() {
-            return false;
-        }
-
-        @Override
-        public boolean isAnonymousConfigurable() {
-            return false;
-        }
-
-        @Override
-        public String getUsernamePlaceholder() {
-            return Locale.localizedString(" Storage Account Name", "Azure");
-        }
-
-        @Override
-        public String getPasswordPlaceholder() {
-            return Locale.localizedString("Primary Access Key", "Azure");
-        }
-
-        @Override
-        public boolean validate(Credentials credentials) {
-            if(super.validate(credentials)) {
-                return null != Base64.decode(credentials.getPassword());
-            }
-            return false;
-        }
-
-        @Override
-        public String favicon() {
-            return this.icon();
-        }
-
-        @Override
-        public SessionFactory getSessionFactory() {
-            return AzureSession.factory();
-        }
-
-        @Override
-        public PathFactory getPathFactory() {
-            return AzurePath.factory();
         }
     };
 

@@ -62,7 +62,6 @@ public class ProtocolFactory {
 
         Protocol.GDOCS_SSL.register();
 
-        Protocol.AZURE_SSL.register();
         Protocol.DROPBOX_SSL.register();
 
         // Load thirdparty protocols
