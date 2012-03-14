@@ -178,7 +178,7 @@ public class S3Session extends CloudSession {
 
         @Override
         public void authorizeHttpRequest(HttpUriRequest httpMethod, HttpContext context)
-                throws Exception {
+                throws ServiceException {
             if(authorize(httpMethod, credentials)) {
                 return;
             }
@@ -224,7 +224,7 @@ public class S3Session extends CloudSession {
     }
 
     protected boolean authorize(HttpUriRequest httpMethod, ProviderCredentials credentials)
-            throws IOException, ServiceException {
+            throws ServiceException {
         return false;
     }
 

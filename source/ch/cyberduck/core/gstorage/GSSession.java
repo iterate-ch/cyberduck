@@ -94,10 +94,16 @@ public class GSSession extends S3Session {
 
     @Override
     protected boolean authorize(HttpUriRequest request, ProviderCredentials credentials)
-            throws IOException, ServiceException {
+            throws ServiceException {
         if(credentials instanceof OAuth2Credentials) {
             request.setHeader("x-goog-api-version", "2");
-            OAuth2Tokens tokens = ((OAuth2Credentials) credentials).getOAuth2Tokens();
+            OAuth2Tokens tokens;
+            try {
+                tokens = ((OAuth2Credentials) credentials).getOAuth2Tokens();
+            }
+            catch(IOException e) {
+                throw new ServiceException(e.getMessage());
+            }
             if(tokens == null) {
                 throw new ServiceException("Cannot authenticate using OAuth2 until initial tokens are provided");
             }
