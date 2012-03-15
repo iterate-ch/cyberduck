@@ -28,7 +28,6 @@ import org.apache.http.StatusLine;
 import org.apache.log4j.Logger;
 import org.jets3t.service.CloudFrontServiceException;
 import org.jets3t.service.ServiceException;
-import org.soyatec.windows.azure.error.StorageServerException;
 
 import java.io.IOException;
 import java.net.SocketException;
@@ -191,9 +190,6 @@ public class BackgroundException extends Exception {
                         buffer.append(" ").append(status.getReasonPhrase());
                     }
                 }
-            }
-            else if(cause instanceof StorageServerException) {
-                buffer.delete(buffer.indexOf("\r\n"), buffer.length());
             }
         }
         String message = buffer.toString();
