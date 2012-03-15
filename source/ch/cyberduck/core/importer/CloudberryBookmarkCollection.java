@@ -27,7 +27,7 @@ import org.apache.log4j.Logger;
 import org.xml.sax.Attributes;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public abstract class CloudberryBookmarkCollection extends XmlBookmarkCollection {
     private static Logger log = Logger.getLogger(CloudberryBookmarkCollection.class);
@@ -60,9 +60,6 @@ public abstract class CloudberryBookmarkCollection extends XmlBookmarkCollection
                 }
                 else if("DunkelSettings".equals(type)) {
                     current = new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname(), Protocol.S3_SSL.getDefaultPort());
-                }
-                else if("AzureSettings".equals(type)) {
-                    current = new Host(Protocol.AZURE_SSL, Protocol.AZURE_SSL.getDefaultHostname(), Protocol.AZURE_SSL.getDefaultPort());
                 }
                 else {
                     log.warn("Unsupported connection type:" + type);
