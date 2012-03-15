@@ -1,0 +1,17 @@
+"Listing directory failed" = "فشل سرد الدليل";
+"Cannot create {0}" = "لا يمكن أنشاء الملف {0}";
+"Cannot create folder {0}" = "لا يمكن أنشاء المجلد {0}";
+"Cannot rename {0}" = "لا يمكن تغيير الأسم {0}";
+"Cannot read file attributes" = "لا يمكن قراءة سمات الملف";
+"Cannot write file attributes" = "لا يمكن كتابة سمات الملف";
+"Cannot delete {0}" = "لا يمكن الحذف {0}";
+"Cannot change owner" = "لا يمكن تغيير المالك";
+"Cannot change group" = "لا يمكن تغيير المجموعة";
+"Cannot change permissions" = "لا يمكن تغيير الصلاحيات";
+"Cannot change timestamp" = "لا يمكن تغيير الطابع الزمني";
+"Connection failed" = "فشل الأتصال";
+"Download failed" = "فشل التحميل";
+"Upload failed" = "فشل الرفع";
+"Cannot read CDN configuration" = "لا يمكن قرآءة أعدادات CDN ";
+"Cannot write CDN configuration" = "لا يمكن كتابة أعدادات CDN ";
+"Cannot read container configuration" = "Cannot read container configuration";

@@ -1,0 +1,37 @@
+{
+    IBClasses =     (
+        {
+    CLASS = CDOutlineView;
+    LANGUAGE = ObjC;
+    SUPERCLASS = NSOutlineView;
+},
+        {
+    ACTIONS =     {
+        closeSheet = id;
+    };
+    CLASS = CDTransferPrompt;
+    LANGUAGE = ObjC;
+    OUTLETS =     {
+        actionPopup = NSPopUpButton;
+        browserView = NSTableView;
+        localModificationField = NSTextField;
+        localSizeField = NSTextField;
+        localURLField = NSTextField;
+        remoteModificationField = NSTextField;
+        remoteSizeField = NSTextField;
+        remoteURLField = NSTextField;
+        statusIndicator = NSProgressIndicator;
+        statusLabel = NSTextField;
+        toggleDetailsButton = NSButton;
+        window = NSWindow;
+    };
+    SUPERCLASS = NSObject;
+},
+        {
+    CLASS = FirstResponder;
+    LANGUAGE = ObjC;
+    SUPERCLASS = NSObject;
+}
+    );
+    IBVersion = 1;
+}

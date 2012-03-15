@@ -1,0 +1,33 @@
+{
+    IBClasses =     (
+        {
+    ACTIONS =     {
+        closeSheet = id;
+        helpButtonClicked = id;
+    };
+    CLASS = CDLoginController;
+    LANGUAGE = ObjC;
+    OUTLETS =     {
+        anonymousCheckbox = NSButton;
+        iconView = id;
+        keychainCheckbox = NSButton;
+        passwordField = NSSecureTextField;
+        passwordLabel = id;
+        pkCheckbox = NSButton;
+        pkLabel = NSTextField;
+        textField = NSTextField;
+        titleField = NSTextField;
+        usernameField = NSTextField;
+        usernameLabel = id;
+        window = NSWindow;
+    };
+    SUPERCLASS = NSObject;
+},
+        {
+    CLASS = FirstResponder;
+    LANGUAGE = ObjC;
+    SUPERCLASS = NSObject;
+}
+    );
+    IBVersion = 1;
+}
