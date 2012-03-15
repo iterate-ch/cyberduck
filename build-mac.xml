@@ -231,7 +231,7 @@
         </exec>
     </target>
 
-    <target name="copy-runtime">
+    <target name="copy-runtime" depends="unlock-keychain">
         <echo message="Copy runtime from ${jvm.runtime.home}..."/>
         <copy todir="${app.runtime}" preservelastmodified="true">
             <fileset followsymlinks="false" dir="${jvm.runtime.home}"/>
@@ -259,7 +259,7 @@
         </apply>
     </target>
 
-    <target name="codesign">
+    <target name="codesign" depends="unlock-keychain">
         <echo message="Code signing ${app.java}/*.dylib with entitlements ${codesign.arg}..."/>
         <apply executable="/usr/bin/codesign" failonerror="true"
                type="file"
@@ -293,6 +293,12 @@
         <echo message="Code signing application bundle with entitlements ${codesign.arg}..."/>
         <exec executable="/usr/bin/codesign" spawn="false" failonerror="true">
             <arg line="--force --sign '${codesign.certificate}' --keychain ${codesign.keychain} ${codesign.arg} -v ${app.bundle}"/>
+        </exec>
+    </target>
+
+    <target name="unlock-keychain">
+        <exec executable="/usr/bin/security">
+            <arg line="unlock-keychain ${codesign.keychain}"/>
         </exec>
     </target>
 
