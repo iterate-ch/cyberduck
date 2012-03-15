@@ -372,7 +372,7 @@ public class SyncTransfer extends Transfer {
      *
      */
     public static interface Comparison {
-        ;
+        boolean equals(Object other);
     }
 
     /**
