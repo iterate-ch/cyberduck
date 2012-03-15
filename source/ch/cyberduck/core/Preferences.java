@@ -26,7 +26,12 @@ import org.apache.log4j.Logger;
 import org.jets3t.service.model.S3Object;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.TimeZone;
 import java.util.logging.Handler;
 import java.util.logging.LogManager;
 
@@ -569,8 +574,11 @@ public abstract class Preferences {
         defaults.put("s3.upload.metadata.md5", String.valueOf(false));
         defaults.put("s3.upload.multipart", String.valueOf(true));
         defaults.put("s3.upload.multipart.concurency", String.valueOf(5));
-        defaults.put("s3.upload.multipart.threshold", String.valueOf(5 * 1024 * 1024));
-        defaults.put("s3.upload.multipart.size", String.valueOf(5 * 1024 * 1024));
+        /**
+         * Threshold in bytes. Only use multipart uploads for files more than 5GB
+         */
+        defaults.put("s3.upload.multipart.threshold", String.valueOf(5L * 1024L * 1024L * 1024L));
+        defaults.put("s3.upload.multipart.size", String.valueOf(5L * 1024L * 1024L));
 
         /**
          * A prefix to apply to log file names
