@@ -21,14 +21,21 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.PreferencesFactory;
-import ch.cyberduck.ui.cocoa.foundation.*;
-
-import org.rococoa.Rococoa;
-import org.rococoa.cocoa.foundation.NSInteger;
-import org.rococoa.cocoa.foundation.NSUInteger;
+import ch.cyberduck.ui.cocoa.foundation.FoundationKitFunctions;
+import ch.cyberduck.ui.cocoa.foundation.FoundationKitFunctionsLibrary;
+import ch.cyberduck.ui.cocoa.foundation.NSArray;
+import ch.cyberduck.ui.cocoa.foundation.NSBundle;
+import ch.cyberduck.ui.cocoa.foundation.NSEnumerator;
+import ch.cyberduck.ui.cocoa.foundation.NSLocale;
+import ch.cyberduck.ui.cocoa.foundation.NSObject;
+import ch.cyberduck.ui.cocoa.foundation.NSString;
+import ch.cyberduck.ui.cocoa.foundation.NSUserDefaults;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.rococoa.Rococoa;
+import org.rococoa.cocoa.foundation.NSInteger;
+import org.rococoa.cocoa.foundation.NSUInteger;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -161,26 +168,35 @@ public class UserDefaultsPreferences extends Preferences {
 
         defaults.put("tmp.dir", FoundationKitFunctionsLibrary.NSTemporaryDirectory());
 
-        String name = NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleName").toString();
-        defaults.put("application.name", name);
-        NSArray directories = FoundationKitFunctionsLibrary.NSSearchPathForDirectoriesInDomains(
-                FoundationKitFunctions.NSSearchPathDirectory.NSApplicationSupportDirectory,
-                FoundationKitFunctions.NSSearchPathDomainMask.NSUserDomainMask,
-                true);
-        if(directories.count().intValue() == 0) {
-            log.error("Failed searching for application support directory");
-            defaults.put("application.support.path", LocalFactory.createLocal("~/Library/Application Support", name).getAbbreviatedPath());
+        final NSBundle bundle = NSBundle.mainBundle();
+        if(null != bundle) {
+            final NSObject bundleName = bundle.objectForInfoDictionaryKey("CFBundleName");
+            final String applicationName;
+            if(null != bundleName) {
+                applicationName = bundleName.toString();
+            }
+            else {
+                applicationName = "Cyberduck";
+            }
+            NSArray directories = FoundationKitFunctionsLibrary.NSSearchPathForDirectoriesInDomains(
+                    FoundationKitFunctions.NSSearchPathDirectory.NSApplicationSupportDirectory,
+                    FoundationKitFunctions.NSSearchPathDomainMask.NSUserDomainMask,
+                    true);
+            if(directories.count().intValue() == 0) {
+                log.error("Failed searching for application support directory");
+                defaults.put("application.support.path", LocalFactory.createLocal("~/Library/Application Support", applicationName).getAbbreviatedPath());
+            }
+            else {
+                String directory = directories.objectAtIndex(new NSUInteger(0)).toString();
+                log.info("Found application support directory:" + directory);
+                defaults.put("application.support.path", LocalFactory.createLocal(directory, applicationName).getAbbreviatedPath());
+            }
+            defaults.put("application.name", applicationName);
+            defaults.put("application.version",
+                    bundle.objectForInfoDictionaryKey("CFBundleShortVersionString").toString());
+            defaults.put("application.receipt.path", bundle.bundlePath() + "/Contents/_MASReceipt");
+            defaults.put("application.bookmarks.path", bundle.bundlePath() + "/Contents/Resources/Bookmarks");
         }
-        else {
-            String directory = directories.objectAtIndex(new NSUInteger(0)).toString();
-            log.info("Found application support directory:" + directory);
-            defaults.put("application.support.path", LocalFactory.createLocal(directory, name).getAbbreviatedPath());
-        }
-        defaults.put("application.version",
-                NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleShortVersionString").toString());
-
-        defaults.put("application.receipt.path", NSBundle.mainBundle().bundlePath() + "/Contents/_MASReceipt");
-        defaults.put("application.bookmarks.path", NSBundle.mainBundle().bundlePath() + "/Contents/Resources/Bookmarks");
 
         defaults.put("update.feed.release", "http://version.cyberduck.ch/changelog.rss");
         defaults.put("update.feed.beta", "http://version.cyberduck.ch/beta/changelog.rss");
