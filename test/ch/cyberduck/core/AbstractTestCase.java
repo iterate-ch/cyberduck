@@ -21,15 +21,12 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.aquaticprime.Donation;
 import ch.cyberduck.core.threading.AutoreleaseActionOperationBatcher;
-import ch.cyberduck.ui.cocoa.AlertHostKeyController;
-import ch.cyberduck.ui.cocoa.PromptLoginController;
 import ch.cyberduck.ui.cocoa.UserDefaultsDateFormatter;
 import ch.cyberduck.ui.cocoa.UserDefaultsPreferences;
+import ch.cyberduck.ui.cocoa.foundation.NSAutoreleasePool;
 import ch.cyberduck.ui.cocoa.i18n.BundleLocale;
 import ch.cyberduck.ui.cocoa.model.FinderLocal;
 import ch.cyberduck.ui.cocoa.model.OutlinePathReference;
-import ch.cyberduck.ui.cocoa.quicklook.DeprecatedQuickLook;
-import ch.cyberduck.ui.cocoa.quicklook.QuartzQuickLook;
 import ch.cyberduck.ui.cocoa.serializer.HostPlistReader;
 import ch.cyberduck.ui.cocoa.serializer.PlistDeserializer;
 import ch.cyberduck.ui.cocoa.serializer.PlistSerializer;
@@ -39,6 +36,7 @@ import ch.cyberduck.ui.cocoa.serializer.TransferPlistReader;
 import ch.cyberduck.ui.growl.GrowlNative;
 
 import org.apache.log4j.BasicConfigurator;
+import org.junit.After;
 import org.junit.Before;
 
 /**
@@ -50,8 +48,12 @@ public class AbstractTestCase {
         BasicConfigurator.configure();
     }
 
+    NSAutoreleasePool pool;
+
     @Before
     public void factory() {
+        pool = NSAutoreleasePool.push();
+
         AutoreleaseActionOperationBatcher.register();
         FinderLocal.register();
         UserDefaultsPreferences.register();
@@ -74,18 +76,14 @@ public class AbstractTestCase {
         SystemConfigurationReachability.register();
         UserDefaultsDateFormatter.register();
 
-        DeprecatedQuickLook.register();
-        QuartzQuickLook.register();
-
-        PromptLoginController.register();
-        AlertHostKeyController.register();
-
-        if(Preferences.instance().getBoolean("rendezvous.enable")) {
-            RendezvousResponder.register();
-        }
         ProtocolFactory.register();
 
         Preferences.instance().setProperty("growl.enable", false);
         Preferences.instance().setProperty("application.support.path", ".");
+    }
+
+    @After
+    public void post() {
+        pool.drain();
     }
 }
