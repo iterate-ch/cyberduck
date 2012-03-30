@@ -49,11 +49,18 @@ public final class Native {
                 // a libray in java.library.path that was not intended
                 // because of a naming conflict.
                 System.load(path);
-                log.info("Loaded " + path + " in " + (System.currentTimeMillis() - l) + "ms");
+                log.info(String.format("Loaded %s in %dms", path, System.currentTimeMillis() - l));
                 return true;
             }
             catch(UnsatisfiedLinkError e) {
-                log.error("Failed to load " + path + ":" + e.getMessage(), e);
+                log.warn(String.format("Failed to load %s:%s", path, e.getMessage()), e);
+                try {
+                    System.loadLibrary(library);
+                }
+                catch(UnsatisfiedLinkError f) {
+                    log.warn(String.format("Failed to load %s:%s", library, e.getMessage()), e);
+                    return false;
+                }
                 return false;
             }
         }
@@ -64,7 +71,7 @@ public final class Native {
      * @return Path in application bundle
      */
     protected static String getPath(String name) {
-        final String lib = NSBundle.mainBundle().resourcePath() + "/Java/lib" + name + ".dylib";
+        final String lib = String.format("%s/Java/lib%s.dylib", NSBundle.mainBundle().resourcePath(), name);
         if(log.isInfoEnabled()) {
             log.info(String.format("Locating library %s at %s", name, lib));
         }
