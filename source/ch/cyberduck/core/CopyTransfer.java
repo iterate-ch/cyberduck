@@ -39,10 +39,16 @@ import java.util.Map;
 public class CopyTransfer extends Transfer {
     private static Logger log = Logger.getLogger(CopyTransfer.class);
 
+    /**
+     * Mapping source to destination files
+     */
     private Map<Path, Path> files = Collections.emptyMap();
 
     private Session destination;
 
+    /**
+     * @param files Source to destination mapping
+     */
     public CopyTransfer(Map<Path, Path> files) {
         super(new ArrayList<Path>(files.keySet()));
         this.files = files;
@@ -183,23 +189,37 @@ public class CopyTransfer extends Transfer {
 
     @Override
     public AttributedList<Path> children(Path source) {
-        return source.children();
+        final AttributedList<Path> list = source.children();
+        final Path target = files.get(source);
+        for(Path p : list) {
+            files.put(p, PathFactory.createPath(destination,
+                    target.getAbsolute(), p.getName(), p.attributes().getType()));
+        }
+        return list;
     }
 
     @Override
     protected void transfer(Path source, TransferOptions options) {
+        log.debug("transfer:" + source);
         final Path destination = files.get(source);
-        source.copy(destination, bandwidth, new AbstractStreamListener() {
-            @Override
-            public void bytesReceived(long bytes) {
-                transferred += bytes;
-            }
+        if(source.attributes().isFile()) {
+            source.copy(destination, bandwidth, new AbstractStreamListener() {
+                @Override
+                public void bytesReceived(long bytes) {
+                    transferred += bytes;
+                }
 
-            @Override
-            public void bytesSent(long bytes) {
-                transferred += bytes;
+                @Override
+                public void bytesSent(long bytes) {
+                    transferred += bytes;
+                }
+            });
+        }
+        else {
+            if(destination.getSession().isCreateFolderSupported(destination)) {
+                destination.mkdir();
             }
-        });
+        }
     }
 
     @Override
