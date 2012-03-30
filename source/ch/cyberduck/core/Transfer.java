@@ -30,7 +30,11 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.text.MessageFormat;
-import java.util.*;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @version $Id$
@@ -807,9 +811,5 @@ public abstract class Transfer implements Serializable {
      */
     public double getTransferred() {
         return transferred;
-    }
-
-    public void setTransferred(double transferred) {
-        this.transferred = transferred;
     }
 }
