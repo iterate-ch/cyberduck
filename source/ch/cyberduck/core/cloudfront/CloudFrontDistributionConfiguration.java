@@ -19,7 +19,19 @@ package ch.cyberduck.core.cloudfront;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.ConnectionCanceledException;
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.ErrorListener;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LoginCanceledException;
+import ch.cyberduck.core.LoginController;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.ProgressListener;
+import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.Session;
+import ch.cyberduck.core.SessionFactory;
+import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.i18n.Locale;
@@ -29,13 +41,24 @@ import org.apache.http.client.HttpClient;
 import org.apache.log4j.Logger;
 import org.jets3t.service.CloudFrontService;
 import org.jets3t.service.CloudFrontServiceException;
-import org.jets3t.service.model.cloudfront.*;
+import org.jets3t.service.model.cloudfront.CustomOrigin;
+import org.jets3t.service.model.cloudfront.Distribution;
+import org.jets3t.service.model.cloudfront.DistributionConfig;
+import org.jets3t.service.model.cloudfront.InvalidationSummary;
+import org.jets3t.service.model.cloudfront.LoggingStatus;
+import org.jets3t.service.model.cloudfront.S3Origin;
 import org.jets3t.service.security.AWSCredentials;
 import org.jets3t.service.utils.ServiceUtils;
 
 import java.io.IOException;
 import java.text.MessageFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Amazon CloudFront CDN configuration.
@@ -374,9 +397,7 @@ public class CloudFrontDistributionConfiguration extends HttpSession implements 
      */
     private String readInvalidationStatus(ch.cyberduck.core.cdn.Distribution distribution) throws IOException {
         try {
-            CloudFrontService cf = this.getClient();
-
-            final long reference = System.currentTimeMillis();
+            final CloudFrontService cf = this.getClient();
             boolean complete = false;
             int inprogress = 0;
             List<InvalidationSummary> summaries = cf.listInvalidations(distribution.getId());
@@ -589,10 +610,12 @@ public class CloudFrontDistributionConfiguration extends HttpSession implements 
 
         if(method.equals(ch.cyberduck.core.cdn.Distribution.STREAMING)) {
             for(Distribution d : cf.listStreamingDistributions(origin)) {
-                // Write to cache
-                distributionStatus.get(method).put(origin, this.convert(d, method));
-                // We currently only support one distribution per bucket
-                break;
+                if(d.getOrigin() instanceof S3Origin) {
+                    // Write to cache
+                    distributionStatus.get(method).put(origin, this.convert(d, method));
+                    // We currently only support one distribution per bucket
+                    break;
+                }
             }
         }
         else if(method.equals(ch.cyberduck.core.cdn.Distribution.DOWNLOAD)) {
@@ -672,29 +695,5 @@ public class CloudFrontDistributionConfiguration extends HttpSession implements 
             return cf.getStreamingDistributionConfig(distribution.getId());
         }
         return cf.getDistributionConfig(distribution.getId());
-    }
-
-    /**
-     * @param distribution A distribution (the distribution must be disabled and deployed first)
-     * @throws CloudFrontServiceException CloudFront failure details
-     * @throws IOException                Service error
-     */
-    private void deleteDistribution(ch.cyberduck.core.cdn.Distribution distribution)
-            throws IOException, CloudFrontServiceException {
-
-        CloudFrontService cf = this.getClient();
-        if(distribution.getMethod().equals(ch.cyberduck.core.cdn.Distribution.STREAMING)) {
-            cf.deleteStreamingDistribution(distribution.getId());
-        }
-        else if(distribution.getMethod().equals(ch.cyberduck.core.cdn.Distribution.DOWNLOAD)) {
-            cf.deleteDistribution(distribution.getId());
-        }
-        else if(distribution.getMethod().equals(ch.cyberduck.core.cdn.Distribution.CUSTOM)
-                || distribution.getMethod().equals(ch.cyberduck.core.cdn.Distribution.WEBSITE_CDN)) {
-            cf.deleteDistribution(distribution.getId());
-        }
-        else {
-            throw new RuntimeException("Invalid distribution method:" + distribution.getMethod());
-        }
     }
 }
