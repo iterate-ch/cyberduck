@@ -127,11 +127,9 @@ static ODBEditor	*_sharedODBEditor;
 	NSArray *runningApplications = [workspace launchedApplications];
 	NSEnumerator *enumerator = [runningApplications objectEnumerator];
 	NSDictionary *applicationInfo;
-	
 	while (nil != (applicationInfo = [enumerator nextObject]))
 	{
-		NSString	*bundleIdentifier = [applicationInfo objectForKey: @"NSApplicationBundleIdentifier"];
-		
+		NSString *bundleIdentifier = [applicationInfo objectForKey: @"NSApplicationBundleIdentifier"];
 		if ([bundleIdentifier isEqualToString: _editorBundleIdentifier])
 		{
 			running = YES;
@@ -140,12 +138,10 @@ static ODBEditor	*_sharedODBEditor;
 			break;
 		}
 	}
-	
 	if (running == NO)
 	{
 		success = [workspace launchAppWithBundleIdentifier: _editorBundleIdentifier options: 0L additionalEventParamDescriptor: nil launchIdentifier: nil];
 	}
-	
 	return success;
 }
 
