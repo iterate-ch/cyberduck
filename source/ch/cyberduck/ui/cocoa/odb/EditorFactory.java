@@ -49,8 +49,8 @@ public class EditorFactory {
     }
 
     /**
-     * @param c
-     * @param path
+     * @param c    Controller
+     * @param path File to edit
      * @return New editor instance for the given file type.
      */
     public static Editor createEditor(BrowserController c, final Path path) {
@@ -58,9 +58,9 @@ public class EditorFactory {
     }
 
     /**
-     * @param c
+     * @param c                Controller
      * @param bundleIdentifier The application bundle identifier of the editor to use
-     * @param path
+     * @param path             File to edit
      * @return New editor instance for the given file type.
      */
     public static Editor createEditor(BrowserController c, String bundleIdentifier, final Path path) {
@@ -99,7 +99,7 @@ public class EditorFactory {
     }
 
     /**
-     * @param file
+     * @param file File to find editor for
      * @return The bundle identifier of the application for this file or null if no
      *         suitable and installed editor is found.
      */
@@ -176,7 +176,7 @@ public class EditorFactory {
     }
 
     /**
-     * @param file
+     * @param file File to find suitable editors
      * @return Installed applications suitable to edit the given file type. Does always include
      *         the default editor set in the Preferences
      */
@@ -225,8 +225,8 @@ public class EditorFactory {
     /**
      * Determine the human readable application name for a given bundle identifier.
      *
-     * @param bundleIdentifier
-     * @return
+     * @param bundleIdentifier Editor application identifier
+     * @return Real application name
      */
     public static String getApplicationName(String bundleIdentifier) {
         if(!applicationNameCache.containsKey(bundleIdentifier)) {
