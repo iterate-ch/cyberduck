@@ -18,7 +18,18 @@ package ch.cyberduck.core.editor;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.DownloadTransfer;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathFactory;
+import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Transfer;
+import ch.cyberduck.core.TransferAction;
+import ch.cyberduck.core.TransferOptions;
+import ch.cyberduck.core.TransferPrompt;
+import ch.cyberduck.core.UploadTransfer;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.core.threading.BackgroundAction;
@@ -37,7 +48,13 @@ public abstract class AbstractEditor {
     /**
      * The file has been closed in the editor while the upload was in progress
      */
-    private boolean deferredDelete;
+    private boolean closed;
+
+    /**
+     * File has changed but not uploaded yet
+     */
+    private boolean dirty;
+
     /**
      * The edited path
      */
@@ -58,19 +75,32 @@ public abstract class AbstractEditor {
         edited.setLocal(local);
     }
 
-    protected void setDeferredDelete(boolean deferredDelete) {
-        this.deferredDelete = deferredDelete;
+    protected void setClosed(boolean closed) {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Set deferred delete flag for %s", edited.getLocal().getAbsolute()));
+        }
+        this.closed = closed;
     }
 
-    public boolean isDeferredDelete() {
-        return deferredDelete;
+    public boolean isClosed() {
+        return closed;
+    }
+
+    public boolean isDirty() {
+        return dirty;
+    }
+
+    public void setDirty(boolean dirty) {
+        this.dirty = dirty;
     }
 
     /**
      *
      */
     protected void delete() {
-        log.debug("delete");
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Delete edited file %s", edited.getLocal().getAbsolute()));
+        }
         edited.getLocal().delete(Preferences.instance().getBoolean("editor.file.trash"));
     }
 
@@ -130,6 +160,8 @@ public abstract class AbstractEditor {
                     edited.getLocal().writeUnixPermission(permissions, false);
                     // Important, should always be run on the main thread; otherwise applescript crashes
                     AbstractEditor.this.edit();
+                    // Reset transfer status
+                    edited.status().setComplete(false);
                 }
             }
         };
@@ -181,10 +213,10 @@ public abstract class AbstractEditor {
             @Override
             public void cleanup() {
                 if(edited.status().isComplete()) {
-                    if(AbstractEditor.this.isDeferredDelete()) {
+                    if(AbstractEditor.this.isClosed()) {
                         AbstractEditor.this.delete();
                     }
-                    AbstractEditor.this.setDeferredDelete(false);
+                    AbstractEditor.this.setDirty(false);
                 }
             }
         };

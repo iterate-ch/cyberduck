@@ -125,14 +125,6 @@ public class WatchEditor extends Editor implements FileWatcherListener {
         super.delete();
     }
 
-    @Override
-    protected void setDeferredDelete(boolean deferredDelete) {
-        if(!this.isOpen()) {
-            this.delete();
-        }
-        super.setDeferredDelete(deferredDelete);
-    }
-
     public void fileWritten(Local file) {
         if(log.isInfoEnabled()) {
             log.info("fileWritten:" + file);

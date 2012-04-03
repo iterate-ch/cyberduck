@@ -104,7 +104,7 @@ public class ODBEditor extends Editor {
             return;
         }
         if(!this.edit(edited.getLocal().getAbsolute(), edited.toURL(), bundleIdentifier)) {
-            log.warn(String.format("Edit failed for:%s", edited.getLocal().getAbsolute()));
+            log.warn(String.format("Edit failed for %s", edited.getLocal().getAbsolute()));
         }
     }
 
@@ -123,10 +123,13 @@ public class ODBEditor extends Editor {
      * Called by the native editor when the file has been closed
      */
     public void didCloseFile() {
-        if(!edited.status().isComplete()) {
-            this.setDeferredDelete(true);
+        log.debug(String.format("Received notification from editor to close file %s",
+                edited.getLocal().getAbsolute()));
+        if(this.isDirty()) {
+            this.setClosed(true);
         }
         else {
+            // Delete immediately
             this.delete();
         }
     }
@@ -135,6 +138,9 @@ public class ODBEditor extends Editor {
      * called by the native editor when the file has been saved
      */
     public void didModifyFile() {
+        log.debug(String.format("Received notification from editor to save file %s",
+                edited.getLocal().getAbsolute()));
+        this.setDirty(true);
         this.save();
     }
 }
