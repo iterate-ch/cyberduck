@@ -26,8 +26,6 @@ import ch.cyberduck.core.sftp.SFTPSession;
 import ch.cyberduck.core.ssl.SSLSession;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.core.threading.BackgroundAction;
-import ch.cyberduck.core.threading.DefaultMainAction;
-import ch.cyberduck.core.threading.MainAction;
 import ch.cyberduck.ui.PathPasteboard;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.delegate.ArchiveMenuDelegate;
@@ -35,7 +33,17 @@ import ch.cyberduck.ui.cocoa.delegate.CopyURLMenuDelegate;
 import ch.cyberduck.ui.cocoa.delegate.EditMenuDelegate;
 import ch.cyberduck.ui.cocoa.delegate.OpenURLMenuDelegate;
 import ch.cyberduck.ui.cocoa.delegate.URLMenuDelegate;
-import ch.cyberduck.ui.cocoa.foundation.*;
+import ch.cyberduck.ui.cocoa.foundation.NSAppleScript;
+import ch.cyberduck.ui.cocoa.foundation.NSArray;
+import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
+import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
+import ch.cyberduck.ui.cocoa.foundation.NSEnumerator;
+import ch.cyberduck.ui.cocoa.foundation.NSIndexSet;
+import ch.cyberduck.ui.cocoa.foundation.NSNotification;
+import ch.cyberduck.ui.cocoa.foundation.NSNotificationCenter;
+import ch.cyberduck.ui.cocoa.foundation.NSObject;
+import ch.cyberduck.ui.cocoa.foundation.NSRange;
+import ch.cyberduck.ui.cocoa.foundation.NSString;
 import ch.cyberduck.ui.cocoa.model.OutlinePathReference;
 import ch.cyberduck.ui.cocoa.odb.Editor;
 import ch.cyberduck.ui.cocoa.odb.EditorFactory;
@@ -2218,9 +2226,9 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     }
 
     /**
-     * @param selected             A map with the original files as the key and the destination
-     *                             files as the value
-     * @param browser Transfer in browser session
+     * @param selected A map with the original files as the key and the destination
+     *                 files as the value
+     * @param browser  Transfer in browser session
      */
     protected void duplicatePaths(final Map<Path, Path> selected, final boolean browser) {
         if(this.checkOverwrite(selected.values())) {
@@ -2281,7 +2289,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                         Locale.localizedString("Cancel"), //alternative button
                         null //other button
                 );
-                final boolean[] confirm = new boolean[] {false};
+                final boolean[] confirm = new boolean[]{false};
                 this.alert(alert, new SheetCallback() {
                     public void callback(final int returncode) {
                         if(returncode == DEFAULT_OPTION) {
@@ -2326,7 +2334,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                         Locale.localizedString("Cancel"), //alternative button
                         null //other button
                 );
-                final boolean[] confirm = new boolean[] {false};
+                final boolean[] confirm = new boolean[]{false};
                 this.alert(alert, new SheetCallback() {
                     public void callback(final int returncode) {
                         if(returncode == DEFAULT_OPTION) {
@@ -2577,7 +2585,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         this.deletePaths(this.getSelectedPaths());
     }
 
-    private static String lastSelectedDownloadDirectory = 
+    private static String lastSelectedDownloadDirectory =
             Preferences.instance().getProperty("queue.download.folder");
 
     private NSOpenPanel downloadToPanel;
@@ -3952,18 +3960,33 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     }
 
     /**
+     * @return Browser tab active
+     */
+    private boolean isBrowser() {
+        return this.getSelectedTabView() == TAB_LIST_VIEW
+                || this.getSelectedTabView() == TAB_OUTLINE_VIEW;
+    }
+
+    /**
+     * @return Bookmarks tab active
+     */
+    private boolean isBookmarks() {
+        return this.getSelectedTabView() == TAB_BOOKMARKS;
+    }
+
+    /**
      * @param action the method selector
      * @return true if the item by that identifier should be enabled
      */
     private boolean validateItem(final Selector action) {
         if(action.equals(Foundation.selector("cut:"))) {
-            return this.isMounted() && this.getSelectionCount() > 0;
+            return this.isBrowser() && this.isMounted() && this.getSelectionCount() > 0;
         }
         else if(action.equals(Foundation.selector("copy:"))) {
-            return this.isMounted() && this.getSelectionCount() > 0;
+            return this.isBrowser() && this.isMounted() && this.getSelectionCount() > 0;
         }
         else if(action.equals(Foundation.selector("paste:"))) {
-            if(this.isMounted()) {
+            if(this.isBrowser() && this.isMounted()) {
                 PathPasteboard pasteboard = PathPasteboard.getPasteboard(this.getSession());
                 if(pasteboard.isEmpty()) {
                     NSPasteboard pboard = NSPasteboard.generalPasteboard();
@@ -3980,25 +4003,35 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             return false;
         }
         else if(action.equals(Foundation.selector("encodingMenuClicked:"))) {
-            return !isActivityRunning();
+            return this.isBrowser() && !isActivityRunning();
         }
         else if(action.equals(Foundation.selector("connectBookmarkButtonClicked:"))) {
-            return bookmarkTable.numberOfSelectedRows().intValue() == 1;
+            if(this.isBookmarks()) {
+                return bookmarkTable.numberOfSelectedRows().intValue() == 1;
+            }
         }
         else if(action.equals(Foundation.selector("addBookmarkButtonClicked:"))) {
-            return bookmarkModel.getSource().allowsAdd();
+            if(this.isBookmarks()) {
+                return bookmarkModel.getSource().allowsAdd();
+            }
         }
         else if(action.equals(Foundation.selector("deleteBookmarkButtonClicked:"))) {
-            return bookmarkModel.getSource().allowsDelete() && bookmarkTable.selectedRow().intValue() != -1;
+            if(this.isBookmarks()) {
+                return bookmarkModel.getSource().allowsDelete() && bookmarkTable.selectedRow().intValue() != -1;
+            }
         }
         else if(action.equals(Foundation.selector("duplicateBookmarkButtonClicked:"))) {
-            return bookmarkModel.getSource().allowsEdit() && bookmarkTable.numberOfSelectedRows().intValue() == 1;
+            if(this.isBookmarks()) {
+                return bookmarkModel.getSource().allowsEdit() && bookmarkTable.numberOfSelectedRows().intValue() == 1;
+            }
         }
         else if(action.equals(Foundation.selector("editBookmarkButtonClicked:"))) {
-            return bookmarkModel.getSource().allowsEdit() && bookmarkTable.numberOfSelectedRows().intValue() == 1;
+            if(this.isBookmarks()) {
+                return bookmarkModel.getSource().allowsEdit() && bookmarkTable.numberOfSelectedRows().intValue() == 1;
+            }
         }
         else if(action.equals(Foundation.selector("editButtonClicked:"))) {
-            if(this.isMounted() && this.getSelectionCount() > 0) {
+            if(this.isBrowser() && this.isMounted() && this.getSelectionCount() > 0) {
                 for(Path selected : this.getSelectedPaths()) {
                     if(!this.isEditable(selected)) {
                         return false;
@@ -4013,7 +4046,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             return false;
         }
         else if(action.equals(Foundation.selector("editMenuClicked:"))) {
-            if(this.isMounted() && this.getSelectionCount() > 0) {
+            if(this.isBrowser() && this.isMounted() && this.getSelectionCount() > 0) {
                 for(Path selected : this.getSelectedPaths()) {
                     if(!this.isEditable(selected)) {
                         return false;
@@ -4024,37 +4057,37 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             return false;
         }
         else if(action.equals(Foundation.selector("searchButtonClicked:"))) {
-            return this.isMounted() || this.getSelectedTabView() == TAB_BOOKMARKS;
+            return this.isMounted() || this.isBookmarks();
         }
         else if(action.equals(Foundation.selector("quicklookButtonClicked:"))) {
-            return this.isMounted() && QuickLookFactory.instance().isAvailable() && this.getSelectionCount() > 0;
+            return this.isBrowser() && this.isMounted() && QuickLookFactory.instance().isAvailable() && this.getSelectionCount() > 0;
         }
         else if(action.equals(Foundation.selector("openBrowserButtonClicked:"))) {
             return this.isMounted();
         }
         else if(action.equals(Foundation.selector("sendCustomCommandClicked:"))) {
-            return this.isMounted() && this.getSession().isSendCommandSupported();
+            return this.isBrowser() && this.isMounted() && this.getSession().isSendCommandSupported();
         }
         else if(action.equals(Foundation.selector("gotoButtonClicked:"))) {
-            return this.isMounted();
+            return this.isBrowser() && this.isMounted();
         }
         else if(action.equals(Foundation.selector("infoButtonClicked:"))) {
-            return this.isMounted() && this.getSelectionCount() > 0;
+            return this.isBrowser() && this.isMounted() && this.getSelectionCount() > 0;
         }
         else if(action.equals(Foundation.selector("createFolderButtonClicked:"))) {
-            return this.isMounted() && this.getSession().isCreateFolderSupported(this.workdir());
+            return this.isBrowser() && this.isMounted() && this.getSession().isCreateFolderSupported(this.workdir());
         }
         else if(action.equals(Foundation.selector("createFileButtonClicked:"))) {
-            return this.isMounted() && this.getSession().isCreateFileSupported(this.workdir());
+            return this.isBrowser() && this.isMounted() && this.getSession().isCreateFileSupported(this.workdir());
         }
         else if(action.equals(Foundation.selector("createSymlinkButtonClicked:"))) {
-            return this.isMounted() && this.getSession().isCreateSymlinkSupported() && this.getSelectionCount() == 1;
+            return this.isBrowser() && this.isMounted() && this.getSession().isCreateSymlinkSupported() && this.getSelectionCount() == 1;
         }
         else if(action.equals(Foundation.selector("duplicateFileButtonClicked:"))) {
-            return this.isMounted() && this.getSelectionCount() == 1;
+            return this.isBrowser() && this.isMounted() && this.getSelectionCount() == 1;
         }
         else if(action.equals(Foundation.selector("renameFileButtonClicked:"))) {
-            if(this.isMounted() && this.getSelectionCount() == 1) {
+            if(this.isBrowser() && this.isMounted() && this.getSelectionCount() == 1) {
                 final Path selected = this.getSelectedPath();
                 if(null == selected) {
                     return false;
@@ -4064,64 +4097,66 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             return false;
         }
         else if(action.equals(Foundation.selector("deleteFileButtonClicked:"))) {
-            return this.isMounted() && this.getSelectionCount() > 0;
+            return this.isBrowser() && this.isMounted() && this.getSelectionCount() > 0;
         }
         else if(action.equals(Foundation.selector("revertFileButtonClicked:"))) {
-            if(this.isMounted() && this.getSelectionCount() == 1) {
+            if(this.isBrowser() && this.isMounted() && this.getSelectionCount() == 1) {
                 return this.getSession().isRevertSupported();
             }
             return false;
         }
         else if(action.equals(Foundation.selector("reloadButtonClicked:"))) {
-            return this.isMounted();
+            return this.isBrowser() && this.isMounted();
         }
         else if(action.equals(Foundation.selector("newBrowserButtonClicked:"))) {
             return this.isMounted();
         }
         else if(action.equals(Foundation.selector("uploadButtonClicked:"))) {
-            return this.isMounted();
+            return this.isBrowser() && this.isMounted();
         }
         else if(action.equals(Foundation.selector("syncButtonClicked:"))) {
-            return this.isMounted();
+            return this.isBrowser() && this.isMounted();
         }
         else if(action.equals(Foundation.selector("downloadAsButtonClicked:"))) {
-            return this.isMounted() && this.getSelectionCount() == 1;
+            return this.isBrowser() && this.isMounted() && this.getSelectionCount() == 1;
         }
         else if(action.equals(Foundation.selector("downloadToButtonClicked:")) || action.equals(Foundation.selector("downloadButtonClicked:"))) {
-            return this.isMounted() && this.getSelectionCount() > 0;
+            return this.isBrowser() && this.isMounted() && this.getSelectionCount() > 0;
         }
         else if(action.equals(Foundation.selector("insideButtonClicked:"))) {
-            return this.isMounted() && this.getSelectionCount() > 0;
+            return this.isBrowser() && this.isMounted() && this.getSelectionCount() > 0;
         }
         else if(action.equals(Foundation.selector("upButtonClicked:"))) {
-            return this.isMounted() && !this.workdir().isRoot();
+            return this.isBrowser() && this.isMounted() && !this.workdir().isRoot();
         }
         else if(action.equals(Foundation.selector("backButtonClicked:"))) {
-            return this.isMounted() && this.getBackHistory().size() > 1;
+            return this.isBrowser() && this.isMounted() && this.getBackHistory().size() > 1;
         }
         else if(action.equals(Foundation.selector("forwardButtonClicked:"))) {
-            return this.isMounted() && this.getForwardHistory().size() > 0;
+            return this.isBrowser() && this.isMounted() && this.getForwardHistory().size() > 0;
         }
         else if(action.equals(Foundation.selector("printDocument:"))) {
-            return this.isMounted();
+            return this.isBrowser() && this.isMounted();
         }
         else if(action.equals(Foundation.selector("disconnectButtonClicked:"))) {
-            if(!this.isConnected()) {
-                return this.isActivityRunning();
+            if(this.isBrowser()) {
+                if(!this.isConnected()) {
+                    return this.isActivityRunning();
+                }
+                return this.isConnected();
             }
-            return this.isConnected();
         }
         else if(action.equals(Foundation.selector("interruptButtonClicked:"))) {
-            return this.isActivityRunning();
+            return this.isBrowser() && this.isActivityRunning();
         }
         else if(action.equals(Foundation.selector("gotofolderButtonClicked:"))) {
-            return this.isMounted();
+            return this.isBrowser() && this.isMounted();
         }
         else if(action.equals(Foundation.selector("openTerminalButtonClicked:"))) {
-            return this.isMounted() && this.getSession() instanceof SFTPSession;
+            return this.isBrowser() && this.isMounted() && this.getSession() instanceof SFTPSession;
         }
         else if(action.equals(Foundation.selector("archiveButtonClicked:")) || action.equals(Foundation.selector("archiveMenuClicked:"))) {
-            if(this.isMounted()) {
+            if(this.isBrowser() && this.isMounted()) {
                 if(!this.getSession().isArchiveSupported()) {
                     return false;
                 }
@@ -4138,7 +4173,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             return false;
         }
         else if(action.equals(Foundation.selector("unarchiveButtonClicked:"))) {
-            if(this.isMounted()) {
+            if(this.isBrowser() && this.isMounted()) {
                 if(!this.getSession().isUnarchiveSupported()) {
                     return false;
                 }
