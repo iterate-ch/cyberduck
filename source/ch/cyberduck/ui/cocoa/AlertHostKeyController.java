@@ -84,11 +84,11 @@ public class AlertHostKeyController extends MemoryHostKeyVerifier {
     /**
      * Path to known_hosts file.
      */
-    private Local file;
+    private Local file
+            = LocalFactory.createLocal(Preferences.instance().getProperty("ssh.knownhosts"));
 
     @Override
     protected KnownHosts getDatabase() {
-        file = LocalFactory.createLocal(Preferences.instance().getProperty("ssh.knownhosts"));
         if(!file.exists()) {
             file.touch(true);
         }
