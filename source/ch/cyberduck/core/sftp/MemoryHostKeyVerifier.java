@@ -50,7 +50,7 @@ public abstract class MemoryHostKeyVerifier extends HostKeyController {
 
     public boolean verifyServerHostKey(final String hostname, final int port, final String serverHostKeyAlgorithm,
                                        final byte[] serverHostKey) throws IOException {
-        int result = this.getDatabase().verifyHostkey(hostname, serverHostKeyAlgorithm, serverHostKey);
+        final int result = this.getDatabase().verifyHostkey(hostname, serverHostKeyAlgorithm, serverHostKey);
         if(KnownHosts.HOSTKEY_IS_OK == result) {
             return true; // We are happy
         }
@@ -67,7 +67,7 @@ public abstract class MemoryHostKeyVerifier extends HostKeyController {
                          final byte[] serverHostKey, boolean always) {
         // The following call will ONLY put the key into the memory cache!
         // To save it in a known hosts file, also call "KnownHosts.addHostkeyToFile(...)"
-        String hashedHostname = KnownHosts.createHashedHostname(hostname);
+        final String hashedHostname = KnownHosts.createHashedHostname(hostname);
         try {
             // Add the hostkey to the in-memory database
             this.getDatabase().addHostkey(new String[]{hashedHostname}, serverHostKeyAlgorithm, serverHostKey);

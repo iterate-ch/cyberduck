@@ -21,22 +21,35 @@ package ch.cyberduck.core.sftp;
  */
 
 import ch.cyberduck.core.ConnectionCanceledException;
+
 import ch.ethz.ssh2.ServerHostKeyVerifier;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public abstract class HostKeyController implements ServerHostKeyVerifier {
 
     /**
+     * @param hostname               Hostname
+     * @param port                   Port number
+     * @param serverHostKeyAlgorithm Algorithm
+     * @param serverHostKey          Key blob
      * @return True if accepted.
+     * @throws ch.cyberduck.core.ConnectionCanceledException
+     *          Canceled by user
      */
     protected abstract boolean isUnknownKeyAccepted(final String hostname, final int port, final String serverHostKeyAlgorithm,
-                                 final byte[] serverHostKey) throws ConnectionCanceledException;
+                                                    final byte[] serverHostKey) throws ConnectionCanceledException;
 
     /**
+     * @param hostname               Hostname
+     * @param port                   Port number
+     * @param serverHostKeyAlgorithm Algorithm
+     * @param serverHostKey          Key blob
      * @return True if accepted.
+     * @throws ch.cyberduck.core.ConnectionCanceledException
+     *          Canceled by user
      */
     protected abstract boolean isChangedKeyAccepted(final String hostname, final int port, final String serverHostKeyAlgorithm,
-                                 final byte[] serverHostKey) throws ConnectionCanceledException;
+                                                    final byte[] serverHostKey) throws ConnectionCanceledException;
 }

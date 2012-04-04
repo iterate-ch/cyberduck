@@ -39,18 +39,14 @@ public abstract class PreferencesHostKeyVerifier extends MemoryHostKeyVerifier {
     @Override
     protected boolean isUnknownKeyAccepted(String hostname, int port, String serverHostKeyAlgorithm, byte[] serverHostKey)
             throws ConnectionCanceledException {
-
-        if(String.valueOf(Base64.encode(serverHostKey)).equals(
-                Preferences.instance().getProperty("ssh.hostkey." + serverHostKeyAlgorithm + "." + hostname))) {
-            return true;
-        }
-        return false;
+        return String.valueOf(Base64.encode(serverHostKey)).equals(
+                Preferences.instance().getProperty(String.format("ssh.hostkey.%s.%s", serverHostKeyAlgorithm, hostname)));
     }
 
     @Override
     protected void save(final String hostname, final String serverHostKeyAlgorithm,
                         final byte[] serverHostKey) {
-        Preferences.instance().setProperty("ssh.hostkey." + serverHostKeyAlgorithm + "." + hostname,
+        Preferences.instance().setProperty(String.format("ssh.hostkey.%s.%s", serverHostKeyAlgorithm, hostname),
                 String.valueOf(Base64.encode(serverHostKey)));
     }
 }
