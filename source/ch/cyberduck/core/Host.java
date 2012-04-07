@@ -384,11 +384,11 @@ public class Host implements Serializable {
     /**
      * Parses URL in the format ftp://username:pass@hostname:portnumber/path/to/file
      *
-     * @param input URL
+     * @param url URL
      * @return Bookmark
      */
-    public static Host parse(String input) {
-        input = input.trim();
+    public static Host parse(final String url) {
+        final String input = url.trim();
         int begin = 0;
         int cut;
         Protocol protocol = null;
@@ -832,19 +832,6 @@ public class Host implements Serializable {
      */
     public void setTimestamp(Date timestamp) {
         this.timestamp = timestamp;
-    }
-
-    /**
-     * @return The IP address of the remote host if available
-     * @throws UnknownHostException If the address cannot be resolved
-     */
-    public String getIp() throws UnknownHostException {
-        try {
-            return InetAddress.getByName(hostname).toString();
-        }
-        catch(UnknownHostException e) {
-            throw new UnknownHostException(hostname + " cannot be resolved");
-        }
     }
 
     /**
