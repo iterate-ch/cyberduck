@@ -20,14 +20,14 @@ package ch.cyberduck.core.ftp;
  */
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class FTPConnectMode {
 
     /**
      * Represents active connect mode
      */
-    public static FTPConnectMode PORT = new FTPConnectMode() {
+    public static final FTPConnectMode PORT = new FTPConnectMode() {
         @Override
         public String toString() {
             return "active";
@@ -37,7 +37,7 @@ public class FTPConnectMode {
     /**
      * Represents PASV connect mode
      */
-    public static FTPConnectMode PASV = new FTPConnectMode() {
+    public static final FTPConnectMode PASV = new FTPConnectMode() {
         @Override
         public String toString() {
             return "passive";
