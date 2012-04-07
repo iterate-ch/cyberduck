@@ -39,7 +39,6 @@ import org.apache.log4j.Logger;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -538,8 +537,6 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
             }
         });
     }
-
-    private CountDownLatch unmount;
 
     public void unmount() {
         log.debug("unmount");
