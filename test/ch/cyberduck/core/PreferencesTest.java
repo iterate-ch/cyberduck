@@ -4,6 +4,7 @@ import org.junit.Test;
 
 import java.util.List;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -31,5 +32,19 @@ public class PreferencesTest extends AbstractTestCase {
         final List<String> properties = p.getList("metadata");
         assertTrue(properties.contains("a"));
         assertTrue(properties.contains("b"));
+    }
+
+    @Test
+    public void testLong() {
+        Preferences p = Preferences.instance();
+        p.setProperty("test.p", 2L);
+        assertEquals("2", p.getProperty("test.p"));
+    }
+
+    @Test
+    public void testDouble() {
+        Preferences p = Preferences.instance();
+        p.setProperty("test.p", 0.983652);
+        assertEquals("0.983652", p.getProperty("test.p"));
     }
 }

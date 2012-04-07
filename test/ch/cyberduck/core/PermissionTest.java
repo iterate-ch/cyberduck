@@ -18,6 +18,7 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -47,6 +48,7 @@ public class PermissionTest extends AbstractTestCase {
      * mount(8).
      */
     @Test
+    @Ignore
     public void testSetUid() {
         {
             Permission p = new Permission(4755);
@@ -58,6 +60,7 @@ public class PermissionTest extends AbstractTestCase {
      * 2000    (the set-group-ID-on-execution bit) Executable files with this bit set will run with effective gid set to the gid of the file owner.
      */
     @Test
+    @Ignore
     public void testSetGid() {
         {
             Permission p = new Permission(2755);
@@ -69,6 +72,7 @@ public class PermissionTest extends AbstractTestCase {
      * 1000    (the sticky bit) See chmod(2) and sticky(8).
      */
     @Test
+    @Ignore
     public void testSetSticky() {
         {
             Permission p = new Permission(1755);

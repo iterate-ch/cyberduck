@@ -2680,8 +2680,6 @@ sv.lproj/ServicesMenu.strings -text svneol=unset#text/utf-16
 sv.lproj/Status.strings -text svneol=unset#text/utf-16
 sv.lproj/Transfer.strings -text svneol=unset#text/utf-16
 test/ch/cyberduck/Test.csproj -text
-test/ch/cyberduck/core/PreferencesTest.java -text
-test/ch/cyberduck/core/ProxyTest.java -text
 test/ch/cyberduck/ui/controller/LocalImplTest.cs -text svneol=unset#application/octet-stream
 test/ch/cyberduck/ui/controller/PersistentFormHandlerTest.cs -text
 th.lproj/Alert.nib/classes.nib -text
