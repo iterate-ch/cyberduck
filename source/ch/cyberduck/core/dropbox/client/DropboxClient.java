@@ -22,8 +22,6 @@ package ch.cyberduck.core.dropbox.client;
  * http://bitbucket.org/dropboxapi/dropbox-client-java
  */
 
-import oauth.signpost.exception.OAuthException;
-
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -34,18 +32,18 @@ import org.apache.http.entity.mime.MultipartEntity;
 import org.apache.http.entity.mime.content.ContentBody;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
-import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import oauth.signpost.exception.OAuthException;
+
 /**
  * @version $Id$
  */
 public class DropboxClient extends AbstractHttpDropboxClient {
-    private static Logger log = Logger.getLogger(DropboxClient.class);
 
     /**
      * @param client

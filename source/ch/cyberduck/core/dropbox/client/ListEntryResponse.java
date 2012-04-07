@@ -60,9 +60,9 @@ public class ListEntryResponse extends AbstractResponse {
         revision = this.getLong(map, "revision");
         thumbnail = this.getBoolean(map, "thumb_exists");
 
-        Object json_contents = map.get("contents");
-        if(json_contents instanceof JSONArray) {
-            for(Object entry : ((JSONArray) json_contents)) {
+        Object c = map.get("contents");
+        if(c instanceof JSONArray) {
+            for(Object entry : ((JSONArray) c)) {
                 if(entry instanceof JSONObject) {
                     contents.add(new ListEntryResponse((JSONObject) entry));
                 }

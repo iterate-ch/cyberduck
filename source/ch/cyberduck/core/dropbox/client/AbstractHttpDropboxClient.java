@@ -22,9 +22,6 @@ package ch.cyberduck.core.dropbox.client;
  * http://bitbucket.org/dropboxapi/dropbox-client-java
  */
 
-import oauth.signpost.OAuthConsumer;
-import oauth.signpost.commonshttp.CommonsHttpOAuthConsumer;
-import oauth.signpost.exception.OAuthException;
 import ch.cyberduck.core.ConnectionCanceledException;
 
 import org.apache.commons.lang.StringUtils;
@@ -52,6 +49,10 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
+
+import oauth.signpost.OAuthConsumer;
+import oauth.signpost.commonshttp.CommonsHttpOAuthConsumer;
+import oauth.signpost.exception.OAuthException;
 
 /**
  * @version $Id$
@@ -87,9 +88,9 @@ public abstract class AbstractHttpDropboxClient {
 
     protected HttpClient client;
 
-    protected AbstractHttpDropboxClient(HttpClient client, String api_host, String content_host, String protocol, int port) {
-        this.api_host = api_host;
-        this.content_host = content_host;
+    protected AbstractHttpDropboxClient(HttpClient client, String apihost, String contenthost, String protocol, int port) {
+        this.api_host = apihost;
+        this.content_host = contenthost;
         this.protocol = protocol;
         this.port = port;
         this.client = client;

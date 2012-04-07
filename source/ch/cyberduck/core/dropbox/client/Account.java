@@ -39,10 +39,10 @@ public class Account extends AbstractResponse {
 
     public Account(JSONObject map) {
         country = this.getString(map, "country");
-        displayName = this.getString(map,"display_name");
+        displayName = this.getString(map, "display_name");
         uid = this.getLong(map, "uid");
         Object quotaInfo = map.get("quota_info");
-        if(quotaInfo != null && quotaInfo instanceof Map) {
+        if(quotaInfo instanceof Map) {
             Map quotamap = (Map) quotaInfo;
             quotaQuota = this.getLong(quotamap, "quota");
             quotaNormal = this.getLong(quotamap, "normal");

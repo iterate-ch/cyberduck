@@ -22,28 +22,22 @@ package ch.cyberduck.core.dropbox.client;
  * http://bitbucket.org/dropboxapi/dropbox-client-java
  */
 
+import org.apache.http.HttpRequest;
+
 import oauth.signpost.OAuthConsumer;
-import oauth.signpost.OAuthProvider;
 import oauth.signpost.basic.DefaultOAuthConsumer;
-import oauth.signpost.basic.DefaultOAuthProvider;
 import oauth.signpost.commonshttp.CommonsHttpOAuthConsumer;
 import oauth.signpost.exception.OAuthException;
-
-import org.apache.http.HttpRequest;
-import org.apache.log4j.Logger;
 
 /**
  * @version $Id$
  */
 public class Authenticator {
-    private static Logger log = Logger.getLogger(DropboxClient.class);
 
     private String consumer_key;
     private String consumer_secret;
 
     private OAuthConsumer consumer;
-
-    private OAuthProvider provider;
 
     public Authenticator(String consumer_key, String consumer_secret, String request_token_url, String access_token_url,
                          String authorization_url, String access_token_key, String access_token_secret) {
@@ -52,7 +46,6 @@ public class Authenticator {
 
         this.consumer = new DefaultOAuthConsumer(consumer_key, consumer_secret);
         this.consumer.setTokenWithSecret(access_token_key, access_token_secret);
-        this.provider = new DefaultOAuthProvider(request_token_url, access_token_url, authorization_url);
     }
 
     public void sign(HttpRequest request) throws OAuthException {
