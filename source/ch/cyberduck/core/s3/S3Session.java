@@ -1138,7 +1138,6 @@ public class S3Session extends CloudSession {
             if(method.equals(Distribution.WEBSITE)) {
                 try {
                     S3Session.this.check();
-
                     // Configure Website Index Document
                     StringBuilder name = new StringBuilder(Locale.localizedString("Website", "S3")).append(" ").append(method.toString());
                     if(enabled) {
@@ -1147,9 +1146,7 @@ public class S3Session extends CloudSession {
                     else {
                         this.message(MessageFormat.format(Locale.localizedString("Disable {0} Distribution", "Status"), name));
                     }
-                    Distribution d = distributionStatus.get(method).get(origin);
                     final String bucket = S3Session.this.getContainerForHostname(origin);
-
                     if(enabled) {
                         String suffix = "index.html";
                         if(StringUtils.isNotBlank(defaultRootObject)) {
