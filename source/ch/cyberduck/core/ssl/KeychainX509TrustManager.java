@@ -92,8 +92,14 @@ public abstract class KeychainX509TrustManager extends AbstractX509TrustManager 
         }
     }
 
+    /**
+     * Singleton instance
+     */
     private static KeyStore store;
 
+    /**
+     * @return The key manager factory
+     */
     private KeyStore init() {
         if(null == store) {
             try {
@@ -124,19 +130,19 @@ public abstract class KeychainX509TrustManager extends AbstractX509TrustManager 
     @Override
     public String chooseClientAlias(String[] keyType, Principal[] issuers, Socket socket) {
         try {
-            KeyStore store = this.init();
+            final KeyStore s = this.init();
             // List of issuer distinguished name
             List<String> list = new ArrayList<String>();
-            Enumeration<String> aliases = store.aliases();
+            Enumeration<String> aliases = s.aliases();
             while(aliases.hasMoreElements()) {
                 String alias = aliases.nextElement();
                 log.info(String.format("Alias in Keychain %s", alias));
-                if(store.isKeyEntry(alias)) {
+                if(s.isKeyEntry(alias)) {
                     log.info(String.format("Private key for alias %s", alias));
                     continue;
                 }
-                if(store.isCertificateEntry(alias)) {
-                    Certificate cert = store.getCertificate(alias);
+                if(s.isCertificateEntry(alias)) {
+                    Certificate cert = s.getCertificate(alias);
                     if(null == cert) {
                         log.warn(String.format("Failed to retrieve certificate for alias %s", alias));
                         continue;
@@ -156,7 +162,7 @@ public abstract class KeychainX509TrustManager extends AbstractX509TrustManager 
                 }
                 return null;
             }
-            String alias = store.getCertificateAlias(cert);
+            String alias = s.getCertificateAlias(cert);
             log.info(String.format("Certificate alias %s choosen", alias));
             return alias;
         }
@@ -169,9 +175,9 @@ public abstract class KeychainX509TrustManager extends AbstractX509TrustManager 
     @Override
     public X509Certificate[] getCertificateChain(String alias) {
         try {
-            KeyStore store = this.init();
+            final KeyStore s = this.init();
             List<X509Certificate> result = new ArrayList<X509Certificate>();
-            Certificate[] chain = store.getCertificateChain(alias);
+            Certificate[] chain = s.getCertificateChain(alias);
             if(null == chain) {
                 log.warn(String.format("No certificate chain for alias %s", alias));
             }
@@ -184,7 +190,7 @@ public abstract class KeychainX509TrustManager extends AbstractX509TrustManager 
             }
             if(result.isEmpty()) {
                 log.warn(String.format("No certificate chain for alias %s", alias));
-                Certificate cert = store.getCertificate(alias);
+                Certificate cert = s.getCertificate(alias);
                 if(cert instanceof X509Certificate) {
                     result.add((X509Certificate) cert);
                 }
@@ -199,10 +205,10 @@ public abstract class KeychainX509TrustManager extends AbstractX509TrustManager 
 
     @Override
     public PrivateKey getPrivateKey(String alias) {
-        KeyStore store = this.init();
+        final KeyStore s = this.init();
         try {
-            if(store.isKeyEntry(alias)) {
-                Key key = store.getKey(alias, "null".toCharArray());
+            if(s.isKeyEntry(alias)) {
+                Key key = s.getKey(alias, "null".toCharArray());
                 if(key instanceof PrivateKey) {
                     return (PrivateKey) key;
                 }
