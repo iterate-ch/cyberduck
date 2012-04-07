@@ -571,12 +571,12 @@ public class FinderLocal extends Local {
                 public void run() {
                     if(-1 == progress) {
                         NSWorkspace.sharedWorkspace().setIcon_forFile_options(
-                                null, getAbsolute(), new NSUInteger(0));
+                                null, path, new NSUInteger(0));
                     }
                     else {
                         // Specify 0 if you want to generate icons in all available icon representation formats
                         NSWorkspace.sharedWorkspace().setIcon_forFile_options(
-                                IconCache.iconNamed("download" + progress + ".icns"), getAbsolute(), new NSUInteger(0));
+                                IconCache.iconNamed("download" + progress + ".icns"), path, new NSUInteger(0));
                     }
                 }
             });
