@@ -18,13 +18,10 @@ package ch.cyberduck.core.threading;
  *  dkocher@cyberduck.ch
  */
 
-import org.apache.log4j.Logger;
-
 /**
  * @version $Id$
  */
 public class BackgroundActionRegistry extends AbstractActionRegistry<BackgroundAction> {
-    private static Logger log = Logger.getLogger(BackgroundActionRegistry.class);
 
     private static BackgroundActionRegistry global = null;
 
