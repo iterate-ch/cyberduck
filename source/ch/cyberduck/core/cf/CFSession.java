@@ -116,12 +116,12 @@ public class CFSession extends CloudSession {
      * @throws java.io.IOException If the connection is already canceled
      */
     protected void configure() throws IOException {
-        FilesClient client = this.getClient();
-        client.setConnectionTimeOut(this.timeout());
-        client.setUserAgent(this.getUserAgent());
+        final FilesClient c = this.getClient();
+        c.setConnectionTimeOut(this.timeout());
+        c.setUserAgent(this.getUserAgent());
         // Do not calculate ETag in advance
-        client.setUseETag(false);
-        client.setAuthenticationURL(this.getAuthenticationUrl());
+        c.setUseETag(false);
+        c.setAuthenticationURL(this.getAuthenticationUrl());
     }
 
     private String getAuthenticationUrl() {
@@ -159,16 +159,16 @@ public class CFSession extends CloudSession {
                 public String getHostname() {
                     try {
                         if(CFSession.this.isConnected()) {
-                            FilesClient client = CFSession.this.getClient();
-                            if(!client.isLoggedin()) {
-                                URI url = new URI(client.getAuthenticationURL());
+                            final FilesClient c = CFSession.this.getClient();
+                            if(!c.isLoggedin()) {
+                                URI url = new URI(c.getAuthenticationURL());
                                 return url.getHost();
                             }
                             if(cdnRequest) {
-                                URI url = new URI(client.getCdnManagementURL());
+                                URI url = new URI(c.getCdnManagementURL());
                                 return url.getHost();
                             }
-                            URI url = new URI(client.getStorageURL());
+                            URI url = new URI(c.getStorageURL());
                             return url.getHost();
                         }
                         else {
@@ -294,7 +294,7 @@ public class CFSession extends CloudSession {
                         }
                         cdnRequest = true;
                         try {
-                            final FilesCDNContainer info = CFSession.this.getClient().getCDNContainerInfo(origin);
+                            CFSession.this.getClient().getCDNContainerInfo(origin);
                         }
                         catch(FilesException e) {
                             if(404 == e.getHttpStatusCode()) {
@@ -366,7 +366,6 @@ public class CFSession extends CloudSession {
                         CFSession.this.message(MessageFormat.format(Locale.localizedString("Writing CDN configuration of {0}", "Status"),
                                 origin));
                         cdnRequest = true;
-                        URI url = new URI(CFSession.this.getClient().getCdnManagementURL());
                         for(Path file : files) {
                             if(file.isContainer()) {
                                 CFSession.this.getClient().purgeCDNContainer(origin, null);
@@ -377,9 +376,6 @@ public class CFSession extends CloudSession {
                         }
                     }
                     catch(IOException e) {
-                        CFSession.this.error("Cannot write CDN configuration", e);
-                    }
-                    catch(URISyntaxException e) {
                         CFSession.this.error("Cannot write CDN configuration", e);
                     }
                     catch(HttpException e) {
