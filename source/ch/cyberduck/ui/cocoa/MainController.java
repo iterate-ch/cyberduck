@@ -87,7 +87,6 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
@@ -252,12 +251,10 @@ public class MainController extends BundleController implements NSApplication.De
         columns.put("browser.columnOwner", Locale.localizedString("Owner"));
         columns.put("browser.columnGroup", Locale.localizedString("Group"));
         columns.put("browser.columnPermissions", Locale.localizedString("Permissions"));
-        Iterator<String> identifiers = columns.keySet().iterator();
-        int i = 0;
-        for(Iterator iter = columns.values().iterator(); iter.hasNext(); i++) {
-            NSMenuItem item = this.columnMenu.addItemWithTitle_action_keyEquivalent((String) iter.next(),
+        for(Map.Entry<String, String> entry : columns.entrySet()) {
+            NSMenuItem item = this.columnMenu.addItemWithTitle_action_keyEquivalent(entry.getValue(),
                     Foundation.selector("columnMenuClicked:"), StringUtils.EMPTY);
-            final String identifier = identifiers.next();
+            final String identifier = entry.getKey();
             item.setState(Preferences.instance().getBoolean(identifier) ? NSCell.NSOnState : NSCell.NSOffState);
             item.setRepresentedObject(identifier);
         }
@@ -281,8 +278,8 @@ public class MainController extends BundleController implements NSApplication.De
         this.editMenuDelegate = new EditMenuDelegate() {
             @Override
             protected Local getSelectedFile() {
-                final List<BrowserController> browsers = MainController.getBrowsers();
-                for(BrowserController controller : browsers) {
+                final List<BrowserController> b = MainController.getBrowsers();
+                for(BrowserController controller : b) {
                     if(controller.window().isKeyWindow()) {
                         return controller.getSelectedFile();
                     }
@@ -307,8 +304,8 @@ public class MainController extends BundleController implements NSApplication.De
         this.urlMenuDelegate = new CopyURLMenuDelegate() {
             @Override
             protected List<Path> getSelected() {
-                final List<BrowserController> browsers = MainController.getBrowsers();
-                for(BrowserController controller : browsers) {
+                final List<BrowserController> b = MainController.getBrowsers();
+                for(BrowserController controller : b) {
                     if(controller.window().isKeyWindow()) {
                         List<Path> selected = controller.getSelectedPaths();
                         if(selected.isEmpty()) {
@@ -334,8 +331,8 @@ public class MainController extends BundleController implements NSApplication.De
         this.openUrlMenuDelegate = new OpenURLMenuDelegate() {
             @Override
             protected List<Path> getSelected() {
-                final List<BrowserController> browsers = MainController.getBrowsers();
-                for(BrowserController controller : browsers) {
+                final List<BrowserController> b = MainController.getBrowsers();
+                for(BrowserController controller : b) {
                     if(controller.window().isKeyWindow()) {
                         List<Path> selected = controller.getSelectedPaths();
                         if(selected.isEmpty()) {
