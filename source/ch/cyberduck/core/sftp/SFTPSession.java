@@ -164,10 +164,8 @@ public class SFTPSession extends Session {
         if(!this.getClient().isAuthenticationComplete()) {
             throw new LoginCanceledException();
         }
-
         // Make sure subsystem is available
-        final SFTPv3Client subsystem = this.sftp();
-
+        this.sftp();
         this.fireConnectionDidOpenEvent();
     }
 
