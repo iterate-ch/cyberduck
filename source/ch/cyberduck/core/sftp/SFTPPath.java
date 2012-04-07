@@ -84,22 +84,22 @@ public class SFTPPath extends Path {
 
     private final SFTPSession session;
 
-    private SFTPPath(SFTPSession s, String parent, String name, int type) {
+    protected SFTPPath(SFTPSession s, String parent, String name, int type) {
         super(parent, name, type);
         this.session = s;
     }
 
-    private SFTPPath(SFTPSession s, String path, int type) {
+    protected SFTPPath(SFTPSession s, String path, int type) {
         super(path, type);
         this.session = s;
     }
 
-    private SFTPPath(SFTPSession s, String parent, Local file) {
+    protected SFTPPath(SFTPSession s, String parent, Local file) {
         super(parent, file);
         this.session = s;
     }
 
-    private <T> SFTPPath(SFTPSession s, T dict) {
+    protected <T> SFTPPath(SFTPSession s, T dict) {
         super(dict);
         this.session = s;
     }
