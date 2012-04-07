@@ -337,9 +337,9 @@ public class BrowserController extends WindowController implements NSToolbar.Del
      * @return The first selected path found or null if there is no selection
      */
     protected Path getSelectedPath() {
-        List<Path> selected = this.getSelectedPaths();
-        if(selected.size() > 0) {
-            return selected.get(0);
+        final List<Path> s = this.getSelectedPaths();
+        if(s.size() > 0) {
+            return s.get(0);
         }
         return null;
     }
@@ -551,13 +551,13 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         this.urlMenuDelegate = new CopyURLMenuDelegate() {
             @Override
             protected List<Path> getSelected() {
-                List<Path> selected = BrowserController.this.getSelectedPaths();
-                if(selected.isEmpty()) {
+                final List<Path> s = BrowserController.this.getSelectedPaths();
+                if(s.isEmpty()) {
                     if(BrowserController.this.isMounted()) {
                         return Collections.singletonList(BrowserController.this.workdir());
                     }
                 }
-                return selected;
+                return s;
             }
         };
         this.urlMenu.setDelegate(urlMenuDelegate.id());
@@ -572,13 +572,13 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         this.openUrlMenuDelegate = new OpenURLMenuDelegate() {
             @Override
             protected List<Path> getSelected() {
-                List<Path> selected = BrowserController.this.getSelectedPaths();
-                if(selected.isEmpty()) {
+                final List<Path> s = BrowserController.this.getSelectedPaths();
+                if(s.isEmpty()) {
                     if(BrowserController.this.isMounted()) {
                         return Collections.singletonList(BrowserController.this.workdir());
                     }
                 }
-                return selected;
+                return s;
             }
         };
         this.openUrlMenu.setDelegate(openUrlMenuDelegate.id());
@@ -983,7 +983,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
         @Override
         public void tableColumnClicked(NSTableView view, NSTableColumn tableColumn) {
-            List<Path> selected = BrowserController.this.getSelectedPaths();
+            final List<Path> s = BrowserController.this.getSelectedPaths();
             if(this.selectedColumnIdentifier().equals(tableColumn.identifier())) {
                 this.setSortedAscending(!this.isSortedAscending());
             }
@@ -998,7 +998,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                             IconCache.iconNamed("NSAscendingSortIndicator") :
                             IconCache.iconNamed("NSDescendingSortIndicator"),
                     tableColumn.identifier());
-            reloadData(selected);
+            reloadData(s);
         }
 
         @Override
@@ -2178,7 +2178,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     @Action
     public void reloadButtonClicked(final ID sender) {
         if(this.isMounted()) {
-            final List<Path> selected = this.getSelectedPaths();
+            final List<Path> s = this.getSelectedPaths();
             switch(this.browserSwitchView.selectedSegment()) {
                 case SWITCH_LIST_VIEW: {
                     this.workdir().invalidate();
@@ -2196,7 +2196,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                     break;
                 }
             }
-            this.reloadData(selected);
+            this.reloadData(s);
         }
     }
 
@@ -2569,8 +2569,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     @Action
     public void infoButtonClicked(final ID sender) {
         if(this.getSelectionCount() > 0) {
-            final List<Path> selected = this.getSelectedPaths();
-            InfoController c = InfoController.Factory.create(BrowserController.this, selected);
+            InfoController c = InfoController.Factory.create(BrowserController.this, this.getSelectedPaths());
             c.window().makeKeyAndOrderFront(null);
         }
     }
@@ -2608,8 +2607,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     public void downloadToPanelDidEnd_returnCode_contextInfo(NSOpenPanel sheet, int returncode, final ID contextInfo) {
         sheet.close();
         if(returncode == SheetCallback.DEFAULT_OPTION) {
-            final Session session = this.getTransferSession();
-            final List<Path> roots = new Collection<Path>();
             final Local downloadfolder = LocalFactory.createLocal(sheet.filename());
             this.download(this.getSelectedPaths(), downloadfolder);
         }
@@ -2851,7 +2848,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
      */
     protected void transfer(final Transfer transfer, final Path destination, boolean browser,
                             final TransferPrompt prompt) {
-        final TransferListener reload;
         transfer.addListener(new TransferAdapter() {
             @Override
             public void transferDidEnd() {
@@ -3102,19 +3098,19 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         PathPasteboard pasteboard = PathPasteboard.getPasteboard(this.getSession());
         pasteboard.clear();
         pasteboard.setCopy(true);
-        List<Path> selected = this.getSelectedPaths();
-        for(Path p : selected) {
+        final List<Path> s = this.getSelectedPaths();
+        for(Path p : s) {
             // Writing data for private use when the item gets dragged to the transfer queue.
             pasteboard.add(p);
         }
         final NSPasteboard clipboard = NSPasteboard.generalPasteboard();
-        if(selected.size() == 0) {
-            selected = Collections.singletonList(this.workdir());
+        if(s.size() == 0) {
+            s.add(this.workdir());
         }
         clipboard.declareTypes(NSArray.arrayWithObject(
                 NSString.stringWithString(NSPasteboard.StringPboardType)), null);
         StringBuilder copy = new StringBuilder();
-        for(Path p : selected) {
+        for(Path p : s) {
             copy.append(p.getAbsolute()).append("\n");
         }
         if(!clipboard.setStringForType(copy.toString(), NSPasteboard.StringPboardType)) {
@@ -3127,9 +3123,9 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         PathPasteboard pasteboard = PathPasteboard.getPasteboard(this.getSession());
         pasteboard.clear();
         pasteboard.setCut(true);
-        for(Path selected : this.getSelectedPaths()) {
+        for(Path s : this.getSelectedPaths()) {
             // Writing data for private use when the item gets dragged to the transfer queue.
-            pasteboard.add(selected);
+            pasteboard.add(s);
         }
         final NSPasteboard clipboard = NSPasteboard.generalPasteboard();
         clipboard.declareTypes(NSArray.arrayWithObject(NSString.stringWithString(NSPasteboard.StringPboardType)), null);
@@ -3264,22 +3260,22 @@ public class BrowserController extends WindowController implements NSToolbar.Del
      * @param archive Archive format
      */
     private void archiveClicked(final Archive archive) {
-        final List<Path> selected = this.getSelectedPaths();
-        if(this.checkOverwrite(Collections.singletonList(archive.getArchive(selected)))) {
+        final List<Path> s = this.getSelectedPaths();
+        if(this.checkOverwrite(Collections.singletonList(archive.getArchive(s)))) {
             background(new BrowserBackgroundAction(BrowserController.this) {
                 public void run() {
-                    session.archive(archive, selected);
+                    session.archive(archive, s);
                 }
 
                 @Override
                 public void cleanup() {
                     // Update Selection
-                    reloadData(Collections.singletonList(archive.getArchive(selected)));
+                    reloadData(Collections.singletonList(archive.getArchive(s)));
                 }
 
                 @Override
                 public String getActivity() {
-                    return archive.getCompressCommand(selected);
+                    return archive.getCompressCommand(s);
                 }
             });
         }
@@ -3288,27 +3284,27 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     @Action
     public void unarchiveButtonClicked(final ID sender) {
         final List<Path> expanded = new ArrayList<Path>();
-        for(final Path selected : this.getSelectedPaths()) {
-            final Archive archive = Archive.forName(selected.getName());
+        for(final Path s : this.getSelectedPaths()) {
+            final Archive archive = Archive.forName(s.getName());
             if(null == archive) {
                 continue;
             }
-            if(this.checkOverwrite(archive.getExpanded(Collections.singletonList(selected)))) {
+            if(this.checkOverwrite(archive.getExpanded(Collections.singletonList(s)))) {
                 background(new BrowserBackgroundAction(BrowserController.this) {
                     public void run() {
-                        session.unarchive(archive, selected);
+                        session.unarchive(archive, s);
                     }
 
                     @Override
                     public void cleanup() {
-                        expanded.addAll(archive.getExpanded(Collections.singletonList(selected)));
+                        expanded.addAll(archive.getExpanded(Collections.singletonList(s)));
                         // Update Selection
                         reloadData(expanded);
                     }
 
                     @Override
                     public String getActivity() {
-                        return archive.getDecompressCommand(selected);
+                        return archive.getDecompressCommand(s);
                     }
                 });
             }
@@ -4032,12 +4028,12 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         }
         else if(action.equals(Foundation.selector("editButtonClicked:"))) {
             if(this.isBrowser() && this.isMounted() && this.getSelectionCount() > 0) {
-                for(Path selected : this.getSelectedPaths()) {
-                    if(!this.isEditable(selected)) {
+                for(Path s : this.getSelectedPaths()) {
+                    if(!this.isEditable(s)) {
                         return false;
                     }
                     // Choose editor for selected file
-                    if(null == EditorFactory.defaultEditor(selected.getLocal())) {
+                    if(null == EditorFactory.defaultEditor(s.getLocal())) {
                         return false;
                     }
                 }
@@ -4047,8 +4043,8 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         }
         else if(action.equals(Foundation.selector("editMenuClicked:"))) {
             if(this.isBrowser() && this.isMounted() && this.getSelectionCount() > 0) {
-                for(Path selected : this.getSelectedPaths()) {
-                    if(!this.isEditable(selected)) {
+                for(Path s : this.getSelectedPaths()) {
+                    if(!this.isEditable(s)) {
                         return false;
                     }
                 }
@@ -4161,8 +4157,8 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                     return false;
                 }
                 if(this.getSelectionCount() > 0) {
-                    for(Path selected : this.getSelectedPaths()) {
-                        if(selected.attributes().isFile() && Archive.isArchive(selected.getName())) {
+                    for(Path s : this.getSelectedPaths()) {
+                        if(s.attributes().isFile() && Archive.isArchive(s.getName())) {
                             // At least one file selected is already an archive. No distinct action possible
                             return false;
                         }
@@ -4178,11 +4174,11 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                     return false;
                 }
                 if(this.getSelectionCount() > 0) {
-                    for(Path selected : this.getSelectedPaths()) {
-                        if(selected.attributes().isDirectory()) {
+                    for(Path s : this.getSelectedPaths()) {
+                        if(s.attributes().isDirectory()) {
                             return false;
                         }
-                        if(!Archive.isArchive(selected.getName())) {
+                        if(!Archive.isArchive(s.getName())) {
                             return false;
                         }
                     }
