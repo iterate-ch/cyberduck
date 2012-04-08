@@ -35,7 +35,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * @version $Id$
  */
 public class AttributedList<E extends AbstractPath> extends CopyOnWriteArrayList<E> {
-    protected static Logger log = Logger.getLogger(Cache.class);
+    private static final Logger log = Logger.getLogger(Cache.class);
 
 
     /**

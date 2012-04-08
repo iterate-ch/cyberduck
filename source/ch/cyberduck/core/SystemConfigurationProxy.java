@@ -28,7 +28,7 @@ import java.net.UnknownHostException;
 /**
  * @version $Id$
  */
-public class SystemConfigurationProxy extends AbstractProxy implements Proxy {
+public final class SystemConfigurationProxy extends AbstractProxy implements Proxy {
     private static Logger log = Logger.getLogger(SystemConfigurationProxy.class);
 
     public static void register() {
@@ -43,7 +43,7 @@ public class SystemConfigurationProxy extends AbstractProxy implements Proxy {
     }
 
     private SystemConfigurationProxy() {
-        ;
+        //
     }
 
     private static boolean JNI_LOADED = false;

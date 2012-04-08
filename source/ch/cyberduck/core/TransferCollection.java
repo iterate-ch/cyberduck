@@ -27,7 +27,7 @@ import org.apache.log4j.Logger;
 /**
  * @version $Id$
  */
-public class TransferCollection extends Collection<Transfer> {
+public final class TransferCollection extends Collection<Transfer> {
     private static Logger log = Logger.getLogger(TransferCollection.class);
 
     private static TransferCollection instance;
@@ -69,18 +69,6 @@ public class TransferCollection extends Collection<Transfer> {
     public void add(int row, Transfer o) {
         super.add(row, o);
         this.save();
-    }
-
-    /**
-     * Does not save the collection after modifiying
-     *
-     * @param row Index in collection
-     * @return the element that was removed from the list.
-     * @see #save()
-     */
-    @Override
-    public Transfer remove(int row) {
-        return super.remove(row);
     }
 
     public void save() {

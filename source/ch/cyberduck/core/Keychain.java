@@ -44,7 +44,7 @@ public final class Keychain extends AbstractKeychain {
     }
 
     private Keychain() {
-        ;
+        //
     }
 
     private static boolean JNI_LOADED = false;

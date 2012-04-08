@@ -29,7 +29,7 @@ import java.util.*;
  * @version $Id$
  */
 public class Cache<E extends AbstractPath> {
-    protected static Logger log = Logger.getLogger(Cache.class);
+    private static final Logger log = Logger.getLogger(Cache.class);
 
     public enum Lifecycle {
         /**

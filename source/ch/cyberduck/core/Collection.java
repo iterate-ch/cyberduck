@@ -111,7 +111,7 @@ public class Collection<E> extends ArrayList<E> implements CollectionListener<E>
     @Override
     public void clear() {
         for(Iterator<E> iter = this.iterator(); iter.hasNext();) {
-            E next = iter.next();
+            iter.next();
             iter.remove();
         }
     }

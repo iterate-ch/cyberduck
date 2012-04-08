@@ -21,7 +21,6 @@ package ch.cyberduck.core;
 import org.apache.log4j.Logger;
 
 import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
 
 /**
  * @version $Id$
@@ -29,23 +28,14 @@ import java.util.regex.PatternSyntaxException;
 public class HiddenFilesPathFilter<E extends AbstractPath> implements PathFilter<E> {
     private static Logger log = Logger.getLogger(HiddenFilesPathFilter.class);
 
-    private Pattern HIDDEN_PATTERN;
-
-    public HiddenFilesPathFilter() {
-        try {
-            HIDDEN_PATTERN = Pattern.compile(
-                    Preferences.instance().getProperty("browser.hidden.regex"));
-        }
-        catch(PatternSyntaxException e) {
-            log.warn(e.getMessage());
-        }
-    }
+    private Pattern pattern = Pattern.compile(
+            Preferences.instance().getProperty("browser.hidden.regex"));
 
     public boolean accept(E file) {
-        if(null == HIDDEN_PATTERN) {
+        if(null == pattern) {
             return true;
         }
-        if(HIDDEN_PATTERN.matcher(file.getName()).matches()) {
+        if(pattern.matcher(file.getName()).matches()) {
             return false;
         }
         if(file.attributes().isDuplicate()) {

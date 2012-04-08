@@ -48,6 +48,11 @@ public class BookmarkCollection extends AbstractHostCollection {
         return DEFAULT_COLLECTION;
     }
 
+    /**
+     * The file to persist this collection in
+     */
+    private Local file;
+
     @Override
     public String getName() {
         return Locale.localizedString("Favorites");
@@ -57,29 +62,8 @@ public class BookmarkCollection extends AbstractHostCollection {
      * @param file Favorites Plist
      */
     public BookmarkCollection(Local file) {
-        this.setFile(file);
-    }
-
-    /**
-     * The file to persist this collection in
-     */
-    protected Local file;
-
-    /**
-     * Will create the parent directory if missing
-     *
-     * @param file Legacy location of bookmarks
-     */
-    protected void setFile(Local file) {
         this.file = file;
         this.file.getParent().mkdir(true);
-    }
-
-    /**
-     * @return Legacy location of bookmarks
-     */
-    public Local getFile() {
-        return this.file;
     }
 
     @Override

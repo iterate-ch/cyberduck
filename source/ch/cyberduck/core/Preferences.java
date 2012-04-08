@@ -590,8 +590,8 @@ public abstract class Preferences {
         defaults.put("google.storage.oauth.clientid", "996125414232.apps.googleusercontent.com");
         defaults.put("google.storage.oauth.secret", "YdaFjo2t74-Q0sThsXgeTv3l");
 
-        final int MONTH = 60 * 60 * 24 * 30; //30 days in seconds
-        defaults.put("s3.cache.seconds", String.valueOf(MONTH));
+        final int month = 60 * 60 * 24 * 30; //30 days in seconds
+        defaults.put("s3.cache.seconds", String.valueOf(month));
 
         /**
          * Default metadata for uploads. Format must be "key1=value1 key2=value2"
@@ -778,8 +778,8 @@ public abstract class Preferences {
         defaults.put("archive.command.expand.bz2", "bzip2 -dk {0}");
 
         defaults.put("update.check", String.valueOf(true));
-        final int DAY = 60 * 60 * 24;
-        defaults.put("update.check.interval", String.valueOf(DAY)); // periodic update check in seconds
+        final int day = 60 * 60 * 24;
+        defaults.put("update.check.interval", String.valueOf(day)); // periodic update check in seconds
 
         defaults.put("terminal.bundle.identifier", "com.apple.Terminal");
         defaults.put("terminal.command", "do script \"{0}\"");

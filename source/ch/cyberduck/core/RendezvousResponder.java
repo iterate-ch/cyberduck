@@ -35,8 +35,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * @version $Id$
  */
-public class RendezvousResponder extends AbstractRendezvous
-        implements BrowseListener, ResolveListener {
+public final class RendezvousResponder extends AbstractRendezvous implements BrowseListener, ResolveListener {
     private static Logger log = Logger.getLogger(RendezvousResponder.class);
 
     private Map<String, DNSSDService> browsers;
@@ -53,7 +52,6 @@ public class RendezvousResponder extends AbstractRendezvous
     }
 
     private RendezvousResponder() {
-        log.debug("Rendezvous");
         this.browsers = new ConcurrentHashMap<String, DNSSDService>();
     }
 

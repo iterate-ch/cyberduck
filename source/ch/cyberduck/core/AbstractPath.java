@@ -213,16 +213,20 @@ public abstract class AbstractPath {
      * @param parent The parent directory
      * @param name   The relative filename
      */
-    protected void setPath(String parent, String name) {
-        if(null == parent) {
-            parent = String.valueOf(this.getPathDelimiter());
-        }
-        //Determine if the parent path already ends with a delimiter
-        if(parent.endsWith(String.valueOf(this.getPathDelimiter()))) {
-            this.setPath(parent + name);
+    protected void setPath(final String parent, final String name) {
+        final String p;
+        if(StringUtils.isBlank(parent)) {
+            p = String.valueOf(this.getPathDelimiter());
         }
         else {
-            this.setPath(parent + this.getPathDelimiter() + name);
+            p = parent;
+        }
+        // Determine if the parent path already ends with a delimiter
+        if(p.endsWith(String.valueOf(this.getPathDelimiter()))) {
+            this.setPath(p + name);
+        }
+        else {
+            this.setPath(p + this.getPathDelimiter() + name);
         }
     }
 
@@ -350,7 +354,7 @@ public abstract class AbstractPath {
     /**
      * Duplicate file
      *
-     * @param copy     Destination
+     * @param copy Destination
      */
     public abstract void copy(AbstractPath copy);
 

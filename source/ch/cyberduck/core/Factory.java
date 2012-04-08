@@ -56,14 +56,14 @@ public abstract class Factory<T> {
         return this.toString().hashCode();
     }
 
-    public static Platform NATIVE_PLATFORM = new Platform() {
+    public static final Platform NATIVE_PLATFORM = new Platform() {
         @Override
         public String toString() {
             return System.getProperty("os.name");
         }
     };
 
-    public static Platform VERSION_PLATFORM = new Platform() {
+    public static final Platform VERSION_PLATFORM = new Platform() {
         @Override
         public String toString() {
             return System.getProperty("os.version");

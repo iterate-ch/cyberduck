@@ -19,7 +19,6 @@ package ch.cyberduck.core;
  */
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 
 /**
  * Stores the login credentials
@@ -27,7 +26,6 @@ import org.apache.log4j.Logger;
  * @version $Id$
  */
 public abstract class Credentials {
-    private static Logger log = Logger.getLogger(Credentials.class);
 
     /**
      * The login name
@@ -132,11 +130,11 @@ public abstract class Credentials {
      * @return true if the username is anononymous
      */
     public boolean isAnonymousLogin() {
-        final String user = this.getUsername();
-        if(StringUtils.isEmpty(user)) {
+        final String u = this.getUsername();
+        if(StringUtils.isEmpty(u)) {
             return false;
         }
-        return Preferences.instance().getProperty("connection.login.anon.name").equals(user);
+        return Preferences.instance().getProperty("connection.login.anon.name").equals(u);
     }
 
     /**

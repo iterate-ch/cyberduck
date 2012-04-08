@@ -198,7 +198,7 @@ public class UploadTransfer extends Transfer {
     }
 
     private final PathFilter<Local> exclusionRegexFilter = new PathFilter<Local>() {
-        final Pattern pattern
+        private final Pattern pattern
                 = Pattern.compile(Preferences.instance().getProperty("queue.upload.skip.regex"));
 
         public boolean accept(Local child) {

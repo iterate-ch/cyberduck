@@ -30,7 +30,7 @@ import java.util.concurrent.ArrayBlockingQueue;
  * @version $Id$
  */
 public class Queue {
-    protected static Logger log = Logger.getLogger(Transfer.class);
+    private static Logger log = Logger.getLogger(Queue.class);
 
     private static Queue instance;
 

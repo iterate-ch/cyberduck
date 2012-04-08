@@ -63,7 +63,7 @@ public class HistoryCollection extends AbstractFolderHostCollection {
     /**
      * Does not allow duplicate entries.
      *
-     * @param row Row number
+     * @param row      Row number
      * @param bookmark Bookmark
      */
     @Override

@@ -22,7 +22,7 @@ package ch.cyberduck.core;
 /**
  * @version $Id$
  */
-public class SystemConfigurationReachability implements Reachability {
+public final class SystemConfigurationReachability implements Reachability {
 
     public static void register() {
         ReachabilityFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
@@ -36,7 +36,7 @@ public class SystemConfigurationReachability implements Reachability {
     }
 
     private SystemConfigurationReachability() {
-        ;
+        //
     }
 
     private static boolean JNI_LOADED = false;

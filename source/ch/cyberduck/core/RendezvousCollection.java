@@ -28,7 +28,7 @@ import java.util.Iterator;
  */
 public final class RendezvousCollection extends AbstractHostCollection {
 
-    private static RendezvousCollection RENDEZVOUS_COLLECTION
+    private static final RendezvousCollection RENDEZVOUS_COLLECTION
             = new RendezvousCollection();
 
     private RendezvousCollection() {

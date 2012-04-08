@@ -32,11 +32,11 @@ import java.util.List;
 /**
  * @version $Id$
  */
-public class ProtocolFactory {
+public final class ProtocolFactory {
     private static Logger log = Logger.getLogger(ProtocolFactory.class);
 
     private ProtocolFactory() {
-        super();
+        //
     }
 
     /**

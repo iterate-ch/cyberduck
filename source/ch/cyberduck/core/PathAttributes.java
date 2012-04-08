@@ -36,7 +36,6 @@ import java.util.Map;
  * @version $Id$
  */
 public class PathAttributes extends Attributes implements Serializable {
-    private static Logger log = Logger.getLogger(PathAttributes.class);
 
     /**
      * The file length
