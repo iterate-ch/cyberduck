@@ -61,15 +61,14 @@ import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 import ch.cyberduck.ui.cocoa.urlhandler.URLSchemeHandlerConfiguration;
 import ch.cyberduck.ui.cocoa.view.BookmarkCell;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+import org.jets3t.service.model.S3Object;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
 import org.rococoa.Selector;
 import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSUInteger;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-import org.jets3t.service.model.S3Object;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -83,7 +82,7 @@ import java.util.regex.PatternSyntaxException;
 /**
  * @version $Id$
  */
-public class PreferencesController extends ToolbarWindowController {
+public final class PreferencesController extends ToolbarWindowController {
     private static Logger log = Logger.getLogger(PreferencesController.class);
 
     private static PreferencesController instance = null;
@@ -1964,7 +1963,7 @@ public class PreferencesController extends ToolbarWindowController {
         this.documentExportFormatPopup.removeAllItems();
         StringTokenizer formats = new StringTokenizer(
                 Preferences.instance().getProperty("google.docs.export.document.formats"), ",");
-        for(int i = 0; formats.hasMoreTokens(); i++) {
+        while(formats.hasMoreTokens()) {
             String format = formats.nextToken();
             final String description = FinderLocal.kind(format);
             final String suffix = new StringBuilder().append(" (.").append(format).append(")").toString();
@@ -1996,7 +1995,7 @@ public class PreferencesController extends ToolbarWindowController {
         this.spreadsheetExportFormatPopup.removeAllItems();
         StringTokenizer formats = new StringTokenizer(
                 Preferences.instance().getProperty("google.docs.export.spreadsheet.formats"), ",");
-        for(int i = 0; formats.hasMoreTokens(); i++) {
+        while(formats.hasMoreTokens()) {
             String format = formats.nextToken();
             final String title = new StringBuilder(FinderLocal.kind(format)).append(" (.").append(format).append(")").toString();
             this.spreadsheetExportFormatPopup.addItemWithTitle(title);
@@ -2023,7 +2022,7 @@ public class PreferencesController extends ToolbarWindowController {
         this.presentationExportFormatPopup.removeAllItems();
         StringTokenizer formats = new StringTokenizer(
                 Preferences.instance().getProperty("google.docs.export.presentation.formats"), ",");
-        for(int i = 0; formats.hasMoreTokens(); i++) {
+        while(formats.hasMoreTokens()) {
             String format = formats.nextToken();
             final String title = new StringBuilder(FinderLocal.kind(format)).append(" (.").append(format).append(")").toString();
             this.presentationExportFormatPopup.addItemWithTitle(title);

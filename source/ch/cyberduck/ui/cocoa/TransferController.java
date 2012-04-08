@@ -60,7 +60,7 @@ import java.util.StringTokenizer;
 /**
  * @version $Id$
  */
-public class TransferController extends WindowController implements NSToolbar.Delegate {
+public final class TransferController extends WindowController implements NSToolbar.Delegate {
     private static Logger log = Logger.getLogger(TransferController.class);
 
     private static TransferController instance = null;

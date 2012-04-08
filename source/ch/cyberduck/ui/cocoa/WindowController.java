@@ -20,18 +20,31 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.i18n.Locale;
-import ch.cyberduck.ui.cocoa.application.*;
-import ch.cyberduck.ui.cocoa.foundation.*;
+import ch.cyberduck.ui.cocoa.application.NSAlert;
+import ch.cyberduck.ui.cocoa.application.NSApplication;
+import ch.cyberduck.ui.cocoa.application.NSButton;
+import ch.cyberduck.ui.cocoa.application.NSCell;
+import ch.cyberduck.ui.cocoa.application.NSPrintInfo;
+import ch.cyberduck.ui.cocoa.application.NSPrintOperation;
+import ch.cyberduck.ui.cocoa.application.NSPrintPanel;
+import ch.cyberduck.ui.cocoa.application.NSTextField;
+import ch.cyberduck.ui.cocoa.application.NSTextView;
+import ch.cyberduck.ui.cocoa.application.NSView;
+import ch.cyberduck.ui.cocoa.application.NSWindow;
+import ch.cyberduck.ui.cocoa.foundation.NSArray;
+import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
+import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
+import ch.cyberduck.ui.cocoa.foundation.NSNotification;
+import ch.cyberduck.ui.cocoa.foundation.NSNotificationCenter;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
 import org.rococoa.Rococoa;
 import org.rococoa.cocoa.foundation.NSPoint;
 import org.rococoa.cocoa.foundation.NSSize;
 import org.rococoa.cocoa.foundation.NSUInteger;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -119,11 +132,11 @@ public abstract class WindowController extends BundleController implements NSWin
      * @return True if the controller window is on screen.
      */
     public boolean isVisible() {
-        NSWindow window = this.window();
-        if(null == window) {
+        final NSWindow w = this.window();
+        if(null == w) {
             return false;
         }
-        return window.isVisible();
+        return w.isVisible();
     }
 
     public void windowDidBecomeKey(NSNotification notification) {
@@ -170,9 +183,9 @@ public abstract class WindowController extends BundleController implements NSWin
         NSArray windows = NSApplication.sharedApplication().windows();
         int count = windows.count().intValue();
         if(count != 0) {
-            NSWindow window = Rococoa.cast(windows.objectAtIndex(new NSUInteger(count - 1)), NSWindow.class);
-            NSPoint origin = window.frame().origin;
-            origin = new NSPoint(origin.x.doubleValue(), origin.y.doubleValue() + window.frame().size.height.doubleValue());
+            NSWindow w = Rococoa.cast(windows.objectAtIndex(new NSUInteger(count - 1)), NSWindow.class);
+            NSPoint origin = w.frame().origin;
+            origin = new NSPoint(origin.x.doubleValue(), origin.y.doubleValue() + w.frame().size.height.doubleValue());
             this.window.setFrameTopLeftPoint(this.window.cascadeTopLeftFromPoint(origin));
         }
     }

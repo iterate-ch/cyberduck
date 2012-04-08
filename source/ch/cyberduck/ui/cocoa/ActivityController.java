@@ -48,7 +48,7 @@ import java.util.Map;
 /**
  * @version $Id$
  */
-public class ActivityController extends WindowController {
+public final class ActivityController extends WindowController {
     private static Logger log = Logger.getLogger(ActivityController.class);
 
     private static ActivityController instance = null;
