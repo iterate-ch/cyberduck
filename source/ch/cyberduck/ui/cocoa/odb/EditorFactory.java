@@ -41,7 +41,7 @@ import java.util.Map;
 /**
  * @version $Id$
  */
-public class EditorFactory {
+public final class EditorFactory {
     private static Logger log = Logger.getLogger(EditorFactory.class);
 
     private EditorFactory() {
