@@ -26,7 +26,7 @@ import ch.cyberduck.ui.Pasteboard;
 /**
  * @version $Id$
  */
-public class HostPasteboard extends Collection<Host> implements Pasteboard<Host> {
+public final class HostPasteboard extends Collection<Host> implements Pasteboard<Host> {
 
     private static HostPasteboard instance;
 

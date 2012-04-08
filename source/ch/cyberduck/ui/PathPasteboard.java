@@ -33,7 +33,7 @@ import java.util.Map;
 /**
  * @version $Id$
  */
-public class PathPasteboard extends Collection<Path> implements Pasteboard<Path> {
+public final class PathPasteboard extends Collection<Path> implements Pasteboard<Path> {
 
     private static Map<Session, PathPasteboard> instances = new HashMap<Session, PathPasteboard>() {
         @Override
