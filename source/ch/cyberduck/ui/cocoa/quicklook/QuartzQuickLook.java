@@ -23,7 +23,6 @@ import ch.cyberduck.core.Collection;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.ui.cocoa.foundation.NSURL;
 
-import org.apache.log4j.Logger;
 import org.rococoa.ID;
 import org.rococoa.cocoa.foundation.NSInteger;
 
@@ -34,7 +33,6 @@ import java.util.List;
  * @version $Id$
  */
 public final class QuartzQuickLook extends AbstractQuickLook {
-    private static Logger log = Logger.getLogger(QuartzQuickLook.class);
 
     public static void register() {
         if(!Factory.VERSION_PLATFORM.matches("10\\.5.*")) {

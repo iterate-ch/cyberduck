@@ -23,8 +23,6 @@ import ch.cyberduck.core.Collection;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Native;
 
-import org.apache.log4j.Logger;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,7 +30,6 @@ import java.util.List;
  * @version $Id$
  */
 public final class DeprecatedQuickLook extends AbstractQuickLook {
-    private static Logger log = Logger.getLogger(DeprecatedQuickLook.class);
 
     public static void register() {
         if(Factory.VERSION_PLATFORM.matches("10\\.5.*")) {
