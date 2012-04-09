@@ -1104,7 +1104,7 @@ public abstract class Path extends AbstractPath implements Serializable {
             }
             // Becuase URLEncoder uses <code>application/x-www-form-urlencoded</code> we have to replace these
             // for proper URI percented encoding.
-            return b.toString().replaceAll("\\+", "%20");
+            return b.toString().replace("+", "%20").replace("*", "%2A").replace("%7E", "~");
         }
         catch(UnsupportedEncodingException e) {
             log.error(e.getMessage());
