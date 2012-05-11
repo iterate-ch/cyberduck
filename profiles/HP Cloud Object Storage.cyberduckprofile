@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Protocol</key>
+	<string>swift</string>
+	<key>Vendor</key>
+	<string>hp</string>
+	<key>Description</key>
+	<string>HP Cloud Object Storage</string>
+	<key>Default Hostname</key>
+	<string>region-a.geo-1.identity.hpcloudsvc.com</string>
+	<key>Default Port</key>
+	<string>35357</string>
+	<key>Username Placeholder</key>
+	<string>Tenant ID:Account Email Address</string>
+	<key>Password Placeholder</key>
+	<string>Console Password</string>
+</dict>
+</plist>
