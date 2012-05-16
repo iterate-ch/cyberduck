@@ -17,7 +17,7 @@
 "Could not open or read the host file" = "تعذر فتح أو قراءة ملف المضيف";
 "Could not open the file" = "لا يمكن فتح الملف";
 "Could not show the file" = "لا يمكن عرض الملف";
-"Could not show the file in the Finder" = "لا يمكن أن تظهر في Finder";
+"Could not show the file in the Finder" = "لا يمكن عرض الملف في Finder";
 "Create New Folder" = "أنشاء مجلد جديد";
 "Cut {0}" = "قص {0}";
 "Copy {0}" = "نسخ {0}";
@@ -27,8 +27,8 @@
 "Delete file" = "حذف ملف";
 "Deny" = "منع";
 "Disconnect" = "قطع الاتصال";
-"Disconnect from {0}" = "قطع الأتصال من {0}";
-"Disconnect from server" = "قطع من الخادم";
+"Disconnect from {0}" = "قطع الأتصال بـ{0}";
+"Disconnect from server" = "قطع الأتصال بالخادم";
 "Do you want to delete the selected bookmark?" = "هل تريد حذف المفضلة المحددة";
 "Download" = "تحميل";
 "Download As:" = "التحميل كا:";
@@ -64,10 +64,10 @@
 "New Connection" = "أتصال جديد";
 "New Folder" = "مجلد جديد";
 "No Bonjour services available" = "No Bonjour services available";
-"No external editor available" = "لا يوجد محرر خارج متاح";
+"No external editor available" = "لا يوجد محرر خارجي متاح";
 "No newer version available." = "لا توجد نسخة جديدة متاحة.";
 "No private key selected" = "No private key selected";
-"No recently connected servers available" = "لا خوادم متصلة مؤخرا متاحة";
+"No recently connected servers available" = "لا توجد خوادم متصلة مؤخراً متاحة";
 "No update" = "لا يوجد تحديث";
 "None" = "لا شيء";
 "{0} of {1}" = "{0} من {1}";
@@ -86,11 +86,11 @@
 "Quit" = "خروج";
 "Quit Anyway" = "الخروج بأية حال";
 "Really delete the following files? This cannot be undone." = "متأكد من حذف الملفات التالية ؟ هذا لا يمكن التراجع عنه.";
-"Refresh" = "التحديث";
-"Refresh directory listing" = "Refresh directory listing";
+"Refresh" = "تحديث";
+"Refresh directory listing" = "تحديث دليل القائمة";
 "Reload" = "تحديث";
 "Remove" = "إزالة";
-"Remove completed transfers from list." = "إزالة المنقولات المكتملة من القائمة.";
+"Remove completed transfers from list." = "إزالة الملفات المكتملة النقل من القائمة";
 "Resume" = "استئناف";
 "Review…" = "استعراض ...";
 "Search" = "البحث";
@@ -100,7 +100,7 @@
 "Show" = "عرض";
 "Show file attributes" = "أظهار سمات الملف";
 "Show in Finder" = "اعرض في Finder";
-"Show Transfers window" = "أعرض نافذة المنقولات";
+"Show Transfers window" = "أعرض نافذة النقل";
 "Size" = "حجم";
 "Stop" = "توقف";
 "Skip" = "تخطى";
@@ -117,7 +117,7 @@
 "There was a problem checking for an update. Please try again later." = "كانت هناك مشكلة أثناء التحقق من تحديث. يرجى المحاولة مرة أخرى في وقت لاحق.";
 "Toggle Bookmarks" = "تبديل المفضلة";
 "Transfer in progress" = "جاري النقل";
-"Transfers" = "المنقولات";
+"Transfers" = "النقل";
 "Trash" = "سلة المهملات";
 "Unknown" = "غير معروف";
 "Unknown host key for {0}." = "Unknown host key for {0}.";
