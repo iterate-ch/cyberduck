@@ -165,7 +165,7 @@ public abstract class Path extends AbstractPath implements Serializable {
         if(this.status().isComplete()) {
             dict.setStringForKey(String.valueOf(true), "Complete");
         }
-        return dict.<S>getSerialized();
+        return dict.getSerialized();
     }
 
     /**

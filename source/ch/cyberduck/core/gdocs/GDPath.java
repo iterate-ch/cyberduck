@@ -19,7 +19,15 @@ package ch.cyberduck.core.gdocs;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AbstractPath;
+import ch.cyberduck.core.Acl;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathFactory;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.StreamListener;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.serializer.Deserializer;
@@ -28,24 +36,6 @@ import ch.cyberduck.core.serializer.Serializer;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-
-import com.google.gdata.client.DocumentQuery;
-import com.google.gdata.client.GDataProtocol;
-import com.google.gdata.client.GoogleAuthTokenFactory;
-import com.google.gdata.client.Service;
-import com.google.gdata.client.http.HttpGDataRequest;
-import com.google.gdata.client.spreadsheet.SpreadsheetService;
-import com.google.gdata.data.*;
-import com.google.gdata.data.acl.AclEntry;
-import com.google.gdata.data.acl.AclFeed;
-import com.google.gdata.data.acl.AclRole;
-import com.google.gdata.data.acl.AclScope;
-import com.google.gdata.data.docs.*;
-import com.google.gdata.data.media.MediaSource;
-import com.google.gdata.util.AuthenticationException;
-import com.google.gdata.util.ContentType;
-import com.google.gdata.util.NotImplementedException;
-import com.google.gdata.util.ServiceException;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -58,6 +48,36 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import com.google.gdata.client.DocumentQuery;
+import com.google.gdata.client.GDataProtocol;
+import com.google.gdata.client.GoogleAuthTokenFactory;
+import com.google.gdata.client.Service;
+import com.google.gdata.client.http.HttpGDataRequest;
+import com.google.gdata.client.spreadsheet.SpreadsheetService;
+import com.google.gdata.data.DateTime;
+import com.google.gdata.data.Link;
+import com.google.gdata.data.MediaContent;
+import com.google.gdata.data.OutOfLineContent;
+import com.google.gdata.data.Person;
+import com.google.gdata.data.PlainTextConstruct;
+import com.google.gdata.data.acl.AclEntry;
+import com.google.gdata.data.acl.AclFeed;
+import com.google.gdata.data.acl.AclRole;
+import com.google.gdata.data.acl.AclScope;
+import com.google.gdata.data.docs.DocumentEntry;
+import com.google.gdata.data.docs.DocumentListEntry;
+import com.google.gdata.data.docs.DocumentListFeed;
+import com.google.gdata.data.docs.FolderEntry;
+import com.google.gdata.data.docs.PresentationEntry;
+import com.google.gdata.data.docs.RevisionEntry;
+import com.google.gdata.data.docs.RevisionFeed;
+import com.google.gdata.data.docs.SpreadsheetEntry;
+import com.google.gdata.data.media.MediaSource;
+import com.google.gdata.util.AuthenticationException;
+import com.google.gdata.util.ContentType;
+import com.google.gdata.util.NotImplementedException;
+import com.google.gdata.util.ServiceException;
 
 public class GDPath extends Path {
     private static Logger log = Logger.getLogger(GDPath.class);
@@ -116,7 +136,7 @@ public class GDPath extends Path {
         if(documentType != null) {
             dict.setStringForKey(documentType, "DocumentType");
         }
-        return super.<S>getAsDictionary(dict);
+        return super.getAsDictionary(dict);
     }
 
     private final GDSession session;
