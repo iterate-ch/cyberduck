@@ -38,7 +38,9 @@ import org.apache.log4j.Logger;
 import org.jets3t.service.Jets3tProperties;
 import org.jets3t.service.ServiceException;
 import org.jets3t.service.acl.AccessControlList;
+import org.jets3t.service.acl.Permission;
 import org.jets3t.service.acl.gs.GSAccessControlList;
+import org.jets3t.service.acl.gs.GroupByEmailAddressGrantee;
 import org.jets3t.service.impl.rest.AccessControlListHandler;
 import org.jets3t.service.impl.rest.GSAccessControlListHandler;
 import org.jets3t.service.impl.rest.XmlResponsesSaxParser;
@@ -231,6 +233,14 @@ public class GSSession extends S3Session {
                     status.setLogfilePrefix(Preferences.instance().getProperty("google.logging.prefix"));
                 }
                 this.check();
+                // Grant write for Google to logging target bucket
+                final AccessControlList acl = this.getClient().getBucketAcl(container);
+                final GroupByEmailAddressGrantee grantee = new GroupByEmailAddressGrantee(
+                        "cloud-storage-analytics@google.com");
+                if(!acl.getPermissionsForGrantee(grantee).contains(Permission.PERMISSION_WRITE)) {
+                    acl.grantPermission(grantee, Permission.PERMISSION_WRITE);
+                    this.getClient().putBucketAcl(container, acl);
+                }
                 this.getClient().setBucketLoggingStatusImpl(container, status);
             }
             catch(ServiceException e) {
