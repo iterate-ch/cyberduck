@@ -2,6 +2,7 @@
 - [Localize] Arabic Localization
 - [Feature] Bucket location in South America (Sao Paulo) Region (S3)
 - [Feature] Multi-Object Delete (S3)
+- [Feature] Interoperability with HP Cloud (Openstack)
 
 4.2.1 [http://trac.cyberduck.ch/milestone/4.2.1]
 - [Bugfix] Edited files not uploaded (#6399)
