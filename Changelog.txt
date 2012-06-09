@@ -9,6 +9,9 @@ Changelog. Last modified: $Date$
 - [Feature] Bucket location in South America (São Paulo) Region (S3)
 - [Feature] Multi-Object Delete (S3)
 - [Feature] Interoperability with HP Cloud (Openstack)
+- [Feature] Interoperability with Lunacloud Storage (S3)
+- [Bugfix] Copy folder from server to server (#6440)
+- [Bugfix] Duplicate folder (#6495)
 
 4.2.1 [http://trac.cyberduck.ch/milestone/4.2.1]
 - [Bugfix] Edited files not uploaded (#6399)
