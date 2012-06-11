@@ -1,0 +1,6 @@
+designated => 
+	(anchor apple generic and certificate leaf[field.1.2.840.113635.100.6.1.9]) /* Developer ID */
+        and identifier "ch.sudo.cyberduck"
+	or
+	    (certificate root = H"a1fb64aab7a4441436d50b91f310bf8c3dafc22c") /* Deprecated */
+	    and identifier "ch.sudo.cyberduck"
