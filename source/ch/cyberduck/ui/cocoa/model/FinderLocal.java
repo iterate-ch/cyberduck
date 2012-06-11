@@ -28,7 +28,16 @@ import ch.cyberduck.core.threading.DefaultMainAction;
 import ch.cyberduck.ui.cocoa.IconCache;
 import ch.cyberduck.ui.cocoa.ProxyController;
 import ch.cyberduck.ui.cocoa.application.NSWorkspace;
-import ch.cyberduck.ui.cocoa.foundation.*;
+import ch.cyberduck.ui.cocoa.foundation.NSArray;
+import ch.cyberduck.ui.cocoa.foundation.NSBundle;
+import ch.cyberduck.ui.cocoa.foundation.NSDate;
+import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
+import ch.cyberduck.ui.cocoa.foundation.NSDistributedNotificationCenter;
+import ch.cyberduck.ui.cocoa.foundation.NSFileManager;
+import ch.cyberduck.ui.cocoa.foundation.NSNotification;
+import ch.cyberduck.ui.cocoa.foundation.NSNumber;
+import ch.cyberduck.ui.cocoa.foundation.NSObject;
+import ch.cyberduck.ui.cocoa.foundation.NSString;
 
 import org.apache.commons.collections.map.AbstractLinkedMap;
 import org.apache.commons.collections.map.LRUMap;
@@ -151,7 +160,7 @@ public class FinderLocal extends Local {
         final boolean success = NSFileManager.defaultManager().createSymbolicLinkAtPath_pathContent(
                 this.getAbsolute(), target);
         if(!success) {
-            log.error("File attribute changed failed:" + getAbsolute());
+            log.error("File attribute changed failed:" + this.getAbsolute());
         }
     }
 
@@ -372,7 +381,7 @@ public class FinderLocal extends Local {
             return super.getSymlinkTarget();
         }
         return LocalFactory.createLocal((Local) this.getParent(),
-                NSFileManager.defaultManager().destinationOfSymbolicLinkAtPath_error(getAbsolute(), null));
+                NSFileManager.defaultManager().destinationOfSymbolicLinkAtPath_error(this.getAbsolute(), null));
     }
 
     public static native String kind(String extension);
