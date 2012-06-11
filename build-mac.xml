@@ -131,7 +131,7 @@
         <!-- Copy stub for system runtime -->
         <antcall target="copy-stub"/>
         <!-- Remove custom runtime -->
-        <delete dir="${app.runtime.lib}"/>
+        <delete dir="${app.runtime}"/>
 
         <antcall target="codesign"/>
         <antcall target="tar"/>
