@@ -26,7 +26,13 @@ import ch.cyberduck.core.ProxyFactory;
 import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
 import ch.cyberduck.core.ssl.SSLSession;
 
-import org.apache.http.*;
+import org.apache.http.Header;
+import org.apache.http.HttpException;
+import org.apache.http.HttpHost;
+import org.apache.http.HttpRequest;
+import org.apache.http.HttpRequestInterceptor;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpResponseInterceptor;
 import org.apache.http.auth.params.AuthPNames;
 import org.apache.http.auth.params.AuthParams;
 import org.apache.http.client.params.AuthPolicy;
@@ -42,8 +48,7 @@ import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.conn.ssl.X509HostnameVerifier;
 import org.apache.http.impl.client.AbstractHttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.conn.tsccm.ConnPoolByRoute;
-import org.apache.http.impl.conn.tsccm.ThreadSafeClientConnManager;
+import org.apache.http.impl.conn.PoolingClientConnectionManager;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
@@ -58,7 +63,6 @@ import java.security.cert.X509Certificate;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @version $Id$
@@ -155,16 +159,9 @@ public abstract class HttpSession extends SSLSession {
                     }
                 }
             }
-            ThreadSafeClientConnManager manager = new ThreadSafeClientConnManager(registry) {
-                @Override
-                protected ConnPoolByRoute createConnectionPool(long connTTL, TimeUnit connTTLTimeUnit) {
-                    // Set the maximum connections per host for the HTTP connection manager,
-                    // *and* also set the maximum number of total connections.
-                    connPerRoute.setDefaultMaxPerRoute(Preferences.instance().getInteger("http.connections.route"));
-                    return new ConnPoolByRoute(connOperator, connPerRoute,
-                            Preferences.instance().getInteger("http.connections.total"));
-                }
-            };
+            PoolingClientConnectionManager manager = new PoolingClientConnectionManager(registry);
+            manager.setMaxTotal(Preferences.instance().getInteger("http.connections.total"));
+            manager.setDefaultMaxPerRoute(Preferences.instance().getInteger("http.connections.route"));
             AbstractHttpClient http = new DefaultHttpClient(manager, params);
             this.configure(http);
             clients.put(hostname, http);
