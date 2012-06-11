@@ -1949,6 +1949,7 @@ pl.lproj/ServicesMenu.strings -text svneol=unset#text/utf-16
 pl.lproj/Status.strings -text svneol=unset#text/utf-16
 pl.lproj/Transfer.strings -text svneol=unset#text/utf-16
 profiles/Azure.cyberduckprofile -text
+profiles/Cloud.ca[!!-~]Object[!!-~]Store[!!-~]East-1[!!-~]Region.cyberduckprofile -text
 profiles/Dropbox.cyberduckprofile -text
 profiles/Dunkel[!!-~]Cloud[!!-~]Storage.cyberduckprofile -text
 profiles/GreenQloud.cyberduckprofile -text
