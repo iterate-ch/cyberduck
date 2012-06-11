@@ -37,7 +37,7 @@
     <property name="app.runtime.lib"
               value="@executable_path/../Resources/Java/Runtime.jdk/Contents/Home/jre/lib/server/libjvm.dylib"/>
     <!--<property name="app.runtime.lib"-->
-              <!--value="@executable_path/../Resources/Java/Runtime.jdk/Contents/Home/lib/server/libjvm.dylib"/>-->
+    <!--value="@executable_path/../Resources/Java/Runtime.jdk/Contents/Home/lib/server/libjvm.dylib"/>-->
     <property name="app.runtime.properties.key" value="Runtime"/>
     <property name="app.runtime.system.min" value="10.5"/>
 
@@ -128,7 +128,11 @@
     </target>
 
     <target name="distribution-sparkle" depends="timestamp">
+        <!-- Copy stub for system runtime -->
         <antcall target="copy-stub"/>
+        <!-- Remove custom runtime -->
+        <delete dir="${app.runtime.lib}"/>
+
         <antcall target="codesign"/>
         <antcall target="tar"/>
         <antcall target="zip"/>
@@ -318,7 +322,7 @@
             <arg line="-d -r- ${app.bundle}"/>
         </exec>
         <echo message="Check signature validity for ${app.bundle}..."/>
-        <exec executable="/usr/sbin/spctl" failonerror="true">
+        <exec executable="/usr/sbin/spctl" failonerror="false">
             <arg line="--assess --type execute ${app.bundle} -vv"/>
         </exec>
     </target>
