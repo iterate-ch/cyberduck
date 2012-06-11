@@ -291,7 +291,7 @@
                type="file"
                parallel="false" spawn="false" force="true">
             <arg line="--force --sign '${codesign.certificate}' --keychain ${codesign.keychain} ${codesign.arg} -v"/>
-            <fileset dir="${app.runtime}">
+            <fileset dir="${app.runtime}" erroronmissingdir="false">
                 <include name="**/*.dylib"/>
             </fileset>
             <srcfile/>
