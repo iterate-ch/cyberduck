@@ -47,6 +47,7 @@ import org.jets3t.service.model.S3Bucket;
 import org.jets3t.service.model.S3BucketLoggingStatus;
 import org.jets3t.service.model.S3BucketVersioningStatus;
 import org.jets3t.service.model.S3Object;
+import org.jets3t.service.model.S3WebsiteConfig;
 import org.jets3t.service.model.StorageBucket;
 import org.jets3t.service.model.StorageBucketLoggingStatus;
 import org.jets3t.service.model.StorageObject;
@@ -1153,7 +1154,7 @@ public class S3Session extends CloudSession {
                             suffix = FilenameUtils.getName(defaultRootObject);
                         }
                         // Enable website endpoint
-                        S3Session.this.getClient().setWebsiteConfig(bucket, new WebsiteConfig(suffix));
+                        S3Session.this.getClient().setWebsiteConfig(bucket, new S3WebsiteConfig(suffix));
                     }
                     else {
                         // Disable website endpoint
