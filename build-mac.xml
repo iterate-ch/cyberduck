@@ -321,10 +321,6 @@
         <exec executable="/usr/bin/codesign" failonerror="true">
             <arg line="-d -r- ${app.bundle}"/>
         </exec>
-        <echo message="Check signature validity for ${app.bundle}..."/>
-        <exec executable="/usr/sbin/spctl" failonerror="false">
-            <arg line="--assess --type execute ${app.bundle} -vv"/>
-        </exec>
     </target>
 
     <target name="tar">
