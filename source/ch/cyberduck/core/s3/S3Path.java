@@ -19,7 +19,20 @@ package ch.cyberduck.core.s3;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AbstractPath;
+import ch.cyberduck.core.Acl;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.ConnectionCanceledException;
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LoginController;
+import ch.cyberduck.core.LoginControllerFactory;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathFactory;
+import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.StreamListener;
 import ch.cyberduck.core.cloud.CloudPath;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
 import ch.cyberduck.core.http.ResponseOutputStream;
@@ -60,7 +73,17 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TimeZone;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -1337,7 +1360,7 @@ public class S3Path extends CloudPath {
      * @throws ConnectionCanceledException Authentication canceled for MFA delete
      * @throws ServiceException            Service error
      */
-    private void delete(String container, List<ObjectKeyAndVersion> keys) throws ConnectionCanceledException, ServiceException {
+    protected void delete(String container, List<ObjectKeyAndVersion> keys) throws ConnectionCanceledException, ServiceException {
         if(this.getSession().isMultiFactorAuthentication(container)) {
             LoginController c = LoginControllerFactory.instance(this.getSession());
             final Credentials credentials = this.getSession().mfa(c);
@@ -1348,9 +1371,16 @@ public class S3Path extends CloudPath {
                     true);
         }
         else {
-            this.getSession().getClient().deleteMultipleObjects(container,
-                    keys.toArray(new ObjectKeyAndVersion[keys.size()]),
-                    true);
+            if(this.getHost().getHostname().equals(Protocol.S3_SSL.getDefaultHostname())) {
+                this.getSession().getClient().deleteMultipleObjects(container,
+                        keys.toArray(new ObjectKeyAndVersion[keys.size()]),
+                        true);
+            }
+            else {
+                for(ObjectKeyAndVersion k : keys) {
+                    this.getSession().getClient().deleteObject(container, k.getKey());
+                }
+            }
         }
     }
 
