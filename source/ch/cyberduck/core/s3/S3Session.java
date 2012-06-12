@@ -178,6 +178,21 @@ public class S3Session extends CloudSession {
         }
 
         @Override
+        public WebsiteConfig getWebsiteConfigImpl(String bucketName) throws ServiceException {
+            return super.getWebsiteConfigImpl(bucketName);
+        }
+
+        @Override
+        public void setWebsiteConfigImpl(String bucketName, WebsiteConfig config) throws ServiceException {
+            super.setWebsiteConfigImpl(bucketName, config);
+        }
+
+        @Override
+        public void deleteWebsiteConfigImpl(String bucketName) throws ServiceException {
+            super.deleteWebsiteConfigImpl(bucketName);
+        }
+
+        @Override
         public void authorizeHttpRequest(HttpUriRequest httpMethod, HttpContext context)
                 throws ServiceException {
             if(authorize(httpMethod, credentials)) {
@@ -310,7 +325,7 @@ public class S3Session extends CloudSession {
             return this.getHost().getHostname(true);
         }
         if(this.getHost().getHostname().equals(this.getHost().getProtocol().getDefaultHostname())) {
-            return bucket + "." + this.getHost().getHostname(true);
+            return String.format("%s.%s", bucket, this.getHost().getHostname(true));
         }
         return this.getHost().getHostname(true);
     }
@@ -984,7 +999,7 @@ public class S3Session extends CloudSession {
      * @param bucket Bucket name
      * @return Website distribution hostname
      */
-    private String getWebsiteEndpoint(String bucket) {
+    protected String getWebsiteEndpoint(String bucket) {
         // Geographical location
         final String location = this.getLocation(bucket);
         // US Standard
@@ -1007,7 +1022,7 @@ public class S3Session extends CloudSession {
         else if(S3Bucket.LOCATION_SOUTH_AMERICA_EAST.equals(location)) {
             endpoint = "s3-website-sa-east-1.amazonaws.com";
         }
-        return bucket + "." + endpoint;
+        return String.format("%s.%s", bucket, endpoint);
     }
 
     /**
