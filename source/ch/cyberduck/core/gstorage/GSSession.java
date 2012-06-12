@@ -28,9 +28,12 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.SessionFactory;
+import ch.cyberduck.core.cdn.Distribution;
+import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.s3.S3Session;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.http.client.methods.HttpUriRequest;
@@ -45,7 +48,9 @@ import org.jets3t.service.impl.rest.AccessControlListHandler;
 import org.jets3t.service.impl.rest.GSAccessControlListHandler;
 import org.jets3t.service.impl.rest.XmlResponsesSaxParser;
 import org.jets3t.service.model.GSBucketLoggingStatus;
+import org.jets3t.service.model.GSWebsiteConfig;
 import org.jets3t.service.model.S3Object;
+import org.jets3t.service.model.WebsiteConfig;
 import org.jets3t.service.security.OAuth2Credentials;
 import org.jets3t.service.security.OAuth2Tokens;
 import org.jets3t.service.security.ProviderCredentials;
@@ -59,7 +64,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Google Storage for Developers is a new service for developers to store and
@@ -69,8 +76,14 @@ import java.util.List;
  *
  * @version $Id$
  */
-public class GSSession extends S3Session {
+public class GSSession extends S3Session implements DistributionConfiguration {
     private static Logger log = Logger.getLogger(GSSession.class);
+
+    /**
+     * Cache distribution status result.
+     */
+    private Map<String, Distribution> distributionStatus
+            = new HashMap<String, Distribution>();
 
     private static class Factory extends SessionFactory {
         @Override
@@ -92,6 +105,7 @@ public class GSSession extends S3Session {
         super.configure(hostname);
         Jets3tProperties configuration = super.getProperties();
         configuration.setProperty("s3service.enable-storage-classes", String.valueOf(false));
+        configuration.setProperty("s3service.disable-dns-buckets", String.valueOf(true));
     }
 
     @Override
@@ -349,6 +363,11 @@ public class GSSession extends S3Session {
             public BucketLoggingStatusHandler parseLoggingStatusResponse(InputStream inputStream) throws ServiceException {
                 return super.parseLoggingStatusResponse(inputStream, new GSBucketLoggingStatusHandler());
             }
+
+            @Override
+            public WebsiteConfig parseWebsiteConfigurationResponse(InputStream inputStream) throws ServiceException {
+                return super.parseWebsiteConfigurationResponse(inputStream, new GSWebsiteConfigurationHandler());
+            }
         };
     }
 
@@ -385,7 +404,154 @@ public class GSSession extends S3Session {
     }
 
     @Override
-    public boolean isCDNSupported() {
+    protected String getWebsiteEndpoint(String container) {
+        return String.format("%s.%s", container, this.getHost().getProtocol().getDefaultHostname());
+    }
+
+    @Override
+    public DistributionConfiguration cdn() {
+        return this;
+    }
+
+    /**
+     * Distribution methods supported by this S3 provider.
+     *
+     * @return Download and Streaming for AWS.
+     */
+    @Override
+    public List<Distribution.Method> getMethods() {
+        return Arrays.asList(Distribution.WEBSITE);
+    }
+
+    @Override
+    public String toString(Distribution.Method method) {
+        return method.toString();
+    }
+
+    @Override
+    public void clear() {
+        distributionStatus.clear();
+    }
+
+    @Override
+    public String getOrigin(Distribution.Method method, String container) {
+        return container;
+    }
+
+    @Override
+    public Distribution read(String origin, Distribution.Method method) {
+        // Website Endpoint URL
+        final String url = method.getProtocol() + this.getWebsiteEndpoint(origin);
+        if(!distributionStatus.containsKey(origin)) {
+            try {
+                this.check();
+
+                try {
+                    final WebsiteConfig configuration = this.getClient().getWebsiteConfigImpl(origin);
+                    final Distribution distribution = new Distribution(
+                            null,
+                            origin,
+                            method,
+                            configuration.isWebsiteConfigActive(),
+                            configuration.isWebsiteConfigActive(),
+                            // http://example-bucket.s3-website-us-east-1.amazonaws.com/
+                            url,
+                            Locale.localizedString("Deployed", "S3"),
+                            new String[]{},
+                            false,
+                            configuration.getIndexDocumentSuffix());
+                    // Cache website configuration
+                    distributionStatus.put(origin, distribution);
+                }
+                catch(ServiceException e) {
+                    // Not found. Website configuration not enbabled.
+                    String status = Locale.localizedString(e.getErrorCode());
+                    if(status.equals(e.getErrorCode())) {
+                        // No localization found. Use english text
+                        status = e.getErrorMessage();
+                    }
+                    final Distribution distribution = new Distribution(null, origin, method, false, url, status);
+                    distributionStatus.put(origin, distribution);
+                }
+            }
+            catch(IOException e) {
+                this.error("Cannot read website configuration", e);
+            }
+        }
+        if(distributionStatus.containsKey(origin)) {
+            return distributionStatus.get(origin);
+        }
+        return new ch.cyberduck.core.cdn.Distribution(origin, method);
+    }
+
+    @Override
+    public void invalidate(String origin, Distribution.Method method, List<Path> files, boolean recursive) {
+        distributionStatus.remove(origin);
+    }
+
+    @Override
+    public boolean isInvalidationSupported(Distribution.Method method) {
+        return false;
+    }
+
+    @Override
+    public boolean isCached(Distribution.Method method) {
+        return !distributionStatus.isEmpty();
+    }
+
+    @Override
+    public String toString() {
+        return Locale.localizedString("Website Configuration", "S3");
+    }
+
+    @Override
+    public void write(boolean enabled, String origin, Distribution.Method method, String[] cnames, boolean logging, String loggingBucket, String defaultRootObject) {
+        try {
+            this.check();
+            // Configure Website Index Document
+            StringBuilder name = new StringBuilder(Locale.localizedString("Website", "S3")).append(" ").append(method.toString());
+            if(enabled) {
+                this.message(MessageFormat.format(Locale.localizedString("Enable {0} Distribution", "Status"), name));
+            }
+            else {
+                this.message(MessageFormat.format(Locale.localizedString("Disable {0} Distribution", "Status"), name));
+            }
+            if(enabled) {
+                String suffix = "index.html";
+                if(StringUtils.isNotBlank(defaultRootObject)) {
+                    suffix = FilenameUtils.getName(defaultRootObject);
+                }
+                // Enable website endpoint
+                this.getClient().setWebsiteConfigImpl(origin, new GSWebsiteConfig(suffix));
+            }
+            else {
+                // Disable website endpoint
+                this.getClient().setWebsiteConfigImpl(origin, new GSWebsiteConfig());
+            }
+        }
+        catch(IOException e) {
+            this.error("Cannot write website configuration", e);
+        }
+        catch(ServiceException e) {
+            this.error("Cannot write website configuration", e);
+        }
+        finally {
+            distributionStatus.remove(origin);
+        }
+    }
+
+    @Override
+    public boolean isDefaultRootSupported(Distribution.Method method) {
+        return true;
+    }
+
+    @Override
+    public boolean isLoggingSupported(Distribution.Method method) {
+        return false;
+    }
+
+    @Override
+    public boolean isCnameSupported(Distribution.Method method) {
         return false;
     }
 }

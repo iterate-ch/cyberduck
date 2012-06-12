@@ -4,6 +4,7 @@
 - [Feature] Multi-Object Delete (S3)
 - [Feature] Interoperability with HP Cloud (Openstack)
 - [Feature] Interoperability with Lunacloud Storage (S3)
+- [Feature] Website Configuration (Google Storage)
 - [Bugfix] Copy folder from server to server (#6440)
 - [Bugfix] Duplicate folder (#6495)
 
