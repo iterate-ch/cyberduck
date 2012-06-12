@@ -325,5 +325,7 @@
         </array>
         <key>LSMinimumSystemVersion</key>
         <string>_MINIMUM_SYSTEM_</string>
+        <key>NSHighResolutionCapable</key>
+        <true/>
     </dict>
 </plist>
