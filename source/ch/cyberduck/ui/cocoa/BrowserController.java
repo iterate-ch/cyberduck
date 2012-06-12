@@ -3110,8 +3110,11 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         clipboard.declareTypes(NSArray.arrayWithObject(
                 NSString.stringWithString(NSPasteboard.StringPboardType)), null);
         StringBuilder copy = new StringBuilder();
-        for(Path p : s) {
-            copy.append(p.getAbsolute()).append("\n");
+        for(Iterator<Path> i = s.iterator(); i.hasNext(); ) {
+            copy.append(i.next().getAbsolute());
+            if(i.hasNext()) {
+                copy.append("\n");
+            }
         }
         if(!clipboard.setStringForType(copy.toString(), NSPasteboard.StringPboardType)) {
             log.error("Error writing to NSPasteboard.StringPboardType.");
