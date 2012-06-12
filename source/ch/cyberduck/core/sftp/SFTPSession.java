@@ -218,7 +218,7 @@ public class SFTPSession extends Session {
 
                 @Override
                 public String getPasswordPlaceholder() {
-                    return Locale.localizedString("One-time passcode", "Credentials");
+                    return getHost().getProtocol().getPasswordPlaceholder();
                 }
             };
             controller.prompt(host.getProtocol(), additional,
@@ -373,8 +373,7 @@ public class SFTPSession extends Session {
      * @throws IOException Login failed or canceled
      */
     private boolean loginUsingKBIAuthentication(final LoginController controller, final Credentials credentials) throws IOException {
-        log.debug("loginUsingKBIAuthentication" +
-                "make:" + credentials);
+        log.debug("loginUsingKBIAuthentication:" + credentials);
         if(this.getClient().isAuthMethodAvailable(credentials.getUsername(), "keyboard-interactive")) {
             return this.getClient().authenticateWithKeyboardInteractive(credentials.getUsername(),
                     /**
@@ -395,21 +394,10 @@ public class SFTPSession extends Session {
                             if(0 == promptCount) {
                                 log.debug("First callback returning provided credentials");
                                 promptCount++;
-                                return new String[]{host.getCredentials().getPassword()};
+                                return new String[]{credentials.getPassword()};
                             }
                             String[] response = new String[numPrompts];
                             for(int i = 0; i < numPrompts; i++) {
-                                Credentials credentials = new Credentials(host.getCredentials().getUsername(), null, false) {
-                                    @Override
-                                    public String getUsernamePlaceholder() {
-                                        return host.getProtocol().getUsernamePlaceholder();
-                                    }
-
-                                    @Override
-                                    public String getPasswordPlaceholder() {
-                                        return Locale.localizedString("One-time passcode", "Credentials");
-                                    }
-                                };
                                 controller.prompt(host.getProtocol(), credentials,
                                         Locale.localizedString("Provide additional login credentials", "Credentials"), prompt[i], false, false, false);
                                 response[i] = credentials.getPassword();
