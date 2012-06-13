@@ -1513,7 +1513,7 @@ public class S3Path extends CloudPath {
             if(hostname.startsWith(container)) {
                 url.append(hostname);
                 if(!this.isContainer()) {
-                    url.append(encode(this.getKey()));
+                    url.append(DELIMITER).append(encode(this.getKey()));
                 }
             }
             else {

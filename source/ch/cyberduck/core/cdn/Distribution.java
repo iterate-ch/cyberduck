@@ -502,7 +502,7 @@ public class Distribution {
         }
         StringBuilder b = new StringBuilder(base);
         if(StringUtils.isNotEmpty(file.getKey())) {
-            b.append(Path.encode(file.getKey()));
+            b.append(Path.DELIMITER).append(Path.encode(file.getKey()));
         }
         try {
             return new URI(b.toString()).normalize().toString();
@@ -571,7 +571,7 @@ public class Distribution {
         StringBuilder b = new StringBuilder();
         b.append(this.getMethod().getProtocol()).append(cname).append(this.getMethod().getContext());
         if(StringUtils.isNotEmpty(file.getKey())) {
-            b.append(Path.encode(file.getKey()));
+            b.append(Path.DELIMITER).append(Path.encode(file.getKey()));
         }
         try {
             return new URI(b.toString()).normalize().toString();

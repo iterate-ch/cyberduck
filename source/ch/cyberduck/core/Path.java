@@ -1100,7 +1100,7 @@ public abstract class Path extends AbstractPath implements Serializable {
                 return p;
             }
             while(t.hasMoreTokens()) {
-                b.append(DELIMITER).append(URLEncoder.encode(t.nextToken(), "UTF-8"));
+                b.append(URLEncoder.encode(t.nextToken(), "UTF-8"));
             }
             // Becuase URLEncoder uses <code>application/x-www-form-urlencoded</code> we have to replace these
             // for proper URI percented encoding.
@@ -1128,7 +1128,7 @@ public abstract class Path extends AbstractPath implements Serializable {
      */
     public String toURL(boolean credentials) {
         // Do not use java.net.URL because it doesn't know about custom protocols!
-        return this.getHost().toURL(credentials) + encode(this.getAbsolute());
+        return String.format("%s%s", this.getHost().toURL(credentials), encode(this.getAbsolute()));
     }
 
     /**
