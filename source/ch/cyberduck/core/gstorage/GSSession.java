@@ -59,6 +59,7 @@ import org.jets3t.service.utils.oauth.OAuthUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -137,9 +138,9 @@ public class GSSession extends S3Session implements DistributionConfiguration {
         if(provider instanceof OAuth2Credentials) {
             final OAuth2Credentials oauth = (OAuth2Credentials) provider;
             final String acccesstoken = KeychainFactory.instance().getPassword(this.getHost().getProtocol().getScheme().name(),
-                    this.getHost().getPort(), OAuthConstants.GSOAuth2_10.Endpoints.Token, "Google OAuth2 Access Token");
+                    this.getHost().getPort(), URI.create(OAuthConstants.GSOAuth2_10.Endpoints.Token).getHost(), "Google OAuth2 Access Token");
             final String refreshtoken = KeychainFactory.instance().getPassword(this.getHost().getProtocol().getScheme().name(),
-                    this.getHost().getPort(), OAuthConstants.GSOAuth2_10.Endpoints.Token, "Google OAuth2 Refresh Token");
+                    this.getHost().getPort(), URI.create(OAuthConstants.GSOAuth2_10.Endpoints.Token).getHost(), "Google OAuth2 Refresh Token");
             if(StringUtils.isEmpty(acccesstoken) || StringUtils.isEmpty(refreshtoken)) {
                 final String url = ((OAuth2Credentials) provider).generateBrowserUrlToAuthorizeNativeApplication(
                         OAuthConstants.GSOAuth2_10.Scopes.FullControl
@@ -176,9 +177,9 @@ public class GSSession extends S3Session implements DistributionConfiguration {
 
                 // Save for future use
                 KeychainFactory.instance().addPassword(this.getHost().getProtocol().getScheme().name(),
-                        this.getHost().getPort(), OAuthConstants.GSOAuth2_10.Endpoints.Token, "Google OAuth2 Access Token", tokens.getAccessToken());
+                        this.getHost().getPort(), URI.create(OAuthConstants.GSOAuth2_10.Endpoints.Token).getHost(), "Google OAuth2 Access Token", tokens.getAccessToken());
                 KeychainFactory.instance().addPassword(this.getHost().getProtocol().getScheme().name(),
-                        this.getHost().getPort(), OAuthConstants.GSOAuth2_10.Endpoints.Token, "Google OAuth2 Refresh Token", tokens.getRefreshToken());
+                        this.getHost().getPort(), URI.create(OAuthConstants.GSOAuth2_10.Endpoints.Token).getHost(), "Google OAuth2 Refresh Token", tokens.getRefreshToken());
 
                 // Save expiry
                 Preferences.instance().setProperty("google.storage.oauth.expiry", tokens.getExpiry().getTime());
