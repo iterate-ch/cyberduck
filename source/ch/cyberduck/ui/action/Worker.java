@@ -38,9 +38,7 @@ public abstract class Worker<T> {
         return name.toString();
     }
 
-    public T run() {
-        throw new UnsupportedOperationException();
-    };
+    public abstract T run();
 
     public abstract void cleanup(T result);
 
