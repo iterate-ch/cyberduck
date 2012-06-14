@@ -35,6 +35,7 @@ import java.net.UnknownHostException;
 import java.text.MessageFormat;
 
 import ch.ethz.ssh2.SFTPException;
+import com.amazonaws.AmazonServiceException;
 import com.googlecode.sardine.impl.SardineException;
 import com.rackspacecloud.client.cloudfiles.FilesException;
 
@@ -111,6 +112,9 @@ public class BackgroundException extends Exception {
         }
         if(cause instanceof ServiceException) {
             return "S3 " + Locale.localizedString("Error");
+        }
+        if(cause instanceof AmazonServiceException) {
+            return "IAM " + Locale.localizedString("Error");
         }
         if(cause instanceof CloudFrontServiceException) {
             return "CloudFront " + Locale.localizedString("Error");
@@ -189,6 +193,13 @@ public class BackgroundException extends Exception {
                     if(StringUtils.isNotBlank(status.getReasonPhrase())) {
                         buffer.append(" ").append(status.getReasonPhrase());
                     }
+                }
+            }
+            else if(cause instanceof AmazonServiceException) {
+                final AmazonServiceException a = (AmazonServiceException) cause;
+                final String status = a.getErrorCode();
+                if(StringUtils.isNotBlank(status)) {
+                    buffer.append(" ").append(status);
                 }
             }
         }
