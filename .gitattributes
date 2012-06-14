@@ -821,6 +821,8 @@ img/general.tiff -text svneol=unset#image/tiff
 img/google-icon.png -text svneol=unset#image/png
 img/google.icns -text
 img/google.ico -text
+img/googledrive-icon.png -text svneol=unset#image/png
+img/googledrive.icns -text
 img/greenArrow1.png -text
 img/greenArrow2.png -text
 img/history.tiff -text svneol=unset#image/tiff
