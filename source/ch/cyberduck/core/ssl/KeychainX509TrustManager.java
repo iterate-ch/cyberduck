@@ -155,6 +155,7 @@ public abstract class KeychainX509TrustManager extends AbstractX509TrustManager 
                 }
             }
             X509Certificate cert = KeychainFactory.instance().chooseCertificate(list.toArray(new String[list.size()]),
+                    this.getHostname(),
                     MessageFormat.format(Locale.localizedString("Select the certificate to use when connecting to {0}."), this.getHostname()));
             if(null == cert) {
                 if(log.isInfoEnabled()) {

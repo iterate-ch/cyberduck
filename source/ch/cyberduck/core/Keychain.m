@@ -100,7 +100,8 @@ jbyteArray GetCertData(JNIEnv *env, SecCertificateRef certificateRef) {
 	return jb;
 }
 
-JNIEXPORT jbyteArray Java_ch_cyberduck_core_Keychain_chooseCertificateNative(JNIEnv *env, jobject this, jobjectArray jIssuers, jstring jPrompt) {
+JNIEXPORT jbyteArray Java_ch_cyberduck_core_Keychain_chooseCertificateNative(JNIEnv *env, jobject this,
+                                                                             jobjectArray jIssuers, jstring jHostname, jstring jPrompt) {
 	//NSArray *identities = CreateCertificatesFromData(env, jCertificates);
     NSMutableArray *identities = [NSMutableArray array];
     SecIdentitySearchRef search;
@@ -112,15 +113,9 @@ JNIEXPORT jbyteArray Java_ch_cyberduck_core_Keychain_chooseCertificateNative(JNI
     }
     CFRelease(search);
 	SFChooseIdentityPanel *panel = [[SFChooseIdentityPanel alloc] init];
-	if([panel respondsToSelector:@selector(setShowsHelp:)]) {
-		[panel setShowsHelp:NO];
-	}
-	if([panel respondsToSelector:@selector(setDomain:)]) {
-		//[panel setDomain:convertToNSString(env, jDomain)];
-	}
-	if([panel respondsToSelector:@selector(setAlternateButtonTitle:)]) {
-		[panel setAlternateButtonTitle:NSLocalizedString(@"Disconnect", @"")];
-	}
+    [panel setShowsHelp:NO];
+    [panel setDomain:convertToNSString(env, jHostname)];
+    [panel setAlternateButtonTitle:NSLocalizedString(@"Disconnect", @"")];
 	[panel setInformativeText:convertToNSString(env, jPrompt)];
 	// Create an SSL policy ref configured for client cert evaluation.
 	SecPolicyRef policy;

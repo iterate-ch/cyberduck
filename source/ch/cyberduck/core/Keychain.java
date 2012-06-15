@@ -175,11 +175,11 @@ public final class Keychain extends AbstractKeychain {
     private native boolean displayCertificatesNative(Object[] certificates);
 
     @Override
-    public synchronized X509Certificate chooseCertificate(String[] issuers, String prompt) {
+    public synchronized X509Certificate chooseCertificate(String[] issuers, String hostname, String prompt) {
         if(!loadNative()) {
             return null;
         }
-        byte[] cert = this.chooseCertificateNative(issuers, prompt);
+        byte[] cert = this.chooseCertificateNative(issuers, hostname, prompt);
         if(null == cert) {
             log.info("No certificate selected");
             return null;
@@ -203,5 +203,5 @@ public final class Keychain extends AbstractKeychain {
      * @param prompt  String to display in prompt
      * @return Selected certificate
      */
-    private native byte[] chooseCertificateNative(String[] issuers, String prompt);
+    private native byte[] chooseCertificateNative(String[] issuers, String hostname, String prompt);
 }
