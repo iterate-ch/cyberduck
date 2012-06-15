@@ -83,7 +83,7 @@ JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_Keychain_displayCertificatesNa
  * Signature: (Ljava/lang/String)Ljava/lang/String;
  */
 JNIEXPORT jbyteArray Java_ch_cyberduck_core_Keychain_chooseCertificateNative
-  (JNIEnv *env, jobject this, jobjectArray jIssuers, jstring jPrompt);
+  (JNIEnv *env, jobject this, jobjectArray jIssuers, jstring jHostname, jstring jPrompt);
 
 #ifdef __cplusplus
 }
