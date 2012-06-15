@@ -43,15 +43,21 @@ import org.apache.log4j.Logger;
 import org.spearce.jgit.errors.InvalidPatternException;
 import org.spearce.jgit.fnmatch.FileNameMatcher;
 
-import java.io.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Simple configuration parser for the OpenSSH ~/.ssh/config file.
- * <p/>
- * Since JSch does not (currently) have the ability to parse an OpenSSH
- * configuration file this is a simple parser to read that file and make the
- * critical options available to {@link SshSessionFactory}.
  */
 public class OpenSshConfig {
     private static Logger log = Logger.getLogger(OpenSshConfig.class);
@@ -395,7 +401,7 @@ public class OpenSshConfig {
          *         host connection.
          */
         public boolean isBatchMode() {
-            return batchMode != null && batchMode.booleanValue();
-		}
-	}
+            return batchMode != null && batchMode;
+        }
+    }
 }
