@@ -44,7 +44,7 @@ public class Distribution {
     private String id;
 
     /**
-     * Configuration sucessfully applied and distributed
+     * Configuration successfully applied and distributed
      */
     private boolean deployed;
 
