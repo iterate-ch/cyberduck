@@ -81,6 +81,28 @@
         </dn:msbuild>
     </target>
 
+    <target name="dlls" depends="version, archive">
+        <fileset id="jars" dir=".">
+            <include name="build/core.jar"/>
+            <include name="build/ui.jar"/>
+            <include name="lib/*.jar"/>
+            <exclude name="lib/jna-*.jar"/>
+            <exclude name="lib/activation-*.jar"/>
+            <exclude name="lib/asm-*.jar"/>
+            <exclude name="lib/cglib-*.jar"/>
+            <exclude name="lib/dns_sd.jar"/>
+            <exclude name="lib/jaxb*.jar"/>
+        </fileset>
+        <pathconvert property="jars" refid="jars" pathsep=" ">
+            <mapper type="regexp" from="^(.*)$" to="{ \1 }"/>
+        </pathconvert>
+        <exec executable="${ikvm.home}/bin/ikvmc" dir="${build}">
+            <arg value="-target:library"/>
+            <arg value="-sharedclassloader"/>
+            <arg line="${jars}"/>
+        </exec>
+    </target>
+
     <target name="dll" depends="version, archive" description="Convert core.jar and ui.jar to core.dll">
         <ikvmc target="library" out="${build}/core.dll" home="${ikvm.home}" version="${version}" debug="false"
                verbose="true">
