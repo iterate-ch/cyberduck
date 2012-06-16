@@ -117,34 +117,6 @@
                 <exclude name="dns_sd.jar"/>
                 <exclude name="jaxb*.jar"/>
             </fileset>
-            <outputfilter>
-                <contains>Warning IKVMC0107: skipping resource (name clash): "META-INF/</contains>
-                <contains>Warning IKVMC0111: emitted java.lang.NoClassDefFoundError in "ch.cyberduck.core.Native
-                </contains>
-                <contains>org.apache.commons.cli</contains>
-                <contains>ch.cyberduck.ui.cocoa</contains>
-                <contains>org.apache.avalon</contains>
-                <contains>org.apache.commons.logging.impl</contains>
-                <contains>Warning IKVMC0111: emitted java.lang.NoClassDefFoundError in "com.rackspacecloud</contains>
-                <contains>javax.servlet.ServletContextListener</contains>
-                <contains>org.dom4j</contains>
-                <contains>org.gjt.xpp</contains>
-                <contains>org.apache.webdav.lib</contains>
-                <contains>org.apache.commons.xmlio</contains>
-                <contains>org.apache.log</contains>
-                <contains>com.sun.msv</contains>
-                <contains>org.xmlpull</contains>
-                <contains>com.google.gdata.data.apt.Data</contains>
-                <contains>com.sun</contains>
-                <contains>javax.annotation</contains>
-                <contains>nu.xom</contains>
-                <contains>org.jaxen.xom</contains>
-                <contains>org.w3c.dom.UserDataHandler</contains>
-                <contains>(class is already available in referenced assembly "IKVM.OpenJDK.XML.API</contains>
-                <contains>javax.jms</contains>
-                <contains>.JMS</contains>
-            </outputfilter>
-            <!-- only 25 outputfilters are allowed! -->
         </ikvmc>
     </target>
 
