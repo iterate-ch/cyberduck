@@ -106,40 +106,40 @@ public abstract class AbstractKeychain {
     }
 
     /**
-     * @param protocol Protocol scheme
-     * @param port Port
+     * @param protocol    Protocol scheme
+     * @param port        Port
      * @param serviceName Hostname
-     * @param user Credentials
+     * @param user        Credentials
      * @return Password if found or null otherwise
      */
     public abstract String getPassword(String protocol, int port, String serviceName, String user);
 
     /**
      * @param serviceName Hostname
-     * @param user Credentials
+     * @param user        Credentials
      * @return Password if found or null otherwise
      */
     public abstract String getPassword(String serviceName, String user);
 
     /**
      * @param serviceName Hostname
-     * @param user Credentials
-     * @param password Password to save for service
+     * @param user        Credentials
+     * @param password    Password to save for service
      */
     public abstract void addPassword(String serviceName, String user, String password);
 
     /**
-     * @param protocol Scheme
-     * @param port Port
+     * @param protocol    Scheme
+     * @param port        Port
      * @param serviceName Hostname
-     * @param user Credentials
-     * @param password Password to save for service
+     * @param user        Credentials
+     * @param password    Password to save for service
      */
     public abstract void addPassword(String protocol, int port, String serviceName, String user, String password);
 
     /**
      * @param hostname Hostname
-     * @param certs Certificate chain
+     * @param certs    Certificate chain
      * @return True if trusted in Keychain
      */
     public abstract boolean isTrusted(String hostname, X509Certificate[] certs);
@@ -153,11 +153,12 @@ public abstract class AbstractKeychain {
     /**
      * Prompt user for client certificate
      *
-     * @param issuers Distinguished names
-     * @param prompt Display in certificate choose prompt
+     * @param issuers  Distinguished names
+     * @param hostname Client hostname
+     * @param prompt   Display in certificate choose prompt
      * @return Null if no certificate selected
      */
-    public X509Certificate chooseCertificate(String[] issuers, String prompt) {
+    public X509Certificate chooseCertificate(String[] issuers, String hostname, String prompt) {
         return null;
     }
 }
