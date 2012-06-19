@@ -25,7 +25,7 @@ import ch.cyberduck.ui.cocoa.BrowserController;
 import org.apache.log4j.Logger;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class WorkerBackgroundAction<T> extends BrowserBackgroundAction {
     private static Logger log = Logger.getLogger(WorkerBackgroundAction.class);
@@ -39,6 +39,7 @@ public class WorkerBackgroundAction<T> extends BrowserBackgroundAction {
         this.worker = worker;
     }
 
+    @Override
     public void run() {
         result = worker.run();
     }

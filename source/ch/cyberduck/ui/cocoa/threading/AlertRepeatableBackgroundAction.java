@@ -23,8 +23,21 @@ import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.threading.BackgroundException;
 import ch.cyberduck.core.threading.RepeatableBackgroundAction;
-import ch.cyberduck.ui.cocoa.*;
-import ch.cyberduck.ui.cocoa.application.*;
+import ch.cyberduck.ui.cocoa.AbstractTableDelegate;
+import ch.cyberduck.ui.cocoa.Action;
+import ch.cyberduck.ui.cocoa.AlertController;
+import ch.cyberduck.ui.cocoa.ErrorController;
+import ch.cyberduck.ui.cocoa.ListDataSource;
+import ch.cyberduck.ui.cocoa.Outlet;
+import ch.cyberduck.ui.cocoa.SheetCallback;
+import ch.cyberduck.ui.cocoa.SheetController;
+import ch.cyberduck.ui.cocoa.WindowController;
+import ch.cyberduck.ui.cocoa.application.NSAlert;
+import ch.cyberduck.ui.cocoa.application.NSButton;
+import ch.cyberduck.ui.cocoa.application.NSCell;
+import ch.cyberduck.ui.cocoa.application.NSTableColumn;
+import ch.cyberduck.ui.cocoa.application.NSTableView;
+import ch.cyberduck.ui.cocoa.application.NSTextView;
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
 import ch.cyberduck.ui.cocoa.foundation.NSNotification;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
@@ -35,8 +48,6 @@ import org.rococoa.ID;
 import org.rococoa.Rococoa;
 import org.rococoa.cocoa.CGFloat;
 import org.rococoa.cocoa.foundation.NSInteger;
-
-import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -99,6 +110,7 @@ public abstract class AlertRepeatableBackgroundAction extends RepeatableBackgrou
                 );
                 alert.setShowsHelp(true);
                 final AlertController c = new AlertController(AlertRepeatableBackgroundAction.this.controller, alert) {
+                    @Override
                     public void callback(final int returncode) {
                         if(returncode == SheetCallback.ALTERNATE_OPTION) {
                             AlertRepeatableBackgroundAction.this.diagnose();
@@ -234,12 +246,15 @@ public abstract class AlertRepeatableBackgroundAction extends RepeatableBackgrou
                     return false;
                 }
 
+                @Override
                 public void enterKeyPressed(final ID sender) {
                 }
 
+                @Override
                 public void deleteKeyPressed(final ID sender) {
                 }
 
+                @Override
                 public String tooltip(ErrorController e) {
                     return e.getTooltip();
                 }
@@ -269,6 +284,7 @@ public abstract class AlertRepeatableBackgroundAction extends RepeatableBackgrou
                     NSAttributedString.attributedStringWithAttributes(AlertRepeatableBackgroundAction.this.getTranscript(), FIXED_WITH_FONT_ATTRIBUTES));
         }
 
+        @Override
         public void callback(final int returncode) {
             Preferences.instance().setProperty("alert.toggle.transcript", this.transcriptButton.state());
             AlertRepeatableBackgroundAction.this.callback(returncode);
