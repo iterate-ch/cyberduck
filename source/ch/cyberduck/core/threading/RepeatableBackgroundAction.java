@@ -45,7 +45,8 @@ import java.util.concurrent.CyclicBarrier;
 /**
  * @version $Id$
  */
-public abstract class RepeatableBackgroundAction extends AbstractBackgroundAction<Boolean> implements ErrorListener, TranscriptListener {
+public abstract class RepeatableBackgroundAction extends AbstractBackgroundAction<Boolean>
+        implements ErrorListener, TranscriptListener {
     private static Logger log = Logger.getLogger(RepeatableBackgroundAction.class);
     private static final String lineSeparator = System.getProperty("line.separator");
 
@@ -105,7 +106,7 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
             return;
         }
         final String description
-                = (null == exception.getPath()) ? exception.getSession().getHost().getHostname() : exception.getPath().getName();
+                = (null == exception.getPath()) ? exception.getHost().getHostname() : exception.getPath().getName();
         if(exceptions.size() < Preferences.instance().getInteger("growl.limit")) {
             Growl.instance().notify(exception.getMessage(), description);
         }
@@ -134,6 +135,7 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
      * @param message @see ch.cyberduck.core.TranscriptListener
      * @see #TRANSCRIPT_MAX_LENGTH
      */
+    @Override
     public void log(boolean request, String message) {
         if(transcript.length() > TRANSCRIPT_MAX_LENGTH) {
             transcript = new StringBuilder();
@@ -196,7 +198,7 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
 
     protected void diagnose() {
         List<BackgroundException> exceptions = this.getExceptions();
-        exceptions.get(exceptions.size() - 1).getSession().getHost().diagnose();
+        exceptions.get(exceptions.size() - 1).getHost().diagnose();
     }
 
     /**

@@ -23,13 +23,10 @@ import ch.cyberduck.ui.cocoa.application.NSTextField;
 import ch.cyberduck.ui.cocoa.application.NSView;
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
 
-import org.apache.log4j.Logger;
-
 /**
  * @version $Id:$
  */
 public class ErrorController extends BundleController {
-    private static Logger log = Logger.getLogger(TaskController.class);
 
     @Outlet
     private NSTextField hostField;
@@ -38,7 +35,7 @@ public class ErrorController extends BundleController {
         this.hostField = hostField;
         if(null == failure.getPath()) {
             this.hostField.setAttributedStringValue(
-                    NSAttributedString.attributedStringWithAttributes(failure.getSession().getHost().toURL(), FIXED_WITH_FONT_ATTRIBUTES));
+                    NSAttributedString.attributedStringWithAttributes(failure.getHost().toURL(), FIXED_WITH_FONT_ATTRIBUTES));
         }
         else {
             this.hostField.setAttributedStringValue(

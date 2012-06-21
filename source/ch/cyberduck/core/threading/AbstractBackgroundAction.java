@@ -31,12 +31,14 @@ import java.util.Set;
  */
 public abstract class AbstractBackgroundAction<T> implements BackgroundAction<T> {
 
+    @Override
     public void init() {
         ;
     }
 
     private boolean canceled;
 
+    @Override
     public void cancel() {
         canceled = true;
         BackgroundActionListener[] l = listeners.toArray(
@@ -52,16 +54,19 @@ public abstract class AbstractBackgroundAction<T> implements BackgroundAction<T>
      *
      * @return True if the user canceled this action
      */
+    @Override
     public boolean isCanceled() {
         return canceled;
     }
 
     private boolean running;
 
+    @Override
     public boolean isRunning() {
         return running;
     }
 
+    @Override
     public boolean prepare() {
         if(this.isCanceled()) {
             return false;
@@ -75,6 +80,7 @@ public abstract class AbstractBackgroundAction<T> implements BackgroundAction<T>
         return true;
     }
 
+    @Override
     public void finish() {
         running = false;
         BackgroundActionListener[] l = listeners.toArray(
@@ -84,17 +90,18 @@ public abstract class AbstractBackgroundAction<T> implements BackgroundAction<T>
         }
     }
 
-
     /**
      * Default implementation with no result
      *
      * @return Null
      */
+    @Override
     public T call() {
         this.run();
         return null;
     }
 
+    @Override
     public void cleanup() {
         ;
     }
@@ -111,14 +118,17 @@ public abstract class AbstractBackgroundAction<T> implements BackgroundAction<T>
     private Set<BackgroundActionListener> listeners
             = Collections.synchronizedSet(new HashSet<BackgroundActionListener>());
 
+    @Override
     public void addListener(BackgroundActionListener listener) {
         listeners.add(listener);
     }
 
+    @Override
     public void removeListener(BackgroundActionListener listener) {
         listeners.remove(listener);
     }
 
+    @Override
     public String getActivity() {
         return Locale.localizedString("Unknown");
     }
@@ -130,6 +140,7 @@ public abstract class AbstractBackgroundAction<T> implements BackgroundAction<T>
 
     private final Object lock = new Object();
 
+    @Override
     public Object lock() {
         // No synchronization with other tasks by default
         return lock;

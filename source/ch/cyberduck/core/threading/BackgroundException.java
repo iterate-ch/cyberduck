@@ -18,8 +18,8 @@ package ch.cyberduck.core.threading;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Session;
 import ch.cyberduck.core.ftp.FTPException;
 import ch.cyberduck.core.i18n.Locale;
 
@@ -49,11 +49,11 @@ public class BackgroundException extends Exception {
 
     private Path path;
 
-    private Session session;
+    private Host host;
 
-    public BackgroundException(Session session, Path path, String message, Throwable cause) {
+    public BackgroundException(Host host, Path path, String message, Throwable cause) {
         super(cause);
-        this.session = session;
+        this.host = host;
         this.path = path;
         if(null == message) {
             this.message = Locale.localizedString("Unknown");
@@ -221,10 +221,10 @@ public class BackgroundException extends Exception {
     }
 
     /**
-     * @return The session this exception occured
+     * @return The session this exception occurred
      */
-    public Session getSession() {
-        return session;
+    public Host getHost() {
+        return host;
     }
 
     @Override
@@ -247,7 +247,7 @@ public class BackgroundException extends Exception {
         if(path != null ? !path.equals(that.path) : that.path != null) {
             return false;
         }
-        if(session != null ? !session.equals(that.session) : that.session != null) {
+        if(host != null ? !host.equals(that.host) : that.host != null) {
             return false;
         }
 
@@ -258,7 +258,7 @@ public class BackgroundException extends Exception {
     public int hashCode() {
         int result = message != null ? message.hashCode() : 0;
         result = 31 * result + (path != null ? path.hashCode() : 0);
-        result = 31 * result + (session != null ? session.hashCode() : 0);
+        result = 31 * result + (host != null ? host.hashCode() : 0);
         result = 31 * result + (this.getCause() != null ? this.getCause().hashCode() : 0);
         return result;
     }

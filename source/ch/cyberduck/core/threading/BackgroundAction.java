@@ -41,8 +41,10 @@ public interface BackgroundAction<T> extends Runnable, Callable<T> {
     /**
      * Called form a worker thread not blocking the user interface
      */
+    @Override
     void run();
 
+    @Override
     T call();
 
     /**
