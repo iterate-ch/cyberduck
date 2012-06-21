@@ -33,9 +33,7 @@ import org.apache.http.HttpRequest;
 import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpResponseInterceptor;
-import org.apache.http.auth.params.AuthPNames;
 import org.apache.http.auth.params.AuthParams;
-import org.apache.http.client.params.AuthPolicy;
 import org.apache.http.client.params.HttpClientParams;
 import org.apache.http.client.protocol.RequestAcceptEncoding;
 import org.apache.http.client.protocol.ResponseContentEncoding;
@@ -60,7 +58,6 @@ import javax.net.ssl.SSLException;
 import javax.net.ssl.SSLSocket;
 import java.io.IOException;
 import java.security.cert.X509Certificate;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -95,17 +92,7 @@ public abstract class HttpSession extends SSLSession {
             HttpProtocolParams.setUserAgent(params, getUserAgent());
 
             AuthParams.setCredentialCharset(params, Preferences.instance().getProperty("http.credentials.charset"));
-            // We do not currently have a fallback mechanism for multiple
-            // authentication schemes.
-            // Put Kerberos to the bottom because it requires additional configuration we
-            // do not currently provide.
-            params.setParameter(AuthPNames.TARGET_AUTH_PREF, Arrays.asList(
-                    AuthPolicy.NTLM,
-                    AuthPolicy.DIGEST,
-                    AuthPolicy.BASIC,
-                    // Disable Kerberos
-                    AuthPolicy.SPNEGO)
-            );
+
             HttpConnectionParams.setTcpNoDelay(params, true);
             HttpConnectionParams.setSoTimeout(params, timeout());
             HttpConnectionParams.setConnectionTimeout(params, timeout());
