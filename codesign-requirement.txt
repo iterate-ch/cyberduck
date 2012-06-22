@@ -1,5 +1,15 @@
 designated => 
-		(anchor apple generic and identifier "ch.sudo.cyberduck" and ((cert leaf[field.1.2.840.113635.100.6.1.9] exists) or (certificate 1[field.1.2.840.113635.100.6.2.6] exists and certificate leaf[field.1.2.840.113635.100.6.1.13] exists and certificate leaf[subject.OU] = "G69SCX94XU")))  /* Developer ID */
-	or
-	    ((certificate root = H"a1fb64aab7a4441436d50b91f310bf8c3dafc22c") /* Deprecated */
-	    and identifier "ch.sudo.cyberduck")
+	identifier "ch.sudo.cyberduck"
+	and (
+		anchor apple generic and (
+			cert leaf[field.1.2.840.113635.100.6.1.9] exists /* from the Mac App Store */
+			or (
+				certificate 1[field.1.2.840.113635.100.6.2.6] exists /* from a Developer ID authority */
+					and certificate leaf[field.1.2.840.113635.100.6.1.13] exists /* a Developer ID certificate */
+					and certificate leaf[subject.OU] = "G69SCX94XU" /* Developer ID Application */
+			)
+		)
+	)
+	or (
+	    certificate root = H"a1fb64aab7a4441436d50b91f310bf8c3dafc22c" /* Deprecated Cyberduck Code Signing Certificate */
+	)
