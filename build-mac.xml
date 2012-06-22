@@ -38,7 +38,6 @@
               value="@executable_path/../Resources/Java/Runtime.jdk/Contents/Home/jre/lib/server/libjvm.dylib"/>
     <!--<property name="app.runtime.lib"-->
     <!--value="@executable_path/../Resources/Java/Runtime.jdk/Contents/Home/lib/server/libjvm.dylib"/>-->
-    <property name="app.runtime.properties.key" value="Runtime"/>
     <property name="app.runtime.system.min" value="10.5"/>
 
     <property name="app.spotlight" value="${app.library}/Spotlight"/>
@@ -121,7 +120,6 @@
             <include name="**/Info.plist"/>
             <replacefilter token="_REVISION_" value="${svn.revision}"/>
             <replacefilter token="_VERSION_" value="${cyberduck.version.major}.${cyberduck.version.minor}"/>
-            <replacefilter token="_RUNTIME_" value="${app.runtime.properties.key}"/>
             <replacefilter token="_MINIMUM_SYSTEM_" value="${app.runtime.system.min}"/>
             <replacefilter token="_SPARKLEFEED_" value="${sparkle.feed}"/>
         </replace>
@@ -341,15 +339,6 @@
     </target>
 
     <target name="copy-stub">
-        <echo message="Using stub: ${apple.appstub}"/>
-        <!-- copy application stub -->
-        <copy file="${apple.appstub}" toFile="${app.executable}" overwrite="true"/>
-        <!-- fix stub permissions -->
-        <chmod perm="755" type="file">
-            <fileset dir="${app.macos}">
-                <include name="${ant.project.name}"/>
-            </fileset>
-        </chmod>
         <antcall target="shared-library-install-name">
             <param name="newname" value="/System/Library/Frameworks/JavaVM.framework/Versions/A/JavaVM"/>
             <param name="oldname" value="${app.runtime.lib}"/>
@@ -367,7 +356,6 @@
 
     <target name="nightly" depends="clean, revision">
         <antcall target="build">
-            <param name="app.runtime.properties.key" value="Java"/>
             <param name="sparkle.feed" value="http://version.cyberduck.ch/nightly/changelog.rss"/>
         </antcall>
         <antcall target="distribution-sparkle">
@@ -400,7 +388,6 @@
 
     <target name="beta" depends="clean, revision">
         <antcall target="build">
-            <param name="app.runtime.properties.key" value="Java"/>
             <param name="sparkle.feed" value="http://version.cyberduck.ch/beta/changelog.rss"/>
         </antcall>
         <antcall target="distribution-sparkle">
@@ -433,7 +420,6 @@
 
     <target name="release" depends="clean, revision">
         <antcall target="build">
-            <param name="app.runtime.properties.key" value="Java"/>
             <param name="sparkle.feed" value="http://version.cyberduck.ch/changelog.rss"/>
         </antcall>
         <antcall target="distribution-sparkle">
@@ -475,7 +461,6 @@
 
     <target name="mas" depends="clean, revision">
         <antcall target="build">
-            <param name="app.runtime.properties.key" value="Runtime"/>
             <param name="app.runtime.system.min" value="10.6.6"/>
         </antcall>
         <antcall target="distribution-mas"/>
