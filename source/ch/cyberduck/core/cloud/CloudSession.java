@@ -55,6 +55,7 @@ public abstract class CloudSession extends HttpSession {
         return false;
     }
 
+    @Override
     public boolean isAnalyticsSupported() {
         return this.isLoggingSupported();
     }

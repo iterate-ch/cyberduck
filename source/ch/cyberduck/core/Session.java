@@ -774,6 +774,10 @@ public abstract class Session implements TranscriptListener {
         };
     }
 
+    public boolean isAnalyticsSupported() {
+        return this.isCDNSupported();
+    }
+
     public AnalyticsProvider analytics() {
         return new QloudstatAnalyticsProvider();
     }
