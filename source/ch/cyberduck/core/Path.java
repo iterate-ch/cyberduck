@@ -1100,7 +1100,7 @@ public abstract class Path extends AbstractPath implements Serializable {
                 return p;
             }
             while(t.hasMoreTokens()) {
-                b.append(URLEncoder.encode(t.nextToken(), "UTF-8"));
+                b.append(DELIMITER).append(URLEncoder.encode(t.nextToken(), "UTF-8"));
             }
             // Becuase URLEncoder uses <code>application/x-www-form-urlencoded</code> we have to replace these
             // for proper URI percented encoding.
