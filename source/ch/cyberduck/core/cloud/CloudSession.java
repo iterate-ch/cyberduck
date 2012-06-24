@@ -21,7 +21,6 @@ package ch.cyberduck.core.cloud;
 
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.http.HttpSession;
-import ch.cyberduck.core.ssl.AbstractX509TrustManager;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -54,6 +53,10 @@ public abstract class CloudSession extends HttpSession {
 
     public boolean isLoggingSupported() {
         return false;
+    }
+
+    public boolean isAnalyticsSupported() {
+        return this.isLoggingSupported();
     }
 
     public boolean isLogging(final String container) {

@@ -18,12 +18,15 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.analytics.AnalyticsProvider;
+import ch.cyberduck.core.analytics.QloudstatAnalyticsProvider;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.cloudfront.CloudFrontDistributionConfiguration;
 import ch.cyberduck.core.fs.Filesystem;
 import ch.cyberduck.core.fs.FilesystemFactory;
 import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.core.identity.IdentityConfiguration;
 import ch.cyberduck.core.threading.BackgroundException;
 
 import org.apache.commons.lang.StringUtils;
@@ -752,6 +755,29 @@ public abstract class Session implements TranscriptListener {
         return true;
     }
 
+    public IdentityConfiguration iam() {
+        return new IdentityConfiguration() {
+            @Override
+            public void deleteUser(String username) {
+                ;
+            }
+
+            @Override
+            public Credentials getUserCredentials(String username) {
+                return host.getCdnCredentials();
+            }
+
+            @Override
+            public void createUser(String username) {
+                ;
+            }
+        };
+    }
+
+    public AnalyticsProvider analytics() {
+        return new QloudstatAnalyticsProvider();
+    }
+
     /**
      * Delegating CloudFront requests.
      */
@@ -881,7 +907,7 @@ public abstract class Session implements TranscriptListener {
      * @param e       The cause of the error
      */
     public void error(Path path, String message, Throwable e) {
-        this.error(new BackgroundException(this, path, message, e));
+        this.error(new BackgroundException(this.getHost(), path, message, e));
     }
 
     public void error(BackgroundException failure) {
@@ -904,7 +930,7 @@ public abstract class Session implements TranscriptListener {
             cache = new Cache<Path>() {
                 @Override
                 public String toString() {
-                    return "Cache for " + Session.this.toString();
+                    return String.format("Cache for %s", Session.this.toString());
                 }
             };
         }
@@ -926,7 +952,7 @@ public abstract class Session implements TranscriptListener {
         }
         return super.equals(other);
     }
-    
+
     @Override
     public int hashCode() {
         int result = host.getHostname() != null ? host.getHostname().hashCode() : 0;
@@ -935,6 +961,6 @@ public abstract class Session implements TranscriptListener {
     }
 
     public String toString() {
-        return "Session " + host.toURL();
+        return String.format("Session %s", host.toURL());
     }
 }

@@ -20,11 +20,15 @@ package ch.cyberduck.core.s3;
  */
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.analytics.AnalyticsProvider;
+import ch.cyberduck.core.analytics.QloudstatAnalyticsProvider;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.cloud.CloudSession;
 import ch.cyberduck.core.cloudfront.CloudFrontDistributionConfiguration;
 import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.core.identity.AWSIdentityConfiguration;
+import ch.cyberduck.core.identity.IdentityConfiguration;
 import ch.cyberduck.core.threading.BackgroundException;
 
 import org.apache.commons.io.FilenameUtils;
@@ -662,6 +666,12 @@ public class S3Session extends CloudSession {
         return loggingSupported;
     }
 
+    @Override
+    public boolean isAnalyticsSupported() {
+        // Only for AWS
+        return this.getHost().getHostname().equals(Protocol.S3_SSL.getDefaultHostname());
+    }
+
     protected void setLoggingSupported(boolean loggingSupported) {
         this.loggingSupported = loggingSupported;
     }
@@ -1142,7 +1152,7 @@ public class S3Session extends CloudSession {
                         }
                     }
                     catch(IOException e) {
-                        this.error("Cannot read CDN configuration", e);
+                        this.error("Cannot read website configuration", e);
                     }
                 }
             }
@@ -1177,10 +1187,10 @@ public class S3Session extends CloudSession {
                     }
                 }
                 catch(IOException e) {
-                    this.error("Cannot write CDN configuration", e);
+                    this.error("Cannot write website configuration", e);
                 }
                 catch(S3ServiceException e) {
-                    this.error("Cannot write CDN configuration", e);
+                    this.error("Cannot write website configuration", e);
                 }
                 finally {
                     distributionStatus.get(method).clear();
@@ -1214,5 +1224,19 @@ public class S3Session extends CloudSession {
             }
             return super.isLoggingSupported(method);
         }
+    }
+
+    @Override
+    public IdentityConfiguration iam() {
+        return new AWSIdentityConfiguration(this.getHost(), new ErrorListener() {
+            public void error(BackgroundException exception) {
+                S3Session.this.error(exception);
+            }
+        });
+    }
+
+    @Override
+    public AnalyticsProvider analytics() {
+        return new QloudstatAnalyticsProvider();
     }
 }

@@ -113,6 +113,7 @@ public class CFSession extends CloudSession {
 
     /**
      * Set connection properties
+     *
      * @throws java.io.IOException If the connection is already canceled
      */
     protected void configure() throws IOException {
@@ -399,8 +400,18 @@ public class CFSession extends CloudSession {
                     return method.equals(Distribution.DOWNLOAD);
                 }
 
+                @Override
+                public boolean isAnalyticsSupported(Distribution.Method method) {
+                    return this.isLoggingSupported(method);
+                }
+
                 public boolean isCnameSupported(Distribution.Method method) {
                     return false;
+                }
+
+                @Override
+                public Protocol getProtocol() {
+                    return getHost().getProtocol();
                 }
 
                 public List<Distribution.Method> getMethods() {

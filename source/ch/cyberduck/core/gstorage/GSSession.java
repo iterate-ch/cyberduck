@@ -26,6 +26,7 @@ import ch.cyberduck.core.KeychainFactory;
 import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.SessionFactory;
 import ch.cyberduck.core.cdn.Distribution;
@@ -554,5 +555,15 @@ public class GSSession extends S3Session implements DistributionConfiguration {
     @Override
     public boolean isCnameSupported(Distribution.Method method) {
         return false;
+    }
+
+    @Override
+    public boolean isAnalyticsSupported(Distribution.Method method) {
+        return false;
+    }
+
+    @Override
+    public Protocol getProtocol() {
+        return this.getHost().getProtocol();
     }
 }
