@@ -19,12 +19,23 @@ package ch.cyberduck.ui.cocoa;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AbstractPath;
+import ch.cyberduck.core.Acl;
+import ch.cyberduck.core.ConnectionAdapter;
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathFactory;
+import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.Session;
+import ch.cyberduck.core.Status;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cloud.CloudPath;
 import ch.cyberduck.core.cloud.CloudSession;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.s3.S3Path;
+import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.ui.DateFormatterFactory;
 import ch.cyberduck.ui.action.CalculateSizeWorker;
 import ch.cyberduck.ui.action.ChecksumWorker;
@@ -48,6 +59,7 @@ import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 import ch.cyberduck.ui.cocoa.threading.WorkerBackgroundAction;
 import ch.cyberduck.ui.cocoa.util.HyperlinkAttributedStringFactory;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
@@ -441,6 +453,47 @@ public class InfoController extends ToolbarWindowController {
             // Only write change if logging is already enabled
             this.bucketLoggingButtonClicked(sender);
         }
+    }
+
+    @Outlet
+    private NSButton bucketAnalyticsButton;
+
+    public void setBucketAnalyticsButton(NSButton b) {
+        this.bucketAnalyticsButton = b;
+        this.bucketAnalyticsButton.setAction(Foundation.selector("bucketAnalyticsButtonClicked:"));
+    }
+
+    @Action
+    public void bucketAnalyticsButtonClicked(final NSButton sender) {
+        if(this.toggleS3Settings(false)) {
+            controller.background(new BrowserBackgroundAction(controller) {
+                @Override
+                public void run() {
+                    final Session session = controller.getSession();
+                    if(bucketAnalyticsButton.state() == NSCell.NSOnState) {
+                        session.iam().createUser(session.analytics().getName());
+                    }
+                    else {
+                        session.iam().deleteUser(session.analytics().getName());
+                    }
+                }
+
+                @Override
+                public void cleanup() {
+                    toggleS3Settings(true);
+                    initS3();
+                }
+            });
+        }
+    }
+
+    @Outlet
+    private NSTextField bucketAnalyticsSetupUrlField;
+
+    public void setBucketAnalyticsSetupUrlField(NSTextField f) {
+        this.bucketAnalyticsSetupUrlField = f;
+        this.bucketAnalyticsSetupUrlField.setAllowsEditingTextAttributes(true);
+        this.bucketAnalyticsSetupUrlField.setSelectable(true);
     }
 
     @Outlet
@@ -1065,7 +1118,7 @@ public class InfoController extends ToolbarWindowController {
     /**
      * Add new metadata row and selects the value column
      *
-     * @param name Header name
+     * @param name  Header name
      * @param value Header value
      */
     private void addMetadataItem(String name, String value) {
@@ -1391,7 +1444,7 @@ public class InfoController extends ToolbarWindowController {
             if(anonymous) {
                 return false;
             }
-            return session instanceof CloudSession;
+            return session instanceof S3Session;
         }
         if(itemIdentifier.equals(TOOLBAR_ITEM_METADATA)) {
             if(anonymous) {
@@ -1757,6 +1810,8 @@ public class InfoController extends ToolbarWindowController {
         distributionLoggingPopup.addItemWithTitle(Locale.localizedString("None"));
         distributionLoggingPopup.itemWithTitle(Locale.localizedString("None")).setEnabled(false);
 
+        distributionAnalyticsSetupUrlField.setStringValue(Locale.localizedString("None"));
+
         this.distributionStatusButtonClicked(null);
     }
 
@@ -1821,17 +1876,19 @@ public class InfoController extends ToolbarWindowController {
     private boolean toggleS3Settings(final boolean stop) {
         this.window().endEditingFor(null);
         final Session session = controller.getSession();
-        boolean enable = session instanceof CloudSession;
+        final Credentials credentials = session.getHost().getCredentials();
+        boolean enable = session instanceof S3Session;
         if(enable) {
-            final Credentials credentials = session.getHost().getCredentials();
             enable = !credentials.isAnonymousLogin();
         }
         boolean logging = false;
+        boolean analytics = false;
         boolean versioning = false;
         boolean storageclass = false;
         boolean encryption = false;
         if(enable) {
             logging = ((CloudSession) session).isLoggingSupported();
+            analytics = ((CloudSession) session).isAnalyticsSupported();
             versioning = ((CloudSession) session).isVersioningSupported();
             encryption = ((CloudSession) session).getSupportedEncryptionAlgorithms().size() > 0;
             storageclass = ((CloudSession) session).getSupportedStorageClasses().size() > 1;
@@ -1843,6 +1900,13 @@ public class InfoController extends ToolbarWindowController {
                 && bucketVersioningButton.state() == NSCell.NSOnState);
         bucketLoggingButton.setEnabled(stop && enable && logging);
         bucketLoggingPopup.setEnabled(stop && enable && logging);
+        if(ObjectUtils.equals(session.iam().getUserCredentials(session.analytics().getName()), credentials)) {
+            // No need to create new IAM credentials when same as session credentials
+            bucketAnalyticsButton.setEnabled(false);
+        }
+        else {
+            bucketAnalyticsButton.setEnabled(stop && enable && analytics);
+        }
         if(stop) {
             s3Progress.stopAnimation(null);
         }
@@ -1857,7 +1921,7 @@ public class InfoController extends ToolbarWindowController {
      */
     private void initS3() {
         bucketLocationField.setStringValue(Locale.localizedString("Unknown"));
-        bucketLoggingButton.setToolTip(Locale.localizedString("Unknown"));
+        bucketAnalyticsSetupUrlField.setStringValue(Locale.localizedString("None"));
 
         bucketLoggingPopup.removeAllItems();
         bucketLoggingPopup.addItemWithTitle(Locale.localizedString("None"));
@@ -1917,6 +1981,7 @@ public class InfoController extends ToolbarWindowController {
             controller.background(new BrowserBackgroundAction(controller) {
                 String location = null;
                 boolean logging = false;
+                String analytics = null;
                 String loggingBucket = null;
                 boolean versioning = false;
                 boolean mfa = false;
@@ -1938,6 +2003,13 @@ public class InfoController extends ToolbarWindowController {
                     if(s.isVersioningSupported()) {
                         versioning = s.isVersioning(selected.getContainerName());
                         mfa = s.isMultiFactorAuthentication(selected.getContainerName());
+                    }
+                    if(s.isAnalyticsSupported()) {
+                        final Credentials credentials = s.iam().getUserCredentials(controller.getSession().analytics().getName());
+                        if(null != credentials) {
+                            analytics = s.analytics().getSetup(s.getHost().getProtocol(), selected.getContainerName(),
+                                    credentials);
+                        }
                     }
                     if(numberOfFiles() == 1) {
                         encryption = selected.attributes().getEncryption();
@@ -1966,9 +2038,12 @@ public class InfoController extends ToolbarWindowController {
                             bucketLocationField.setStringValue(Locale.localizedString(location, "S3"));
                         }
                         bucketVersioningButton.setState(versioning ? NSCell.NSOnState : NSCell.NSOffState);
-                        bucketMfaButton.setEnabled(versioning);
                         bucketMfaButton.setState(mfa ? NSCell.NSOnState : NSCell.NSOffState);
                         encryptionButton.setState(StringUtils.isNotBlank(encryption) ? NSCell.NSOnState : NSCell.NSOffState);
+                        bucketAnalyticsButton.setState(StringUtils.isNotBlank(analytics) ? NSCell.NSOnState : NSCell.NSOffState);
+                        if(StringUtils.isNotBlank(analytics)) {
+                            bucketAnalyticsSetupUrlField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(analytics));
+                        }
                     }
                     finally {
                         toggleS3Settings(true);
@@ -2297,6 +2372,13 @@ public class InfoController extends ToolbarWindowController {
         distributionEnableButton.setEnabled(stop && enable);
         distributionDeliveryPopup.setEnabled(stop && enable);
         distributionLoggingButton.setEnabled(stop && enable && session.cdn().isLoggingSupported(method));
+        if(ObjectUtils.equals(session.iam().getUserCredentials(session.analytics().getName()), credentials)) {
+            // No need to create new IAM credentials when same as session credentials
+            distributionAnalyticsButton.setEnabled(false);
+        }
+        else {
+            distributionAnalyticsButton.setEnabled(stop && enable && session.cdn().isAnalyticsSupported(method));
+        }
         distributionLoggingPopup.setEnabled(stop && enable && session.cdn().isLoggingSupported(method));
         distributionCnameField.setEnabled(stop && enable && session.cdn().isCnameSupported(method));
         distributionInvalidateObjectsButton.setEnabled(stop && enable && session.cdn().isInvalidationSupported(method));
@@ -2387,17 +2469,23 @@ public class InfoController extends ToolbarWindowController {
     public void distributionStatusButtonClicked(final ID sender) {
         if(this.toggleDistributionSettings(false)) {
             controller.background(new BrowserBackgroundAction(controller) {
-                Distribution distribution;
+                private Distribution distribution;
+                private String analytics;
 
                 public void run() {
                     final Session session = controller.getSession();
                     final Distribution.Method method
                             = Distribution.Method.forName(distributionDeliveryPopup.selectedItem().representedObject());
                     // We only support one distribution per bucket for the sake of simplicity
+                    final String container = getSelected().getContainerName();
                     distribution = session.cdn().read(
-                            session.cdn().getOrigin(method, getSelected().getContainerName()), method);
+                            session.cdn().getOrigin(method, container), method);
                     // Make sure container items are cached for default root object.
                     getSelected().getContainer().children();
+                    if(session.cdn().isAnalyticsSupported(method)) {
+                        final Credentials credentials = session.iam().getUserCredentials(controller.getSession().analytics().getName());
+                        analytics = session.analytics().getSetup(session.cdn().getProtocol(), container, credentials);
+                    }
                 }
 
                 @Override
@@ -2409,7 +2497,6 @@ public class InfoController extends ToolbarWindowController {
                         distributionEnableButton.setState(distribution.isEnabled() ? NSCell.NSOnState : NSCell.NSOffState);
                         distributionStatusField.setAttributedStringValue(NSMutableAttributedString.create(distribution.getStatus(), TRUNCATE_MIDDLE_ATTRIBUTES));
 
-                        distributionLoggingButton.setEnabled(distribution.isEnabled());
                         distributionLoggingButton.setState(distribution.isLogging() ? NSCell.NSOnState : NSCell.NSOffState);
                         final List<String> containers = distribution.getContainers();
                         for(String c : containers) {
@@ -2429,6 +2516,11 @@ public class InfoController extends ToolbarWindowController {
                         }
                         if(null == distributionLoggingPopup.selectedItem()) {
                             distributionLoggingPopup.selectItemWithTitle(Locale.localizedString("None"));
+                        }
+                        distributionAnalyticsButton.setState(StringUtils.isNotBlank(analytics) ? NSCell.NSOnState : NSCell.NSOffState);
+                        if(StringUtils.isNotBlank(analytics)) {
+                            distributionAnalyticsSetupUrlField.setAttributedStringValue(
+                                    HyperlinkAttributedStringFactory.create(analytics));
                         }
 
                         String origin = distribution.getOrigin(getSelected());
@@ -2510,6 +2602,47 @@ public class InfoController extends ToolbarWindowController {
                 }
             });
         }
+    }
+
+    @Outlet
+    private NSButton distributionAnalyticsButton;
+
+    public void setDistributionAnalyticsButton(NSButton b) {
+        this.distributionAnalyticsButton = b;
+        this.distributionAnalyticsButton.setAction(Foundation.selector("distributionAnalyticsButtonClicked:"));
+    }
+
+    @Action
+    public void distributionAnalyticsButtonClicked(final NSButton sender) {
+        if(this.toggleDistributionSettings(false)) {
+            controller.background(new BrowserBackgroundAction(controller) {
+                @Override
+                public void run() {
+                    final Session session = controller.getSession();
+                    if(distributionAnalyticsButton.state() == NSCell.NSOnState) {
+                        session.iam().createUser(session.analytics().getName());
+                    }
+                    else {
+                        session.iam().deleteUser(session.analytics().getName());
+                    }
+                }
+
+                @Override
+                public void cleanup() {
+                    toggleDistributionSettings(true);
+                    initDistribution();
+                }
+            });
+        }
+    }
+
+    @Outlet
+    private NSTextField distributionAnalyticsSetupUrlField;
+
+    public void setDistributionAnalyticsSetupUrlField(NSTextField f) {
+        this.distributionAnalyticsSetupUrlField = f;
+        this.distributionAnalyticsSetupUrlField.setAllowsEditingTextAttributes(true);
+        this.distributionAnalyticsSetupUrlField.setSelectable(true);
     }
 
     @Action
