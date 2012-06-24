@@ -105,31 +105,31 @@ public class BackgroundException extends Exception {
     public String getReadableTitle() {
         final Throwable cause = this.getCause();
         if(cause instanceof FTPException) {
-            return "FTP " + Locale.localizedString("Error");
+            return String.format("FTP %s", Locale.localizedString("Error"));
         }
         if(cause instanceof SFTPException) {
-            return "SSH " + Locale.localizedString("Error");
+            return String.format("SSH %s", Locale.localizedString("Error"));
         }
         if(cause instanceof ServiceException) {
-            return "S3 " + Locale.localizedString("Error");
+            return String.format("S3 %s", Locale.localizedString("Error"));
         }
         if(cause instanceof AmazonServiceException) {
-            return "IAM " + Locale.localizedString("Error");
+            return String.format("IAM %s", Locale.localizedString("Error"));
         }
         if(cause instanceof CloudFrontServiceException) {
-            return "CloudFront " + Locale.localizedString("Error");
+            return String.format("CloudFront %s", Locale.localizedString("Error"));
         }
         if(cause instanceof org.apache.http.HttpException) {
-            return "HTTP " + Locale.localizedString("Error");
+            return String.format("HTTP %s", Locale.localizedString("Error"));
         }
         if(cause instanceof SocketException) {
-            return "Network " + Locale.localizedString("Error");
+            return String.format("Network %s", Locale.localizedString("Error"));
         }
         if(cause instanceof UnknownHostException) {
-            return "DNS " + Locale.localizedString("Error");
+            return String.format("DNS %s", Locale.localizedString("Error"));
         }
         if(cause instanceof IOException) {
-            return "I/O " + Locale.localizedString("Error");
+            return String.format("I/O %s", Locale.localizedString("Error"));
         }
         return Locale.localizedString("Error");
     }
