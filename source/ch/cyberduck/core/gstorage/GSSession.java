@@ -32,6 +32,7 @@ import ch.cyberduck.core.SessionFactory;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.core.identity.IdentityConfiguration;
 import ch.cyberduck.core.s3.S3Session;
 
 import org.apache.commons.io.FilenameUtils;
@@ -78,7 +79,7 @@ import java.util.Map;
  *
  * @version $Id$
  */
-public class GSSession extends S3Session implements DistributionConfiguration {
+public class GSSession extends S3Session implements DistributionConfiguration, IdentityConfiguration {
     private static Logger log = Logger.getLogger(GSSession.class);
 
     /**
@@ -230,6 +231,11 @@ public class GSSession extends S3Session implements DistributionConfiguration {
 
     @Override
     public boolean isLoggingSupported() {
+        return true;
+    }
+
+    @Override
+    public boolean isAnalyticsSupported() {
         return true;
     }
 
@@ -563,7 +569,27 @@ public class GSSession extends S3Session implements DistributionConfiguration {
     }
 
     @Override
+    public IdentityConfiguration iam() {
+        return this;
+    }
+
+    @Override
     public Protocol getProtocol() {
         return this.getHost().getProtocol();
+    }
+
+    @Override
+    public void deleteUser(String username) {
+        ;
+    }
+
+    @Override
+    public Credentials getUserCredentials(String username) {
+        return host.getCredentials();
+    }
+
+    @Override
+    public void createUser(String username) {
+        ;
     }
 }
