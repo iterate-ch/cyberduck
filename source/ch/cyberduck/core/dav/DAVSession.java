@@ -236,8 +236,6 @@ public class DAVSession extends HttpSession {
         client.addResponseInterceptor(new HttpResponseInterceptor() {
             /**
              * Clear the credentials from the authentication state upon failed login to make sure a retry attempt is made.
-             *
-             * @see org.apache.http.impl.client.DefaultRequestDirector#updateAuthState(org.apache.http.auth.AuthState, org.apache.http.HttpHost, org.apache.http.client.CredentialsProvider)
              */
             public void process(final HttpResponse r, final HttpContext context) throws HttpException, IOException {
                 final int code = r.getStatusLine().getStatusCode();
