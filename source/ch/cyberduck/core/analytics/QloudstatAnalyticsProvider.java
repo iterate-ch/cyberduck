@@ -11,7 +11,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class QloudstatAnalyticsProvider implements AnalyticsProvider {
 
@@ -26,6 +26,9 @@ public class QloudstatAnalyticsProvider implements AnalyticsProvider {
     @Override
     public String getSetup(final Protocol protocol, final String container,
                            final Credentials credentials) {
+        if(null == credentials) {
+            return null;
+        }
         final String setup = String.format("provider=%s,endpoint=%s,key=%s,secret=%s",
                 protocol.getDefaultHostname(),
                 container,
