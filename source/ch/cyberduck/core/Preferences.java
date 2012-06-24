@@ -661,6 +661,8 @@ public abstract class Preferences {
          */
         defaults.put("webdav.expect-continue", String.valueOf(true));
 
+        defaults.put("analytics.provider.qloudstat.setup", "https://qloudstat.com/configuration/add");
+
         /**
          * Maximum concurrent connections to the same host
          * Unlimited by default
