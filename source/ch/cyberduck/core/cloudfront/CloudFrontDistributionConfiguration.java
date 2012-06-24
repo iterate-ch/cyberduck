@@ -51,6 +51,7 @@ import org.jets3t.service.security.AWSCredentials;
 import org.jets3t.service.utils.ServiceUtils;
 
 import java.io.IOException;
+import java.net.URI;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -83,7 +84,7 @@ public class CloudFrontDistributionConfiguration extends HttpSession implements 
     public CloudFrontDistributionConfiguration(LoginController parent, Credentials credentials,
                                                ErrorListener error, ProgressListener progress,
                                                TranscriptListener transcript) {
-        super(new Host(Protocol.S3_SSL, "cloudfront.amazonaws.com", credentials));
+        super(new Host(Protocol.CLOUDFRONT, URI.create(CloudFrontService.ENDPOINT).getHost(), credentials));
         this.login = parent;
         this.addErrorListener(error);
         this.addProgressListener(progress);
@@ -191,6 +192,11 @@ public class CloudFrontDistributionConfiguration extends HttpSession implements 
 
     public boolean isCached(ch.cyberduck.core.cdn.Distribution.Method method) {
         return !distributionStatus.get(method).isEmpty();
+    }
+
+    @Override
+    public Protocol getProtocol() {
+        return this.getHost().getProtocol();
     }
 
     public String getOrigin(ch.cyberduck.core.cdn.Distribution.Method method, String container) {
@@ -314,6 +320,11 @@ public class CloudFrontDistributionConfiguration extends HttpSession implements 
         return method.equals(ch.cyberduck.core.cdn.Distribution.DOWNLOAD)
                 || method.equals(ch.cyberduck.core.cdn.Distribution.STREAMING)
                 || method.equals(ch.cyberduck.core.cdn.Distribution.CUSTOM);
+    }
+
+    @Override
+    public boolean isAnalyticsSupported(ch.cyberduck.core.cdn.Distribution.Method method) {
+        return this.isLoggingSupported(method);
     }
 
     public boolean isCnameSupported(ch.cyberduck.core.cdn.Distribution.Method method) {

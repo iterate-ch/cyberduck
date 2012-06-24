@@ -20,13 +20,14 @@ package ch.cyberduck.core.cdn;
  */
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Protocol;
 
 import java.util.List;
 
 /**
  * CDN configuration actions.
  *
- * @version $Id:$
+ * @version $Id$
  */
 public interface DistributionConfiguration {
 
@@ -91,6 +92,12 @@ public interface DistributionConfiguration {
 
     /**
      * @param method Distribution method
+     * @return If there is an analytics provider
+     */
+    boolean isAnalyticsSupported(Distribution.Method method);
+
+    /**
+     * @param method Distribution method
      * @return True if CNAME for for the CDN URI can be configured
      */
     boolean isCnameSupported(Distribution.Method method);
@@ -108,6 +115,11 @@ public interface DistributionConfiguration {
      * @return Bucket name not fully qualified.
      */
     String getOrigin(Distribution.Method method, String container);
+
+    /**
+     * @return Hostname and port
+     */
+    Protocol getProtocol();
 
     /**
      * Marketing name for the distribution service
