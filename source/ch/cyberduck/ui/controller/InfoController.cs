@@ -233,7 +233,7 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             else
             {
-                View.ToolbarS3Enabled = session is CloudSession;
+                View.ToolbarS3Enabled = session is S3Session;
             }
 
             if (anonymous)
@@ -1145,7 +1145,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private bool ToggleS3Settings(bool stop)
         {
             Session session = _controller.getSession();
-            bool enable = session is CloudSession;
+            bool enable = session is S3Session;
             if (enable)
             {
                 Credentials credentials = session.getHost().getCredentials();
