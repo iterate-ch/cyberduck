@@ -40,11 +40,13 @@ import ch.cyberduck.core.sftp.SFTPSession;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.jets3t.service.CloudFrontService;
 import org.jets3t.service.Constants;
 import org.jets3t.service.model.S3Bucket;
 
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
+import java.net.URI;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -510,6 +512,58 @@ public abstract class Protocol {
         @Override
         public PathFactory getPathFactory() {
             return S3Path.factory();
+        }
+    };
+
+    public static final Protocol CLOUDFRONT = new Protocol() {
+        @Override
+        public String getName() {
+            return "Cloudfront";
+        }
+
+        @Override
+        public String getDescription() {
+            return Locale.localizedString("Amazon CloudFront", "S3");
+        }
+
+        @Override
+        public String getIdentifier() {
+            return "cloudfront";
+        }
+
+        @Override
+        public boolean isPortConfigurable() {
+            return false;
+        }
+
+        @Override
+        public Scheme getScheme() {
+            return Scheme.https;
+        }
+
+        @Override
+        public String getDefaultHostname() {
+            return URI.create(CloudFrontService.ENDPOINT).getHost();
+        }
+
+        @Override
+        public String getUsernamePlaceholder() {
+            return Locale.localizedString("Access Key ID", "S3");
+        }
+
+        @Override
+        public String getPasswordPlaceholder() {
+            return Locale.localizedString("Secret Access Key", "S3");
+        }
+
+        @Override
+        public SessionFactory getSessionFactory() {
+            return null;
+        }
+
+        @Override
+        public PathFactory getPathFactory() {
+            return null;
         }
     };
 
