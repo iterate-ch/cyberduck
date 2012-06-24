@@ -3,7 +3,7 @@ package ch.cyberduck.core.identity;
 import ch.cyberduck.core.Credentials;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public interface IdentityConfiguration {
 
@@ -26,6 +26,7 @@ public interface IdentityConfiguration {
      * Create new user and create access credentials
      *
      * @param username Username
+     * @param policy   Policy language document
      */
-    void createUser(String username);
+    void createUser(String username, String policy);
 }

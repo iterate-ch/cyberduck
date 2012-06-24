@@ -662,6 +662,10 @@ public abstract class Preferences {
         defaults.put("webdav.expect-continue", String.valueOf(true));
 
         defaults.put("analytics.provider.qloudstat.setup", "https://qloudstat.com/configuration/add");
+        defaults.put("analytics.provider.qloudstat.iam.policy.s3",
+                "{\"Statement\": [{\"Action\": [\"s3:Get*\",\"s3:List*\",\"s3:ListAllMyBuckets\"],\"Effect\": \"Allow\",\"Resource\": \"arn:aws:s3:::*\"}]}");
+        defaults.put("analytics.provider.qloudstat.iam.policy.cloudfront",
+                "{\"Statement\": [{\"Action\": [\"s3:Get*\",\"s3:List*\"],\"Effect\": \"Allow\",\"Resource\": \"arn:aws:s3:::*\"},{\"Action\": [\"cloudfront:Get*\",\"cloudfront:List*\"],\"Effect\": \"Allow\",\"Resource\": \"*\"}]}");
 
         /**
          * Maximum concurrent connections to the same host

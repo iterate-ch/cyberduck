@@ -6,14 +6,17 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.KeychainFactory;
 import ch.cyberduck.core.threading.BackgroundException;
 
+import org.apache.log4j.Logger;
+
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.services.identitymanagement.AmazonIdentityManagementClient;
 import com.amazonaws.services.identitymanagement.model.*;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class AWSIdentityConfiguration implements IdentityConfiguration {
+    private static Logger log = Logger.getLogger(AWSIdentityConfiguration.class);
 
     private Host host;
 
@@ -55,6 +58,9 @@ public class AWSIdentityConfiguration implements IdentityConfiguration {
             }
             iam.deleteUser(new DeleteUserRequest(username));
         }
+        catch(NoSuchEntityException e) {
+            log.warn(String.format("User %s already removed", username));
+        }
         catch(AmazonClientException e) {
             listener.error(new BackgroundException(host, null, "Cannot write user configuration", e));
         }
@@ -82,6 +88,10 @@ public class AWSIdentityConfiguration implements IdentityConfiguration {
                 for(AccessKeyMetadata key : keys.getAccessKeyMetadata()) {
                     final String secret = KeychainFactory.instance().getPassword(host.getProtocol().getScheme().name(), host.getPort(),
                             host.getHostname(), key.getAccessKeyId());
+                    if(null == secret) {
+                        log.warn(String.format("No secret key saved in Keychain for %s", key.getAccessKeyId()));
+                        continue;
+                    }
                     return new Credentials(key.getAccessKeyId(), secret) {
                         @Override
                         public String getUsernamePlaceholder() {
@@ -106,32 +116,7 @@ public class AWSIdentityConfiguration implements IdentityConfiguration {
     }
 
     @Override
-    public void createUser(final String username) {
-        final String document = "{" +
-                "\"Statement\": [" +
-                "{" +
-                "  \"Action\": [" +
-                "    \"s3:Get*\"," +
-                "    \"s3:List*\"," +
-                "    \"s3:ListAllMyBuckets\"" +
-                "  ]," +
-                "  \"Effect\": \"Allow\"," +
-                "  \"Resource\": \"arn:aws:s3:::*\"" +
-                "}," +
-                "{" +
-                "  \"Action\": [" +
-                "    \"cloudfront:Get*\"," +
-                "    \"cloudfront:List*\"" +
-                "  ]," +
-                "  \"Effect\": \"Allow\"," +
-                "  \"Resource\": \"*\"" +
-                "}" +
-                "]" +
-                "}";
-        this.createUser(username, document);
-    }
-
-    protected void createUser(final String username, String policy) {
+    public void createUser(final String username, String policy) {
         try {
             // Create new IAM credentials
             AmazonIdentityManagementClient iam = new AmazonIdentityManagementClient(
@@ -150,7 +135,9 @@ public class AWSIdentityConfiguration implements IdentityConfiguration {
                 user = iam.createUser(new CreateUserRequest().withUserName(username)).getUser();
             }
             catch(EntityAlreadyExistsException e) {
-                user = iam.getUser(new GetUserRequest().withUserName(username)).getUser();
+                log.warn(String.format("Remove existing user with name %s", username));
+                this.deleteUser(username);
+                user = iam.createUser(new CreateUserRequest().withUserName(username)).getUser();
             }
             final CreateAccessKeyResult key = iam.createAccessKey(
                     new CreateAccessKeyRequest().withUserName(user.getUserName()));

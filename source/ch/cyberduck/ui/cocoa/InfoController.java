@@ -471,7 +471,9 @@ public class InfoController extends ToolbarWindowController {
                 public void run() {
                     final Session session = controller.getSession();
                     if(bucketAnalyticsButton.state() == NSCell.NSOnState) {
-                        session.iam().createUser(session.analytics().getName());
+                        final String document = Preferences.instance().getProperty(
+                                "analytics.provider.qloudstat.iam.policy.s3");
+                        session.iam().createUser(session.analytics().getName(), document);
                     }
                     else {
                         session.iam().deleteUser(session.analytics().getName());
@@ -2620,7 +2622,9 @@ public class InfoController extends ToolbarWindowController {
                 public void run() {
                     final Session session = controller.getSession();
                     if(distributionAnalyticsButton.state() == NSCell.NSOnState) {
-                        session.iam().createUser(session.analytics().getName());
+                        final String document = Preferences.instance().getProperty(
+                                "analytics.provider.qloudstat.iam.policy.cloudfront");
+                        session.iam().createUser(session.analytics().getName(), document);
                     }
                     else {
                         session.iam().deleteUser(session.analytics().getName());

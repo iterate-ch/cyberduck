@@ -768,7 +768,7 @@ public abstract class Session implements TranscriptListener {
             }
 
             @Override
-            public void createUser(String username) {
+            public void createUser(String username, String policy) {
                 ;
             }
         };
