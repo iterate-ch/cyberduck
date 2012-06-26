@@ -589,7 +589,7 @@ public class GSSession extends S3Session implements DistributionConfiguration, I
     }
 
     @Override
-    public void createUser(String username) {
+    public void createUser(String username, String policy) {
         ;
     }
 }

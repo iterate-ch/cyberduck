@@ -445,7 +445,7 @@ public class CFSession extends CloudSession implements DistributionConfiguration
     }
 
     @Override
-    public void createUser(String username) {
+    public void createUser(String username, String policy) {
         ;
     }
 }
