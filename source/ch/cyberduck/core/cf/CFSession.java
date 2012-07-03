@@ -122,17 +122,18 @@ public class CFSession extends CloudSession implements DistributionConfiguration
     }
 
     private String getAuthenticationUrl() {
-        StringBuilder authentication = new StringBuilder(host.getProtocol().getScheme().toString()).append("://");
-        if(host.getHostname().equals(Protocol.CLOUDFILES.getDefaultHostname())) {
-            // Use default authentication server. Rackspace.
+        StringBuilder authentication = new StringBuilder();
+        authentication.append(host.getProtocol().getScheme().toString()).append("://");
+        if(host.getHostname().equals("storage.clouddrive.com")) {
+            // Legacy bookmarks. Use default authentication server for Rackspace.
             authentication.append("auth.api.rackspacecloud.com");
-            authentication.append("/v1.0");
         }
         else {
             // Use custom authentication server. Swift (OpenStack Object Storage) installation.
-            authentication.append(host.getHostname()).append(":").append(host.getPort());
-            authentication.append(Preferences.instance().getProperty("cf.authentication.context"));
+            authentication.append(host.getHostname());
         }
+        authentication.append(":").append(host.getPort());
+        authentication.append(Preferences.instance().getProperty("cf.authentication.context"));
         if(log.isInfoEnabled()) {
             log.info(String.format("Using authentication URL %s", authentication.toString()));
         }

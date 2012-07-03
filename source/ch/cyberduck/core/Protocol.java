@@ -771,7 +771,7 @@ public abstract class Protocol {
 
         @Override
         public String getDefaultHostname() {
-            return "storage.clouddrive.com";
+            return "auth.api.rackspacecloud.com";
         }
 
         @Override
