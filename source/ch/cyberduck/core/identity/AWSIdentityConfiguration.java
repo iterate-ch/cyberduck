@@ -10,7 +10,20 @@ import org.apache.log4j.Logger;
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.services.identitymanagement.AmazonIdentityManagementClient;
-import com.amazonaws.services.identitymanagement.model.*;
+import com.amazonaws.services.identitymanagement.model.AccessKeyMetadata;
+import com.amazonaws.services.identitymanagement.model.CreateAccessKeyRequest;
+import com.amazonaws.services.identitymanagement.model.CreateAccessKeyResult;
+import com.amazonaws.services.identitymanagement.model.CreateUserRequest;
+import com.amazonaws.services.identitymanagement.model.DeleteAccessKeyRequest;
+import com.amazonaws.services.identitymanagement.model.DeleteUserPolicyRequest;
+import com.amazonaws.services.identitymanagement.model.DeleteUserRequest;
+import com.amazonaws.services.identitymanagement.model.ListAccessKeysRequest;
+import com.amazonaws.services.identitymanagement.model.ListAccessKeysResult;
+import com.amazonaws.services.identitymanagement.model.ListUserPoliciesRequest;
+import com.amazonaws.services.identitymanagement.model.ListUserPoliciesResult;
+import com.amazonaws.services.identitymanagement.model.NoSuchEntityException;
+import com.amazonaws.services.identitymanagement.model.PutUserPolicyRequest;
+import com.amazonaws.services.identitymanagement.model.User;
 
 /**
  * @version $Id$
@@ -130,15 +143,7 @@ public class AWSIdentityConfiguration implements IdentityConfiguration {
                         }
                     }
             );
-            User user;
-            try {
-                user = iam.createUser(new CreateUserRequest().withUserName(username)).getUser();
-            }
-            catch(EntityAlreadyExistsException e) {
-                log.warn(String.format("Remove existing user with name %s", username));
-                this.deleteUser(username);
-                user = iam.createUser(new CreateUserRequest().withUserName(username)).getUser();
-            }
+            User user = iam.createUser(new CreateUserRequest().withUserName(username)).getUser();
             final CreateAccessKeyResult key = iam.createAccessKey(
                     new CreateAccessKeyRequest().withUserName(user.getUserName()));
 
