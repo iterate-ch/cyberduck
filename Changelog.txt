@@ -13,6 +13,7 @@ Changelog. Last modified: $Date$
 - [Feature] Website Configuration (Google Storage)
 - [Bugfix] Copy folder from server to server (#6440)
 - [Bugfix] Duplicate folder (#6495)
+- [Bugfix] Interoperability with latest API (CloudFront)
 
 4.2.1 [http://trac.cyberduck.ch/milestone/4.2.1]
 - [Bugfix] Edited files not uploaded (#6399)
