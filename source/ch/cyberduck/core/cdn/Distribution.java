@@ -44,6 +44,16 @@ public class Distribution {
     private String id;
 
     /**
+     * For If-Match when updating configuration
+     */
+    private String etag;
+
+    /**
+     * Caller reference
+     */
+    private String reference;
+
+    /**
      * Configuration successfully applied and distributed
      */
     private boolean deployed;
@@ -307,7 +317,7 @@ public class Distribution {
      */
     public Distribution(String id, String origin, Method method, boolean enabled,
                         String url, String sslUrl, String streamingUrl, String status, boolean logging) {
-        this(id, origin, method, enabled, enabled, url, sslUrl, streamingUrl, status, new String[]{},
+        this(id, null, null, origin, method, enabled, enabled, url, sslUrl, streamingUrl, status, new String[]{},
                 logging, null, null);
     }
 
@@ -371,11 +381,12 @@ public class Distribution {
      */
     public Distribution(String id, String origin, Method method, boolean enabled, boolean deployed, String url,
                         String status, String[] cnames, boolean logging, String defaultRootObject) {
-        this(id, origin, method, enabled, deployed, url, null, null, status, cnames, logging, null, defaultRootObject);
+        this(id, null, null, origin, method, enabled, deployed, url, null, null, status, cnames, logging, null, defaultRootObject);
     }
 
     /**
      * @param id                Identifier of this distribution
+     * @param etag              ETag header
      * @param origin            Server to fetch original content
      * @param method            Kind of distribution
      * @param enabled           Deployment Enabled
@@ -389,10 +400,12 @@ public class Distribution {
      * @param loggingContainer  Logging target bucket
      * @param defaultRootObject Index file
      */
-    public Distribution(String id, String origin, Method method, boolean enabled, boolean deployed, String url,
+    public Distribution(String id, String etag, String reference, String origin, Method method, boolean enabled, boolean deployed, String url,
                         String sslUrl, String streamingUrl, String status, String[] cnames,
                         boolean logging, String loggingContainer, String defaultRootObject) {
         this.id = id;
+        this.etag = etag;
+        this.reference = reference;
         this.origin = origin;
         this.enabled = enabled;
         this.deployed = deployed;
@@ -409,6 +422,14 @@ public class Distribution {
 
     public String getId() {
         return id;
+    }
+
+    public String getEtag() {
+        return etag;
+    }
+
+    public String getReference() {
+        return reference;
     }
 
     /**
