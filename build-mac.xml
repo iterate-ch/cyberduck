@@ -109,15 +109,19 @@
                 <include name="*.dylib"/>
             </fileset>
         </copy>
+        <copy todir="${app.contents}" overwrite="true">
+            <fileset dir="${basedir}">
+                <include name="Info.plist"/>
+            </fileset>
+        </copy>
 
-        <antcall target="copy-runtime"/>
         <antcall target="spotlight"/>
 
         <echo message="_VERSION_=${cyberduck.version.major}.${cyberduck.version.minor}"/>
         <echo message="_REVISION_=${svn.revision}"/>
         <echo message="_SPARKLEFEED_=${sparkle.feed}"/>
-        <replace dir="${app.bundle}" summary="true" encoding="UTF-8">
-            <include name="**/Info.plist"/>
+        <replace dir="${app.contents}" summary="true" encoding="UTF-8">
+            <include name="Info.plist"/>
             <replacefilter token="_REVISION_" value="${svn.revision}"/>
             <replacefilter token="_VERSION_" value="${cyberduck.version.major}.${cyberduck.version.minor}"/>
             <replacefilter token="_MINIMUM_SYSTEM_" value="${app.runtime.system.min}"/>
@@ -128,9 +132,6 @@
     <target name="distribution-sparkle" depends="timestamp">
         <!-- Copy stub for system runtime -->
         <antcall target="copy-stub"/>
-        <!-- Remove custom runtime -->
-        <delete dir="${app.runtime}"/>
-
         <antcall target="codesign"/>
         <antcall target="tar"/>
         <antcall target="zip"/>
@@ -171,8 +172,12 @@
     </target>
 
     <target name="distribution-mas" depends="timestamp">
-        <replace dir="${app.bundle}" summary="true" encoding="UTF-8">
-            <include name="**/Info.plist"/>
+        <!-- Copy runtime -->
+        <antcall target="copy-runtime"/>
+
+        <replace dir="${app.contents}" summary="true" encoding="UTF-8">
+            <include name="Info.plist"/>
+            <!-- Disable Sparkle Keys -->
             <replacefilter token="SU" value="None"/>
         </replace>
         <delete dir="${app.frameworks}/Sparkle.framework"/>
@@ -244,6 +249,10 @@
             <param name="oldname" value="/System/Library/Frameworks/JavaVM.framework/Versions/A/JavaVM"/>
             <param name="newname" value="${app.runtime.lib}"/>
         </antcall>
+        <replace dir="${app.contents}" summary="true" encoding="UTF-8">
+            <include name="Info.plist"/>
+            <replacefilter token="_RUNTIME_" value="Runtime"/>
+        </replace>
     </target>
 
     <target name="shared-library-install-name">
@@ -326,6 +335,10 @@
         <exec executable="/usr/bin/codesign" failonerror="true">
             <arg line="-d -r- ${app.bundle}"/>
         </exec>
+        <echo message="Check signature validity for ${app.bundle}..."/>
+        <exec executable="/usr/sbin/spctl" failonerror="true">
+            <arg line="--assess --type execute ${app.bundle} -vv"/>
+        </exec>
     </target>
 
     <target name="tar">
@@ -339,10 +352,23 @@
     </target>
 
     <target name="copy-stub">
+        <echo message="Using stub: ${apple.appstub}"/>
+        <!-- copy application stub -->
+        <copy file="${apple.appstub}" toFile="${app.executable}" overwrite="true"/>
+        <!-- fix stub permissions -->
+        <chmod perm="755" type="file">
+            <fileset dir="${app.macos}">
+                <include name="${ant.project.name}"/>
+            </fileset>
+        </chmod>
         <antcall target="shared-library-install-name">
             <param name="newname" value="/System/Library/Frameworks/JavaVM.framework/Versions/A/JavaVM"/>
             <param name="oldname" value="${app.runtime.lib}"/>
         </antcall>
+        <replace dir="${app.contents}" summary="true" encoding="UTF-8">
+            <include name="Info.plist"/>
+            <replacefilter token="_RUNTIME_" value="Java"/>
+        </replace>
     </target>
 
     <target name="zip">
