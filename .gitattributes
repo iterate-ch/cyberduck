@@ -1724,7 +1724,7 @@ lib/gdata-media-1.0.jar -text
 lib/gdata-spreadsheet-3.0.jar -text
 lib/gdata-spreadsheet-meta-3.0.jar -text
 lib/google-collect-1.0.jar -text
-lib/httpclient-4.2.jar -text
+lib/httpclient-4.2.1.jar -text
 lib/httpcore-4.2.1.jar -text
 lib/httpmime-4.1.2.jar -text
 lib/icu4j-module-4.4.1.1.jar -text
