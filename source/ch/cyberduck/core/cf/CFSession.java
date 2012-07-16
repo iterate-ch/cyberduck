@@ -284,12 +284,10 @@ public class CFSession extends CloudSession implements DistributionConfiguration
         try {
             CFSession.this.check();
             if(enabled) {
-                CFSession.this.message(MessageFormat.format(Locale.localizedString("Enable {0} Distribution", "Status"),
-                        Locale.localizedString("Rackspace Cloud Files", "Mosso")));
+                CFSession.this.message(MessageFormat.format(Locale.localizedString("Enable {0} Distribution", "Status"), "CDN"));
             }
             else {
-                CFSession.this.message(MessageFormat.format(Locale.localizedString("Disable {0} Distribution", "Status"),
-                        Locale.localizedString("Rackspace Cloud Files", "Mosso")));
+                CFSession.this.message(MessageFormat.format(Locale.localizedString("Disable {0} Distribution", "Status"), "CDN"));
             }
             cdnRequest = true;
             try {
