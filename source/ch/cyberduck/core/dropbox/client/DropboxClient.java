@@ -131,7 +131,7 @@ public class DropboxClient extends AbstractHttpDropboxClient {
         // first we add a "fake" param of file=path of *uploaded* file, THEN we sign that.
         List<BasicNameValuePair> nvps = new ArrayList<BasicNameValuePair>();
         nvps.add(new BasicNameValuePair("file", content.getFilename()));
-        req.setEntity(new UrlEncodedFormEntity(nvps, HTTP.UTF_8));
+        req.setEntity(new UrlEncodedFormEntity(nvps, "UTF-8"));
         try {
             auth.sign(req);
         }

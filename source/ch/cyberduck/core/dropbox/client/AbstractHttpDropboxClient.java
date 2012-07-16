@@ -302,7 +302,7 @@ public abstract class AbstractHttpDropboxClient {
                     }
                 }
                 try {
-                    post.setEntity(new UrlEncodedFormEntity(form, HTTP.UTF_8));
+                    post.setEntity(new UrlEncodedFormEntity(form, "UTF-8"));
                 }
                 catch(UnsupportedEncodingException e) {
                     throw new RuntimeException(e);
