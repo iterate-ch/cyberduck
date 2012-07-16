@@ -1262,6 +1262,9 @@ public class S3Path extends CloudPath {
      * @return ACL to write to server
      */
     protected AccessControlList convert(Acl acl) {
+        if(null == acl) {
+            return null;
+        }
         AccessControlList list = new AccessControlList();
         list.setOwner(new S3Owner(acl.getOwner().getIdentifier(), acl.getOwner().getDisplayName()));
         for(Acl.UserAndRole userAndRole : acl.asList()) {
