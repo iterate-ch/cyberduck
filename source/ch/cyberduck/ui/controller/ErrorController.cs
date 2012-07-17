@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2011 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -15,6 +15,7 @@
 // Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
 // 
+
 using System.Collections.Generic;
 using ch.cyberduck.core;
 using ch.cyberduck.core.threading;
@@ -40,7 +41,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                            BackgroundException failure = (BackgroundException) rowObject;
                                            if (null == failure.getPath())
                                            {
-                                               return failure.getSession().getHost().toURL();
+                                               return failure.getHost().toURL();
                                            }
                                            return failure.getPath().getAbsolute();
                                        };
