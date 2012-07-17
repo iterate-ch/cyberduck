@@ -1844,6 +1844,11 @@ namespace Ch.Cyberduck.Ui.Controller
                             _view.DistributionLoggingPopup = file.getContainerName();
                         }
                     }
+                    if (null == _view.DistributionLoggingPopup)
+                    {
+                        _view.DistributionLoggingPopup = Locale.localizedString("None");                        
+                    }
+
                     // Concatenate URLs
                     if (_infoController.NumberOfFiles > 1)
                     {
