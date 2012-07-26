@@ -12,6 +12,8 @@
         aclRemoveButton = NSButton;
         aclTable = NSTableView;
         aclUrlField = NSTextField;
+        bucketAnalyticsButton = NSButton;
+        bucketAnalyticsSetupUrlField = NSTextField;
         bucketLocationField = NSTextField;
         bucketLoggingButton = NSButton;
         bucketLoggingPopup = NSPopUpButton;
@@ -19,6 +21,8 @@
         bucketVersioningButton = NSButton;
         checksumField = NSTextField;
         createdField = NSTextField;
+        distributionAnalyticsButton = NSButton;
+        distributionAnalyticsSetupUrlField = NSTextField;
         distributionCnameField = NSTextField;
         distributionCnameUrlField = NSTextField;
         distributionDefaultRootPopup = NSPopUpButton;
