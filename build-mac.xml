@@ -33,11 +33,9 @@
     <property name="app.frameworks" value="${app.contents}/Frameworks"/>
     <property name="app.resources" value="${app.contents}/Resources"/>
     <property name="app.java" value="${app.resources}/Java"/>
-    <property name="app.runtime" value="${app.java}/Runtime.jdk"/>
+    <property name="app.runtime" value="${app.java}/Runtime.jre"/>
     <property name="app.runtime.lib"
-              value="@executable_path/../Resources/Java/Runtime.jdk/Contents/Home/jre/lib/server/libjvm.dylib"/>
-    <!--<property name="app.runtime.lib"-->
-    <!--value="@executable_path/../Resources/Java/Runtime.jdk/Contents/Home/lib/server/libjvm.dylib"/>-->
+              value="@executable_path/../Resources/Java/Runtime.jre/Contents/Home/lib/server/libjvm.dylib"/>
     <property name="app.runtime.system.min" value="10.5"/>
 
     <property name="app.spotlight" value="${app.library}/Spotlight"/>
@@ -47,11 +45,9 @@
     <property name="apple.appstub"
               location="/System/Library/Frameworks/JavaVM.framework/Resources/MacOS/JavaApplicationStub"/>
 
-    <property name="jvm.runtime.home" value="${lib}/1.7.0.20.0-b06-internal.jdk"/>
-    <!--<property name="jvm.runtime.home" value="${lib}/1.7.0.21.0-b17-b218.jdk"/>-->
+    <property name="jvm.runtime.home" value="${lib}/1.7.0u6.jre"/>
     <property name="jvm.runtime.bundle.home" value="Contents/Home"/>
-    <property name="jvm.runtime.bundle.lib" value="Contents/Home/jre/lib"/>
-    <!--<property name="jvm.runtime.bundle.lib" value="Contents/Home/lib"/>-->
+    <property name="jvm.runtime.bundle.lib" value="Contents/Home/lib"/>
 
     <property name="codesign.certificate" value="Cyberduck Code Signing Certificate"/>
     <!--<property name="codesign.certificate" value="Developer ID Application: David Kocher"/>-->
@@ -243,7 +239,31 @@
     <target name="copy-runtime">
         <echo message="Copy runtime from ${jvm.runtime.home}..."/>
         <copy todir="${app.runtime}" preservelastmodified="true">
-            <fileset followsymlinks="false" dir="${jvm.runtime.home}"/>
+            <fileset followsymlinks="false" dir="${jvm.runtime.home}">
+                <exclude name="Contents/Home/bin/**"/>
+                <exclude name="Contents/Home/man/**"/>
+                <exclude name="Contents/Home/lib/applet/**"/>
+                <exclude name="Contents/Home/lib/servicetag/**"/>
+                <exclude name="Contents/Home/lib/management/**"/>
+                <exclude name="Contents/Home/lib/management-agent.jar"/>
+                <exclude name="Contents/Home/lib/images/**"/>
+                <exclude name="Contents/Home/lib/xawt/**"/>
+                <exclude name="Contents/Home/lib/lwawt/**"/>
+                <exclude name="Contents/Home/lib/client/**"/>
+                <exclude name="Contents/Home/lib/headless/**"/>
+                <exclude name="Contents/Home/lib/JObjC.jar"/>
+                <exclude name="Contents/Home/lib/libJObjC.dylib"/>
+                <exclude name="Contents/Home/lib/libsplashscreen.dylib"/>
+                <exclude name="Contents/Home/lib/libfontmanager.dylib"/>
+                <exclude name="Contents/Home/lib/libAppleScriptEngine.dylib"/>
+                <exclude name="Contents/Home/lib/fontconfig.*"/>
+                <exclude name="Contents/Home/lib/libawt.dylib"/>
+                <exclude name="Contents/Home/lib/libjawt.dylib"/>
+                <exclude name="Contents/Home/lib/libhprof.dylib"/>
+                <exclude name="Contents/Home/lib/libinstrument.dylib"/>
+                <exclude name="Contents/Home/lib/libjsound.dylib"/>
+                <exclude name="Contents/Home/lib/rhino.jar"/>
+            </fileset>
         </copy>
         <antcall target="shared-library-install-name">
             <param name="oldname" value="/System/Library/Frameworks/JavaVM.framework/Versions/A/JavaVM"/>
