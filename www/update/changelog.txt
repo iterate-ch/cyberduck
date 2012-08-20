@@ -5,6 +5,7 @@
 - [Feature] Interoperability with HP Cloud (Openstack)
 - [Feature] Interoperability with Lunacloud Storage (S3)
 - [Feature] Website Configuration (Google Storage)
+- [Feature] Retina resolution support (#6760)
 - [Bugfix] Copy folder from server to server (#6440)
 - [Bugfix] Duplicate folder (#6495)
 - [Bugfix] Interoperability with latest API (CloudFront)
