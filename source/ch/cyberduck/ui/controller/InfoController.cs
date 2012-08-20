@@ -309,7 +309,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                                      break;
 
                                                  case ListChangedType.ItemChanged:
-                                                     if (
+                                                     if (args.NewIndex < _metadata.Count &&
                                                          Utils.IsNotBlank(
                                                              _metadata[args.NewIndex].Name) &&
                                                          Utils.IsNotBlank(_metadata[args.NewIndex].Value))
