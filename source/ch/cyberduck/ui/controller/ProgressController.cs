@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -81,6 +81,7 @@ namespace Ch.Cyberduck.Ui.Controller
             SetMessageText();
             SetStatusText();
             SetRootPaths();
+            SetTransferStatus();
 
             ICollection<Session> sessions =
                 Utils.ConvertFromJavaList<Session>(_transfer.getSessions());
@@ -100,6 +101,17 @@ namespace Ch.Cyberduck.Ui.Controller
                 roots.Add(p.getName());
             }
             View.PopulateRoots(roots);
+        }
+
+        private void SetTransferStatus()
+        {
+            if (_transfer.isRunning())
+            {
+                View.TransferStatus = TransferStatus.InProgress;
+            } else
+            {
+                View.TransferStatus = _transfer.isComplete() ? TransferStatus.Complete : TransferStatus.Incomplete;
+            }
         }
 
         private void SetIcon()
