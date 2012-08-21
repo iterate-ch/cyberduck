@@ -166,8 +166,14 @@ namespace Ch.Cyberduck.Ui.Controller
 
             PopulateBandwithList();
 
-            View.TranscriptVisible = Preferences.instance().getBoolean("queue.logDrawer.isOpen");
-            View.TranscriptHeight = Preferences.instance().getInteger("queue.logDrawer.size.height");
+            View.PositionSizeRestoredEvent += delegate
+                                                  {
+                                                      View.TranscriptVisible = Preferences.instance().getBoolean("queue.logDrawer.isOpen");
+                                                      View.TranscriptHeight = Preferences.instance().getInteger("queue.logDrawer.size.height");
+
+                                                      View.ToggleTranscriptEvent += View_ToggleTranscriptEvent;
+                                                      View.TranscriptHeightChangedEvent += View_TranscriptHeightChangedEvent;
+                                                  };
             View.QueueSize = Preferences.instance().getInteger("queue.maxtransfers");
             View.BandwidthEnabled = false;
 
@@ -181,8 +187,6 @@ namespace Ch.Cyberduck.Ui.Controller
             View.SelectionChangedEvent += View_SelectionChangedEvent;
             View.BandwidthChangedEvent += View_BandwidthChangedEvent;
             View.QueueSizeChangedEvent += View_QueueSizeChangedEvent;
-            View.ToggleTranscriptEvent += View_ToggleTranscriptEvent;
-            View.TranscriptHeightChangedEvent += View_TranscriptHeightChangedEvent;
 
             View.ValidateResumeEvent += View_ValidateResumeEvent;
             View.ValidateReloadEvent += View_ValidateReloadEvent;

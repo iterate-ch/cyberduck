@@ -69,6 +69,7 @@ namespace Ch.Cyberduck.Ui.Controller
             SysIcons footerIcon, DialogResponseHandler handler);
 
         //todo evtl. extend form that implements these events
+        event VoidHandler PositionSizeRestoredEvent;
         event VoidHandler ViewShownEvent;
         event VoidHandler ViewClosedEvent;
         event FormClosingEventHandler ViewClosingEvent;

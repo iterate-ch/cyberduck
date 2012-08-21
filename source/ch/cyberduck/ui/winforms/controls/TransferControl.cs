@@ -251,6 +251,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Controls
         public event VoidHandler ViewShownEvent = delegate { };
         public event VoidHandler ViewClosedEvent = delegate { };
         public event FormClosingEventHandler ViewClosingEvent = delegate { };
+        public event VoidHandler PositionSizeRestoredEvent = delegate { };
         public event VoidHandler ViewDisposedEvent;
 
         private void DelegateOnDoubleClick(object sender, EventArgs e)

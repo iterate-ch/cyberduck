@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2011 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -93,6 +93,14 @@ namespace Ch.Cyberduck.Ui.Winforms
                                 if (null != disposedEvent) ViewDisposedEvent();
                             };
 
+            ValuesLoaded += delegate
+                                {
+                                    if (PositionSizeRestoredEvent != null)
+                                    {
+                                        PositionSizeRestoredEvent();
+                                    }
+                                };
+
             Application.Idle += OnApplicationIdle;
 
             if (!DesignMode)
@@ -185,6 +193,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             handler(dialog.CommandButtonResult, dialog.VerificationChecked);
             return result;
         }
+
+        public event VoidHandler PositionSizeRestoredEvent;
 
         public event VoidHandler ViewShownEvent;
         public event VoidHandler ViewClosedEvent;
@@ -336,7 +346,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             // Notify that values are loaded and ready for getting.
             var handler = ValuesLoaded;
             if (handler != null)
+            {
                 handler(this, EventArgs.Empty);
+            }
         }
 
         protected event EventHandler<EventArgs> ValuesLoaded;
