@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2011 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -70,6 +70,14 @@ namespace Ch.Cyberduck.Ui.Winforms
                     LocalizeTexts();
                     EventHandler localizationCompleted = LocalizationCompleted;
                     if (null != localizationCompleted) LocalizationCompleted(this, EventArgs.Empty);
+                }
+            };
+
+            ValuesLoaded += delegate
+            {
+                if (PositionSizeRestoredEvent != null)
+                {
+                    PositionSizeRestoredEvent();
                 }
             };
 
@@ -186,6 +194,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             return result;
         }
 
+        public event VoidHandler PositionSizeRestoredEvent;
         public event VoidHandler ViewShownEvent;
         public event VoidHandler ViewClosedEvent;
         public event FormClosingEventHandler ViewClosingEvent;
