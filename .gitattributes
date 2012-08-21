@@ -2569,6 +2569,7 @@ source/ch/cyberduck/ui/winforms/ActivityForm.Designer.cs -text
 source/ch/cyberduck/ui/winforms/ActivityForm.cs -text
 source/ch/cyberduck/ui/winforms/ActivityForm.resx -text
 source/ch/cyberduck/ui/winforms/BaseForm.Designer.cs -text
+source/ch/cyberduck/ui/winforms/BaseForm.cs -text
 source/ch/cyberduck/ui/winforms/BaseForm.resx -text
 source/ch/cyberduck/ui/winforms/BookmarkForm.Designer.cs -text
 source/ch/cyberduck/ui/winforms/BookmarkForm.cs -text
