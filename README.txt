@@ -23,6 +23,8 @@ Windows
 	http://msbuildtasks.tigris.org/
 - Latest IKVM binary release in C:/workspace/
 	http://sourceforge.net/projects/ikvm/files/
+- Bonjour SDK for Windows
+    https://developer.apple.com/downloads/index.action?q=Bonjour%20SDK%20for%20Windows
 
 Compiling
 ---------
