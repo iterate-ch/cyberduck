@@ -20,7 +20,6 @@ package ch.cyberduck.ui.action;
  */
 
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.cloud.CloudPath;
 import ch.cyberduck.core.http.HttpPath;
 import ch.cyberduck.core.i18n.Locale;
 
