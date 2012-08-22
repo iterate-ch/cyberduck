@@ -19,16 +19,7 @@ package ch.cyberduck.core.gstorage;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Acl;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.KeychainFactory;
-import ch.cyberduck.core.LoginController;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.Protocol;
-import ch.cyberduck.core.Session;
-import ch.cyberduck.core.SessionFactory;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.i18n.Locale;
@@ -121,7 +112,9 @@ public class GSSession extends S3Session implements DistributionConfiguration, I
                 tokens = ((OAuth2Credentials) credentials).getOAuth2Tokens();
             }
             catch(IOException e) {
-                throw new ServiceException(e.getMessage());
+                final ServiceException failure = new ServiceException(e.getMessage());
+                failure.initCause(e);
+                throw failure;
             }
             if(tokens == null) {
                 throw new ServiceException("Cannot authenticate using OAuth2 until initial tokens are provided");
