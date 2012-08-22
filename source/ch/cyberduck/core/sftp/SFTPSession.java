@@ -520,30 +520,36 @@ public class SFTPSession extends Session {
             BufferedReader stdoutReader = new BufferedReader(new InputStreamReader(new StreamGobbler(sess.getStdout())));
             BufferedReader stderrReader = new BufferedReader(new InputStreamReader(new StreamGobbler(sess.getStderr())));
 
-            // Here is the output from stdout
-            while(true) {
-                String line = stdoutReader.readLine();
-                if(null == line) {
-                    break;
+            try {
+                // Here is the output from stdout
+                while(true) {
+                    String line = stdoutReader.readLine();
+                    if(null == line) {
+                        break;
+                    }
+                    this.log(false, line);
                 }
-                this.log(false, line);
-            }
-            // Here is the output from stderr
-            StringBuilder error = new StringBuilder();
-            while(true) {
-                String line = stderrReader.readLine();
-                if(null == line) {
-                    break;
+                // Here is the output from stderr
+                StringBuilder error = new StringBuilder();
+                while(true) {
+                    String line = stderrReader.readLine();
+                    if(null == line) {
+                        break;
+                    }
+                    this.log(false, line);
+                    // Standard error output contains all status messages, not only errors.
+                    if(StringUtils.isNotBlank(error.toString())) {
+                        error.append(" ");
+                    }
+                    error.append(line).append(".");
                 }
-                this.log(false, line);
-                // Standard error output contains all status messages, not only errors.
                 if(StringUtils.isNotBlank(error.toString())) {
-                    error.append(" ");
+                    this.error(error.toString(), null);
                 }
-                error.append(line).append(".");
             }
-            if(StringUtils.isNotBlank(error.toString())) {
-                this.error(error.toString(), null);
+            finally {
+                IOUtils.closeQuietly(stdoutReader);
+                IOUtils.closeQuietly(stderrReader);
             }
         }
         finally {
