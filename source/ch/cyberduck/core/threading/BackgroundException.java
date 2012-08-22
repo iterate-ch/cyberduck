@@ -150,9 +150,6 @@ public class BackgroundException extends Exception {
                     buffer.append(".");
                 }
             }
-            if(cause instanceof SFTPException) {
-                ;
-            }
             if(cause instanceof ServiceException) {
                 final ServiceException s3 = (ServiceException) cause;
                 if(StringUtils.isNotBlank(s3.getResponseStatus())) {
