@@ -40,35 +40,36 @@ package org.spearce.jgit.fnmatch;
 import java.util.List;
 
 abstract class AbstractHead implements Head {
-	private List<Head> newHeads = null;
+    private List<Head> newHeads = null;
 
-	private final boolean star;
+    private final boolean star;
 
-	protected abstract boolean matches(char c);
+    protected abstract boolean matches(char c);
 
-	AbstractHead(boolean star) {
-		this.star = star;
-	}
+    AbstractHead(boolean star) {
+        this.star = star;
+    }
 
-	/**
-	 *
-	 * @param newHeads
-	 *            a list of {@link Head}s which will not be modified.
-	 */
-	public final void setNewHeads(List<Head> newHeads) {
-		if (this.newHeads != null)
-			throw new IllegalStateException("Property is already non null");
-		this.newHeads = newHeads;
-	}
+    /**
+     * @param newHeads a list of {@link Head}s which will not be modified.
+     */
+    public final void setNewHeads(List<Head> newHeads) {
+        if(this.newHeads != null) {
+            throw new IllegalStateException("Property is already non null");
+        }
+        this.newHeads = newHeads;
+    }
 
-	public List<Head> getNextHeads(char c) {
-		if (matches(c))
-			return newHeads;
-		else
-			return FileNameMatcher.EMPTY_HEAD_LIST;
-	}
+    public List<Head> getNextHeads(char c) {
+        if(matches(c)) {
+            return newHeads;
+        }
+        else {
+            return FileNameMatcher.EMPTY_HEAD_LIST;
+        }
+    }
 
-	boolean isStar() {
-		return star;
-	}
+    boolean isStar() {
+        return star;
+    }
 }
