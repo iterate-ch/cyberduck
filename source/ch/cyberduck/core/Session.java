@@ -118,12 +118,12 @@ public abstract class Session implements TranscriptListener {
                 if(e.getMessage().equals("Software caused connection abort")) {
                     // Do not report as failed if socket opening interrupted
                     log.warn("Supressed socket exception:" + e.getMessage());
-                    throw new ConnectionCanceledException();
+                    throw new ConnectionCanceledException(e.getMessage(), e);
                 }
                 if(e.getMessage().equals("Socket closed")) {
                     // Do not report as failed if socket opening interrupted
                     log.warn("Supressed socket exception:" + e.getMessage());
-                    throw new ConnectionCanceledException();
+                    throw new ConnectionCanceledException(e.getMessage(), e);
                 }
                 throw e;
             }
@@ -133,7 +133,7 @@ public abstract class Session implements TranscriptListener {
                     throw e;
                 }
                 // Most probably caused by user dismissing ceritifcate. No trusted certificate found.
-                throw new ConnectionCanceledException(e.getMessage());
+                throw new ConnectionCanceledException(e.getMessage(), e);
             }
         }
         catch(IOException e) {
