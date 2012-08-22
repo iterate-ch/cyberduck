@@ -66,6 +66,7 @@ public class AttributedList<E extends AbstractPath> extends CopyOnWriteArrayList
     }
 
     private static class EmptyList extends AttributedList<AbstractPath> {
+        private static final long serialVersionUID = -3141819895841964174L;
 
         @Override
         public int size() {
@@ -80,12 +81,6 @@ public class AttributedList<E extends AbstractPath> extends CopyOnWriteArrayList
         @Override
         public AbstractPath get(int index) {
             throw new IndexOutOfBoundsException("Index: " + index);
-        }
-
-        // Preserves singleton property
-
-        private AttributedList<AbstractPath> readResolve() {
-            return EMPTY_LIST;
         }
     }
 
@@ -240,10 +235,6 @@ public class AttributedList<E extends AbstractPath> extends CopyOnWriteArrayList
         return super.addAll(c);
     }
 
-    /**
-     * @param reference
-     * @return
-     */
     public E get(PathReference reference) {
         return references.get(reference);
     }
@@ -260,7 +251,7 @@ public class AttributedList<E extends AbstractPath> extends CopyOnWriteArrayList
      * The CopyOnWriteArrayList iterator does not support remove but the sort implementation
      * makes use of it. Provide our own implementation here to circumvent.
      *
-     * @param comparator
+     * @param comparator The comparator to use
      * @see java.util.Collections#sort(java.util.List, java.util.Comparator)
      * @see java.util.concurrent.CopyOnWriteArrayList#iterator()
      */
