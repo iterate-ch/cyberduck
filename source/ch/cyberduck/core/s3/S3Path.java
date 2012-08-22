@@ -19,20 +19,7 @@ package ch.cyberduck.core.s3;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractPath;
-import ch.cyberduck.core.Acl;
-import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.ConnectionCanceledException;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LoginController;
-import ch.cyberduck.core.LoginControllerFactory;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathFactory;
-import ch.cyberduck.core.Permission;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.Protocol;
-import ch.cyberduck.core.StreamListener;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.cloud.CloudPath;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
 import ch.cyberduck.core.http.ResponseOutputStream;
@@ -73,17 +60,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TimeZone;
+import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -846,7 +823,7 @@ public class S3Path extends CloudPath {
                 catch(InterruptedException e) {
                     log.error("Part upload failed:" + e.getMessage());
                     status().setComplete(false);
-                    throw new ConnectionCanceledException(e.getMessage());
+                    throw new ConnectionCanceledException(e.getMessage(), e);
                 }
                 catch(ExecutionException e) {
                     log.warn("Part upload failed:" + e.getMessage());
@@ -857,7 +834,7 @@ public class S3Path extends CloudPath {
                     if(e.getCause() instanceof IOException) {
                         throw (IOException) e.getCause();
                     }
-                    throw new ConnectionCanceledException(e.getMessage());
+                    throw new ConnectionCanceledException(e.getMessage(), e);
                 }
             }
             if(status().isComplete()) {
