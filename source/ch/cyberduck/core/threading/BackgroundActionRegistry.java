@@ -22,6 +22,7 @@ package ch.cyberduck.core.threading;
  * @version $Id$
  */
 public class BackgroundActionRegistry extends AbstractActionRegistry<BackgroundAction> {
+    private static final long serialVersionUID = 1721336643608575003L;
 
     private static BackgroundActionRegistry global = null;
 

@@ -25,4 +25,5 @@ import ch.cyberduck.core.Collection;
  * @version $Id$
  */
 public abstract class AbstractActionRegistry<T extends Runnable> extends Collection<T> {
+    private static final long serialVersionUID = 7745413022118744838L;
 }
