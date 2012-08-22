@@ -1,17 +1,22 @@
 package org.kohsuke.putty;
 
-import ch.ethz.ssh2.crypto.Base64;
-import ch.ethz.ssh2.crypto.PEMDecryptException;
-import ch.ethz.ssh2.crypto.cipher.AES;
-import ch.ethz.ssh2.crypto.cipher.CBCMode;
-
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.math.BigInteger;
-import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
+
+import ch.ethz.ssh2.crypto.Base64;
+import ch.ethz.ssh2.crypto.PEMDecryptException;
+import ch.ethz.ssh2.crypto.cipher.AES;
+import ch.ethz.ssh2.crypto.cipher.CBCMode;
 
 /**
  * Interprets PuTTY's ".ppk" file.
@@ -110,7 +115,7 @@ public class PuTTYKey {
     /**
      * Decrypt private key
      *
-     * @param passphrase
+     * @param passphrase To decrypt
      */
     private byte[] decrypt(String passphrase) throws IOException {
         if(this.isEncrypted()) {
@@ -171,9 +176,9 @@ public class PuTTYKey {
      * Converts this key into OpenSSH format.
      *
      * @return A multi-line string that can be written back to a file.
-     * @throws InvalidKeyException If the passphrase is wrong
+     * @throws PEMDecryptException If the passphrase is wrong
      */
-    public String toOpenSSH(String passphrase) throws IOException, PEMDecryptException {
+    public String toOpenSSH(String passphrase) throws IOException {
         if("ssh-rsa".equals(this.getAlgorithm())) {
             KeyReader r = new KeyReader(publicKey);
             r.skip();   // skip this

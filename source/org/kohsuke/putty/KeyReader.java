@@ -25,12 +25,11 @@ public class KeyReader {
     /**
      * Skips an integer without reading it.
      */
-    public void skip() {
-        try {
-            di.skipBytes(di.readInt());
-        }
-        catch(IOException e) {
-            throw new AssertionError(e);
+    public void skip() throws IOException {
+        final int n = di.readInt();
+        final int skipped = di.skipBytes(n);
+        if(skipped != n) {
+            throw new IOException(String.format("Skipped %d bytes instead of %d", skipped, n));
         }
     }
 
@@ -38,7 +37,7 @@ public class KeyReader {
         try {
             int len = di.readInt();
             if(len <= 0 || len > 512) {
-                throw new PEMDecryptException("Invalid length " +len);
+                throw new PEMDecryptException("Invalid length " + len);
             }
             byte[] r = new byte[len];
             di.readFully(r);
