@@ -39,21 +39,22 @@ public abstract class Factory<T> {
         public boolean matches(String regex) {
             return this.toString().matches(regex);
         }
-    }
 
-    public boolean equals(Object other) {
-        if(null == other) {
+        @Override
+        public boolean equals(Object other) {
+            if(null == other) {
+                return false;
+            }
+            if(other instanceof Platform) {
+                return other.toString().equals(this.toString());
+            }
             return false;
         }
-        if(other instanceof Platform) {
-            return other.toString().equals(this.toString());
-        }
-        return false;
-    }
 
-    @Override
-    public int hashCode() {
-        return this.toString().hashCode();
+        @Override
+        public int hashCode() {
+            return this.toString().hashCode();
+        }
     }
 
     public static final Platform NATIVE_PLATFORM = new Platform() {
