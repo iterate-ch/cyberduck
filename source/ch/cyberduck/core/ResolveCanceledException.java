@@ -22,6 +22,7 @@ package ch.cyberduck.core;
  * @version $Id$
  */
 public class ResolveCanceledException extends ConnectionCanceledException {
+    private static final long serialVersionUID = -8022014902668414964L;
 
     public ResolveCanceledException() {
         super();

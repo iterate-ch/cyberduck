@@ -45,6 +45,8 @@ import com.rackspacecloud.client.cloudfiles.FilesException;
 public class BackgroundException extends Exception {
     private static Logger log = Logger.getLogger(BackgroundException.class);
 
+    private static final long serialVersionUID = -6114495291207129418L;
+
     private String message;
 
     private Path path;

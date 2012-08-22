@@ -25,6 +25,8 @@ import java.io.IOException;
  */
 public class IOResumeException extends IOException {
 
+    private static final long serialVersionUID = -312412837701506092L;
+
     public IOResumeException(String s) {
         super(s);
     }

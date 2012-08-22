@@ -24,12 +24,18 @@ import java.io.IOException;
 
 /**
  * To be used if a connection attempt is interrupted by the user
+ *
  * @version $Id$
  */
 public class ConnectionCanceledException extends IOException {
+    private static final long serialVersionUID = 1731598032382782206L;
 
     public ConnectionCanceledException() {
         super(Locale.localizedString("Connection attempt canceled", "Credentials"));
+    }
+
+    public ConnectionCanceledException(Throwable cause) {
+        super(Locale.localizedString("Connection attempt canceled", "Credentials"), cause);
     }
 
     public ConnectionCanceledException(String s) {

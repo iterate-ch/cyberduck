@@ -22,9 +22,11 @@ import ch.cyberduck.core.i18n.Locale;
 
 /**
  * To be used if a login attempt is canceled by the user
+ *
  * @version $Id$
  */
 public class LoginCanceledException extends ConnectionCanceledException {
+    private static final long serialVersionUID = 3299339665746039518L;
 
     public LoginCanceledException() {
         super(Locale.localizedString("Login canceled", "Credentials"));
