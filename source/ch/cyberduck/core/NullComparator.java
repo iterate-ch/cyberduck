@@ -32,6 +32,9 @@ public class NullComparator<V> implements Comparator<V>, java.io.Serializable {
 
     @Override
     public boolean equals(Object object) {
+        if(null == object) {
+            return false;
+        }
         return object.getClass().equals(this.getClass());
     }
 

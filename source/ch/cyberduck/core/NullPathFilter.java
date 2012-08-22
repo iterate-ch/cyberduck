@@ -29,6 +29,9 @@ public class NullPathFilter<E extends AbstractPath> implements PathFilter<E> {
 
     @Override
     public boolean equals(Object object) {
+        if(null == object) {
+            return false;
+        }
         return object.getClass().equals(this.getClass());
     }
 
