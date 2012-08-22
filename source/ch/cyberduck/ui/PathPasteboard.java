@@ -47,6 +47,8 @@ public final class PathPasteboard extends Collection<Path> implements Pasteboard
         }
     };
 
+    private static final long serialVersionUID = -6390582952938739270L;
+
     private boolean cut;
 
     public void setCut(boolean cut) {
