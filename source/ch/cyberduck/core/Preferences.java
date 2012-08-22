@@ -216,7 +216,6 @@ public abstract class Preferences {
         defaults.put("protocol." + Protocol.CLOUDFILES + ".enable", String.valueOf(true));
         defaults.put("protocol." + Protocol.SWIFT + ".enable", String.valueOf(true));
         defaults.put("protocol." + Protocol.GDOCS_SSL + ".enable", String.valueOf(true));
-        defaults.put("protocol." + Protocol.DROPBOX_SSL + ".enable", String.valueOf(false));
 
         defaults.put("path.symboliclink.resolve", String.valueOf(false));
         /**
@@ -645,12 +644,6 @@ public abstract class Preferences {
         defaults.put("google.docs.delete.trash", String.valueOf(false));
 
         /**
-         * Dropbox OAuth Application Secrets
-         */
-        defaults.put("dropbox.key", StringUtils.EMPTY);
-        defaults.put("dropbox.secret", StringUtils.EMPTY);
-
-        /**
          * NTLM Windows Domain
          */
         defaults.put("webdav.ntlm.domain", StringUtils.EMPTY);
@@ -663,9 +656,9 @@ public abstract class Preferences {
 
         defaults.put("analytics.provider.qloudstat.setup", "https://qloudstat.com/configuration/add");
         defaults.put("analytics.provider.qloudstat.iam.policy.s3",
-                "{\"Statement\": [{\"Action\": [\"s3:Get*\",\"s3:List*\",\"s3:ListAllMyBuckets\"],\"Effect\": \"Allow\",\"Resource\": \"arn:aws:s3:::*\"}]}");
+                "{\"Statement\": [{\"Action\": [\"s3:Get*\",\"s3:List*\"],\"Effect\": \"Allow\",\"Resource\": \"arn:aws:s3:::%s/*\"}]}");
         defaults.put("analytics.provider.qloudstat.iam.policy.cloudfront",
-                "{\"Statement\": [{\"Action\": [\"s3:Get*\",\"s3:List*\"],\"Effect\": \"Allow\",\"Resource\": \"arn:aws:s3:::*\"},{\"Action\": [\"cloudfront:Get*\",\"cloudfront:List*\"],\"Effect\": \"Allow\",\"Resource\": \"*\"}]}");
+                "{\"Statement\": [{\"Action\": [\"s3:Get*\",\"s3:List*\"],\"Effect\": \"Allow\",\"Resource\": \"arn:aws:s3:::%s/*\"},{\"Action\": [\"cloudfront:Get*\",\"cloudfront:List*\"],\"Effect\": \"Allow\",\"Resource\": \"*\"}]}");
 
         /**
          * Maximum concurrent connections to the same host

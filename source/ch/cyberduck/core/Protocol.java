@@ -22,8 +22,6 @@ import ch.cyberduck.core.cf.CFPath;
 import ch.cyberduck.core.cf.CFSession;
 import ch.cyberduck.core.dav.DAVPath;
 import ch.cyberduck.core.dav.DAVSession;
-import ch.cyberduck.core.dropbox.DropboxPath;
-import ch.cyberduck.core.dropbox.DropboxSession;
 import ch.cyberduck.core.eucalyptus.ECPath;
 import ch.cyberduck.core.eucalyptus.ECSession;
 import ch.cyberduck.core.ftp.FTPPath;
@@ -1044,73 +1042,6 @@ public abstract class Protocol {
         @Override
         public PathFactory getPathFactory() {
             return GSPath.factory();
-        }
-    };
-
-    public static final Protocol DROPBOX_SSL = new Protocol() {
-        @Override
-        public String getName() {
-            return "Dropbox";
-        }
-
-        @Override
-        public String getDescription() {
-            return "Dropbox";
-        }
-
-        @Override
-        public String getIdentifier() {
-            return "dropbox";
-        }
-
-        @Override
-        public boolean isHostnameConfigurable() {
-            return false;
-        }
-
-        @Override
-        public String getDefaultHostname() {
-            return "api.getdropbox.com";
-        }
-
-        @Override
-        public Scheme getScheme() {
-            return Scheme.https;
-        }
-
-        @Override
-        public boolean isPortConfigurable() {
-            return false;
-        }
-
-        @Override
-        public boolean isWebUrlConfigurable() {
-            return false;
-        }
-
-        @Override
-        public boolean isAnonymousConfigurable() {
-            return false;
-        }
-
-        @Override
-        public String getUsernamePlaceholder() {
-            return Locale.localizedString("Email Address", "S3");
-        }
-
-        @Override
-        public String favicon() {
-            return this.icon();
-        }
-
-        @Override
-        public SessionFactory getSessionFactory() {
-            return DropboxSession.factory();
-        }
-
-        @Override
-        public PathFactory getPathFactory() {
-            return DropboxPath.factory();
         }
     };
 }
