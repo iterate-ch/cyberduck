@@ -38,6 +38,10 @@ public class ConnectionCanceledException extends IOException {
         super(Locale.localizedString("Connection attempt canceled", "Credentials"), cause);
     }
 
+    public ConnectionCanceledException(final String message, final Throwable cause) {
+        super(message, cause);
+    }
+
     public ConnectionCanceledException(String s) {
         super(s);
     }

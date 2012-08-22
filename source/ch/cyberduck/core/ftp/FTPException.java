@@ -22,9 +22,11 @@ package ch.cyberduck.core.ftp;
 import java.io.IOException;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class FTPException extends IOException {
+    private static final long serialVersionUID = -809453207804218675L;
+
     public FTPException(String message) {
         super(message);
     }
