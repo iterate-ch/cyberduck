@@ -32,7 +32,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public abstract class CommonUnixFTPEntryParser extends ConfigurableFTPFileEntryParserImpl {
     private static Logger log = Logger.getLogger(CommonUnixFTPEntryParser.class);
@@ -49,7 +49,7 @@ public abstract class CommonUnixFTPEntryParser extends ConfigurableFTPFileEntryP
         try {
             return super.parseTimestamp(timestampStr);
         }
-        catch(ParseException e) {
+        catch(final ParseException e) {
             // #1813 Leap year bug. Taken from http://svn.apache.org/viewvc/commons/proper/net/branches/NET_2_0/src/main/java/org/apache/commons/net/ftp/parser/FTPTimestampParserImpl.java?pathrev=631284&view=diff&r1=631284&r2=139565&diff_format=u
             return new FTPTimestampParserImpl() {
                 @Override
@@ -69,7 +69,9 @@ public abstract class CommonUnixFTPEntryParser extends ConfigurableFTPFileEntryP
                         working.setTime(parsed);
                     }
                     else {
-                        throw new ParseException("Timestamp could not be parsed:" + timestampStr, pp.getIndex());
+                        final ParseException failure = new ParseException(String.format("Timestamp %s could not be parsed.", timestampStr), pp.getIndex());
+                        failure.initCause(e);
+                        throw failure;
                     }
                     return working;
                 }
