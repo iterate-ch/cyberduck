@@ -55,7 +55,7 @@ public class BundleLocale extends Locale {
 
     @Override
     public String get(final String key, final String table) {
-        String identifier = table + "." + key;
+        String identifier = String.format("%s.%s", table, key);
         if(!cache.containsKey(identifier)) {
             cache.put(identifier, NSBundle.localizedString(key, table));
         }
