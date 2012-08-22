@@ -27,6 +27,7 @@ import ch.cyberduck.core.Preferences;
  * @version $Id$
  */
 public class FlashFxp3BookmarkCollection extends FlashFxpBookmarkCollection {
+    private static final long serialVersionUID = -2549896899532082545L;
 
     @Override
     public String getBundleIdentifier() {

@@ -19,7 +19,12 @@ package ch.cyberduck.core.importer;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.PathFilter;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.ftp.FTPConnectMode;
 
 import org.apache.commons.io.IOUtils;
@@ -39,6 +44,8 @@ import java.util.regex.Pattern;
 public class FireFtpBookmarkCollection extends ThirdpartyBookmarkCollection {
     private static Logger log = Logger.getLogger(FireFtpBookmarkCollection.class);
 
+    private static final long serialVersionUID = -1802799231453221690L;
+
     @Override
     public String getBundleIdentifier() {
         return "org.mozdev.fireftp";
@@ -56,8 +63,6 @@ public class FireFtpBookmarkCollection extends ThirdpartyBookmarkCollection {
 
     /**
      * FireFTP settings are in Firefox/Profiles/.*\.default/fireFTPsites.dat
-     *
-     * @param folder
      */
     @Override
     protected void parse(Local folder) {
@@ -81,8 +86,6 @@ public class FireFtpBookmarkCollection extends ThirdpartyBookmarkCollection {
 
     /**
      * Read invalid JSON format.
-     *
-     * @param file
      */
     private void read(Local file) {
         try {

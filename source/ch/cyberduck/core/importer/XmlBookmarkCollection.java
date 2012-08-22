@@ -36,10 +36,12 @@ import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public abstract class XmlBookmarkCollection extends ThirdpartyBookmarkCollection {
     private static Logger log = Logger.getLogger(XmlBookmarkCollection.class);
+
+    private static final long serialVersionUID = -3145592458663362423L;
 
     protected static abstract class AbstractHandler extends DefaultHandler {
         private StringBuilder currentText = null;

@@ -32,6 +32,8 @@ import org.xml.sax.Attributes;
 public abstract class CloudberryBookmarkCollection extends XmlBookmarkCollection {
     private static Logger log = Logger.getLogger(CloudberryBookmarkCollection.class);
 
+    private static final long serialVersionUID = 2245328157886337606L;
+
     @Override
     protected void parse(Local file) {
         this.read(file);

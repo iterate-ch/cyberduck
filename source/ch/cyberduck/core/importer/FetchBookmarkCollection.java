@@ -36,6 +36,8 @@ import java.util.List;
 public class FetchBookmarkCollection extends ThirdpartyBookmarkCollection {
     private static Logger log = Logger.getLogger(FetchBookmarkCollection.class);
 
+    private static final long serialVersionUID = -7544710198776572190L;
+
     @Override
     public String getBundleIdentifier() {
         return "com.fetchsoftworks.Fetch";

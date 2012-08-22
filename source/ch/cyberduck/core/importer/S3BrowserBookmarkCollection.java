@@ -19,7 +19,11 @@ package ch.cyberduck.core.importer;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Protocol;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -35,6 +39,8 @@ import java.util.Scanner;
  */
 public class S3BrowserBookmarkCollection extends ThirdpartyBookmarkCollection {
     private static Logger log = Logger.getLogger(S3BrowserBookmarkCollection.class);
+
+    private static final long serialVersionUID = 2559948549693535359L;
 
     @Override
     public String getBundleIdentifier() {

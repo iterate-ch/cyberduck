@@ -19,7 +19,11 @@ package ch.cyberduck.core.importer;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Protocol;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -33,10 +37,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class WinScpBookmarkCollection extends ThirdpartyBookmarkCollection {
     private static Logger log = Logger.getLogger(WinScpBookmarkCollection.class);
+
+    private static final long serialVersionUID = 4886529703737860985L;
 
     @Override
     public String getBundleIdentifier() {

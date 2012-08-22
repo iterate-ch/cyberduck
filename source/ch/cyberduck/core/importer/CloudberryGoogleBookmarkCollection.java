@@ -27,6 +27,7 @@ import ch.cyberduck.core.Preferences;
  * @version $Id$
  */
 public class CloudberryGoogleBookmarkCollection extends CloudberryBookmarkCollection {
+    private static final long serialVersionUID = 2519947574262078779L;
 
     @Override
     public String getBundleIdentifier() {

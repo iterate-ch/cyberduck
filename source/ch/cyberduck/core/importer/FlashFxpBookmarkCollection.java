@@ -36,10 +36,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public abstract class FlashFxpBookmarkCollection extends ThirdpartyBookmarkCollection {
     private static Logger log = Logger.getLogger(FlashFxpBookmarkCollection.class);
+
+    private static final long serialVersionUID = 5122804563710604658L;
 
     @Override
     protected void parse(Local file) {

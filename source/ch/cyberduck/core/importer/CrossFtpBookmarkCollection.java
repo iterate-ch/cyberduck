@@ -19,7 +19,11 @@ package ch.cyberduck.core.importer;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Protocol;
 
 import org.apache.log4j.Logger;
 import org.xml.sax.Attributes;
@@ -29,6 +33,8 @@ import org.xml.sax.Attributes;
  */
 public class CrossFtpBookmarkCollection extends XmlBookmarkCollection {
     private static Logger log = Logger.getLogger(CrossFtpBookmarkCollection.class);
+
+    private static final long serialVersionUID = 7442378118872253601L;
 
     @Override
     public String getBundleIdentifier() {

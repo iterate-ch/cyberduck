@@ -19,7 +19,12 @@ package ch.cyberduck.core.importer;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.PathFilter;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.ftp.FTPConnectMode;
 
 import org.apache.log4j.Logger;
@@ -31,6 +36,8 @@ import org.w3c.util.InvalidDateException;
  */
 public class SmartFtpBookmarkCollection extends XmlBookmarkCollection {
     private static Logger log = Logger.getLogger(SmartFtpBookmarkCollection.class);
+
+    private static final long serialVersionUID = 6455585501577444740L;
 
     @Override
     public String getBundleIdentifier() {

@@ -33,10 +33,12 @@ import org.apache.log4j.Logger;
 import java.text.MessageFormat;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public abstract class ThirdpartyBookmarkCollection extends AbstractHostCollection {
     private static Logger log = Logger.getLogger(ThirdpartyBookmarkCollection.class);
+
+    private static final long serialVersionUID = -4582425984484543617L;
 
     @Override
     public void load() {

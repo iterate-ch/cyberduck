@@ -19,7 +19,12 @@ package ch.cyberduck.core.importer;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.ftp.FTPConnectMode;
 
 import org.apache.commons.lang.StringUtils;
@@ -30,6 +35,8 @@ import org.apache.log4j.Logger;
  */
 public class FilezillaBookmarkCollection extends XmlBookmarkCollection {
     private static Logger log = Logger.getLogger(FilezillaBookmarkCollection.class);
+
+    private static final long serialVersionUID = -4612895793983093594L;
 
     @Override
     public String getBundleIdentifier() {

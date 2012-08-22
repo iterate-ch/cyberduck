@@ -19,20 +19,30 @@ package ch.cyberduck.core.importer;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
-import ch.cyberduck.ui.cocoa.foundation.*;
-
-import org.rococoa.ObjCClass;
-import org.rococoa.Rococoa;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Protocol;
+import ch.cyberduck.ui.cocoa.foundation.NSArray;
+import ch.cyberduck.ui.cocoa.foundation.NSData;
+import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
+import ch.cyberduck.ui.cocoa.foundation.NSEnumerator;
+import ch.cyberduck.ui.cocoa.foundation.NSKeyedUnarchiver;
+import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.rococoa.ObjCClass;
+import org.rococoa.Rococoa;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class TransmitBookmarkCollection extends ThirdpartyBookmarkCollection {
     private static Logger log = Logger.getLogger(TransmitBookmarkCollection.class);
+
+    private static final long serialVersionUID = 6406786269501430927L;
 
     @Override
     public Local getFile() {

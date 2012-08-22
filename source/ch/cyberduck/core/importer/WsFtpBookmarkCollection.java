@@ -19,7 +19,12 @@ package ch.cyberduck.core.importer;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.PathFilter;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Protocol;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -37,6 +42,8 @@ import java.util.regex.Pattern;
  */
 public class WsFtpBookmarkCollection extends ThirdpartyBookmarkCollection {
     private static Logger log = Logger.getLogger(WsFtpBookmarkCollection.class);
+
+    private static final long serialVersionUID = -254244450037887034L;
 
     @Override
     public String getBundleIdentifier() {
