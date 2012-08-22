@@ -22,7 +22,6 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.SessionFactory;
-import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.s3.S3Session;
 
 import org.jets3t.service.Jets3tProperties;

@@ -20,8 +20,6 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.i18n.Locale;
 
-import org.apache.commons.lang.StringUtils;
-
 /**
  * @version $Id$
  */

@@ -18,7 +18,6 @@ package ch.cyberduck.core.eucalyptus;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFactory;

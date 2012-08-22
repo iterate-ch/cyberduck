@@ -20,7 +20,6 @@ package ch.cyberduck.core.io;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 
 /**
  * @version $Id$
