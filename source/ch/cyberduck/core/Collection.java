@@ -20,7 +20,11 @@ package ch.cyberduck.core;
 
 import org.apache.log4j.Logger;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
@@ -28,6 +32,8 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public class Collection<E> extends ArrayList<E> implements CollectionListener<E> {
     private static Logger log = Logger.getLogger(Collection.class);
+
+    private static final long serialVersionUID = 2169368029038925573L;
 
     /**
      *
@@ -110,7 +116,7 @@ public class Collection<E> extends ArrayList<E> implements CollectionListener<E>
 
     @Override
     public void clear() {
-        for(Iterator<E> iter = this.iterator(); iter.hasNext();) {
+        for(Iterator<E> iter = this.iterator(); iter.hasNext(); ) {
             iter.next();
             iter.remove();
         }

@@ -34,6 +34,8 @@ import java.util.ListIterator;
 public class BookmarkCollection extends AbstractHostCollection {
     private static Logger log = Logger.getLogger(BookmarkCollection.class);
 
+    private static final long serialVersionUID = -74831755267110254L;
+
     /**
      * Legacy default bookmark file
      */

@@ -27,6 +27,7 @@ import java.util.Iterator;
  * @version $Id$
  */
 public final class RendezvousCollection extends AbstractHostCollection {
+    private static final long serialVersionUID = 6468881403370416829L;
 
     private static final RendezvousCollection RENDEZVOUS_COLLECTION
             = new RendezvousCollection();

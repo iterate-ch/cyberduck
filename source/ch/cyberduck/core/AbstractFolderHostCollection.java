@@ -32,6 +32,8 @@ import org.apache.log4j.Logger;
 public abstract class AbstractFolderHostCollection extends AbstractHostCollection {
     private static Logger log = Logger.getLogger(AbstractFolderHostCollection.class);
 
+    private static final long serialVersionUID = 6598370606581477494L;
+
     protected Local folder;
 
     /**
