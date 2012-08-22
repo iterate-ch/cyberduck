@@ -42,28 +42,24 @@ package org.spearce.jgit.errors;
  * side or a character class which is open to the right side.
  */
 public class NoClosingBracketException extends InvalidPatternException {
+    private static final long serialVersionUID = 2130098378147938384L;
 
-	/**
-	 * @param indexOfOpeningBracket
-	 *            the position of the [ character which has no ] character.
-	 * @param openingBracket
-	 *            the unclosed bracket.
-	 * @param closingBracket
-	 *            the missing closing bracket.
-	 * @param pattern
-	 *            the invalid pattern.
-	 */
-	public NoClosingBracketException(final int indexOfOpeningBracket,
-			final String openingBracket, final String closingBracket,
-			final String pattern) {
-		super(createMessage(indexOfOpeningBracket, openingBracket,
-				closingBracket), pattern);
-	}
+    /**
+     * @param indexOfOpeningBracket the position of the [ character which has no ] character.
+     * @param openingBracket        the unclosed bracket.
+     * @param closingBracket        the missing closing bracket.
+     * @param pattern               the invalid pattern.
+     */
+    public NoClosingBracketException(final int indexOfOpeningBracket,
+                                     final String openingBracket, final String closingBracket,
+                                     final String pattern) {
+        super(createMessage(indexOfOpeningBracket, openingBracket,
+                closingBracket), pattern);
+    }
 
-	private static String createMessage(final int indexOfOpeningBracket,
-			final String openingBracket, final String closingBracket) {
-		return String.format("No closing %s found for %s at index %s.",
-				closingBracket, openingBracket, new Integer(
-						indexOfOpeningBracket));
-	}
+    private static String createMessage(final int indexOfOpeningBracket,
+                                        final String openingBracket, final String closingBracket) {
+        return String.format("No closing %s found for %s at index %s.",
+                closingBracket, openingBracket, indexOfOpeningBracket);
+    }
 }
