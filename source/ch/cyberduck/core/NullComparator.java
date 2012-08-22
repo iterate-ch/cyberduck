@@ -23,7 +23,8 @@ import java.util.Comparator;
 /**
  * @version $Id$
  */
-public class NullComparator<V> implements Comparator<V> {
+public class NullComparator<V> implements Comparator<V>, java.io.Serializable {
+    private static final long serialVersionUID = 2663541696462558462L;
 
     public int compare(V x, V y) {
         return 0;
@@ -31,7 +32,7 @@ public class NullComparator<V> implements Comparator<V> {
 
     @Override
     public boolean equals(Object object) {
-        return object.getClass().equals(NullComparator.class);
+        return object.getClass().equals(this.getClass());
     }
 
     @Override
