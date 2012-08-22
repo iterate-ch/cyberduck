@@ -118,7 +118,7 @@ public class Resolver implements Runnable {
      */
     public void cancel() {
         synchronized(this.signal) {
-            this.signal.notify();
+            this.signal.notifyAll();
         }
     }
 
@@ -139,7 +139,7 @@ public class Resolver implements Runnable {
         finally {
             synchronized(this.signal) {
                 // Notify #resolve to proceed
-                this.signal.notify();
+                this.signal.notifyAll();
             }
         }
     }
