@@ -165,8 +165,10 @@ public class DateParser {
             }
         }
         catch(NumberFormatException ex) {
-            throw new InvalidDateException("[" + ex.getMessage() +
+            final InvalidDateException failure = new InvalidDateException("[" + ex.getMessage() +
                     "] is not an integer");
+            failure.initCause(ex);
+            throw failure;
         }
         return calendar;
     }
