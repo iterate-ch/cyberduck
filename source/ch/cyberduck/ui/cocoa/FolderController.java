@@ -24,8 +24,6 @@ import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.ui.cocoa.application.NSAlert;
 import ch.cyberduck.ui.cocoa.threading.BrowserBackgroundAction;
 
-import org.apache.log4j.Logger;
-
 import java.text.MessageFormat;
 import java.util.Collections;
 
@@ -33,7 +31,6 @@ import java.util.Collections;
  * @version $Id$
  */
 public class FolderController extends FileController {
-    private static Logger log = Logger.getLogger(FolderController.class);
 
     public FolderController(final WindowController parent) {
         super(parent, NSAlert.alert(

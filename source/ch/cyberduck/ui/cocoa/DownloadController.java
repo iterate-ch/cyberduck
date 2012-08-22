@@ -18,25 +18,25 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.DownloadTransfer;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathFactory;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.SessionFactory;
+import ch.cyberduck.core.Transfer;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.ui.cocoa.application.NSAlert;
 import ch.cyberduck.ui.cocoa.application.NSTextField;
 
-import org.rococoa.cocoa.foundation.NSRect;
-
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.rococoa.cocoa.foundation.NSRect;
 
 /**
  * @version $Id$
  */
 public class DownloadController extends AlertController {
-    private static Logger log = Logger.getLogger(DownloadController.class);
 
-    /**
-     *
-     */
     protected NSTextField urlField
             = NSTextField.textfieldWithFrame(new NSRect(0, 22));
 
