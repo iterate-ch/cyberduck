@@ -5,13 +5,13 @@
 package org.w3c.util;
 
 /**
+ * @author Benoît Mahé (bmahe@w3.org)
  * @version $Revision$
- * @author  Benoît Mahé (bmahe@w3.org)
  */
 public class InvalidDateException extends Exception {
+    private static final long serialVersionUID = -9012791102239300978L;
 
     public InvalidDateException(String msg) {
-	super(msg);
+        super(msg);
     }
-    
 }
