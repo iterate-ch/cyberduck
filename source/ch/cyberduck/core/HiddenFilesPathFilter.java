@@ -18,15 +18,12 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import org.apache.log4j.Logger;
-
 import java.util.regex.Pattern;
 
 /**
  * @version $Id$
  */
 public class HiddenFilesPathFilter<E extends AbstractPath> implements PathFilter<E> {
-    private static Logger log = Logger.getLogger(HiddenFilesPathFilter.class);
 
     private Pattern pattern = Pattern.compile(
             Preferences.instance().getProperty("browser.hidden.regex"));
@@ -38,9 +35,6 @@ public class HiddenFilesPathFilter<E extends AbstractPath> implements PathFilter
         if(pattern.matcher(file.getName()).matches()) {
             return false;
         }
-        if(file.attributes().isDuplicate()) {
-            return false;
-        }
-        return true;
+        return !file.attributes().isDuplicate();
     }
 }
