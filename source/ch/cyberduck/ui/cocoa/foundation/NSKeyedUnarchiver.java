@@ -21,18 +21,19 @@ package ch.cyberduck.ui.cocoa.foundation;
 
 import org.rococoa.ObjCClass;
 import org.rococoa.ObjCObject;
-import org.rococoa.Rococoa;
 
 /**
  * @version $Id:$
  */
 public abstract class NSKeyedUnarchiver extends NSCoder {
+    private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSKeyedUnarchiver", _Class.class);
+
     /**
      * Original signature : <code>+(id)unarchiveObjectWithData:(NSData*)</code><br>
      * <i>native declaration : NSKeyedArchiver.h:94</i>
      */
     public static NSObject unarchiveObjectWithData(NSData data) {
-        return getNSClass().unarchiveObjectWithData(data);
+        return CLASS.unarchiveObjectWithData(data);
     }
 
     /**
@@ -40,7 +41,7 @@ public abstract class NSKeyedUnarchiver extends NSCoder {
      * <i>native declaration : NSKeyedArchiver.h:95</i>
      */
     public static NSObject unarchiveObjectWithFile(String path) {
-        return getNSClass().unarchiveObjectWithFile(path);
+        return CLASS.unarchiveObjectWithFile(path);
     }
 
     /**
@@ -55,7 +56,7 @@ public abstract class NSKeyedUnarchiver extends NSCoder {
      * @see #initForReadingWithData(NSData)
      */
     public static NSKeyedUnarchiver createForReadingWithData(NSData data) {
-        return getNSClass().alloc().initForReadingWithData(data);
+        return CLASS.alloc().initForReadingWithData(data);
     }
 
     /**
@@ -81,7 +82,7 @@ public abstract class NSKeyedUnarchiver extends NSCoder {
      * <i>native declaration : NSKeyedArchiver.h:104</i>
      */
     public static void setClass_forClassName(ObjCClass cls, String codedName) {
-        getNSClass().setClass_forClassName(cls, codedName);
+        CLASS.setClass_forClassName(cls, codedName);
     }
 
     /**
@@ -89,7 +90,7 @@ public abstract class NSKeyedUnarchiver extends NSCoder {
      * <i>native declaration : NSKeyedArchiver.h:109</i>
      */
     public static ObjCClass classForClassName(String codedName) {
-        return getNSClass().classForClassName(codedName);
+        return CLASS.classForClassName(codedName);
     }
 
     /**
@@ -144,15 +145,15 @@ public abstract class NSKeyedUnarchiver extends NSCoder {
     /// <i>native declaration : NSKeyedArchiver.h</i>
 
     public static NSKeyedUnarchiver alloc() {
-        return getNSClass().alloc();
+        return CLASS.alloc();
     }
     /// <i>native declaration : NSKeyedArchiver.h</i>
 
     public static NSKeyedUnarchiver new_() {
-        return getNSClass().new_();
+        return CLASS.new_();
     }
 
-    public static abstract class _class_ extends NSCoder._class_ {
+    public static abstract class _Class extends NSCoder._class_ {
         /**
          * Original signature : <code>+(id)unarchiveObjectWithData:(NSData*)</code><br>
          * <i>native declaration : NSKeyedArchiver.h:94</i>
@@ -183,13 +184,4 @@ public abstract class NSKeyedUnarchiver extends NSCoder {
 
         public abstract NSKeyedUnarchiver new_();
     }
-
-    public static _class_ getNSClass() {
-        if(_NSCLASS_ == null) {
-            _NSCLASS_ = Rococoa.createClass("NSKeyedUnarchiver", _class_.class);
-        }
-        return _NSCLASS_;
-    }
-
-    private static _class_ _NSCLASS_;
 }
