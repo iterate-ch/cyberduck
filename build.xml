@@ -246,12 +246,13 @@
         <property name="sonar.sources" value="${source}"/>
         <property name="sonar.tests" value="${unittests}"/>
         <property name="sonar.binaries" value="${build.classes}"/>
-        <property name="sonar.surefire.reportsPath" value="${build.unittests.reports}" />
+        <property name="sonar.surefire.reportsPath" value="${build.unittests.reports}"/>
         <pathconvert property="sonar.libraries" refid="build.classpath" pathsep=","/>
         <property name="sonar.host.url" value="http://${sonar.host}:9000/"/>
-        <property name="sonar.jdbc.url" value="jdbc:mysql://${sonar.host}:3306/sonar?useUnicode=true&amp;characterEncoding=utf8"/>
+        <property name="sonar.jdbc.url"
+                  value="jdbc:mysql://${sonar.host}:3306/sonar?useUnicode=true&amp;characterEncoding=utf8"/>
         <property name="sonar.jdbc.username" value="sonar"/>
-        <property name="sonar.jdbc.password" value=""/>
+        <property name="sonar.jdbc.password" value="sonar"/>
         <property name="sonar.jdbc.driverClassName" value="com.mysql.jdbc.Driver"/>
         <property name="sonar.core.codeCoveragePlugin" value="jacoco"/>
         <property name="sonar.dynamicAnalysis" value="reuseReports"/>
