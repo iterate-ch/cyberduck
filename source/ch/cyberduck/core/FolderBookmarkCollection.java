@@ -40,6 +40,8 @@ public class FolderBookmarkCollection extends AbstractFolderHostCollection {
 
     private static final String PREFIX = "bookmark.";
 
+    private static final long serialVersionUID = -675342412129904735L;
+
     /**
      * @return Singleton instance
      */
@@ -119,7 +121,7 @@ public class FolderBookmarkCollection extends AbstractFolderHostCollection {
     protected synchronized void sort() {
         Collections.sort(this, new Comparator<Host>() {
             public int compare(Host o1, Host o2) {
-                return new Integer(Preferences.instance().getInteger(PREFIX + o1.getUuid())).compareTo(
+                return Integer.valueOf(Preferences.instance().getInteger(PREFIX + o1.getUuid())).compareTo(
                         Preferences.instance().getInteger(PREFIX + o2.getUuid())
                 );
             }
