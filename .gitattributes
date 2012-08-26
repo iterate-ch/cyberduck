@@ -826,6 +826,8 @@ img/googledrive.icns -text
 img/greenArrow1.png -text
 img/greenArrow2.png -text
 img/history.tiff -text svneol=unset#image/tiff
+img/hpcloud-icon.png -text svneol=unset#image/png
+img/hpcloud.icns -text
 img/info.tiff -text svneol=unset#image/tiff
 img/language.tiff -text
 img/list.tiff -text svneol=unset#image/tiff
