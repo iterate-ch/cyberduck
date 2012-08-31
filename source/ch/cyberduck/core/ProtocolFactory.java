@@ -62,8 +62,6 @@ public final class ProtocolFactory {
 
         Protocol.GDOCS_SSL.register();
 
-        Protocol.DROPBOX_SSL.register();
-
         // Load thirdparty protocols
         final Local profiles = LocalFactory.createLocal(Preferences.instance().getProperty("application.support.path"), "Profiles");
         if(profiles.exists()) {
