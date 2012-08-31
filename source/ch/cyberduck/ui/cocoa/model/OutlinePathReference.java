@@ -72,6 +72,27 @@ public class OutlinePathReference extends PathReference<NSObject> {
         return hashcode;
     }
 
+    @Override
+    public boolean equals(final Object o) {
+        if(this == o) {
+            return true;
+        }
+        if(o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        if(!super.equals(o)) {
+            return false;
+        }
+
+        final OutlinePathReference that = (OutlinePathReference) o;
+
+        if(hashcode != that.hashcode) {
+            return false;
+        }
+
+        return true;
+    }
+
     private static class Factory extends PathReferenceFactory {
         @Override
         protected PathReference create() {
