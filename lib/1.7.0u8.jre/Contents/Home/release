@@ -1,0 +1,5 @@
+JAVA_VERSION="1.7.0"
+OS_NAME="Darwin"
+OS_VERSION="11.2"
+OS_ARCH="universal"
+SOURCE=" .:ecdd4cb148be corba:91e7e402171d hotspot:6e9aa487055f jaxp:8f1564e231f4 jaxws:b7aa18f459f6 jdk:0b236cc20500 langtools:f0677f68913a"
