@@ -19,19 +19,7 @@ package ch.cyberduck.core.cloudfront;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.ConnectionCanceledException;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.ErrorListener;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.LoginCanceledException;
-import ch.cyberduck.core.LoginController;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.ProgressListener;
-import ch.cyberduck.core.Protocol;
-import ch.cyberduck.core.Session;
-import ch.cyberduck.core.SessionFactory;
-import ch.cyberduck.core.TranscriptListener;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.i18n.Locale;
@@ -488,14 +476,15 @@ public class CloudFrontDistributionConfiguration extends HttpSession implements 
         log.debug("createDistribution:" + method);
         CloudFrontService cf = this.getClient();
         if(method.equals(ch.cyberduck.core.cdn.Distribution.STREAMING)) {
-            return cf.createStreamingDistribution(
-                    new S3Origin(origin),
+            return cf.createDistribution(new StreamingDistributionConfig(
+                    new S3Origin[]{new S3Origin(origin)},
                     String.valueOf(reference), // Caller reference - a unique string value
                     cnames, // CNAME aliases for distribution
                     new Date(reference).toString(), // Comment
                     enabled,  // Enabled?
-                    logging
-            );
+                    logging,
+                    null
+            ));
         }
         if(method.equals(ch.cyberduck.core.cdn.Distribution.DOWNLOAD)) {
             return cf.createDistribution(
