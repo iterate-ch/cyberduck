@@ -26,6 +26,7 @@ import org.apache.log4j.Logger;
 import org.jets3t.service.model.S3Object;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
+import java.security.Security;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -54,8 +55,8 @@ public abstract class Preferences {
      * TTL for DNS queries
      */
     static {
-        System.setProperty("networkaddress.cache.ttl", "10");
-        System.setProperty("networkaddress.cache.negative.ttl", "5");
+        Security.setProperty("networkaddress.cache.ttl", "10");
+        Security.setProperty("networkaddress.cache.negative.ttl", "5");
     }
 
     private static final Object lock = new Object();
