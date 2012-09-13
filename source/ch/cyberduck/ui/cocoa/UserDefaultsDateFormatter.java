@@ -124,14 +124,16 @@ public class UserDefaultsDateFormatter extends AbstractDateFormatter implements 
      * @param natural      Use natural language
      * @return A short format string or "Unknown" if there is a problem converting the time to a string
      */
-    public synchronized String getShortFormat(final long milliseconds, boolean natural) {
-        if(-1 == milliseconds) {
-            return Locale.localizedString("Unknown");
+    public String getShortFormat(final long milliseconds, boolean natural) {
+        synchronized(shortDateFormatter) {
+            if(-1 == milliseconds) {
+                return Locale.localizedString("Unknown");
+            }
+            if(natural) {
+                return shortDateNaturalFormatter.stringFromDate(toDate(milliseconds));
+            }
+            return shortDateFormatter.stringFromDate(toDate(milliseconds));
         }
-        if(natural) {
-            return shortDateNaturalFormatter.stringFromDate(toDate(milliseconds));
-        }
-        return shortDateFormatter.stringFromDate(toDate(milliseconds));
     }
 
     /**
@@ -141,14 +143,16 @@ public class UserDefaultsDateFormatter extends AbstractDateFormatter implements 
      * @param natural      Use natural language
      * @return A medium format string or "Unknown" if there is a problem converting the time to a string
      */
-    public synchronized String getMediumFormat(final long milliseconds, boolean natural) {
-        if(-1 == milliseconds) {
-            return Locale.localizedString("Unknown");
+    public String getMediumFormat(final long milliseconds, boolean natural) {
+        synchronized(mediumDateFormatter) {
+            if(-1 == milliseconds) {
+                return Locale.localizedString("Unknown");
+            }
+            if(natural) {
+                return mediumDateNaturalFormatter.stringFromDate(toDate(milliseconds));
+            }
+            return mediumDateFormatter.stringFromDate(toDate(milliseconds));
         }
-        if(natural) {
-            return mediumDateNaturalFormatter.stringFromDate(toDate(milliseconds));
-        }
-        return mediumDateFormatter.stringFromDate(toDate(milliseconds));
     }
 
     /**
@@ -158,13 +162,15 @@ public class UserDefaultsDateFormatter extends AbstractDateFormatter implements 
      * @param natural      Use natural language
      * @return A long format string or "Unknown" if there is a problem converting the time to a string
      */
-    public synchronized String getLongFormat(final long milliseconds, boolean natural) {
-        if(-1 == milliseconds) {
-            return Locale.localizedString("Unknown");
+    public String getLongFormat(final long milliseconds, boolean natural) {
+        synchronized(longDateFormatter) {
+            if(-1 == milliseconds) {
+                return Locale.localizedString("Unknown");
+            }
+            if(natural) {
+                return longDateNaturalFormatter.stringFromDate(toDate(milliseconds));
+            }
+            return longDateFormatter.stringFromDate(toDate(milliseconds));
         }
-        if(natural) {
-            return longDateNaturalFormatter.stringFromDate(toDate(milliseconds));
-        }
-        return longDateFormatter.stringFromDate(toDate(milliseconds));
     }
 }
