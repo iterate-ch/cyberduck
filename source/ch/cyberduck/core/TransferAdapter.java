@@ -25,24 +25,38 @@ import ch.cyberduck.core.io.BandwidthThrottle;
  */
 public class TransferAdapter implements TransferListener {
 
+    @Override
     public void transferWillStart() {
+        //
     }
 
+    @Override
     public void transferQueued() {
+        //
     }
 
+    @Override
     public void transferResumed() {
+        //
     }
 
+    @Override
     public void transferDidEnd() {
+        //
     }
 
+    @Override
     public void willTransferPath(final Path path) {
+        //
     }
 
+    @Override
     public void didTransferPath(final Path path) {
+        //
     }
 
+    @Override
     public void bandwidthChanged(BandwidthThrottle bandwidth) {
+        //
     }
 }

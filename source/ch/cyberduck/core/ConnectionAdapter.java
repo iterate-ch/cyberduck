@@ -23,19 +23,23 @@ package ch.cyberduck.core;
  */
 public abstract class ConnectionAdapter implements ConnectionListener {
 
+    @Override
     public void connectionWillOpen() {
-        ;
+        //
     }
 
+    @Override
     public void connectionDidOpen() {
-        ;
+        //
     }
 
+    @Override
     public void connectionWillClose() {
-        ;
+        //
     }
 
+    @Override
     public void connectionDidClose() {
-        ;
+        //
     }
 }
