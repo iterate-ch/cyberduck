@@ -40,17 +40,18 @@ package org.spearce.jgit.fnmatch;
 import java.util.List;
 
 final class LastHead implements Head {
-	static final Head INSTANCE = new LastHead();
+    static final Head INSTANCE = new LastHead();
 
-	/**
-	 * Don't call this constructor, use {@link #INSTANCE}
-	 */
-	private LastHead() {
-		// defined because of javadoc and visibility modifier.
-	}
+    /**
+     * Don't call this constructor, use {@link #INSTANCE}
+     */
+    private LastHead() {
+        // defined because of javadoc and visibility modifier.
+    }
 
-	public List<Head> getNextHeads(char c) {
-		return FileNameMatcher.EMPTY_HEAD_LIST;
-	}
+    @Override
+    public List<Head> getNextHeads(char c) {
+        return FileNameMatcher.EMPTY_HEAD_LIST;
+    }
 
 }

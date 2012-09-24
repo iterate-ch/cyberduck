@@ -278,8 +278,7 @@ public class FileNameMatcher {
     private static AbstractHead createWildCardHead(
             final Character invalidWildgetCharacter, final boolean star) {
         if(invalidWildgetCharacter != null) {
-            return new RestrictedWildCardHead(invalidWildgetCharacter
-                    .charValue(), star);
+            return new RestrictedWildCardHead(invalidWildgetCharacter, star);
         }
         else {
             return new WildCardHead(star);
@@ -290,8 +289,7 @@ public class FileNameMatcher {
         final List<Head> newHeads = listForLocalUseage;
         newHeads.clear();
         List<Head> lastAddedHeads = null;
-        for(int i = 0; i < heads.size(); i++) {
-            final Head head = heads.get(i);
+        for(final Head head : heads) {
             final List<Head> headsToAdd = head.getNextHeads(c);
             // Why the next performance optimization isn't wrong:
             // Some times two heads return the very same list.
@@ -357,8 +355,8 @@ public class FileNameMatcher {
      *         gets extended.
      */
     public boolean canAppendMatch() {
-        for(int i = 0; i < heads.size(); i++) {
-            if(heads.get(i) != LastHead.INSTANCE) {
+        for(Head head : heads) {
+            if(head != LastHead.INSTANCE) {
                 return true;
             }
         }
