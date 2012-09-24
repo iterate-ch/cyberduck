@@ -63,6 +63,7 @@ public abstract class URLMenuDelegate extends AbstractMenuDelegate {
      */
     protected abstract List<Path> getSelected();
 
+    @Override
     public NSInteger numberOfItemsInMenu(NSMenu menu) {
         List<Path> selected = this.getSelected();
         if(selected.isEmpty()) {
@@ -96,7 +97,7 @@ public abstract class URLMenuDelegate extends AbstractMenuDelegate {
         }
         else {
             final StringBuilder builder = new StringBuilder();
-            for(Iterator<Path> iter = selected.iterator(); iter.hasNext();) {
+            for(Iterator<Path> iter = selected.iterator(); iter.hasNext(); ) {
                 List<AbstractPath.DescriptiveUrl> urls = this.getURLs(iter.next());
                 AbstractPath.DescriptiveUrl url = urls.get(index.intValue() / 2);
                 builder.append(url.getUrl());

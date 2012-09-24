@@ -45,6 +45,7 @@ public class TransferMenuDelegate extends AbstractMenuDelegate {
         this.roots = roots;
     }
 
+    @Override
     public NSInteger numberOfItemsInMenu(NSMenu menu) {
         if(this.isPopulated()) {
             // If you return a negative value, the number of items is left unchanged

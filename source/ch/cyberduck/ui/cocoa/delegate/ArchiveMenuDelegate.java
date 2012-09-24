@@ -31,6 +31,7 @@ import org.rococoa.cocoa.foundation.NSInteger;
  */
 public class ArchiveMenuDelegate extends AbstractMenuDelegate {
 
+    @Override
     public NSInteger numberOfItemsInMenu(NSMenu menu) {
         if(this.isPopulated()) {
             // If you return a negative value, the number of items is left unchanged

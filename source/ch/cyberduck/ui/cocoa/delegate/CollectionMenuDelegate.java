@@ -41,6 +41,7 @@ public abstract class CollectionMenuDelegate<T> extends AbstractMenuDelegate imp
         return this.collection;
     }
 
+    @Override
     public NSInteger numberOfItemsInMenu(NSMenu menu) {
         if(this.isPopulated()) {
             // If you return a negative value, the number of items is left unchanged
@@ -54,18 +55,22 @@ public abstract class CollectionMenuDelegate<T> extends AbstractMenuDelegate imp
         return new NSInteger(1);
     }
 
+    @Override
     public void collectionItemAdded(T item) {
         this.setNeedsUpdate(true);
     }
 
+    @Override
     public void collectionItemRemoved(T item) {
         this.setNeedsUpdate(true);
     }
 
+    @Override
     public void collectionItemChanged(T item) {
         this.setNeedsUpdate(true);
     }
 
+    @Override
     public void collectionLoaded() {
         this.setNeedsUpdate(true);
     }

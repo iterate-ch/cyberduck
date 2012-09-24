@@ -23,12 +23,11 @@ import ch.cyberduck.ui.cocoa.application.NSEvent;
 import ch.cyberduck.ui.cocoa.application.NSMenu;
 import ch.cyberduck.ui.cocoa.application.NSMenuItem;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.rococoa.ID;
 import org.rococoa.Selector;
 import org.rococoa.cocoa.foundation.NSInteger;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 
 /**
  * @version $Id$
@@ -56,6 +55,7 @@ public abstract class AbstractMenuDelegate extends ProxyController implements NS
      * Return true to continue the process. If you return false, your menuUpdateItemAtIndex
      * is not called again. In that case, it is your responsibility to trim any extra items from the menu.
      */
+    @Override
     public boolean menu_updateItem_atIndex_shouldCancel(NSMenu menu, NSMenuItem item, NSInteger index, boolean cancel) {
         return this.menuUpdateItemAtIndex(menu, item, index, cancel);
     }
