@@ -32,10 +32,10 @@
     <property name="app.library" value="${app.contents}/Library"/>
     <property name="app.frameworks" value="${app.contents}/Frameworks"/>
     <property name="app.resources" value="${app.contents}/Resources"/>
-    <property name="app.java" value="${app.contents}/PlugIns"/>
+    <property name="app.java" value="${app.resources}/Java"/>
     <property name="app.runtime" value="${app.java}/Runtime.jre"/>
     <property name="app.runtime.lib"
-              value="@executable_path/../PlugIns/Runtime.jre/Contents/Home/lib/server/libjvm.dylib"/>
+              value="@executable_path/../Resources/Java/Runtime.jre/Contents/Home/lib/server/libjvm.dylib"/>
     <property name="app.runtime.system.min" value="10.5"/>
 
     <property name="app.spotlight" value="${app.library}/Spotlight"/>
