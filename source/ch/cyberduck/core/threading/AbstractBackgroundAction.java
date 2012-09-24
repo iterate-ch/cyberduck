@@ -33,7 +33,7 @@ public abstract class AbstractBackgroundAction<T> implements BackgroundAction<T>
 
     @Override
     public void init() {
-        ;
+        //
     }
 
     private boolean canceled;
@@ -103,7 +103,7 @@ public abstract class AbstractBackgroundAction<T> implements BackgroundAction<T>
 
     @Override
     public void cleanup() {
-        ;
+        //
     }
 
     protected String toString(List<Path> files) {
