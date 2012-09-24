@@ -20,12 +20,33 @@ package ch.cyberduck.core.gdocs;
  */
 
 import ch.cyberduck.core.*;
-import ch.cyberduck.core.Proxy;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
 import ch.cyberduck.core.ssl.SSLSession;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.InetSocketAddress;
+import java.net.URL;
+import java.net.URLConnection;
+import java.net.UnknownHostException;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
 
 import com.google.gdata.client.ClientLoginAccountType;
 import com.google.gdata.client.GoogleAuthTokenFactory;
@@ -37,19 +58,6 @@ import com.google.gdata.data.acl.AclRole;
 import com.google.gdata.util.AuthenticationException;
 import com.google.gdata.util.common.base.CharEscapers;
 import com.google.gdata.util.common.base.StringUtil;
-
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.HttpsURLConnection;
-import java.io.*;
-import java.net.*;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Handler;
-import java.util.logging.Level;
-import java.util.logging.LogRecord;
-import java.util.logging.Logger;
 
 /**
  *
@@ -465,15 +473,18 @@ public class GDSession extends SSLSession {
                 if(inputStream != null) {
                     BufferedReader reader =
                             new BufferedReader(new InputStreamReader(inputStream));
-                    while(null != (string = reader.readLine())) {
-                        outputBuilder.append(string).append('\n');
+                    try {
+                        while(null != (string = reader.readLine())) {
+                            outputBuilder.append(string).append('\n');
+                        }
+                    }
+                    finally {
+                        IOUtils.closeQuietly(reader);
                     }
                 }
             }
             finally {
-                if(inputStream != null) {
-                    inputStream.close();
-                }
+                IOUtils.closeQuietly(inputStream);
             }
             return outputBuilder.toString();
         }
