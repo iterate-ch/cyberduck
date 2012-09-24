@@ -43,6 +43,7 @@ public abstract class AbstractLicense implements License {
         return file;
     }
 
+    @Override
     public String getName() {
         String to = this.getValue("Name");
         if(StringUtils.isBlank(to)) {
@@ -51,6 +52,7 @@ public abstract class AbstractLicense implements License {
         return to;
     }
 
+    @Override
     public boolean isReceipt() {
         return false;
     }
