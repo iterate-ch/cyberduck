@@ -22,6 +22,8 @@ package ch.cyberduck.core;
  * @version $Id$
  */
 public class NullTransferFilter implements TransferFilter {
+
+    @Override
     public boolean accept(Transfer transfer) {
         return true;
     }

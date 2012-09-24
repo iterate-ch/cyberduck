@@ -26,6 +26,7 @@ import java.util.Comparator;
 public class NullComparator<V> implements Comparator<V>, java.io.Serializable {
     private static final long serialVersionUID = 2663541696462558462L;
 
+    @Override
     public int compare(V x, V y) {
         return 0;
     }

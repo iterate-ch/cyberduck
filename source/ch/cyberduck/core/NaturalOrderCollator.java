@@ -44,8 +44,10 @@ import java.util.Locale;
  * @author Werner Randelshofer
  * @version $Id$
  */
-public class NaturalOrderCollator extends Collator {
+public class NaturalOrderCollator extends Collator implements java.io.Serializable {
     private static Logger log = Logger.getLogger(NaturalOrderCollator.class);
+
+    private static final long serialVersionUID = -7074910013839273765L;
 
     private Collator collator;
 
@@ -119,6 +121,7 @@ public class NaturalOrderCollator extends Collator {
         }
     }
 
+    @Override
     public int hashCode() {
         return collator.hashCode();
     }

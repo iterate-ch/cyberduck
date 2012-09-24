@@ -32,6 +32,8 @@ public final class TransferCollection extends Collection<Transfer> {
 
     private static TransferCollection instance;
 
+    private static final long serialVersionUID = -6879481152545265228L;
+
     private Local file;
 
     private TransferCollection(Local file) {

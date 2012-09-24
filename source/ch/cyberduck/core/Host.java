@@ -229,6 +229,7 @@ public class Host implements Serializable {
     /**
      * @param serialized A valid bookmark dictionary
      */
+    @Override
     public <T> void init(T serialized) {
         final Deserializer dict = DeserializerFactory.createDeserializer(serialized);
         Object uuidObj = dict.stringForKey("UUID");
@@ -318,6 +319,7 @@ public class Host implements Serializable {
         }
     }
 
+    @Override
     public <T> T getAsDictionary() {
         final Serializer dict = SerializerFactory.createSerializer();
         dict.setStringForKey(this.getProtocol().getIdentifier(), "Protocol");

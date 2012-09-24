@@ -25,10 +25,12 @@ import java.util.Comparator;
 /**
  * @version $Id$
  */
-public class NaturalOrderComparator implements Comparator<String> {
+public class NaturalOrderComparator implements Comparator<String>, java.io.Serializable {
 
+    private static final long serialVersionUID = -5851677380348435176L;
     private Collator collator = new NaturalOrderCollator();
 
+    @Override
     public int compare(String s1, String s2) {
         return collator.compare(s1, s2);
     }

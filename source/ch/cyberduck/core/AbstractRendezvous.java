@@ -85,7 +85,7 @@ public abstract class AbstractRendezvous implements Rendezvous {
             Collections.synchronizedSet(new HashSet<RendezvousListener>());
 
     private RendezvousListener notifier = new RendezvousListener() {
-
+        @Override
         public void serviceResolved(final String identifier, final Host host) {
             log.info("Service resolved:" + host);
             RendezvousListener[] l = listeners.toArray(
@@ -95,6 +95,7 @@ public abstract class AbstractRendezvous implements Rendezvous {
             }
         }
 
+        @Override
         public void serviceLost(final String servicename) {
             log.info("Service lost:" + servicename);
             RendezvousListener[] l = listeners.toArray(
@@ -110,6 +111,7 @@ public abstract class AbstractRendezvous implements Rendezvous {
      *
      * @param listener Callback
      */
+    @Override
     public void addListener(RendezvousListener listener) {
         listeners.add(listener);
     }
@@ -119,22 +121,25 @@ public abstract class AbstractRendezvous implements Rendezvous {
      *
      * @param listener Callback
      */
+    @Override
     public void removeListener(RendezvousListener listener) {
         listeners.remove(listener);
     }
 
-
     /**
      * @return The number of services found; 0 <= services < n
      */
+    @Override
     public int numberOfServices() {
         return services.size();
     }
 
+    @Override
     public Host getService(int index) {
         return services.values().toArray(new Host[services.size()])[index];
     }
 
+    @Override
     public Iterator<Host> iterator() {
         return services.values().iterator();
     }
@@ -143,6 +148,7 @@ public abstract class AbstractRendezvous implements Rendezvous {
      * @param index Index in collection
      * @return A nicely formatted informative string
      */
+    @Override
     public String getDisplayedName(int index) {
         if(index < this.numberOfServices()) {
             Host host = services.values().toArray(new Host[services.size()])[index];
@@ -155,6 +161,7 @@ public abstract class AbstractRendezvous implements Rendezvous {
      * @param identifier The full service domain name
      * @return A nicely formatted informative string
      */
+    @Override
     public String getDisplayedName(String identifier) {
         Host host = services.get(identifier);
         if(null == host) {

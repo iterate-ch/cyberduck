@@ -21,7 +21,7 @@ package ch.cyberduck.core;
 /**
  * @version $Id$
  */
-public class TransferOptions {
+public final class TransferOptions {
 
     /**
      * Resume requested using user interface

@@ -79,6 +79,7 @@ public class Permission implements Serializable {
         this.init(dict);
     }
 
+    @Override
     public <T> void init(T serialized) {
         final Deserializer dict = DeserializerFactory.createDeserializer(serialized);
         final String maskObj = dict.stringForKey("Mask");
@@ -87,6 +88,7 @@ public class Permission implements Serializable {
         }
     }
 
+    @Override
     public <T> T getAsDictionary() {
         final Serializer dict = SerializerFactory.createSerializer();
         dict.setStringForKey(this.getMask(), "Mask");

@@ -30,7 +30,6 @@ import java.security.cert.X509Certificate;
 public abstract class AbstractKeychain {
     private static Logger log = Logger.getLogger(AbstractKeychain.class);
 
-
     /**
      * @param host Hostname
      * @return the password fetched from the keychain or null if it was not found

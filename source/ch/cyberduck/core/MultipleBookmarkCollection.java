@@ -28,11 +28,14 @@ public class MultipleBookmarkCollection extends Collection<FolderBookmarkCollect
     private static Logger log = Logger.getLogger(FolderBookmarkCollection.class);
 
     private static final MultipleBookmarkCollection EMPTY = new MultipleBookmarkCollection(null) {
+        private static final long serialVersionUID = 5741322275377145083L;
+
         @Override
         public void load() {
-            ;
+            //
         }
     };
+    private static final long serialVersionUID = -6318679625583371126L;
 
     public static MultipleBookmarkCollection empty() {
         return EMPTY;
@@ -87,6 +90,7 @@ public class MultipleBookmarkCollection extends Collection<FolderBookmarkCollect
     }
 
 
+    @Override
     public boolean allowsAdd() {
         for(AbstractHostCollection c : this) {
             if(!c.allowsAdd()) {
@@ -96,6 +100,7 @@ public class MultipleBookmarkCollection extends Collection<FolderBookmarkCollect
         return true;
     }
 
+    @Override
     public boolean allowsDelete() {
         for(AbstractHostCollection c : this) {
             if(!c.allowsDelete()) {
@@ -105,6 +110,7 @@ public class MultipleBookmarkCollection extends Collection<FolderBookmarkCollect
         return true;
     }
 
+    @Override
     public boolean allowsEdit() {
         for(AbstractHostCollection c : this) {
             if(!c.allowsEdit()) {

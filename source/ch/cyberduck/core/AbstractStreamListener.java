@@ -23,11 +23,13 @@ package ch.cyberduck.core;
  */
 public class AbstractStreamListener implements StreamListener {
 
+    @Override
     public void bytesSent(long bytes) {
-        ;
+        //
     }
 
+    @Override
     public void bytesReceived(long bytes) {
-        ;
+        //
     }
 }

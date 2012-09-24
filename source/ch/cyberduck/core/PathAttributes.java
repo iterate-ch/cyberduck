@@ -131,6 +131,7 @@ public class PathAttributes extends Attributes implements Serializable {
         this.init(dict);
     }
 
+    @Override
     public <T> void init(T serialized) {
         final Deserializer dict = DeserializerFactory.createDeserializer(serialized);
         String typeObj = dict.stringForKey("Type");
@@ -156,6 +157,7 @@ public class PathAttributes extends Attributes implements Serializable {
         }
     }
 
+    @Override
     public <T> T getAsDictionary() {
         final Serializer dict = SerializerFactory.createSerializer();
         dict.setStringForKey(String.valueOf(type), "Type");

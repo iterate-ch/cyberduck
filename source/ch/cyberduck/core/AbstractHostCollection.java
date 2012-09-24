@@ -33,6 +33,8 @@ import java.util.List;
  * @version $Id$
  */
 public abstract class AbstractHostCollection extends Collection<Host> implements EditableCollection {
+    private static final long serialVersionUID = -255801158019850767L;
+
     private static Logger log = Logger.getLogger(AbstractHostCollection.class);
 
     private static final AbstractHostCollection EMPTY = new AbstractHostCollection() {
@@ -187,12 +189,13 @@ public abstract class AbstractHostCollection extends Collection<Host> implements
      *
      * @return True if bookmarks can be edited
      */
+    @Override
     public boolean allowsEdit() {
         return true;
     }
 
     public void save() {
-        ; // Not persistent by default
+        // Not persistent by default
     }
 
     public void load(Collection<Host> c) {

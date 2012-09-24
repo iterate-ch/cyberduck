@@ -29,20 +29,24 @@ import org.apache.log4j.Logger;
 public abstract class AbstractLoginController implements LoginController {
     private static Logger log = Logger.getLogger(AbstractLoginController.class);
 
+    @Override
     public void warn(String title, String message, String preference) throws LoginCanceledException {
         this.warn(title, message, Locale.localizedString("Continue", "Credentials"),
                 Locale.localizedString("Disconnect", "Credentials"), preference);
     }
 
+    @Override
     public abstract void warn(String title, String message, String continueButton, String disconnectButton, String preference)
             throws LoginCanceledException;
 
+    @Override
     public void check(final Host host, String title, String message)
             throws LoginCanceledException {
         this.check(host, title, message, Preferences.instance().getBoolean("connection.login.useKeychain"),
                 host.getProtocol().equals(Protocol.SFTP), host.getProtocol().isAnonymousConfigurable());
     }
 
+    @Override
     public void check(final Host host, String title, String message, boolean enableKeychain, boolean enablePublicKey, boolean enableAnonymous)
             throws LoginCanceledException {
 
@@ -92,11 +96,13 @@ public abstract class AbstractLoginController implements LoginController {
         }
     }
 
+    @Override
     public void fail(Protocol protocol, Credentials credentials, String reason) throws LoginCanceledException {
         this.prompt(protocol, credentials,
                 Locale.localizedString("Login failed", "Credentials"), reason);
     }
 
+    @Override
     public void success(Host host) {
         Credentials credentials = host.getCredentials();
         if(credentials.isAnonymousLogin()) {
@@ -110,6 +116,7 @@ public abstract class AbstractLoginController implements LoginController {
         KeychainFactory.instance().save(host);
     }
 
+    @Override
     public void fail(Protocol protocol, Credentials credentials)
             throws LoginCanceledException {
         this.prompt(protocol, credentials,
@@ -117,12 +124,14 @@ public abstract class AbstractLoginController implements LoginController {
                 Locale.localizedString("Login with username and password", "Credentials"));
     }
 
+    @Override
     public void prompt(final Protocol protocol, final Credentials credentials,
                        final String title, final String reason) throws LoginCanceledException {
         this.prompt(protocol, credentials, title, reason, Preferences.instance().getBoolean("connection.login.useKeychain"),
                 protocol.equals(Protocol.SFTP), protocol.isAnonymousConfigurable());
     }
 
+    @Override
     public abstract void prompt(Protocol protocol, Credentials credentials,
                                 String title, String reason,
                                 boolean enableKeychain, boolean enablePublicKey, boolean enableAnonymous) throws LoginCanceledException;

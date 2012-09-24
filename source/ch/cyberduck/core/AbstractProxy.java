@@ -46,6 +46,7 @@ public abstract class AbstractProxy implements Proxy {
      * Note that setting these properties directs <b>all</b> TCP
      * sockets in this JVM to the SOCKS proxy
      */
+    @Override
     public void configure(final Host host) {
         Properties properties = System.getProperties();
         if(Preferences.instance().getBoolean("connection.proxy.enable")
@@ -72,13 +73,13 @@ public abstract class AbstractProxy implements Proxy {
     }
 
     /**
-     * @param wildcard
-     * @param hostname
+     * @param wildcard Pattern
+     * @param hostname Server
      * @return True if hostname matches wildcard
      */
-    protected boolean matches(String wildcard, String hostname) {
-        String host = wildcard.replace("*", ".*").replace("?", ".");
-        String regex = new StringBuffer("^").append(host).append("$").toString();
+    protected boolean matches(final String wildcard, final String hostname) {
+        final String host = wildcard.replace("*", ".*").replace("?", ".");
+        final String regex = String.format("^%s$", host);
         try {
             return hostname.matches(regex);
         }

@@ -121,6 +121,7 @@ public abstract class Path extends AbstractPath implements Serializable {
         this.init(dict);
     }
 
+    @Override
     public <T> void init(T serialized) {
         final Deserializer dict = DeserializerFactory.createDeserializer(serialized);
         this.init(dict);
@@ -148,6 +149,7 @@ public abstract class Path extends AbstractPath implements Serializable {
         }
     }
 
+    @Override
     public <S> S getAsDictionary() {
         final Serializer dict = SerializerFactory.createSerializer();
         return (S) this.getAsDictionary(dict);
@@ -930,10 +932,12 @@ public abstract class Path extends AbstractPath implements Serializable {
         final StreamListener listener = new StreamListener() {
             int step = 0;
 
+            @Override
             public void bytesSent(long bytes) {
                 l.bytesSent(bytes);
             }
 
+            @Override
             public void bytesReceived(long bytes) {
                 if(-1 == bytes) {
                     // Remove custom icon if complete. The Finder will display the default

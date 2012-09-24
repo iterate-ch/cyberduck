@@ -792,16 +792,19 @@ public abstract class Session implements TranscriptListener {
             cf = new CloudFrontDistributionConfiguration(LoginControllerFactory.instance(this),
                     host.getCdnCredentials(),
                     new ErrorListener() {
+                        @Override
                         public void error(BackgroundException exception) {
                             Session.this.error(exception);
                         }
                     },
                     new ProgressListener() {
+                        @Override
                         public void message(String message) {
                             Session.this.message(message);
                         }
                     },
                     new TranscriptListener() {
+                        @Override
                         public void log(boolean request, String message) {
                             Session.this.log(request, message);
                         }

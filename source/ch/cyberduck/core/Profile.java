@@ -54,11 +54,13 @@ public class Profile extends Protocol implements Serializable {
         super();
     }
 
+    @Override
     public <T> void init(T serialized) {
         dict = DeserializerFactory.createDeserializer(serialized);
         parent = ProtocolFactory.forName(dict.stringForKey("Protocol"));
     }
 
+    @Override
     public <T> T getAsDictionary() {
         final Serializer serializer = SerializerFactory.createSerializer();
         serializer.setStringForKey("Protocol", parent.getIdentifier());

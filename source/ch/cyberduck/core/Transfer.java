@@ -152,6 +152,7 @@ public abstract class Transfer implements Serializable {
         this.init(dict);
     }
 
+    @Override
     public <T> void init(T serialized) {
         final Deserializer dict = DeserializerFactory.createDeserializer(serialized);
         final List rootsObj = dict.listForKey("Roots");
@@ -180,6 +181,7 @@ public abstract class Transfer implements Serializable {
         }
     }
 
+    @Override
     public abstract <T> T getAsDictionary();
 
     public Serializer getSerializer() {

@@ -154,6 +154,7 @@ public class Collection<E> extends ArrayList<E> implements CollectionListener<E>
         return modified;
     }
 
+    @Override
     public void collectionLoaded() {
         if(this.isLocked()) {
             log.debug("Do not notify changes of locked collection");
@@ -164,6 +165,7 @@ public class Collection<E> extends ArrayList<E> implements CollectionListener<E>
         }
     }
 
+    @Override
     public void collectionItemAdded(E item) {
         if(this.isLocked()) {
             log.debug("Do not notify changes of locked collection");
@@ -174,6 +176,7 @@ public class Collection<E> extends ArrayList<E> implements CollectionListener<E>
         }
     }
 
+    @Override
     public void collectionItemRemoved(E item) {
         if(this.isLocked()) {
             log.debug("Do not notify changes of locked collection");
@@ -184,6 +187,7 @@ public class Collection<E> extends ArrayList<E> implements CollectionListener<E>
         }
     }
 
+    @Override
     public void collectionItemChanged(E item) {
         if(this.isLocked()) {
             log.debug("Do not notify changes of locked collection");
