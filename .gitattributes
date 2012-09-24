@@ -792,6 +792,7 @@ img/connect.tiff -text svneol=unset#image/tiff
 img/connection-secure.tiff -text
 img/connection.tiff -text svneol=unset#image/tiff
 img/delete.tiff -text svneol=unset#image/tiff
+img/disktemplate.icns -text
 img/download.tiff -text svneol=unset#image/tiff
 img/download0.icns -text
 img/download1.icns -text
