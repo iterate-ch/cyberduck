@@ -787,7 +787,6 @@ img/cf-icon.png -text svneol=unset#unset
 img/cf.icns -text
 img/cf.ico -text
 img/clean.tiff -text svneol=unset#image/tiff
-img/cleanAll.tiff -text svneol=unset#image/tiff
 img/column.tiff -text svneol=unset#image/tiff
 img/connect.tiff -text svneol=unset#image/tiff
 img/connection-secure.tiff -text
