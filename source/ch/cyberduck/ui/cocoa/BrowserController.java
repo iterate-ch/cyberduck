@@ -33,17 +33,7 @@ import ch.cyberduck.ui.cocoa.delegate.CopyURLMenuDelegate;
 import ch.cyberduck.ui.cocoa.delegate.EditMenuDelegate;
 import ch.cyberduck.ui.cocoa.delegate.OpenURLMenuDelegate;
 import ch.cyberduck.ui.cocoa.delegate.URLMenuDelegate;
-import ch.cyberduck.ui.cocoa.foundation.NSAppleScript;
-import ch.cyberduck.ui.cocoa.foundation.NSArray;
-import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
-import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
-import ch.cyberduck.ui.cocoa.foundation.NSEnumerator;
-import ch.cyberduck.ui.cocoa.foundation.NSIndexSet;
-import ch.cyberduck.ui.cocoa.foundation.NSNotification;
-import ch.cyberduck.ui.cocoa.foundation.NSNotificationCenter;
-import ch.cyberduck.ui.cocoa.foundation.NSObject;
-import ch.cyberduck.ui.cocoa.foundation.NSRange;
-import ch.cyberduck.ui.cocoa.foundation.NSString;
+import ch.cyberduck.ui.cocoa.foundation.*;
 import ch.cyberduck.ui.cocoa.model.OutlinePathReference;
 import ch.cyberduck.ui.cocoa.odb.Editor;
 import ch.cyberduck.ui.cocoa.odb.EditorFactory;
@@ -3831,19 +3821,19 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         // Determine if there are any open connections
         for(final BrowserController controller : MainController.getBrowsers()) {
             if(!controller.unmount(new SheetCallback() {
-                        public void callback(final int returncode) {
-                            if(returncode == DEFAULT_OPTION) { //Disconnect
-                                controller.window().close();
-                                if(NSApplication.NSTerminateNow.equals(BrowserController.applicationShouldTerminate(app))) {
-                                    app.terminate(null);
-                                }
-                            }
-                        }
-                    }, new Runnable() {
-                public void run() {
-                    ;
-                }
-            }
+                                       public void callback(final int returncode) {
+                                           if(returncode == DEFAULT_OPTION) { //Disconnect
+                                               controller.window().close();
+                                               if(NSApplication.NSTerminateNow.equals(BrowserController.applicationShouldTerminate(app))) {
+                                                   app.terminate(null);
+                                               }
+                                           }
+                                       }
+                                   }, new Runnable() {
+                                       public void run() {
+                                           ;
+                                       }
+                                   }
             )) {
                 return NSApplication.NSTerminateCancel;
             }
@@ -4378,7 +4368,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             item.setLabel(Locale.localizedString(TOOLBAR_REFRESH));
             item.setPaletteLabel(Locale.localizedString(TOOLBAR_REFRESH));
             item.setToolTip(Locale.localizedString("Refresh directory listing"));
-            item.setImage(IconCache.iconNamed("refresh.tiff"));
+            item.setImage(IconCache.iconNamed("reload.tiff"));
             item.setTarget(this.id());
             item.setAction(Foundation.selector("reloadButtonClicked:"));
             return item;
