@@ -38,6 +38,8 @@ public abstract class AbstractHostCollection extends Collection<Host> implements
     private static Logger log = Logger.getLogger(AbstractHostCollection.class);
 
     private static final AbstractHostCollection EMPTY = new AbstractHostCollection() {
+        private static final long serialVersionUID = -8444415684736364173L;
+
         @Override
         public String getName() {
             return Locale.localizedString("None");
@@ -119,6 +121,7 @@ public abstract class AbstractHostCollection extends Collection<Host> implements
 
     public void sortByNickname() {
         this.sort(new Comparator<Host>() {
+            @Override
             public int compare(Host o1, Host o2) {
                 return comparator.compare(o1.getNickname(), o2.getNickname());
             }
@@ -127,6 +130,7 @@ public abstract class AbstractHostCollection extends Collection<Host> implements
 
     public void sortByHostname() {
         this.sort(new Comparator<Host>() {
+            @Override
             public int compare(Host o1, Host o2) {
                 return comparator.compare(o1.getHostname(), o2.getHostname());
             }
@@ -135,6 +139,7 @@ public abstract class AbstractHostCollection extends Collection<Host> implements
 
     public void sortByProtocol() {
         this.sort(new Comparator<Host>() {
+            @Override
             public int compare(Host o1, Host o2) {
                 return comparator.compare(o1.getProtocol().getProvider(), o2.getProtocol().getProvider());
             }
@@ -171,6 +176,7 @@ public abstract class AbstractHostCollection extends Collection<Host> implements
      *
      * @return True if bookmark collection can be extended
      */
+    @Override
     public boolean allowsAdd() {
         return true;
     }
@@ -180,6 +186,7 @@ public abstract class AbstractHostCollection extends Collection<Host> implements
      *
      * @return True if bookmarks can be removed
      */
+    @Override
     public boolean allowsDelete() {
         return true;
     }

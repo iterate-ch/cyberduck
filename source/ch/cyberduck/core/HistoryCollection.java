@@ -95,6 +95,7 @@ public class HistoryCollection extends AbstractFolderHostCollection {
     @Override
     protected synchronized void sort() {
         Collections.sort(this, new Comparator<Host>() {
+            @Override
             public int compare(Host o1, Host o2) {
                 if(null == o1.getTimestamp()) {
                     return 1;

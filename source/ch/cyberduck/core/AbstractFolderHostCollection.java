@@ -90,6 +90,7 @@ public abstract class AbstractFolderHostCollection extends AbstractHostCollectio
         try {
             final AttributedList<Local> bookmarks = folder.children(
                     new PathFilter<Local>() {
+                        @Override
                         public boolean accept(Local file) {
                             return file.getName().endsWith(".duck");
                         }
