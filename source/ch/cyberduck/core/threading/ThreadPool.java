@@ -19,7 +19,11 @@ package ch.cyberduck.core.threading;
  * dkocher@cyberduck.ch
  */
 
-import java.util.concurrent.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.ThreadFactory;
 
 /**
  * @version $Id$
@@ -45,6 +49,7 @@ public class ThreadPool {
     private final ThreadFactory threadFactory = new ThreadFactory() {
         private int threadCount = 1;
 
+        @Override
         public Thread newThread(Runnable r) {
             Thread thread = new Thread(r);
             thread.setName("background-" + threadCount++);
