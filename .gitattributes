@@ -872,19 +872,24 @@ img/hpcloud.icns -text
 img/info.png -text svneol=unset#image/png
 img/info.tiff -text svneol=unset#image/tiff
 img/info@2x.png -text svneol=unset#image/png
+img/language.png -text svneol=unset#image/png
 img/language.tiff -text
 img/language@2x.png -text svneol=unset#image/png
 img/list.tiff -text svneol=unset#image/tiff
+img/locked.png -text svneol=unset#image/png
 img/locked.tiff -text svneol=unset#image/tiff
 img/locked@2x.png -text svneol=unset#image/png
 img/log.png -text
 img/log.tiff -text
 img/log@2x.png -text svneol=unset#image/png
 img/multiple.ico -text
+img/newfolder.png -text svneol=unset#image/png
 img/newfolder.tiff -text
 img/newfolder@2x.png -text svneol=unset#image/png
+img/notfound.png -text svneol=unset#image/png
 img/notfound.tiff -text svneol=unset#image/tiff
 img/notfound@2x.png -text svneol=unset#image/png
+img/open.png -text svneol=unset#image/png
 img/open.tiff -text svneol=unset#image/tiff
 img/open@2x.png -text svneol=unset#image/png
 img/outline.tiff -text svneol=unset#image/tiff
@@ -907,6 +912,7 @@ img/reload.tiff -text svneol=unset#image/tiff
 img/reload@2x.png -text svneol=unset#image/png
 img/remove.tiff -text svneol=unset#image/tiff
 img/removePressed.tiff -text svneol=unset#image/tiff
+img/rendezvous.png -text svneol=unset#image/png
 img/rendezvous.tiff -text
 img/rendezvous@2x.png -text svneol=unset#image/png
 img/resume.png -text svneol=unset#image/png
@@ -924,8 +930,10 @@ img/search-active.png -text
 img/search-inactive.png -text
 img/sftp-icon.png -text svneol=unset#image/png
 img/sftp-icon.tiff -text
+img/sftp-icon@2x.png -text svneol=unset#image/png
 img/sftp.icns -text
 img/sftp.ico -text
+img/site.png -text svneol=unset#image/png
 img/site.tiff -text
 img/site@2x.png -text svneol=unset#image/png
 img/statusBlue.tiff -text
@@ -938,10 +946,12 @@ img/statusRed@2x.png -text svneol=unset#image/png
 img/statusYellow.png -text svneol=unset#image/png
 img/statusYellow.tiff -text svneol=unset#image/tiff
 img/statusYellow@2x.png -text svneol=unset#image/png
+img/stop.png -text svneol=unset#image/png
 img/stop.tiff -text svneol=unset#image/tiff
 img/stop@2x.png -text svneol=unset#image/png
 img/swift-icon.png -text svneol=unset#image/png
 img/swift-icon.tiff -text
+img/swift-icon@2x.png -text svneol=unset#image/png
 img/swift.icns -text
 img/swift.ico -text
 img/sync.png -text svneol=unset#image/png
@@ -954,11 +964,13 @@ img/trash.tiff -text svneol=unset#image/tiff
 img/turtle.png -text svneol=unset#image/png
 img/turtle.tiff -text svneol=unset#image/tiff
 img/turtle@2x.png -text svneol=unset#image/png
+img/unlocked.png -text svneol=unset#image/png
 img/unlocked.tiff -text svneol=unset#image/tiff
 img/unlocked@2x.png -text svneol=unset#image/png
 img/update.png -text svneol=unset#image/png
 img/update.tiff -text svneol=unset#image/tiff
 img/update@2x.png -text svneol=unset#image/png
+img/upload.png -text svneol=unset#image/png
 img/upload.tiff -text svneol=unset#image/tiff
 img/upload@2x.png -text svneol=unset#image/png
 it.lproj/Alert.nib/classes.nib -text
