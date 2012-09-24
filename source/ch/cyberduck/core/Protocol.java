@@ -878,12 +878,12 @@ public abstract class Protocol {
 
         @Override
         public String disk() {
-            return "google";
+            return "googledrive";
         }
 
         @Override
         public String icon() {
-            return "google-icon";
+            return "googledrive-icon";
         }
 
         @Override
