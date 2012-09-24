@@ -48,7 +48,7 @@ VMLaunchOptions *NewVMLaunchOptions(int argc, const char **currentArg)
         exit(-1);
     }
     // If we succeeded, look for our property.
-    CFDictionaryRef javaDict = CFDictionaryGetValue(bundleInfoDict, CFSTR("Runtime"));
+    CFDictionaryRef javaDict = CFDictionaryGetValue(bundleInfoDict, CFSTR("Java"));
     if(NULL == javaDict) {
         fprintf(stderr, "[Launcher Error] No Runtime key in dictionary.\n");
         exit(-1);
