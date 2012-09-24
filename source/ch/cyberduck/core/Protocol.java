@@ -81,7 +81,7 @@ public abstract class Protocol {
     }
 
     public boolean isEnabled() {
-        return Preferences.instance().getBoolean("protocol." + this.getIdentifier() + ".enable");
+        return Preferences.instance().getBoolean(String.format("protocol.%s.enable", this.getIdentifier()));
     }
 
     /**
@@ -89,7 +89,7 @@ public abstract class Protocol {
      */
     public void register() {
         if(log.isDebugEnabled()) {
-            log.debug("Register protocol:" + this);
+            log.debug(String.format("Register protocol %s", this.getIdentifier()));
         }
         SessionFactory.addFactory(this, this.getSessionFactory());
         PathFactory.addFactory(this, this.getPathFactory());
@@ -157,7 +157,7 @@ public abstract class Protocol {
      * @return A small icon to display
      */
     public String icon() {
-        return this.getIdentifier() + "-icon";
+        return String.format("%s-icon", this.getIdentifier());
     }
 
     /**
