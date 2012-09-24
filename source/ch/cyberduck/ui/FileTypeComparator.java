@@ -28,6 +28,8 @@ import java.util.Locale;
  * @version $Id$
  */
 public class FileTypeComparator extends BrowserComparator {
+    private static final long serialVersionUID = 3354482708309574292L;
+
     private Collator impl = Collator.getInstance(Locale.getDefault());
 
     public FileTypeComparator(boolean ascending) {

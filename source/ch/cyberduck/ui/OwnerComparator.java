@@ -25,6 +25,7 @@ import ch.cyberduck.core.Path;
  * @version $Id$
  */
 public class OwnerComparator extends BrowserComparator {
+    private static final long serialVersionUID = -3411022739897657092L;
 
     public OwnerComparator(boolean ascending) {
         super(ascending, new FilenameComparator(ascending));

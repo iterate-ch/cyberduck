@@ -30,6 +30,8 @@ import java.util.Locale;
  * @version $Id$
  */
 public class ExtensionComparator extends BrowserComparator {
+    private static final long serialVersionUID = -7930478156003767294L;
+
     private Collator impl = Collator.getInstance(Locale.getDefault());
 
     public ExtensionComparator(boolean ascending) {

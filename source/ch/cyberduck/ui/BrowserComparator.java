@@ -20,6 +20,7 @@ package ch.cyberduck.ui;
 
 import ch.cyberduck.core.Path;
 
+import java.io.Serializable;
 import java.util.Comparator;
 
 /**
@@ -27,7 +28,8 @@ import java.util.Comparator;
  *
  * @version $Id$
  */
-public abstract class BrowserComparator implements Comparator<Path> {
+public abstract class BrowserComparator implements Comparator<Path>, Serializable {
+    private static final long serialVersionUID = -5905031111032653689L;
 
     protected boolean ascending;
     private BrowserComparator second;

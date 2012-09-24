@@ -25,6 +25,7 @@ import ch.cyberduck.core.Path;
  * @version $Id$
  */
 public class SizeComparator extends BrowserComparator {
+    private static final long serialVersionUID = -8659327370467434757L;
 
     public SizeComparator(boolean ascending) {
         super(ascending, new FilenameComparator(ascending));

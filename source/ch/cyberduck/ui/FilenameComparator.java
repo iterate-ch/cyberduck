@@ -28,6 +28,8 @@ import java.util.Comparator;
  * @version $Id$
  */
 public class FilenameComparator extends BrowserComparator {
+    private static final long serialVersionUID = -6726865487297853350L;
+
     private Comparator<String> impl = new NaturalOrderComparator();
 
     public FilenameComparator(boolean ascending) {

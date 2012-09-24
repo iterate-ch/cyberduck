@@ -25,6 +25,7 @@ import ch.cyberduck.core.Path;
  * @version $Id$
  */
 public class PermissionsComparator extends BrowserComparator {
+    private static final long serialVersionUID = 6998556172282538797L;
 
     public PermissionsComparator(boolean ascending) {
         super(ascending, new FilenameComparator(ascending));

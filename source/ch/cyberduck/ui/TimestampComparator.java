@@ -25,6 +25,7 @@ import ch.cyberduck.core.Path;
  * @version $Id$
  */
 public class TimestampComparator extends BrowserComparator {
+    private static final long serialVersionUID = 2242337528465570314L;
 
     public TimestampComparator(boolean ascending) {
         super(ascending, new FilenameComparator(ascending));

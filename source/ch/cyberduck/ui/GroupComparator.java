@@ -26,6 +26,7 @@ import ch.cyberduck.ui.cocoa.BrowserTableDataSource;
  * @version $Id$
  */
 public class GroupComparator extends BrowserComparator {
+    private static final long serialVersionUID = 6549899374390308835L;
 
     public GroupComparator(boolean ascending) {
         super(ascending, new FilenameComparator(ascending));
