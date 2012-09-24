@@ -66,6 +66,7 @@ public class WsFtpBookmarkCollection extends ThirdpartyBookmarkCollection {
     @Override
     protected void parse(Local folder) {
         for(Local child : folder.children(new PathFilter<Local>() {
+            @Override
             public boolean accept(Local file) {
                 if(file.attributes().isDirectory()) {
                     return false;
