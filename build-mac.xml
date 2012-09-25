@@ -45,7 +45,7 @@
     <property name="apple.appstub"
               location="/System/Library/Frameworks/JavaVM.framework/Resources/MacOS/JavaApplicationStub"/>
 
-    <property name="jvm.runtime.home" value="${lib}/1.7.0u8.jre"/>
+    <property name="jvm.runtime.home" value="${lib}/1.7.0u10.jre"/>
     <property name="jvm.runtime.bundle.home" value="Contents/Home"/>
     <property name="jvm.runtime.bundle.lib" value="Contents/Home/lib"/>
 
