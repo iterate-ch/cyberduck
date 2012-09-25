@@ -138,7 +138,9 @@ public abstract class AlertRepeatableBackgroundAction extends RepeatableBackgrou
         }
     }
 
-    private static class TableColumnFactory extends HashMap<String, NSTableColumn> {
+    private static final class TableColumnFactory extends HashMap<String, NSTableColumn> {
+        private static final long serialVersionUID = 3845599333470816101L;
+
         private NSTableColumn create(String identifier) {
             if(!this.containsKey(identifier)) {
                 this.put(identifier, NSTableColumn.tableColumnWithIdentifier(identifier));
@@ -215,10 +217,12 @@ public abstract class AlertRepeatableBackgroundAction extends RepeatableBackgrou
                 errors.add(new ErrorController(e));
             }
             this.errorView.setDataSource((model = new ListDataSource() {
+                @Override
                 public NSInteger numberOfRowsInTableView(NSTableView view) {
                     return new NSInteger(errors.size());
                 }
 
+                @Override
                 public NSObject tableView_objectValueForTableColumn_row(NSTableView view, NSTableColumn tableColumn, NSInteger row) {
                     return null;
                 }
