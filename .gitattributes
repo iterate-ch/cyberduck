@@ -2574,14 +2574,11 @@ source/ch/cyberduck/ui/cocoa/delegate/OpenURLMenuDelegate.java -text
 source/ch/cyberduck/ui/cocoa/delegate/URLMenuDelegate.java -text
 source/ch/cyberduck/ui/cocoa/foundation/NSCoder.java -text
 source/ch/cyberduck/ui/cocoa/foundation/NSKeyedUnarchiver.java -text
-source/ch/cyberduck/ui/cocoa/main.c -text
 source/ch/cyberduck/ui/cocoa/main.m -text
 source/ch/cyberduck/ui/cocoa/quicklook/QLPreviewPanel.h -text
 source/ch/cyberduck/ui/cocoa/quicklook/QuickLook.h -text
 source/ch/cyberduck/ui/cocoa/quicklook/QuickLook.m -text
 source/ch/cyberduck/ui/cocoa/urlhandler/URLSchemeHandlerConfiguration.m -text
-source/ch/cyberduck/ui/cocoa/utils.c -text
-source/ch/cyberduck/ui/cocoa/utils.h -text
 source/ch/cyberduck/ui/controller/ActivityController.cs -text
 source/ch/cyberduck/ui/controller/AsyncController.cs -text
 source/ch/cyberduck/ui/controller/BookmarkController.cs -text

@@ -17,6 +17,8 @@
 		470C64781328CC0300146FB6 /* docs.google.com – Google Docs.duck in CopyFiles */ = {isa = PBXBuildFile; fileRef = 470C646E1328CBF300146FB6 /* docs.google.com – Google Docs.duck */; };
 		470C64791328CC0300146FB6 /* s3.amazonaws.com – S3.duck in CopyFiles */ = {isa = PBXBuildFile; fileRef = 470C646F1328CBF300146FB6 /* s3.amazonaws.com – S3.duck */; };
 		470C647A1328CC0300146FB6 /* storage.clouddrive.com – Cloud Files.duck in CopyFiles */ = {isa = PBXBuildFile; fileRef = 470C64701328CBF300146FB6 /* storage.clouddrive.com – Cloud Files.duck */; };
+		47121FF71611F94000E2547D /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 47121FF61611F94000E2547D /* main.m */; };
+		471220AD1611F96A00E2547D /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 471220AC1611F96A00E2547D /* Cocoa.framework */; };
 		4714591713B492CD00F1A9D2 /* libAquaticPrime.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4773D6B00F9C86A7004658BD /* libAquaticPrime.a */; };
 		4716C5F50872BA9900938886 /* Command.nib in Resources */ = {isa = PBXBuildFile; fileRef = 4716C5EF0872BA9800938886 /* Command.nib */; };
 		4718C1EF107A9F12006FDEFA /* SystemConfigurationReachability.h in Headers */ = {isa = PBXBuildFile; fileRef = 4718C1ED107A9F12006FDEFA /* SystemConfigurationReachability.h */; };
@@ -184,7 +186,6 @@
 		4767311216108ECF00B28D35 /* s3.icns in Resources */ = {isa = PBXBuildFile; fileRef = 4767310B16108ECF00B28D35 /* s3.icns */; };
 		4767311316108ECF00B28D35 /* sftp.icns in Resources */ = {isa = PBXBuildFile; fileRef = 4767310C16108ECF00B28D35 /* sftp.icns */; };
 		4767311416108ECF00B28D35 /* swift.icns in Resources */ = {isa = PBXBuildFile; fileRef = 4767310D16108ECF00B28D35 /* swift.icns */; };
-		47673CA312F0885C00E6FC9A /* JavaVM.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47673CA212F0885C00E6FC9A /* JavaVM.framework */; };
 		477A10480FD08DBA00BAD4AD /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 		477A10E00FD08DE900BAD4AD /* ProxyForJava.h in Headers */ = {isa = PBXBuildFile; fileRef = 477A108A0FD08DE800BAD4AD /* ProxyForJava.h */; };
 		477A10E10FD08DE900BAD4AD /* ProxyForJava.m in Sources */ = {isa = PBXBuildFile; fileRef = 477A108B0FD08DE800BAD4AD /* ProxyForJava.m */; };
@@ -226,9 +227,6 @@
 		47BE1F8B12369DF100E758FE /* CDTransmitImporter.h in Headers */ = {isa = PBXBuildFile; fileRef = 47BE1F8912369DF100E758FE /* CDTransmitImporter.h */; };
 		47BE1F8C12369DF100E758FE /* CDTransmitImporter.m in Sources */ = {isa = PBXBuildFile; fileRef = 47BE1F8A12369DF100E758FE /* CDTransmitImporter.m */; };
 		47BEDBD30B9296C800141EB4 /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47BEDBD20B9296C800141EB4 /* ApplicationServices.framework */; };
-		47C2723F12E99D6100A13758 /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 47C2722F12E99D2B00A13758 /* main.c */; };
-		47C2724012E99D6100A13758 /* utils.c in Sources */ = {isa = PBXBuildFile; fileRef = 47C2723012E99D2B00A13758 /* utils.c */; };
-		47C2724512E99DA200A13758 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 29B97325FDCFA39411CA2CEA /* Foundation.framework */; };
 		47CD043812DB5F2000694306 /* File.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47CD041612DB5F2000694306 /* File.strings */; };
 		47CD045B12DB5F2E00694306 /* Folder.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47CD043912DB5F2E00694306 /* Folder.strings */; };
 		47CD047E12DB5F4500694306 /* Goto.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47CD045C12DB5F4500694306 /* Goto.strings */; };
@@ -505,6 +503,8 @@
 		470FDC7E099E4AC5008DE09C /* he */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = he; path = he.lproj/Credentials.strings; sourceTree = "<group>"; };
 		470FDC80099E4AC5008DE09C /* he */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = he; path = he.lproj/Status.strings; sourceTree = "<group>"; };
 		470FDC81099E4AC5008DE09C /* he */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = he; path = he.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		47121FF61611F94000E2547D /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		471220AC1611F96A00E2547D /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		4716C5F00872BA9800938886 /* en */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = en; path = en.lproj/Command.nib; sourceTree = "<group>"; };
 		47181E840E17D1A600568D80 /* el */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = el; path = el.lproj/Command.nib; sourceTree = "<group>"; };
 		47181E850E17D1A600568D80 /* el */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = el; path = el.lproj/Info.nib; sourceTree = "<group>"; };
@@ -1230,9 +1230,6 @@
 		47BE1F8A12369DF100E758FE /* CDTransmitImporter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CDTransmitImporter.m; path = importer/CDTransmitImporter.m; sourceTree = "<group>"; };
 		47BEDB030B92960400141EB4 /* libURLSchemeHandlerConfiguration.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libURLSchemeHandlerConfiguration.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		47BEDBD20B9296C800141EB4 /* ApplicationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ApplicationServices.framework; path = /System/Library/Frameworks/ApplicationServices.framework; sourceTree = "<absolute>"; };
-		47C2722F12E99D2B00A13758 /* main.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
-		47C2723012E99D2B00A13758 /* utils.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = utils.c; sourceTree = "<group>"; };
-		47C2723D12E99D5900A13758 /* utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = utils.h; sourceTree = "<group>"; };
 		47C4D6CB08798D0C007A1D39 /* cs */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = cs; path = cs.lproj/Command.nib; sourceTree = "<group>"; };
 		47C4D6CC08798D10007A1D39 /* nl */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = nl; path = nl.lproj/Command.nib; sourceTree = "<group>"; };
 		47C4D6CD08798D14007A1D39 /* fi */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = fi; path = fi.lproj/Command.nib; sourceTree = "<group>"; };
@@ -1628,8 +1625,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				47673CA312F0885C00E6FC9A /* JavaVM.framework in Frameworks */,
-				47C2724512E99DA200A13758 /* Foundation.framework in Frameworks */,
+				471220AD1611F96A00E2547D /* Cocoa.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1662,6 +1658,7 @@
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
 				471D2C5405A2505600675163 /* Info.plist */,
+				471220AC1611F96A00E2547D /* Cocoa.framework */,
 			);
 			name = "cyberduck-cocoa";
 			sourceTree = "<group>";
@@ -1787,9 +1784,7 @@
 		4741530206C4F08A00AC0BD2 /* cocoa */ = {
 			isa = PBXGroup;
 			children = (
-				47C2722F12E99D2B00A13758 /* main.c */,
-				47C2723012E99D2B00A13758 /* utils.c */,
-				47C2723D12E99D5900A13758 /* utils.h */,
+				47121FF61611F94000E2547D /* main.m */,
 				4718C1FE107AA41F006FDEFA /* urlhandler */,
 				47DF9A21102CE43B00DCAD41 /* model */,
 				4798434E072B0DAA00FA3CDB /* view */,
@@ -2860,8 +2855,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				47C2723F12E99D6100A13758 /* main.c in Sources */,
-				47C2724012E99D6100A13758 /* utils.c in Sources */,
+				47121FF71611F94000E2547D /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4418,10 +4412,9 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COPY_PHASE_STRIP = YES;
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				INFOPLIST_FILE = Info.plist;
-				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				OTHER_LDFLAGS = (
-					"-lz",
 					"-sectcreate",
 					__TEXT,
 					__info_plist,

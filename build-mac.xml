@@ -280,7 +280,6 @@
             <fileset dir="${app.java}">
                 <include name="*.dylib"/>
             </fileset>
-            <file file="${app.executable}"/>
             <srcfile/>
         </apply>
     </target>
