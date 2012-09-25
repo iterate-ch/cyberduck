@@ -27,10 +27,9 @@ import ch.cyberduck.ui.cocoa.application.NSTableView;
 import ch.cyberduck.ui.cocoa.foundation.NSNotification;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
+import org.apache.log4j.Logger;
 import org.rococoa.ID;
 import org.rococoa.cocoa.foundation.NSInteger;
-
-import org.apache.log4j.Logger;
 
 import java.util.Comparator;
 
@@ -157,6 +156,7 @@ public abstract class AbstractTableDelegate<E> extends ProxyController implement
     // Sorting
     // ----------------------------------------------------------
 
+    @Override
     public Comparator<E> getSortingComparator() {
         return new NullComparator<E>();
     }
@@ -170,6 +170,7 @@ public abstract class AbstractTableDelegate<E> extends ProxyController implement
         Preferences.instance().setProperty("browser.sort.ascending", this.sortAscending);
     }
 
+    @Override
     public boolean isSortedAscending() {
         if(null == this.sortAscending) {
             //return default value

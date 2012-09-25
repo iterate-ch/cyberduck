@@ -21,7 +21,15 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.core.NullComparator;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Status;
-import ch.cyberduck.ui.*;
+import ch.cyberduck.ui.DateFormatterFactory;
+import ch.cyberduck.ui.ExtensionComparator;
+import ch.cyberduck.ui.FileTypeComparator;
+import ch.cyberduck.ui.FilenameComparator;
+import ch.cyberduck.ui.GroupComparator;
+import ch.cyberduck.ui.OwnerComparator;
+import ch.cyberduck.ui.PermissionsComparator;
+import ch.cyberduck.ui.SizeComparator;
+import ch.cyberduck.ui.TimestampComparator;
 
 import org.apache.log4j.Logger;
 
@@ -36,6 +44,7 @@ public abstract class AbstractPathTableDelegate extends AbstractTableDelegate<Pa
     /**
      * @return A tooltip string containing the size and modification date of the path
      */
+    @Override
     public String tooltip(Path p) {
         return p.getAbsolute() + "\n"
                 + Status.getSizeAsString(p.attributes().getSize()) + "\n"
