@@ -89,7 +89,7 @@ public final class IconCache {
 
     public static NSImage aliasIcon(String extension, Integer size) {
         return IconCache.instance().badge(
-                IconCache.instance().iconForName("aliasbadge.png", size),
+                IconCache.instance().iconForName("aliasbadge.tiff", size),
                 IconCache.instance().iconForExtension(extension, size));
     }
 
@@ -178,7 +178,7 @@ public final class IconCache {
     }
 
     private NSImage iconForFolder(NSImage badge, Integer size) {
-        final String name = "NSFolder" + badge.name();
+        final String name = String.format("NSFolder%s", badge.name());
         NSImage folder = this.iconForName(name, size);
         if(null == folder) {
             folder = this.badge(badge, this.convert(FOLDER_ICON, size));
@@ -318,7 +318,7 @@ public final class IconCache {
 
     public NSImage iconForPath(final Path item, Integer size, boolean overlay) {
         if(item.attributes().isSymbolicLink()) {
-            NSImage badge = this.iconForName("aliasbadge.png", size);
+            NSImage badge = this.iconForName("aliasbadge.tiff", size);
             if(item.attributes().isDirectory()) {
                 return this.iconForFolder(badge, size);
             }
@@ -339,17 +339,17 @@ public final class IconCache {
             if(overlay) {
                 if(!item.attributes().getPermission().isExecutable()
                         || (item.isCached() && !item.cache().get(item.getReference()).attributes().isReadable())) {
-                    NSImage badge = this.iconForName("privatefolderbadge.png", size);
+                    NSImage badge = this.iconForName("privatefolderbadge.tiff", size);
                     return this.iconForFolder(badge, size);
                 }
                 if(!item.attributes().getPermission().isReadable()) {
                     if(item.attributes().getPermission().isWritable()) {
-                        NSImage badge = this.iconForName("dropfolderbadge.png", size);
+                        NSImage badge = this.iconForName("dropfolderbadge.tiff", size);
                         return this.iconForFolder(badge, size);
                     }
                 }
                 if(!item.attributes().getPermission().isWritable()) {
-                    NSImage badge = this.iconForName("readonlyfolderbadge.png", size);
+                    NSImage badge = this.iconForName("readonlyfolderbadge.tiff", size);
                     return this.iconForFolder(badge, size);
                 }
             }
