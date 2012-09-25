@@ -124,6 +124,7 @@ public class UserDefaultsDateFormatter extends AbstractDateFormatter implements 
      * @param natural      Use natural language
      * @return A short format string or "Unknown" if there is a problem converting the time to a string
      */
+    @Override
     public String getShortFormat(final long milliseconds, boolean natural) {
         synchronized(shortDateFormatter) {
             if(-1 == milliseconds) {
@@ -143,6 +144,7 @@ public class UserDefaultsDateFormatter extends AbstractDateFormatter implements 
      * @param natural      Use natural language
      * @return A medium format string or "Unknown" if there is a problem converting the time to a string
      */
+    @Override
     public String getMediumFormat(final long milliseconds, boolean natural) {
         synchronized(mediumDateFormatter) {
             if(-1 == milliseconds) {
@@ -162,6 +164,7 @@ public class UserDefaultsDateFormatter extends AbstractDateFormatter implements 
      * @param natural      Use natural language
      * @return A long format string or "Unknown" if there is a problem converting the time to a string
      */
+    @Override
     public String getLongFormat(final long milliseconds, boolean natural) {
         synchronized(longDateFormatter) {
             if(-1 == milliseconds) {
