@@ -44,6 +44,7 @@ public abstract class AbstractController implements Controller {
      *
      * @param runnable The action to execute
      */
+    @Override
     public void invoke(MainAction runnable) {
         this.invoke(runnable, true);
     }
@@ -72,6 +73,7 @@ public abstract class AbstractController implements Controller {
      * @see java.lang.Thread
      * @see ch.cyberduck.core.threading.BackgroundAction#lock()
      */
+    @Override
     public <T> Future<T> background(final BackgroundAction<T> runnable) {
         if(log.isDebugEnabled()) {
             log.debug("background:" + runnable);
@@ -80,6 +82,7 @@ public abstract class AbstractController implements Controller {
         actions.add(runnable);
         // Start background task
         Callable<T> command = new Callable<T>() {
+            @Override
             public T call() {
                 // Synchronize all background threads to this lock so actions run
                 // sequentially as they were initiated from the main interface thread
@@ -102,6 +105,7 @@ public abstract class AbstractController implements Controller {
                         runnable.finish();
                         // Invoke the cleanup on the main thread to let the action synchronize the user interface
                         invoke(new ControllerMainAction(AbstractController.this) {
+                            @Override
                             public void run() {
                                 try {
                                     runnable.cleanup();

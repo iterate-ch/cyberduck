@@ -53,6 +53,7 @@ public class DuplicateFileController extends FileController {
         this.filenameField.setStringValue(proposal);
     }
 
+    @Override
     public void callback(final int returncode) {
         if(returncode == DEFAULT_OPTION) {
             this.duplicateFile(this.getSelected(), filenameField.stringValue());
@@ -65,7 +66,7 @@ public class DuplicateFileController extends FileController {
     }
 
     private void duplicateFile(final Path selected, final String filename) {
-        final Session target = ((BrowserController)parent).getTransferSession(true);
+        final Session target = ((BrowserController) parent).getTransferSession(true);
         final Path duplicate = PathFactory.createPath(target,
                 selected.getParent().getAbsolute(), filename, selected.attributes().getType());
         ((BrowserController) parent).duplicatePath(selected, duplicate);

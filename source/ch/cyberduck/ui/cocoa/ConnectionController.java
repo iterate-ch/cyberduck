@@ -18,21 +18,33 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.BookmarkCollection;
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.KeychainFactory;
+import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.ftp.FTPConnectMode;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.ui.cocoa.application.*;
-import ch.cyberduck.ui.cocoa.foundation.*;
+import ch.cyberduck.ui.cocoa.foundation.NSArray;
+import ch.cyberduck.ui.cocoa.foundation.NSEnumerator;
+import ch.cyberduck.ui.cocoa.foundation.NSNotification;
+import ch.cyberduck.ui.cocoa.foundation.NSNotificationCenter;
+import ch.cyberduck.ui.cocoa.foundation.NSObject;
+import ch.cyberduck.ui.cocoa.foundation.NSString;
 import ch.cyberduck.ui.cocoa.util.HyperlinkAttributedStringFactory;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
 import org.rococoa.Rococoa;
 import org.rococoa.cocoa.foundation.NSInteger;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 import org.spearce.jgit.transport.OpenSshConfig;
 
 import java.util.HashMap;
@@ -222,10 +234,12 @@ public class ConnectionController extends SheetController {
     }
 
     private static class HostFieldModel extends ProxyController implements NSComboBox.DataSource {
+        @Override
         public NSInteger numberOfItemsInComboBox(final NSComboBox sender) {
             return new NSInteger(BookmarkCollection.defaultCollection().size());
         }
 
+        @Override
         public NSObject comboBox_objectValueForItemAtIndex(final NSComboBox sender, final NSInteger row) {
             return NSString.stringWithString(BookmarkCollection.defaultCollection().get(row.intValue()).getNickname());
         }
@@ -290,6 +304,7 @@ public class ConnectionController extends SheetController {
             this.background(new AbstractBackgroundAction<Void>() {
                 boolean reachable = false;
 
+                @Override
                 public void run() {
                     reachable = new Host(hostname).isReachable();
                 }
@@ -593,6 +608,7 @@ public class ConnectionController extends SheetController {
         return true;
     }
 
+    @Override
     public void callback(final int returncode) {
         if(returncode == DEFAULT_OPTION) {
             this.window().endEditingFor(null);

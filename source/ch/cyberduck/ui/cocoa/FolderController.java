@@ -43,6 +43,7 @@ public class FolderController extends FileController {
         alert.setIcon(IconCache.iconNamed("newfolder.tiff", 64));
     }
 
+    @Override
     public void callback(int returncode) {
         if(returncode == DEFAULT_OPTION) {
             this.createFolder(this.getWorkdir(), filenameField.stringValue());
@@ -55,6 +56,7 @@ public class FolderController extends FileController {
             final Path folder = PathFactory.createPath(c.getSession(), workdir.getAbsolute(),
                     filename, Path.DIRECTORY_TYPE);
 
+            @Override
             public void run() {
                 folder.mkdir(false);
             }

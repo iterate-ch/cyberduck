@@ -20,9 +20,19 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.Preferences;
-import ch.cyberduck.ui.cocoa.application.*;
-import ch.cyberduck.ui.cocoa.foundation.*;
+import ch.cyberduck.ui.cocoa.application.NSTabView;
+import ch.cyberduck.ui.cocoa.application.NSTabViewItem;
+import ch.cyberduck.ui.cocoa.application.NSToolbar;
+import ch.cyberduck.ui.cocoa.application.NSToolbarItem;
+import ch.cyberduck.ui.cocoa.application.NSView;
+import ch.cyberduck.ui.cocoa.application.NSWindow;
+import ch.cyberduck.ui.cocoa.foundation.FoundationKitFunctionsLibrary;
+import ch.cyberduck.ui.cocoa.foundation.NSArray;
+import ch.cyberduck.ui.cocoa.foundation.NSEnumerator;
+import ch.cyberduck.ui.cocoa.foundation.NSNotification;
+import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
+import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.Rococoa;
 import org.rococoa.cocoa.foundation.NSPoint;
@@ -30,9 +40,11 @@ import org.rococoa.cocoa.foundation.NSRect;
 import org.rococoa.cocoa.foundation.NSSize;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
-import org.apache.log4j.Logger;
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A window controller with a toolbar populated from a tabbed view.
@@ -158,6 +170,7 @@ public abstract class ToolbarWindowController extends WindowController implement
     private Map<String, NSToolbarItem> cache
             = new HashMap<String, NSToolbarItem>();
 
+    @Override
     public NSToolbarItem toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar(NSToolbar toolbar,
                                                                                  final String itemIdentifier,
                                                                                  boolean flag) {
@@ -180,19 +193,23 @@ public abstract class ToolbarWindowController extends WindowController implement
         return toolbarItem;
     }
 
+    @Override
     public NSArray toolbarAllowedItemIdentifiers(NSToolbar toolbar) {
         List<String> identifiers = this.getPanelIdentifiers();
         return NSArray.arrayWithObjects(identifiers.toArray(new String[identifiers.size()]));
     }
 
+    @Override
     public NSArray toolbarDefaultItemIdentifiers(NSToolbar toolbar) {
         return this.toolbarAllowedItemIdentifiers(toolbar);
     }
 
+    @Override
     public NSArray toolbarSelectableItemIdentifiers(NSToolbar toolbar) {
         return this.toolbarAllowedItemIdentifiers(toolbar);
     }
 
+    @Override
     public boolean validateToolbarItem(final NSToolbarItem item) {
         return this.validateTabWithIdentifier(item.itemIdentifier());
     }
@@ -235,6 +252,7 @@ public abstract class ToolbarWindowController extends WindowController implement
         return windowFrame.size.height.doubleValue() - this.window().contentView().frame().size.height.doubleValue();
     }
 
+    @Override
     public void tabView_didSelectTabViewItem(NSTabView tabView, NSTabViewItem tabViewItem) {
         this.window.setTitle(windowTitle + " – " + this.getTitle(tabViewItem));
         this.resize();

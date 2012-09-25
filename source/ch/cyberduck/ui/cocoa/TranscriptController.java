@@ -28,9 +28,8 @@ import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 import ch.cyberduck.ui.cocoa.foundation.NSRange;
 
-import org.rococoa.cocoa.foundation.NSUInteger;
-
 import org.apache.commons.lang.StringUtils;
+import org.rococoa.cocoa.foundation.NSUInteger;
 
 /**
  * @version $Id$
@@ -83,6 +82,7 @@ public class TranscriptController extends BundleController implements Transcript
         this.loadBundle();
     }
 
+    @Override
     public void log(final boolean request, final String transcript) {
         this.write(request ? FIXED_WITH_FONT_REQUEST_ATTRIBUTES : FIXED_WITH_FONT_RESPONSE_ATTRIBUTES, transcript);
     }

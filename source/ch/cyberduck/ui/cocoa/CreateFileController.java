@@ -45,6 +45,7 @@ public class CreateFileController extends FileController {
         alert.setIcon(IconCache.documentIcon(null, 64));
     }
 
+    @Override
     public void callback(final int returncode) {
         if(returncode == DEFAULT_OPTION) {
             this.createFile(this.getWorkdir(), filenameField.stringValue(), false);
@@ -60,6 +61,7 @@ public class CreateFileController extends FileController {
             final Path file = PathFactory.createPath(c.getSession(), workdir.getAbsolute(),
                     filename, Path.FILE_TYPE);
 
+            @Override
             public void run() {
                 file.touch();
                 if(file.exists()) {

@@ -144,6 +144,7 @@ public abstract class SheetController extends WindowController implements SheetC
                 return;
             }
             invoke(new ControllerMainAction(this) {
+                @Override
                 public void run() {
                     //Invoke again on main thread
                     beginSheetImpl();

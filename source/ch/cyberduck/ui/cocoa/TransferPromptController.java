@@ -30,15 +30,14 @@ import ch.cyberduck.ui.cocoa.model.OutlinePathReference;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 import ch.cyberduck.ui.cocoa.view.OutlineCell;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
 import org.rococoa.Rococoa;
 import org.rococoa.cocoa.CGFloat;
 import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSUInteger;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 
 import java.text.MessageFormat;
 import java.util.HashMap;
@@ -81,7 +80,7 @@ public abstract class TransferPromptController extends SheetController implement
 
     @Override
     public void awakeFromNib() {
-        for(Session s: transfer.getSessions()) {
+        for(Session s : transfer.getSessions()) {
             s.addProgressListener(l);
         }
         this.reloadData();
@@ -95,7 +94,7 @@ public abstract class TransferPromptController extends SheetController implement
 
     @Override
     public void invalidate() {
-        for(Session s: transfer.getSessions()) {
+        for(Session s : transfer.getSessions()) {
             s.removeProgressListener(l);
         }
         browserView.setDataSource(null);
@@ -108,8 +107,10 @@ public abstract class TransferPromptController extends SheetController implement
      *
      */
     private ProgressListener l = new ProgressListener() {
+        @Override
         public void message(final String msg) {
             invoke(new WindowMainAction(TransferPromptController.this) {
+                @Override
                 public void run() {
                     // Update the status label at the bottom of the browser window
                     statusLabel.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(msg,
@@ -128,6 +129,7 @@ public abstract class TransferPromptController extends SheetController implement
 
     protected Transfer transfer;
 
+    @Override
     public void callback(final int returncode) {
         log.debug("callback:" + returncode);
         if(returncode == CANCEL_OPTION) { // Abort
@@ -149,6 +151,7 @@ public abstract class TransferPromptController extends SheetController implement
                 TRUNCATE_MIDDLE_ATTRIBUTES));
     }
 
+    @Override
     public TransferAction prompt() {
         log.debug("prompt:" + transfer);
         for(Path next : transfer.getRoots()) {
@@ -167,6 +170,8 @@ public abstract class TransferPromptController extends SheetController implement
     protected final TableColumnFactory tableColumnsFactory = new TableColumnFactory();
 
     protected static class TableColumnFactory extends HashMap<String, NSTableColumn> {
+        private static final long serialVersionUID = -1455753054446012489L;
+
         protected NSTableColumn create(String identifier) {
             if(!this.containsKey(identifier)) {
                 this.put(identifier, NSTableColumn.tableColumnWithIdentifier(identifier));
@@ -194,10 +199,12 @@ public abstract class TransferPromptController extends SheetController implement
         this.browserView.setDataSource(this.browserModel.id());
         this.browserView.setDelegate((this.browserViewDelegate = new AbstractPathTableDelegate() {
 
+            @Override
             public void enterKeyPressed(final ID sender) {
                 ;
             }
 
+            @Override
             public void deleteKeyPressed(final ID sender) {
                 ;
             }
@@ -447,9 +454,9 @@ public abstract class TransferPromptController extends SheetController implement
 
         final TransferAction defaultAction
                 = TransferAction.forName(Preferences.instance().getProperty("queue.prompt.action.default"));
-        
+
         boolean renameSupported = true;
-        for(Session s: transfer.getSessions()) {
+        for(Session s : transfer.getSessions()) {
             if(!s.isRenameSupported(transfer.getRoot())) {
                 renameSupported = false;
                 break;

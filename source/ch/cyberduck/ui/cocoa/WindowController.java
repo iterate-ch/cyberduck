@@ -20,17 +20,7 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.i18n.Locale;
-import ch.cyberduck.ui.cocoa.application.NSAlert;
-import ch.cyberduck.ui.cocoa.application.NSApplication;
-import ch.cyberduck.ui.cocoa.application.NSButton;
-import ch.cyberduck.ui.cocoa.application.NSCell;
-import ch.cyberduck.ui.cocoa.application.NSPrintInfo;
-import ch.cyberduck.ui.cocoa.application.NSPrintOperation;
-import ch.cyberduck.ui.cocoa.application.NSPrintPanel;
-import ch.cyberduck.ui.cocoa.application.NSTextField;
-import ch.cyberduck.ui.cocoa.application.NSTextView;
-import ch.cyberduck.ui.cocoa.application.NSView;
-import ch.cyberduck.ui.cocoa.application.NSWindow;
+import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
@@ -139,18 +129,22 @@ public abstract class WindowController extends BundleController implements NSWin
         return w.isVisible();
     }
 
+    @Override
     public void windowDidBecomeKey(NSNotification notification) {
         ;
     }
 
+    @Override
     public void windowDidResignKey(NSNotification notification) {
         ;
     }
 
+    @Override
     public void windowDidBecomeMain(NSNotification notification) {
         ;
     }
 
+    @Override
     public void windowDidResignMain(NSNotification notification) {
         ;
     }
@@ -158,6 +152,7 @@ public abstract class WindowController extends BundleController implements NSWin
     /**
      * @see ch.cyberduck.ui.cocoa.application.NSWindow.Delegate
      */
+    @Override
     public boolean windowShouldClose(NSWindow sender) {
         return true;
     }
@@ -165,6 +160,7 @@ public abstract class WindowController extends BundleController implements NSWin
     /**
      * Override this method if the controller should not be invalidated after its window closes
      */
+    @Override
     public void windowWillClose(NSNotification notification) {
         log.debug("windowWillClose:" + notification);
         for(WindowListener listener : listeners.toArray(new WindowListener[listeners.size()])) {
@@ -228,6 +224,7 @@ public abstract class WindowController extends BundleController implements NSWin
     protected int alert(final NSAlert alert, String help) {
         final int[] response = new int[1];
         this.alert(alert, new SheetCallback() {
+            @Override
             public void callback(final int returncode) {
                 response[0] = returncode;
             }
@@ -252,6 +249,7 @@ public abstract class WindowController extends BundleController implements NSWin
      */
     protected void alert(final NSAlert alert, final SheetCallback callback, final String help) {
         SheetController c = new AlertController(this, alert) {
+            @Override
             public void callback(final int returncode) {
                 callback.callback(returncode);
             }
@@ -277,6 +275,7 @@ public abstract class WindowController extends BundleController implements NSWin
      */
     protected void alert(final NSWindow sheet) {
         this.alert(sheet, new SheetCallback() {
+            @Override
             public void callback(final int returncode) {
                 ;
             }
@@ -292,6 +291,7 @@ public abstract class WindowController extends BundleController implements NSWin
      */
     protected void alert(final NSWindow sheet, final SheetCallback callback) {
         SheetController c = new SheetController(this, sheet) {
+            @Override
             public void callback(final int returncode) {
                 callback.callback(returncode);
             }

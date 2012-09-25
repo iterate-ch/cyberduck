@@ -107,11 +107,14 @@ public class ProgressController extends BundleController {
             @Override
             public void transferWillStart() {
                 invoke(new DefaultMainAction() {
+                    @Override
                     public void run() {
                         pl = new ProgressListener() {
+                            @Override
                             public void message(final String message) {
                                 messageText = message;
                                 invoke(new DefaultMainAction() {
+                                    @Override
                                     public void run() {
                                         setMessageText();
                                     }
@@ -134,6 +137,7 @@ public class ProgressController extends BundleController {
             @Override
             public void transferDidEnd() {
                 invoke(new DefaultMainAction() {
+                    @Override
                     public void run() {
                         for(Session s : transfer.getSessions()) {
                             s.removeProgressListener(pl);
@@ -155,8 +159,10 @@ public class ProgressController extends BundleController {
             public void willTransferPath(final Path path) {
                 meter.reset();
                 progressTimer = getTimerPool().scheduleAtFixedRate(new Runnable() {
+                    @Override
                     public void run() {
                         invoke(new DefaultMainAction() {
+                            @Override
                             public void run() {
                                 setProgressText();
                                 final double transferred = transfer.getTransferred();

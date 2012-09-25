@@ -93,6 +93,7 @@ public class ProxyController extends AbstractController {
      *                 If the current thread is also the main thread, and you specify YES for this parameter,
      *                 the message is delivered and processed immediately.
      */
+    @Override
     public void invoke(final MainAction runnable, final boolean wait) {
         if(!runnable.isValid()) {
             return;
@@ -121,6 +122,7 @@ public class ProxyController extends AbstractController {
     /**
      * @return True if the current thread is not a background worker thread
      */
+    @Override
     public boolean isMainThread() {
         return NSThread.isMainThread();
     }

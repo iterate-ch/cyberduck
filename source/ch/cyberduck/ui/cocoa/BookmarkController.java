@@ -30,21 +30,7 @@ import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.ftp.FTPConnectMode;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
-import ch.cyberduck.ui.cocoa.application.NSButton;
-import ch.cyberduck.ui.cocoa.application.NSCell;
-import ch.cyberduck.ui.cocoa.application.NSColor;
-import ch.cyberduck.ui.cocoa.application.NSControl;
-import ch.cyberduck.ui.cocoa.application.NSFont;
-import ch.cyberduck.ui.cocoa.application.NSImage;
-import ch.cyberduck.ui.cocoa.application.NSMenuItem;
-import ch.cyberduck.ui.cocoa.application.NSOpenPanel;
-import ch.cyberduck.ui.cocoa.application.NSPanel;
-import ch.cyberduck.ui.cocoa.application.NSPopUpButton;
-import ch.cyberduck.ui.cocoa.application.NSText;
-import ch.cyberduck.ui.cocoa.application.NSTextField;
-import ch.cyberduck.ui.cocoa.application.NSTextFieldCell;
-import ch.cyberduck.ui.cocoa.application.NSTextView;
-import ch.cyberduck.ui.cocoa.application.NSWindow;
+import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSData;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
@@ -55,13 +41,12 @@ import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.foundation.NSURL;
 import ch.cyberduck.ui.cocoa.util.HyperlinkAttributedStringFactory;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.ID;
 import org.rococoa.Selector;
 import org.rococoa.cocoa.foundation.NSInteger;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 import org.spearce.jgit.transport.OpenSshConfig;
 
 import java.util.Arrays;
@@ -297,6 +282,7 @@ public class BookmarkController extends WindowController {
         if(Preferences.instance().getBoolean("bookmark.favicon.download")) {
             this.background(new AbstractBackgroundAction<Void>() {
 
+                @Override
                 public void run() {
                     NSImage img;
                     final String f = host.getProtocol().favicon();
@@ -374,6 +360,7 @@ public class BookmarkController extends WindowController {
         this.timezonePopup.lastItem().setRepresentedObject(UTC.getID());
         this.timezonePopup.menu().addItem(NSMenuItem.separatorItem());
         Collections.sort(timezones, new Comparator<String>() {
+            @Override
             public int compare(String o1, String o2) {
                 return TimeZone.getTimeZone(o1).getID().compareTo(TimeZone.getTimeZone(o2).getID());
             }
@@ -709,6 +696,7 @@ public class BookmarkController extends WindowController {
             this.background(new AbstractBackgroundAction<Void>() {
                 boolean reachable = false;
 
+                @Override
                 public void run() {
                     reachable = host.isReachable();
                 }
@@ -767,7 +755,7 @@ public class BookmarkController extends WindowController {
         }
         if(sender.state() == NSCell.NSOffState) {
             if(Preferences.instance().getProperty("connection.login.name").equals(
-                   Preferences.instance().getProperty("connection.login.anon.name"))) {
+                    Preferences.instance().getProperty("connection.login.anon.name"))) {
                 host.getCredentials().setUsername(StringUtils.EMPTY);
             }
             else {

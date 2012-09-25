@@ -39,10 +39,9 @@ import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.foundation.NSString;
 import ch.cyberduck.ui.cocoa.model.OutlinePathReference;
 
+import org.apache.log4j.Logger;
 import org.rococoa.Rococoa;
 import org.rococoa.cocoa.foundation.NSInteger;
-
-import org.apache.log4j.Logger;
 
 import java.text.MessageFormat;
 import java.util.List;
@@ -83,6 +82,7 @@ public abstract class TransferPromptModel extends OutlineDataSource {
     }
 
     protected abstract static class PromptFilter implements PathFilter<Path> {
+        @Override
         public boolean accept(Path file) {
             return true;
         }
@@ -143,6 +143,7 @@ public abstract class TransferPromptModel extends OutlineDataSource {
                 // Reloading a workdir that is not cached yet would cause the interface to freeze;
                 // Delay until path is cached in the background
                 controller.background(new AbstractBackgroundAction<Void>() {
+                    @Override
                     public void run() {
                         transfer.children(path);
                     }
@@ -202,6 +203,7 @@ public abstract class TransferPromptModel extends OutlineDataSource {
         return cached;
     }
 
+    @Override
     public boolean outlineView_isItemExpandable(final NSOutlineView view, final NSObject item) {
         if(null == item) {
             return false;
@@ -209,6 +211,7 @@ public abstract class TransferPromptModel extends OutlineDataSource {
         return this.lookup(new OutlinePathReference(item)).attributes().isDirectory();
     }
 
+    @Override
     public NSInteger outlineView_numberOfChildrenOfItem(final NSOutlineView view, NSObject item) {
         if(null == item) {
             return new NSInteger(roots.size());
@@ -216,6 +219,7 @@ public abstract class TransferPromptModel extends OutlineDataSource {
         return new NSInteger(this.children(this.lookup(new OutlinePathReference(item))).size());
     }
 
+    @Override
     public NSObject outlineView_child_ofItem(final NSOutlineView view, NSInteger index, NSObject item) {
         if(null == item) {
             return roots.get(index.intValue()).<NSObject>getReference().unique();
@@ -227,6 +231,7 @@ public abstract class TransferPromptModel extends OutlineDataSource {
         return children.get(index.intValue()).<NSObject>getReference().unique();
     }
 
+    @Override
     public NSObject outlineView_objectValueForTableColumn_byItem(final NSOutlineView view, final NSTableColumn tableColumn, NSObject item) {
         if(null == item) {
             return null;

@@ -83,6 +83,7 @@ public final class TransferController extends WindowController implements NSTool
             @Override
             public void collectionLoaded() {
                 invoke(new WindowMainAction(TransferController.this) {
+                    @Override
                     public void run() {
                         transferSpinner.stopAnimation(null);
                         transferTable.setGridStyleMask(NSTableView.NSTableViewSolidHorizontalGridLineMask);
@@ -287,6 +288,7 @@ public final class TransferController extends WindowController implements NSTool
     }
 
     private class BandwidthMenuDelegate extends AbstractMenuDelegate {
+        @Override
         public NSInteger numberOfItemsInMenu(NSMenu menu) {
             return new NSInteger(new StringTokenizer(Preferences.instance().getProperty("queue.bandwidth.options"), ",").countTokens() + 3);
         }
@@ -350,6 +352,7 @@ public final class TransferController extends WindowController implements NSTool
             @Override
             public void collectionLoaded() {
                 invoke(new ControllerMainAction(TransferController.this) {
+                    @Override
                     public void run() {
                         reload();
                     }
@@ -359,6 +362,7 @@ public final class TransferController extends WindowController implements NSTool
             @Override
             public void collectionItemAdded(Transfer item) {
                 invoke(new ControllerMainAction(TransferController.this) {
+                    @Override
                     public void run() {
                         reload();
                     }
@@ -368,6 +372,7 @@ public final class TransferController extends WindowController implements NSTool
             @Override
             public void collectionItemRemoved(Transfer item) {
                 invoke(new ControllerMainAction(TransferController.this) {
+                    @Override
                     public void run() {
                         reload();
                     }
@@ -416,6 +421,7 @@ public final class TransferController extends WindowController implements NSTool
                         null //other button
                 );
                 instance.alert(alert, new SheetCallback() {
+                    @Override
                     public void callback(int returncode) {
                         if(returncode == DEFAULT_OPTION) { //Quit
                             for(Transfer transfer : TransferCollection.defaultCollection()) {
@@ -439,6 +445,8 @@ public final class TransferController extends WindowController implements NSTool
     private final TableColumnFactory tableColumnsFactory = new TableColumnFactory();
 
     private static class TableColumnFactory extends HashMap<String, NSTableColumn> {
+        private static final long serialVersionUID = 766139884741077738L;
+
         private NSTableColumn create(String identifier) {
             if(!this.containsKey(identifier)) {
                 this.put(identifier, NSTableColumn.tableColumnWithIdentifier(identifier));
@@ -457,14 +465,17 @@ public final class TransferController extends WindowController implements NSTool
         this.transferTable.setRowHeight(new CGFloat(82));
         this.transferTable.setDataSource((transferTableModel = new TransferTableDataSource()).id());
         this.transferTable.setDelegate((transferTableDelegate = new AbstractTableDelegate<Transfer>() {
+            @Override
             public String tooltip(Transfer t) {
                 return t.getName();
             }
 
+            @Override
             public void enterKeyPressed(final ID sender) {
                 this.tableRowDoubleClicked(sender);
             }
 
+            @Override
             public void deleteKeyPressed(final ID sender) {
                 deleteButtonClicked(sender);
             }
@@ -661,6 +672,7 @@ public final class TransferController extends WindowController implements NSTool
             alert.setShowsSuppressionButton(true);
             alert.suppressionButton().setTitle(Locale.localizedString("Don't ask again", "Configuration"));
             this.alert(alert, new SheetCallback() {
+                @Override
                 public void callback(int returncode) {
                     if(alert.suppressionButton().state() == NSCell.NSOnState) {
                         // Never show again.
@@ -748,12 +760,14 @@ public final class TransferController extends WindowController implements NSTool
                 return true;
             }
 
+            @Override
             public void run() {
                 final TransferOptions options = new TransferOptions();
                 options.reloadRequested = reload;
                 options.resumeRequested = resume;
                 options.invalidateCache = Cache.Lifecycle.FOREVER;
                 transfer.start(new TransferPrompt() {
+                    @Override
                     public TransferAction prompt() {
                         return TransferPromptController.create(TransferController.this, transfer).prompt();
                     }
@@ -811,6 +825,7 @@ public final class TransferController extends WindowController implements NSTool
             public void log(final boolean request, final String message) {
                 if(logDrawer.state() == NSDrawer.OpenState) {
                     invoke(new WindowMainAction(TransferController.this) {
+                        @Override
                         public void run() {
                             TransferController.this.transcript.log(request, message);
                         }
@@ -831,6 +846,7 @@ public final class TransferController extends WindowController implements NSTool
 
     private void validateToolbar() {
         invoke(new WindowMainAction(TransferController.this) {
+            @Override
             public void run() {
                 window().toolbar().validateVisibleItems();
                 updateIcon();
@@ -855,6 +871,7 @@ public final class TransferController extends WindowController implements NSTool
     private Map<String, NSToolbarItem> toolbarItems
             = new HashMap<String, NSToolbarItem>();
 
+    @Override
     public NSToolbarItem toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar(NSToolbar toolbar, final String itemIdentifier, boolean flag) {
         if(!toolbarItems.containsKey(itemIdentifier)) {
             toolbarItems.put(itemIdentifier, NSToolbarItem.itemWithIdentifier(itemIdentifier));
@@ -973,6 +990,7 @@ public final class TransferController extends WindowController implements NSTool
             final Transfer transfer = transferTableModel.getSource().get(index.intValue());
             if(transfer.isRunning()) {
                 this.background(new AbstractBackgroundAction<Void>() {
+                    @Override
                     public void run() {
                         transfer.cancel();
                     }
@@ -987,6 +1005,7 @@ public final class TransferController extends WindowController implements NSTool
         for(final Transfer transfer : transfers) {
             if(transfer.isRunning()) {
                 this.background(new AbstractBackgroundAction<Void>() {
+                    @Override
                     public void run() {
                         transfer.cancel();
                     }
@@ -1103,6 +1122,7 @@ public final class TransferController extends WindowController implements NSTool
      *
      * @param toolbar Window toolbar
      */
+    @Override
     public NSArray toolbarDefaultItemIdentifiers(NSToolbar toolbar) {
         return NSArray.arrayWithObjects(
                 TOOLBAR_RESUME,
@@ -1120,6 +1140,7 @@ public final class TransferController extends WindowController implements NSTool
      *
      * @param toolbar Window toolbar
      */
+    @Override
     public NSArray toolbarAllowedItemIdentifiers(NSToolbar toolbar) {
         return NSArray.arrayWithObjects(
                 TOOLBAR_RESUME,
@@ -1139,6 +1160,7 @@ public final class TransferController extends WindowController implements NSTool
         );
     }
 
+    @Override
     public NSArray toolbarSelectableItemIdentifiers(NSToolbar toolbar) {
         return NSArray.array();
     }
@@ -1172,6 +1194,7 @@ public final class TransferController extends WindowController implements NSTool
     /**
      * @param item Toolbar item
      */
+    @Override
     public boolean validateToolbarItem(final NSToolbarItem item) {
         return this.validateItem(item.action());
     }
@@ -1188,6 +1211,7 @@ public final class TransferController extends WindowController implements NSTool
         }
         if(action.equals(Foundation.selector("stopButtonClicked:"))) {
             return this.validate(new TransferToolbarValidator() {
+                @Override
                 public boolean validate(Transfer transfer) {
                     return transfer.isRunning();
                 }
@@ -1195,6 +1219,7 @@ public final class TransferController extends WindowController implements NSTool
         }
         if(action.equals(Foundation.selector("reloadButtonClicked:"))) {
             return this.validate(new TransferToolbarValidator() {
+                @Override
                 public boolean validate(Transfer transfer) {
                     return transfer.isReloadable() && !transfer.isRunning();
                 }
@@ -1202,6 +1227,7 @@ public final class TransferController extends WindowController implements NSTool
         }
         if(action.equals(Foundation.selector("deleteButtonClicked:"))) {
             return this.validate(new TransferToolbarValidator() {
+                @Override
                 public boolean validate(Transfer transfer) {
                     return !transfer.isRunning();
                 }
@@ -1209,6 +1235,7 @@ public final class TransferController extends WindowController implements NSTool
         }
         if(action.equals(Foundation.selector("resumeButtonClicked:"))) {
             return this.validate(new TransferToolbarValidator() {
+                @Override
                 public boolean validate(Transfer transfer) {
                     if(transfer.isRunning()) {
                         return false;
@@ -1220,6 +1247,7 @@ public final class TransferController extends WindowController implements NSTool
         if(action.equals(Foundation.selector("openButtonClicked:"))
                 || action.equals(Foundation.selector("trashButtonClicked:"))) {
             return this.validate(new TransferToolbarValidator() {
+                @Override
                 public boolean validate(Transfer transfer) {
                     if(!transfer.isComplete()) {
                         return false;
@@ -1237,6 +1265,7 @@ public final class TransferController extends WindowController implements NSTool
         }
         if(action.equals(Foundation.selector("revealButtonClicked:"))) {
             return this.validate(new TransferToolbarValidator() {
+                @Override
                 public boolean validate(Transfer transfer) {
                     for(Path i : transfer.getRoots()) {
                         if(i.getLocal().exists()) {

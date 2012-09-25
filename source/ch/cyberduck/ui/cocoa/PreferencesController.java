@@ -19,32 +19,10 @@ package ch.cyberduck.ui.cocoa;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractCollectionListener;
-import ch.cyberduck.core.BookmarkCollection;
-import ch.cyberduck.core.CollectionListener;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LocalFactory;
-import ch.cyberduck.core.Permission;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.Protocol;
-import ch.cyberduck.core.ProtocolFactory;
-import ch.cyberduck.core.Status;
-import ch.cyberduck.core.TransferAction;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.sparkle.Updater;
-import ch.cyberduck.ui.cocoa.application.NSApplication;
-import ch.cyberduck.ui.cocoa.application.NSButton;
-import ch.cyberduck.ui.cocoa.application.NSCell;
-import ch.cyberduck.ui.cocoa.application.NSColor;
-import ch.cyberduck.ui.cocoa.application.NSFont;
-import ch.cyberduck.ui.cocoa.application.NSMenuItem;
-import ch.cyberduck.ui.cocoa.application.NSOpenPanel;
-import ch.cyberduck.ui.cocoa.application.NSPopUpButton;
-import ch.cyberduck.ui.cocoa.application.NSText;
-import ch.cyberduck.ui.cocoa.application.NSTextView;
-import ch.cyberduck.ui.cocoa.application.NSView;
-import ch.cyberduck.ui.cocoa.application.NSWindow;
+import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.foundation.NSAppleScript;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
@@ -503,6 +481,7 @@ public final class PreferencesController extends ToolbarWindowController {
         @Override
         public void collectionItemAdded(final Host bookmark) {
             invoke(new WindowMainAction(PreferencesController.this) {
+                @Override
                 public void run() {
                     defaultBookmarkCombobox.addItemWithTitle(bookmark.getNickname());
                     defaultBookmarkCombobox.lastItem().setImage(IconCache.iconNamed("cyberduck-document", 16));
@@ -514,6 +493,7 @@ public final class PreferencesController extends ToolbarWindowController {
         @Override
         public void collectionItemRemoved(final Host bookmark) {
             invoke(new WindowMainAction(PreferencesController.this) {
+                @Override
                 public void run() {
                     String selected = defaultBookmarkCombobox.selectedItem().representedObject();
                     if(StringUtils.isNotEmpty(selected)) {
@@ -1966,7 +1946,7 @@ public final class PreferencesController extends ToolbarWindowController {
         while(formats.hasMoreTokens()) {
             String format = formats.nextToken();
             final String description = FinderLocal.kind(format);
-            final String suffix = new StringBuilder().append(" (.").append(format).append(")").toString();
+            final String suffix = String.format(" (.%s)", format);
             final StringBuilder title = new StringBuilder(description);
             if(!description.endsWith(suffix)) {
                 title.append(suffix);
@@ -1997,7 +1977,7 @@ public final class PreferencesController extends ToolbarWindowController {
                 Preferences.instance().getProperty("google.docs.export.spreadsheet.formats"), ",");
         while(formats.hasMoreTokens()) {
             String format = formats.nextToken();
-            final String title = new StringBuilder(FinderLocal.kind(format)).append(" (.").append(format).append(")").toString();
+            final String title = String.format("%s (.%s)", FinderLocal.kind(format), format);
             this.spreadsheetExportFormatPopup.addItemWithTitle(title);
             this.spreadsheetExportFormatPopup.lastItem().setRepresentedObject(format);
             if(format.equals(Preferences.instance().getProperty("google.docs.export.spreadsheet"))) {
@@ -2024,7 +2004,7 @@ public final class PreferencesController extends ToolbarWindowController {
                 Preferences.instance().getProperty("google.docs.export.presentation.formats"), ",");
         while(formats.hasMoreTokens()) {
             String format = formats.nextToken();
-            final String title = new StringBuilder(FinderLocal.kind(format)).append(" (.").append(format).append(")").toString();
+            final String title = String.format("%s (.%s)", FinderLocal.kind(format), format);
             this.presentationExportFormatPopup.addItemWithTitle(title);
             this.presentationExportFormatPopup.lastItem().setRepresentedObject(format);
             if(format.equals(Preferences.instance().getProperty("google.docs.export.presentation"))) {

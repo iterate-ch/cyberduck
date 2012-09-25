@@ -33,10 +33,9 @@ import ch.cyberduck.ui.cocoa.foundation.NSRange;
 import ch.cyberduck.ui.cocoa.threading.BrowserBackgroundAction;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 
-import org.rococoa.cocoa.foundation.NSUInteger;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.rococoa.cocoa.foundation.NSUInteger;
 
 import java.io.IOException;
 
@@ -78,6 +77,7 @@ public class CommandController extends SheetController implements TranscriptList
         this.image.setImage(IconCache.instance().iconForApplication("com.apple.Terminal", 128));
     }
 
+    @Override
     public void layoutManager_didCompleteLayoutForTextContainer_atEnd(NSLayoutManager layoutManager,
                                                                       NSObject textContainer,
                                                                       boolean finished) {
@@ -110,6 +110,7 @@ public class CommandController extends SheetController implements TranscriptList
             parent.background(new BrowserBackgroundAction((BrowserController) parent) {
                 boolean close;
 
+                @Override
                 public void run() {
                     try {
                         session.sendCommand(command);
@@ -139,8 +140,10 @@ public class CommandController extends SheetController implements TranscriptList
         }
     }
 
+    @Override
     public void log(boolean request, final String message) {
         invoke(new WindowMainAction(this) {
+            @Override
             public void run() {
                 responseField.textStorage().replaceCharactersInRange_withAttributedString(
                         NSRange.NSMakeRange(responseField.textStorage().length(), new NSUInteger(0)),
@@ -154,6 +157,7 @@ public class CommandController extends SheetController implements TranscriptList
         return true;
     }
 
+    @Override
     public void callback(final int returncode) {
         ;
     }

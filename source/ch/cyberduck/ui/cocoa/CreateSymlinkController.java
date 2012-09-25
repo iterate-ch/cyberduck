@@ -51,6 +51,7 @@ public class CreateSymlinkController extends FileController {
                 selected.getName()));
     }
 
+    @Override
     public void callback(final int returncode) {
         if(returncode == DEFAULT_OPTION) {
             this.createSymlink(this.getSelected(), filenameField.stringValue(), false);
@@ -62,6 +63,7 @@ public class CreateSymlinkController extends FileController {
         final Path link = PathFactory.createPath(this.getSession(),
                 this.getWorkdir().getAbsolute(), symlink, Path.FILE_TYPE);
         c.background(new BrowserBackgroundAction(c) {
+            @Override
             public void run() {
                 // Symlink pointing to existing file
                 link.symlink(selected.getName());

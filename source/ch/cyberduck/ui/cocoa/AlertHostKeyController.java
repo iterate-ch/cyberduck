@@ -127,6 +127,7 @@ public class AlertHostKeyController extends MemoryHostKeyVerifier {
         }
         alert.setShowsHelp(true);
         SheetController c = new AlertController(parent, alert) {
+            @Override
             public void callback(final int returncode) {
                 if(returncode == DEFAULT_OPTION) {// allow host (once)
                     allow(hostname, serverHostKeyAlgorithm, serverHostKey,
@@ -168,6 +169,7 @@ public class AlertHostKeyController extends MemoryHostKeyVerifier {
         }
         alert.setShowsHelp(true);
         SheetController c = new AlertController(parent, alert) {
+            @Override
             public void callback(final int returncode) {
                 if(returncode == DEFAULT_OPTION) {
                     allow(hostname, serverHostKeyAlgorithm, serverHostKey,

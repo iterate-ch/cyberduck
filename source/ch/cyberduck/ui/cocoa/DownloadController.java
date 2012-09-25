@@ -65,6 +65,7 @@ public class DownloadController extends AlertController {
         this.url = url;
     }
 
+    @Override
     public void callback(final int returncode) {
         if(returncode == DEFAULT_OPTION) {
             Host host = Host.parse(urlField.stringValue());

@@ -195,6 +195,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         else {
             // Setting up a custom filter for the directory listing
             this.filenameFilter = new PathFilter<Path>() {
+                @Override
                 public boolean accept(Path file) {
                     if(file.getName().toLowerCase().contains(search.toLowerCase())) {
                         // Matching filename
@@ -663,6 +664,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             @Override
             public void collectionLoaded() {
                 invoke(new WindowMainAction(BrowserController.this) {
+                    @Override
                     public void run() {
                         browserSpinner.stopAnimation(null);
                         bookmarkTable.setGridStyleMask(NSTableView.NSTableViewSolidHorizontalGridLineMask);
@@ -866,6 +868,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
         public AbstractBrowserTableDelegate() {
             BrowserController.this.addListener(new WindowListener() {
+                @Override
                 public void windowWillClose() {
                     if(QuickLookFactory.instance().isAvailable()) {
                         if(QuickLookFactory.instance().isOpen()) {
@@ -918,11 +921,13 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                     background(new BrowserBackgroundAction(BrowserController.this) {
                         final Collection<Local> previews = new Collection<Local>();
 
+                        @Override
                         public void run() {
                             Transfer transfer = new DownloadTransfer(downloads);
                             TransferOptions options = new TransferOptions();
                             options.closeSession = false;
                             transfer.start(new TransferPrompt() {
+                                @Override
                                 public TransferAction prompt() {
                                     return TransferAction.ACTION_RESUME;
                                 }
@@ -967,6 +972,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             }
         }
 
+        @Override
         public void deleteKeyPressed(final ID sender) {
             BrowserController.this.deleteFileButtonClicked(sender);
         }
@@ -1073,6 +1079,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
      * @return
      * @ Sent to each object in the responder chain to find a controller.
      */
+    @Override
     public boolean acceptsPreviewPanelControl(QLPreviewPanel panel) {
         log.debug("acceptsPreviewPanelControl");
         return true;
@@ -1085,6 +1092,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
      * @param panel The Preview Panel the receiver will control.
      * @ Sent to the object taking control of the Preview Panel.
      */
+    @Override
     public void beginPreviewPanelControl(QLPreviewPanel panel) {
         log.debug("beginPreviewPanelControl");
         QuickLookFactory.instance().willBeginQuickLook();
@@ -1097,6 +1105,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
      * @param panel The Preview Panel that the receiver will stop controlling.
      * @ Sent to the object in control of the Preview Panel just before stopping its control.
      */
+    @Override
     public void endPreviewPanelControl(QLPreviewPanel panel) {
         log.debug("endPreviewPanelControl");
         QuickLookFactory.instance().didEndQuickLook();
@@ -1132,6 +1141,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
         browserOutlineView.setDataSource((browserOutlineModel = new BrowserOutlineViewModel(this)).id());
         browserOutlineView.setDelegate((browserOutlineViewDelegate = new AbstractBrowserOutlineViewDelegate<Path>() {
+            @Override
             public void enterKeyPressed(final ID sender) {
                 if(Preferences.instance().getBoolean("browser.enterkey.rename")) {
                     if(browserOutlineView.numberOfSelectedRows().intValue() == 1) {
@@ -1146,6 +1156,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             /**
              * @see NSOutlineView.Delegate
              */
+            @Override
             public void outlineView_willDisplayCell_forTableColumn_item(NSOutlineView view, NSTextFieldCell cell,
                                                                         NSTableColumn tableColumn, NSObject item) {
                 if(null == item) {
@@ -1170,6 +1181,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             /**
              * @see NSOutlineView.Delegate
              */
+            @Override
             public boolean outlineView_shouldExpandItem(final NSOutlineView view, final NSObject item) {
                 NSEvent event = NSApplication.sharedApplication().currentEvent();
                 if(event != null) {
@@ -1193,6 +1205,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             /**
              * @see NSOutlineView.Delegate
              */
+            @Override
             public void outlineViewItemDidExpand(NSNotification notification) {
                 updateStatusLabel();
             }
@@ -1200,6 +1213,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             /**
              * @see NSOutlineView.Delegate
              */
+            @Override
             public void outlineViewItemDidCollapse(NSNotification notification) {
                 updateStatusLabel();
             }
@@ -1250,6 +1264,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
         browserListView.setDataSource((browserListModel = new BrowserListViewModel(this)).id());
         browserListView.setDelegate((browserListViewDelegate = new AbstractBrowserListViewDelegate<Path>() {
+            @Override
             public void enterKeyPressed(final ID sender) {
                 if(Preferences.instance().getBoolean("browser.enterkey.rename")) {
                     if(browserListView.numberOfSelectedRows().intValue() == 1) {
@@ -1261,6 +1276,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 }
             }
 
+            @Override
             public void tableView_willDisplayCell_forTableColumn_row(NSTableView view, NSTextFieldCell cell, NSTableColumn tableColumn, NSInteger row) {
                 final String identifier = tableColumn.identifier();
                 final Path path = browserListModel.children(BrowserController.this.workdir()).get(row.intValue());
@@ -1451,6 +1467,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 this, BookmarkCollection.defaultCollection())
         ).id());
         this.bookmarkTable.setDelegate((this.bookmarkTableDelegate = new AbstractTableDelegate<Host>() {
+            @Override
             public String tooltip(Host bookmark) {
                 return bookmark.toURL();
             }
@@ -1460,10 +1477,12 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 BrowserController.this.connectBookmarkButtonClicked(sender);
             }
 
+            @Override
             public void enterKeyPressed(final ID sender) {
                 this.tableRowDoubleClicked(sender);
             }
 
+            @Override
             public void deleteKeyPressed(final ID sender) {
                 if(bookmarkModel.getSource().allowsDelete()) {
                     BrowserController.this.deleteBookmarkButtonClicked(sender);
@@ -1644,10 +1663,12 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     }
 
     private static class QuickConnectModel extends ProxyController implements NSComboBox.DataSource {
+        @Override
         public NSInteger numberOfItemsInComboBox(final NSComboBox combo) {
             return new NSInteger(BookmarkCollection.defaultCollection().size());
         }
 
+        @Override
         public NSObject comboBox_objectValueForItemAtIndex(final NSComboBox sender, final NSInteger row) {
             return NSString.stringWithString(BookmarkCollection.defaultCollection().get(row.intValue()).getNickname());
         }
@@ -1710,6 +1731,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         }
         else {
             this.bookmarkModel.setFilter(new HostFilter() {
+                @Override
                 public boolean accept(Host host) {
                     return StringUtils.lowerCase(host.getNickname()).contains(searchString.toLowerCase())
                             || ((null != host.getComment()) && StringUtils.lowerCase(host.getComment()).contains(searchString.toLowerCase()))
@@ -1836,6 +1858,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 Locale.localizedString("Cancel"),
                 null);
         this.alert(alert, new SheetCallback() {
+            @Override
             public void callback(int returncode) {
                 if(returncode == DEFAULT_OPTION) {
                     bookmarkTable.deselectAll(null);
@@ -2011,6 +2034,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 return;
             }
             this.background(new BrowserBackgroundAction(this) {
+                @Override
                 public void run() {
                     session.close();
                 }
@@ -2269,7 +2293,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 i++;
             }
             if(i >= 10) {
-                alertText.append("\n" + Character.toString('\u2022') + " ...)");
+                alertText.append("\n").append(Character.toString('\u2022')).append(" ...)");
             }
             if(shouldWarn) {
                 NSAlert alert = NSAlert.alert(
@@ -2281,6 +2305,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 );
                 final boolean[] confirm = new boolean[]{false};
                 this.alert(alert, new SheetCallback() {
+                    @Override
                     public void callback(final int returncode) {
                         if(returncode == DEFAULT_OPTION) {
                             confirm[0] = true;
@@ -2326,6 +2351,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 );
                 final boolean[] confirm = new boolean[]{false};
                 this.alert(alert, new SheetCallback() {
+                    @Override
                     public void callback(final int returncode) {
                         if(returncode == DEFAULT_OPTION) {
                             confirm[0] = checkOverwrite(selected);
@@ -2403,6 +2429,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 null //other button
         );
         this.alert(alert, new SheetCallback() {
+            @Override
             public void callback(final int returncode) {
                 if(returncode == DEFAULT_OPTION) {
                     BrowserController.this.deletePathsImpl(normalized);
@@ -2413,6 +2440,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
     private void deletePathsImpl(final List<Path> files) {
         this.background(new BrowserBackgroundAction(this) {
+            @Override
             public void run() {
                 for(Path file : files) {
                     if(this.isCanceled()) {
@@ -2442,6 +2470,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
      */
     public void revertPath(final Path selected) {
         this.background(new BrowserBackgroundAction(this) {
+            @Override
             public void run() {
                 if(this.isCanceled()) {
                     return;
@@ -2823,6 +2852,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
      */
     protected void transfer(final Transfer transfer, final Path destination, final boolean browser) {
         this.transfer(transfer, destination, browser, new TransferPrompt() {
+            @Override
             public TransferAction prompt() {
                 return TransferPromptController.create(BrowserController.this, transfer).prompt();
             }
@@ -2845,6 +2875,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                     destination.invalidate();
                     if(!transfer.isCanceled()) {
                         invoke(new WindowMainAction(BrowserController.this) {
+                            @Override
                             public void run() {
                                 reloadData(true);
                             }
@@ -2872,8 +2903,10 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 public void willTransferPath(Path path) {
                     meter.reset();
                     progressTimer = getTimerPool().scheduleAtFixedRate(new Runnable() {
+                        @Override
                         public void run() {
                             invoke(new WindowMainAction(BrowserController.this) {
+                                @Override
                                 public void run() {
                                     BrowserController.this.updateStatusLabel(meter.getProgress());
                                 }
@@ -2902,6 +2935,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 }
             });
             this.background(new BrowserBackgroundAction(this) {
+                @Override
                 public void run() {
                     TransferOptions options = new TransferOptions();
                     options.closeSession = false;
@@ -2955,6 +2989,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     public void connectButtonClicked(final ID sender) {
         final SheetController controller = ConnectionController.instance(this);
         this.addListener(new WindowListener() {
+            @Override
             public void windowWillClose() {
                 controller.invalidate();
             }
@@ -3256,6 +3291,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         final List<Path> s = this.getSelectedPaths();
         if(this.checkOverwrite(Collections.singletonList(archive.getArchive(s)))) {
             background(new BrowserBackgroundAction(BrowserController.this) {
+                @Override
                 public void run() {
                     session.archive(archive, s);
                 }
@@ -3284,6 +3320,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             }
             if(this.checkOverwrite(archive.getExpanded(Collections.singletonList(s)))) {
                 background(new BrowserBackgroundAction(BrowserController.this) {
+                    @Override
                     public void run() {
                         session.unarchive(archive, s);
                     }
@@ -3368,6 +3405,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                         directory.getName());
             }
 
+            @Override
             public void run() {
                 if(directory.isCached()) {
                     //Reset the readable attribute
@@ -3502,8 +3540,10 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         this.setWorkdir(null);
         this.setEncoding(session.getEncoding());
         session.addProgressListener(new ProgressListener() {
+            @Override
             public void message(final String message) {
                 invoke(new WindowMainAction(BrowserController.this) {
+                    @Override
                     public void run() {
                         laststatus = message;
                         updateStatusLabel(message);
@@ -3515,6 +3555,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             @Override
             public void connectionWillOpen() {
                 invoke(new WindowMainAction(BrowserController.this) {
+                    @Override
                     public void run() {
                         // Update status icon
                         bookmarkTable.setNeedsDisplay();
@@ -3527,6 +3568,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             @Override
             public void connectionDidOpen() {
                 invoke(new WindowMainAction(BrowserController.this) {
+                    @Override
                     public void run() {
                         // Update status icon
                         bookmarkTable.setNeedsDisplay();
@@ -3550,6 +3592,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             @Override
             public void connectionDidClose() {
                 invoke(new WindowMainAction(BrowserController.this) {
+                    @Override
                     public void run() {
                         // Update status icon
                         bookmarkTable.setNeedsDisplay();
@@ -3572,9 +3615,11 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         backHistory.clear();
         forwardHistory.clear();
         session.addTranscriptListener(new TranscriptListener() {
+            @Override
             public void log(final boolean request, final String message) {
                 if(logDrawer.state() == NSDrawer.OpenState) {
                     invoke(new WindowMainAction(BrowserController.this) {
+                        @Override
                         public void run() {
                             transcript.log(request, message);
                         }
@@ -3600,6 +3645,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             log.debug("mount:" + host);
         }
         this.unmount(new Runnable() {
+            @Override
             public void run() {
                 // The browser has no session, we are allowed to proceed
                 // Initialize the browser with the new session attaching all listeners
@@ -3608,6 +3654,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 background(new BrowserBackgroundAction(BrowserController.this) {
                     private Path mount;
 
+                    @Override
                     public void run() {
                         // Mount this session
                         mount = session.mount();
@@ -3644,6 +3691,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
      */
     public boolean unmount() {
         return this.unmount(new Runnable() {
+            @Override
             public void run() {
                 ;
             }
@@ -3657,6 +3705,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
      */
     public boolean unmount(final Runnable disconnected) {
         return this.unmount(new SheetCallback() {
+            @Override
             public void callback(int returncode) {
                 if(returncode == DEFAULT_OPTION) {
                     unmountImpl(disconnected);
@@ -3687,6 +3736,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 alert.setShowsSuppressionButton(true);
                 alert.suppressionButton().setTitle(Locale.localizedString("Don't ask again", "Configuration"));
                 this.alert(alert, new SheetCallback() {
+                    @Override
                     public void callback(int returncode) {
                         if(alert.suppressionButton().state() == NSCell.NSOnState) {
                             // Never show again.
@@ -3716,6 +3766,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         }
         final Session session = this.getSession();
         this.background(new AbstractBackgroundAction<Void>() {
+            @Override
             public void run() {
                 session.close();
             }
@@ -3750,6 +3801,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 }
             }
             this.background(new BrowserBackgroundAction(this) {
+                @Override
                 public void run() {
                     if(hasSession()) {
                         // Aggressively close the connection to interrupt the current task
@@ -3789,6 +3841,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
      */
     private void disconnect() {
         this.background(new BrowserBackgroundAction(this) {
+            @Override
             public void run() {
                 session.close();
             }
@@ -3821,6 +3874,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         // Determine if there are any open connections
         for(final BrowserController controller : MainController.getBrowsers()) {
             if(!controller.unmount(new SheetCallback() {
+                                       @Override
                                        public void callback(final int returncode) {
                                            if(returncode == DEFAULT_OPTION) { //Disconnect
                                                controller.window().close();
@@ -3830,6 +3884,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                                            }
                                        }
                                    }, new Runnable() {
+                                       @Override
                                        public void run() {
                                            ;
                                        }
@@ -3844,6 +3899,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     @Override
     public boolean windowShouldClose(final NSWindow sender) {
         return this.unmount(new Runnable() {
+            @Override
             public void run() {
                 sender.close();
             }
@@ -4205,6 +4261,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     private static final String TOOLBAR_QUICKLOOK = "Quick Look";
     private static final String TOOLBAR_LOG = "Log";
 
+    @Override
     public boolean validateToolbarItem(final NSToolbarItem item) {
         final String identifier = item.itemIdentifier();
         if(identifier.equals(TOOLBAR_EDIT)) {
@@ -4264,6 +4321,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     private Map<String, NSToolbarItem> toolbarItems
             = new HashMap<String, NSToolbarItem>();
 
+    @Override
     public NSToolbarItem toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar(NSToolbar toolbar, final String itemIdentifier, boolean inserted) {
         if(log.isDebugEnabled()) {
             log.debug("toolbar_itemForItemIdentifier_willBeInsertedIntoToolbar:" + itemIdentifier);
@@ -4542,6 +4600,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
      * @param toolbar Window toolbar
      * @return The default configuration of toolbar items
      */
+    @Override
     public NSArray toolbarDefaultItemIdentifiers(NSToolbar toolbar) {
         return NSArray.arrayWithObjects(
                 TOOLBAR_NEW_CONNECTION,
@@ -4560,6 +4619,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
      * @param toolbar Window toolbar
      * @return All available toolbar items
      */
+    @Override
     public NSArray toolbarAllowedItemIdentifiers(NSToolbar toolbar) {
         return NSArray.arrayWithObjects(
                 TOOLBAR_NEW_CONNECTION,
@@ -4590,6 +4650,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         );
     }
 
+    @Override
     public NSArray toolbarSelectableItemIdentifiers(NSToolbar toolbar) {
         return NSArray.array();
     }

@@ -85,6 +85,7 @@ public final class ActivityController extends WindowController {
         @Override
         public void collectionItemAdded(final BackgroundAction action) {
             invoke(new WindowMainAction(ActivityController.this) {
+                @Override
                 public void run() {
                     log.debug("collectionItemAdded:" + action);
                     tasks.put(action, new TaskController(action));
@@ -96,6 +97,7 @@ public final class ActivityController extends WindowController {
         @Override
         public void collectionItemRemoved(final BackgroundAction action) {
             invoke(new WindowMainAction(ActivityController.this) {
+                @Override
                 public void run() {
                     log.debug("collectionItemRemoved:" + action);
                     final TaskController controller = tasks.remove(action);
@@ -143,7 +145,9 @@ public final class ActivityController extends WindowController {
 
     private final TableColumnFactory tableColumnsFactory = new TableColumnFactory();
 
-    private static class TableColumnFactory extends HashMap<String, NSTableColumn> {
+    private static final class TableColumnFactory extends HashMap<String, NSTableColumn> {
+        private static final long serialVersionUID = -2861187853086923598L;
+
         private NSTableColumn create(String identifier) {
             if(!this.containsKey(identifier)) {
                 this.put(identifier, NSTableColumn.tableColumnWithIdentifier(identifier));
@@ -161,21 +165,26 @@ public final class ActivityController extends WindowController {
         this.table = table;
         this.table.setRowHeight(new CGFloat(42));
         this.table.setDataSource((model = new ListDataSource() {
+            @Override
             public NSInteger numberOfRowsInTableView(NSTableView view) {
                 return new NSInteger(tasks.size());
             }
 
+            @Override
             public NSObject tableView_objectValueForTableColumn_row(NSTableView view, NSTableColumn tableColumn, NSInteger row) {
                 return null;
             }
         }).id());
         this.table.setDelegate((delegate = new AbstractTableDelegate<TaskController>() {
+            @Override
             public void enterKeyPressed(final ID sender) {
             }
 
+            @Override
             public void deleteKeyPressed(final ID sender) {
             }
 
+            @Override
             public String tooltip(TaskController c) {
                 return null;
             }

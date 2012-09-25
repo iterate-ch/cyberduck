@@ -48,11 +48,13 @@ public class GotoController extends AlertController {
         private final Comparator<Path> comparator = new NullComparator<Path>();
 
         private final PathFilter<Path> filter = new PathFilter<Path>() {
+            @Override
             public boolean accept(Path p) {
                 return p.attributes().isDirectory();
             }
         };
 
+        @Override
         public NSInteger numberOfItemsInComboBox(NSComboBox combo) {
             if(!((BrowserController) parent).isMounted()) {
                 return new NSInteger(0);
@@ -60,6 +62,7 @@ public class GotoController extends AlertController {
             return new NSInteger(((BrowserController) parent).workdir().children(comparator, filter).size());
         }
 
+        @Override
         public NSObject comboBox_objectValueForItemAtIndex(final NSComboBox sender, final NSInteger row) {
             return ((BrowserController) parent).workdir().children(comparator, filter).get(row.intValue()).<NSObject>getReference().unique();
         }
