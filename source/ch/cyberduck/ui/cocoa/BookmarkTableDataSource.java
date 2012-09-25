@@ -21,8 +21,14 @@ package ch.cyberduck.ui.cocoa;
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.serializer.HostReaderFactory;
 import ch.cyberduck.core.serializer.HostWriterFactory;
-import ch.cyberduck.ui.cocoa.application.*;
+import ch.cyberduck.ui.cocoa.application.NSApplication;
+import ch.cyberduck.ui.cocoa.application.NSDraggingInfo;
+import ch.cyberduck.ui.cocoa.application.NSDraggingSource;
+import ch.cyberduck.ui.cocoa.application.NSEvent;
 import ch.cyberduck.ui.cocoa.application.NSImage;
+import ch.cyberduck.ui.cocoa.application.NSPasteboard;
+import ch.cyberduck.ui.cocoa.application.NSTableColumn;
+import ch.cyberduck.ui.cocoa.application.NSTableView;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 import ch.cyberduck.ui.cocoa.foundation.NSIndexSet;
@@ -33,11 +39,14 @@ import ch.cyberduck.ui.cocoa.foundation.NSString;
 import ch.cyberduck.ui.cocoa.foundation.NSURL;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 
-import org.rococoa.Rococoa;
-import org.rococoa.cocoa.foundation.*;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.rococoa.Rococoa;
+import org.rococoa.cocoa.foundation.NSInteger;
+import org.rococoa.cocoa.foundation.NSPoint;
+import org.rococoa.cocoa.foundation.NSRect;
+import org.rococoa.cocoa.foundation.NSSize;
+import org.rococoa.cocoa.foundation.NSUInteger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -73,33 +82,40 @@ public class BookmarkTableDataSource extends ListDataSource {
         this.source.addListener(listener = new CollectionListener<Host>() {
             private ScheduledFuture<?> delayed = null;
 
+            @Override
             public void collectionLoaded() {
                 cache.clear();
                 invoke(new WindowMainAction(controller) {
+                    @Override
                     public void run() {
                         controller.reloadBookmarks();
                     }
                 });
             }
 
+            @Override
             public void collectionItemAdded(Host item) {
                 cache.remove(item);
                 invoke(new WindowMainAction(controller) {
+                    @Override
                     public void run() {
                         controller.reloadBookmarks();
                     }
                 });
             }
 
+            @Override
             public void collectionItemRemoved(Host item) {
                 cache.remove(item);
                 invoke(new WindowMainAction(controller) {
+                    @Override
                     public void run() {
                         controller.reloadBookmarks();
                     }
                 });
             }
 
+            @Override
             public void collectionItemChanged(Host item) {
                 cache.remove(item);
                 if(null != delayed) {
@@ -109,6 +125,7 @@ public class BookmarkTableDataSource extends ListDataSource {
                 delayed = getTimerPool().schedule(new Runnable() {
                     public void run() {
                         controller.invoke(new WindowMainAction(controller) {
+                            @Override
                             public void run() {
                                 controller.reloadBookmarks();
                             }
@@ -156,6 +173,8 @@ public class BookmarkTableDataSource extends ListDataSource {
         }
         if(null == filtered) {
             filtered = new AbstractHostCollection() {
+                private static final long serialVersionUID = -2154002477046004380L;
+
                 @Override
                 public String getName() {
                     return source.getName();
@@ -192,18 +211,22 @@ public class BookmarkTableDataSource extends ListDataSource {
                 }
             }
             filtered.addListener(new CollectionListener<Host>() {
+                @Override
                 public void collectionLoaded() {
                     source.collectionLoaded();
                 }
 
+                @Override
                 public void collectionItemAdded(Host item) {
                     source.add(item);
                 }
 
+                @Override
                 public void collectionItemRemoved(Host item) {
                     source.remove(item);
                 }
 
+                @Override
                 public void collectionItemChanged(Host item) {
                     source.collectionItemChanged(item);
                 }
@@ -212,6 +235,7 @@ public class BookmarkTableDataSource extends ListDataSource {
         return filtered;
     }
 
+    @Override
     public NSInteger numberOfRowsInTableView(NSTableView view) {
         return new NSInteger(this.getSource().size());
     }
@@ -223,6 +247,7 @@ public class BookmarkTableDataSource extends ListDataSource {
             Preferences.instance().getInteger("bookmark.model.cache.size")
     );
 
+    @Override
     public NSObject tableView_objectValueForTableColumn_row(NSTableView view, NSTableColumn tableColumn, NSInteger row) {
         if(row.intValue() >= this.numberOfRowsInTableView(view).intValue()) {
             return null;

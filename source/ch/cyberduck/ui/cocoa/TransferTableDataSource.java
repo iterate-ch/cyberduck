@@ -37,11 +37,10 @@ import ch.cyberduck.ui.cocoa.foundation.NSIndexSet;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.foundation.NSString;
 
-import org.rococoa.cocoa.foundation.NSInteger;
-import org.rococoa.cocoa.foundation.NSUInteger;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.rococoa.cocoa.foundation.NSInteger;
+import org.rococoa.cocoa.foundation.NSUInteger;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -97,15 +96,17 @@ public class TransferTableDataSource extends ListDataSource {
         else {
             // Setting up a custom filter
             this.filter = new TransferFilter() {
+                @Override
                 public boolean accept(Transfer transfer) {
                     // Match for pathnames and hostname
                     if(transfer.getName().toLowerCase().contains(searchString.toLowerCase())) {
                         return true;
                     }
-                    for(Session s: transfer.getSessions()) {
-                       if(s.getHost().getHostname().toLowerCase().contains(searchString.toLowerCase())) {
-                           return true;
-                       };
+                    for(Session s : transfer.getSessions()) {
+                        if(s.getHost().getHostname().toLowerCase().contains(searchString.toLowerCase())) {
+                            return true;
+                        }
+                        ;
                     }
                     return false;
                 }
@@ -133,6 +134,7 @@ public class TransferTableDataSource extends ListDataSource {
         return filtered;
     }
 
+    @Override
     public NSInteger numberOfRowsInTableView(NSTableView view) {
         return new NSInteger(this.getSource().size());
     }
@@ -144,6 +146,7 @@ public class TransferTableDataSource extends ListDataSource {
             Preferences.instance().getInteger("queue.model.cache.size")
     );
 
+    @Override
     public NSObject tableView_objectValueForTableColumn_row(NSTableView view, NSTableColumn tableColumn, NSInteger row) {
         if(row.intValue() >= this.numberOfRowsInTableView(view).intValue()) {
             return null;

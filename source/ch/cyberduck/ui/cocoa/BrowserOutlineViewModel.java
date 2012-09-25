@@ -23,16 +23,21 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathReference;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.ui.PathPasteboard;
-import ch.cyberduck.ui.cocoa.application.*;
+import ch.cyberduck.ui.cocoa.application.NSApplication;
+import ch.cyberduck.ui.cocoa.application.NSDraggingInfo;
+import ch.cyberduck.ui.cocoa.application.NSEvent;
+import ch.cyberduck.ui.cocoa.application.NSOutlineView;
+import ch.cyberduck.ui.cocoa.application.NSPasteboard;
+import ch.cyberduck.ui.cocoa.application.NSTableColumn;
+import ch.cyberduck.ui.cocoa.application.NSTableView;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.foundation.NSURL;
 import ch.cyberduck.ui.cocoa.model.OutlinePathReference;
 
+import org.apache.log4j.Logger;
 import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSUInteger;
-
-import org.apache.log4j.Logger;
 
 /**
  * @version $Id$
@@ -60,6 +65,7 @@ public class BrowserOutlineViewModel extends BrowserTableDataSource implements N
     /**
      * @see NSOutlineView.DataSource
      */
+    @Override
     public boolean outlineView_isItemExpandable(final NSOutlineView view, final NSObject item) {
         if(log.isDebugEnabled()) {
             log.debug("outlineViewIsItemExpandable:" + item);
@@ -77,6 +83,7 @@ public class BrowserOutlineViewModel extends BrowserTableDataSource implements N
     /**
      * @see NSOutlineView.DataSource
      */
+    @Override
     public NSInteger outlineView_numberOfChildrenOfItem(final NSOutlineView view, NSObject item) {
         if(log.isDebugEnabled()) {
             log.debug("outlineView_numberOfChildrenOfItem:" + item);
@@ -113,6 +120,7 @@ public class BrowserOutlineViewModel extends BrowserTableDataSource implements N
      *      of a given parent item are accessed sequentially. If item is null, this method should
      *      return the appropriate child item of the root object
      */
+    @Override
     public NSObject outlineView_child_ofItem(final NSOutlineView outlineView, NSInteger index, NSObject item) {
         if(log.isDebugEnabled()) {
             log.debug("outlineView_child_ofItem:" + item);
@@ -135,11 +143,13 @@ public class BrowserOutlineViewModel extends BrowserTableDataSource implements N
         return children.get(index.intValue()).<NSObject>getReference().unique();
     }
 
+    @Override
     public void outlineView_setObjectValue_forTableColumn_byItem(final NSOutlineView outlineView, NSObject value,
                                                                  final NSTableColumn tableColumn, NSObject item) {
         super.setObjectValueForItem(controller.lookup(new OutlinePathReference(item)), value, tableColumn.identifier());
     }
 
+    @Override
     public NSObject outlineView_objectValueForTableColumn_byItem(final NSOutlineView view, final NSTableColumn tableColumn, NSObject item) {
         if(null == item) {
             return null;
@@ -147,6 +157,7 @@ public class BrowserOutlineViewModel extends BrowserTableDataSource implements N
         return super.objectValueForItem(controller.lookup(new OutlinePathReference(item)), tableColumn.identifier());
     }
 
+    @Override
     public NSUInteger outlineView_validateDrop_proposedItem_proposedChildIndex(final NSOutlineView view, final NSDraggingInfo draggingInfo, NSObject item, NSInteger row) {
         if(controller.isMounted()) {
             Path destination = null;
@@ -185,6 +196,7 @@ public class BrowserOutlineViewModel extends BrowserTableDataSource implements N
         return super.validateDrop(view, null, row, draggingInfo);
     }
 
+    @Override
     public boolean outlineView_acceptDrop_item_childIndex(final NSOutlineView outlineView, final NSDraggingInfo info, NSObject item, NSInteger row) {
         Path destination = null;
         if(controller.isMounted()) {
@@ -198,10 +210,12 @@ public class BrowserOutlineViewModel extends BrowserTableDataSource implements N
         return super.acceptDrop(outlineView, destination, info);
     }
 
+    @Override
     public NSArray outlineView_namesOfPromisedFilesDroppedAtDestination_forDraggedItems(NSURL dropDestination, NSArray items) {
         return this.namesOfPromisedFilesDroppedAtDestination(dropDestination);
     }
 
+    @Override
     public boolean outlineView_writeItems_toPasteboard(final NSOutlineView outlineView, final NSArray items, final NSPasteboard pboard) {
         return super.writeItemsToPasteBoard(outlineView, items, pboard);
     }

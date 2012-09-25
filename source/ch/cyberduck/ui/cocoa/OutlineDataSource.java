@@ -18,7 +18,12 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.ui.cocoa.application.*;
+import ch.cyberduck.ui.cocoa.application.NSDraggingInfo;
+import ch.cyberduck.ui.cocoa.application.NSDraggingSource;
+import ch.cyberduck.ui.cocoa.application.NSImage;
+import ch.cyberduck.ui.cocoa.application.NSOutlineView;
+import ch.cyberduck.ui.cocoa.application.NSPasteboard;
+import ch.cyberduck.ui.cocoa.application.NSTableColumn;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.foundation.NSURL;
@@ -34,47 +39,58 @@ import org.rococoa.cocoa.foundation.NSUInteger;
 public abstract class OutlineDataSource extends ProxyController implements NSOutlineView.DataSource, NSDraggingSource {
     private static Logger log = Logger.getLogger(OutlineDataSource.class);
 
+    @Override
     public void outlineView_setObjectValue_forTableColumn_byItem(final NSOutlineView outlineView, NSObject value,
                                                                  final NSTableColumn tableColumn, NSObject item) {
         throw new RuntimeException("Not editable");
     }
 
+    @Override
     public NSUInteger outlineView_validateDrop_proposedItem_proposedChildIndex(final NSOutlineView outlineView, final NSDraggingInfo info, NSObject destination, NSInteger row) {
         return NSDraggingInfo.NSDragOperationNone;
     }
 
+    @Override
     public boolean outlineView_acceptDrop_item_childIndex(final NSOutlineView outlineView, final NSDraggingInfo info, NSObject item, NSInteger row) {
         return false;
     }
 
+    @Override
     public boolean outlineView_writeItems_toPasteboard(final NSOutlineView outlineView, final NSArray items, final NSPasteboard pboard) {
         return false;
     }
 
+    @Override
     public NSArray outlineView_namesOfPromisedFilesDroppedAtDestination_forDraggedItems(NSURL dropDestination, NSArray items) {
         return NSArray.array();
     }
 
+    @Override
     public NSUInteger draggingSourceOperationMaskForLocal(boolean flag) {
         return new NSUInteger(NSDraggingInfo.NSDragOperationMove.intValue() | NSDraggingInfo.NSDragOperationCopy.intValue());
     }
 
+    @Override
     public void draggedImage_beganAt(NSImage image, NSPoint point) {
         log.trace("draggedImage_beganAt");
     }
 
+    @Override
     public void draggedImage_endedAt_operation(NSImage image, NSPoint point, NSUInteger operation) {
         log.trace("draggedImage_endedAt_operation");
     }
 
+    @Override
     public void draggedImage_movedTo(NSImage image, NSPoint point) {
         log.trace("draggedImage_movedTo");
     }
 
+    @Override
     public boolean ignoreModifierKeysWhileDragging() {
         return false;
     }
 
+    @Override
     public NSArray namesOfPromisedFilesDroppedAtDestination(final NSURL dropDestination) {
         return NSArray.array();
     }

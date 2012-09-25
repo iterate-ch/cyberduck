@@ -115,6 +115,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                 // Reloading a workdir that is not cached yet would cause the interface to freeze;
                 // Delay until path is cached in the background
                 controller.background(new BrowserBackgroundAction(controller) {
+                    @Override
                     public void run() {
                         path.children();
                     }
@@ -238,6 +239,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
      * @return Always false
      * @see NSDraggingSource
      */
+    @Override
     public boolean ignoreModifierKeysWhileDragging() {
         // If this method is not implemented or returns false, the user can tailor the drag operation by
         // holding down a modifier key during the drag.
@@ -253,6 +255,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
      *         any dragging operations, it should return NSDragOperationNone.
      * @see NSDraggingSource
      */
+    @Override
     public NSUInteger draggingSourceOperationMaskForLocal(boolean local) {
         log.debug("draggingSourceOperationMaskForLocal:" + local);
         if(local) {
@@ -483,6 +486,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
         return false;
     }
 
+    @Override
     public void draggedImage_beganAt(NSImage image, NSPoint point) {
         log.trace("draggedImage_beganAt:" + point);
     }
@@ -490,6 +494,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
     /**
      * See http://www.cocoabuilder.com/archive/message/2005/10/5/118857
      */
+    @Override
     public void draggedImage_endedAt_operation(NSImage image, NSPoint point, NSUInteger operation) {
         log.trace("draggedImage_endedAt_operation:" + operation);
         final PathPasteboard pasteboard = PathPasteboard.getPasteboard(controller.getSession());
@@ -499,6 +504,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
         pasteboard.clear();
     }
 
+    @Override
     public void draggedImage_movedTo(NSImage image, NSPoint point) {
         log.trace("draggedImage_movedTo:" + point);
     }
@@ -510,6 +516,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
      *         you can cache dropDestination and defer the creation of the files until the finishedDraggingImage method to avoid
      *         blocking the destination application.
      */
+    @Override
     public NSArray namesOfPromisedFilesDroppedAtDestination(final NSURL url) {
         log.debug("namesOfPromisedFilesDroppedAtDestination:" + url);
         NSMutableArray promisedDragNames = NSMutableArray.array();
@@ -544,6 +551,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
             if(dock) {
                 // Drag to application icon in dock.
                 controller.transfer(transfer, null, true, new TransferPrompt() {
+                    @Override
                     public TransferAction prompt() {
                         return TransferAction.ACTION_OVERWRITE;
                     }
