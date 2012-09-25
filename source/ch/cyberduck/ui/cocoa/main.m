@@ -23,8 +23,8 @@
 
 #define JAVA_LAUNCH_ERROR "Runtime Launcher Error"
 
-#define JVM_PROPERTIES_KEY "Java"
-#define JVM_LIB_KEY "Runtime"
+#define JVM_PROPERTIES_KEY "Runtime"
+#define JVM_LIB_KEY "Library"
 #define JVM_MAIN_CLASS_NAME_KEY "MainClass"
 #define JVM_WORKING_DIRECTORY "WorkingDirectory"
 #define JVM_OPTIONS_KEY "VMOptions"
