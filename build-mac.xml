@@ -121,7 +121,7 @@
             <include name="Info.plist"/>
             <replacefilter token="_REVISION_" value="${svn.revision}"/>
             <replacefilter token="_VERSION_" value="${cyberduck.version.major}.${cyberduck.version.minor}"/>
-            <replacefilter token="Runtime" value="${app.runtime.properties.key}"/>
+            <replacefilter token="_RUNTIME_" value="${app.runtime.properties.key}"/>
             <replacefilter token="_MINIMUM_SYSTEM_" value="${app.runtime.system.min}"/>
             <replacefilter token="_SPARKLEFEED_" value="${sparkle.feed}"/>
         </replace>
@@ -130,6 +130,9 @@
     <target name="distribution-sparkle" depends="timestamp">
         <!-- Copy stub for system runtime -->
         <antcall target="copy-stub"/>
+        <!-- Remove custom runtime -->
+        <delete dir="${app.runtime}"/>
+
         <antcall target="codesign"/>
         <antcall target="tar"/>
         <antcall target="zip"/>
