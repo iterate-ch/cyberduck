@@ -43,7 +43,7 @@ namespace Ch.Cyberduck.Ui.Controller.Growl
                                                description));
         }
 
-        public override void register()
+        public override void setup()
         {
             _connector.Register(_app, new[]
                                           {

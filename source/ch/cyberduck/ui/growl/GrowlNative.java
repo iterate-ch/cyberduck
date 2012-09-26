@@ -19,6 +19,7 @@ package ch.cyberduck.ui.growl;
  */
 
 import ch.cyberduck.core.Native;
+import ch.cyberduck.core.Preferences;
 
 /**
  * @version $Id$
@@ -34,8 +35,12 @@ public class GrowlNative extends Growl {
         return JNI_LOADED;
     }
 
-    public static void registerImpl() {
-        GrowlFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
+    public static void register() {
+        if(Preferences.instance().getBoolean("growl.enable")) {
+            if(Factory.VERSION_PLATFORM.matches("10\\.(5|6|7).*")) {
+                GrowlFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
+            }
+        }
     }
 
     private static class Factory extends GrowlFactory {
@@ -49,7 +54,7 @@ public class GrowlNative extends Growl {
     }
 
     @Override
-    public native void register();
+    public native void setup();
 
     @Override
     public native void notify(String title, String description);

@@ -20,6 +20,8 @@ package ch.cyberduck.ui.growl;
 
 import ch.cyberduck.core.Factory;
 
+import org.apache.log4j.Logger;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,6 +29,7 @@ import java.util.Map;
  * @version $Id: GrowlFactory.java 5451 2009-10-09 08:34:10Z dkocher $
  */
 public abstract class GrowlFactory extends Factory<Growl> {
+    private static Logger log = Logger.getLogger(GrowlFactory.class);
 
     /**
      * Registered factories
@@ -37,15 +40,38 @@ public abstract class GrowlFactory extends Factory<Growl> {
         factories.put(platform, f);
     }
 
-    private static Growl l;
+    private static Growl instance;
 
     public static Growl createGrowl() {
-        if(null == l) {
-            if(!factories.containsKey(NATIVE_PLATFORM)) {
-                throw new RuntimeException("No implementation for " + NATIVE_PLATFORM);
+        if(null == instance) {
+            if(factories.containsKey(VERSION_PLATFORM)) {
+                instance = factories.get(VERSION_PLATFORM).create();
             }
-            l = factories.get(NATIVE_PLATFORM).create();
+            else {
+                instance = new Disabled();
+            }
         }
-        return l;
+        return instance;
+    }
+
+    private static final class Disabled extends Growl {
+        @Override
+        public void setup() {
+            log.warn("Growl notifications disabled");
+        }
+
+        @Override
+        public void notify(String title, String description) {
+            if(log.isInfoEnabled()) {
+                log.info(description);
+            }
+        }
+
+        @Override
+        public void notifyWithImage(String title, String description, String image) {
+            if(log.isInfoEnabled()) {
+                log.info(description);
+            }
+        }
     }
 }
