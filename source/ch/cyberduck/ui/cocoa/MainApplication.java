@@ -18,7 +18,12 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.Keychain;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.RendezvousResponder;
+import ch.cyberduck.core.SystemConfigurationProxy;
+import ch.cyberduck.core.SystemConfigurationReachability;
 import ch.cyberduck.core.aquaticprime.Donation;
 import ch.cyberduck.core.aquaticprime.Receipt;
 import ch.cyberduck.core.sparkle.Updater;
@@ -30,8 +35,14 @@ import ch.cyberduck.ui.cocoa.model.FinderLocal;
 import ch.cyberduck.ui.cocoa.model.OutlinePathReference;
 import ch.cyberduck.ui.cocoa.quicklook.DeprecatedQuickLook;
 import ch.cyberduck.ui.cocoa.quicklook.QuartzQuickLook;
-import ch.cyberduck.ui.cocoa.serializer.*;
+import ch.cyberduck.ui.cocoa.serializer.HostPlistReader;
+import ch.cyberduck.ui.cocoa.serializer.PlistDeserializer;
+import ch.cyberduck.ui.cocoa.serializer.PlistSerializer;
+import ch.cyberduck.ui.cocoa.serializer.PlistWriter;
+import ch.cyberduck.ui.cocoa.serializer.ProtocolPlistReader;
+import ch.cyberduck.ui.cocoa.serializer.TransferPlistReader;
 import ch.cyberduck.ui.growl.GrowlNative;
+import ch.cyberduck.ui.growl.NotificationCenter;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -61,7 +72,8 @@ public class MainApplication {
                 FinderLocal.register();
                 UserDefaultsPreferences.register();
                 BundleLocale.register();
-                GrowlNative.registerImpl();
+                GrowlNative.register();
+                NotificationCenter.register();
                 if(null == Updater.getFeed()) {
                     Receipt.register();
                 }
