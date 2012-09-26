@@ -16,6 +16,8 @@ Changelog. Last modified: $Date$
 - [Bugfix] Copy folder from server to server (#6440)
 - [Bugfix] Duplicate folder (#6495)
 - [Bugfix] Interoperability with latest API (CloudFront)
+- [Bugfix] Crash in Rendezvous resolver (#6814)
+- [Bugfix] Java optional install required (App Store) (#6090)
 
 4.2.1 [http://trac.cyberduck.ch/milestone/4.2.1]
 - [Bugfix] Edited files not uploaded (#6399)
