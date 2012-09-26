@@ -27,7 +27,8 @@
 #define JVM_LIB_KEY "Library"
 #define JVM_DEFAULT_LIB "/Library/Internet Plug-Ins/JavaAppletPlugin.plugin/Contents/Home/lib/jli/libjli.dylib"
 #define JVM_MAIN_CLASS_NAME_KEY "MainClass"
-#define JVM_WORKING_DIRECTORY "WorkingDirectory"
+#define JVM_WORKING_DIRECTORY_KEY "WorkingDirectory"
+#define JVM_STARTONMAINTHREAD_KEY "StartOnMainThread"
 #define JVM_OPTIONS_KEY "VMOptions"
 #define JVM_ARGUMENTS_KEY "VMArguments"
 
@@ -82,7 +83,7 @@ int launch(char *commandName) {
             userInfo:nil] raise];
     }
 
-    NSString *javaPath = [[javaDict objectForKey:@JVM_WORKING_DIRECTORY] stringByReplacingOccurrencesOfString:@APP_ROOT_PREFIX withString:[mainBundle bundlePath]];
+    NSString *javaPath = [[javaDict objectForKey:@JVM_WORKING_DIRECTORY_KEY] stringByReplacingOccurrencesOfString:@APP_ROOT_PREFIX withString:[mainBundle bundlePath]];
     if (javaPath == nil) {
         [[NSException exceptionWithName:@JAVA_LAUNCH_ERROR
             reason:NSLocalizedString(@"Working directory path required in Info.plist", @UNSPECIFIED_ERROR)
@@ -108,6 +109,11 @@ int launch(char *commandName) {
         }
         else {
             options = [javaDict objectForKey:@JVM_OPTIONS_KEY];
+        }
+    }
+    if ([javaDict objectForKey:@JVM_STARTONMAINTHREAD_KEY] != nil) {
+        if ([[javaDict objectForKey:@JVM_STARTONMAINTHREAD_KEY] boolValue]) {
+            options = [options arrayByAddingObject:@"-XstartOnFirstThread"];
         }
     }
 
