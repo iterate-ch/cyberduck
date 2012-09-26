@@ -742,6 +742,7 @@ public abstract class Path extends AbstractPath implements Serializable {
             try {
                 UploadTransfer upload = new UploadTransfer(this);
                 upload.start(new TransferPrompt() {
+                    @Override
                     public TransferAction prompt() {
                         return TransferAction.ACTION_OVERWRITE;
                     }
