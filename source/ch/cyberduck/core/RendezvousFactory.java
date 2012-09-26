@@ -49,38 +49,47 @@ public abstract class RendezvousFactory extends Factory<Rendezvous> {
             if(!factories.containsKey(NATIVE_PLATFORM)) {
                 log.warn(String.format("No implementation for %s", NATIVE_PLATFORM));
                 return new Rendezvous() {
+                    @Override
                     public void init() {
                         ;
                     }
 
+                    @Override
                     public void quit() {
                         ;
                     }
 
+                    @Override
                     public void addListener(RendezvousListener listener) {
                         ;
                     }
 
+                    @Override
                     public void removeListener(RendezvousListener listener) {
                         ;
                     }
 
+                    @Override
                     public int numberOfServices() {
                         return 0;
                     }
 
+                    @Override
                     public Host getService(int index) {
                         return null;
                     }
 
+                    @Override
                     public Iterator<Host> iterator() {
                         return Collections.<Host>emptyList().iterator();
                     }
 
+                    @Override
                     public String getDisplayedName(int index) {
                         return null;
                     }
 
+                    @Override
                     public String getDisplayedName(String identifier) {
                         return null;
                     }

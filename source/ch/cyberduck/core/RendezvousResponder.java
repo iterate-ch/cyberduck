@@ -18,16 +18,16 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.ui.cocoa.foundation.NSAutoreleasePool;
-
-import org.apache.log4j.Logger;
-
 import com.apple.dnssd.BrowseListener;
 import com.apple.dnssd.DNSSD;
 import com.apple.dnssd.DNSSDException;
 import com.apple.dnssd.DNSSDService;
 import com.apple.dnssd.ResolveListener;
 import com.apple.dnssd.TXTRecord;
+
+import ch.cyberduck.ui.cocoa.foundation.NSAutoreleasePool;
+
+import org.apache.log4j.Logger;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -55,6 +55,7 @@ public final class RendezvousResponder extends AbstractRendezvous implements Bro
         this.browsers = new ConcurrentHashMap<String, DNSSDService>();
     }
 
+    @Override
     public void init() {
         log.debug("init");
         try {
@@ -71,6 +72,7 @@ public final class RendezvousResponder extends AbstractRendezvous implements Bro
         }
     }
 
+    @Override
     public void quit() {
         for(String protocol : this.getServiceTypes()) {
             if(log.isInfoEnabled()) {
@@ -84,6 +86,7 @@ public final class RendezvousResponder extends AbstractRendezvous implements Bro
         }
     }
 
+    @Override
     public void serviceFound(DNSSDService browser, int flags, int ifIndex, String servicename,
                              String regType, String domain) {
         log.debug("serviceFound:" + servicename);
@@ -95,6 +98,7 @@ public final class RendezvousResponder extends AbstractRendezvous implements Bro
         }
     }
 
+    @Override
     public void serviceLost(DNSSDService browser, int flags, int ifIndex, String serviceName,
                             String regType, String domain) {
         log.debug("serviceLost:" + serviceName);
@@ -111,11 +115,13 @@ public final class RendezvousResponder extends AbstractRendezvous implements Bro
         }
     }
 
+    @Override
     public void operationFailed(DNSSDService resolver, int errorCode) {
         log.warn(String.format("Operation failed with error code %d", errorCode));
         resolver.stop();
     }
 
+    @Override
     public void serviceResolved(DNSSDService resolver, int flags, int ifIndex,
                                 final String fullname, final String hostname, int port, TXTRecord txtRecord) {
         log.debug("serviceResolved:" + fullname);

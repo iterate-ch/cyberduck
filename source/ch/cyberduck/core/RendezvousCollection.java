@@ -34,10 +34,12 @@ public final class RendezvousCollection extends AbstractHostCollection {
 
     private RendezvousCollection() {
         RendezvousFactory.instance().addListener(new RendezvousListener() {
+            @Override
             public void serviceResolved(String identifier, Host host) {
                 RendezvousCollection.this.collectionItemAdded(host);
             }
 
+            @Override
             public void serviceLost(String servicename) {
                 RendezvousCollection.this.collectionItemRemoved(null);
             }
