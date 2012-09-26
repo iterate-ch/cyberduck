@@ -58,7 +58,7 @@ public class AbstractTestCase {
         FinderLocal.register();
         UserDefaultsPreferences.register();
         BundleLocale.register();
-        GrowlNative.registerImpl();
+        GrowlNative.register();
         Donation.register();
 
         PlistDeserializer.register();
