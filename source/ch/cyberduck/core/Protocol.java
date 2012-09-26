@@ -281,6 +281,11 @@ public abstract class Protocol {
         }
 
         @Override
+        public boolean isAnonymousConfigurable() {
+            return false;
+        }
+
+        @Override
         public String disk() {
             return FTP_TLS.disk();
         }
