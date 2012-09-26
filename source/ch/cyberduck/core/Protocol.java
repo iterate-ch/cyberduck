@@ -281,6 +281,16 @@ public abstract class Protocol {
         }
 
         @Override
+        public String disk() {
+            return FTP_TLS.disk();
+        }
+
+        @Override
+        public String icon() {
+            return FTP_TLS.icon();
+        }
+
+        @Override
         public SessionFactory getSessionFactory() {
             return SFTPSession.factory();
         }
@@ -399,12 +409,12 @@ public abstract class Protocol {
 
         @Override
         public String disk() {
-            return SFTP.disk();
+            return FTP.disk();
         }
 
         @Override
         public String icon() {
-            return SFTP.icon();
+            return FTP.icon();
         }
 
         @Override
