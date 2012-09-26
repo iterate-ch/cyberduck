@@ -4,12 +4,9 @@ import ch.cyberduck.ui.cocoa.foundation.NSUserNotification;
 import ch.cyberduck.ui.cocoa.foundation.NSUserNotificationCenter;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class NotificationCenter extends Growl {
-
-    private NSUserNotificationCenter center
-            = NSUserNotificationCenter.defaultUserNotificationCenter();
 
     public static void register() {
         if(Factory.VERSION_PLATFORM.matches("10\\.8.*")) {
@@ -27,7 +24,7 @@ public class NotificationCenter extends Growl {
         final NSUserNotification notification = NSUserNotification.notification();
         notification.setTitle(title);
         notification.setInformativeText(description);
-        center.scheduleNotification(notification);
+        NSUserNotificationCenter.defaultUserNotificationCenter().scheduleNotification(notification);
     }
 
     @Override
