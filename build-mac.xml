@@ -36,6 +36,7 @@
     <property name="app.runtime" value="${app.java}/Runtime.jre"/>
     <property name="app.runtime.lib"
               value="@executable_path/../Resources/Java/Runtime.jre/Contents/Home/lib/server/libjvm.dylib"/>
+    <property name="app.runtime.bundle" value="true"/>
     <property name="app.runtime.properties.key" value="Runtime"/>
     <property name="app.runtime.system.min" value="10.5"/>
 
@@ -111,6 +112,10 @@
                 <include name="Info.plist"/>
             </fileset>
         </copy>
+        <!-- Copy runtime -->
+        <antcall target="copy-runtime"/>
+        <!-- Copy stub for system runtime -->
+        <antcall target="copy-stub"/>
 
         <antcall target="spotlight"/>
 
@@ -127,19 +132,13 @@
         </replace>
     </target>
 
-    <target name="distribution-sparkle" depends="timestamp">
-        <!-- Copy stub for system runtime -->
-        <antcall target="copy-stub"/>
-        <!-- Remove custom runtime -->
-        <delete dir="${app.runtime}"/>
-
-        <antcall target="codesign"/>
+    <target name="distribution-sparkle" depends="codesign">
         <antcall target="tar"/>
         <antcall target="zip"/>
         <antcall target="sparkle-feed"/>
     </target>
 
-    <target name="sparkle-feed">
+    <target name="sparkle-feed" depends="timestamp">
         <copy todir="${build}" overwrite="true">
             <fileset dir="${www.update}">
                 <include name="changelog.rss"/>
@@ -172,10 +171,7 @@
         </replace>
     </target>
 
-    <target name="distribution-mas" depends="timestamp">
-        <!-- Copy runtime -->
-        <antcall target="copy-runtime"/>
-
+    <target name="distribution-mas">
         <replace dir="${app.contents}" summary="true" encoding="UTF-8">
             <include name="Info.plist"/>
             <!-- Disable Sparkle Keys -->
@@ -241,7 +237,7 @@
         </exec>
     </target>
 
-    <target name="copy-runtime">
+    <target name="copy-runtime" depends="bundle-runtime-eval" if="app.runtime.bundle">
         <echo message="Copy runtime from ${jvm.runtime.home}..."/>
         <copy todir="${app.runtime}" preservelastmodified="true">
             <fileset followsymlinks="false" dir="${jvm.runtime.home}">
@@ -367,8 +363,17 @@
                   algorithm="md5"/>
     </target>
 
-    <target name="copy-stub">
+    <target name="bundle-runtime-eval">
+        <condition property="app.runtime.bundle">
+            <equals arg1="${app.runtime.properties.key}" arg2="Runtime"/>
+        </condition>
+        <echo message="Bundle runtime with application:${app.runtime.bundle}"/>
+    </target>
+
+    <target name="copy-stub" depends="bundle-runtime-eval" unless="app.runtime.bundle">
         <echo message="Using stub: ${apple.appstub}"/>
+        <!-- Remove custom runtime -->
+        <delete dir="${app.runtime}"/>
         <!-- copy application stub -->
         <copy file="${apple.appstub}" toFile="${app.executable}" overwrite="true"/>
         <!-- fix stub permissions -->
@@ -394,7 +399,7 @@
 
     <target name="nightly" depends="clean, revision">
         <antcall target="build">
-            <param name="app.runtime.properties.key" value="Java"/>
+            <param name="app.runtime.properties.key" value="Runtime"/>
             <param name="sparkle.feed" value="http://version.cyberduck.ch/nightly/changelog.rss"/>
         </antcall>
         <antcall target="distribution-sparkle">
