@@ -12,6 +12,7 @@
 - [Bugfix] Interoperability with latest API (CloudFront)
 - [Bugfix] Crash in Rendezvous resolver (#6814)
 - [Bugfix] Java optional install required (App Store) (#6090)
+- [Bugfix] Changes in editor not uploaded when choosing save on close (#6590)
 
 4.2.1 [http://trac.cyberduck.ch/milestone/4.2.1]
 - [Bugfix] Edited files not uploaded (#6399)
