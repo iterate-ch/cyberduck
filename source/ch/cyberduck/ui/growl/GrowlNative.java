@@ -38,7 +38,7 @@ public class GrowlNative extends Growl {
     public static void register() {
         if(Preferences.instance().getBoolean("growl.enable")) {
             if(Factory.VERSION_PLATFORM.matches("10\\.(5|6|7).*")) {
-                GrowlFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
+                GrowlFactory.addFactory(Factory.VERSION_PLATFORM, new Factory());
             }
         }
     }
