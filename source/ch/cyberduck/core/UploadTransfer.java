@@ -122,6 +122,7 @@ public class UploadTransfer extends Transfer {
     }
 
     private abstract class UploadTransferFilter extends TransferFilter {
+        @Override
         public boolean accept(final Path file) {
             if(!file.getLocal().exists()) {
                 return false;
@@ -201,6 +202,7 @@ public class UploadTransfer extends Transfer {
         private final Pattern pattern
                 = Pattern.compile(Preferences.instance().getProperty("queue.upload.skip.regex"));
 
+        @Override
         public boolean accept(Local child) {
             if(child.attributes().isDuplicate()) {
                 return false;

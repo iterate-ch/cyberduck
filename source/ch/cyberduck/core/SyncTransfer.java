@@ -185,6 +185,7 @@ public class SyncTransfer extends Transfer {
             }
         }
 
+        @Override
         public boolean accept(Path p) {
             final Comparison compare = SyncTransfer.this.compare(p);
             if(compare.equals(COMPARISON_REMOTE_NEWER)) {

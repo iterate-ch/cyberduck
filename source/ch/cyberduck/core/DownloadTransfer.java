@@ -119,6 +119,7 @@ public class DownloadTransfer extends Transfer {
     }
 
     private abstract class DownloadTransferFilter extends TransferFilter {
+        @Override
         public boolean accept(Path file) {
             if(file.attributes().isSymbolicLink()) {
                 if(!DownloadTransfer.this.isSymlinkSupported(file)) {
@@ -246,6 +247,7 @@ public class DownloadTransfer extends Transfer {
         final Pattern pattern
                 = Pattern.compile(Preferences.instance().getProperty("queue.download.skip.regex"));
 
+        @Override
         public boolean accept(Path child) {
             if(child.attributes().isDuplicate()) {
                 return false;
