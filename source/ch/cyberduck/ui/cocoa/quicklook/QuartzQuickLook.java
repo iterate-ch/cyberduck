@@ -86,10 +86,12 @@ public final class QuartzQuickLook extends AbstractQuickLook {
         panel = QLPreviewPanel.sharedPreviewPanel();
     }
 
+    @Override
     public boolean isAvailable() {
         return null != panel;
     }
 
+    @Override
     public boolean isOpen() {
         return QLPreviewPanel.sharedPreviewPanelExists() && panel.isVisible();
     }
@@ -100,6 +102,7 @@ public final class QuartzQuickLook extends AbstractQuickLook {
         super.willBeginQuickLook();
     }
 
+    @Override
     public void open() {
         panel.makeKeyAndOrderFront(null);
         if(null == panel.dataSource()) {
@@ -110,6 +113,7 @@ public final class QuartzQuickLook extends AbstractQuickLook {
         panel.reloadData();
     }
 
+    @Override
     public void close() {
         panel.orderOut(null);
     }

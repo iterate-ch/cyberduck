@@ -43,7 +43,7 @@ public final class DeprecatedQuickLook extends AbstractQuickLook {
             return new DeprecatedQuickLook();
         }
     }
-    
+
     private DeprecatedQuickLook() {
         Native.load("QuickLook");
     }
@@ -64,18 +64,21 @@ public final class DeprecatedQuickLook extends AbstractQuickLook {
         this.selectNative(paths.toArray(new String[paths.size()]));
     }
 
+    @Override
     public boolean isAvailable() {
         return this.isAvailableNative();
     }
 
     public native boolean isAvailableNative();
 
+    @Override
     public boolean isOpen() {
         return this.isOpenNative();
     }
 
     public native boolean isOpenNative();
 
+    @Override
     public void open() {
         this.willBeginQuickLook();
         this.openNative();
@@ -83,6 +86,7 @@ public final class DeprecatedQuickLook extends AbstractQuickLook {
 
     public native void openNative();
 
+    @Override
     public void close() {
         this.closeNative();
         this.didEndQuickLook();

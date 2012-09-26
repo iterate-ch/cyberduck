@@ -23,20 +23,23 @@ import ch.cyberduck.core.Local;
  */
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public abstract class AbstractQuickLook implements QuickLookInterface {
 
     protected Collection<Local> selected;
 
+    @Override
     public void select(final Collection<Local> files) {
         this.selected = files;
     }
 
+    @Override
     public void willBeginQuickLook() {
         ;
     }
 
+    @Override
     public void didEndQuickLook() {
         selected.clear();
     }

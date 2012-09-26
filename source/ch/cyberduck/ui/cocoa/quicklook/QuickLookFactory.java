@@ -47,18 +47,22 @@ public abstract class QuickLookFactory extends Factory<QuickLookInterface> {
             }
             else {
                 instance = new AbstractQuickLook() {
+                    @Override
                     public boolean isAvailable() {
                         return false;
                     }
 
+                    @Override
                     public boolean isOpen() {
                         return false;
                     }
 
+                    @Override
                     public void open() {
                         throw new UnsupportedOperationException();
                     }
 
+                    @Override
                     public void close() {
                         throw new UnsupportedOperationException();
                     }
