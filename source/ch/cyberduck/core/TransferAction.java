@@ -34,6 +34,9 @@ public abstract class TransferAction {
 
     protected static Map<String, TransferAction> actions = new HashMap<String, TransferAction>();
 
+    @Override
+    public abstract String toString();
+
     public abstract String getLocalizableString();
 
     public static TransferAction forName(String name) {
@@ -45,6 +48,11 @@ public abstract class TransferAction {
      */
     public static final TransferAction ACTION_OVERWRITE = new TransferAction() {
         @Override
+        public String toString() {
+            return "overwrite";
+        }
+
+        @Override
         public String getLocalizableString() {
             return Locale.localizedString("Overwrite");
         }
@@ -54,6 +62,11 @@ public abstract class TransferAction {
      * Append to any exsisting file when writing
      */
     public static final TransferAction ACTION_RESUME = new TransferAction() {
+        @Override
+        public String toString() {
+            return "resume";
+        }
+
         @Override
         public String getLocalizableString() {
             return Locale.localizedString("Resume");
@@ -65,6 +78,11 @@ public abstract class TransferAction {
      */
     public static final TransferAction ACTION_RENAME = new TransferAction() {
         @Override
+        public String toString() {
+            return "similar";
+        }
+
+        @Override
         public String getLocalizableString() {
             return Locale.localizedString("Rename");
         }
@@ -74,6 +92,11 @@ public abstract class TransferAction {
      * Create a new file with a similar name
      */
     public static final TransferAction ACTION_RENAME_EXISTING = new TransferAction() {
+        @Override
+        public String toString() {
+            return "rename";
+        }
+
         @Override
         public String getLocalizableString() {
             return Locale.localizedString("Rename existing");
@@ -85,6 +108,11 @@ public abstract class TransferAction {
      */
     public static final TransferAction ACTION_SKIP = new TransferAction() {
         @Override
+        public String toString() {
+            return "skip";
+        }
+
+        @Override
         public String getLocalizableString() {
             return Locale.localizedString("Skip");
         }
@@ -95,12 +123,22 @@ public abstract class TransferAction {
      */
     public static final TransferAction ACTION_CALLBACK = new TransferAction() {
         @Override
+        public String toString() {
+            return "ask";
+        }
+
+        @Override
         public String getLocalizableString() {
             return Locale.localizedString("Prompt");
         }
     };
 
     public static final TransferAction ACTION_CANCEL = new TransferAction() {
+        @Override
+        public String toString() {
+            return "cancel";
+        }
+
         @Override
         public String getLocalizableString() {
             return Locale.localizedString("Cancel");
