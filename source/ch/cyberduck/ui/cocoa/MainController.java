@@ -124,9 +124,6 @@ public class MainController extends BundleController implements NSApplication.De
 
     /**
      * Extract the URL from the Apple event and handle it here.
-     *
-     * @param event
-     * @param reply
      */
     public void handleGetURLEvent_withReplyEvent(NSAppleEventDescriptor event, NSAppleEventDescriptor reply) {
         log.debug("Received URL from Apple Event:" + event);
@@ -492,6 +489,7 @@ public class MainController extends BundleController implements NSApplication.De
         }
     }
 
+    @Override
     public boolean application_openFile(NSApplication app, String filename) {
         log.debug("applicationOpenFile:" + filename);
         final Local f = LocalFactory.createLocal(filename);
@@ -564,6 +562,7 @@ public class MainController extends BundleController implements NSApplication.De
             else {
                 // Upload file
                 this.background(new AbstractBackgroundAction<Void>() {
+                    @Override
                     public void run() {
                         // Wait until bookmarks are loaded
                         try {
@@ -662,6 +661,7 @@ public class MainController extends BundleController implements NSApplication.De
                 Locale.localizedString("Upload"),
                 Locale.localizedString("Cancel"),
                 null)) {
+            @Override
             public void callback(int returncode) {
                 if(DEFAULT_OPTION == returncode) {
                     final String selected = bookmarksPopup.selectedItem().representedObject();
@@ -711,6 +711,7 @@ public class MainController extends BundleController implements NSApplication.De
      * file opened through this method is assumed to be temporary its the application's
      * responsibility to remove the file at the appropriate time.
      */
+    @Override
     public boolean application_openTempFile(NSApplication app, String filename) {
         log.debug("applicationOpenTempFile:" + filename);
         return this.application_openFile(app, filename);
@@ -721,6 +722,7 @@ public class MainController extends BundleController implements NSApplication.De
      * the application from opening an untitled file; return true otherwise.
      * Note that applicationOpenUntitledFile is invoked if this method returns true.
      */
+    @Override
     public boolean applicationShouldOpenUntitledFile(NSApplication sender) {
         log.debug("applicationShouldOpenUntitledFile");
         return Preferences.instance().getBoolean("browser.openUntitled");
@@ -729,6 +731,7 @@ public class MainController extends BundleController implements NSApplication.De
     /**
      * @return true if the file was successfully opened, false otherwise.
      */
+    @Override
     public boolean applicationOpenUntitledFile(NSApplication app) {
         log.debug("applicationOpenUntitledFile");
         return false;
@@ -775,6 +778,7 @@ public class MainController extends BundleController implements NSApplication.De
      * want anything to happen at all (not recommended), or you can implement this method,
      * handle the event yourself in some custom way, and return false.
      */
+    @Override
     public boolean applicationShouldHandleReopen_hasVisibleWindows(NSApplication app, boolean visibleWindowsFound) {
         log.debug("applicationShouldHandleReopen");
         // While an application is open, the Dock icon has a symbol below it.
@@ -816,6 +820,7 @@ public class MainController extends BundleController implements NSApplication.De
      * by double-clicking a file, the delegate receives the applicationOpenFile message before receiving
      * applicationDidFinishLaunching. (applicationWillFinishLaunching is sent before applicationOpenFile.)
      */
+    @Override
     public void applicationDidFinishLaunching(NSNotification notification) {
         if(log.isInfoEnabled()) {
             log.info(String.format("Running version %s", NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleVersion").toString()));
@@ -832,6 +837,7 @@ public class MainController extends BundleController implements NSApplication.De
         }
         if(Preferences.instance().getBoolean("browser.serialize")) {
             this.background(new AbstractBackgroundAction<Void>() {
+                @Override
                 public void run() {
                     sessions.load();
                 }
@@ -847,6 +853,7 @@ public class MainController extends BundleController implements NSApplication.De
         }
 
         this.background(new AbstractBackgroundAction<Void>() {
+            @Override
             public void run() {
                 final BookmarkCollection c = BookmarkCollection.defaultCollection();
                 c.load();
@@ -870,6 +877,7 @@ public class MainController extends BundleController implements NSApplication.De
             }
         });
         this.background(new AbstractBackgroundAction<Void>() {
+            @Override
             public void run() {
                 HistoryCollection.defaultCollection().load();
             }
@@ -880,6 +888,7 @@ public class MainController extends BundleController implements NSApplication.De
             }
         });
         this.background(new AbstractBackgroundAction<Void>() {
+            @Override
             public void run() {
                 TransferCollection.defaultCollection().load();
             }
@@ -890,9 +899,10 @@ public class MainController extends BundleController implements NSApplication.De
             }
         });
         this.background(new AbstractBackgroundAction<Void>() {
+            @Override
             public void run() {
                 // Make sure we register to Growl first
-                Growl.instance().register();
+                Growl.instance().setup();
             }
 
             @Override
@@ -902,6 +912,7 @@ public class MainController extends BundleController implements NSApplication.De
         });
         if(Preferences.instance().getBoolean("rendezvous.enable")) {
             RendezvousFactory.instance().addListener(new RendezvousListener() {
+                @Override
                 public void serviceResolved(final String identifier, final Host host) {
                     if(Preferences.instance().getBoolean("rendezvous.loopback.supress")) {
                         try {
@@ -915,12 +926,14 @@ public class MainController extends BundleController implements NSApplication.De
                         }
                     }
                     invoke(new DefaultMainAction() {
+                        @Override
                         public void run() {
                             Growl.instance().notifyWithImage("Bonjour", RendezvousFactory.instance().getDisplayedName(identifier), "rendezvous");
                         }
                     });
                 }
 
+                @Override
                 public void serviceLost(String servicename) {
                     ;
                 }
@@ -974,6 +987,7 @@ public class MainController extends BundleController implements NSApplication.De
                 null);
         if(Preferences.instance().getBoolean("rendezvous.enable")) {
             this.background(new AbstractBackgroundAction<Void>() {
+                @Override
                 public void run() {
                     RendezvousFactory.instance().init();
                 }
@@ -983,6 +997,7 @@ public class MainController extends BundleController implements NSApplication.De
         this.background(new AbstractBackgroundAction<Void>() {
             private List<ThirdpartyBookmarkCollection> bookmarks = Collections.emptyList();
 
+            @Override
             public void run() {
                 bookmarks = this.getThirdpartyBookmarks();
                 for(ThirdpartyBookmarkCollection c : bookmarks) {
@@ -1040,6 +1055,7 @@ public class MainController extends BundleController implements NSApplication.De
             }
         });
         this.background(new AbstractBackgroundAction<Void>() {
+            @Override
             public void run() {
                 // Wait until bookmarks are loaded
                 try {
@@ -1117,6 +1133,7 @@ public class MainController extends BundleController implements NSApplication.De
      * @param app Application instance
      * @return Return true to allow the application to terminate.
      */
+    @Override
     public NSUInteger applicationShouldTerminate(final NSApplication app) {
         log.debug("applicationShouldTerminate");
         // Determine if there are any running transfers
@@ -1265,6 +1282,7 @@ public class MainController extends BundleController implements NSApplication.De
      *
      * @param notification Notification name
      */
+    @Override
     public void applicationWillTerminate(NSNotification notification) {
         log.debug("applicationWillTerminate");
 
@@ -1361,6 +1379,7 @@ public class MainController extends BundleController implements NSApplication.De
         }
         final BrowserController controller = new BrowserController();
         controller.addListener(new WindowListener() {
+            @Override
             public void windowWillClose() {
                 browsers.remove(controller);
             }
@@ -1376,6 +1395,7 @@ public class MainController extends BundleController implements NSApplication.De
     /**
      * We are not a Windows application. Long live the application wide menu bar.
      */
+    @Override
     public boolean applicationShouldTerminateAfterLastWindowClosed(NSApplication app) {
         return false;
     }
