@@ -25,6 +25,7 @@
 
 #define JVM_PROPERTIES_KEY "Runtime"
 #define JVM_LIB_KEY "Library"
+#define JVM_DEFAULT_LIB "/Library/Internet Plug-Ins/JavaAppletPlugin.plugin/Contents/Home/lib/jli/libjli.dylib"
 #define JVM_MAIN_CLASS_NAME_KEY "MainClass"
 #define JVM_WORKING_DIRECTORY "WorkingDirectory"
 #define JVM_OPTIONS_KEY "VMOptions"
@@ -82,6 +83,11 @@ int launch(char *commandName) {
     }
 
     NSString *javaPath = [[javaDict objectForKey:@JVM_WORKING_DIRECTORY] stringByReplacingOccurrencesOfString:@APP_ROOT_PREFIX withString:[mainBundle bundlePath]];
+    if (javaPath == nil) {
+        [[NSException exceptionWithName:@JAVA_LAUNCH_ERROR
+            reason:NSLocalizedString(@"Working directory path required in Info.plist", @UNSPECIFIED_ERROR)
+            userInfo:nil] raise];
+    }
     NSMutableString *classPath = [NSMutableString stringWithFormat:@"-Djava.class.path=%@", javaPath];
     // Set the class path
     NSFileManager *defaultFileManager = [NSFileManager defaultManager];
@@ -133,6 +139,9 @@ int launch(char *commandName) {
 
     // Locate the JLI_Launch() function
     NSString *libjliPath = [[javaDict objectForKey:@JVM_LIB_KEY] stringByReplacingOccurrencesOfString:@APP_ROOT_PREFIX withString:[mainBundle bundlePath]];
+    if (libjliPath == nil) {
+        libjliPath = @JVM_DEFAULT_LIB;
+    }
     void *libJLI = dlopen([libjliPath fileSystemRepresentation], RTLD_LAZY);
 
     JLI_Launch_t jli_LaunchFxnPtr = NULL;
