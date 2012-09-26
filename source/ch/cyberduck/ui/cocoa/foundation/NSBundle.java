@@ -25,11 +25,6 @@ import org.rococoa.ObjCClass;
 public abstract class NSBundle extends NSObject {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSBundle", _Class.class);
 
-    /**
-     * @param key
-     * @param tableName
-     * @return
-     */
     public static String localizedString(String key, String tableName) {
         return NSBundle.mainBundle().localizedStringForKey_value_table(key, key, tableName);
     }
@@ -51,24 +46,6 @@ public abstract class NSBundle extends NSObject {
         return CLASS.loadNibNamed_owner(nibName, owner);
     }
 
-    /**
-     * This is the primitive that loads the contents of a .nib file.  Context holds key value
-     * pairs that can name objects that are referenced by the objects within the nib
-     * file (e.g., "NSOwner").  Objects from the nib are allocated in zone.
-     *
-     * @param fileName
-     * @param context
-     * @param zone
-     * @return
-     */
-    public static boolean loadNibNamed(String fileName, NSDictionary context, NSZone zone) {
-        return CLASS.loadNibFile_externalNameTable_withZone(fileName, context, zone);
-    }
-
-    /**
-     * @param path
-     * @return
-     */
     public static NSBundle bundleWithPath(String path) {
         return CLASS.bundleWithPath(path);
     }
@@ -129,8 +106,6 @@ public abstract class NSBundle extends NSObject {
          * <i>native declaration : :87</i>
          */
         NSArray preferredLocalizationsFromArray_forPreferences(NSArray localizationsArray1, NSArray preferencesArray2);
-
-        boolean loadNibFile_externalNameTable_withZone(String fileName, NSDictionary context, NSZone zone);
 
         boolean loadNibNamed_owner(String nibName, org.rococoa.ID owner);
     }

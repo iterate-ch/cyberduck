@@ -22,7 +22,6 @@ package ch.cyberduck.ui.cocoa.application;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSCopying;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
-import ch.cyberduck.ui.cocoa.foundation.NSZone;
 
 import org.rococoa.ID;
 import org.rococoa.ObjCClass;
@@ -41,18 +40,6 @@ public abstract class NSMenu extends NSObject implements NSCopying {
     }
 
     public interface _Class extends ObjCClass {
-        /**
-         * Original signature : <code>void setMenuZone(NSZone*)</code><br>
-         * <i>native declaration : :41</i>
-         */
-        void setMenuZone(NSZone aZone);
-
-        /**
-         * Original signature : <code>NSZone* menuZone()</code><br>
-         * <i>native declaration : :42</i>
-         */
-        NSZone menuZone();
-
         /**
          * Original signature : <code>void popUpContextMenu(NSMenu*, NSEvent*, NSView*)</code><br>
          * <i>native declaration : :44</i>

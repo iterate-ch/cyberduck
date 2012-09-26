@@ -19,17 +19,7 @@ package ch.cyberduck.ui.cocoa;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractPath;
-import ch.cyberduck.core.Acl;
-import ch.cyberduck.core.ConnectionAdapter;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathFactory;
-import ch.cyberduck.core.Permission;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.Protocol;
-import ch.cyberduck.core.Session;
-import ch.cyberduck.core.Status;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cloud.CloudPath;
 import ch.cyberduck.core.cloud.CloudSession;
@@ -469,10 +459,11 @@ public class InfoController extends ToolbarWindowController {
             controller.background(new BrowserBackgroundAction(controller) {
                 @Override
                 public void run() {
-                    final Session session = controller.getSession();
+                    final CloudSession session = (CloudSession) controller.getSession();
                     if(bucketAnalyticsButton.state() == NSCell.NSOnState) {
-                        final String document = Preferences.instance().getProperty(
-                                "analytics.provider.qloudstat.iam.policy.s3");
+                        final String document = String.format(Preferences.instance().getProperty(
+                                "analytics.provider.qloudstat.iam.policy.s3"),
+                                session.getLoggingTarget(getSelected().getContainerName()));
                         session.iam().createUser(session.analytics().getName(), document);
                     }
                     else {
@@ -2620,10 +2611,16 @@ public class InfoController extends ToolbarWindowController {
             controller.background(new BrowserBackgroundAction(controller) {
                 @Override
                 public void run() {
-                    final Session session = controller.getSession();
+                    final CloudSession session = (CloudSession) controller.getSession();
                     if(distributionAnalyticsButton.state() == NSCell.NSOnState) {
-                        final String document = Preferences.instance().getProperty(
-                                "analytics.provider.qloudstat.iam.policy.cloudfront");
+                        final Distribution.Method method
+                                = Distribution.Method.forName(distributionDeliveryPopup.selectedItem().representedObject());
+                        // We only support one distribution per bucket for the sake of simplicity
+                        final String container = getSelected().getContainerName();
+                        Distribution distribution = session.cdn().read(
+                                session.cdn().getOrigin(method, container), method);
+                        final String document = String.format(Preferences.instance().getProperty(
+                                "analytics.provider.qloudstat.iam.policy.cloudfront"), distribution.getLoggingTarget());
                         session.iam().createUser(session.analytics().getName(), document);
                     }
                     else {

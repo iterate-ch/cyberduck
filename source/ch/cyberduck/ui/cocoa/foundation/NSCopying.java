@@ -22,9 +22,4 @@ package ch.cyberduck.ui.cocoa.foundation;
 /// <i>native declaration : :45</i>
 public interface NSCopying {
 
-    /**
-     * Original signature : <code>copyWithZone(NSZone*)</code><br>
-     * <i>native declaration : :47</i>
-     */
-    NSCopying copyWithZone(NSZone zone);
 }

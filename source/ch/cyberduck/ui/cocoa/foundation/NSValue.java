@@ -35,36 +35,6 @@ public abstract class NSValue extends NSObject {
     }
 
     /**
-     * Original signature : <code>void getValue(void*)</code><br>
-     * <i>native declaration : /Users/dkocher/null:12</i>
-     */
-    public abstract void getValue(com.sun.jna.Pointer value);
-
-    /**
-     * Original signature : <code>const char* objCType()</code><br>
-     * <i>native declaration : /Users/dkocher/null:13</i>
-     */
-    public abstract com.sun.jna.ptr.ByteByReference objCType();
-
-    /**
-     * Original signature : <code>initWithBytes(const void*, const char*)</code><br>
-     * <i>from NSValueCreation native declaration : /Users/dkocher/null:19</i>
-     */
-    public abstract NSValue initWithBytes_objCType(com.sun.jna.Pointer value, java.lang.String type);
-
-    /**
-     * Original signature : <code>nonretainedObjectValue()</code><br>
-     * <i>from NSValueExtensionMethods native declaration : /Users/dkocher/null:28</i>
-     */
-    public abstract NSObject nonretainedObjectValue();
-
-    /**
-     * Original signature : <code>void* pointerValue()</code><br>
-     * <i>from NSValueExtensionMethods native declaration : /Users/dkocher/null:31</i>
-     */
-    public abstract com.sun.jna.Pointer pointerValue();
-
-    /**
      * Original signature : <code>BOOL isEqualToValue(NSValue*)</code><br>
      * <i>from NSValueExtensionMethods native declaration : /Users/dkocher/null:33</i>
      */
