@@ -364,12 +364,11 @@
 
     <target name="bundle-runtime-eval">
         <echo message="Runtime property is set to ${app.runtime.properties.key}"/>
-        <condition property="app.runtime.bundle" value="true" else="false">
+        <condition property="app.runtime.bundle" value="true">
             <and>
                 <equals arg1="${app.runtime.properties.key}" arg2="Runtime"/>
             </and>
         </condition>
-        <echo message="Bundle runtime with application:${app.runtime.bundle}"/>
     </target>
 
     <target name="copy-stub" depends="bundle-runtime-eval" unless="app.runtime.bundle">
