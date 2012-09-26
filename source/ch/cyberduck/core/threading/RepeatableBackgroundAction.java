@@ -87,6 +87,7 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
      * @param exception Service error
      * @see ch.cyberduck.core.ErrorListener
      */
+    @Override
     public void error(final BackgroundException exception) {
         // Do not report an error when the action was canceled intentionally
         Throwable cause = exception.getCause();
