@@ -26,6 +26,8 @@ import ch.cyberduck.core.sftp.SFTPSession;
 import ch.cyberduck.core.ssl.SSLSession;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.core.threading.BackgroundAction;
+import ch.cyberduck.core.threading.DefaultMainAction;
+import ch.cyberduck.core.threading.MainAction;
 import ch.cyberduck.ui.PathPasteboard;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.delegate.ArchiveMenuDelegate;
@@ -1359,6 +1361,8 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     private final TableColumnFactory bookmarkTableColumnFactory = new TableColumnFactory();
 
     private static class TableColumnFactory extends HashMap<String, NSTableColumn> {
+        private static final long serialVersionUID = 7925372062613505899L;
+
         private NSTableColumn create(String identifier) {
             if(!this.containsKey(identifier)) {
                 this.put(identifier, NSTableColumn.tableColumnWithIdentifier(identifier));
@@ -2245,9 +2249,12 @@ public class BrowserController extends WindowController implements NSToolbar.Del
      * @param browser  Transfer in browser session
      */
     protected void duplicatePaths(final Map<Path, Path> selected, final boolean browser) {
-        if(this.checkOverwrite(selected.values())) {
-            transfer(new CopyTransfer(selected), workdir, browser);
-        }
+        this.checkOverwrite(selected.values(), new DefaultMainAction() {
+            @Override
+            public void run() {
+                transfer(new CopyTransfer(selected), workdir, browser);
+            }
+        });
     }
 
     /**
@@ -2263,19 +2270,20 @@ public class BrowserController extends WindowController implements NSToolbar.Del
      *                 files as the value
      */
     protected void renamePaths(final Map<Path, Path> selected) {
-        if(this.checkMove(selected.values())) {
-            MoveTransfer move = new MoveTransfer(selected);
-            transfer(move, workdir, true);
-        }
+        this.checkMove(selected.values(), new DefaultMainAction() {
+            @Override
+            public void run() {
+                transfer(new MoveTransfer(selected), workdir, true);
+            }
+        });
     }
 
     /**
      * Displays a warning dialog about already existing files
      *
      * @param selected The files to check for existance
-     * @return True if should proceed
      */
-    private boolean checkOverwrite(final java.util.Collection<Path> selected) {
+    private void checkOverwrite(final java.util.Collection<Path> selected, final MainAction action) {
         if(selected.size() > 0) {
             StringBuilder alertText = new StringBuilder(
                     Locale.localizedString("A file with the same name already exists. Do you want to replace the existing file?"));
@@ -2303,31 +2311,27 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                         Locale.localizedString("Cancel"), //alternative button
                         null //other button
                 );
-                final boolean[] confirm = new boolean[]{false};
                 this.alert(alert, new SheetCallback() {
                     @Override
                     public void callback(final int returncode) {
                         if(returncode == DEFAULT_OPTION) {
-                            confirm[0] = true;
+                            action.run();
                         }
                     }
                 });
-                return confirm[0];
             }
             else {
-                return true;
+                action.run();
             }
         }
-        return false;
     }
 
     /**
      * Displays a warning dialog about files to be moved
      *
      * @param selected The files to check for existance
-     * @return True if should proceed
      */
-    private boolean checkMove(final java.util.Collection<Path> selected) {
+    private void checkMove(final java.util.Collection<Path> selected, final MainAction action) {
         if(selected.size() > 0) {
             if(Preferences.instance().getBoolean("browser.confirmMove")) {
                 StringBuilder alertText = new StringBuilder(
@@ -2349,22 +2353,19 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                         Locale.localizedString("Cancel"), //alternative button
                         null //other button
                 );
-                final boolean[] confirm = new boolean[]{false};
                 this.alert(alert, new SheetCallback() {
                     @Override
                     public void callback(final int returncode) {
                         if(returncode == DEFAULT_OPTION) {
-                            confirm[0] = checkOverwrite(selected);
+                            checkOverwrite(selected, action);
                         }
                     }
                 });
-                return confirm[0];
             }
             else {
-                return this.checkOverwrite(selected);
+                this.checkOverwrite(selected, action);
             }
         }
-        return false;
     }
 
     /**
@@ -3289,25 +3290,28 @@ public class BrowserController extends WindowController implements NSToolbar.Del
      */
     private void archiveClicked(final Archive archive) {
         final List<Path> s = this.getSelectedPaths();
-        if(this.checkOverwrite(Collections.singletonList(archive.getArchive(s)))) {
-            background(new BrowserBackgroundAction(BrowserController.this) {
-                @Override
-                public void run() {
-                    session.archive(archive, s);
-                }
+        this.checkOverwrite(Collections.singletonList(archive.getArchive(s)), new DefaultMainAction() {
+            @Override
+            public void run() {
+                background(new BrowserBackgroundAction(BrowserController.this) {
+                    @Override
+                    public void run() {
+                        session.archive(archive, s);
+                    }
 
-                @Override
-                public void cleanup() {
-                    // Update Selection
-                    reloadData(Collections.singletonList(archive.getArchive(s)));
-                }
+                    @Override
+                    public void cleanup() {
+                        // Update Selection
+                        reloadData(Collections.singletonList(archive.getArchive(s)));
+                    }
 
-                @Override
-                public String getActivity() {
-                    return archive.getCompressCommand(s);
-                }
-            });
-        }
+                    @Override
+                    public String getActivity() {
+                        return archive.getCompressCommand(s);
+                    }
+                });
+            }
+        });
     }
 
     @Action
@@ -3318,26 +3322,29 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             if(null == archive) {
                 continue;
             }
-            if(this.checkOverwrite(archive.getExpanded(Collections.singletonList(s)))) {
-                background(new BrowserBackgroundAction(BrowserController.this) {
-                    @Override
-                    public void run() {
-                        session.unarchive(archive, s);
-                    }
+            this.checkOverwrite(archive.getExpanded(Collections.singletonList(s)), new DefaultMainAction() {
+                @Override
+                public void run() {
+                    background(new BrowserBackgroundAction(BrowserController.this) {
+                        @Override
+                        public void run() {
+                            session.unarchive(archive, s);
+                        }
 
-                    @Override
-                    public void cleanup() {
-                        expanded.addAll(archive.getExpanded(Collections.singletonList(s)));
-                        // Update Selection
-                        reloadData(expanded);
-                    }
+                        @Override
+                        public void cleanup() {
+                            expanded.addAll(archive.getExpanded(Collections.singletonList(s)));
+                            // Update Selection
+                            reloadData(expanded);
+                        }
 
-                    @Override
-                    public String getActivity() {
-                        return archive.getDecompressCommand(s);
-                    }
-                });
-            }
+                        @Override
+                        public String getActivity() {
+                            return archive.getDecompressCommand(s);
+                        }
+                    });
+                }
+            });
         }
     }
 
