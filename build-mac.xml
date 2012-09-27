@@ -106,7 +106,7 @@
                 <include name="*.dylib"/>
             </fileset>
         </copy>
-        <copy todir="${app.contents}" overwrite="true">
+        <copy todir="${app.contents}">
             <fileset dir="${basedir}">
                 <include name="Info.plist"/>
             </fileset>
