@@ -285,7 +285,7 @@
     </target>
 
     <target name="codesign" depends="unlock-keychain,compile-codesign-requirement">
-        <echo message="Code signing ${app.java}/*.dylib with entitlements ${codesign.arg}..."/>
+        <echo message="Code signing ${app.java}/*.dylib with certificate ${codesign.certificate} and entitlements ${codesign.arg}..."/>
         <apply executable="/usr/bin/codesign" failonerror="true"
                type="file"
                parallel="false" spawn="false" force="true">
@@ -295,7 +295,7 @@
             </fileset>
             <srcfile/>
         </apply>
-        <echo message="Code signing ${app.spotlight} with entitlements ${codesign.arg}..."/>
+        <echo message="Code signing ${app.spotlight} with certificate ${codesign.certificate} and entitlements ${codesign.arg}..."/>
         <apply executable="/usr/bin/codesign" failonerror="true"
                type="dir"
                parallel="false" spawn="false" force="true">
@@ -305,7 +305,7 @@
             </fileset>
             <srcfile/>
         </apply>
-        <echo message="Code signing ${app.frameworks} with entitlements ${codesign.arg}..."/>
+        <echo message="Code signing ${app.frameworks} with certificate ${codesign.certificate} and entitlements ${codesign.arg}..."/>
         <apply executable="/usr/bin/codesign" failonerror="true"
                type="dir"
                parallel="false" spawn="false" force="true">
@@ -315,7 +315,7 @@
             </fileset>
             <srcfile/>
         </apply>
-        <echo message="Code signing ${app.runtime} with entitlements ${codesign.arg}..."/>
+        <echo message="Code signing ${app.runtime} with certificate ${codesign.certificate} and entitlements ${codesign.arg}..."/>
         <apply executable="/usr/bin/codesign" failonerror="true"
                type="file"
                parallel="false" spawn="false" force="true">
@@ -325,7 +325,7 @@
             </fileset>
             <srcfile/>
         </apply>
-        <echo message="Code signing application bundle with entitlements ${codesign.arg}..."/>
+        <echo message="Code signing application bundle with certificate ${codesign.certificate} and entitlements ${codesign.arg}..."/>
         <exec executable="/usr/bin/codesign" spawn="false" failonerror="true">
             <arg line="--force --sign '${codesign.certificate}' --keychain ${codesign.keychain} ${codesign.arg} -v ${app.bundle}"/>
         </exec>
