@@ -758,16 +758,24 @@ id.lproj/S3.strings -text svneol=unset#text/utf-16
 id.lproj/ServicesMenu.strings -text svneol=unset#text/utf-16
 id.lproj/Status.strings -text svneol=unset#text/utf-16
 id.lproj/Transfer.strings -text svneol=unset#text/utf-16
+img/add.png -text svneol=unset#image/png
 img/add.tiff -text svneol=unset#image/tiff
+img/add@2x.png -text svneol=unset#image/png
+img/addPressed.png -text svneol=unset#image/png
 img/addPressed.tiff -text svneol=unset#image/tiff
+img/addPressed@2x.png -text svneol=unset#image/png
 img/advanced.png -text svneol=unset#image/png
 img/advanced.tiff -text
 img/advanced@2x.png -text svneol=unset#image/png
+img/alert.png -text svneol=unset#image/png
 img/alert.tiff -text svneol=unset#image/tiff
+img/alert@2x.png -text svneol=unset#image/png
 img/aliasbadge.png -text svneol=unset#image/png
 img/aliasbadge.tiff -text
 img/aliasbadge@2x.png -text svneol=unset#image/png
+img/arrowDown.png -text svneol=unset#image/png
 img/arrowDown.tiff -text svneol=unset#image/tiff
+img/arrowDown@2x.png -text svneol=unset#image/png
 img/arrowDownBlack.tiff -text svneol=unset#image/tiff
 img/arrowDownBlack16.tiff -text svneol=unset#image/tiff
 img/arrowLeft.tiff -text svneol=unset#image/tiff
@@ -775,7 +783,9 @@ img/arrowLeft16.tiff -text svneol=unset#image/tiff
 img/arrowLeftBlack.tiff -text svneol=unset#image/tiff
 img/arrowLeftBlack16.tiff -text svneol=unset#image/tiff
 img/arrowRightBlack16.tiff -text svneol=unset#image/tiff
+img/arrowUp.png -text svneol=unset#image/png
 img/arrowUp.tiff -text svneol=unset#image/tiff
+img/arrowUp@2x.png -text svneol=unset#image/png
 img/arrowUpBlack.tiff -text svneol=unset#image/tiff
 img/arrowUpBlack16.tiff -text svneol=unset#image/tiff
 img/azure-icon.png -text svneol=unset#image/png
@@ -786,7 +796,9 @@ img/azure.ico -text
 img/bandwidth.png -text svneol=unset#image/png
 img/bandwidth.tiff -text svneol=unset#image/tiff
 img/bandwidth@2x.png -text svneol=unset#image/png
+img/book.png -text svneol=unset#image/png
 img/book.tiff -text svneol=unset#image/tiff
+img/book@2x.png -text svneol=unset#image/png
 img/bookmark.png -text svneol=unset#image/png
 img/bookmark.tiff -text
 img/bookmark@2x.png -text svneol=unset#image/png
@@ -811,7 +823,9 @@ img/connect.png -text svneol=unset#image/png
 img/connect.tiff -text svneol=unset#image/tiff
 img/connect@2x.png -text svneol=unset#image/png
 img/connection-secure.tiff -text
+img/connection.png -text svneol=unset#image/png
 img/connection.tiff -text svneol=unset#image/tiff
+img/connection@2x.png -text svneol=unset#image/png
 img/delete.png -text svneol=unset#image/png
 img/delete.tiff -text svneol=unset#image/tiff
 img/delete@2x.png -text svneol=unset#image/png
@@ -837,8 +851,12 @@ img/dropbox.ico -text
 img/dropfolderbadge.png -text svneol=unset#image/png
 img/dropfolderbadge.tiff -text
 img/dropfolderbadge@2x.png -text svneol=unset#image/png
+img/edit.png -text svneol=unset#image/png
 img/edit.tiff -text svneol=unset#image/tiff
+img/edit@2x.png -text svneol=unset#image/png
+img/editPressed.png -text svneol=unset#image/png
 img/editPressed.tiff -text svneol=unset#image/tiff
+img/editPressed@2x.png -text svneol=unset#image/png
 img/eject.png -text svneol=unset#image/png
 img/eject.tiff -text svneol=unset#image/tiff
 img/eject@2x.png -text svneol=unset#image/png
@@ -851,7 +869,9 @@ img/ftp-icon.tiff -text
 img/ftp-icon@2x.png -text svneol=unset#image/png
 img/ftp.icns -text
 img/ftp.ico -text
+img/gear.png -text svneol=unset#image/png
 img/gear.tiff -text svneol=unset#image/tiff
+img/gear@2x.png -text svneol=unset#image/png
 img/general.png -text svneol=unset#image/png
 img/general.tiff -text svneol=unset#image/tiff
 img/general@2x.png -text svneol=unset#image/png
@@ -875,7 +895,9 @@ img/info@2x.png -text svneol=unset#image/png
 img/language.png -text svneol=unset#image/png
 img/language.tiff -text
 img/language@2x.png -text svneol=unset#image/png
+img/list.png -text svneol=unset#image/png
 img/list.tiff -text svneol=unset#image/tiff
+img/list@2x.png -text svneol=unset#image/png
 img/locked.png -text svneol=unset#image/png
 img/locked.tiff -text svneol=unset#image/tiff
 img/locked@2x.png -text svneol=unset#image/png
@@ -892,12 +914,18 @@ img/notfound@2x.png -text svneol=unset#image/png
 img/open.png -text svneol=unset#image/png
 img/open.tiff -text svneol=unset#image/tiff
 img/open@2x.png -text svneol=unset#image/png
+img/outline.png -text svneol=unset#image/png
 img/outline.tiff -text svneol=unset#image/tiff
+img/outline@2x.png -text svneol=unset#image/png
 img/pencil.png -text svneol=unset#image/png
 img/pencil.tiff -text svneol=unset#image/tiff
 img/pencil@2x.png -text svneol=unset#image/png
+img/permissions.png -text svneol=unset#image/png
 img/permissions.tiff -text
+img/permissions@2x.png -text svneol=unset#image/png
+img/plus.png -text svneol=unset#image/png
 img/plus.tiff -text svneol=unset#image/tiff
+img/plus@2x.png -text svneol=unset#image/png
 img/privatefolderbadge.png -text svneol=unset#image/png
 img/privatefolderbadge.tiff -text
 img/privatefolderbadge@2x.png -text svneol=unset#image/png
@@ -910,8 +938,12 @@ img/readonlyfolderbadge@2x.png -text svneol=unset#image/png
 img/reload.png -text svneol=unset#image/png
 img/reload.tiff -text svneol=unset#image/tiff
 img/reload@2x.png -text svneol=unset#image/png
+img/remove.png -text svneol=unset#image/png
 img/remove.tiff -text svneol=unset#image/tiff
+img/remove@2x.png -text svneol=unset#image/png
+img/removePressed.png -text svneol=unset#image/png
 img/removePressed.tiff -text svneol=unset#image/tiff
+img/removePressed@2x.png -text svneol=unset#image/png
 img/rendezvous.png -text svneol=unset#image/png
 img/rendezvous.tiff -text
 img/rendezvous@2x.png -text svneol=unset#image/png
@@ -960,7 +992,9 @@ img/sync@2x.png -text svneol=unset#image/png
 img/throbber.gif -text
 img/throbber_small.gif -text
 img/transparent.tiff -text
+img/trash.png -text svneol=unset#image/png
 img/trash.tiff -text svneol=unset#image/tiff
+img/trash@2x.png -text svneol=unset#image/png
 img/turtle.png -text svneol=unset#image/png
 img/turtle.tiff -text svneol=unset#image/tiff
 img/turtle@2x.png -text svneol=unset#image/png
