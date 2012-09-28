@@ -20,21 +20,32 @@ tiff="/usr/bin/tiffutil"
 
 usage() {
     echo "Converts *.png and *@2x.png to .tiff"
-	echo "	  Usage: combine.sh --run"
+	echo "	  Usage: combine.sh [--source <png>] --run"
 }
 
 run() {
     for name in `ls . | grep @2x.png`; do
 		png=`basename $name @2x.png`
-		echo "$tiff -cathidpicheck $png.png $png@2x.png -out $png.tiff"
-        $tiff -cathidpicheck $png.png $png@2x.png -out $png.tiff
+		tiff;
     done;
+}
+
+tiff() {
+	echo "$tiff -cathidpicheck $png.png $png@2x.png -out $png.tiff"
+    $tiff -cathidpicheck $png.png $png@2x.png -out $png.tiff
 }
 
 while [ "$1" != "" ] # When there are arguments...
     do case "$1" in 
             -r | --run)
                 run;
+                echo "*** DONE. ***";
+                exit 0;
+            ;; 
+            -s | --source)
+			    shift;
+			    png=$1;
+			    tiff;
                 echo "*** DONE. ***";
                 exit 0;
             ;; 
