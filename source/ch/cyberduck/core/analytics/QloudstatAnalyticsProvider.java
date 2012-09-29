@@ -55,8 +55,7 @@ public class QloudstatAnalyticsProvider implements AnalyticsProvider {
             return b.toString().replace("+", "%20").replace("*", "%2A").replace("%7E", "~");
         }
         catch(UnsupportedEncodingException e) {
-            log.error(e.getMessage());
-            return null;
+            throw new RuntimeException(e.getMessage(), e);
         }
     }
 }
