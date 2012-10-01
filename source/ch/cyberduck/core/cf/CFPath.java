@@ -288,7 +288,7 @@ public class CFPath extends CloudPath {
                             marker = object.getName();
                         }
                         if(Preferences.instance().getBoolean("cf.list.cdn.preload")) {
-                            for(Distribution.Method method : this.getSession().cdn().getMethods()) {
+                            for(Distribution.Method method : this.getSession().cdn().getMethods(this.getContainerName())) {
                                 // Cache CDN configuration
                                 this.getSession().cdn().read(this.getSession().cdn().getOrigin(method, this.getContainerName()), method);
                             }
@@ -461,6 +461,7 @@ public class CFPath extends CloudPath {
              *
              * @return The ETag returned by the server for the uploaded object
              */
+            @Override
             public String call(AbstractHttpEntity entity) throws IOException {
                 try {
                     return CFPath.this.getSession().getClient().storeObjectAs(CFPath.this.getContainerName(),
@@ -474,6 +475,7 @@ public class CFPath extends CloudPath {
                 }
             }
 
+            @Override
             public long getContentLength() {
                 return status().getLength() - status().getCurrent();
             }
@@ -657,7 +659,7 @@ public class CFPath extends CloudPath {
     @Override
     public String toHttpURL() {
         CFSession session = this.getSession();
-        for(Distribution.Method method : session.cdn().getMethods()) {
+        for(Distribution.Method method : session.cdn().getMethods(this.getContainerName())) {
             if(session.cdn().isCached(method)) {
                 final Distribution distribution = session.cdn().read(session.cdn().getOrigin(method, this.getContainerName()), method);
                 return distribution.getURL(this);

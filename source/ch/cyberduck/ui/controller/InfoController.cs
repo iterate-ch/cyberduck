@@ -1214,7 +1214,7 @@ namespace Ch.Cyberduck.Ui.Controller
             View.DistributionTitle = String.Format(Locale.localizedString("Enable {0} Distribution", "Status"),
                                                    session.cdn().toString());
             methods = new List<KeyValuePair<string, Distribution.Method>>();
-            List list = session.cdn().getMethods();
+            List list = session.cdn().getMethods(SelectedPath.getContainerName());
             for (int i = 0; i < list.size(); i++)
             {
                 Distribution.Method method = (Distribution.Method) list.get(i);
@@ -1224,7 +1224,7 @@ namespace Ch.Cyberduck.Ui.Controller
             if (null == selected)
             {
                 // Select first distribution option
-                View.DistributionDeliveryMethod = (Distribution.Method) session.cdn().getMethods().iterator().next();
+                View.DistributionDeliveryMethod = (Distribution.Method) session.cdn(SelectedPath.getContainerName()).getMethods().iterator().next();
             }
             else
             {

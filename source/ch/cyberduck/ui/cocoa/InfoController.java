@@ -334,6 +334,7 @@ public class InfoController extends ToolbarWindowController {
     public void storageClassPopupClicked(final NSPopUpButton sender) {
         if(this.toggleS3Settings(false)) {
             controller.background(new BrowserBackgroundAction(controller) {
+                @Override
                 public void run() {
                     for(Path next : files) {
                         next.attributes().setStorageClass(sender.selectedItem().representedObject());
@@ -370,6 +371,7 @@ public class InfoController extends ToolbarWindowController {
     public void encryptionButtonClicked(final NSButton sender) {
         if(this.toggleS3Settings(false)) {
             controller.background(new BrowserBackgroundAction(controller) {
+                @Override
                 public void run() {
                     for(Path next : files) {
                         next.attributes().setEncryption(encryptionButton.state() == NSCell.NSOnState ?
@@ -407,6 +409,7 @@ public class InfoController extends ToolbarWindowController {
     public void bucketLoggingButtonClicked(final NSButton sender) {
         if(this.toggleS3Settings(false)) {
             controller.background(new BrowserBackgroundAction(controller) {
+                @Override
                 public void run() {
                     final String container = getSelected().getContainerName();
                     ((CloudSession) controller.getSession()).setLogging(container,
@@ -501,6 +504,7 @@ public class InfoController extends ToolbarWindowController {
     public void bucketVersioningButtonClicked(final NSButton sender) {
         if(this.toggleS3Settings(false)) {
             controller.background(new BrowserBackgroundAction(controller) {
+                @Override
                 public void run() {
                     final String container = getSelected().getContainerName();
                     ((CloudSession) controller.getSession()).setVersioning(container,
@@ -529,6 +533,7 @@ public class InfoController extends ToolbarWindowController {
     public void bucketMfaButtonClicked(final NSButton sender) {
         if(this.toggleS3Settings(false)) {
             controller.background(new BrowserBackgroundAction(controller) {
+                @Override
                 public void run() {
                     final String container = getSelected().getContainerName();
                     ((CloudSession) controller.getSession()).setVersioning(container,
@@ -662,10 +667,12 @@ public class InfoController extends ToolbarWindowController {
         this.aclTable.setColumnAutoresizingStyle(NSTableView.NSTableViewUniformColumnAutoresizingStyle);
         this.aclTable.tableColumnWithIdentifier(HEADER_ACL_PERMISSION_COLUMN).setDataCell(aclPermissionCellPrototype);
         this.aclTable.setDataSource((aclTableModel = new ListDataSource() {
+            @Override
             public NSInteger numberOfRowsInTableView(NSTableView view) {
                 return new NSInteger(acl.size());
             }
 
+            @Override
             public NSObject tableView_objectValueForTableColumn_row(NSTableView view, NSTableColumn tableColumn,
                                                                     NSInteger row) {
                 if(row.intValue() < acl.size()) {
@@ -726,10 +733,12 @@ public class InfoController extends ToolbarWindowController {
                 this.enterKeyPressed(sender);
             }
 
+            @Override
             public void enterKeyPressed(final ID sender) {
                 aclTable.editRow(aclTable.columnWithIdentifier(HEADER_ACL_GRANTEE_COLUMN), aclTable.selectedRow(), true);
             }
 
+            @Override
             public void deleteKeyPressed(final ID sender) {
                 aclRemoveButtonClicked(sender);
             }
@@ -740,6 +749,7 @@ public class InfoController extends ToolbarWindowController {
                 return this.tooltip(acl.get(row.intValue()));
             }
 
+            @Override
             public String tooltip(Acl.UserAndRole c) {
                 return c.getUser().getIdentifier();
             }
@@ -894,6 +904,7 @@ public class InfoController extends ToolbarWindowController {
             this.value = value;
         }
 
+        @Override
         public int compareTo(Header o) {
             return this.getName().compareTo(o.getName());
         }
@@ -921,10 +932,12 @@ public class InfoController extends ToolbarWindowController {
         this.metadataTable.setAllowsMultipleSelection(true);
         this.metadataTable.setColumnAutoresizingStyle(NSTableView.NSTableViewUniformColumnAutoresizingStyle);
         this.metadataTable.setDataSource((metadataTableModel = new ListDataSource() {
+            @Override
             public NSInteger numberOfRowsInTableView(NSTableView view) {
                 return new NSInteger(metadata.size());
             }
 
+            @Override
             public NSObject tableView_objectValueForTableColumn_row(NSTableView view, NSTableColumn tableColumn,
                                                                     NSInteger row) {
                 if(row.intValue() < metadata.size()) {
@@ -973,16 +986,19 @@ public class InfoController extends ToolbarWindowController {
                 this.enterKeyPressed(sender);
             }
 
+            @Override
             public void enterKeyPressed(final ID sender) {
                 metadataTable.editRow(
                         metadataTable.columnWithIdentifier(HEADER_METADATA_VALUE_COLUMN),
                         metadataTable.selectedRow(), true);
             }
 
+            @Override
             public void deleteKeyPressed(final ID sender) {
                 metadataRemoveButtonClicked(sender);
             }
 
+            @Override
             public String tooltip(String c) {
                 return c;
             }
@@ -1313,6 +1329,7 @@ public class InfoController extends ToolbarWindowController {
     private BrowserController controller;
 
     private final WindowListener browserWindowListener = new WindowListener() {
+        @Override
         public void windowWillClose() {
             final NSWindow window = window();
             if(null != window) {
@@ -1787,7 +1804,7 @@ public class InfoController extends ToolbarWindowController {
         distributionEnableButton.setTitle(MessageFormat.format(Locale.localizedString("Enable {0} Distribution", "Status"),
                 session.cdn().toString()));
         distributionDeliveryPopup.removeItemWithTitle(Locale.localizedString("None"));
-        for(Distribution.Method method : session.cdn().getMethods()) {
+        for(Distribution.Method method : session.cdn().getMethods(this.getSelected().getContainerName())) {
             distributionDeliveryPopup.addItemWithTitle(method.toString());
             distributionDeliveryPopup.itemWithTitle(method.toString()).setRepresentedObject(method.toString());
         }
@@ -1795,7 +1812,7 @@ public class InfoController extends ToolbarWindowController {
         distributionDeliveryPopup.selectItemWithTitle(selected);
         if(null == distributionDeliveryPopup.selectedItem()) {
             // Select first distribution option
-            Distribution.Method method = session.cdn().getMethods().iterator().next();
+            Distribution.Method method = session.cdn().getMethods(this.getSelected().getContainerName()).iterator().next();
             distributionDeliveryPopup.selectItemWithTitle(method.toString());
         }
 
@@ -1974,13 +1991,13 @@ public class InfoController extends ToolbarWindowController {
             controller.background(new BrowserBackgroundAction(controller) {
                 String location = null;
                 boolean logging = false;
-                String analytics = null;
                 String loggingBucket = null;
                 boolean versioning = false;
                 boolean mfa = false;
                 List<String> containers = new ArrayList<String>();
                 String encryption = null;
 
+                @Override
                 public void run() {
                     final CloudSession s = (CloudSession) controller.getSession();
                     if(s.isLocationSupported()) {
@@ -1996,13 +2013,6 @@ public class InfoController extends ToolbarWindowController {
                     if(s.isVersioningSupported()) {
                         versioning = s.isVersioning(selected.getContainerName());
                         mfa = s.isMultiFactorAuthentication(selected.getContainerName());
-                    }
-                    if(s.isAnalyticsSupported()) {
-                        final Credentials credentials = s.iam().getUserCredentials(controller.getSession().analytics().getName());
-                        if(null != credentials) {
-                            analytics = s.analytics().getSetup(s.getHost().getProtocol(), selected.getContainerName(),
-                                    credentials);
-                        }
                     }
                     if(numberOfFiles() == 1) {
                         encryption = selected.attributes().getEncryption();
@@ -2033,9 +2043,15 @@ public class InfoController extends ToolbarWindowController {
                         bucketVersioningButton.setState(versioning ? NSCell.NSOnState : NSCell.NSOffState);
                         bucketMfaButton.setState(mfa ? NSCell.NSOnState : NSCell.NSOffState);
                         encryptionButton.setState(StringUtils.isNotBlank(encryption) ? NSCell.NSOnState : NSCell.NSOffState);
-                        bucketAnalyticsButton.setState(StringUtils.isNotBlank(analytics) ? NSCell.NSOnState : NSCell.NSOffState);
-                        if(StringUtils.isNotBlank(analytics)) {
-                            bucketAnalyticsSetupUrlField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(analytics));
+                        if(controller.getSession().isAnalyticsSupported()) {
+                            final Credentials credentials = controller.getSession().iam().getUserCredentials(controller.getSession().analytics().getName());
+                            if(null != credentials) {
+                                bucketAnalyticsSetupUrlField.setAttributedStringValue(HyperlinkAttributedStringFactory.create(
+                                        controller.getSession().analytics().getSetup(controller.getSession().getHost().getProtocol(),
+                                                selected.getContainerName(), credentials)
+                                ));
+                            }
+                            bucketAnalyticsButton.setState(null != credentials ? NSCell.NSOnState : NSCell.NSOffState);
                         }
                     }
                     finally {
@@ -2389,6 +2405,7 @@ public class InfoController extends ToolbarWindowController {
     public void distributionInvalidateObjectsButtonClicked(final ID sender) {
         if(this.toggleDistributionSettings(false)) {
             controller.background(new BrowserBackgroundAction(controller) {
+                @Override
                 public void run() {
                     final Session session = controller.getSession();
                     Distribution.Method method = Distribution.Method.forName(distributionDeliveryPopup.selectedItem().representedObject());
@@ -2422,6 +2439,7 @@ public class InfoController extends ToolbarWindowController {
     public void distributionApplyButtonClicked(final ID sender) {
         if(this.toggleDistributionSettings(false)) {
             controller.background(new BrowserBackgroundAction(controller) {
+                @Override
                 public void run() {
                     final Session session = controller.getSession();
                     Distribution.Method method = Distribution.Method.forName(distributionDeliveryPopup.selectedItem().representedObject());
@@ -2463,22 +2481,17 @@ public class InfoController extends ToolbarWindowController {
         if(this.toggleDistributionSettings(false)) {
             controller.background(new BrowserBackgroundAction(controller) {
                 private Distribution distribution;
-                private String analytics;
 
+                @Override
                 public void run() {
                     final Session session = controller.getSession();
                     final Distribution.Method method
                             = Distribution.Method.forName(distributionDeliveryPopup.selectedItem().representedObject());
                     // We only support one distribution per bucket for the sake of simplicity
                     final String container = getSelected().getContainerName();
-                    distribution = session.cdn().read(
-                            session.cdn().getOrigin(method, container), method);
+                    distribution = session.cdn().read(session.cdn().getOrigin(method, container), method);
                     // Make sure container items are cached for default root object.
                     getSelected().getContainer().children();
-                    if(session.cdn().isAnalyticsSupported(method)) {
-                        final Credentials credentials = session.iam().getUserCredentials(controller.getSession().analytics().getName());
-                        analytics = session.analytics().getSetup(session.cdn().getProtocol(), container, credentials);
-                    }
                 }
 
                 @Override
@@ -2497,12 +2510,12 @@ public class InfoController extends ToolbarWindowController {
                             distributionLoggingPopup.addItemWithTitle(c);
                             distributionLoggingPopup.lastItem().setRepresentedObject(c);
                         }
+                        final String container = getSelected().getContainerName();
                         if(StringUtils.isNotBlank(distribution.getLoggingTarget())) {
                             // Select configured logging container if any
                             distributionLoggingPopup.selectItemWithTitle(distribution.getLoggingTarget());
                         }
                         else {
-                            final String container = getSelected().getContainerName();
                             if(distributionLoggingPopup.itemWithTitle(container) != null) {
                                 distributionLoggingPopup.selectItemWithTitle(container);
                             }
@@ -2510,10 +2523,13 @@ public class InfoController extends ToolbarWindowController {
                         if(null == distributionLoggingPopup.selectedItem()) {
                             distributionLoggingPopup.selectItemWithTitle(Locale.localizedString("None"));
                         }
-                        distributionAnalyticsButton.setState(StringUtils.isNotBlank(analytics) ? NSCell.NSOnState : NSCell.NSOffState);
-                        if(StringUtils.isNotBlank(analytics)) {
-                            distributionAnalyticsSetupUrlField.setAttributedStringValue(
-                                    HyperlinkAttributedStringFactory.create(analytics));
+                        if(session.cdn().isAnalyticsSupported(distribution.getMethod())) {
+                            final Credentials credentials = session.iam().getUserCredentials(controller.getSession().analytics().getName());
+                            distributionAnalyticsButton.setState(credentials != null ? NSCell.NSOnState : NSCell.NSOffState);
+                            if(credentials != null) {
+                                distributionAnalyticsSetupUrlField.setAttributedStringValue(
+                                        HyperlinkAttributedStringFactory.create(session.analytics().getSetup(session.cdn().getProtocol(), container, credentials)));
+                            }
                         }
 
                         String origin = distribution.getOrigin(getSelected());
@@ -2663,6 +2679,7 @@ public class InfoController extends ToolbarWindowController {
                 @Override
                 protected void update(final long size) {
                     invoke(new WindowMainAction(InfoController.this) {
+                        @Override
                         public void run() {
                             updateSize(size);
                         }

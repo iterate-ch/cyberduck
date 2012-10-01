@@ -106,8 +106,9 @@ public interface DistributionConfiguration {
      * List available distribution methods for this CDN.
      *
      * @return The supported protocols
+     * @param container Origin
      */
-    List<Distribution.Method> getMethods();
+    List<Distribution.Method> getMethods(String container);
 
     /**
      * @param method    Distribution method

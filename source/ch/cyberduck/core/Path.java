@@ -1209,7 +1209,7 @@ public abstract class Path extends AbstractPath implements Serializable {
         // Include all CDN URLs
         Session session = this.getSession();
         if(session.isCDNSupported()) {
-            for(Distribution.Method method : session.cdn().getMethods()) {
+            for(Distribution.Method method : session.cdn().getMethods(this.getContainerName())) {
                 if(session.cdn().isCached(method)) {
                     String container = this.getContainerName();
                     if(null == container) {
