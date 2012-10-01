@@ -47,16 +47,7 @@ import org.jets3t.service.acl.AccessControlList;
 import org.jets3t.service.acl.GroupGrantee;
 import org.jets3t.service.impl.rest.XmlResponsesSaxParser;
 import org.jets3t.service.impl.rest.httpclient.RestS3Service;
-import org.jets3t.service.model.S3Bucket;
-import org.jets3t.service.model.S3BucketLoggingStatus;
-import org.jets3t.service.model.S3BucketVersioningStatus;
-import org.jets3t.service.model.S3Object;
-import org.jets3t.service.model.S3WebsiteConfig;
-import org.jets3t.service.model.StorageBucket;
-import org.jets3t.service.model.StorageBucketLoggingStatus;
-import org.jets3t.service.model.StorageObject;
-import org.jets3t.service.model.StorageOwner;
-import org.jets3t.service.model.WebsiteConfig;
+import org.jets3t.service.model.*;
 import org.jets3t.service.model.cloudfront.CustomOrigin;
 import org.jets3t.service.security.AWSCredentials;
 import org.jets3t.service.security.OAuth2Credentials;
@@ -296,7 +287,7 @@ public class S3Session extends CloudSession {
         return configuration;
     }
 
-    protected void configure(String hostname) {
+    protected void configure(final String hostname) {
         log.debug("configure:" + hostname);
         if(StringUtils.isNotBlank(host.getProtocol().getDefaultHostname())
                 && hostname.endsWith(host.getProtocol().getDefaultHostname())) {
@@ -321,7 +312,7 @@ public class S3Session extends CloudSession {
     }
 
     @Override
-    public String getHostnameForContainer(String bucket) {
+    public String getHostnameForContainer(final String bucket) {
         if(configuration.getBoolProperty("s3service.disable-dns-buckets", false)) {
             return this.getHost().getHostname(true);
         }
@@ -1062,16 +1053,19 @@ public class S3Session extends CloudSession {
         public WebsiteCloudFrontDistributionConfiguration() {
             super(LoginControllerFactory.instance(S3Session.this), S3Session.this.host.getCredentials(),
                     new ErrorListener() {
+                        @Override
                         public void error(BackgroundException exception) {
                             S3Session.this.error(exception);
                         }
                     },
                     new ProgressListener() {
+                        @Override
                         public void message(String message) {
                             S3Session.this.message(message);
                         }
                     },
                     new TranscriptListener() {
+                        @Override
                         public void log(boolean request, String message) {
                             S3Session.this.log(request, message);
                         }
@@ -1082,10 +1076,15 @@ public class S3Session extends CloudSession {
         /**
          * Distribution methods supported by this S3 provider.
          *
+         * @param container Origin bucket
          * @return Download and Streaming for AWS.
          */
         @Override
-        public List<Distribution.Method> getMethods() {
+        public List<Distribution.Method> getMethods(final String container) {
+            if(!ServiceUtils.isBucketNameValidDNSName(container)) {
+                // Disable website configuration if bucket name is not DNS compatible
+                return super.getMethods(container);
+            }
             return Arrays.asList(Distribution.WEBSITE, Distribution.WEBSITE_CDN, Distribution.DOWNLOAD, Distribution.STREAMING);
         }
 
@@ -1109,7 +1108,7 @@ public class S3Session extends CloudSession {
         }
 
         @Override
-        protected List<String> getContainers(Distribution.Method method) {
+        protected List<String> getContainers() {
             return new ArrayList<String>(buckets.keySet());
         }
 
@@ -1202,11 +1201,12 @@ public class S3Session extends CloudSession {
         }
 
         @Override
-        protected CustomOrigin getCustomOriginConfiguration(Distribution.Method method, String origin) {
+        protected CustomOrigin getCustomOriginConfiguration(final String id,
+                                                            final Distribution.Method method, final String origin) {
             if(method.equals(Distribution.WEBSITE_CDN)) {
-                return new CustomOrigin(origin, CustomOrigin.OriginProtocolPolicy.HTTP_ONLY);
+                return new CustomOrigin(id, origin, CustomOrigin.OriginProtocolPolicy.HTTP_ONLY);
             }
-            return super.getCustomOriginConfiguration(method, origin);
+            return super.getCustomOriginConfiguration(id, method, origin);
         }
 
         @Override
@@ -1229,6 +1229,7 @@ public class S3Session extends CloudSession {
     @Override
     public IdentityConfiguration iam() {
         return new AWSIdentityConfiguration(this.getHost(), new ErrorListener() {
+            @Override
             public void error(BackgroundException exception) {
                 S3Session.this.error(exception);
             }
