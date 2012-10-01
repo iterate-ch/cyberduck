@@ -20,6 +20,7 @@ package ch.cyberduck.core.cloudfront;
  */
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.i18n.Locale;
@@ -31,7 +32,6 @@ import org.jets3t.service.CloudFrontService;
 import org.jets3t.service.CloudFrontServiceException;
 import org.jets3t.service.model.cloudfront.CacheBehavior;
 import org.jets3t.service.model.cloudfront.CustomOrigin;
-import org.jets3t.service.model.cloudfront.Distribution;
 import org.jets3t.service.model.cloudfront.DistributionConfig;
 import org.jets3t.service.model.cloudfront.InvalidationSummary;
 import org.jets3t.service.model.cloudfront.LoggingStatus;
@@ -70,8 +70,20 @@ public class CloudFrontDistributionConfiguration extends HttpSession implements 
     /**
      * Cache distribution status result.
      */
-    protected Map<ch.cyberduck.core.cdn.Distribution.Method, Map<String, ch.cyberduck.core.cdn.Distribution>> distributionStatus
-            = new HashMap<ch.cyberduck.core.cdn.Distribution.Method, Map<String, ch.cyberduck.core.cdn.Distribution>>();
+    protected Map<Distribution.Method, Map<String, Distribution>> distributionStatus
+            = new HashMap<Distribution.Method, Map<String, Distribution>>() {
+        private static final long serialVersionUID = -2745277784871254371L;
+
+        @Override
+        public Map<String, Distribution> get(final Object key) {
+            if(!this.containsKey(key)) {
+                final HashMap<String, Distribution> create = new HashMap<String, Distribution>();
+                this.put((Distribution.Method) key, create);
+                return create;
+            }
+            return super.get(key);
+        }
+    };
 
     public CloudFrontDistributionConfiguration(LoginController parent, Credentials credentials,
                                                ErrorListener error, ProgressListener progress,
@@ -81,7 +93,6 @@ public class CloudFrontDistributionConfiguration extends HttpSession implements 
         this.addErrorListener(error);
         this.addProgressListener(progress);
         this.addTranscriptListener(transcript);
-        this.clear();
     }
 
     /**
@@ -89,6 +100,7 @@ public class CloudFrontDistributionConfiguration extends HttpSession implements 
      *
      * @return A cached cloud front service interface
      */
+    @Override
     protected CloudFrontService getClient() throws ConnectionCanceledException {
         if(null == client) {
             throw new ConnectionCanceledException();
@@ -126,9 +138,9 @@ public class CloudFrontDistributionConfiguration extends HttpSession implements 
                     return CloudFrontDistributionConfiguration.this.http();
                 }
             };
-            // Provoke authentication error if any.
-            for(ch.cyberduck.core.cdn.Distribution.Method method : getMethods()) {
-                for(String container : this.getContainers(method)) {
+            // Provoke authentication error
+            for(String container : this.getContainers()) {
+                for(Distribution.Method method : getMethods(container)) {
                     // Cache first container
                     this.cache(this.getOrigin(method, container), method);
                     break;
@@ -178,11 +190,13 @@ public class CloudFrontDistributionConfiguration extends HttpSession implements 
         return Locale.localizedString("Amazon CloudFront", "S3");
     }
 
-    public String toString(ch.cyberduck.core.cdn.Distribution.Method method) {
+    @Override
+    public String toString(Distribution.Method method) {
         return this.toString();
     }
 
-    public boolean isCached(ch.cyberduck.core.cdn.Distribution.Method method) {
+    @Override
+    public boolean isCached(Distribution.Method method) {
         return !distributionStatus.get(method).isEmpty();
     }
 
@@ -191,19 +205,22 @@ public class CloudFrontDistributionConfiguration extends HttpSession implements 
         return this.getHost().getProtocol();
     }
 
-    public String getOrigin(ch.cyberduck.core.cdn.Distribution.Method method, String container) {
+    @Override
+    public String getOrigin(Distribution.Method method, String container) {
         return container + CloudFrontService.DEFAULT_BUCKET_SUFFIX;
     }
 
-    public List<ch.cyberduck.core.cdn.Distribution.Method> getMethods() {
-        return Arrays.asList(ch.cyberduck.core.cdn.Distribution.DOWNLOAD, ch.cyberduck.core.cdn.Distribution.STREAMING);
+    @Override
+    public List<Distribution.Method> getMethods(final String container) {
+        return Arrays.asList(Distribution.DOWNLOAD, Distribution.STREAMING);
     }
 
-    public ch.cyberduck.core.cdn.Distribution read(String origin, ch.cyberduck.core.cdn.Distribution.Method method) {
-        if(method.equals(ch.cyberduck.core.cdn.Distribution.DOWNLOAD)
-                || method.equals(ch.cyberduck.core.cdn.Distribution.STREAMING)
-                || method.equals(ch.cyberduck.core.cdn.Distribution.CUSTOM)
-                || method.equals(ch.cyberduck.core.cdn.Distribution.WEBSITE_CDN)) {
+    @Override
+    public Distribution read(String origin, Distribution.Method method) {
+        if(method.equals(Distribution.DOWNLOAD)
+                || method.equals(Distribution.STREAMING)
+                || method.equals(Distribution.CUSTOM)
+                || method.equals(Distribution.WEBSITE_CDN)) {
             if(!distributionStatus.get(method).containsKey(origin)) {
                 try {
                     this.check();
@@ -217,7 +234,7 @@ public class CloudFrontDistributionConfiguration extends HttpSession implements 
                 }
                 catch(LoginCanceledException canceled) {
                     // User canceled Cloudfront login. Possibly not enabled in Amazon configuration.
-                    distributionStatus.get(method).put(origin, new ch.cyberduck.core.cdn.Distribution(null,
+                    distributionStatus.get(method).put(origin, new Distribution(null,
                             origin, method, false, null, canceled.getMessage()));
                 }
                 catch(IOException e) {
@@ -228,10 +245,11 @@ public class CloudFrontDistributionConfiguration extends HttpSession implements 
         if(distributionStatus.get(method).containsKey(origin)) {
             return distributionStatus.get(method).get(origin);
         }
-        return new ch.cyberduck.core.cdn.Distribution(origin, method);
+        return new Distribution(origin, method);
     }
 
-    public void write(boolean enabled, String origin, ch.cyberduck.core.cdn.Distribution.Method method,
+    @Override
+    public void write(boolean enabled, String origin, Distribution.Method method,
                       String[] cnames, boolean logging, String loggingBucket, String defaultRootObject) {
         try {
             this.check();
@@ -253,9 +271,11 @@ public class CloudFrontDistributionConfiguration extends HttpSession implements 
             else {
                 this.message(MessageFormat.format(Locale.localizedString("Disable {0} Distribution", "Status"), name));
             }
-            ch.cyberduck.core.cdn.Distribution d = distributionStatus.get(method).get(origin);
+            Distribution d = distributionStatus.get(method).get(origin);
             if(null == d) {
-                log.debug("No existing distribution found for method:" + method);
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("No existing distribution found for method %s", method));
+                }
                 this.createDistribution(enabled, method, origin, cnames, loggingStatus, defaultRootObject);
             }
             else {
@@ -297,30 +317,34 @@ public class CloudFrontDistributionConfiguration extends HttpSession implements 
         }
     }
 
-    public boolean isDefaultRootSupported(ch.cyberduck.core.cdn.Distribution.Method method) {
-        return method.equals(ch.cyberduck.core.cdn.Distribution.DOWNLOAD)
-                || method.equals(ch.cyberduck.core.cdn.Distribution.WEBSITE_CDN)
-                || method.equals(ch.cyberduck.core.cdn.Distribution.CUSTOM);
-    }
-
-    public boolean isInvalidationSupported(ch.cyberduck.core.cdn.Distribution.Method method) {
-        return method.equals(ch.cyberduck.core.cdn.Distribution.DOWNLOAD)
-                || method.equals(ch.cyberduck.core.cdn.Distribution.WEBSITE_CDN)
-                || method.equals(ch.cyberduck.core.cdn.Distribution.CUSTOM);
-    }
-
-    public boolean isLoggingSupported(ch.cyberduck.core.cdn.Distribution.Method method) {
-        return method.equals(ch.cyberduck.core.cdn.Distribution.DOWNLOAD)
-                || method.equals(ch.cyberduck.core.cdn.Distribution.STREAMING)
-                || method.equals(ch.cyberduck.core.cdn.Distribution.CUSTOM);
+    @Override
+    public boolean isDefaultRootSupported(Distribution.Method method) {
+        return method.equals(Distribution.DOWNLOAD)
+                || method.equals(Distribution.WEBSITE_CDN)
+                || method.equals(Distribution.CUSTOM);
     }
 
     @Override
-    public boolean isAnalyticsSupported(ch.cyberduck.core.cdn.Distribution.Method method) {
+    public boolean isInvalidationSupported(Distribution.Method method) {
+        return method.equals(Distribution.DOWNLOAD)
+                || method.equals(Distribution.WEBSITE_CDN)
+                || method.equals(Distribution.CUSTOM);
+    }
+
+    @Override
+    public boolean isLoggingSupported(Distribution.Method method) {
+        return method.equals(Distribution.DOWNLOAD)
+                || method.equals(Distribution.STREAMING)
+                || method.equals(Distribution.CUSTOM);
+    }
+
+    @Override
+    public boolean isAnalyticsSupported(Distribution.Method method) {
         return this.isLoggingSupported(method);
     }
 
-    public boolean isCnameSupported(ch.cyberduck.core.cdn.Distribution.Method method) {
+    @Override
+    public boolean isCnameSupported(Distribution.Method method) {
         return true;
     }
 
@@ -337,14 +361,15 @@ public class CloudFrontDistributionConfiguration extends HttpSession implements 
      * @param files     Files to purge
      * @param recursive Recursivly for folders
      */
-    public void invalidate(String origin, ch.cyberduck.core.cdn.Distribution.Method method, List<Path> files, boolean recursive) {
+    @Override
+    public void invalidate(String origin, Distribution.Method method, List<Path> files, boolean recursive) {
         try {
             this.check();
             this.message(MessageFormat.format(Locale.localizedString("Writing CDN configuration of {0}", "Status"),
                     origin));
 
             final long reference = System.currentTimeMillis();
-            ch.cyberduck.core.cdn.Distribution d = distributionStatus.get(method).get(origin);
+            Distribution d = distributionStatus.get(method).get(origin);
             if(null == d) {
                 log.error("No cached distribution for origin:" + origin);
                 return;
@@ -399,7 +424,7 @@ public class CloudFrontDistributionConfiguration extends HttpSession implements 
      * @return Status message from service
      * @throws IOException Service error
      */
-    private String readInvalidationStatus(ch.cyberduck.core.cdn.Distribution distribution) throws IOException {
+    private String readInvalidationStatus(Distribution distribution) throws IOException {
         try {
             final CloudFrontService cf = this.getClient();
             boolean complete = false;
@@ -429,7 +454,7 @@ public class CloudFrontDistributionConfiguration extends HttpSession implements 
         return Locale.localizedString("Unknown");
     }
 
-    protected List<String> getContainers(ch.cyberduck.core.cdn.Distribution.Method method) {
+    protected List<String> getContainers() {
         // List S3 containers
         final Session session = SessionFactory.createSession(
                 new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname(), host.getCredentials()));
@@ -444,10 +469,9 @@ public class CloudFrontDistributionConfiguration extends HttpSession implements 
         return Collections.emptyList();
     }
 
+    @Override
     public void clear() {
-        for(ch.cyberduck.core.cdn.Distribution.Method method : this.getMethods()) {
-            distributionStatus.put(method, new HashMap<String, ch.cyberduck.core.cdn.Distribution>(0));
-        }
+        distributionStatus.clear();
     }
 
     /**
@@ -465,55 +489,46 @@ public class CloudFrontDistributionConfiguration extends HttpSession implements 
      * @throws ConnectionCanceledException Authentication canceled
      */
     private org.jets3t.service.model.cloudfront.Distribution createDistribution(boolean enabled,
-                                                                                ch.cyberduck.core.cdn.Distribution.Method method,
+                                                                                Distribution.Method method,
                                                                                 final String origin,
                                                                                 String[] cnames,
                                                                                 LoggingStatus logging,
                                                                                 String defaultRootObject)
             throws ConnectionCanceledException, CloudFrontServiceException {
-        final long reference = System.currentTimeMillis();
 
-        log.debug("createDistribution:" + method);
+        final String reference = String.valueOf(System.currentTimeMillis());
+
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Create new %s distribution", method.toString()));
+        }
         CloudFrontService cf = this.getClient();
-        if(method.equals(ch.cyberduck.core.cdn.Distribution.STREAMING)) {
-            return cf.createDistribution(new StreamingDistributionConfig(
-                    new S3Origin[]{new S3Origin(origin)},
-                    String.valueOf(reference), // Caller reference - a unique string value
-                    cnames, // CNAME aliases for distribution
-                    new Date(reference).toString(), // Comment
-                    enabled,  // Enabled?
-                    logging,
-                    null
-            ));
-        }
-        if(method.equals(ch.cyberduck.core.cdn.Distribution.DOWNLOAD)) {
-            return cf.createDistribution(
-                    new S3Origin(origin),
-                    String.valueOf(reference), // Caller reference - a unique string value
-                    cnames, // CNAME aliases for distribution
-                    new Date(reference).toString(), // Comment
-                    enabled,  // Enabled?
-                    logging, // Logging Status. Disabled if null
-                    false,
-                    null,
-                    null,
-                    defaultRootObject
+
+        final String originId = UUID.randomUUID().toString();
+        final CacheBehavior cacheBehavior = new CacheBehavior(
+                originId, false, null, CacheBehavior.ViewerProtocolPolicy.ALLOW_ALL, 0L
+        );
+
+        if(method.equals(Distribution.STREAMING)) {
+            final StreamingDistributionConfig config = new StreamingDistributionConfig(
+                    new S3Origin[]{new S3Origin(originId, origin, null)},
+                    reference, cnames, null, enabled, logging, null);
+            return cf.createDistribution(config
             );
         }
-        if(method.equals(ch.cyberduck.core.cdn.Distribution.CUSTOM)
-                || method.equals(ch.cyberduck.core.cdn.Distribution.WEBSITE_CDN)) {
-            return cf.createDistribution(
-                    this.getCustomOriginConfiguration(method, origin),
-                    String.valueOf(reference), // Caller reference - a unique string value
-                    cnames, // CNAME aliases for distribution
-                    new Date(reference).toString(), // Comment
-                    enabled,  // Enabled?
-                    logging, // Logging Status. Disabled if null
-                    false,
-                    null,
-                    null,
-                    defaultRootObject
-            );
+        if(method.equals(Distribution.DOWNLOAD)) {
+            DistributionConfig config = new DistributionConfig(
+                    new Origin[]{new S3Origin(originId, origin, null)},
+                    reference, cnames, null, enabled, logging,
+                    defaultRootObject, cacheBehavior, new CacheBehavior[]{});
+            return cf.createDistribution(config);
+        }
+        if(method.equals(Distribution.CUSTOM)
+                || method.equals(Distribution.WEBSITE_CDN)) {
+            DistributionConfig config = new DistributionConfig(
+                    new Origin[]{new CustomOrigin(originId, origin, CustomOrigin.OriginProtocolPolicy.MATCH_VIEWER)},
+                    reference, cnames, null, enabled, logging,
+                    defaultRootObject, cacheBehavior, new CacheBehavior[]{});
+            return cf.createDistribution(config);
         }
         throw new RuntimeException("Invalid distribution method:" + method);
     }
@@ -524,46 +539,50 @@ public class CloudFrontDistributionConfiguration extends HttpSession implements 
      * @param enabled           Distribution status
      * @param method            Distribution method
      * @param origin            Name of the container
-     * @param id                Distribution reference
+     * @param distributionId    Distribution reference
      * @param cnames            DNS CNAME aliases for distribution
      * @param logging           Access log configuration
      * @param defaultRootObject Index file for distribution. Only supported for download and custom origins.
      * @throws CloudFrontServiceException CloudFront failure details
      * @throws IOException                I/O error
      */
-    private void updateDistribution(boolean enabled, ch.cyberduck.core.cdn.Distribution.Method method, final String origin,
-                                    String id, String etag, String reference, String[] cnames, LoggingStatus logging, String defaultRootObject)
+    private void updateDistribution(boolean enabled, Distribution.Method method, final String origin,
+                                    final String distributionId, final String etag, final String reference,
+                                    final String[] cnames, final LoggingStatus logging, final String defaultRootObject)
             throws CloudFrontServiceException, IOException {
 
-        log.debug("updateDistribution:" + origin);
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Update %s distribution with origin %s", method.toString(), origin));
+        }
 
         final String originId = UUID.randomUUID().toString();
-        final CacheBehavior cacheBehavior = new CacheBehavior();
-        cacheBehavior.setTargetOriginId(originId);
+        final CacheBehavior cacheBehavior = new CacheBehavior(
+                originId, false, null, CacheBehavior.ViewerProtocolPolicy.ALLOW_ALL, 0L
+        );
 
         final CloudFrontService cf = this.getClient();
-        if(method.equals(ch.cyberduck.core.cdn.Distribution.STREAMING)) {
+        if(method.equals(Distribution.STREAMING)) {
             StreamingDistributionConfig config = new StreamingDistributionConfig(
                     new Origin[]{new S3Origin(originId, origin, null)}, reference, cnames, null, enabled, logging, null);
             config.setEtag(etag);
-            cf.updateDistributionConfig(id, config);
+            cf.updateDistributionConfig(distributionId, config);
         }
-        else if(method.equals(ch.cyberduck.core.cdn.Distribution.DOWNLOAD)) {
+        else if(method.equals(Distribution.DOWNLOAD)) {
             DistributionConfig config = new DistributionConfig(
                     new Origin[]{new S3Origin(originId, origin, null)},
                     reference, cnames, null, enabled, logging,
                     defaultRootObject, cacheBehavior, new CacheBehavior[]{});
             config.setEtag(etag);
-            cf.updateDistributionConfig(id, config);
+            cf.updateDistributionConfig(distributionId, config);
         }
-        else if(method.equals(ch.cyberduck.core.cdn.Distribution.CUSTOM)
-                || method.equals(ch.cyberduck.core.cdn.Distribution.WEBSITE_CDN)) {
+        else if(method.equals(Distribution.CUSTOM)
+                || method.equals(Distribution.WEBSITE_CDN)) {
             DistributionConfig config = new DistributionConfig(
-                    new Origin[]{this.getCustomOriginConfiguration(method, origin)},
+                    new Origin[]{this.getCustomOriginConfiguration(originId, method, origin)},
                     reference, cnames, null, enabled, logging,
                     defaultRootObject, cacheBehavior, new CacheBehavior[]{});
             config.setEtag(etag);
-            cf.updateDistributionConfig(id, config);
+            cf.updateDistributionConfig(distributionId, config);
         }
         else {
             throw new RuntimeException("Invalid distribution method:" + method);
@@ -575,18 +594,10 @@ public class CloudFrontDistributionConfiguration extends HttpSession implements 
      * @param origin Origin container
      * @return Match viewer policy
      */
-    protected CustomOrigin getCustomOriginConfiguration(ch.cyberduck.core.cdn.Distribution.Method method, String origin) {
-//        int httpPort = 80;
-//        if(method.getProtocol().equals("http")) {
-//            httpPort = method.getDefaultPort();
-//        }
-//        int httpsPort = 443;
-//        if(method.getProtocol().equals("https")) {
-//            httpsPort = method.getDefaultPort();
-//        }
-//        return new CustomOrigin(origin, CustomOrigin.OriginProtocolPolicy.MATCH_VIEWER,
-//                httpPort, httpsPort);
-        return new CustomOrigin(origin, CustomOrigin.OriginProtocolPolicy.MATCH_VIEWER);
+    protected CustomOrigin getCustomOriginConfiguration(final String id,
+                                                        final Distribution.Method method,
+                                                        final String origin) {
+        return new CustomOrigin(id, origin, CustomOrigin.OriginProtocolPolicy.MATCH_VIEWER);
     }
 
     /**
@@ -597,14 +608,17 @@ public class CloudFrontDistributionConfiguration extends HttpSession implements 
      * @throws CloudFrontServiceException CloudFront failure details
      * @throws IOException                Service error
      */
-    private void cache(String origin, ch.cyberduck.core.cdn.Distribution.Method method)
+    private void cache(String origin, Distribution.Method method)
             throws IOException, CloudFrontServiceException {
-        log.debug("listDistributions:" + origin);
+
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("List distributions for origin %s", origin));
+        }
 
         CloudFrontService cf = this.getClient();
 
-        if(method.equals(ch.cyberduck.core.cdn.Distribution.STREAMING)) {
-            for(Distribution d : cf.listStreamingDistributions(origin)) {
+        if(method.equals(Distribution.STREAMING)) {
+            for(org.jets3t.service.model.cloudfront.Distribution d : cf.listStreamingDistributions(origin)) {
                 for(Origin o : d.getConfig().getOrigins()) {
                     if(o instanceof S3Origin) {
                         // Write to cache
@@ -615,9 +629,9 @@ public class CloudFrontDistributionConfiguration extends HttpSession implements 
                 }
             }
         }
-        else if(method.equals(ch.cyberduck.core.cdn.Distribution.DOWNLOAD)) {
+        else if(method.equals(Distribution.DOWNLOAD)) {
             // List distributions restricting to bucket name origin
-            for(Distribution d : cf.listDistributions(origin)) {
+            for(org.jets3t.service.model.cloudfront.Distribution d : cf.listDistributions(origin)) {
                 for(Origin o : d.getConfig().getOrigins()) {
                     if(o instanceof S3Origin) {
                         // Write to cache
@@ -628,8 +642,8 @@ public class CloudFrontDistributionConfiguration extends HttpSession implements 
                 }
             }
         }
-        else if(method.equals(ch.cyberduck.core.cdn.Distribution.CUSTOM)
-                || method.equals(ch.cyberduck.core.cdn.Distribution.WEBSITE_CDN)) {
+        else if(method.equals(Distribution.CUSTOM)
+                || method.equals(Distribution.WEBSITE_CDN)) {
             for(org.jets3t.service.model.cloudfront.Distribution d : cf.listDistributions()) {
                 for(Origin o : d.getConfig().getOrigins()) {
                     // Listing all distributions and look for custom origin
@@ -643,8 +657,8 @@ public class CloudFrontDistributionConfiguration extends HttpSession implements 
         }
     }
 
-    private ch.cyberduck.core.cdn.Distribution convert(Distribution d,
-                                                       ch.cyberduck.core.cdn.Distribution.Method method)
+    private Distribution convert(final org.jets3t.service.model.cloudfront.Distribution d,
+                                 Distribution.Method method)
             throws IOException, CloudFrontServiceException {
         // Retrieve distributions configuration to access current logging status settings.
         final DistributionConfig distributionConfig = this.getDistributionConfig(d);
@@ -658,7 +672,7 @@ public class CloudFrontDistributionConfiguration extends HttpSession implements 
             loggingTarget = ServiceUtils.findBucketNameInHostname(distributionConfig.getLoggingStatus().getBucket(),
                     Protocol.S3_SSL.getDefaultHostname());
         }
-        final ch.cyberduck.core.cdn.Distribution distribution = new ch.cyberduck.core.cdn.Distribution(
+        final Distribution distribution = new Distribution(
                 d.getId(),
                 distributionConfig.getEtag(),
                 distributionConfig.getCallerReference(),
@@ -668,7 +682,7 @@ public class CloudFrontDistributionConfiguration extends HttpSession implements 
                 d.isDeployed(),
                 // CloudFront URL
                 String.format("%s%s%s", method.getProtocol(), d.getDomainName(), method.getContext()),
-                method.equals(ch.cyberduck.core.cdn.Distribution.DOWNLOAD) || method.equals(ch.cyberduck.core.cdn.Distribution.CUSTOM)
+                method.equals(Distribution.DOWNLOAD) || method.equals(Distribution.CUSTOM)
                         ? String.format("https://%s%s", d.getDomainName(), method.getContext()) : null, // No SSL
                 null,
                 Locale.localizedString(d.getStatus(), "S3"),
@@ -680,7 +694,7 @@ public class CloudFrontDistributionConfiguration extends HttpSession implements 
             distribution.setInvalidationStatus(this.readInvalidationStatus(distribution));
         }
         if(this.isLoggingSupported(method)) {
-            distribution.setContainers(this.getContainers(method));
+            distribution.setContainers(this.getContainers());
         }
         return distribution;
     }
