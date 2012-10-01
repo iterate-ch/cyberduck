@@ -189,7 +189,7 @@
         </array>
         <key>LSApplicationCategoryType</key>
         <string>public.app-category.productivity</string>
-        <key>_RUNTIME_</key>
+        <key>Runtime</key>
         <dict>
             <key>Library</key>
             <string>$APP_PACKAGE/Contents/Resources/Java/Runtime.jre/Contents/Home/lib/jli/libjli.dylib</string>
