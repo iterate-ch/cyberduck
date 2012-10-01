@@ -43,5 +43,4 @@ public class FlashFxp3BookmarkCollection extends FlashFxpBookmarkCollection {
     public Local getFile() {
         return LocalFactory.createLocal(Preferences.instance().getProperty("bookmark.import.flashfxp3.location"));
     }
-
 }
