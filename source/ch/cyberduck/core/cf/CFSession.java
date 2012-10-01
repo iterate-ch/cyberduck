@@ -32,6 +32,7 @@ import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.cloud.CloudSession;
 import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.core.identity.DefaultCredentialsIdentityConfiguration;
 import ch.cyberduck.core.identity.IdentityConfiguration;
 import ch.cyberduck.core.ssl.AbstractX509TrustManager;
 import ch.cyberduck.core.ssl.KeychainX509TrustManager;
@@ -59,7 +60,7 @@ import com.rackspacecloud.client.cloudfiles.FilesException;
  *
  * @version $Id$
  */
-public class CFSession extends CloudSession implements DistributionConfiguration, IdentityConfiguration {
+public class CFSession extends CloudSession implements DistributionConfiguration {
     private static Logger log = Logger.getLogger(CFSession.class);
 
     private static class Factory extends SessionFactory {
@@ -271,42 +272,45 @@ public class CFSession extends CloudSession implements DistributionConfiguration
             = new HashMap<String, Distribution>();
 
 
+    @Override
     public boolean isCached(Distribution.Method method) {
         return !distributionStatus.isEmpty();
     }
 
+    @Override
     public String getOrigin(Distribution.Method method, String container) {
         return container;
     }
 
+    @Override
     public void write(boolean enabled, String origin, Distribution.Method method,
                       String[] cnames, boolean logging, String loggingBucket, String defaultRootObject) {
         try {
-            CFSession.this.check();
+            this.check();
             if(enabled) {
-                CFSession.this.message(MessageFormat.format(Locale.localizedString("Enable {0} Distribution", "Status"), "CDN"));
+                this.message(MessageFormat.format(Locale.localizedString("Enable {0} Distribution", "Status"), "CDN"));
             }
             else {
-                CFSession.this.message(MessageFormat.format(Locale.localizedString("Disable {0} Distribution", "Status"), "CDN"));
+                this.message(MessageFormat.format(Locale.localizedString("Disable {0} Distribution", "Status"), "CDN"));
             }
             cdnRequest = true;
             try {
-                CFSession.this.getClient().getCDNContainerInfo(origin);
+                this.getClient().getCDNContainerInfo(origin);
             }
             catch(FilesException e) {
                 if(404 == e.getHttpStatusCode()) {
                     // Not found.
-                    CFSession.this.getClient().cdnEnableContainer(origin);
+                    this.getClient().cdnEnableContainer(origin);
                 }
             }
             // Toggle content distribution for the container without changing the TTL expiration
-            CFSession.this.getClient().cdnUpdateContainer(origin, -1, enabled, logging);
+            this.getClient().cdnUpdateContainer(origin, -1, enabled, logging);
         }
         catch(IOException e) {
-            CFSession.this.error("Cannot write CDN configuration", e);
+            this.error("Cannot write CDN configuration", e);
         }
         catch(HttpException e) {
-            CFSession.this.error("Cannot write CDN configuration", e);
+            this.error("Cannot write CDN configuration", e);
         }
         finally {
             distributionStatus.clear();
@@ -314,17 +318,18 @@ public class CFSession extends CloudSession implements DistributionConfiguration
         }
     }
 
+    @Override
     public Distribution read(String origin, final Distribution.Method method) {
         if(!distributionStatus.containsKey(origin)) {
             try {
-                CFSession.this.check();
-                CFSession.this.message(MessageFormat.format(Locale.localizedString("Reading CDN configuration of {0}", "Status"),
+                this.check();
+                this.message(MessageFormat.format(Locale.localizedString("Reading CDN configuration of {0}", "Status"),
                         origin));
 
                 cdnRequest = true;
-                final FilesCDNContainer info = CFSession.this.getClient().getCDNContainerInfo(origin);
+                final FilesCDNContainer info = this.getClient().getCDNContainerInfo(origin);
                 final Distribution distribution = new Distribution(info.getName(),
-                        new URI(CFSession.this.getClient().getStorageURL()).getHost(),
+                        new URI(this.getClient().getStorageURL()).getHost(),
                         method, info.isEnabled(), info.getCdnURL(), info.getSSLURL(), info.getStreamingURL(),
                         info.isEnabled() ? Locale.localizedString("CDN Enabled", "Mosso") : Locale.localizedString("CDN Disabled", "Mosso"),
                         info.getRetainLogs()) {
@@ -342,10 +347,10 @@ public class CFSession extends CloudSession implements DistributionConfiguration
                 distributionStatus.put(origin, new Distribution(null, origin, method, false, null, Locale.localizedString("CDN Disabled", "Mosso")));
             }
             catch(IOException e) {
-                CFSession.this.error("Cannot read CDN configuration", e);
+                this.error("Cannot read CDN configuration", e);
             }
             catch(URISyntaxException e) {
-                CFSession.this.error("Cannot read CDN configuration", e);
+                this.error("Cannot read CDN configuration", e);
             }
             finally {
                 cdnRequest = false;
@@ -357,26 +362,27 @@ public class CFSession extends CloudSession implements DistributionConfiguration
         return new Distribution(origin, method);
     }
 
+    @Override
     public void invalidate(String origin, Distribution.Method method, List<Path> files, boolean recursive) {
         try {
-            CFSession.this.check();
-            CFSession.this.message(MessageFormat.format(Locale.localizedString("Writing CDN configuration of {0}", "Status"),
+            this.check();
+            this.message(MessageFormat.format(Locale.localizedString("Writing CDN configuration of {0}", "Status"),
                     origin));
             cdnRequest = true;
             for(Path file : files) {
                 if(file.isContainer()) {
-                    CFSession.this.getClient().purgeCDNContainer(origin, null);
+                    this.getClient().purgeCDNContainer(origin, null);
                 }
                 else {
-                    CFSession.this.getClient().purgeCDNObject(origin, file.getKey(), null);
+                    this.getClient().purgeCDNObject(origin, file.getKey(), null);
                 }
             }
         }
         catch(IOException e) {
-            CFSession.this.error("Cannot write CDN configuration", e);
+            this.error("Cannot write CDN configuration", e);
         }
         catch(HttpException e) {
-            CFSession.this.error("Cannot write CDN configuration", e);
+            this.error("Cannot write CDN configuration", e);
         }
         finally {
             distributionStatus.clear();
@@ -384,14 +390,17 @@ public class CFSession extends CloudSession implements DistributionConfiguration
         }
     }
 
+    @Override
     public boolean isInvalidationSupported(Distribution.Method method) {
         return true;
     }
 
+    @Override
     public boolean isDefaultRootSupported(Distribution.Method method) {
         return false;
     }
 
+    @Override
     public boolean isLoggingSupported(Distribution.Method method) {
         return method.equals(Distribution.DOWNLOAD);
     }
@@ -401,6 +410,7 @@ public class CFSession extends CloudSession implements DistributionConfiguration
         return this.isLoggingSupported(method);
     }
 
+    @Override
     public boolean isCnameSupported(Distribution.Method method) {
         return false;
     }
@@ -410,8 +420,9 @@ public class CFSession extends CloudSession implements DistributionConfiguration
         return getHost().getProtocol();
     }
 
-    public List<Distribution.Method> getMethods() {
-        if(!CFSession.this.isCDNSupported()) {
+    @Override
+    public List<Distribution.Method> getMethods(final String container) {
+        if(!this.isCDNSupported()) {
             return Collections.emptyList();
         }
         return Arrays.asList(Distribution.DOWNLOAD);
@@ -421,30 +432,18 @@ public class CFSession extends CloudSession implements DistributionConfiguration
         return Locale.localizedString("Akamai", "Mosso");
     }
 
+    @Override
     public String toString(Distribution.Method method) {
         return this.toString();
     }
 
+    @Override
     public void clear() {
         distributionStatus.clear();
     }
 
+    @Override
     public IdentityConfiguration iam() {
-        return this;
-    }
-
-    @Override
-    public void deleteUser(String username) {
-        ;
-    }
-
-    @Override
-    public Credentials getUserCredentials(String username) {
-        return host.getCredentials();
-    }
-
-    @Override
-    public void createUser(String username, String policy) {
-        ;
+        return new DefaultCredentialsIdentityConfiguration(host);
     }
 }

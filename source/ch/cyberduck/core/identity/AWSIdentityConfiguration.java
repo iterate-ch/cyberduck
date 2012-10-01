@@ -4,26 +4,17 @@ import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.ErrorListener;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.KeychainFactory;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.PreferencesUseragentProvider;
+import ch.cyberduck.core.ProxyFactory;
 import ch.cyberduck.core.threading.BackgroundException;
 
 import org.apache.log4j.Logger;
 
 import com.amazonaws.AmazonClientException;
+import com.amazonaws.ClientConfiguration;
 import com.amazonaws.services.identitymanagement.AmazonIdentityManagementClient;
-import com.amazonaws.services.identitymanagement.model.AccessKeyMetadata;
-import com.amazonaws.services.identitymanagement.model.CreateAccessKeyRequest;
-import com.amazonaws.services.identitymanagement.model.CreateAccessKeyResult;
-import com.amazonaws.services.identitymanagement.model.CreateUserRequest;
-import com.amazonaws.services.identitymanagement.model.DeleteAccessKeyRequest;
-import com.amazonaws.services.identitymanagement.model.DeleteUserPolicyRequest;
-import com.amazonaws.services.identitymanagement.model.DeleteUserRequest;
-import com.amazonaws.services.identitymanagement.model.ListAccessKeysRequest;
-import com.amazonaws.services.identitymanagement.model.ListAccessKeysResult;
-import com.amazonaws.services.identitymanagement.model.ListUserPoliciesRequest;
-import com.amazonaws.services.identitymanagement.model.ListUserPoliciesResult;
-import com.amazonaws.services.identitymanagement.model.NoSuchEntityException;
-import com.amazonaws.services.identitymanagement.model.PutUserPolicyRequest;
-import com.amazonaws.services.identitymanagement.model.User;
+import com.amazonaws.services.identitymanagement.model.*;
 
 /**
  * @version $Id$
@@ -38,21 +29,31 @@ public class AWSIdentityConfiguration implements IdentityConfiguration {
      */
     private ErrorListener listener;
 
-    public AWSIdentityConfiguration(Host host, ErrorListener listener) {
+    private PreferencesUseragentProvider ua;
+
+    /**
+     * Prefix in preferences
+     */
+    private static final String prefix = "iam.";
+
+    public AWSIdentityConfiguration(final Host host, final ErrorListener listener) {
         this.host = host;
         this.listener = listener;
     }
 
     @Override
     public void deleteUser(final String username) {
+        Preferences.instance().deleteProperty(String.format("%s%s", prefix, username));
         try {
             // Create new IAM credentials
             AmazonIdentityManagementClient iam = new AmazonIdentityManagementClient(
                     new com.amazonaws.auth.AWSCredentials() {
+                        @Override
                         public String getAWSAccessKeyId() {
                             return host.getCredentials().getUsername();
                         }
 
+                        @Override
                         public String getAWSSecretKey() {
                             return host.getCredentials().getPassword();
                         }
@@ -81,79 +82,65 @@ public class AWSIdentityConfiguration implements IdentityConfiguration {
 
     @Override
     public Credentials getUserCredentials(final String username) {
-        try {
-            // Create new IAM credentials
-            AmazonIdentityManagementClient iam = new AmazonIdentityManagementClient(
-                    new com.amazonaws.auth.AWSCredentials() {
-                        public String getAWSAccessKeyId() {
-                            return host.getCredentials().getUsername();
-                        }
-
-                        public String getAWSSecretKey() {
-                            return host.getCredentials().getPassword();
-                        }
-                    }
-            );
-            try {
-                final ListAccessKeysResult keys
-                        = iam.listAccessKeys(new ListAccessKeysRequest().withUserName(username));
-
-                for(AccessKeyMetadata key : keys.getAccessKeyMetadata()) {
-                    final String secret = KeychainFactory.instance().getPassword(host.getProtocol().getScheme().name(), host.getPort(),
-                            host.getHostname(), key.getAccessKeyId());
-                    if(null == secret) {
-                        log.warn(String.format("No secret key saved in Keychain for %s", key.getAccessKeyId()));
-                        continue;
-                    }
-                    return new Credentials(key.getAccessKeyId(), secret) {
-                        @Override
-                        public String getUsernamePlaceholder() {
-                            return host.getProtocol().getUsernamePlaceholder();
-                        }
-
-                        @Override
-                        public String getPasswordPlaceholder() {
-                            return host.getProtocol().getPasswordPlaceholder();
-                        }
-                    };
-                }
-            }
-            catch(NoSuchEntityException e) {
-                return null;
-            }
+        // Resolve access key id
+        final String id = Preferences.instance().getProperty(String.format("%s%s", prefix, username));
+        if(null == id) {
+            log.warn(String.format("No access key found for user %s", username));
+            return null;
         }
-        catch(AmazonClientException e) {
-            listener.error(new BackgroundException(host, null, "Cannot read user configuration", e));
-        }
-        return null;
+        return new Credentials(id, KeychainFactory.instance().getPassword(host.getProtocol().getScheme().name(), host.getPort(),
+                host.getHostname(), id)) {
+            @Override
+            public String getUsernamePlaceholder() {
+                return host.getProtocol().getUsernamePlaceholder();
+            }
+
+            @Override
+            public String getPasswordPlaceholder() {
+                return host.getProtocol().getPasswordPlaceholder();
+            }
+        };
     }
 
     @Override
-    public void createUser(final String username, String policy) {
+    public void createUser(final String username, final String policy) {
         try {
             // Create new IAM credentials
+            final int timeout = Preferences.instance().getInteger("connection.timeout.seconds") * 1000;
+            final ClientConfiguration configuration = new ClientConfiguration();
+            configuration.setConnectionTimeout(timeout);
+            configuration.setSocketTimeout(timeout);
+            configuration.setUserAgent(ua.get());
+            configuration.setMaxErrorRetry(0);
+            configuration.setMaxConnections(1);
+            configuration.setProxyHost(ProxyFactory.instance().getHTTPSProxyHost(host));
+            configuration.setProxyPort(ProxyFactory.instance().getHTTPSProxyPort(host));
             AmazonIdentityManagementClient iam = new AmazonIdentityManagementClient(
                     new com.amazonaws.auth.AWSCredentials() {
+                        @Override
                         public String getAWSAccessKeyId() {
                             return host.getCredentials().getUsername();
                         }
 
+                        @Override
                         public String getAWSSecretKey() {
                             return host.getCredentials().getPassword();
                         }
-                    }
+                    }, configuration
             );
-            User user = iam.createUser(new CreateUserRequest().withUserName(username)).getUser();
+            final User user = iam.createUser(new CreateUserRequest().withUserName(username)).getUser();
             final CreateAccessKeyResult key = iam.createAccessKey(
                     new CreateAccessKeyRequest().withUserName(user.getUserName()));
 
             // Write policy document to get read access
             iam.putUserPolicy(new PutUserPolicyRequest(user.getUserName(), "Policy", policy));
-
+            // Map virtual user name to IAM access key
+            final String id = key.getAccessKey().getAccessKeyId();
+            Preferences.instance().setProperty(String.format("%s%s", prefix, username), id);
             // Save secret
             KeychainFactory.instance().addPassword(
                     host.getProtocol().getScheme().name(), host.getPort(), host.getHostname(),
-                    key.getAccessKey().getAccessKeyId(), key.getAccessKey().getSecretAccessKey());
+                    id, key.getAccessKey().getSecretAccessKey());
         }
         catch(AmazonClientException e) {
             listener.error(new BackgroundException(host, null, "Cannot write user configuration", e));

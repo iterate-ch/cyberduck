@@ -26,6 +26,7 @@ import ch.cyberduck.core.cloudfront.CloudFrontDistributionConfiguration;
 import ch.cyberduck.core.fs.Filesystem;
 import ch.cyberduck.core.fs.FilesystemFactory;
 import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.core.identity.DefaultCDNCredentialsIdentityConfiguration;
 import ch.cyberduck.core.identity.IdentityConfiguration;
 import ch.cyberduck.core.threading.BackgroundException;
 
@@ -70,13 +71,10 @@ public abstract class Session implements TranscriptListener {
      */
     protected abstract <C> C getClient() throws ConnectionCanceledException;
 
-    private final String ua = Preferences.instance().getProperty("application.name") + "/"
-            + Preferences.instance().getProperty("application.version")
-            + " (" + System.getProperty("os.name") + "/" + System.getProperty("os.version") + ")"
-            + " (" + System.getProperty("os.arch") + ")";
+    private UseragentProvider ua = new PreferencesUseragentProvider();
 
     public String getUserAgent() {
-        return ua;
+        return ua.get();
     }
 
     /**
@@ -147,7 +145,7 @@ public abstract class Session implements TranscriptListener {
      * @return The timeout in milliseconds
      */
     protected int timeout() {
-        return (int) Preferences.instance().getDouble("connection.timeout.seconds") * 1000;
+        return Preferences.instance().getInteger("connection.timeout.seconds") * 1000;
     }
 
     /**
@@ -699,6 +697,7 @@ public abstract class Session implements TranscriptListener {
      * @param message Log line
      * @see TranscriptListener
      */
+    @Override
     public void log(boolean request, final String message) {
         if(log.isInfoEnabled()) {
             log.info(message);
@@ -756,22 +755,7 @@ public abstract class Session implements TranscriptListener {
     }
 
     public IdentityConfiguration iam() {
-        return new IdentityConfiguration() {
-            @Override
-            public void deleteUser(String username) {
-                ;
-            }
-
-            @Override
-            public Credentials getUserCredentials(String username) {
-                return host.getCdnCredentials();
-            }
-
-            @Override
-            public void createUser(String username, String policy) {
-                ;
-            }
-        };
+        return new DefaultCDNCredentialsIdentityConfiguration(host);
     }
 
     public boolean isAnalyticsSupported() {
@@ -831,7 +815,7 @@ public abstract class Session implements TranscriptListener {
                 }
 
                 @Override
-                public List<Distribution.Method> getMethods() {
+                public List<Distribution.Method> getMethods(final String container) {
                     if(this.isCDNSupported()) {
                         return Arrays.asList(Distribution.CUSTOM);
                     }
