@@ -38,11 +38,11 @@ public abstract class NSDistributedNotificationCenter extends NSNotificationCent
          */
         NSDistributedNotificationCenter defaultCenter();
     }
-    /**
-     * <i>native declaration : :35</i><br>
-     * Conversion Error : /// Original signature : <code>void addObserver(null, null, NSString*, NSString*, NSNotificationSuspensionBehavior)</code><br>
-     * - (void)addObserver:(null)observer selector:(null)selector name:(NSString*)name object:(NSString*)object suspensionBehavior:(NSNotificationSuspensionBehavior)suspensionBehavior; (Argument observer cannot be converted)
-     */
+
+    public static NSNotificationCenter defaultCenter() {
+        return CLASS.defaultCenter();
+    }
+
     /**
      * Original signature : <code>void postNotificationName(NSString*, NSString*, NSDictionary*, BOOL)</code><br>
      * <i>native declaration : :38</i>
