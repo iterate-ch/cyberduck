@@ -27,7 +27,6 @@ import ch.cyberduck.ui.cocoa.application.NSTableView;
 import ch.cyberduck.ui.cocoa.foundation.NSNotification;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
-import org.apache.log4j.Logger;
 import org.rococoa.ID;
 import org.rococoa.cocoa.foundation.NSInteger;
 
@@ -37,7 +36,6 @@ import java.util.Comparator;
  * @version $Id$
  */
 public abstract class AbstractTableDelegate<E> extends ProxyController implements TableDelegate<E> {
-    private static Logger log = Logger.getLogger(AbstractTableDelegate.class);
 
     private NSTableColumn selectedColumn;
 
