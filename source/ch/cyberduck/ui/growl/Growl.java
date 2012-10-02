@@ -18,13 +18,10 @@ package ch.cyberduck.ui.growl;
  *  dkocher@cyberduck.ch
  */
 
-import org.apache.log4j.Logger;
-
 /**
  * @version $Id$
  */
 public abstract class Growl {
-    private static Logger log = Logger.getLogger(Growl.class);
 
     private static Growl current = null;
 
