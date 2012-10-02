@@ -1,5 +1,5 @@
 // 
-// Copyright (c) 2010-2011 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -72,15 +72,18 @@ namespace Ch.Cyberduck.Ui.Controller
             StructureMapBootstrapper.Bootstrap();
             RegisterImplementations();
 
-            // Add the event handler for handling UI thread exceptions to the event.
-            System.Windows.Forms.Application.ThreadException += ExceptionHandler;
+            if (!Debugger.IsAttached)
+            {
+                // Add the event handler for handling UI thread exceptions to the event.
+                System.Windows.Forms.Application.ThreadException += ExceptionHandler;
 
-            // Set the unhandled exception mode to force all Windows Forms errors to go through
-            // our handler.
-            System.Windows.Forms.Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
+                // Set the unhandled exception mode to force all Windows Forms errors to go through
+                // our handler.
+                System.Windows.Forms.Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
 
-            // Add the event handler for handling non-UI thread exceptions to the event. 
-            AppDomain.CurrentDomain.UnhandledException += UnhandledExceptionHandler;
+                // Add the event handler for handling non-UI thread exceptions to the event. 
+                AppDomain.CurrentDomain.UnhandledException += UnhandledExceptionHandler;
+            }
 
             ConfigureLogging();
 
@@ -108,24 +111,24 @@ namespace Ch.Cyberduck.Ui.Controller
             Startup += ApplicationDidFinishLaunching;
             StartupNextInstance += StartupNextInstanceHandler;
             Shutdown += delegate
-                            {
-                                if (Preferences.instance().getBoolean("rendezvous.enable"))
-                                {
-                                    try
-                                    {
-                                        RendezvousFactory.instance().quit();
-                                    }
-                                    catch (SystemException se)
-                                    {
-                                        Logger.warn("No Bonjour support available", se);
-                                    }
-                                }
-                                Preferences.instance().setProperty("uses", Preferences.instance().getInteger("uses") + 1);
-                                Preferences.instance().save();
-                                // Shutdown thread pools
-                                AbstractController.getTimerPool().shutdownNow();
-                                ThreadPool.instance().shutdown();
-                            };
+                {
+                    if (Preferences.instance().getBoolean("rendezvous.enable"))
+                    {
+                        try
+                        {
+                            RendezvousFactory.instance().quit();
+                        }
+                        catch (SystemException se)
+                        {
+                            Logger.warn("No Bonjour support available", se);
+                        }
+                    }
+                    Preferences.instance().setProperty("uses", Preferences.instance().getInteger("uses") + 1);
+                    Preferences.instance().save();
+                    // Shutdown thread pools
+                    AbstractController.getTimerPool().shutdownNow();
+                    ThreadPool.instance().shutdown();
+                };
         }
 
         internal static MainController Application
@@ -319,7 +322,7 @@ namespace Ch.Cyberduck.Ui.Controller
             Logger.debug("ApplicationDidFinishLaunching");
             CommandsAfterLaunch(CommandLineArgs);
 
-            UpdateController.Instance.CheckForUpdatesIfNecessary();
+            //UpdateController.Instance.CheckForUpdatesIfNecessary();
 
             if (Preferences.instance().getBoolean("queue.openByDefault"))
             {
@@ -341,31 +344,31 @@ namespace Ch.Cyberduck.Ui.Controller
                                    });
             }
             //Registering for Growl is an expensive operation. Takes up to 500ms on my machine.
-            _bc.Background(delegate { ch.cyberduck.ui.growl.Growl.instance().register(); }, delegate { });
+            _bc.Background(delegate { ch.cyberduck.ui.growl.Growl.instance().setup(); }, delegate { });
 
             // User bookmarks and thirdparty applications
             CountdownEvent cde = new CountdownEvent(2);
 
             _bc.Background(delegate
-                               {
-                                   BookmarkCollection c = BookmarkCollection.defaultCollection();
-                                   c.load();
-                                   cde.Signal();
-                               }, delegate
-                                      {
-                                          if (Preferences.instance
-                                              ().getBoolean(
-                                                  "browser.openUntitled"))
-                                          {
-                                              if (
-                                                  Browsers.Count ==
-                                                  0)
-                                              {
-                                                  OpenDefaultBookmark
-                                                      (NewBrowser());
-                                              }
-                                          }
-                                      });
+                {
+                    BookmarkCollection c = BookmarkCollection.defaultCollection();
+                    c.load();
+                    cde.Signal();
+                }, delegate
+                    {
+                        if (Preferences.instance
+                            ().getBoolean(
+                                "browser.openUntitled"))
+                        {
+                            if (
+                                Browsers.Count ==
+                                0)
+                            {
+                                OpenDefaultBookmark
+                                    (NewBrowser());
+                            }
+                        }
+                    });
             _bc.Background(delegate { HistoryCollection.defaultCollection().load(); }, delegate { });
             _bc.Background(delegate { TransferCollection.defaultCollection().load(); }, delegate { });
 
@@ -421,25 +424,25 @@ namespace Ch.Cyberduck.Ui.Controller
             // Import thirdparty bookmarks.
             IList<ThirdpartyBookmarkCollection> thirdpartyBookmarks = GetThirdpartyBookmarks();
             _bc.Background(delegate
-                               {
-                                   foreach (ThirdpartyBookmarkCollection c in thirdpartyBookmarks)
-                                   {
-                                       if (!Preferences.instance().getBoolean(c.getConfiguration()))
-                                       {
-                                           if (!c.isInstalled())
-                                           {
-                                               Logger.info("No application installed for " + c.getBundleIdentifier());
-                                               continue;
-                                           }
-                                           c.load();
-                                           if (c.isEmpty())
-                                           {
-                                               // Flag as imported
-                                               Preferences.instance().setProperty(c.getConfiguration(), true);
-                                           }
-                                       }
-                                   }
-                               },
+                {
+                    foreach (ThirdpartyBookmarkCollection c in thirdpartyBookmarks)
+                    {
+                        if (!Preferences.instance().getBoolean(c.getConfiguration()))
+                        {
+                            if (!c.isInstalled())
+                            {
+                                Logger.info("No application installed for " + c.getBundleIdentifier());
+                                continue;
+                            }
+                            c.load();
+                            if (c.isEmpty())
+                            {
+                                // Flag as imported
+                                Preferences.instance().setProperty(c.getConfiguration(), true);
+                            }
+                        }
+                    }
+                },
                            delegate
                                {
                                    foreach (ThirdpartyBookmarkCollection c in thirdpartyBookmarks)
@@ -485,45 +488,45 @@ namespace Ch.Cyberduck.Ui.Controller
                                    cde.Signal();
                                });
             _bc.Background(delegate
-                               {
-                                   cde.Wait();
-                                   BookmarkCollection c = BookmarkCollection.defaultCollection();
-                                   if (c.isEmpty())
-                                   {
-                                       FolderBookmarkCollection defaults =
-                                           new FolderBookmarkCollection(LocalFactory.createLocal(
-                                               Preferences.instance().getProperty("application.bookmarks.path")
-                                                                            ));
-                                       defaults.load();
-                                       foreach (Host bookmark in defaults)
-                                       {
-                                           if (Logger.isDebugEnabled())
-                                           {
-                                               Logger.debug("Adding default bookmark:" + bookmark);
-                                           }
-                                           c.add(bookmark);
-                                       }
-                                   }
-                               }, delegate { });
+                {
+                    cde.Wait();
+                    BookmarkCollection c = BookmarkCollection.defaultCollection();
+                    if (c.isEmpty())
+                    {
+                        FolderBookmarkCollection defaults =
+                            new FolderBookmarkCollection(LocalFactory.createLocal(
+                                Preferences.instance().getProperty("application.bookmarks.path")
+                                                             ));
+                        defaults.load();
+                        foreach (Host bookmark in defaults)
+                        {
+                            if (Logger.isDebugEnabled())
+                            {
+                                Logger.debug("Adding default bookmark:" + bookmark);
+                            }
+                            c.add(bookmark);
+                        }
+                    }
+                }, delegate { });
         }
 
         private IList<ThirdpartyBookmarkCollection> GetThirdpartyBookmarks()
         {
             return new List<ThirdpartyBookmarkCollection>
-                       {
-                           new FilezillaBookmarkCollection(),
-                           new WinScpBookmarkCollection(),
-                           new SmartFtpBookmarkCollection(),
-                           new FlashFxp4BookmarkCollection(),
-                           new FlashFxp3BookmarkCollection(),
-                           new WsFtpBookmarkCollection(),
-                           new FireFtpBookmarkCollection(),
-                           new CrossFtpBookmarkCollection(),
-                           new CloudberryS3BookmarkCollection(),
-                           new CloudberryGoogleBookmarkCollection(),
-                           new CloudberryAzureBookmarkCollection(),
-                           new S3BrowserBookmarkCollection()
-                       };
+                {
+                    new FilezillaBookmarkCollection(),
+                    new WinScpBookmarkCollection(),
+                    new SmartFtpBookmarkCollection(),
+                    new FlashFxp4BookmarkCollection(),
+                    new FlashFxp3BookmarkCollection(),
+                    new WsFtpBookmarkCollection(),
+                    new FireFtpBookmarkCollection(),
+                    new CrossFtpBookmarkCollection(),
+                    new CloudberryS3BookmarkCollection(),
+                    new CloudberryGoogleBookmarkCollection(),
+                    new CloudberryAzureBookmarkCollection(),
+                    new S3BrowserBookmarkCollection()
+                };
         }
 
         /// <summary>
@@ -675,38 +678,38 @@ namespace Ch.Cyberduck.Ui.Controller
                                               true,
                                               Locale.localizedString("Don't ask again", "Configuration"),
                                               SysIcons.Warning, delegate(int option, bool verificationChecked)
-                                                                    {
-                                                                        if (verificationChecked)
-                                                                        {
-                                                                            // Never show again.
-                                                                            Preferences.instance().setProperty(
-                                                                                "browser.confirmDisconnect", false);
-                                                                        }
-                                                                        switch (option)
-                                                                        {
-                                                                            case -1: // Cancel
-                                                                                // Quit has been interrupted. Delete any saved sessions so far.
-                                                                                Application._sessions.clear();
-                                                                                return;
-                                                                            case 0: // Review
-                                                                                if (
-                                                                                    BrowserController.
-                                                                                        ApplicationShouldTerminate())
-                                                                                {
-                                                                                    break;
-                                                                                }
-                                                                                return;
-                                                                            case 1: // Quit
-                                                                                foreach (
-                                                                                    BrowserController c in
-                                                                                        new List<BrowserController>(
-                                                                                            Browsers))
-                                                                                {
-                                                                                    c.View.Dispose();
-                                                                                }
-                                                                                break;
-                                                                        }
-                                                                    });
+                                                  {
+                                                      if (verificationChecked)
+                                                      {
+                                                          // Never show again.
+                                                          Preferences.instance().setProperty(
+                                                              "browser.confirmDisconnect", false);
+                                                      }
+                                                      switch (option)
+                                                      {
+                                                          case -1: // Cancel
+                                                              // Quit has been interrupted. Delete any saved sessions so far.
+                                                              Application._sessions.clear();
+                                                              return;
+                                                          case 0: // Review
+                                                              if (
+                                                                  BrowserController.
+                                                                      ApplicationShouldTerminate())
+                                                              {
+                                                                  break;
+                                                              }
+                                                              return;
+                                                          case 1: // Quit
+                                                              foreach (
+                                                                  BrowserController c in
+                                                                      new List<BrowserController>(
+                                                                          Browsers))
+                                                              {
+                                                                  c.View.Dispose();
+                                                              }
+                                                              break;
+                                                      }
+                                                  });
                     }
                     else
                     {
@@ -735,35 +738,35 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             BrowserController controller = new BrowserController();
             controller.View.ViewClosingEvent += delegate(object sender, FormClosingEventArgs args)
-                                                    {
-                                                        if (args.Cancel)
-                                                        {
-                                                            return;
-                                                        }
-                                                        if (1 == Browsers.Count)
-                                                        {
-                                                            // last browser is about to close, check if we can terminate
-                                                            args.Cancel = !ApplicationShouldTerminate();
-                                                        }
-                                                    };
+                {
+                    if (args.Cancel)
+                    {
+                        return;
+                    }
+                    if (1 == Browsers.Count)
+                    {
+                        // last browser is about to close, check if we can terminate
+                        args.Cancel = !ApplicationShouldTerminate();
+                    }
+                };
             controller.View.ViewDisposedEvent += delegate
-                                                     {
-                                                         Browsers.Remove(controller);
-                                                         if (0 == Browsers.Count)
-                                                         {
-                                                             // Close/Dispose all non-browser forms (e.g. Transfers) to allow shutdown
-                                                             FormCollection forms = application.OpenForms;
-                                                             for (int i = forms.Count - 1; i >= 0; i--)
-                                                             {
-                                                                 forms[i].Dispose();
-                                                             }
-                                                             Exit();
-                                                         }
-                                                         else
-                                                         {
-                                                             application.MainForm = Browsers[0].View as Form;
-                                                         }
-                                                     };
+                {
+                    Browsers.Remove(controller);
+                    if (0 == Browsers.Count)
+                    {
+                        // Close/Dispose all non-browser forms (e.g. Transfers) to allow shutdown
+                        FormCollection forms = application.OpenForms;
+                        for (int i = forms.Count - 1; i >= 0; i--)
+                        {
+                            forms[i].Dispose();
+                        }
+                        Exit();
+                    }
+                    else
+                    {
+                        application.MainForm = Browsers[0].View as Form;
+                    }
+                };
             if (show)
             {
                 controller.View.Show();
