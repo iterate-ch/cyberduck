@@ -877,6 +877,7 @@ img/googledrive-icon.png -text svneol=unset#image/png
 img/googledrive-icon.tiff -text
 img/googledrive-icon@2x.png -text svneol=unset#image/png
 img/googledrive.icns -text
+img/googledrive.ico -text
 img/greenArrow1.png -text
 img/greenArrow2.png -text
 img/history.png -text svneol=unset#image/png
