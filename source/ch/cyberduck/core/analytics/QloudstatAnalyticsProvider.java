@@ -29,6 +29,7 @@ public class QloudstatAnalyticsProvider implements AnalyticsProvider {
     public String getSetup(final Protocol protocol, final String container,
                            final Credentials credentials) {
         if(!credentials.validate(protocol)) {
+            log.warn(String.format("No valid credentials for analytics setup in %s", container));
             return null;
         }
         final String setup = String.format("provider=%s,endpoint=%s,key=%s,secret=%s",
