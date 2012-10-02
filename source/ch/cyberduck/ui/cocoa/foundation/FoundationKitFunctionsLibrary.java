@@ -22,15 +22,19 @@ package ch.cyberduck.ui.cocoa.foundation;
 import org.rococoa.cocoa.foundation.NSRect;
 import org.rococoa.internal.RococoaTypeMapper;
 
+import java.util.Collections;
+
 import com.sun.jna.Library;
 import com.sun.jna.Native;
-
-import java.util.Collections;
 
 /**
  * @version $Id$
  */
-public class FoundationKitFunctionsLibrary {
+public final class FoundationKitFunctionsLibrary {
+
+    private FoundationKitFunctionsLibrary() {
+        //
+    }
 
     private static final FoundationKitFunctions instance = (FoundationKitFunctions) Native.loadLibrary(
             "Foundation", FoundationKitFunctions.class, Collections.singletonMap(Library.OPTION_TYPE_MAPPER, new RococoaTypeMapper()));

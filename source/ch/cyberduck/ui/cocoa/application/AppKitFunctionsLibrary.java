@@ -20,9 +20,13 @@ package ch.cyberduck.ui.cocoa.application;
  */
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
-public class AppKitFunctionsLibrary {
+public final class AppKitFunctionsLibrary {
+
+    private AppKitFunctionsLibrary() {
+        //
+    }
 
     public static void beep() {
         AppKitFunctions.instance.NSBeep();
