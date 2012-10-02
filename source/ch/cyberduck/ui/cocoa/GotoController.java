@@ -99,6 +99,7 @@ public class GotoController extends AlertController {
         super.invalidate();
     }
 
+    @Override
     public void callback(final int returncode) {
         if(returncode == DEFAULT_OPTION) {
             this.gotoFolder(((BrowserController) parent).workdir(), folderCombobox.stringValue());
