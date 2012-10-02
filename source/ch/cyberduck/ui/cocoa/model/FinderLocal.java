@@ -28,16 +28,7 @@ import ch.cyberduck.core.threading.DefaultMainAction;
 import ch.cyberduck.ui.cocoa.IconCache;
 import ch.cyberduck.ui.cocoa.ProxyController;
 import ch.cyberduck.ui.cocoa.application.NSWorkspace;
-import ch.cyberduck.ui.cocoa.foundation.NSArray;
-import ch.cyberduck.ui.cocoa.foundation.NSBundle;
-import ch.cyberduck.ui.cocoa.foundation.NSDate;
-import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
-import ch.cyberduck.ui.cocoa.foundation.NSDistributedNotificationCenter;
-import ch.cyberduck.ui.cocoa.foundation.NSFileManager;
-import ch.cyberduck.ui.cocoa.foundation.NSNotification;
-import ch.cyberduck.ui.cocoa.foundation.NSNumber;
-import ch.cyberduck.ui.cocoa.foundation.NSObject;
-import ch.cyberduck.ui.cocoa.foundation.NSString;
+import ch.cyberduck.ui.cocoa.foundation.*;
 
 import org.apache.commons.collections.map.AbstractLinkedMap;
 import org.apache.commons.collections.map.LRUMap;
@@ -420,7 +411,7 @@ public class FinderLocal extends Local {
             public void run() {
                 boolean success = NSFileManager.defaultManager().setAttributes_ofItemAtPath_error(
                         NSDictionary.dictionaryWithObjectsForKeys(
-                                NSArray.arrayWithObject(NSDate.dateWithTimeIntervalSince1970(modified / 1000)),
+                                NSArray.arrayWithObject(NSDate.dateWithTimeIntervalSince1970(modified / 1000d)),
                                 NSArray.arrayWithObject(NSFileManager.NSFileModificationDate)),
                         getAbsolute(), null);
                 if(!success) {

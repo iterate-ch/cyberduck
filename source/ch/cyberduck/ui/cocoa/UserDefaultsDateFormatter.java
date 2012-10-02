@@ -114,7 +114,7 @@ public class UserDefaultsDateFormatter extends AbstractDateFormatter implements 
      */
     private static NSDate toDate(long milliseconds) {
         // first convert to seconds instead of milliseconds
-        return NSDate.dateWithTimeIntervalSince1970(milliseconds / 1000);
+        return NSDate.dateWithTimeIntervalSince1970(milliseconds / 1000d);
     }
 
     /**

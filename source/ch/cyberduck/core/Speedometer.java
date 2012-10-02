@@ -63,7 +63,7 @@ public class Speedometer {
                 return -1;
             }
             // number of seconds data was actually transferred
-            double elapsedSeconds = (System.currentTimeMillis() - timestamp) / 1000;
+            double elapsedSeconds = (System.currentTimeMillis() - timestamp) / 1000d;
             if(elapsedSeconds > 1) {
                 double bytes = bytesTransferred - initialBytesTransferred;
                 // The throughput is usually measured in bits per second
