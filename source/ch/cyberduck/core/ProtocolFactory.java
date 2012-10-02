@@ -66,6 +66,7 @@ public final class ProtocolFactory {
         final Local profiles = LocalFactory.createLocal(Preferences.instance().getProperty("application.support.path"), "Profiles");
         if(profiles.exists()) {
             for(Local profile : profiles.children(new PathFilter<Local>() {
+                @Override
                 public boolean accept(Local file) {
                     return "cyberduckprofile".equals(FilenameUtils.getExtension(file.getName()));
                 }

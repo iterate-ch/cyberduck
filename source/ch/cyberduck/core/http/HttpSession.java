@@ -115,18 +115,22 @@ public abstract class HttpSession extends SSLSession {
                     new SSLSocketFactory(
                             new CustomTrustSSLProtocolSocketFactory(this.getTrustManager(hostname)).getSSLContext(),
                             new X509HostnameVerifier() {
+                                @Override
                                 public void verify(String host, SSLSocket ssl) throws IOException {
                                     log.warn("Hostname verification disabled for:" + host);
                                 }
 
+                                @Override
                                 public void verify(String host, X509Certificate cert) throws SSLException {
                                     log.warn("Hostname verification disabled for:" + host);
                                 }
 
+                                @Override
                                 public void verify(String host, String[] cns, String[] subjectAlts) throws SSLException {
                                     log.warn("Hostname verification disabled for:" + host);
                                 }
 
+                                @Override
                                 public boolean verify(String s, javax.net.ssl.SSLSession sslSession) {
                                     log.warn("Hostname verification disabled for:" + s);
                                     return true;
@@ -158,6 +162,7 @@ public abstract class HttpSession extends SSLSession {
 
     protected void configure(AbstractHttpClient client) {
         client.addRequestInterceptor(new HttpRequestInterceptor() {
+            @Override
             public void process(final HttpRequest request, final HttpContext context) throws HttpException, IOException {
                 log(true, request.getRequestLine().toString());
                 for(Header header : request.getAllHeaders()) {
@@ -166,6 +171,7 @@ public abstract class HttpSession extends SSLSession {
             }
         });
         client.addResponseInterceptor(new HttpResponseInterceptor() {
+            @Override
             public void process(final HttpResponse response, final HttpContext context) throws HttpException, IOException {
                 log(false, response.getStatusLine().toString());
                 for(Header header : response.getAllHeaders()) {

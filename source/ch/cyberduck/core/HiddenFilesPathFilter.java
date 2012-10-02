@@ -28,6 +28,7 @@ public class HiddenFilesPathFilter<E extends AbstractPath> implements PathFilter
     private Pattern pattern = Pattern.compile(
             Preferences.instance().getProperty("browser.hidden.regex"));
 
+    @Override
     public boolean accept(E file) {
         if(null == pattern) {
             return true;
