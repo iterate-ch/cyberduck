@@ -50,8 +50,12 @@ import org.apache.log4j.Logger;
 /**
  * @version $Id$
  */
-public class MainApplication {
+public final class MainApplication {
     private static Logger log = Logger.getLogger(MainApplication.class);
+
+    private MainApplication() {
+        //
+    }
 
     public static void main(String[] arguments) {
         final NSAutoreleasePool pool = NSAutoreleasePool.push();
