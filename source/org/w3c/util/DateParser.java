@@ -19,7 +19,11 @@ import java.util.TimeZone;
  * @author Yves Lafon (ylafon@w3.org)
  * @version $Revision$
  */
-public class DateParser {
+public final class DateParser {
+
+    private DateParser() {
+        //
+    }
 
     private static boolean check(StringTokenizer st, String token)
             throws InvalidDateException {
