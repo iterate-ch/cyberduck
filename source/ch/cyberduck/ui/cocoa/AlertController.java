@@ -33,10 +33,7 @@ import org.rococoa.ID;
 import org.rococoa.Rococoa;
 import org.rococoa.cocoa.foundation.NSRect;
 
-import org.apache.log4j.Logger;
-
 public abstract class AlertController extends SheetController {
-    protected static Logger log = Logger.getLogger(AlertController.class);
 
     /**
      * If using alert and no custom window

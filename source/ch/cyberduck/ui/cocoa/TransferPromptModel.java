@@ -39,7 +39,6 @@ import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.foundation.NSString;
 import ch.cyberduck.ui.cocoa.model.OutlinePathReference;
 
-import org.apache.log4j.Logger;
 import org.rococoa.Rococoa;
 import org.rococoa.cocoa.foundation.NSInteger;
 
@@ -50,7 +49,6 @@ import java.util.List;
  * @version $Id$
  */
 public abstract class TransferPromptModel extends OutlineDataSource {
-    protected static Logger log = Logger.getLogger(TransferPromptModel.class);
 
     /**
      *

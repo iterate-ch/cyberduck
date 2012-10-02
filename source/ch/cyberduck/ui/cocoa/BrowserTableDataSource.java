@@ -58,7 +58,7 @@ import java.util.Map;
  * @version $Id$
  */
 public abstract class BrowserTableDataSource extends ProxyController implements NSDraggingSource {
-    protected static Logger log = Logger.getLogger(BrowserTableDataSource.class);
+    private static final Logger log = Logger.getLogger(BrowserTableDataSource.class);
 
     public static final String ICON_COLUMN = "ICON";
     public static final String FILENAME_COLUMN = "FILENAME";

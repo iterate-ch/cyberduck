@@ -43,7 +43,7 @@ import org.rococoa.cocoa.foundation.NSUInteger;
  * @version $Id$
  */
 public class BrowserOutlineViewModel extends BrowserTableDataSource implements NSOutlineView.DataSource {
-    protected static Logger log = Logger.getLogger(BrowserOutlineViewModel.class);
+    private static final Logger log = Logger.getLogger(BrowserOutlineViewModel.class);
 
     public BrowserOutlineViewModel(BrowserController controller) {
         super(controller);

@@ -47,7 +47,7 @@ import ch.ethz.ssh2.KnownHosts;
  * @version $Id$
  */
 public class AlertHostKeyController extends MemoryHostKeyVerifier {
-    private static Logger log = Logger.getLogger(AlertHostKeyController.class);
+    private static final Logger log = Logger.getLogger(AlertHostKeyController.class);
 
     public static void register() {
         HostKeyControllerFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());

@@ -25,10 +25,13 @@ import ch.cyberduck.core.Transfer;
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
+import org.apache.log4j.Logger;
+
 /**
  * @version $Id$
  */
 public class UploadPromptModel extends TransferPromptModel {
+    private static final Logger log = Logger.getLogger(UploadPromptModel.class);
 
     public UploadPromptModel(TransferPromptController c, Transfer transfer) {
         super(c, transfer);

@@ -1284,7 +1284,7 @@ public final class PreferencesController extends ToolbarWindowController {
         }
     }
 
-    protected static NSDictionary RED_FONT = NSDictionary.dictionaryWithObjectsForKeys(
+    protected static final NSDictionary RED_FONT = NSDictionary.dictionaryWithObjectsForKeys(
             NSArray.arrayWithObjects(NSColor.redColor()),
             NSArray.arrayWithObjects(NSAttributedString.ForegroundColorAttributeName)
     );

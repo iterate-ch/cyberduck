@@ -18,14 +18,21 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathFilter;
+import ch.cyberduck.core.Status;
+import ch.cyberduck.core.SyncTransfer;
+import ch.cyberduck.core.Transfer;
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
+
+import org.apache.log4j.Logger;
 
 /**
  * @version $Id$
  */
 public class SyncPromptModel extends TransferPromptModel {
+    private static final Logger log = Logger.getLogger(SyncPromptModel.class);
 
     public SyncPromptModel(TransferPromptController c, Transfer transfer) {
         super(c, transfer);
