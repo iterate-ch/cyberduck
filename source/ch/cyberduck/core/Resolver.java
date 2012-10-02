@@ -125,6 +125,7 @@ public class Resolver implements Runnable {
     /**
      * Runs the hostname resolution in the background
      */
+    @Override
     public void run() {
         try {
             this.resolved = InetAddress.getByName(this.hostname);
