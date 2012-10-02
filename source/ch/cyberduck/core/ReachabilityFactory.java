@@ -41,7 +41,7 @@ public abstract class ReachabilityFactory extends Factory<Reachability> {
     public static Reachability instance() {
         if(null == diagnostics) {
             if(!factories.containsKey(NATIVE_PLATFORM)) {
-                throw new RuntimeException("No implementation for " + NATIVE_PLATFORM);
+                throw new FactoryException(String.format("No implementation for %s", NATIVE_PLATFORM));
             }
             diagnostics = factories.get(NATIVE_PLATFORM).create();
         }

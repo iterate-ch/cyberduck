@@ -19,6 +19,7 @@ package ch.cyberduck.core.serializer;
  */
 
 import ch.cyberduck.core.Factory;
+import ch.cyberduck.core.FactoryException;
 import ch.cyberduck.core.Transfer;
 
 import java.util.HashMap;
@@ -43,7 +44,7 @@ public abstract class TransferReaderFactory extends Factory<Reader<Transfer>> {
     public static Reader<Transfer> instance() {
         if(null == instance) {
             if(!factories.containsKey(NATIVE_PLATFORM)) {
-                throw new RuntimeException("No implementation for " + NATIVE_PLATFORM);
+                throw new FactoryException(String.format("No implementation for %s", NATIVE_PLATFORM));
             }
             instance = factories.get(NATIVE_PLATFORM).create();
         }

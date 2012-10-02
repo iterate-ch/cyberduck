@@ -46,7 +46,7 @@ public abstract class HostKeyControllerFactory extends Factory<HostKeyController
      */
     public static HostKeyController instance(Session s) {
         if(!factories.containsKey(NATIVE_PLATFORM)) {
-            throw new RuntimeException("No implementation for " + NATIVE_PLATFORM);
+            throw new FactoryException(String.format("No implementation for %s", NATIVE_PLATFORM));
         }
         return factories.get(NATIVE_PLATFORM).create(s);
     }
@@ -57,7 +57,7 @@ public abstract class HostKeyControllerFactory extends Factory<HostKeyController
      */
     public static HostKeyController instance(Controller c) {
         if(!factories.containsKey(NATIVE_PLATFORM)) {
-            throw new RuntimeException("No implementation for " + NATIVE_PLATFORM);
+            throw new FactoryException(String.format("No implementation for %s", NATIVE_PLATFORM));
         }
         return factories.get(NATIVE_PLATFORM).create(c);
     }

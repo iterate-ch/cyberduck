@@ -20,6 +20,7 @@ package ch.cyberduck.core.aquaticprime;
  */
 
 import ch.cyberduck.core.Factory;
+import ch.cyberduck.core.FactoryException;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.PathFilter;
@@ -58,6 +59,7 @@ public abstract class LicenseFactory extends Factory<License> {
         Local support = LocalFactory.createLocal(Preferences.instance().getProperty("application.support.path"));
         if(support.exists()) {
             for(Local key : support.children(new PathFilter<Local>() {
+                @Override
                 public boolean accept(Local file) {
                     return "cyberducklicense".equals(FilenameUtils.getExtension(file.getName()));
                 }
@@ -66,6 +68,7 @@ public abstract class LicenseFactory extends Factory<License> {
             }
             // No key found. Look for receipt
             for(Local key : support.children(new PathFilter<Local>() {
+                @Override
                 public boolean accept(Local file) {
                     return "cyberduckreceipt".equals(FilenameUtils.getExtension(file.getName()));
                 }
@@ -83,7 +86,7 @@ public abstract class LicenseFactory extends Factory<License> {
      */
     public static License create(Local file) {
         if(!factories.containsKey(NATIVE_PLATFORM)) {
-            throw new RuntimeException("No implementation for " + NATIVE_PLATFORM);
+            throw new FactoryException(String.format("No implementation for %s", NATIVE_PLATFORM));
         }
         return factories.get(NATIVE_PLATFORM).open(file);
     }
@@ -94,24 +97,28 @@ public abstract class LicenseFactory extends Factory<License> {
      */
     public static License find() {
         if(!factories.containsKey(NATIVE_PLATFORM)) {
-            throw new RuntimeException("No implementation for " + NATIVE_PLATFORM);
+            throw new FactoryException(String.format("No implementation for %s", NATIVE_PLATFORM));
         }
         return factories.get(NATIVE_PLATFORM).open();
     }
 
     public static final License EMPTY_LICENSE = new License() {
+        @Override
         public boolean verify() {
             return false;
         }
 
+        @Override
         public String getValue(String property) {
             return null;
         }
 
+        @Override
         public String getName() {
             return Locale.localizedString("Not a valid donation key", "License");
         }
 
+        @Override
         public boolean isReceipt() {
             return false;
         }

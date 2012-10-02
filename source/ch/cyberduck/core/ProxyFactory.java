@@ -41,7 +41,7 @@ public abstract class ProxyFactory extends Factory<Proxy> {
     public static Proxy instance() {
         if(null == proxy) {
             if(!factories.containsKey(NATIVE_PLATFORM)) {
-                throw new RuntimeException("No implementation for " + NATIVE_PLATFORM);
+                throw new FactoryException(String.format("No implementation for %s", NATIVE_PLATFORM));
             }
             proxy = factories.get(NATIVE_PLATFORM).create();
         }

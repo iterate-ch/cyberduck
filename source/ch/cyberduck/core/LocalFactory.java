@@ -38,7 +38,7 @@ public abstract class LocalFactory extends Factory<Local> {
 
     protected static LocalFactory getFactory() {
         if(!factories.containsKey(NATIVE_PLATFORM)) {
-            throw new RuntimeException("No implementation for " + NATIVE_PLATFORM);
+            throw new FactoryException(String.format("No implementation for %s", NATIVE_PLATFORM));
         }
         return factories.get(NATIVE_PLATFORM);
     }

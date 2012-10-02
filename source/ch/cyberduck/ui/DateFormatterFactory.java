@@ -20,6 +20,7 @@ package ch.cyberduck.ui;
  */
 
 import ch.cyberduck.core.Factory;
+import ch.cyberduck.core.FactoryException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -44,7 +45,7 @@ public abstract class DateFormatterFactory extends Factory<AbstractDateFormatter
     public static AbstractDateFormatter instance() {
         if(null == formatter) {
             if(!factories.containsKey(NATIVE_PLATFORM)) {
-                throw new RuntimeException("No implementation for " + NATIVE_PLATFORM);
+                throw new FactoryException(String.format("No implementation for %s", NATIVE_PLATFORM));
             }
             formatter = factories.get(NATIVE_PLATFORM).create();
         }
