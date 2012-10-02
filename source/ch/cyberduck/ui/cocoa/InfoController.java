@@ -1898,7 +1898,7 @@ public class InfoController extends ToolbarWindowController {
         boolean encryption = false;
         if(enable) {
             logging = ((CloudSession) session).isLoggingSupported();
-            analytics = ((CloudSession) session).isAnalyticsSupported();
+            analytics = session.isAnalyticsSupported();
             versioning = ((CloudSession) session).isVersioningSupported();
             encryption = ((CloudSession) session).getSupportedEncryptionAlgorithms().size() > 0;
             storageclass = ((CloudSession) session).getSupportedStorageClasses().size() > 1;
@@ -2627,7 +2627,7 @@ public class InfoController extends ToolbarWindowController {
             controller.background(new BrowserBackgroundAction(controller) {
                 @Override
                 public void run() {
-                    final CloudSession session = (CloudSession) controller.getSession();
+                    final Session session = controller.getSession();
                     if(distributionAnalyticsButton.state() == NSCell.NSOnState) {
                         final Distribution.Method method
                                 = Distribution.Method.forName(distributionDeliveryPopup.selectedItem().representedObject());
