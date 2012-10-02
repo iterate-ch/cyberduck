@@ -80,10 +80,10 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
             factory = context.getSocketFactory();
         }
         catch(NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException(e.getMessage(), e);
         }
         catch(KeyManagementException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException(e.getMessage(), e);
         }
     }
 
