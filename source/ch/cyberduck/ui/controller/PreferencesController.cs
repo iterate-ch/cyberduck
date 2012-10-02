@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2011 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -927,7 +927,8 @@ namespace Ch.Cyberduck.Ui.Controller
             View.ChmodUploadEnabled = View.ChmodUpload;
             View.ChmodUploadUseDefault =
                 Preferences.instance().getBoolean("queue.upload.permissions.useDefault");
-            View.ChmodUploadDefaultEnabled = View.ChmodUploadUseDefault;
+            View.ChmodUploadDefaultEnabled = Preferences.instance().getBoolean("queue.upload.changePermissions") &&
+                                             Preferences.instance().getBoolean("queue.upload.permissions.useDefault");
             View.ChmodUploadType = ForFiles;
             View_ChmodUploadTypeChangedEvent();
 
