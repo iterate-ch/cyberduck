@@ -19,15 +19,7 @@ package ch.cyberduck.ui.cocoa.foundation;
  * dkocher@cyberduck.ch
  */
 
-import org.rococoa.ObjCClass;
-
 public abstract class NSFormatter extends NSObject {
-    private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSFormatter", _Class.class);
-
-    public interface _Class extends ObjCClass {
-        NSFormatter alloc();
-    }
-
     /**
      * <i>native declaration : :15</i><br>
      * Conversion Error : /// Original signature : <code>NSString* stringForObjectValue(null)</code><br>
