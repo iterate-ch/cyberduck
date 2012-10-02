@@ -28,8 +28,8 @@ import ch.cyberduck.ui.cocoa.foundation.NSMutableDictionary;
 import java.util.List;
 
 /**
-* @version $Id$
-*/
+ * @version $Id$
+ */
 public class PlistSerializer implements Serializer {
 
     public static void register() {
@@ -53,14 +53,17 @@ public class PlistSerializer implements Serializer {
         this.dict = dict;
     }
 
+    @Override
     public void setStringForKey(String value, String key) {
         dict.setObjectForKey(value, key);
     }
 
+    @Override
     public void setObjectForKey(Serializable value, String key) {
         dict.setObjectForKey(value.<NSDictionary>getAsDictionary(), key);
     }
 
+    @Override
     public <T extends Serializable> void setListForKey(List<T> value, String key) {
         final NSMutableArray list = NSMutableArray.array();
         for(Serializable serializable : value) {
@@ -69,6 +72,7 @@ public class PlistSerializer implements Serializer {
         dict.setObjectForKey(list, key);
     }
 
+    @Override
     public NSDictionary getSerialized() {
         return dict;
     }

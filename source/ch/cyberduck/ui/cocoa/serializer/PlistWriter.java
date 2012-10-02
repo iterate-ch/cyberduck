@@ -18,7 +18,12 @@ package ch.cyberduck.ui.cocoa.serializer;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.Factory;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.Profile;
+import ch.cyberduck.core.Serializable;
+import ch.cyberduck.core.Transfer;
 import ch.cyberduck.core.serializer.HostWriterFactory;
 import ch.cyberduck.core.serializer.ProtocolWriterFactory;
 import ch.cyberduck.core.serializer.TransferWriterFactory;
@@ -59,6 +64,7 @@ public class PlistWriter<S extends Serializable> implements Writer<S> {
         }
     }
 
+    @Override
     public void write(Collection<S> collection, Local file) {
         NSMutableArray list = NSMutableArray.array();
         for(S bookmark : collection) {
@@ -67,6 +73,7 @@ public class PlistWriter<S extends Serializable> implements Writer<S> {
         list.writeToFile(file.getAbsolute());
     }
 
+    @Override
     public void write(S item, Local file) {
         item.<NSDictionary>getAsDictionary().writeToFile(file.getAbsolute());
     }

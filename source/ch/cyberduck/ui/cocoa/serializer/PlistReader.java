@@ -27,17 +27,17 @@ import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 import ch.cyberduck.ui.cocoa.foundation.NSEnumerator;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
+import org.apache.log4j.Logger;
 import org.rococoa.Rococoa;
 
-import org.apache.log4j.Logger;
-
 /**
- * @version $Id$
  * @param <S>
+ * @version $Id$
  */
 public abstract class PlistReader<S extends Serializable> implements Reader<S> {
     private static Logger log = Logger.getLogger(PlistReader.class);
 
+    @Override
     public Collection<S> readCollection(Local file) {
         final Collection<S> c = new Collection<S>();
         NSArray list = NSArray.arrayWithContentsOfFile(file.getAbsolute());
@@ -58,6 +58,7 @@ public abstract class PlistReader<S extends Serializable> implements Reader<S> {
      * @param file A valid bookmark dictionary
      * @return Null if the file cannot be deserialized
      */
+    @Override
     public S read(Local file) {
         NSDictionary dict = NSDictionary.dictionaryWithContentsOfFile(file.getAbsolute());
         if(null == dict) {

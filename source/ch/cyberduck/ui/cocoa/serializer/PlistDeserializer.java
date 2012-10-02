@@ -20,7 +20,11 @@ package ch.cyberduck.ui.cocoa.serializer;
 
 import ch.cyberduck.core.serializer.Deserializer;
 import ch.cyberduck.core.serializer.DeserializerFactory;
-import ch.cyberduck.ui.cocoa.foundation.*;
+import ch.cyberduck.ui.cocoa.foundation.NSArray;
+import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
+import ch.cyberduck.ui.cocoa.foundation.NSEnumerator;
+import ch.cyberduck.ui.cocoa.foundation.NSMutableDictionary;
+import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
 import org.rococoa.Rococoa;
 
@@ -54,6 +58,7 @@ public class PlistDeserializer implements Deserializer<NSDictionary> {
         this.dict = dict;
     }
 
+    @Override
     public String stringForKey(String key) {
         final NSObject value = dict.objectForKey(key);
         if(null == value) {
@@ -62,6 +67,7 @@ public class PlistDeserializer implements Deserializer<NSDictionary> {
         return value.toString();
     }
 
+    @Override
     public NSDictionary objectForKey(String key) {
         final NSObject value = dict.objectForKey(key);
         if(null == value) {
@@ -70,6 +76,7 @@ public class PlistDeserializer implements Deserializer<NSDictionary> {
         return Rococoa.cast(value, NSDictionary.class);
     }
 
+    @Override
     public List<NSDictionary> listForKey(String key) {
         final NSObject value = dict.objectForKey(key);
         if(null == value) {
