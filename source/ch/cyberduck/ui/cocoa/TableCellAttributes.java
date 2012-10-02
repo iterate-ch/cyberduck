@@ -30,7 +30,11 @@ import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 /**
  * @version $Id$
  */
-public class TableCellAttributes {
+public final class TableCellAttributes {
+
+    private TableCellAttributes() {
+        //
+    }
 
     public static final NSMutableParagraphStyle PARAGRAPH_STYLE_LEFT_ALIGNMENT_TRUNCATE_MIDDLE;
 
