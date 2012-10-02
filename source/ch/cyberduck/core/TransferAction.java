@@ -32,7 +32,8 @@ public abstract class TransferAction {
         actions.put(this.toString(), this);
     }
 
-    protected static Map<String, TransferAction> actions = new HashMap<String, TransferAction>();
+    protected static final Map<String, TransferAction> actions
+            = new HashMap<String, TransferAction>();
 
     @Override
     public abstract String toString();
