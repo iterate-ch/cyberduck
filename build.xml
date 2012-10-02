@@ -78,10 +78,6 @@
         </fileset>
     </path>
 
-    <taskdef name="junit" classname="org.apache.tools.ant.taskdefs.optional.junit.JUnitTask">
-        <classpath refid="build.classpath"/>
-    </taskdef>
-
     <target name="init">
         <echo message="ant version:	  ${ant.version}"/>
         <echo message="java version:  ${ant.java.version}"/>
@@ -216,21 +212,27 @@
     </target>
 
     <target name="test" depends="test-compile" description="Runs all test cases and generate report">
+        <taskdef name="junit" classname="org.apache.tools.ant.taskdefs.optional.junit.JUnitTask">
+            <classpath refid="build.classpath"/>
+        </taskdef>
+        <taskdef uri="antlib:org.jacoco.ant" resource="org/jacoco/ant/antlib.xml"/>
         <echo message="${build}/${configuration}"/>
-        <junit fork="yes" forkmode="once" printsummary="on" filtertrace="on" haltonfailure="no" showoutput="yes"
-               dir="${home}">
-            <classpath refid="test.classpath"/>
-            <formatter type="plain" usefile="false"/>
-            <formatter type="xml" extension=".xml" usefile="true"/>
-            <batchtest todir="${build.unittests.reports}">
-                <fileset dir="${build.unittests}">
-                    <include name="**/*Test.class"/>
-                </fileset>
-            </batchtest>
-            <sysproperty key="java.library.path" value="${build}/${configuration}"/>
-            <sysproperty key="jna.library.path" value="${build}/${configuration}"/>
-            <sysproperty key="jna.boot.library.path" value="${lib}"/>
-        </junit>
+        <jacoco:coverage destfile="${build}/jacoco.exec" xmlns:jacoco="antlib:org.jacoco.ant">
+            <junit fork="yes" forkmode="once" printsummary="on" filtertrace="on" haltonfailure="no" showoutput="yes"
+                   dir="${home}">
+                <classpath refid="test.classpath"/>
+                <formatter type="plain" usefile="false"/>
+                <formatter type="xml" extension=".xml" usefile="true"/>
+                <batchtest todir="${build.unittests.reports}">
+                    <fileset dir="${build.unittests}">
+                        <include name="**/*Test.class"/>
+                    </fileset>
+                </batchtest>
+                <sysproperty key="java.library.path" value="${build}/${configuration}"/>
+                <sysproperty key="jna.library.path" value="${build}/${configuration}"/>
+                <sysproperty key="jna.boot.library.path" value="${lib}"/>
+            </junit>
+        </jacoco:coverage>
         <junitreport todir="${build.unittests.reports}/html">
             <fileset dir="${build.unittests.reports}">
                 <include name="TEST-*.xml"/>
@@ -239,9 +241,8 @@
         </junitreport>
     </target>
 
-    <taskdef uri="antlib:org.sonar.ant" resource="org/sonar/ant/antlib.xml"/>
-
     <target name="sonar" depends="build">
+        <taskdef uri="antlib:org.sonar.ant" resource="org/sonar/ant/antlib.xml"/>
         <property name="sonar.projectName" value="${app.name}"/>
         <property name="sonar.projectKey" value="ch.cyberduck:cyberduck"/>
         <property name="sonar.projectVersion" value="${svn.revision}"/>
@@ -256,8 +257,9 @@
         <property name="sonar.jdbc.username" value="sonar"/>
         <property name="sonar.jdbc.password" value="sonar"/>
         <property name="sonar.jdbc.driverClassName" value="com.mysql.jdbc.Driver"/>
-        <property name="sonar.core.codeCoveragePlugin" value="jacoco"/>
         <property name="sonar.dynamicAnalysis" value="reuseReports"/>
+        <property name="sonar.core.codeCoveragePlugin" value="jacoco"/>
+        <property name="sonar.jacoco.reportPath" value="${build}/jacoco.exec"/>
         <property name="sonar.jacoco.antTargets" value="test"/>
         <sonar:sonar xmlns:sonar="antlib:org.sonar.ant"/>
     </target>
