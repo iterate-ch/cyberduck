@@ -108,10 +108,12 @@ public class SFTPSession extends Session {
             }
             this.message(Locale.localizedString("Starting SFTP subsystem", "Status"));
             client = new SFTPv3Client(this.getClient(), new PacketListener() {
+                @Override
                 public void read(String packet) {
                     SFTPSession.this.log(false, packet);
                 }
 
+                @Override
                 public void write(String packet) {
                     SFTPSession.this.log(true, packet);
                 }
@@ -149,6 +151,7 @@ public class SFTPSession extends Session {
 
         connection = new Connection(this.getHostname(), host.getPort(), this.getUserAgent());
         connection.addConnectionMonitor(new ConnectionMonitor() {
+            @Override
             public void connectionLost(Throwable reason) {
                 log.warn(String.format("Connection lost:%s", (null == reason) ? "Unknown" : reason.getMessage()));
                 interrupt();
@@ -387,6 +390,7 @@ public class SFTPSession extends Session {
                          * The callback may be invoked several times, depending on how
                          * many questions-sets the server sends
                          */
+                        @Override
                         public String[] replyToChallenge(String name, String instruction, int numPrompts, String[] prompt,
                                                          boolean[] echo) throws IOException {
                             log.debug("replyToChallenge:" + name);
@@ -489,7 +493,7 @@ public class SFTPSession extends Session {
                 this.getClient().sendIgnorePacket();
             }
             catch(IllegalStateException e) {
-                throw new ConnectionCanceledException();
+                throw new ConnectionCanceledException(e);
             }
         }
     }
