@@ -202,7 +202,7 @@
         </manifest>
     </target>
 
-    <target name="test-compile" depends="build">
+    <target name="test-compile" depends="compile">
         <javac debug="${debug}"
                encoding="utf-8"
                source="1.5"
@@ -242,9 +242,9 @@
     <taskdef uri="antlib:org.sonar.ant" resource="org/sonar/ant/antlib.xml"/>
 
     <target name="sonar" depends="build">
-        <property name="sonar.projectName" value="${app.name}" />
-        <property name="sonar.projectKey" value="ch.cyberduck:cyberduck" />
-        <property name="sonar.projectVersion" value="${svn.revision}" />
+        <property name="sonar.projectName" value="${app.name}"/>
+        <property name="sonar.projectKey" value="ch.cyberduck:cyberduck"/>
+        <property name="sonar.projectVersion" value="${svn.revision}"/>
         <property name="sonar.sources" value="${source}"/>
         <property name="sonar.tests" value="${unittests}"/>
         <property name="sonar.binaries" value="${build.classes}"/>
