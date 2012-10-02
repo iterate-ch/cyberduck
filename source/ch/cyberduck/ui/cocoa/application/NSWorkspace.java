@@ -28,8 +28,6 @@ import org.rococoa.ObjCClass;
 import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
-import com.sun.jna.NativeLong;
-
 /// <i>native declaration : :43</i>
 public abstract class NSWorkspace extends NSObject {
     private static final _Class CLASS = org.rococoa.Rococoa.createClass("NSWorkspace", _Class.class);

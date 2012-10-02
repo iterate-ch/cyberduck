@@ -22,7 +22,6 @@ package ch.cyberduck.ui.cocoa.application;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
 import org.rococoa.ObjCClass;
-import org.rococoa.Selector;
 
 /// <i>native declaration : :18</i>
 public abstract class NSTabViewItem extends NSObject {
