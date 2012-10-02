@@ -33,7 +33,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class MoveTransfer extends Transfer {
     private static Logger log = Logger.getLogger(MoveTransfer.class);
@@ -69,7 +69,7 @@ public class MoveTransfer extends Transfer {
     public <T> T getAsDictionary() {
         final Serializer dict = super.getSerializer();
         dict.setStringForKey(String.valueOf(Transfer.KIND_MOVE), "Kind");
-        return dict.<T>getSerialized();
+        return dict.getSerialized();
     }
 
     /**
@@ -120,6 +120,7 @@ public class MoveTransfer extends Transfer {
     }
 
     private final class MoveTransferFilter extends TransferFilter {
+        @Override
         public boolean accept(final Path source) {
             final Path destination = files.get(source);
             if(destination.attributes().isDirectory()) {

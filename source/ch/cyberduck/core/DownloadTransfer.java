@@ -105,7 +105,7 @@ public class DownloadTransfer extends Transfer {
     public <T> T getAsDictionary() {
         final Serializer dict = super.getSerializer();
         dict.setStringForKey(String.valueOf(KIND_DOWNLOAD), "Kind");
-        return dict.<T>getSerialized();
+        return dict.getSerialized();
     }
 
     /**

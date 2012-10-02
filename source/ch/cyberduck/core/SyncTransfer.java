@@ -52,7 +52,7 @@ public class SyncTransfer extends Transfer {
     public <T> T getAsDictionary() {
         final Serializer dict = super.getSerializer();
         dict.setStringForKey(String.valueOf(KIND_SYNC), "Kind");
-        return dict.<T>getSerialized();
+        return dict.getSerialized();
     }
 
     /**
