@@ -19,21 +19,31 @@ package ch.cyberduck.core.fs.kfs;
  * dkocher@cyberduck.ch
  */
 
-import com.sun.jna.*;
+import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
+
+import com.sun.jna.Callback;
+import com.sun.jna.IntegerType;
+import com.sun.jna.Library;
+import com.sun.jna.Native;
+import com.sun.jna.NativeLong;
+import com.sun.jna.Pointer;
+import com.sun.jna.PointerType;
+import com.sun.jna.Structure;
+import com.sun.jna.Union;
 import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.ptr.NativeLongByReference;
 import com.sun.jna.ptr.PointerByReference;
 
-import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
-
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public interface KfsLibrary extends Library {
     KfsLibrary INSTANCE = (KfsLibrary) Native.loadLibrary("KFS", KfsLibrary.class);
 
     public class size_t extends IntegerType {
+        private static final long serialVersionUID = -3572309021097406645L;
+
         public size_t() {
             this(0);
         }
