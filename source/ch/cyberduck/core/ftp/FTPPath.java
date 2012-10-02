@@ -26,6 +26,8 @@ import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.StreamListener;
+import ch.cyberduck.core.date.MDTMMillisecondsDateFormatter;
+import ch.cyberduck.core.date.MDTMSecondsDateFormatter;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.ui.DateFormatterFactory;
@@ -45,14 +47,12 @@ import java.io.OutputStream;
 import java.net.SocketTimeoutException;
 import java.text.MessageFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -458,7 +458,7 @@ public class FTPPath extends Path {
     }
 
     protected boolean parseListResponse(final AttributedList<Path> children,
-                                        FTPFileEntryParser parser, List<String> replies)  {
+                                        FTPFileEntryParser parser, List<String> replies) {
         if(null == replies) {
             // This is an empty directory
             return false;
@@ -604,26 +604,6 @@ public class FTPPath extends Path {
     }
 
     /**
-     * Format to interpret MTDM timestamp
-     */
-    private static final SimpleDateFormat tsFormatSeconds =
-            new SimpleDateFormat("yyyyMMddHHmmss");
-
-    static {
-        tsFormatSeconds.setTimeZone(TimeZone.getTimeZone("UTC"));
-    }
-
-    /**
-     * Format to interpret MTDM timestamp
-     */
-    private static final SimpleDateFormat tsFormatMilliseconds =
-            new SimpleDateFormat("yyyyMMddHHmmss.SSS");
-
-    static {
-        tsFormatMilliseconds.setTimeZone(TimeZone.getTimeZone("UTC"));
-    }
-
-    /**
      * Parse the timestamp using the MTDM format
      *
      * @param timestamp Date string
@@ -634,13 +614,13 @@ public class FTPPath extends Path {
             return -1;
         }
         try {
-            Date parsed = tsFormatSeconds.parse(timestamp);
+            Date parsed = new MDTMSecondsDateFormatter().parse(timestamp);
             return parsed.getTime();
         }
         catch(ParseException e) {
             log.warn("Failed to parse timestamp:" + e.getMessage());
             try {
-                Date parsed = tsFormatMilliseconds.parse(timestamp);
+                Date parsed = new MDTMMillisecondsDateFormatter().parse(timestamp);
                 return parsed.getTime();
             }
             catch(ParseException f) {
@@ -850,8 +830,10 @@ public class FTPPath extends Path {
         this.getSession().message(MessageFormat.format(Locale.localizedString("Changing timestamp of {0} to {1}", "Status"),
                 this.getName(), DateFormatterFactory.instance().getShortFormat(modified)));
         try {
+            final MDTMSecondsDateFormatter formatter = new MDTMSecondsDateFormatter();
             if(this.getSession().getClient().isFeatureSupported(FTPCommand.MFMT)) {
-                if(this.getSession().getClient().setModificationTime(this.getAbsolute(), tsFormatSeconds.format(modified))) {
+                if(this.getSession().getClient().setModificationTime(this.getAbsolute(),
+                        formatter.format(modified))) {
                     this.attributes().setModificationDate(modified);
                 }
             }
@@ -863,9 +845,9 @@ public class FTPPath extends Path {
                     // and the modification time is set to the value of the second element
                     // Accessed date, modified date, created date
                     if(this.getSession().getClient().sendSiteCommand("UTIME " + this.getAbsolute()
-                            + " " + tsFormatSeconds.format(new Date(modified))
-                            + " " + tsFormatSeconds.format(new Date(modified))
-                            + " " + tsFormatSeconds.format(new Date(created))
+                            + " " + formatter.format(new Date(modified))
+                            + " " + formatter.format(new Date(modified))
+                            + " " + formatter.format(new Date(created))
                             + " UTC")) {
                         this.attributes().setModificationDate(modified);
                         this.attributes().setCreationDate(created);

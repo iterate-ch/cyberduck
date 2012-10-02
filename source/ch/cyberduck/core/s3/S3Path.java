@@ -21,6 +21,7 @@ package ch.cyberduck.core.s3;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.cloud.CloudPath;
+import ch.cyberduck.core.date.RFC1123DateFormatter;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
 import ch.cyberduck.core.http.ResponseOutputStream;
 import ch.cyberduck.core.i18n.Locale;
@@ -59,7 +60,6 @@ import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.MessageFormat;
-import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -268,17 +268,6 @@ public class S3Path extends CloudPath {
         return acl;
     }
 
-    /**
-     * Format to RFC 1123 timestamp
-     * Expires: Thu, 01 Dec 1994 16:00:00 GMT
-     */
-    private SimpleDateFormat rfc1123 =
-            new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z", java.util.Locale.ENGLISH);
-
-    {
-        rfc1123.setTimeZone(TimeZone.getDefault());
-    }
-
     private static final String METADATA_HEADER_EXPIRES = "Expires";
 
     /**
@@ -293,7 +282,7 @@ public class S3Path extends CloudPath {
             // copy-in-place  (with the same bucket and object names for source and destination)
             // to update an object's metadata while leaving the object's data unchanged.
             final StorageObject target = this.getDetails();
-            target.addMetadata(METADATA_HEADER_EXPIRES, rfc1123.format(expiration));
+            target.addMetadata(METADATA_HEADER_EXPIRES, new RFC1123DateFormatter().format(expiration));
             this.getSession().getClient().updateObjectMetadata(this.getContainerName(), target);
         }
         catch(ServiceException e) {
@@ -719,6 +708,7 @@ public class S3Path extends CloudPath {
         final ThreadFactory threadFactory = new ThreadFactory() {
             private int threadCount = 1;
 
+            @Override
             public Thread newThread(Runnable r) {
                 Thread thread = new Thread(r);
                 thread.setName("multipart-" + threadCount++);
@@ -862,6 +852,7 @@ public class S3Path extends CloudPath {
         }
         log.info(String.format("Submit part %d to queue", partNumber));
         return pool.submit(new Callable<MultipartPart>() {
+            @Override
             public MultipartPart call() throws IOException, ServiceException {
                 Map<String, String> requestParameters = new HashMap<String, String>();
                 requestParameters.put("uploadId", multipart.getUploadId());
@@ -919,6 +910,7 @@ public class S3Path extends CloudPath {
             this.getSession().check();
         }
         DelayedHttpEntityCallable<StorageObject> command = new DelayedHttpEntityCallable<StorageObject>() {
+            @Override
             public StorageObject call(AbstractHttpEntity entity) throws IOException {
                 try {
                     entity.setContentType(new BasicHeader(HttpHeaders.CONTENT_TYPE, getLocal().getMimeType()));
@@ -932,6 +924,7 @@ public class S3Path extends CloudPath {
                 return part;
             }
 
+            @Override
             public long getContentLength() {
                 return contentLength;
             }
@@ -1096,6 +1089,7 @@ public class S3Path extends CloudPath {
         // Amazon S3 returns object versions in the order in which they were
         // stored, with the most recently stored returned first.
         Collections.sort(versionOrDeleteMarkers, new Comparator<BaseVersionOrDeleteMarker>() {
+            @Override
             public int compare(BaseVersionOrDeleteMarker o1, BaseVersionOrDeleteMarker o2) {
                 return o1.getLastModified().compareTo(o2.getLastModified());
             }

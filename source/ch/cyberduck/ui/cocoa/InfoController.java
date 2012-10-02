@@ -23,6 +23,7 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cloud.CloudPath;
 import ch.cyberduck.core.cloud.CloudSession;
+import ch.cyberduck.core.date.RFC1123DateFormatter;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.s3.S3Path;
 import ch.cyberduck.core.s3.S3Session;
@@ -60,7 +61,6 @@ import org.rococoa.cocoa.foundation.NSPoint;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
 import java.text.MessageFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -68,7 +68,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.TimeZone;
 
 /**
  * @version $Id$
@@ -1088,22 +1087,11 @@ public class InfoController extends ToolbarWindowController {
         this.addMetadataItem("Content-Encoding", StringUtils.EMPTY, true);
     }
 
-    /**
-     * Format to RFC 1123 timestamp
-     * Expires: Thu, 01 Dec 1994 16:00:00 GMT
-     */
-    private SimpleDateFormat rfc1123 =
-            new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z", java.util.Locale.ENGLISH);
-
-    {
-        rfc1123.setTimeZone(TimeZone.getDefault());
-    }
-
     @Action
     public void metadataAddExpiresClicked(ID sender) {
         final Calendar time = Calendar.getInstance();
         time.add(Calendar.SECOND, Preferences.instance().getInteger("s3.cache.seconds"));
-        this.addMetadataItem("Expires", rfc1123.format(time.getTime()));
+        this.addMetadataItem("Expires", new RFC1123DateFormatter().format(time.getTime()));
     }
 
     @Action
