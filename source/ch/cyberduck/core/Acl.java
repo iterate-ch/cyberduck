@@ -35,6 +35,7 @@ import java.util.Set;
  * @version $Id$
  */
 public class Acl extends HashMap<Acl.User, Set<Acl.Role>> {
+    private static final long serialVersionUID = 372192161904802600L;
 
     public static final Acl EMPTY = new Acl();
 
@@ -148,6 +149,7 @@ public class Acl extends HashMap<Acl.User, Set<Acl.Role>> {
             return this.getUser().toString() + ":" + this.getRole().toString();
         }
 
+        @Override
         public int compareTo(UserAndRole o) {
             return this.toString().compareTo(o.toString());
         }
@@ -215,6 +217,7 @@ public class Acl extends HashMap<Acl.User, Set<Acl.Role>> {
             return this.getIdentifier().hashCode();
         }
 
+        @Override
         public int compareTo(User o) {
             return this.getIdentifier().compareTo(o.getIdentifier());
         }
@@ -402,6 +405,7 @@ public class Acl extends HashMap<Acl.User, Set<Acl.Role>> {
             return this.getName().hashCode();
         }
 
+        @Override
         public int compareTo(Role o) {
             return this.getName().compareTo(o.getName());
         }
