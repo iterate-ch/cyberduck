@@ -38,6 +38,8 @@ public abstract class ReadMetadataWorker extends Worker<Map<String, String>> {
 
     private Map<String, Integer> count = new HashMap<String, Integer>();
     private Map<String, String> updated = new HashMap<String, String>() {
+        private static final long serialVersionUID = 832792761300696739L;
+
         @Override
         public String put(String key, String value) {
             int n = 0;
