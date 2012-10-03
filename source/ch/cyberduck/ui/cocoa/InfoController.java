@@ -1246,15 +1246,8 @@ public class InfoController extends ToolbarWindowController {
         this.iconImageView = iconImageView;
     }
 
-    /**
-     * Window title including the filename
-     */
-    private String title;
-
     @Override
     public void setWindow(NSWindow window) {
-        // Remember original window title
-        title = window.title();
         window.setShowsResizeIndicator(true);
         super.setWindow(window);
     }
