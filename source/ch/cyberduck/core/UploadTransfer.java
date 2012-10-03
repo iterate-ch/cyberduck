@@ -176,7 +176,7 @@ public class UploadTransfer extends Transfer {
         public void complete(Path file) {
             if(!file.status().isCanceled()) {
                 if(session.isAclSupported()) {
-                    ; // Currently handled in S3 only.
+                    // Currently handled in S3 only.
                 }
                 if(session.isUnixPermissionsSupported()) {
                     if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
