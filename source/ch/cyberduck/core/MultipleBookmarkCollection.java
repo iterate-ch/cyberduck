@@ -41,7 +41,7 @@ public class MultipleBookmarkCollection extends Collection<FolderBookmarkCollect
         return EMPTY;
     }
 
-    private static MultipleBookmarkCollection DEFAULT_COLLECTION = new MultipleBookmarkCollection(
+    private static final MultipleBookmarkCollection DEFAULT_COLLECTION = new MultipleBookmarkCollection(
             LocalFactory.createLocal(Preferences.instance().getProperty("application.support.path"), "Bookmarks")
     );
 
@@ -69,6 +69,7 @@ public class MultipleBookmarkCollection extends Collection<FolderBookmarkCollect
         }
         final AttributedList<Local> groups = folder.children(
                 new PathFilter<Local>() {
+                    @Override
                     public boolean accept(Local file) {
                         return file.attributes().isDirectory();
                     }
