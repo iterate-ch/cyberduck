@@ -380,6 +380,7 @@ public class FinderLocal extends Local {
     @Override
     public void writeUnixPermission(final Permission perm, final boolean recursive) {
         new ProxyController().invoke(new DefaultMainAction() {
+            @Override
             public void run() {
                 boolean success = NSFileManager.defaultManager().setAttributes_ofItemAtPath_error(
                         NSDictionary.dictionaryWithObjectsForKeys(
@@ -408,6 +409,7 @@ public class FinderLocal extends Local {
     @Override
     public void writeTimestamp(final long created, final long modified, final long accessed) {
         new ProxyController().invoke(new DefaultMainAction() {
+            @Override
             public void run() {
                 boolean success = NSFileManager.defaultManager().setAttributes_ofItemAtPath_error(
                         NSDictionary.dictionaryWithObjectsForKeys(
@@ -429,6 +431,7 @@ public class FinderLocal extends Local {
         if(this.exists()) {
             final Local file = this;
             new ProxyController().invoke(new DefaultMainAction() {
+                @Override
                 public void run() {
                     if(log.isDebugEnabled()) {
                         log.debug(String.format("Move %s to Trash", file));
@@ -506,6 +509,7 @@ public class FinderLocal extends Local {
             return;
         }
         new ProxyController().invoke(new DefaultMainAction() {
+            @Override
             public void run() {
                 setQuarantine(getAbsolute(), originUrl, dataUrl);
             }
@@ -536,6 +540,7 @@ public class FinderLocal extends Local {
             return;
         }
         new ProxyController().invoke(new DefaultMainAction() {
+            @Override
             public void run() {
                 setWhereFrom(getAbsolute(), dataUrl);
             }
@@ -568,6 +573,7 @@ public class FinderLocal extends Local {
             }
             final String path = this.getAbsolute();
             new ProxyController().invoke(new DefaultMainAction() {
+                @Override
                 public void run() {
                     if(-1 == progress) {
                         NSWorkspace.sharedWorkspace().setIcon_forFile_options(
