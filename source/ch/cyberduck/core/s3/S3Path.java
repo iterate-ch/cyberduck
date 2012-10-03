@@ -334,8 +334,8 @@ public class S3Path extends CloudPath {
                 final StorageObject target = this.getDetails();
                 HashMap<String, String> metadata = new HashMap<String, String>();
                 Map<String, Object> source = target.getModifiableMetadata();
-                for(String key : source.keySet()) {
-                    metadata.put(key, source.get(key).toString());
+                for(Map.Entry<String, Object> entry : source.entrySet()) {
+                    metadata.put(entry.getKey(), entry.getValue().toString());
                 }
                 this.attributes().setEncryption(target.getServerSideEncryptionAlgorithm());
                 this.attributes().setMetadata(metadata);
