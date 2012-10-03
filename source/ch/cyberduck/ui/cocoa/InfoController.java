@@ -2108,8 +2108,8 @@ public class InfoController extends ToolbarWindowController {
                 public void cleanup(Map<String, String> updated) {
                     try {
                         List<Header> m = new ArrayList<Header>();
-                        for(String key : updated.keySet()) {
-                            m.add(new Header(key, updated.get(key)));
+                        for(Map.Entry<String, String> key : updated.entrySet()) {
+                            m.add(new Header(key.getKey(), key.getValue()));
                         }
                         setMetadata(m);
                     }
