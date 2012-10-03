@@ -29,6 +29,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -85,9 +86,9 @@ public class Acl extends HashMap<Acl.User, Set<Acl.Role>> {
      */
     public List<UserAndRole> asList() {
         List<UserAndRole> grants = new ArrayList<UserAndRole>();
-        for(Acl.User user : this.keySet()) {
-            for(Acl.Role role : this.get(user)) {
-                grants.add(new UserAndRole(user, role));
+        for(Map.Entry<User, Set<Role>> user : this.entrySet()) {
+            for(Acl.Role role : user.getValue()) {
+                grants.add(new UserAndRole(user.getKey(), role));
             }
         }
         Collections.sort(grants);
