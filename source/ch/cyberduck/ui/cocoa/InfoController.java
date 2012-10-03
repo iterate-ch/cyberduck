@@ -1186,23 +1186,23 @@ public class InfoController extends ToolbarWindowController {
     }
 
     @Outlet
-    public NSButton ownerr;
+    private NSButton ownerr;
     @Outlet
-    public NSButton ownerw;
+    private NSButton ownerw;
     @Outlet
-    public NSButton ownerx;
+    private NSButton ownerx;
     @Outlet
-    public NSButton groupr;
+    private NSButton groupr;
     @Outlet
-    public NSButton groupw;
+    private NSButton groupw;
     @Outlet
-    public NSButton groupx;
+    private NSButton groupx;
     @Outlet
-    public NSButton otherr;
+    private NSButton otherr;
     @Outlet
-    public NSButton otherw;
+    private NSButton otherw;
     @Outlet
-    public NSButton otherx;
+    private NSButton otherx;
 
     public void setOwnerr(NSButton ownerr) {
         this.ownerr = ownerr;

@@ -803,6 +803,25 @@ public final class PreferencesController extends ToolbarWindowController {
         this.chmodDownloadDefaultCheckbox.setState(!enabled ? NSCell.NSOnState : NSCell.NSOffState);
     }
 
+    @Outlet
+    private NSButton downerr;
+    @Outlet
+    private NSButton downerw;
+    @Outlet
+    private NSButton downerx;
+    @Outlet
+    private NSButton dgroupr;
+    @Outlet
+    private NSButton dgroupw;
+    @Outlet
+    private NSButton dgroupx;
+    @Outlet
+    private NSButton dotherr;
+    @Outlet
+    private NSButton dotherw;
+    @Outlet
+    private NSButton dotherx;
+
     public void setDownerr(NSButton downerr) {
         this.downerr = downerr;
     }
@@ -839,6 +858,49 @@ public final class PreferencesController extends ToolbarWindowController {
         this.dotherx = dotherx;
     }
 
+    public void defaultPermissionsDownloadChanged(final ID sender) {
+        boolean[][] p = new boolean[3][3];
+
+        p[Permission.OWNER][Permission.READ] = (downerr.state() == NSCell.NSOnState);
+        p[Permission.OWNER][Permission.WRITE] = (downerw.state() == NSCell.NSOnState);
+        p[Permission.OWNER][Permission.EXECUTE] = (downerx.state() == NSCell.NSOnState);
+
+        p[Permission.GROUP][Permission.READ] = (dgroupr.state() == NSCell.NSOnState);
+        p[Permission.GROUP][Permission.WRITE] = (dgroupw.state() == NSCell.NSOnState);
+        p[Permission.GROUP][Permission.EXECUTE] = (dgroupx.state() == NSCell.NSOnState);
+
+        p[Permission.OTHER][Permission.READ] = (dotherr.state() == NSCell.NSOnState);
+        p[Permission.OTHER][Permission.WRITE] = (dotherw.state() == NSCell.NSOnState);
+        p[Permission.OTHER][Permission.EXECUTE] = (dotherx.state() == NSCell.NSOnState);
+
+        Permission permission = new Permission(p);
+        if(chmodDownloadTypePopup.selectedItem().tag() == 0) {
+            Preferences.instance().setProperty("queue.download.permissions.file.default", permission.getOctalString());
+        }
+        if(chmodDownloadTypePopup.selectedItem().tag() == 1) {
+            Preferences.instance().setProperty("queue.download.permissions.folder.default", permission.getOctalString());
+        }
+    }
+
+    @Outlet
+    private NSButton uownerr;
+    @Outlet
+    private NSButton uownerw;
+    @Outlet
+    private NSButton uownerx;
+    @Outlet
+    private NSButton ugroupr;
+    @Outlet
+    private NSButton ugroupw;
+    @Outlet
+    private NSButton ugroupx;
+    @Outlet
+    private NSButton uotherr;
+    @Outlet
+    private NSButton uotherw;
+    @Outlet
+    private NSButton uotherx;
+
     public void setUownerr(NSButton uownerr) {
         this.uownerr = uownerr;
     }
@@ -874,59 +936,6 @@ public final class PreferencesController extends ToolbarWindowController {
     public void setUotherx(NSButton uotherx) {
         this.uotherx = uotherx;
     }
-
-    @Outlet
-    private NSButton downerr;
-    @Outlet
-    private NSButton downerw;
-    @Outlet
-    private NSButton downerx;
-    @Outlet
-    private NSButton dgroupr;
-    @Outlet
-    private NSButton dgroupw;
-    @Outlet
-    private NSButton dgroupx;
-    @Outlet
-    private NSButton dotherr; //IBOutletdownerr
-    @Outlet
-    private NSButton dotherw;
-    @Outlet
-    private NSButton dotherx;
-
-    public void defaultPermissionsDownloadChanged(final ID sender) {
-        boolean[][] p = new boolean[3][3];
-
-        p[Permission.OWNER][Permission.READ] = (downerr.state() == NSCell.NSOnState);
-        p[Permission.OWNER][Permission.WRITE] = (downerw.state() == NSCell.NSOnState);
-        p[Permission.OWNER][Permission.EXECUTE] = (downerx.state() == NSCell.NSOnState);
-
-        p[Permission.GROUP][Permission.READ] = (dgroupr.state() == NSCell.NSOnState);
-        p[Permission.GROUP][Permission.WRITE] = (dgroupw.state() == NSCell.NSOnState);
-        p[Permission.GROUP][Permission.EXECUTE] = (dgroupx.state() == NSCell.NSOnState);
-
-        p[Permission.OTHER][Permission.READ] = (dotherr.state() == NSCell.NSOnState);
-        p[Permission.OTHER][Permission.WRITE] = (dotherw.state() == NSCell.NSOnState);
-        p[Permission.OTHER][Permission.EXECUTE] = (dotherx.state() == NSCell.NSOnState);
-
-        Permission permission = new Permission(p);
-        if(chmodDownloadTypePopup.selectedItem().tag() == 0) {
-            Preferences.instance().setProperty("queue.download.permissions.file.default", permission.getOctalString());
-        }
-        if(chmodDownloadTypePopup.selectedItem().tag() == 1) {
-            Preferences.instance().setProperty("queue.download.permissions.folder.default", permission.getOctalString());
-        }
-    }
-
-    public NSButton uownerr;
-    public NSButton uownerw;
-    public NSButton uownerx;
-    public NSButton ugroupr;
-    public NSButton ugroupw;
-    public NSButton ugroupx;
-    public NSButton uotherr;
-    public NSButton uotherw;
-    public NSButton uotherx;
 
     @Action
     public void defaultPermissionsUploadChanged(final NSButton sender) {
