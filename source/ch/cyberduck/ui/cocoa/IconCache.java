@@ -302,7 +302,7 @@ public final class IconCache {
 
     private final NSRect NSZeroRect = new NSRect(0, 0);
 
-    private static Local FOLDER_PATH
+    private static final Local FOLDER_PATH
             = LocalFactory.createLocal(Preferences.instance().getProperty("application.support.path"));
 
     private final NSImage FOLDER_ICON = this.iconForPath(FOLDER_PATH);
