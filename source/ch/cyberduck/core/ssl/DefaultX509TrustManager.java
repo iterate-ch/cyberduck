@@ -59,11 +59,13 @@ public class DefaultX509TrustManager implements X509TrustManager {
         this.standardTrustManager = (X509TrustManager) trustmanagers[0];
     }
 
+    @Override
     public void checkClientTrusted(X509Certificate[] x509Certificates, String authType)
             throws CertificateException {
         this.standardTrustManager.checkClientTrusted(x509Certificates, authType);
     }
 
+    @Override
     public void checkServerTrusted(X509Certificate[] x509Certificates, String authType)
             throws CertificateException {
         if((x509Certificates != null)) {
@@ -82,6 +84,7 @@ public class DefaultX509TrustManager implements X509TrustManager {
         }
     }
 
+    @Override
     public X509Certificate[] getAcceptedIssuers() {
         return this.standardTrustManager.getAcceptedIssuers();
     }

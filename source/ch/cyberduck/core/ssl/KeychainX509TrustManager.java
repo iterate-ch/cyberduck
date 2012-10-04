@@ -55,12 +55,14 @@ public abstract class KeychainX509TrustManager extends AbstractX509TrustManager 
      */
     public abstract String getHostname();
 
+    @Override
     public void checkClientTrusted(final X509Certificate[] x509Certificates, String authType)
             throws CertificateException {
 
         this.checkCertificates(x509Certificates);
     }
 
+    @Override
     public void checkServerTrusted(X509Certificate[] x509Certificates, String authType)
             throws CertificateException {
 
@@ -128,7 +130,7 @@ public abstract class KeychainX509TrustManager extends AbstractX509TrustManager 
     }
 
     @Override
-    public String chooseClientAlias(String[] keyType, Principal[] issuers, Socket socket) {
+    public String chooseClientAlias(final String[] keyType, final Principal[] issuers, final Socket socket) {
         try {
             final KeyStore s = this.init();
             // List of issuer distinguished name

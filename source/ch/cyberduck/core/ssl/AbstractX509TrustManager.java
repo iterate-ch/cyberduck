@@ -72,6 +72,7 @@ public abstract class AbstractX509TrustManager implements X509TrustManager, X509
     /**
      * @return All accepted certificates
      */
+    @Override
     public X509Certificate[] getAcceptedIssuers() {
         return this.accepted.toArray(new X509Certificate[this.accepted.size()]);
     }
@@ -119,6 +120,7 @@ public abstract class AbstractX509TrustManager implements X509TrustManager, X509
         return manager;
     }
 
+    @Override
     public String[] getClientAliases(String keyType, Principal[] issuers) {
         return this.init().getClientAliases(keyType, issuers);
     }
@@ -127,14 +129,17 @@ public abstract class AbstractX509TrustManager implements X509TrustManager, X509
      * Choose an alias to authenticate the client side of a secure socket given the public key type and the list of
      * certificate issuer authorities recognized by the peer (if any).
      */
+    @Override
     public String chooseClientAlias(String[] keyType, Principal[] issuers, Socket socket) {
         return this.init().chooseClientAlias(keyType, issuers, socket);
     }
 
+    @Override
     public String[] getServerAliases(String keyType, Principal[] issuers) {
         return this.init().getServerAliases(keyType, issuers);
     }
 
+    @Override
     public String chooseServerAlias(String keyType, Principal[] issuers, Socket socket) {
         return this.init().chooseServerAlias(keyType, issuers, socket);
     }
@@ -142,10 +147,12 @@ public abstract class AbstractX509TrustManager implements X509TrustManager, X509
     /**
      * Returns the certificate chain associated with the given alias.
      */
+    @Override
     public X509Certificate[] getCertificateChain(String alias) {
         return this.init().getCertificateChain(alias);
     }
 
+    @Override
     public PrivateKey getPrivateKey(String alias) {
         return this.init().getPrivateKey(alias);
     }

@@ -136,6 +136,7 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
     @Override
     public Socket createSocket() throws IOException {
         return this.handshake(new SocketGetter() {
+            @Override
             public Socket create() throws IOException {
                 return factory.createSocket();
             }
@@ -146,6 +147,7 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
     public Socket createSocket(final String host, final int port, final InetAddress clientHost, final int clientPort)
             throws IOException {
         return this.handshake(new SocketGetter() {
+            @Override
             public Socket create() throws IOException {
                 return factory.createSocket(host, port, clientHost, clientPort);
             }
@@ -155,6 +157,7 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
     @Override
     public Socket createSocket(final InetAddress host, final int port) throws IOException {
         return this.handshake(new SocketGetter() {
+            @Override
             public Socket create() throws IOException {
                 return factory.createSocket(host, port);
             }
@@ -164,6 +167,7 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
     @Override
     public Socket createSocket(final InetAddress host, final int port, final InetAddress localHost, final int localPort) throws IOException {
         return this.handshake(new SocketGetter() {
+            @Override
             public Socket create() throws IOException {
                 return factory.createSocket(host, port, localHost, localPort);
             }
@@ -173,6 +177,7 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
     @Override
     public Socket createSocket(final String host, final int port) throws IOException {
         return this.handshake(new SocketGetter() {
+            @Override
             public Socket create() throws IOException {
                 return factory.createSocket(host, port);
             }
@@ -183,6 +188,7 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
     public Socket createSocket(final Socket socket, final String host, final int port, final boolean autoClose)
             throws IOException {
         return this.handshake(new SocketGetter() {
+            @Override
             public Socket create() throws IOException {
                 return factory.createSocket(socket, host, port, autoClose);
             }
