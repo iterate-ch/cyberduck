@@ -117,7 +117,7 @@ public abstract class AbstractEditor {
                 final TransferOptions options = new TransferOptions();
                 options.closeSession = false;
                 options.quarantine = false;
-                Transfer download = new DownloadTransfer(edited) {
+                final Transfer download = new DownloadTransfer(edited) {
                     @Override
                     public TransferAction action(final boolean resumeRequested, final boolean reloadRequested) {
                         return getAction();
@@ -184,9 +184,9 @@ public abstract class AbstractEditor {
                     return;
                 }
                 lastchecksum = edited.getLocal().attributes().getChecksum();
-                TransferOptions options = new TransferOptions();
+                final TransferOptions options = new TransferOptions();
                 options.closeSession = false;
-                Transfer upload = new UploadTransfer(edited) {
+                final Transfer upload = new UploadTransfer(edited) {
                     @Override
                     public TransferAction action(final boolean resumeRequested, final boolean reloadRequested) {
                         return TransferAction.ACTION_OVERWRITE;
