@@ -18,13 +18,11 @@ package ch.cyberduck.ui.cocoa.delegate;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractHostCollection;
 import ch.cyberduck.core.HistoryCollection;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.ui.DateFormatterFactory;
 import ch.cyberduck.ui.cocoa.BrowserController;
-import ch.cyberduck.ui.cocoa.IconCache;
 import ch.cyberduck.ui.cocoa.MainController;
 import ch.cyberduck.ui.cocoa.TableCellAttributes;
 import ch.cyberduck.ui.cocoa.application.NSColor;
@@ -34,20 +32,20 @@ import ch.cyberduck.ui.cocoa.application.NSMenuItem;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
-
-import org.rococoa.Foundation;
-import org.rococoa.Selector;
-import org.rococoa.cocoa.foundation.NSInteger;
+import ch.cyberduck.ui.cocoa.resources.IconCache;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.rococoa.Foundation;
+import org.rococoa.Selector;
+import org.rococoa.cocoa.foundation.NSInteger;
 
 import java.util.Date;
 
 /**
  * @version $Id$
  */
-public abstract class HistoryMenuDelegate extends CollectionMenuDelegate<Host> {
+public abstract class HistoryMenuDelegate extends CollectionMenuDelegate {
     private static Logger log = Logger.getLogger(HistoryMenuDelegate.class);
 
     protected static final NSDictionary TIMESTAMP_FONT_ATTRIBUTES = NSDictionary.dictionaryWithObjectsForKeys(
@@ -137,7 +135,7 @@ public abstract class HistoryMenuDelegate extends CollectionMenuDelegate<Host> {
     public void historyMenuItemClicked(NSMenuItem sender) {
         log.debug("historyMenuItemClicked:" + sender);
         BrowserController controller = MainController.newDocument();
-        controller.mount(((AbstractHostCollection) this.collection()).lookup(sender.representedObject()));
+        controller.mount(this.collection().lookup(sender.representedObject()));
     }
 
     public void clearMenuItemClicked(NSMenuItem sender) {

@@ -18,26 +18,24 @@ package ch.cyberduck.ui.cocoa.delegate;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractHostCollection;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.RendezvousCollection;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.ui.cocoa.BrowserController;
-import ch.cyberduck.ui.cocoa.IconCache;
 import ch.cyberduck.ui.cocoa.MainController;
 import ch.cyberduck.ui.cocoa.application.NSMenu;
 import ch.cyberduck.ui.cocoa.application.NSMenuItem;
+import ch.cyberduck.ui.cocoa.resources.IconCache;
 
+import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.Selector;
 import org.rococoa.cocoa.foundation.NSInteger;
 
-import org.apache.log4j.Logger;
-
 /**
  * @version $Id$
  */
-public abstract class RendezvousMenuDelegate extends CollectionMenuDelegate<Host> {
+public abstract class RendezvousMenuDelegate extends CollectionMenuDelegate {
     private static Logger log = Logger.getLogger(RendezvousMenuDelegate.class);
 
     public RendezvousMenuDelegate() {
@@ -68,7 +66,7 @@ public abstract class RendezvousMenuDelegate extends CollectionMenuDelegate<Host
     public void rendezvousMenuClicked(NSMenuItem sender) {
         log.debug("rendezvousMenuClicked:" + sender);
         BrowserController controller = MainController.newDocument();
-        controller.mount(((AbstractHostCollection) this.collection()).lookup(sender.representedObject()));
+        controller.mount(this.collection().lookup(sender.representedObject()));
     }
 
     @Override

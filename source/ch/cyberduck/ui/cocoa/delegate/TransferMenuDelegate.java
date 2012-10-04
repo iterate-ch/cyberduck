@@ -21,9 +21,9 @@ package ch.cyberduck.ui.cocoa.delegate;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.ui.cocoa.IconCache;
 import ch.cyberduck.ui.cocoa.application.NSMenu;
 import ch.cyberduck.ui.cocoa.application.NSMenuItem;
+import ch.cyberduck.ui.cocoa.resources.IconCache;
 
 import org.rococoa.Foundation;
 import org.rococoa.Selector;

@@ -20,11 +20,11 @@ package ch.cyberduck.ui.cocoa.delegate;
 
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.i18n.Locale;
-import ch.cyberduck.ui.cocoa.IconCache;
 import ch.cyberduck.ui.cocoa.application.NSEvent;
 import ch.cyberduck.ui.cocoa.application.NSMenu;
 import ch.cyberduck.ui.cocoa.application.NSMenuItem;
 import ch.cyberduck.ui.cocoa.odb.EditorFactory;
+import ch.cyberduck.ui.cocoa.resources.IconCache;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.rococoa.Foundation;

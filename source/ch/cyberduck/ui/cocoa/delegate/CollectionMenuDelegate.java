@@ -19,8 +19,9 @@ package ch.cyberduck.ui.cocoa.delegate;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Collection;
+import ch.cyberduck.core.AbstractHostCollection;
 import ch.cyberduck.core.CollectionListener;
+import ch.cyberduck.core.Host;
 import ch.cyberduck.ui.cocoa.application.NSMenu;
 
 import org.rococoa.cocoa.foundation.NSInteger;
@@ -28,16 +29,16 @@ import org.rococoa.cocoa.foundation.NSInteger;
 /**
  * @version $Id$
  */
-public abstract class CollectionMenuDelegate<T> extends AbstractMenuDelegate implements CollectionListener<T> {
+public abstract class CollectionMenuDelegate extends AbstractMenuDelegate implements CollectionListener<Host> {
 
-    private Collection<T> collection;
+    private AbstractHostCollection collection;
 
-    public CollectionMenuDelegate(Collection<T> c) {
+    public CollectionMenuDelegate(AbstractHostCollection c) {
         this.collection = c;
         this.collection.addListener(this);
     }
 
-    protected Collection<T> collection() {
+    protected AbstractHostCollection collection() {
         return this.collection;
     }
 
@@ -56,17 +57,17 @@ public abstract class CollectionMenuDelegate<T> extends AbstractMenuDelegate imp
     }
 
     @Override
-    public void collectionItemAdded(T item) {
+    public void collectionItemAdded(Host item) {
         this.setNeedsUpdate(true);
     }
 
     @Override
-    public void collectionItemRemoved(T item) {
+    public void collectionItemRemoved(Host item) {
         this.setNeedsUpdate(true);
     }
 
     @Override
-    public void collectionItemChanged(T item) {
+    public void collectionItemChanged(Host item) {
         this.setNeedsUpdate(true);
     }
 

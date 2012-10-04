@@ -23,7 +23,6 @@ import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.ui.cocoa.Action;
-import ch.cyberduck.ui.cocoa.IconCache;
 import ch.cyberduck.ui.cocoa.TableCellAttributes;
 import ch.cyberduck.ui.cocoa.application.NSColor;
 import ch.cyberduck.ui.cocoa.application.NSFont;
@@ -32,6 +31,7 @@ import ch.cyberduck.ui.cocoa.application.NSMenuItem;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
+import ch.cyberduck.ui.cocoa.resources.IconCache;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;

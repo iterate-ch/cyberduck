@@ -18,25 +18,23 @@ package ch.cyberduck.ui.cocoa.delegate;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractHostCollection;
 import ch.cyberduck.core.BookmarkCollection;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.ui.cocoa.BrowserController;
-import ch.cyberduck.ui.cocoa.IconCache;
 import ch.cyberduck.ui.cocoa.MainController;
 import ch.cyberduck.ui.cocoa.application.NSMenu;
 import ch.cyberduck.ui.cocoa.application.NSMenuItem;
+import ch.cyberduck.ui.cocoa.resources.IconCache;
 
+import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
 import org.rococoa.Selector;
 import org.rococoa.cocoa.foundation.NSInteger;
 
-import org.apache.log4j.Logger;
-
 /**
  * @version $Id$
  */
-public class BookmarkMenuDelegate extends CollectionMenuDelegate<Host> {
+public class BookmarkMenuDelegate extends CollectionMenuDelegate {
     private static Logger log = Logger.getLogger(BookmarkMenuDelegate.class);
 
     public BookmarkMenuDelegate() {
@@ -93,7 +91,7 @@ public class BookmarkMenuDelegate extends CollectionMenuDelegate<Host> {
     public void bookmarkMenuItemClicked(final NSMenuItem sender) {
         log.debug("bookmarkMenuItemClicked:" + sender);
         BrowserController controller = MainController.newDocument();
-        controller.mount(((AbstractHostCollection)this.collection()).lookup(sender.representedObject()));
+        controller.mount(this.collection().lookup(sender.representedObject()));
     }
 
     @Override

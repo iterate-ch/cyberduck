@@ -52,7 +52,7 @@ public abstract class OpenURLMenuDelegate extends URLMenuDelegate {
 
     @Override
     public void handle(final List<String> selected) {
-        for(String url: selected) {
+        for(String url : selected) {
             BundleController.openUrl(url);
         }
     }
