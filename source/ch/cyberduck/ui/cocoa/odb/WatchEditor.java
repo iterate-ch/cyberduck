@@ -81,7 +81,7 @@ public class WatchEditor extends Editor implements FileWatcherListener {
      * @param c    Browser
      * @param path Remote file
      */
-    public WatchEditor(BrowserController c, Path path) {
+    public WatchEditor(final BrowserController c, final Path path) {
         this(c, path.getLocal().getDefaultApplication(), path);
     }
 
@@ -90,7 +90,7 @@ public class WatchEditor extends Editor implements FileWatcherListener {
      * @param bundleIdentifier Editor application
      * @param path             Remote file
      */
-    public WatchEditor(BrowserController c, String bundleIdentifier, Path path) {
+    public WatchEditor(final BrowserController c, final String bundleIdentifier, final Path path) {
         super(c, bundleIdentifier, path);
     }
 
@@ -125,6 +125,7 @@ public class WatchEditor extends Editor implements FileWatcherListener {
         super.delete();
     }
 
+    @Override
     public void fileWritten(Local file) {
         if(log.isInfoEnabled()) {
             log.info("fileWritten:" + file);
@@ -132,12 +133,14 @@ public class WatchEditor extends Editor implements FileWatcherListener {
         this.save();
     }
 
+    @Override
     public void fileRenamed(Local file) {
         if(log.isInfoEnabled()) {
             log.info("fileRenamed:" + file);
         }
     }
 
+    @Override
     public void fileDeleted(Local file) {
         if(log.isInfoEnabled()) {
             log.info("fileDeleted:" + file);
@@ -145,6 +148,7 @@ public class WatchEditor extends Editor implements FileWatcherListener {
         monitor.removeListener(this);
     }
 
+    @Override
     public void fileCreated(Local file) {
         if(log.isInfoEnabled()) {
             log.info("fileCreated:" + file);

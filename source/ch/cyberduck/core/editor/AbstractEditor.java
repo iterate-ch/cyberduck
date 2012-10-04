@@ -18,18 +18,7 @@ package ch.cyberduck.core.editor;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.DownloadTransfer;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LocalFactory;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathFactory;
-import ch.cyberduck.core.Permission;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.Transfer;
-import ch.cyberduck.core.TransferAction;
-import ch.cyberduck.core.TransferOptions;
-import ch.cyberduck.core.TransferPrompt;
-import ch.cyberduck.core.UploadTransfer;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.core.threading.BackgroundAction;
@@ -65,7 +54,7 @@ public abstract class AbstractEditor {
      */
     private String lastchecksum;
 
-    public AbstractEditor(Path path) {
+    public AbstractEditor(final Path path) {
         // Create a copy of the path as to not interfere with the browser. #5524
         this.edited = PathFactory.createPath(path.getSession(), path.<String>getAsDictionary());
         final Local folder = LocalFactory.createLocal(
@@ -120,7 +109,8 @@ public abstract class AbstractEditor {
      * Open the file in the parent directory
      */
     public void open() {
-        BackgroundAction<Void> background = new AbstractBackgroundAction<Void>() {
+        final BackgroundAction<Void> background = new AbstractBackgroundAction<Void>() {
+            @Override
             public void run() {
                 // Delete any existing file which might be used by a watch editor already
                 edited.getLocal().delete(Preferences.instance().getBoolean("editor.file.trash"));
@@ -139,6 +129,7 @@ public abstract class AbstractEditor {
                     }
                 };
                 download.start(new TransferPrompt() {
+                    @Override
                     public TransferAction prompt() {
                         return TransferAction.ACTION_OVERWRITE;
                     }
@@ -165,6 +156,9 @@ public abstract class AbstractEditor {
                 }
             }
         };
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Download file for edit %s", edited.getLocal().getAbsolute()));
+        }
         this.open(background);
     }
 
@@ -177,7 +171,8 @@ public abstract class AbstractEditor {
      * Upload changes to server if checksum of local file has changed since last edit.
      */
     public void save() {
-        BackgroundAction<Void> background = new AbstractBackgroundAction<Void>() {
+        final BackgroundAction<Void> background = new AbstractBackgroundAction<Void>() {
+            @Override
             public void run() {
                 // If checksum still the same no need for save
                 edited.getSession().message(MessageFormat.format(
@@ -198,6 +193,7 @@ public abstract class AbstractEditor {
                     }
                 };
                 upload.start(new TransferPrompt() {
+                    @Override
                     public TransferAction prompt() {
                         return TransferAction.ACTION_OVERWRITE;
                     }
@@ -220,6 +216,9 @@ public abstract class AbstractEditor {
                 }
             }
         };
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Upload changes for %s", edited.getLocal().getAbsolute()));
+        }
         this.save(background);
     }
 

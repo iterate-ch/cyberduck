@@ -28,9 +28,8 @@ import ch.cyberduck.ui.cocoa.foundation.NSEnumerator;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.threading.BrowserBackgroundAction;
 
-import org.rococoa.Rococoa;
-
 import org.apache.log4j.Logger;
+import org.rococoa.Rococoa;
 
 /**
  * @version $Id$
@@ -50,7 +49,7 @@ public abstract class Editor extends AbstractEditor {
      * @param bundleIdentifier Identifier of editor
      * @param path             Remote file
      */
-    public Editor(BrowserController controller, String bundleIdentifier, Path path) {
+    public Editor(final BrowserController controller, final String bundleIdentifier, final Path path) {
         super(path);
         this.controller = controller;
         this.bundleIdentifier = bundleIdentifier;
@@ -61,7 +60,11 @@ public abstract class Editor extends AbstractEditor {
      */
     @Override
     public void open(final BackgroundAction<Void> download) {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Open %s in %s", edited.getLocal().getAbsolute(), bundleIdentifier));
+        }
         controller.background(new BrowserBackgroundAction(controller) {
+            @Override
             public void run() {
                 download.run();
             }
@@ -88,6 +91,9 @@ public abstract class Editor extends AbstractEditor {
             NSDictionary app = Rococoa.cast(next, NSDictionary.class);
             final NSObject identifier = app.objectForKey("NSApplicationBundleIdentifier");
             if(identifier.toString().equals(bundleIdentifier)) {
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Found open application %s", bundleIdentifier));
+                }
                 return true;
             }
         }
@@ -99,8 +105,11 @@ public abstract class Editor extends AbstractEditor {
      */
     @Override
     protected void save(final BackgroundAction<Void> upload) {
-        log.debug("save");
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Save changes from %s for %s", bundleIdentifier, edited.getLocal().getAbsolute()));
+        }
         controller.background(new BrowserBackgroundAction(controller) {
+            @Override
             public void run() {
                 upload.run();
             }
