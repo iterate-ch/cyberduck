@@ -181,7 +181,7 @@ static ODBEditor	*_sharedODBEditor;
 	
 	// send the event
 	
-	status = AESend([appleEvent aeDesc], &reply, kAEWaitReply, kAENormalPriority, kAEDefaultTimeout, NULL, NULL);		
+	status = AESend([appleEvent aeDesc], &reply, kAEWaitReply, kAENormalPriority, 30, NULL, NULL);
 	
 	if (status == noErr)
 	{
