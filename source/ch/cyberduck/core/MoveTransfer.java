@@ -161,7 +161,9 @@ public class MoveTransfer extends Transfer {
 
     @Override
     public TransferFilter filter(final TransferAction action) {
-        log.debug("filter:" + action);
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Filter transfer with action %s", action.toString()));
+        }
         if(action.equals(TransferAction.ACTION_OVERWRITE)) {
             return MOVE_FILTER;
         }
