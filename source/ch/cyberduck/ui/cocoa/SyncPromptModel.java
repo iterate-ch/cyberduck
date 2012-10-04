@@ -25,6 +25,7 @@ import ch.cyberduck.core.SyncTransfer;
 import ch.cyberduck.core.Transfer;
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
+import ch.cyberduck.ui.cocoa.resources.IconCache;
 
 import org.apache.log4j.Logger;
 

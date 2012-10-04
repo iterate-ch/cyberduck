@@ -1,4 +1,4 @@
-package ch.cyberduck.ui.cocoa;
+package ch.cyberduck.ui.cocoa.resources;
 
 /*
  *  Copyright (c) 2005 David Kocher. All rights reserved.

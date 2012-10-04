@@ -37,6 +37,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 import ch.cyberduck.ui.cocoa.foundation.NSNotification;
 import ch.cyberduck.ui.cocoa.foundation.NSNotificationCenter;
+import ch.cyberduck.ui.cocoa.resources.IconCache;
 
 import org.apache.commons.lang.StringUtils;
 import org.rococoa.Foundation;

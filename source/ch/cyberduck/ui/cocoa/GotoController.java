@@ -28,6 +28,7 @@ import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.ui.cocoa.application.NSAlert;
 import ch.cyberduck.ui.cocoa.application.NSComboBox;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
+import ch.cyberduck.ui.cocoa.resources.IconCache;
 
 import org.apache.commons.lang.StringUtils;
 import org.rococoa.cocoa.foundation.NSInteger;
