@@ -18,12 +18,12 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.threading.ControllerMainAction;
 import ch.cyberduck.ui.cocoa.application.AppKitFunctionsLibrary;
 import ch.cyberduck.ui.cocoa.application.NSApplication;
 import ch.cyberduck.ui.cocoa.application.NSButton;
 import ch.cyberduck.ui.cocoa.application.NSPanel;
 import ch.cyberduck.ui.cocoa.application.NSWindow;
+import ch.cyberduck.ui.threading.ControllerMainAction;
 
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;

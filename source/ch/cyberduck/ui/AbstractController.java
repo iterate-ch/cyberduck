@@ -22,9 +22,9 @@ import ch.cyberduck.core.threading.ActionOperationBatcher;
 import ch.cyberduck.core.threading.ActionOperationBatcherFactory;
 import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.threading.BackgroundActionRegistry;
-import ch.cyberduck.core.threading.ControllerMainAction;
 import ch.cyberduck.core.threading.MainAction;
 import ch.cyberduck.core.threading.ThreadPool;
+import ch.cyberduck.ui.threading.ControllerMainAction;
 
 import org.apache.log4j.Logger;
 

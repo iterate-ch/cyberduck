@@ -18,8 +18,8 @@ package ch.cyberduck.ui.cocoa.threading;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.threading.ControllerMainAction;
 import ch.cyberduck.ui.cocoa.WindowController;
+import ch.cyberduck.ui.threading.ControllerMainAction;
 
 /**
  * @version $Id$

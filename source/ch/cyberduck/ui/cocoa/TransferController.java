@@ -23,7 +23,6 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
-import ch.cyberduck.core.threading.ControllerMainAction;
 import ch.cyberduck.ui.PathPasteboard;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.delegate.AbstractMenuDelegate;
@@ -38,6 +37,7 @@ import ch.cyberduck.ui.cocoa.threading.AlertRepeatableBackgroundAction;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 import ch.cyberduck.ui.cocoa.util.HyperlinkAttributedStringFactory;
 import ch.cyberduck.ui.cocoa.view.ControllerCell;
+import ch.cyberduck.ui.threading.ControllerMainAction;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
