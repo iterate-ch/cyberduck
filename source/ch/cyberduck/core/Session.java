@@ -23,8 +23,6 @@ import ch.cyberduck.core.analytics.QloudstatAnalyticsProvider;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.cloudfront.CloudFrontDistributionConfiguration;
-import ch.cyberduck.core.fs.Filesystem;
-import ch.cyberduck.core.fs.FilesystemFactory;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.identity.DefaultCDNCredentialsIdentityConfiguration;
 import ch.cyberduck.core.identity.IdentityConfiguration;
@@ -52,8 +50,6 @@ import java.util.Set;
  */
 public abstract class Session implements TranscriptListener {
     private static Logger log = Logger.getLogger(Session.class);
-
-    private Filesystem fs;
 
     /**
      * Encapsulating all the information of the remote host
@@ -267,14 +263,6 @@ public abstract class Session implements TranscriptListener {
      * @return Null if mount fails. Check the error listener for details.
      */
     public Path mount() {
-        return this.mount(Preferences.instance().getBoolean("disk.mount"));
-    }
-
-    /**
-     * @param filesystem Mount as filesystem
-     * @return Null if mount fails. Check the error listener for details.
-     */
-    protected Path mount(boolean filesystem) {
         this.message(MessageFormat.format(Locale.localizedString("Mounting {0}", "Status"),
                 host.getHostname()));
         try {
@@ -288,10 +276,6 @@ public abstract class Session implements TranscriptListener {
                 // The default path does not exist or is not readable due to possible permission issues
                 // Fallback to default working directory
                 directory = this.workdir();
-            }
-            if(filesystem) {
-                fs = FilesystemFactory.get();
-                fs.mount(this);
             }
             return directory;
         }
@@ -651,12 +635,6 @@ public abstract class Session implements TranscriptListener {
         log.debug("connectionWillClose");
         this.message(MessageFormat.format(Locale.localizedString("Disconnecting {0}", "Status"),
                 host.getHostname()));
-
-        if(null != fs) {
-            // Unmount filesystem first
-            fs.unmount();
-        }
-
         for(ConnectionListener listener : connectionListeners.toArray(new ConnectionListener[connectionListeners.size()])) {
             listener.connectionWillClose();
         }
