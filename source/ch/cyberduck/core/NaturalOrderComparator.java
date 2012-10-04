@@ -26,8 +26,8 @@ import java.util.Comparator;
  * @version $Id$
  */
 public class NaturalOrderComparator implements Comparator<String>, java.io.Serializable {
-
     private static final long serialVersionUID = -5851677380348435176L;
+
     private Collator collator = new NaturalOrderCollator();
 
     @Override

@@ -489,6 +489,7 @@ public abstract class Transfer implements Serializable {
                 failure = true;
             }
             for(Path child : children) {
+                // Recursive
                 this.transfer(child, filter, options);
                 if(!child.status().isComplete()) {
                     failure = true;

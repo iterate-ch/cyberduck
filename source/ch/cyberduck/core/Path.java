@@ -420,6 +420,7 @@ public abstract class Path extends AbstractPath implements Serializable {
      *         cache.
      * @see ch.cyberduck.core.Cache#lookup(PathReference)
      */
+    @Override
     public <T> PathReference<T> getReference() {
         if(null == reference) {
             reference = PathReferenceFactory.createPathReference(this);

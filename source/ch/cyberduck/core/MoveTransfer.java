@@ -153,7 +153,7 @@ public class MoveTransfer extends Transfer {
 
         @Override
         public void complete(Path p) {
-            ;
+            //
         }
     }
 

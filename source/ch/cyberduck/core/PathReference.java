@@ -23,9 +23,6 @@ package ch.cyberduck.core;
  */
 public abstract class PathReference<T> {
 
-    /**
-     * @return
-     */
     public abstract T unique();
 
     @Override
@@ -41,8 +38,6 @@ public abstract class PathReference<T> {
     /**
      * Comparing the hashcode.
      *
-     * @param other
-     * @return True if the hashcode is the same.
      * @see #hashCode()
      */
     @Override
