@@ -59,29 +59,8 @@ public class AttributedList<E extends AbstractPath> extends CopyOnWriteArrayList
         this.addAll(collection);
     }
 
-    private static final AttributedList<AbstractPath> EMPTY_LIST = new EmptyList();
-
     public static <T extends AbstractPath> AttributedList<T> emptyList() {
-        return (AttributedList<T>) EMPTY_LIST;
-    }
-
-    private static class EmptyList extends AttributedList<AbstractPath> {
-        private static final long serialVersionUID = -3141819895841964174L;
-
-        @Override
-        public int size() {
-            return 0;
-        }
-
-        @Override
-        public boolean contains(Object obj) {
-            return false;
-        }
-
-        @Override
-        public AbstractPath get(int index) {
-            throw new IndexOutOfBoundsException("Index: " + index);
-        }
+        return new AttributedList<T>();
     }
 
     /**
