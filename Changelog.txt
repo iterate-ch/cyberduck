@@ -8,6 +8,7 @@ Changelog. Last modified: $Date$
 - [Localize] Arabic Localization
 - [Feature] Retina resolution support (10.8) (#6760)
 - [Feature] Notification center support (10.8) (#6792)
+- [Feature] Gatekeeper support (10.8) (#6888)
 - [Feature] One click setup for analytics with Qloudstat (S3, CloudFront, Cloudfiles, Google Storage)
 - [Feature] Bucket location in South America (São Paulo) Region (S3)
 - [Feature] Multi-Object Delete (S3)

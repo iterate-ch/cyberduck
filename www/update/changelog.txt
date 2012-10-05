@@ -1,7 +1,5 @@
 4.2.2 [http://trac.cyberduck.ch/milestone/4.2.2]
 - [Localize] Arabic Localization
-- [Feature] Retina resolution support (10.8) (#6760)
-- [Feature] Notification center support (10.8) (#6792)
 - [Feature] One click setup for analytics with Qloudstat (S3, CloudFront, Cloudfiles, Google Storage)
 - [Feature] Bucket location in South America (Sao Paulo) Region (S3)
 - [Feature] Multi-Object Delete (S3)
@@ -11,8 +9,6 @@
 - [Bugfix] Copy folder from server to server (#6440)
 - [Bugfix] Duplicate folder (#6495)
 - [Bugfix] Interoperability with latest API (CloudFront)
-- [Bugfix] Crash in Rendezvous resolver (#6814)
-- [Bugfix] Java optional install required (App Store) (#6090)
 - [Bugfix] Changes in editor not uploaded when choosing save on close (#6590)
 - [Bugfix] Dropped support Azure Blob Storage connections (Azure)
 - [Bugfix] Dropped support Dropbox connections (Dropbox)
