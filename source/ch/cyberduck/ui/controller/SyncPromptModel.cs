@@ -100,11 +100,11 @@ namespace Ch.Cyberduck.Ui.Controller
             SyncTransfer.Comparison compare = ((SyncTransfer) Transfer).compare(p);
             if (compare.equals(SyncTransfer.COMPARISON_REMOTE_NEWER))
             {
-                return IconCache.Instance.IconForName("arrowDown", 16);
+                return IconCache.Instance.IconForName("transfer-download", 16);
             }
             if (compare.equals(SyncTransfer.COMPARISON_LOCAL_NEWER))
             {
-                return IconCache.Instance.IconForName("arrowUp", 16);
+                return IconCache.Instance.IconForName("transfer-upload", 16);
             }
             return null;
         }

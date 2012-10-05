@@ -189,6 +189,6 @@ public class MoveTransfer extends Transfer {
 
     @Override
     public String getImage() {
-        return "arrowUp.tiff";
+        return "transfer-upload.tiff";
     }
 }

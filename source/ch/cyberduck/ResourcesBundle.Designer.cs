@@ -97,7 +97,7 @@ namespace Ch.Cyberduck {
         
         internal static System.Drawing.Bitmap arrowDown {
             get {
-                object obj = ResourceManager.GetObject("arrowDown", resourceCulture);
+                object obj = ResourceManager.GetObject("transfer-download", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -118,7 +118,7 @@ namespace Ch.Cyberduck {
         
         internal static System.Drawing.Bitmap arrowUp {
             get {
-                object obj = ResourceManager.GetObject("arrowUp", resourceCulture);
+                object obj = ResourceManager.GetObject("transfer-upload", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

@@ -773,14 +773,8 @@ img/alert@2x.png -text svneol=unset#image/png
 img/aliasbadge.png -text svneol=unset#image/png
 img/aliasbadge.tiff -text
 img/aliasbadge@2x.png -text svneol=unset#image/png
-img/arrowDown.png -text svneol=unset#image/png
-img/arrowDown.tiff -text svneol=unset#image/tiff
-img/arrowDown@2x.png -text svneol=unset#image/png
 img/arrowLeftBlack16.tiff -text svneol=unset#image/tiff
 img/arrowRightBlack16.tiff -text svneol=unset#image/tiff
-img/arrowUp.png -text svneol=unset#image/png
-img/arrowUp.tiff -text svneol=unset#image/tiff
-img/arrowUp@2x.png -text svneol=unset#image/png
 img/arrowUpBlack16.tiff -text svneol=unset#image/tiff
 img/azure-icon.png -text svneol=unset#image/png
 img/azure-icon.tiff -text
@@ -986,6 +980,12 @@ img/sync.tiff -text svneol=unset#image/tiff
 img/sync@2x.png -text svneol=unset#image/png
 img/throbber.gif -text
 img/throbber_small.gif -text
+img/transfer-download.png -text svneol=unset#image/png
+img/transfer-download.tiff -text svneol=unset#image/tiff
+img/transfer-download@2x.png -text svneol=unset#image/png
+img/transfer-upload.png -text svneol=unset#image/png
+img/transfer-upload.tiff -text svneol=unset#image/tiff
+img/transfer-upload@2x.png -text svneol=unset#image/png
 img/transparent.tiff -text
 img/trash.png -text svneol=unset#image/png
 img/trash.tiff -text svneol=unset#image/tiff

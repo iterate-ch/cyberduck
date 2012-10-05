@@ -93,10 +93,10 @@ public class SyncPromptModel extends TransferPromptModel {
                     }
                 }
                 if(compare.equals(SyncTransfer.COMPARISON_REMOTE_NEWER)) {
-                    return tableViewCache.put(item, identifier, IconCache.iconNamed("arrowDown.tiff", 16));
+                    return tableViewCache.put(item, identifier, IconCache.iconNamed("transfer-download.tiff", 16));
                 }
                 if(compare.equals(SyncTransfer.COMPARISON_LOCAL_NEWER)) {
-                    return tableViewCache.put(item, identifier, IconCache.iconNamed("arrowUp.tiff", 16));
+                    return tableViewCache.put(item, identifier, IconCache.iconNamed("transfer-upload.tiff", 16));
                 }
                 return null;
             }

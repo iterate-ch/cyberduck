@@ -540,6 +540,6 @@ public class DownloadTransfer extends Transfer {
 
     @Override
     public String getImage() {
-        return "arrowDown.tiff";
+        return "transfer-download.tiff";
     }
 }
