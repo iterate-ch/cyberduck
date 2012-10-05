@@ -892,8 +892,14 @@ img/log.tiff -text
 img/log@2x.png -text svneol=unset#image/png
 img/multiple.ico -text
 img/nav-backward.png -text svneol=unset#image/png
+img/nav-backward.tiff -text
+img/nav-backward@2x.png -text svneol=unset#image/png
 img/nav-forward.png -text svneol=unset#image/png
+img/nav-forward.tiff -text
+img/nav-forward@2x.png -text svneol=unset#image/png
 img/nav-up.png -text svneol=unset#image/png
+img/nav-up.tiff -text
+img/nav-up@2x.png -text svneol=unset#image/png
 img/newfolder.png -text svneol=unset#image/png
 img/newfolder.tiff -text
 img/newfolder@2x.png -text svneol=unset#image/png
