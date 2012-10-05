@@ -1058,6 +1058,9 @@ public class InfoController extends ToolbarWindowController {
         this.metadataAddButton.addItemWithTitle("Content-Encoding");
         this.metadataAddButton.lastItem().setAction(Foundation.selector("metadataAddContentEncodingClicked:"));
         this.metadataAddButton.lastItem().setTarget(this.id());
+        this.metadataAddButton.addItemWithTitle("x-amz-website-redirect-location");
+        this.metadataAddButton.lastItem().setAction(Foundation.selector("metadataAddRedirectLocationClicked:"));
+        this.metadataAddButton.lastItem().setTarget(this.id());
     }
 
     /**
@@ -1086,6 +1089,11 @@ public class InfoController extends ToolbarWindowController {
     @Action
     public void metadataAddContentEncodingClicked(ID sender) {
         this.addMetadataItem("Content-Encoding", StringUtils.EMPTY, true);
+    }
+
+    @Action
+    public void metadataAddRedirectLocationClicked(ID sender) {
+        this.addMetadataItem("x-amz-website-redirect-location", StringUtils.EMPTY, true);
     }
 
     @Action
