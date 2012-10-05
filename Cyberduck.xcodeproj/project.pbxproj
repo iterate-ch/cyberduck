@@ -29,6 +29,7 @@
 		4718C208107AA445006FDEFA /* SystemConfigurationProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 4718C206107AA445006FDEFA /* SystemConfigurationProxy.m */; };
 		471B4909102C66600059687D /* Growl.h in Headers */ = {isa = PBXBuildFile; fileRef = 471B4905102C66600059687D /* Growl.h */; };
 		471B490B102C66600059687D /* Growl.m in Sources */ = {isa = PBXBuildFile; fileRef = 471B4907102C66600059687D /* Growl.m */; };
+		471D223B161F546B00332346 /* google-icon.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 471D223A161F546B00332346 /* google-icon.tiff */; };
 		471F5C2E12AD1B6B0005D323 /* Alert.strings in Resources */ = {isa = PBXBuildFile; fileRef = 471F5C0C12AD1B6B0005D323 /* Alert.strings */; };
 		472938A00F9DBC420086605D /* AquaticPrime.h in Headers */ = {isa = PBXBuildFile; fileRef = 4729389C0F9DBC420086605D /* AquaticPrime.h */; };
 		472938A10F9DBC420086605D /* License.h in Headers */ = {isa = PBXBuildFile; fileRef = 4729389D0F9DBC420086605D /* License.h */; };
@@ -528,6 +529,7 @@
 		4718C206107AA445006FDEFA /* SystemConfigurationProxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SystemConfigurationProxy.m; sourceTree = "<group>"; };
 		471B4905102C66600059687D /* Growl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Growl.h; sourceTree = "<group>"; };
 		471B4907102C66600059687D /* Growl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Growl.m; sourceTree = "<group>"; };
+		471D223A161F546B00332346 /* google-icon.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = "google-icon.tiff"; sourceTree = "<group>"; };
 		471D2C5405A2505600675163 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		471D2C5505A2505600675163 /* Cyberduck.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Cyberduck.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		471F5C0D12AD1B6B0005D323 /* pt_PT */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = pt_PT; path = pt_PT.lproj/Alert.strings; sourceTree = "<group>"; };
@@ -1890,6 +1892,7 @@
 				4767308D16108E1200B28D35 /* ftp-icon.tiff */,
 				4767308E16108E1200B28D35 /* gear.tiff */,
 				4767308F16108E1200B28D35 /* general.tiff */,
+				471D223A161F546B00332346 /* google-icon.tiff */,
 				4767309016108E1200B28D35 /* googledrive-icon.tiff */,
 				4767309116108E1200B28D35 /* history.tiff */,
 				4767309216108E1200B28D35 /* info.tiff */,
@@ -2623,6 +2626,7 @@
 				4767311216108ECF00B28D35 /* s3.icns in Resources */,
 				4767311316108ECF00B28D35 /* sftp.icns in Resources */,
 				4767311416108ECF00B28D35 /* swift.icns in Resources */,
+				471D223B161F546B00332346 /* google-icon.tiff in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
