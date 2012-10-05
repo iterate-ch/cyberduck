@@ -174,11 +174,11 @@ namespace Ch.Cyberduck.Ui.Winforms.Controls
             {
                 if (value == TransferDirection.Download)
                 {
-                    directionPictureBox.Image = ResourcesBundle.arrowDown;
+                    directionPictureBox.Image = ResourcesBundle.transfer_download;
                 }
                 if (value == TransferDirection.Upload)
                 {
-                    directionPictureBox.Image = ResourcesBundle.arrowUp;
+                    directionPictureBox.Image = ResourcesBundle.transfer_upload;
                 }
                 if (value == TransferDirection.Sync)
                 {

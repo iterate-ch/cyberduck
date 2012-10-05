@@ -773,9 +773,6 @@ img/alert@2x.png -text svneol=unset#image/png
 img/aliasbadge.png -text svneol=unset#image/png
 img/aliasbadge.tiff -text
 img/aliasbadge@2x.png -text svneol=unset#image/png
-img/arrowLeftBlack16.tiff -text svneol=unset#image/tiff
-img/arrowRightBlack16.tiff -text svneol=unset#image/tiff
-img/arrowUpBlack16.tiff -text svneol=unset#image/tiff
 img/azure-icon.png -text svneol=unset#image/png
 img/azure-icon.tiff -text
 img/azure-icon@2x.png -text svneol=unset#image/png
@@ -894,6 +891,9 @@ img/log.png -text
 img/log.tiff -text
 img/log@2x.png -text svneol=unset#image/png
 img/multiple.ico -text
+img/nav-backward.png -text svneol=unset#image/png
+img/nav-forward.png -text svneol=unset#image/png
+img/nav-up.png -text svneol=unset#image/png
 img/newfolder.png -text svneol=unset#image/png
 img/newfolder.tiff -text
 img/newfolder@2x.png -text svneol=unset#image/png

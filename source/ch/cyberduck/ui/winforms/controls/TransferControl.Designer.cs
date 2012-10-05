@@ -101,7 +101,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Controls
             // directionPictureBox
             // 
             this.directionPictureBox.BackColor = System.Drawing.SystemColors.Control;
-            this.directionPictureBox.Image = global::Ch.Cyberduck.ResourcesBundle.arrowDown;
+            this.directionPictureBox.Image = global::Ch.Cyberduck.ResourcesBundle.transfer_download;
             this.directionPictureBox.Location = new System.Drawing.Point(3, 3);
             this.directionPictureBox.Name = "directionPictureBox";
             this.directionPictureBox.Size = new System.Drawing.Size(32, 32);

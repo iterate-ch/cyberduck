@@ -95,48 +95,41 @@ namespace Ch.Cyberduck {
             }
         }
         
-        internal static System.Drawing.Bitmap arrowDown {
+        internal static System.Drawing.Bitmap transfer_download {
             get {
                 object obj = ResourceManager.GetObject("transfer-download", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
         
-        internal static System.Drawing.Bitmap arrowLeftBlack16 {
+        internal static System.Drawing.Bitmap nav_backward {
             get {
-                object obj = ResourceManager.GetObject("arrowLeftBlack16", resourceCulture);
+                object obj = ResourceManager.GetObject("nav-backward", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
         
-        internal static System.Drawing.Bitmap arrowRightBlack16 {
+        internal static System.Drawing.Bitmap nav_forward {
             get {
-                object obj = ResourceManager.GetObject("arrowRightBlack16", resourceCulture);
+                object obj = ResourceManager.GetObject("nav-forward", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
         
-        internal static System.Drawing.Bitmap arrowUp {
+        internal static System.Drawing.Bitmap transfer_upload {
             get {
                 object obj = ResourceManager.GetObject("transfer-upload", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
         
-        internal static System.Drawing.Bitmap arrowUpBlack {
+        internal static System.Drawing.Bitmap nav_up {
             get {
-                object obj = ResourceManager.GetObject("arrowUpBlack", resourceCulture);
+                object obj = ResourceManager.GetObject("nav-up", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
-        
-        internal static System.Drawing.Bitmap arrowUpBlack16 {
-            get {
-                object obj = ResourceManager.GetObject("arrowUpBlack16", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
+
         internal static System.Drawing.Icon azure {
             get {
                 object obj = ResourceManager.GetObject("azure", resourceCulture);

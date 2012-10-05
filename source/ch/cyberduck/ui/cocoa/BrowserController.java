@@ -1888,6 +1888,10 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         this.navigationButton = navigationButton;
         this.navigationButton.setTarget(this.id());
         this.navigationButton.setAction(Foundation.selector("navigationButtonClicked:"));
+        this.navigationButton.setImage_forSegment(IconCache.iconNamed("nav-backward.tiff"),
+                NAVIGATION_LEFT_SEGMENT_BUTTON);
+        this.navigationButton.setImage_forSegment(IconCache.iconNamed("nav-forward.tiff"),
+                NAVIGATION_RIGHT_SEGMENT_BUTTON);
     }
 
     @Action
@@ -1933,6 +1937,8 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         this.upButton = upButton;
         this.upButton.setTarget(this.id());
         this.upButton.setAction(Foundation.selector("upButtonClicked:"));
+        this.upButton.setImage_forSegment(IconCache.iconNamed("nav-up.tiff"),
+                NAVIGATION_UP_SEGMENT_BUTTON);
     }
 
     public void upButtonClicked(final ID sender) {
@@ -4283,7 +4289,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             }
             if(null == editor) {
                 // No editor found
-                item.setImage(IconCache.iconNamed("pencil.tiff"));
+                item.setImage(IconCache.iconNamed("pencil.tiff", 32));
             }
             else {
                 item.setImage(IconCache.instance().iconForApplication(editor, 32));
@@ -4300,7 +4306,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 item.setLabel(Locale.localizedString(TOOLBAR_DISCONNECT));
                 item.setPaletteLabel(Locale.localizedString(TOOLBAR_DISCONNECT));
                 item.setToolTip(Locale.localizedString("Disconnect from server"));
-                item.setImage(IconCache.iconNamed("eject.tiff"));
+                item.setImage(IconCache.iconNamed("eject.tiff", 32));
             }
         }
         else if(identifier.equals(TOOLBAR_ARCHIVE)) {
@@ -4362,7 +4368,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             item.setLabel(Locale.localizedString(TOOLBAR_NEW_CONNECTION));
             item.setPaletteLabel(Locale.localizedString(TOOLBAR_NEW_CONNECTION));
             item.setToolTip(Locale.localizedString("Connect to server"));
-            item.setImage(IconCache.iconNamed("connect.tiff"));
+            item.setImage(IconCache.iconNamed("connect.tiff", 32));
             item.setTarget(this.id());
             item.setAction(Foundation.selector("connectButtonClicked:"));
             return item;
@@ -4371,7 +4377,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             item.setLabel(Locale.localizedString(TOOLBAR_TRANSFERS));
             item.setPaletteLabel(Locale.localizedString(TOOLBAR_TRANSFERS));
             item.setToolTip(Locale.localizedString("Show Transfers window"));
-            item.setImage(IconCache.iconNamed("queue.tiff"));
+            item.setImage(IconCache.iconNamed("queue.tiff", 32));
             item.setAction(Foundation.selector("showTransferQueueClicked:"));
             return item;
         }
@@ -4434,7 +4440,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             item.setLabel(Locale.localizedString(TOOLBAR_REFRESH));
             item.setPaletteLabel(Locale.localizedString(TOOLBAR_REFRESH));
             item.setToolTip(Locale.localizedString("Refresh directory listing"));
-            item.setImage(IconCache.iconNamed("reload.tiff"));
+            item.setImage(IconCache.iconNamed("reload.tiff", 32));
             item.setTarget(this.id());
             item.setAction(Foundation.selector("reloadButtonClicked:"));
             return item;
@@ -4443,7 +4449,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             item.setLabel(Locale.localizedString(TOOLBAR_DOWNLOAD));
             item.setPaletteLabel(Locale.localizedString(TOOLBAR_DOWNLOAD));
             item.setToolTip(Locale.localizedString("Download file"));
-            item.setImage(IconCache.iconNamed("download.tiff"));
+            item.setImage(IconCache.iconNamed("download.tiff", 32));
             item.setTarget(this.id());
             item.setAction(Foundation.selector("downloadButtonClicked:"));
             return item;
@@ -4452,7 +4458,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             item.setLabel(Locale.localizedString(TOOLBAR_UPLOAD));
             item.setPaletteLabel(Locale.localizedString(TOOLBAR_UPLOAD));
             item.setToolTip(Locale.localizedString("Upload local file to the remote host"));
-            item.setImage(IconCache.iconNamed("upload.tiff"));
+            item.setImage(IconCache.iconNamed("upload.tiff", 32));
             item.setTarget(this.id());
             item.setAction(Foundation.selector("uploadButtonClicked:"));
             return item;
@@ -4461,7 +4467,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             item.setLabel(Locale.localizedString(TOOLBAR_SYNCHRONIZE));
             item.setPaletteLabel(Locale.localizedString(TOOLBAR_SYNCHRONIZE));
             item.setToolTip(Locale.localizedString("Synchronize files"));
-            item.setImage(IconCache.iconNamed("sync.tiff"));
+            item.setImage(IconCache.iconNamed("sync.tiff", 32));
             item.setTarget(this.id());
             item.setAction(Foundation.selector("syncButtonClicked:"));
             return item;
@@ -4470,7 +4476,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             item.setLabel(Locale.localizedString(TOOLBAR_GET_INFO));
             item.setPaletteLabel(Locale.localizedString(TOOLBAR_GET_INFO));
             item.setToolTip(Locale.localizedString("Show file attributes"));
-            item.setImage(IconCache.iconNamed("info.tiff"));
+            item.setImage(IconCache.iconNamed("info.tiff", 32));
             item.setTarget(this.id());
             item.setAction(Foundation.selector("infoButtonClicked:"));
             return item;
@@ -4482,7 +4488,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             final String browser = URLSchemeHandlerConfiguration.instance().getDefaultHandlerForURLScheme("http");
             if(null == browser) {
                 item.setEnabled(false);
-                item.setImage(IconCache.iconNamed("notfound.tiff"));
+                item.setImage(IconCache.iconNamed("notfound.tiff", 32));
             }
             else {
                 item.setImage(IconCache.instance().iconForApplication(browser, 32));
@@ -4512,7 +4518,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             item.setLabel(Locale.localizedString(TOOLBAR_DELETE));
             item.setPaletteLabel(Locale.localizedString(TOOLBAR_DELETE));
             item.setToolTip(Locale.localizedString("Delete file"));
-            item.setImage(IconCache.iconNamed("delete.tiff"));
+            item.setImage(IconCache.iconNamed("delete.tiff", 32));
             item.setTarget(this.id());
             item.setAction(Foundation.selector("deleteFileButtonClicked:"));
             return item;
@@ -4539,7 +4545,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             item.setLabel(Locale.localizedString(TOOLBAR_DISCONNECT));
             item.setPaletteLabel(Locale.localizedString(TOOLBAR_DISCONNECT));
             item.setToolTip(Locale.localizedString("Disconnect from server"));
-            item.setImage(IconCache.iconNamed("eject.tiff"));
+            item.setImage(IconCache.iconNamed("eject.tiff", 32));
             item.setTarget(this.id());
             item.setAction(Foundation.selector("disconnectButtonClicked:"));
             return item;
@@ -4553,7 +4559,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 final Local terminal = LocalFactory.createLocal(app);
                 item.setLabel(terminal.getDisplayName());
                 item.setPaletteLabel(terminal.getDisplayName());
-                item.setImage(IconCache.instance().iconForPath(terminal, 128));
+                item.setImage(IconCache.instance().iconForPath(terminal, 32));
             }
             item.setTarget(this.id());
             item.setAction(Foundation.selector("openTerminalButtonClicked:"));
@@ -4563,7 +4569,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             final String t = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier("com.apple.archiveutility");
             item.setLabel(Locale.localizedString("Archive", "Archive"));
             item.setPaletteLabel(Locale.localizedString("Archive", "Archive"));
-            item.setImage(IconCache.instance().iconForPath(LocalFactory.createLocal(t), 128));
+            item.setImage(IconCache.instance().iconForPath(LocalFactory.createLocal(t), 32));
             item.setTarget(this.id());
             item.setAction(Foundation.selector("archiveButtonClicked:"));
             return item;
@@ -4584,7 +4590,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             }
             else {
                 item.setEnabled(false);
-                item.setImage(IconCache.iconNamed("notfound.tiff"));
+                item.setImage(IconCache.iconNamed("notfound.tiff", 32));
             }
             return item;
         }
@@ -4592,7 +4598,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             item.setLabel(Locale.localizedString(TOOLBAR_LOG));
             item.setPaletteLabel(Locale.localizedString(TOOLBAR_LOG));
             item.setToolTip(Locale.localizedString("Toggle Log Drawer"));
-            item.setImage(IconCache.iconNamed("log"));
+            item.setImage(IconCache.iconNamed("log", 32));
             item.setTarget(this.id());
             item.setAction(Foundation.selector("toggleLogDrawer:"));
             return item;
