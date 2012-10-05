@@ -2678,7 +2678,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // parentPathButton
             // 
             this.parentPathButton.FlatAppearance.BorderSize = 0;
-            this.parentPathButton.Image = global::Ch.Cyberduck.ResourcesBundle.nav-up;
+            this.parentPathButton.Image = global::Ch.Cyberduck.ResourcesBundle.nav_up;
             this.parentPathButton.Location = new System.Drawing.Point(867, 3);
             this.parentPathButton.Name = "parentPathButton";
             this.parentPathButton.Size = new System.Drawing.Size(35, 25);
@@ -2700,7 +2700,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // historyForwardButton
             // 
             this.historyForwardButton.FlatAppearance.BorderSize = 0;
-            this.historyForwardButton.Image = global::Ch.Cyberduck.ResourcesBundle.nav-forward;
+            this.historyForwardButton.Image = global::Ch.Cyberduck.ResourcesBundle.nav_forward;
             this.historyForwardButton.Location = new System.Drawing.Point(173, 3);
             this.historyForwardButton.Name = "historyForwardButton";
             this.historyForwardButton.Size = new System.Drawing.Size(35, 25);
@@ -2711,7 +2711,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.historyBackButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.historyBackButton.FlatAppearance.BorderSize = 0;
-            this.historyBackButton.Image = global::Ch.Cyberduck.ResourcesBundle.nav-backward;
+            this.historyBackButton.Image = global::Ch.Cyberduck.ResourcesBundle.nav_backward;
             this.historyBackButton.Location = new System.Drawing.Point(132, 3);
             this.historyBackButton.Name = "historyBackButton";
             this.historyBackButton.Size = new System.Drawing.Size(35, 25);
