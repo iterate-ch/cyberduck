@@ -19,6 +19,7 @@ using System;
 using ch.cyberduck.core.threading;
 using ch.cyberduck.ui;
 using Ch.Cyberduck.Ui.Controller.Threading;
+using ch.cyberduck.ui.threading;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
