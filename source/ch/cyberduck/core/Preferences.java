@@ -213,7 +213,7 @@ public abstract class Preferences {
         defaults.put(String.format("protocol.%s.enable", Protocol.WEBDAV_SSL), String.valueOf(true));
         defaults.put(String.format("protocol.%s.enable", Protocol.S3_SSL), String.valueOf(true));
         defaults.put(String.format("protocol.%s.enable", Protocol.GOOGLESTORAGE_SSL), String.valueOf(true));
-        defaults.put(String.format("protocol.%s.enable", Protocol.EUCALYPTUS), String.valueOf(true));
+        defaults.put(String.format("protocol.%s.enable", Protocol.EUCALYPTUS), String.valueOf(false));
         defaults.put(String.format("protocol.%s.enable", Protocol.CLOUDFILES), String.valueOf(true));
         defaults.put(String.format("protocol.%s.enable", Protocol.SWIFT), String.valueOf(true));
         defaults.put(String.format("protocol.%s.enable", Protocol.GDOCS_SSL), String.valueOf(true));
