@@ -628,7 +628,7 @@ public abstract class Protocol {
 
         @Override
         public String icon() {
-            return "eucalyptus-icon";
+            return S3_SSL.icon();
         }
 
         @Override

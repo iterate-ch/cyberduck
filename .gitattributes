@@ -845,7 +845,6 @@ img/editPressed@2x.png -text svneol=unset#image/png
 img/eject.png -text svneol=unset#image/png
 img/eject.tiff -text svneol=unset#image/tiff
 img/eject@2x.png -text svneol=unset#image/png
-img/eucalyptus-icon.png -text svneol=unset#image/png
 img/executable.png -text svneol=unset#image/png
 img/executable.tiff -text
 img/executable@2x.png -text svneol=unset#image/png
@@ -2189,6 +2188,7 @@ pl.lproj/Transfer.strings -text svneol=unset#text/utf-16
 profiles/Cloud.ca[!!-~]Object[!!-~]Store[!!-~]East-1[!!-~]Region.cyberduckprofile -text
 profiles/Dream Objects.cyberduckprofile -text
 profiles/Dunkel[!!-~]Cloud[!!-~]Storage.cyberduckprofile -text
+profiles/Eucalyptus[!!-~]Walrus[!!-~]S3.cyberduckprofile -text
 profiles/GreenQloud.cyberduckprofile -text
 profiles/HP[!!-~]Cloud[!!-~]Object[!!-~]Storage.cyberduckprofile -text
 profiles/Internap[!!-~]XIPCloud[!!-~]Storage.cyberduckprofile -text
