@@ -92,6 +92,6 @@
     <Win32Resource>$(IntermediateOutputPath)\res1.res</Win32Resource>
   </PropertyGroup>
   <Target Name="BeforeBuild" DependsOnTargets="GetFrameworkPaths;PrepareForBuild">
-    <Exec Command="&quot;$(FrameworkSDKDir)\bin\rc.exe&quot; /i &quot;$(VCIncludePath)&quot; /i &quot;$(FrameworkSDKDir)\include&quot; /r /fo &quot;$(IntermediateOutputPath)\res1.res&quot; res1.rc" />
+    <Exec Command="&quot;C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\Bin\rc.exe&quot; /i &quot;$(VCIncludePath)&quot; /i &quot;C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\include&quot; /r /fo &quot;$(IntermediateOutputPath)\res1.res&quot; res1.rc" />
   </Target>
 </Project>
