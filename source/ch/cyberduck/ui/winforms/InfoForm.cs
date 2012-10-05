@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2011 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -816,6 +816,27 @@ namespace Ch.Cyberduck.Ui.Winforms
             set { bucketLoggingCheckBox.Enabled = value; }
         }
 
+        public bool BucketAnalyticsCheckbox
+        {
+            get { return bucketAnalyticsCheckBox.Checked; }
+            set { bucketAnalyticsCheckBox.Checked = value; }
+        }
+
+        public bool BucketAnalyticsCheckboxEnabled
+        {
+            set { bucketAnalyticsCheckBox.Enabled = value; }
+        }
+
+        public string BucketAnalyticsSetupUrl
+        {
+            set { bucketAnalyticsSetupUrlLinkLabel.Text = value; }
+        }
+
+        public bool BucketAnalyticsSetupUrlEnabled
+        {
+            set { bucketAnalyticsSetupUrlLinkLabel.Enabled = value; }
+        }
+
         public bool BucketVersioning
         {
             get { return bucketVersioningCheckBox.Checked; }
@@ -845,6 +866,29 @@ namespace Ch.Cyberduck.Ui.Winforms
         public event VoidHandler BucketVersioningChanged = delegate { };
         public event VoidHandler BucketMfaChanged = delegate { };
         public event VoidHandler ActiveTabChanged = delegate { };
+        public event VoidHandler BucketAnalyticsCheckboxChanged = delegate { };
+        public event VoidHandler DistributionAnalyticsCheckboxChanged = delegate { };
+
+        public bool DistributionAnalyticsCheckbox
+        {
+            get { return distributionAnalyticsCheckBox.Checked; }
+            set { distributionAnalyticsCheckBox.Checked = value; }
+        }
+
+        public bool DistributionAnalyticsCheckboxEnabled
+        {
+            set { distributionAnalyticsCheckBox.Enabled = value; }
+        }
+
+        public string DistributionAnalyticsSetupUrl
+        {
+            set { distributionAnalyticsSetupUrlLinkLabel.Text = value; }
+        }
+
+        public bool DistributionAnalyticsSetupUrlEnabled
+        {
+            set {distributionAnalyticsSetupUrlLinkLabel.Enabled = value; }
+        }
 
         public bool MetadataTableEnabled
         {
@@ -1260,6 +1304,16 @@ namespace Ch.Cyberduck.Ui.Winforms
         private void encryptionCheckBox_CheckedChanged(object sender, EventArgs e)
         {
             EncryptionChanged();
+        }
+
+        private void bucketAnalyticsCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            BucketAnalyticsCheckboxChanged();
+        }
+
+        private void distributionAnalyticsCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            DistributionAnalyticsCheckboxChanged();
         }
 
         private enum AclColumnName

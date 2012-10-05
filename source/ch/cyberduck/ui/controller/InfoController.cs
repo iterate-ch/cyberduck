@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2011 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -34,6 +34,7 @@ using ch.cyberduck.ui.action;
 using ch.cyberduck.ui.controller.threading;
 using java.lang;
 using java.util;
+using org.apache.commons.lang;
 using org.apache.log4j;
 using Locale = ch.cyberduck.core.i18n.Locale;
 using Object = System.Object;
@@ -100,6 +101,11 @@ namespace Ch.Cyberduck.Ui.Controller
                     PopulateMetadata();
                 }
                 InitTab(View.ActiveTab);
+                if (View.ActiveTab != InfoTab.General)
+                {
+                    // always set general settings (e.g. contains form title)
+                    //InitGeneral();
+                }
             }
         }
 
@@ -653,6 +659,17 @@ namespace Ch.Cyberduck.Ui.Controller
                                                             View.DistributionDeliveryMethod);
             View.DistributionDefaultRootEnabled = stop && enable &&
                                                   session.cdn().isDefaultRootSupported(View.DistributionDeliveryMethod);
+            if (ObjectUtils.equals(session.iam().getUserCredentials(session.analytics().getName()), credentials))
+            {
+                // No need to create new IAM credentials when same as session credentials
+                View.DistributionAnalyticsCheckboxEnabled = false;
+            }
+            else
+            {
+                View.DistributionAnalyticsCheckboxEnabled = stop && enable &&
+                                                            session.cdn().isAnalyticsSupported(
+                                                                View.DistributionDeliveryMethod);
+            }
             if (stop)
             {
                 View.DistributionAnimationActive = false;
@@ -698,6 +715,7 @@ namespace Ch.Cyberduck.Ui.Controller
             View.DistributionLoggingPopupChanged += DistributionLoggingPopupChanged;
             View.DistributionDefaultRootChanged += DistributionApply;
             View.DistributionInvalidateObjects += DistributionInvalidateObjects;
+            View.DistributionAnalyticsCheckboxChanged += DistributionAnalyticsCheckboxChanged;
         }
 
         private void DistributionLoggingPopupChanged()
@@ -732,6 +750,15 @@ namespace Ch.Cyberduck.Ui.Controller
             View.StorageClassChanged += StorageClassChanged;
             View.BucketVersioningChanged += BucketVersioningChanged;
             View.BucketMfaChanged += BucketMfaChanged;
+            View.BucketAnalyticsCheckboxChanged += BucketAnalyticsCheckboxChanged;
+        }
+
+        private void BucketAnalyticsCheckboxChanged()
+        {
+            if (ToggleS3Settings(false))
+            {
+                _controller.background(new SetBucketAnalyticsUrlBackgroundAction(_controller, this));
+            }
         }
 
         private void BucketLoggingPopupChanged()
@@ -775,6 +802,7 @@ namespace Ch.Cyberduck.Ui.Controller
             View.StorageClassChanged -= StorageClassChanged;
             View.BucketVersioningChanged -= BucketVersioningChanged;
             View.BucketMfaChanged -= BucketMfaChanged;
+            View.BucketAnalyticsCheckboxChanged -= BucketAnalyticsCheckboxChanged;
         }
 
         private void BucketMfaChanged()
@@ -797,6 +825,15 @@ namespace Ch.Cyberduck.Ui.Controller
             View.DistributionLoggingPopupChanged -= DistributionLoggingPopupChanged;
             View.DistributionDefaultRootChanged -= DistributionApply;
             View.DistributionInvalidateObjects -= DistributionInvalidateObjects;
+            View.DistributionAnalyticsCheckboxChanged -= DistributionAnalyticsCheckboxChanged;
+        }
+
+        private void DistributionAnalyticsCheckboxChanged()
+        {
+            if (ToggleDistributionSettings(false))
+            {
+                _controller.background(new SetDistributionAnalyticsUrlBackgroundAction(_controller, this));
+            }
         }
 
         private void OtherExecuteChanged()
@@ -1068,6 +1105,9 @@ namespace Ch.Cyberduck.Ui.Controller
             View.BucketLocation = Locale.localizedString("Unknown");
             View.BucketLoggingTooltip = Locale.localizedString("Unknown");
 
+            View.BucketAnalyticsSetupUrl = Locale.localizedString("None");
+            View.BucketAnalyticsSetupUrlEnabled = false;
+
             IList<string> none = new List<string> {Locale.localizedString("None")};
             View.PopulateBucketLogging(none);
 
@@ -1145,19 +1185,21 @@ namespace Ch.Cyberduck.Ui.Controller
         private bool ToggleS3Settings(bool stop)
         {
             Session session = _controller.getSession();
+            Credentials credentials = session.getHost().getCredentials();
             bool enable = session is S3Session;
             if (enable)
             {
-                Credentials credentials = session.getHost().getCredentials();
                 enable = !credentials.isAnonymousLogin();
             }
             bool logging = false;
+            bool analytics = false;
             bool versioning = false;
             bool storageclass = false;
             bool encryption = false;
             if (enable)
             {
                 logging = ((CloudSession) session).isLoggingSupported();
+                analytics = (session).isAnalyticsSupported();
                 versioning = ((CloudSession) session).isVersioningSupported();
                 encryption = ((CloudSession) session).getSupportedEncryptionAlgorithms().size() > 0;
                 storageclass = ((CloudSession) session).getSupportedStorageClasses().size() > 1;
@@ -1169,6 +1211,16 @@ namespace Ch.Cyberduck.Ui.Controller
             View.StorageClassEnabled = stop && enable && storageclass;
             View.EncryptionEnabled = stop && enable && encryption;
 
+            if (ObjectUtils.equals(session.iam().getUserCredentials(_controller.getSession().analytics().getName()),
+                                   credentials))
+            {
+                // No need to create new IAM credentials when same as session credentials
+                View.BucketAnalyticsCheckboxEnabled = false;
+            }
+            else
+            {
+                View.BucketAnalyticsCheckboxEnabled = stop && enable && analytics;
+            }
             if (stop)
             {
                 View.S3AnimationActive = false;
@@ -1224,7 +1276,7 @@ namespace Ch.Cyberduck.Ui.Controller
             if (null == selected)
             {
                 // Select first distribution option
-                View.DistributionDeliveryMethod = (Distribution.Method) session.cdn(SelectedPath.getContainerName()).getMethods().iterator().next();
+                View.DistributionDeliveryMethod = (Distribution.Method)session.cdn().getMethods(SelectedPath.getContainerName()).iterator().next();
             }
             else
             {
@@ -1233,6 +1285,8 @@ namespace Ch.Cyberduck.Ui.Controller
             IList<string> none = new List<string> {Locale.localizedString("None")};
             View.PopulateDistributionLogging(none);
             DistributionDeliveryMethodChanged();
+            View.DistributionAnalyticsSetupUrl = Locale.localizedString("None");
+            View.DistributionAnalyticsSetupUrlEnabled = false;
             //AttachDistributionHandlers();
         }
 
@@ -1608,17 +1662,18 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private class FetchS3BackgroundAction : BrowserBackgroundAction
         {
-            private readonly Path _selected;
             private readonly IList<string> _containers = new List<string>();
             private readonly InfoController _infoController;
+            private readonly Path _selected;
             private readonly IInfoView _view;
+            private String _analytics;
+            private String _encryption;
 
             private String _location;
             private bool _logging;
             private String _loggingBucket;
             private bool _mfa;
             private bool _versioning;
-            private String _encryption = null;
 
             public FetchS3BackgroundAction(BrowserController browserController, InfoController infoController)
                 : base(browserController)
@@ -1650,10 +1705,20 @@ namespace Ch.Cyberduck.Ui.Controller
                     _versioning = s.isVersioning(_selected.getContainerName());
                     _mfa = s.isMultiFactorAuthentication(_selected.getContainerName());
                 }
+                if (s.isAnalyticsSupported())
+                {
+                    Credentials credentials =
+                        s.iam().getUserCredentials(BrowserController.getSession().analytics().getName());
+                    if (credentials.validate(BrowserController.getSession().getHost().getProtocol()))
+                    {
+                        _analytics = s.analytics().getSetup(s.getHost().getProtocol(), _selected.getContainerName(),
+                                                            credentials);
+                    }
+                }
                 if (_infoController.NumberOfFiles == 1)
                 {
                     _encryption = _selected.attributes().getEncryption();
-                }                
+                }
             }
 
             public override void cleanup()
@@ -1682,6 +1747,16 @@ namespace Ch.Cyberduck.Ui.Controller
                     _view.BucketMfaEnabled = _versioning;
                     _view.BucketMfa = _mfa;
                     _view.Encryption = Utils.IsNotBlank(_encryption);
+                    _view.BucketAnalyticsCheckbox = Utils.IsNotBlank(_analytics);
+                    if (Utils.IsNotBlank(_analytics))
+                    {
+                        _view.BucketAnalyticsSetupUrl = _analytics;
+                        _view.BucketAnalyticsSetupUrlEnabled = true;
+                    }
+                    else
+                    {
+                        _view.BucketAnalyticsSetupUrlEnabled = false;
+                    }
                 }
                 finally
                 {
@@ -1783,6 +1858,7 @@ namespace Ch.Cyberduck.Ui.Controller
             private readonly Distribution.Method _deliveryMethod;
             private readonly InfoController _infoController;
             private readonly IInfoView _view;
+            private string _analytics;
             private Distribution _distribution;
 
             public ReadDistributionBackgroundAction(BrowserController browserController, InfoController infoController)
@@ -1798,10 +1874,17 @@ namespace Ch.Cyberduck.Ui.Controller
                 Path file = _infoController.SelectedPath;
                 Session session = BrowserController.getSession();
                 // We only support one distribution per bucket for the sake of simplicity
+                String container = file.getContainerName();
                 _distribution = session.cdn().read(
-                    session.cdn().getOrigin(_deliveryMethod, file.getContainerName()), _deliveryMethod);
+                    session.cdn().getOrigin(_deliveryMethod, container), _deliveryMethod);
                 // Make sure container items are cached for default root object.
                 _infoController.SelectedPath.getContainer().children();
+                if (session.cdn().isAnalyticsSupported(_deliveryMethod))
+                {
+                    Credentials credentials =
+                        session.iam().getUserCredentials(BrowserController.getSession().analytics().getName());
+                    _analytics = session.analytics().getSetup(session.cdn().getProtocol(), container, credentials);
+                }
             }
 
             public override void cleanup()
@@ -1846,9 +1929,15 @@ namespace Ch.Cyberduck.Ui.Controller
                     }
                     if (null == _view.DistributionLoggingPopup)
                     {
-                        _view.DistributionLoggingPopup = Locale.localizedString("None");                        
+                        _view.DistributionLoggingPopup = Locale.localizedString("None");
                     }
 
+
+                    _view.DistributionAnalyticsCheckbox = Utils.IsNotBlank(_analytics);
+                    if (Utils.IsNotBlank(_analytics))
+                    {
+                        _view.DistributionAnalyticsSetupUrl = _analytics;
+                    }
                     // Concatenate URLs
                     if (_infoController.NumberOfFiles > 1)
                     {
@@ -2037,6 +2126,74 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     _infoController.Invoke(() => _infoController.UpdateSize(l));
                 }
+            }
+        }
+
+        private class SetBucketAnalyticsUrlBackgroundAction : BrowserBackgroundAction
+        {
+            private readonly bool _bucketAnalyticsCheckBox;
+            private readonly InfoController _infoController;
+
+            public SetBucketAnalyticsUrlBackgroundAction(BrowserController browserController,
+                                                         InfoController infoController)
+                : base(browserController)
+            {
+                _infoController = infoController;
+                _bucketAnalyticsCheckBox = _infoController.View.BucketAnalyticsCheckbox;
+            }
+
+            public override void run()
+            {
+                Session session = BrowserController.getSession();
+                if (_bucketAnalyticsCheckBox)
+                {
+                    String document = Preferences.instance().getProperty("analytics.provider.qloudstat.iam.policy.s3");
+                    session.iam().createUser(session.analytics().getName(), document);
+                }
+                else
+                {
+                    session.iam().deleteUser(session.analytics().getName());
+                }
+            }
+
+            public override void cleanup()
+            {
+                _infoController.ToggleS3Settings(true);
+                _infoController.InitS3();
+            }
+        }
+
+        private class SetDistributionAnalyticsUrlBackgroundAction : BrowserBackgroundAction
+        {
+            private readonly bool _distributionAnalyticsCheckBox;
+            private readonly InfoController _infoController;
+
+            public SetDistributionAnalyticsUrlBackgroundAction(BrowserController browserController,
+                                                         InfoController infoController)
+                : base(browserController)
+            {
+                _infoController = infoController;
+                _distributionAnalyticsCheckBox = _infoController.View.DistributionAnalyticsCheckbox;
+            }
+
+            public override void run()
+            {
+                Session session = BrowserController.getSession();
+                if (_distributionAnalyticsCheckBox)
+                {
+                    String document = Preferences.instance().getProperty("analytics.provider.qloudstat.iam.policy.cloudfront");
+                    session.iam().createUser(session.analytics().getName(), document);
+                }
+                else
+                {
+                    session.iam().deleteUser(session.analytics().getName());
+                }
+            }
+
+            public override void cleanup()
+            {
+                _infoController.ToggleDistributionSettings(true);
+                _infoController.InitDistribution();
             }
         }
 

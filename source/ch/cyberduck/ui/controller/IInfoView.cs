@@ -133,6 +133,10 @@ namespace Ch.Cyberduck.Ui.Controller
         string DistributionInvalidationStatus { set; }
         string DistributionInvalidateObjectsTooltip { set; }
         bool DistributionInvalidateObjectsEnabled { set; }
+        bool DistributionAnalyticsCheckbox { set; get; }
+        bool DistributionAnalyticsCheckboxEnabled { set; }
+        string DistributionAnalyticsSetupUrl { set; }
+        bool DistributionAnalyticsSetupUrlEnabled { set; }
 
         string BucketLocation { set; }
         bool Encryption { set; get; }
@@ -150,8 +154,12 @@ namespace Ch.Cyberduck.Ui.Controller
         string S3TorrentUrlTooltip { set; }
         bool S3AnimationActive { set; }
         bool BucketLoggingCheckbox { set; get; }
-        string BucketLoggingTooltip { set; }
         bool BucketLoggingCheckboxEnabled { set; }
+        string BucketLoggingTooltip { set; }
+        bool BucketAnalyticsCheckbox { set; get; }
+        bool BucketAnalyticsCheckboxEnabled { set; }
+        string BucketAnalyticsSetupUrl { set; }
+        bool BucketAnalyticsSetupUrlEnabled { set; }
         bool BucketVersioning { get; set; }
         bool BucketVersioningEnabled { set; }
         bool BucketMfa { set; get; }
@@ -185,6 +193,7 @@ namespace Ch.Cyberduck.Ui.Controller
         event VoidHandler DistributionEnabledChanged;
         event VoidHandler DistributionLoggingCheckboxChanged;
         event VoidHandler DistributionLoggingPopupChanged;
+        event VoidHandler DistributionAnalyticsCheckboxChanged;
         event VoidHandler DistributionCnameChanged;
         event VoidHandler DistributionDefaultRootChanged;
         event VoidHandler DistributionInvalidateObjects;
@@ -192,6 +201,7 @@ namespace Ch.Cyberduck.Ui.Controller
         void PopulateStorageClass(IList<KeyValuePair<string, string>> classes);
 
         event VoidHandler BucketLoggingCheckboxChanged;
+        event VoidHandler BucketAnalyticsCheckboxChanged;
         event VoidHandler BucketLoggingPopupChanged;
         event VoidHandler EncryptionChanged;
         event VoidHandler StorageClassChanged;
