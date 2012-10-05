@@ -50,8 +50,7 @@
     <property name="jvm.runtime.bundle.home" value="Contents/Home"/>
     <property name="jvm.runtime.bundle.lib" value="Contents/Home/lib"/>
 
-    <property name="codesign.certificate" value="Cyberduck Code Signing Certificate"/>
-    <!--<property name="codesign.certificate" value="Developer ID Application: David Kocher"/>-->
+    <property name="codesign.certificate" value="Developer ID Application: David Kocher"/>
     <property name="codesign.keychain" value="${user.home}/Library/Keychains/codesign.keychain"/>
     <property name="codesign.entitlements" value="${home}/sandbox.plist"/>
     <!-- Designated requirement -->
