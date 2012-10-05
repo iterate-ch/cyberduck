@@ -57,7 +57,7 @@ public final class IconCache {
      * @param size Requested size
      * @return Cached icon
      */
-    public static NSImage iconNamed(final String name, Integer size) {
+    public static NSImage iconNamed(final String name, final Integer size) {
         return IconCache.instance().iconForName(name, size);
     }
 
@@ -67,7 +67,7 @@ public final class IconCache {
      * @param height Requested size
      * @return Cached icon
      */
-    public static NSImage iconNamed(final String name, Integer width, Integer height) {
+    public static NSImage iconNamed(final String name, final Integer width, final Integer height) {
         return IconCache.instance().iconForName(name, width, height);
     }
 
@@ -75,19 +75,19 @@ public final class IconCache {
      * @param size Requested size
      * @return Standard folder icon for this platform
      */
-    public static NSImage folderIcon(Integer size) {
+    public static NSImage folderIcon(final Integer size) {
         return IconCache.instance().iconForFolder(size);
     }
 
-    public static NSImage documentIcon(String extension) {
+    public static NSImage documentIcon(final String extension) {
         return IconCache.instance().iconForExtension(extension, null);
     }
 
-    public static NSImage documentIcon(String extension, Integer size) {
+    public static NSImage documentIcon(final String extension, final Integer size) {
         return IconCache.instance().iconForExtension(extension, size);
     }
 
-    public static NSImage aliasIcon(String extension, Integer size) {
+    public static NSImage aliasIcon(final String extension, final Integer size) {
         return IconCache.instance().badge(
                 IconCache.instance().iconForName("aliasbadge.tiff", size),
                 IconCache.instance().iconForExtension(extension, size));
@@ -107,7 +107,7 @@ public final class IconCache {
     }
 
     private IconCache() {
-        ;
+        //
     }
 
     /**
@@ -124,7 +124,7 @@ public final class IconCache {
         }
     };
 
-    private void put(String key, NSImage image, Integer size) {
+    private void put(final String key, final NSImage image, final Integer size) {
         Map<Integer, NSImage> versions;
         if(cache.containsKey(key)) {
             versions = cache.get(key);
@@ -136,7 +136,7 @@ public final class IconCache {
         cache.put(key, versions);
     }
 
-    private NSImage load(String key, Integer size) {
+    private NSImage load(final String key, final Integer size) {
         if(!cache.containsKey(key)) {
             log.debug(String.format("No cached image for %s", key));
             return null;
@@ -150,7 +150,7 @@ public final class IconCache {
      * @param size      Requested size
      * @return Cached icon
      */
-    public NSImage iconForExtension(String extension, Integer size) {
+    public NSImage iconForExtension(final String extension, final Integer size) {
         NSImage img = this.load(extension, size);
         if(null == img) {
             img = NSWorkspace.sharedWorkspace().iconForFileType(extension);
@@ -159,7 +159,7 @@ public final class IconCache {
         return img;
     }
 
-    public NSImage iconForExtension(NSImage badge, String extension, Integer size) {
+    public NSImage iconForExtension(final NSImage badge, final String extension, final Integer size) {
         final String name = extension + badge.name();
         NSImage icon = this.iconForName(name, size);
         if(null == icon) {
@@ -169,7 +169,7 @@ public final class IconCache {
         return icon;
     }
 
-    public NSImage iconForFolder(Integer size) {
+    public NSImage iconForFolder(final Integer size) {
         NSImage folder = this.iconForName("NSFolder", size);
         if(null == folder) {
             return this.iconForPath(FOLDER_PATH, size);
@@ -177,7 +177,7 @@ public final class IconCache {
         return folder;
     }
 
-    private NSImage iconForFolder(NSImage badge, Integer size) {
+    private NSImage iconForFolder(final NSImage badge, final Integer size) {
         final String name = String.format("NSFolder%s", badge.name());
         NSImage folder = this.iconForName(name, size);
         if(null == folder) {
@@ -194,7 +194,7 @@ public final class IconCache {
      * @param icon  Icon
      * @return Cached icon
      */
-    private NSImage badge(NSImage badge, NSImage icon) {
+    private NSImage badge(final NSImage badge, final NSImage icon) {
         NSImage f = NSImage.imageWithSize(icon.size());
         f.lockFocus();
         icon.drawInRect(new NSRect(new NSPoint(0, 0), icon.size()),
@@ -219,7 +219,7 @@ public final class IconCache {
      * @return Cached image
      * @see #convert(ch.cyberduck.ui.cocoa.application.NSImage, Integer)
      */
-    protected NSImage iconForName(final String name, Integer size) {
+    protected NSImage iconForName(final String name, final Integer size) {
         return this.iconForName(name, size, size);
     }
 
@@ -232,7 +232,7 @@ public final class IconCache {
      * @see NSImage#imageNamed(String)
      * @see #convert(ch.cyberduck.ui.cocoa.application.NSImage, Integer, Integer)
      */
-    protected NSImage iconForName(final String name, Integer width, Integer height) {
+    protected NSImage iconForName(final String name, final Integer width, final Integer height) {
         NSImage image = this.load(name, width);
         if(null == image) {
             if(name.startsWith("/")) {
@@ -263,7 +263,7 @@ public final class IconCache {
      * @param size Requested size
      * @return Cached icon
      */
-    public NSImage iconForPath(final Local item, Integer size) {
+    public NSImage iconForPath(final Local item, final Integer size) {
         NSImage icon = null;
         if(item.exists()) {
             icon = this.load(item.getAbsolute(), size);
@@ -287,7 +287,7 @@ public final class IconCache {
      * @param size             Requested size
      * @return Cached icon
      */
-    public NSImage iconForApplication(final String bundleIdentifier, Integer size) {
+    public NSImage iconForApplication(final String bundleIdentifier, final Integer size) {
         NSImage icon = this.load(bundleIdentifier, size);
         if(null == icon) {
             icon = NSWorkspace.sharedWorkspace().iconForFile(
@@ -312,11 +312,11 @@ public final class IconCache {
      * @param size Requested size
      * @return Cached icon
      */
-    public NSImage iconForPath(final Path item, Integer size) {
+    public NSImage iconForPath(final Path item, final Integer size) {
         return this.iconForPath(item, size, Preferences.instance().getBoolean("browser.markInaccessibleFolders"));
     }
 
-    public NSImage iconForPath(final Path item, Integer size, boolean overlay) {
+    public NSImage iconForPath(final Path item, final Integer size, final boolean overlay) {
         if(item.attributes().isSymbolicLink()) {
             NSImage badge = this.iconForName("aliasbadge.tiff", size);
             if(item.attributes().isDirectory()) {
@@ -358,11 +358,11 @@ public final class IconCache {
         return this.iconForName("notfound.tiff", size);
     }
 
-    public NSImage convert(NSImage icon, Integer size) {
+    public NSImage convert(final NSImage icon, final Integer size) {
         return this.convert(icon, size, size);
     }
 
-    public NSImage convert(NSImage icon, Integer width, Integer height) {
+    public NSImage convert(final NSImage icon, final Integer width, final Integer height) {
         if(null == width || null == height) {
             log.debug(String.format("Return default size for %s", icon.name()));
             return icon;
