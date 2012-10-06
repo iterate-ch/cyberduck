@@ -1982,8 +1982,8 @@ lib/mime.types -text
 lib/sardine-341.jar -text
 lib/signpost-commonshttp4-1.2.1.2.jar -text
 lib/signpost-core-1.2.1.2.jar -text
-lib/slf4j-api-1.6.1.jar -text
-lib/slf4j-log4j12-1.6.1.jar -text
+lib/slf4j-api-1.7.1.jar -text
+lib/slf4j-log4j12-1.7.1.jar -text
 lib/stax-api-1.0-2.jar -text
 lv.lproj/Alert.nib/classes.nib -text
 lv.lproj/Alert.nib/info.nib -text
