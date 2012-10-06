@@ -1931,7 +1931,7 @@ lib/aws-java-sdk-1.3.12.jar -text
 lib/backport-util-concurrent-3.1.jar -text
 lib/bcmail-jdk15-145.jar -text
 lib/bcprov-jdk15-145.jar -text
-lib/cglib-2.2.jar -text
+lib/cglib-2.2.2.jar -text
 lib/cloudfiles-1.9.1.jar -text
 lib/cloudfiles.properties -text
 lib/commons-codec-1.6.jar -text
