@@ -134,7 +134,6 @@ public abstract class NSImage extends NSObject implements NSCopying {
 
     /**
      * <i>native declaration : :75</i><br>
-     * Conversion Error : NSSize
      */
     public abstract NSImage initWithSize(NSSize aSize);
 
@@ -173,11 +172,6 @@ public abstract class NSImage extends NSObject implements NSCopying {
      */
     public abstract NSImage initByReferencingURL(NSURL url);
     /**
-     * <i>native declaration : :84</i><br>
-     * Conversion Error : /// Original signature : <code>id initWithIconRef(null)</code><br>
-     * - (id)initWithIconRef:(null)iconRef; (Argument iconRef cannot be converted)
-     */
-    /**
      * Original signature : <code>id initWithPasteboard(NSPasteboard*)</code><br>
      * <i>native declaration : :86</i>
      */
@@ -185,13 +179,11 @@ public abstract class NSImage extends NSObject implements NSCopying {
 
     /**
      * <i>native declaration : :88</i><br>
-     * Conversion Error : NSSize
      */
     public abstract void setSize(NSSize aSize);
 
     /**
      * <i>native declaration : :89</i><br>
-     * Conversion Error : NSSize
      */
     public abstract NSSize size();
 
@@ -303,41 +295,6 @@ public abstract class NSImage extends NSObject implements NSCopying {
      */
     public abstract boolean matchesOnMultipleResolution();
     /**
-     * <i>native declaration : :108</i><br>
-     * Conversion Error : /// Original signature : <code>public abstract  void dissolveToPoint(null, CGFloat)</code><br>
-     * - (void)dissolveToPoint:(null)point fraction:(CGFloat)aFloat; (Argument point cannot be converted)
-     */
-    /**
-     * <i>native declaration : :109</i><br>
-     * Conversion Error : /// Original signature : <code>public abstract  void dissolveToPoint(null, null, CGFloat)</code><br>
-     * - (void)dissolveToPoint:(null)point fromRect:(null)rect fraction:(CGFloat)aFloat; (Argument point cannot be converted)
-     */
-    /**
-     * <i>native declaration : :110</i><br>
-     * Conversion Error : /// Original signature : <code>public abstract  void compositeToPoint(null, null)</code><br>
-     * - (void)compositeToPoint:(null)point operation:(null)op; (Argument point cannot be converted)
-     */
-    /**
-     * <i>native declaration : :111</i><br>
-     * Conversion Error : /// Original signature : <code>public abstract  void compositeToPoint(null, null, null)</code><br>
-     * - (void)compositeToPoint:(null)point fromRect:(null)rect operation:(null)op; (Argument point cannot be converted)
-     */
-    /**
-     * <i>native declaration : :112</i><br>
-     * Conversion Error : /// Original signature : <code>public abstract  void compositeToPoint(null, null, CGFloat)</code><br>
-     * - (void)compositeToPoint:(null)point operation:(null)op fraction:(CGFloat)delta; (Argument point cannot be converted)
-     */
-    /**
-     * <i>native declaration : :113</i><br>
-     * Conversion Error : /// Original signature : <code>public abstract  void compositeToPoint(null, null, null, CGFloat)</code><br>
-     * - (void)compositeToPoint:(null)point fromRect:(null)rect operation:(null)op fraction:(CGFloat)delta; (Argument point cannot be converted)
-     */
-    /**
-     * <i>native declaration : :114</i><br>
-     * Conversion Error : /// Original signature : <code>public abstract  void drawAtPoint(null, null, null, CGFloat)</code><br>
-     * - (void)drawAtPoint:(null)point fromRect:(null)fromRect operation:(null)op fraction:(CGFloat)delta; (Argument point cannot be converted)
-     */
-    /**
      * <i>native declaration : :115</i><br>
      * Conversion Error : /// Original signature : <code>public abstract  void drawInRect(null, null, null, CGFloat)</code><br>
      * - (void)drawInRect:(null)rect fromRect:(null)fromRect operation:(null)op fraction:(CGFloat)delta; (Argument rect cannot be converted)
@@ -349,11 +306,6 @@ public abstract class NSImage extends NSObject implements NSCopying {
     }
 
     /**
-     * <i>native declaration : :116</i><br>
-     * Conversion Error : /// Original signature : <code>BOOL drawRepresentation(NSImageRep*, null)</code><br>
-     * - (BOOL)drawRepresentation:(NSImageRep*)imageRep inRect:(null)rect; (Argument rect cannot be converted)
-     */
-    /**
      * Original signature : <code>public abstract  void recache()</code><br>
      * <i>native declaration : :117</i>
      */
@@ -364,11 +316,6 @@ public abstract class NSImage extends NSObject implements NSCopying {
      * <i>native declaration : :118</i>
      */
     public abstract com.sun.jna.Pointer TIFFRepresentation();
-    /**
-     * <i>native declaration : :119</i><br>
-     * Conversion Error : /// Original signature : <code>NSData* TIFFRepresentationUsingCompression(null, float)</code><br>
-     * - (NSData*)TIFFRepresentationUsingCompression:(null)comp factor:(float)aFloat; (Argument comp cannot be converted)
-     */
     /**
      * Original signature : <code>NSArray* representations()</code><br>
      * <i>native declaration : :121</i>
@@ -474,11 +421,6 @@ public abstract class NSImage extends NSObject implements NSCopying {
      * <i>native declaration : :169</i>
      */
     public abstract NSObject alignmentRect();
-    /**
-     * <i>native declaration : :170</i><br>
-     * Conversion Error : /// Original signature : <code>public abstract  void setAlignmentRect(null)</code><br>
-     * - (void)setAlignmentRect:(null)rect; (Argument rect cannot be converted)
-     */
     /**
      * The 'template' property is metadata that allows clients to be smarter about image processing.  An image should be marked as a template if it is basic glpyh-like black and white art that is intended to be processed into derived images for use on screen.<br>
      * NSButtonCell applies effects to images based on the state of the button.  For example, images are shaded darker when the button is pressed.  If a template image is set on a cell, the cell can apply more sophisticated effects.  For example, it may be processed into an image that looks engraved when drawn into a cell whose interiorBackgroundStyle is NSBackgroundStyleRaised, like on a textured button.<br>
