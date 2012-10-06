@@ -1642,8 +1642,9 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         this.actionPopupButton = actionPopupButton;
         this.actionPopupButton.setPullsDown(true);
         this.actionPopupButton.setAutoenablesItems(true);
-        this.actionPopupButton.insertItemWithTitle_atIndex(StringUtils.EMPTY, new NSInteger(0));
-        this.actionPopupButton.itemAtIndex(new NSInteger(0)).setImage(IconCache.iconNamed("gear.tiff"));
+        final NSInteger index = new NSInteger(0);
+        this.actionPopupButton.insertItemWithTitle_atIndex(StringUtils.EMPTY, index);
+        this.actionPopupButton.itemAtIndex(index).setImage(IconCache.iconNamed("gear.tiff", 16));
     }
 
     @Outlet
