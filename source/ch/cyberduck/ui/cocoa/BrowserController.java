@@ -4069,26 +4069,31 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             if(this.isBookmarks()) {
                 return bookmarkTable.numberOfSelectedRows().intValue() == 1;
             }
+            return false;
         }
         else if(action.equals(Foundation.selector("addBookmarkButtonClicked:"))) {
             if(this.isBookmarks()) {
                 return bookmarkModel.getSource().allowsAdd();
             }
+            return false;
         }
         else if(action.equals(Foundation.selector("deleteBookmarkButtonClicked:"))) {
             if(this.isBookmarks()) {
                 return bookmarkModel.getSource().allowsDelete() && bookmarkTable.selectedRow().intValue() != -1;
             }
+            return false;
         }
         else if(action.equals(Foundation.selector("duplicateBookmarkButtonClicked:"))) {
             if(this.isBookmarks()) {
                 return bookmarkModel.getSource().allowsEdit() && bookmarkTable.numberOfSelectedRows().intValue() == 1;
             }
+            return false;
         }
         else if(action.equals(Foundation.selector("editBookmarkButtonClicked:"))) {
             if(this.isBookmarks()) {
                 return bookmarkModel.getSource().allowsEdit() && bookmarkTable.numberOfSelectedRows().intValue() == 1;
             }
+            return false;
         }
         else if(action.equals(Foundation.selector("editButtonClicked:"))) {
             if(this.isBrowser() && this.isMounted() && this.getSelectionCount() > 0) {
