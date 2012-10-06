@@ -1968,7 +1968,7 @@ lib/jaxb-impl-2.2.2.jar -text
 lib/jaxen-1.1.3.jar -text
 lib/jets3t-0.9.1.jar -text
 lib/jna-3.3.0.jar -text
-lib/jul-to-slf4j-1.6.1.jar -text
+lib/jul-to-slf4j-1.7.1.jar -text
 lib/libAquaticPrime.a -text
 lib/libjdns_sd.dylib -text
 lib/libjnidispatch.dylib -text
