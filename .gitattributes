@@ -1941,7 +1941,6 @@ lib/commons-lang-2.6.jar -text
 lib/commons-logging-1.1.1.jar -text
 lib/commons-net-ftp-3.0.1.jar -text
 lib/dns_sd.jar -text
-lib/dom4j-1.6.1.jar -text
 lib/ext/ant-contrib-1.0b3.jar -text
 lib/ext/ant-dotnet-1.0.jar -text
 lib/ext/ant-ikvmc.0.5.jar -text
