@@ -227,6 +227,7 @@ public abstract class Preferences {
 
         defaults.put("local.symboliclink.resolve", String.valueOf(false));
         defaults.put("local.normalize.unicode", String.valueOf(true));
+        defaults.put("local.list.native", String.valueOf(true));
 
         /**
          * Maximum number of directory listings to cache using a most recently used implementation

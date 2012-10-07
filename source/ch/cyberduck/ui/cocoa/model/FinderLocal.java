@@ -140,19 +140,24 @@ public class FinderLocal extends Local {
     }
 
     @Override
-    public AttributedList<Local> list() {
-        final AttributedList<Local> children = new AttributedList<Local>();
-        final NSArray files = NSFileManager.defaultManager().contentsOfDirectoryAtPath_error(this.getAbsolute(), null);
-        if(null == files) {
-            log.error("Error listing children:" + this.getAbsolute());
+    public AttributedList list() {
+        if(Preferences.instance().getBoolean("local.list.native")) {
+            final AttributedList<Local> children = new AttributedList<Local>();
+            final NSArray files = NSFileManager.defaultManager().contentsOfDirectoryAtPath_error(this.getAbsolute(), null);
+            if(null == files) {
+                log.error("Error listing children:" + this.getAbsolute());
+                return children;
+            }
+            final NSEnumerator i = files.objectEnumerator();
+            NSObject next;
+            while(((next = i.nextObject()) != null)) {
+                children.add(new FinderLocal(this.getAbsolute(), next.toString()));
+            }
             return children;
         }
-        final NSEnumerator i = files.objectEnumerator();
-        NSObject next;
-        while(((next = i.nextObject()) != null)) {
-            children.add(new FinderLocal(this.getAbsolute(), next.toString()));
+        else {
+            return super.list();
         }
-        return children;
     }
 
     @Override
