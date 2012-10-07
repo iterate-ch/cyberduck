@@ -60,12 +60,12 @@ namespace Ch.Cyberduck.Ui.Controller
             Files = files;
 
             _controller.View.ViewClosedEvent += delegate
-                                                    {
-                                                        if (!View.IsDisposed)
-                                                        {
-                                                            View.Close();
-                                                        }
-                                                    };
+                {
+                    if (!View.IsDisposed)
+                    {
+                        View.Close();
+                    }
+                };
 
             View.ActiveTabChanged += View_ActiveTabChanged;
         }
@@ -304,31 +304,31 @@ namespace Ch.Cyberduck.Ui.Controller
             _metadata = new BindingList<CustomHeaderEntry>(metadata);
             View.MetadataDataSource = _metadata;
             _metadata.ListChanged += delegate(object sender, ListChangedEventArgs args)
-                                         {
-                                             switch (args.ListChangedType)
-                                             {
-                                                 case ListChangedType.ItemDeleted:
-                                                     if (ToggleMetadataSettings(false))
-                                                     {
-                                                         Background(new WriteMetadataBackgroundAction(_controller, this));
-                                                     }
-                                                     break;
+                {
+                    switch (args.ListChangedType)
+                    {
+                        case ListChangedType.ItemDeleted:
+                            if (ToggleMetadataSettings(false))
+                            {
+                                Background(new WriteMetadataBackgroundAction(_controller, this));
+                            }
+                            break;
 
-                                                 case ListChangedType.ItemChanged:
-                                                     if (args.NewIndex < _metadata.Count &&
-                                                         Utils.IsNotBlank(
-                                                             _metadata[args.NewIndex].Name) &&
-                                                         Utils.IsNotBlank(_metadata[args.NewIndex].Value))
-                                                     {
-                                                         if (ToggleMetadataSettings(false))
-                                                         {
-                                                             Background(new WriteMetadataBackgroundAction(_controller,
-                                                                                                          this));
-                                                         }
-                                                     }
-                                                     break;
-                                             }
-                                         };
+                        case ListChangedType.ItemChanged:
+                            if (args.NewIndex < _metadata.Count &&
+                                Utils.IsNotBlank(
+                                    _metadata[args.NewIndex].Name) &&
+                                Utils.IsNotBlank(_metadata[args.NewIndex].Value))
+                            {
+                                if (ToggleMetadataSettings(false))
+                                {
+                                    Background(new WriteMetadataBackgroundAction(_controller,
+                                                                                 this));
+                                }
+                            }
+                            break;
+                    }
+                };
         }
 
         private void AddAclEntry(Acl.User user, Acl.Role role)
@@ -384,14 +384,13 @@ namespace Ch.Cyberduck.Ui.Controller
                                  DateTimeFormatInfo format = new CultureInfo("en-US").DateTimeFormat;
                                  DateTime expires =
                                      DateTime.Now.AddSeconds(Preferences.instance().getInteger("s3.cache.seconds"));
-                                 AddMetadataItem("Expires", expires.ToString("r", format));
+                                 AddMetadataItem("Expires", expires.ToString("r", format)); // RFC1123 format
                              });
-            metadata.Add(Locale.localizedString("Pragma"),
-                         () => AddMetadataItem("Pragma", "", true));
-            metadata.Add(Locale.localizedString("Content-Type"),
-                         () => AddMetadataItem("Content-Type", "", true));
-            metadata.Add(Locale.localizedString("Content-Encoding"),
-                         () => AddMetadataItem("Content-Encoding", "", true));
+            metadata.Add("Pragma", () => AddMetadataItem("Pragma", String.Empty, true));
+            metadata.Add("Content-Type", () => AddMetadataItem("Content-Type", String.Empty, true));
+            metadata.Add("Content-Encoding", () => AddMetadataItem("Content-Encoding", String.Empty, true));
+            metadata.Add("x-amz-website-redirect-location",
+                         () => AddMetadataItem("x-amz-website-redirect-location", String.Empty, true));
 
             metadata.Add(Locale.localizedString("Remove"), RemoveMetadata);
 
@@ -410,31 +409,31 @@ namespace Ch.Cyberduck.Ui.Controller
         private void ConfigureHelp()
         {
             View.ShowHelp += delegate(object sender, InfoHelpArgs args)
-                                 {
-                                     StringBuilder site =
-                                         new StringBuilder(Preferences.instance().getProperty("website.help"));
-                                     switch (args.Section)
-                                     {
-                                         case InfoHelpArgs.Context.General:
-                                             site.Append("/howto/info");
-                                             break;
-                                         case InfoHelpArgs.Context.Permissions:
-                                             site.Append("/howto/info");
-                                             break;
-                                         case InfoHelpArgs.Context.Metdadata:
-                                             site.Append("/").Append(
-                                                 _controller.getSession().getHost().getProtocol().getProvider());
-                                             break;
-                                         case InfoHelpArgs.Context.Cdn:
-                                             site.Append("/howto/cdn");
-                                             break;
-                                         case InfoHelpArgs.Context.S3:
-                                             site.Append("/").Append(
-                                                 _controller.getSession().getHost().getProtocol().getProvider());
-                                             break;
-                                     }
-                                     Utils.StartProcess(site.ToString());
-                                 };
+                {
+                    StringBuilder site =
+                        new StringBuilder(Preferences.instance().getProperty("website.help"));
+                    switch (args.Section)
+                    {
+                        case InfoHelpArgs.Context.General:
+                            site.Append("/howto/info");
+                            break;
+                        case InfoHelpArgs.Context.Permissions:
+                            site.Append("/howto/info");
+                            break;
+                        case InfoHelpArgs.Context.Metdadata:
+                            site.Append("/").Append(
+                                _controller.getSession().getHost().getProtocol().getProvider());
+                            break;
+                        case InfoHelpArgs.Context.Cdn:
+                            site.Append("/howto/cdn");
+                            break;
+                        case InfoHelpArgs.Context.S3:
+                            site.Append("/").Append(
+                                _controller.getSession().getHost().getProtocol().getProvider());
+                            break;
+                    }
+                    Utils.StartProcess(site.ToString());
+                };
         }
 
         /// <summary>
@@ -502,30 +501,30 @@ namespace Ch.Cyberduck.Ui.Controller
             _acl = new BindingList<UserAndRoleEntry>(userAndRoleEntries);
             View.AclDataSource = _acl;
             _acl.ListChanged += delegate(object sender, ListChangedEventArgs args)
-                                    {
-                                        switch (args.ListChangedType)
-                                        {
-                                            case ListChangedType.ItemDeleted:
-                                                if (ToggleAclSettings(false))
-                                                {
-                                                    Background(new WriteAclBackgroundAction(_controller, this));
-                                                }
-                                                break;
+                {
+                    switch (args.ListChangedType)
+                    {
+                        case ListChangedType.ItemDeleted:
+                            if (ToggleAclSettings(false))
+                            {
+                                Background(new WriteAclBackgroundAction(_controller, this));
+                            }
+                            break;
 
-                                            case ListChangedType.ItemChanged:
-                                                if (
-                                                    Utils.IsNotBlank(
-                                                        _acl[args.NewIndex].getUser().getIdentifier()) &&
-                                                    Utils.IsNotBlank(_acl[args.NewIndex].getRole().getName()))
-                                                {
-                                                    if (ToggleAclSettings(false))
-                                                    {
-                                                        Background(new WriteAclBackgroundAction(_controller, this));
-                                                    }
-                                                }
-                                                break;
-                                        }
-                                    };
+                        case ListChangedType.ItemChanged:
+                            if (
+                                Utils.IsNotBlank(
+                                    _acl[args.NewIndex].getUser().getIdentifier()) &&
+                                Utils.IsNotBlank(_acl[args.NewIndex].getRole().getName()))
+                            {
+                                if (ToggleAclSettings(false))
+                                {
+                                    Background(new WriteAclBackgroundAction(_controller, this));
+                                }
+                            }
+                            break;
+                    }
+                };
         }
 
         /// <summary>
@@ -1250,17 +1249,17 @@ namespace Ch.Cyberduck.Ui.Controller
 
             IList<KeyValuePair<string, Distribution.Method>> methods = new List
                 <KeyValuePair<string, Distribution.Method>>
-                                                                           {
-                                                                               new KeyValuePair
-                                                                                   <string, Distribution.Method>(
-                                                                                   Locale.localizedString("None"), null)
-                                                                           };
+                {
+                    new KeyValuePair
+                        <string, Distribution.Method>(
+                        Locale.localizedString("None"), null)
+                };
             View.PopulateDistributionDeliveryMethod(methods);
             View.PopulateDefaultRoot(new List<KeyValuePair<string, string>>
-                                         {
-                                             new KeyValuePair<string, string>(Locale.localizedString("None"),
-                                                                              String.Empty)
-                                         });
+                {
+                    new KeyValuePair<string, string>(Locale.localizedString("None"),
+                                                     String.Empty)
+                });
 
             Session session = _controller.getSession();
             View.DistributionTitle = String.Format(Locale.localizedString("Enable {0} Distribution", "Status"),
@@ -1276,7 +1275,8 @@ namespace Ch.Cyberduck.Ui.Controller
             if (null == selected)
             {
                 // Select first distribution option
-                View.DistributionDeliveryMethod = (Distribution.Method)session.cdn().getMethods(SelectedPath.getContainerName()).iterator().next();
+                View.DistributionDeliveryMethod =
+                    (Distribution.Method) session.cdn().getMethods(SelectedPath.getContainerName()).iterator().next();
             }
             else
             {
@@ -1536,12 +1536,12 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
                 InfoController c = new InfoController(controller, files);
                 controller.View.ViewClosedEvent += delegate
-                                                       {
-                                                           lock (SyncRoot)
-                                                           {
-                                                               Open.Remove(controller);
-                                                           }
-                                                       };
+                    {
+                        lock (SyncRoot)
+                        {
+                            Open.Remove(controller);
+                        }
+                    };
                 controller.getSession().addConnectionListener(new InfoConnectionListener(c, controller));
 
                 lock (SyncRoot)
@@ -1831,22 +1831,21 @@ namespace Ch.Cyberduck.Ui.Controller
                 public override void cleanup(object obj)
                 {
                     IList<UserAndRoleEntry> entries = Utils.ConvertFromJavaList((List) obj, delegate(object item)
-                                                                                                {
-                                                                                                    Acl.UserAndRole
-                                                                                                        entry =
-                                                                                                            (
-                                                                                                            Acl.
-                                                                                                                UserAndRole
-                                                                                                            ) item;
-                                                                                                    return
-                                                                                                        new UserAndRoleEntry
-                                                                                                            (entry.
-                                                                                                                 getUser
-                                                                                                                 (),
-                                                                                                             entry.
-                                                                                                                 getRole
-                                                                                                                 ());
-                                                                                                });
+                        {
+                            Acl.UserAndRole
+                                entry =
+                                    (
+                                    Acl.UserAndRole
+                                    ) item;
+                            return
+                                new UserAndRoleEntry
+                                    (entry.
+                                         getUser
+                                         (),
+                                     entry.
+                                         getRole
+                                         ());
+                        });
                     _infoController.SetAcl(entries);
                     _infoController.ToggleAclSettings(true);
                 }
@@ -1990,7 +1989,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     if (session.cdn().isDefaultRootSupported(_view.DistributionDeliveryMethod))
                     {
                         List<KeyValuePair<string, string>> defaultRoots = new List<KeyValuePair<string, string>>
-                                                                              {noneEntry};
+                            {noneEntry};
                         foreach (AbstractPath next in _infoController.SelectedPath.getContainer().children())
                         {
                             if (next.attributes().isFile())
@@ -2163,40 +2162,6 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
-        private class SetDistributionAnalyticsUrlBackgroundAction : BrowserBackgroundAction
-        {
-            private readonly bool _distributionAnalyticsCheckBox;
-            private readonly InfoController _infoController;
-
-            public SetDistributionAnalyticsUrlBackgroundAction(BrowserController browserController,
-                                                         InfoController infoController)
-                : base(browserController)
-            {
-                _infoController = infoController;
-                _distributionAnalyticsCheckBox = _infoController.View.DistributionAnalyticsCheckbox;
-            }
-
-            public override void run()
-            {
-                Session session = BrowserController.getSession();
-                if (_distributionAnalyticsCheckBox)
-                {
-                    String document = Preferences.instance().getProperty("analytics.provider.qloudstat.iam.policy.cloudfront");
-                    session.iam().createUser(session.analytics().getName(), document);
-                }
-                else
-                {
-                    session.iam().deleteUser(session.analytics().getName());
-                }
-            }
-
-            public override void cleanup()
-            {
-                _infoController.ToggleDistributionSettings(true);
-                _infoController.InitDistribution();
-            }
-        }
-
         private class SetBucketLoggingBackgroundAction : BrowserBackgroundAction
         {
             private readonly bool _bucketLoggingCheckbox;
@@ -2262,6 +2227,41 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 _infoController.ToggleS3Settings(true);
                 _infoController.InitS3();
+            }
+        }
+
+        private class SetDistributionAnalyticsUrlBackgroundAction : BrowserBackgroundAction
+        {
+            private readonly bool _distributionAnalyticsCheckBox;
+            private readonly InfoController _infoController;
+
+            public SetDistributionAnalyticsUrlBackgroundAction(BrowserController browserController,
+                                                               InfoController infoController)
+                : base(browserController)
+            {
+                _infoController = infoController;
+                _distributionAnalyticsCheckBox = _infoController.View.DistributionAnalyticsCheckbox;
+            }
+
+            public override void run()
+            {
+                Session session = BrowserController.getSession();
+                if (_distributionAnalyticsCheckBox)
+                {
+                    String document =
+                        Preferences.instance().getProperty("analytics.provider.qloudstat.iam.policy.cloudfront");
+                    session.iam().createUser(session.analytics().getName(), document);
+                }
+                else
+                {
+                    session.iam().deleteUser(session.analytics().getName());
+                }
+            }
+
+            public override void cleanup()
+            {
+                _infoController.ToggleDistributionSettings(true);
+                _infoController.InitDistribution();
             }
         }
 
