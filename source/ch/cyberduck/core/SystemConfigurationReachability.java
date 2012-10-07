@@ -48,6 +48,7 @@ public final class SystemConfigurationReachability implements Reachability {
         return JNI_LOADED;
     }
 
+    @Override
     public boolean isReachable(Host host) {
         if(!Preferences.instance().getBoolean("connection.hostname.check")) {
             return true;
@@ -73,6 +74,7 @@ public final class SystemConfigurationReachability implements Reachability {
      *
      * @see Host#toURL
      */
+    @Override
     public void diagnose(Host host) {
         if(!loadNative()) {
             return;
