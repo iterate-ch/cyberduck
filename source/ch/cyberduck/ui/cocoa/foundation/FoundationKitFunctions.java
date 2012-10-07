@@ -246,21 +246,25 @@ public interface FoundationKitFunctions extends Library {
      * <i>native declaration : /System/Library/Frameworks/Foundation.framework/Headers/NSPathUtilities.h:46</i>
      */
     String NSUserName();
+
     /**
      * Original signature : <code>NSString* NSFullUserName()</code><br>
      * <i>native declaration : /System/Library/Frameworks/Foundation.framework/Headers/NSPathUtilities.h:47</i>
      */
     String NSFullUserName();
+
     /**
      * Original signature : <code>NSString* NSHomeDirectory()</code><br>
      * <i>native declaration : /System/Library/Frameworks/Foundation.framework/Headers/NSPathUtilities.h:49</i>
      */
     String NSHomeDirectory();
+
     /**
      * Original signature : <code>NSString* NSHomeDirectoryForUser(String*)</code><br>
      * <i>native declaration : /System/Library/Frameworks/Foundation.framework/Headers/NSPathUtilities.h:50</i>
      */
     String NSHomeDirectoryForUser(String userName);
+
     /**
      * Original signature : <code>NSString* NSTemporaryDirectory()</code><br>
      * <i>native declaration : /System/Library/Frameworks/Foundation.framework/Headers/NSPathUtilities.h:52</i>
@@ -270,9 +274,17 @@ public interface FoundationKitFunctions extends Library {
     /**
      * Original signature : <code>NSArray* NSSearchPathForDirectoriesInDomains(NSSearchPathDirectory, NSSearchPathDomainMask, BOOL)</code><br>
      * <i>native declaration : /System/Library/Frameworks/Foundation.framework/Headers/NSPathUtilities.h:106</i><br>
-     * @param directory @see NSSearchPathDirectory<br>
+     *
+     * @param directory  @see NSSearchPathDirectory<br>
      * @param domainMask @see NSSearchPathDomainMask
      */
     NSArray NSSearchPathForDirectoriesInDomains(int directory, int domainMask, boolean expandTilde);
+
+    /**
+     * Logs an error message to the Apple System Log facility.
+     *
+     * @param format Statement
+     */
+    void NSLog(String format);
 }
 

@@ -6,11 +6,17 @@
             <param name="ConversionPattern" value="%d [%t] %-5p %c - %m%n"/>
         </layout>
     </appender>
+    <appender name="nslog" class="ch.cyberduck.ui.cocoa.logging.SystemLogAppender">
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="[%t] %-5p %c - %m%n"/>
+        </layout>
+    </appender>
     <logger name="org.apache.http.wire" additivity="false">
         <level value="error"/>
     </logger>
     <root>
         <level value="error"/>
         <appender-ref ref="console"/>
+        <appender-ref ref="nslog"/>
     </root>
 </log4j:configuration>
