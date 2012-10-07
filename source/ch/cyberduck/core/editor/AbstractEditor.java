@@ -23,6 +23,7 @@ import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.core.threading.BackgroundAction;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.io.File;
@@ -60,7 +61,10 @@ public abstract class AbstractEditor {
         final Local folder = LocalFactory.createLocal(
                 new File(Preferences.instance().getProperty("editor.tmp.directory"),
                         edited.getHost().getUuid() + String.valueOf(Path.DELIMITER) + edited.getParent().getAbsolute()));
-        final Local local = LocalFactory.createLocal(folder, edited.getName());
+        final String version = path.attributes().getVersionId();
+        final String localName = StringUtils.isEmpty(version) ? edited.getName() :
+                String.format("%s-%s", version, edited.getName());
+        final Local local = LocalFactory.createLocal(folder, localName);
         edited.setLocal(local);
     }
 
