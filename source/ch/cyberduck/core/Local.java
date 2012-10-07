@@ -203,7 +203,7 @@ public abstract class Local extends AbstractPath {
      * @param parent Parent directory
      * @param name   Filename
      */
-    public Local(Local parent, String name) {
+    public Local(final Local parent, final String name) {
         this(parent.getAbsolute(), name);
     }
 
@@ -211,21 +211,21 @@ public abstract class Local extends AbstractPath {
      * @param parent Parent directory
      * @param name   Filename
      */
-    public Local(String parent, String name) {
+    public Local(final String parent, final String name) {
         this.setPath(parent, name);
     }
 
     /**
      * @param path Absolute path
      */
-    public Local(String path) {
+    public Local(final String path) {
         this.setPath(path);
     }
 
     /**
      * @param path File reference
      */
-    public Local(File path) {
+    public Local(final File path) {
         try {
             this.setPath(path.getCanonicalPath());
         }
@@ -436,12 +436,12 @@ public abstract class Local extends AbstractPath {
     }
 
     @Override
-    protected void setPath(String name) {
+    protected void setPath(final String name) {
         String normalized = name;
         if(Preferences.instance().getBoolean("local.normalize.unicode")) {
             if(!Normalizer.isNormalized(normalized, Normalizer.NFC, Normalizer.UNICODE_3_2)) {
                 // Canonical decomposition followed by canonical composition (default)
-                normalized = Normalizer.normalize(normalized, Normalizer.NFC, Normalizer.UNICODE_3_2);
+                normalized = Normalizer.normalize(name, Normalizer.NFC, Normalizer.UNICODE_3_2);
                 if(log.isInfoEnabled()) {
                     log.info("Normalized local path '" + name + "' to '" + normalized + "'");
                 }
@@ -451,7 +451,7 @@ public abstract class Local extends AbstractPath {
     }
 
     @Override
-    public void writeTimestamp(long created, long modified, long accessed) {
+    public void writeTimestamp(final long created, final long modified, final long accessed) {
         if(modified < 0) {
             return;
         }
@@ -464,14 +464,14 @@ public abstract class Local extends AbstractPath {
     public abstract void writeUnixPermission(Permission perm, boolean recursive);
 
     @Override
-    public void rename(AbstractPath renamed) {
+    public void rename(final AbstractPath renamed) {
         if(!new File(path).renameTo(new File(renamed.getAbsolute()))) {
             log.warn(String.format("Rename failed for %s", renamed.getAbsolute()));
         }
     }
 
     @Override
-    public void copy(AbstractPath copy) {
+    public void copy(final AbstractPath copy) {
         if(copy.equals(this)) {
             log.warn(String.format("%s and %s are identical. Not copied.", this.getName(), copy.getName()));
             return;
@@ -549,18 +549,18 @@ public abstract class Local extends AbstractPath {
      * @param originUrl Page that linked to the downloaded file
      * @param dataUrl   Href where the file was downloaded from
      */
-    public abstract void setQuarantine(final String originUrl, final String dataUrl);
+    public abstract void setQuarantine(String originUrl, String dataUrl);
 
     /**
      * @param dataUrl Href where the file was downloaded from
      */
-    public abstract void setWhereFrom(final String dataUrl);
+    public abstract void setWhereFrom(String dataUrl);
 
     public InputStream getInputStream() throws FileNotFoundException {
         return new RepeatableFileInputStream(new File(path));
     }
 
-    public OutputStream getOutputStream(boolean append) throws FileNotFoundException {
+    public OutputStream getOutputStream(final boolean append) throws FileNotFoundException {
         return new FileOutputStream(new File(path), append);
     }
 }
