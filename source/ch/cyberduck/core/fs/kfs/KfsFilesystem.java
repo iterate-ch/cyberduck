@@ -125,7 +125,7 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
                             return true;
                         }
                         final Path directory = selected.getParent();
-                        if(!directory.isCached()) {
+                        if(!session.cache().isCached(directory.getReference())) {
                             log.warn("Return empty stat for directory not cached:" + path);
                             return false;
                         }
