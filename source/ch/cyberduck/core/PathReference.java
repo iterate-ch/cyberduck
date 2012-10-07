@@ -45,6 +45,9 @@ public abstract class PathReference<T> {
         if(null == other) {
             return false;
         }
-        return this.hashCode() == other.hashCode();
+        if(other instanceof PathReference) {
+            return this.hashCode() == other.hashCode();
+        }
+        return false;
     }
 }
