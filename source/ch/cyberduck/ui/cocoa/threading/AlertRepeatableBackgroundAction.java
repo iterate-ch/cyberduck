@@ -20,6 +20,7 @@ package ch.cyberduck.ui.cocoa.threading;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.threading.BackgroundException;
 import ch.cyberduck.core.threading.RepeatableBackgroundAction;
@@ -79,13 +80,16 @@ public abstract class AlertRepeatableBackgroundAction extends RepeatableBackgrou
     }
 
     private void callback(final int returncode) {
-        if(returncode == SheetCallback.DEFAULT_OPTION) { //Try Again
+        if(returncode == SheetCallback.DEFAULT_OPTION) {
+            //Try Again
             for(BackgroundException e : getExceptions()) {
-                Path workdir = e.getPath();
+                final Path workdir = e.getPath();
                 if(null == workdir) {
                     continue;
                 }
-                workdir.invalidate();
+                for(Session session : this.getSessions()) {
+                    session.cache().invalidate(workdir.getReference());
+                }
             }
             AlertRepeatableBackgroundAction.this.reset();
             // Re-run the action with the previous lock used
