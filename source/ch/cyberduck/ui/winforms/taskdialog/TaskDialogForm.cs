@@ -83,10 +83,10 @@ namespace Ch.Cyberduck.Ui.Winforms.Taskdialog
 
       m_isVista = VistaTaskDialog.IsAvailableOnThisOS;
       MainInstruction = "Main Instruction";
-      Content = "";
-      ExpandedInfo = "";
-      Footer = "";
-      VerificationText = "";
+      Content = String.Empty;
+      ExpandedInfo = String.Empty;
+      Footer = String.Empty;
+      VerificationText = String.Empty;
     }
     #endregion 
 
@@ -117,19 +117,19 @@ namespace Ch.Cyberduck.Ui.Winforms.Taskdialog
       form_height += pnlMainInstruction.Height;
 
       // Setup Content
-      pnlContent.Visible = (Content != "");
-      if (Content != "")
+      pnlContent.Visible = (Content != String.Empty);
+      if (Content != String.Empty)
       {
         AdjustLabelHeight(lbContent);
         pnlContent.Height = lbContent.Height + 4;
         form_height += pnlContent.Height;
       }
 
-      bool show_verify_checkbox = (cbVerify.Text != "");
+      bool show_verify_checkbox = (cbVerify.Text != String.Empty);
       cbVerify.Visible = show_verify_checkbox;
 
       // Setup Expanded Info and Buttons panels
-      if (ExpandedInfo == "")
+      if (ExpandedInfo == String.Empty)
       {
         pnlExpandedInfo.Visible = false;
         lbShowHideDetails.Visible = false;
@@ -150,8 +150,8 @@ namespace Ch.Cyberduck.Ui.Winforms.Taskdialog
       }
 
       // Setup RadioButtons
-      pnlRadioButtons.Visible = (m_radioButtons != "");
-      if (m_radioButtons != "")
+      pnlRadioButtons.Visible = (m_radioButtons != String.Empty);
+      if (m_radioButtons != String.Empty)
       {
         string[] arr = m_radioButtons.Split(new char[] { '|' });
         int pnl_height = 12;
@@ -172,8 +172,8 @@ namespace Ch.Cyberduck.Ui.Winforms.Taskdialog
       }
 
       // Setup CommandButtons
-      pnlCommandButtons.Visible = (m_commandButtons != "");
-      if (m_commandButtons != "")
+      pnlCommandButtons.Visible = (m_commandButtons != String.Empty);
+      if (m_commandButtons != String.Empty)
       {
         string[] arr = m_commandButtons.Split(new char[] { '|' });
         int t = 8;
@@ -263,13 +263,13 @@ namespace Ch.Cyberduck.Ui.Winforms.Taskdialog
                          Buttons == TaskDialogButtons.OKCancel ||
                          Buttons == TaskDialogButtons.YesNoCancel);
 
-      if (!show_verify_checkbox && ExpandedInfo == "" && m_Buttons == TaskDialogButtons.None)
+      if (!show_verify_checkbox && ExpandedInfo == String.Empty && m_Buttons == TaskDialogButtons.None)
         pnlButtons.Visible = false;
       else
         form_height += pnlButtons.Height;
 
-      pnlFooter.Visible = (Footer != "");
-      if (Footer != "")
+      pnlFooter.Visible = (Footer != String.Empty);
+      if (Footer != String.Empty)
       {
         AdjustLabelHeight(lbFooter);
         pnlFooter.Height = Math.Max(28, lbFooter.Height + 16);

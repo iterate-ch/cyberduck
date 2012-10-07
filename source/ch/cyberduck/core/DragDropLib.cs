@@ -1853,11 +1853,11 @@ namespace System.Windows.Forms
                 if ((DropImageType) e.Effect != currentType)
                 {
                     if (e.Effect == DragDropEffects.Copy)
-                        data.SetDropDescription(DropImageType.Copy, "Copy", "");
+                        data.SetDropDescription(DropImageType.Copy, "Copy", String.Empty);
                     else if (e.Effect == DragDropEffects.Link)
-                        data.SetDropDescription(DropImageType.Link, "Link", "");
+                        data.SetDropDescription(DropImageType.Link, "Link", String.Empty);
                     else if (e.Effect == DragDropEffects.Move)
-                        data.SetDropDescription(DropImageType.Move, "Move", "");
+                        data.SetDropDescription(DropImageType.Move, "Move", String.Empty);
                     else if (e.Effect == DragDropEffects.None)
                         data.SetDropDescription(DropImageType.None, null, null);
                     SetDropDescriptionIsDefault(data, true);

@@ -1,5 +1,5 @@
-﻿﻿//
-// Copyright (c) 2010 Yves Langisch. All rights reserved.
+﻿// 
+// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -15,15 +15,16 @@
 // Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
 // 
+
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
-using ch.cyberduck.core;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Core.Collections;
-using java.util;
 using Microsoft.Win32;
+using ch.cyberduck.core;
+using java.util;
 using org.apache.commons.io;
 using org.apache.log4j;
 using File = java.io.File;
@@ -38,6 +39,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private static readonly Logger Log = Logger.getLogger(typeof (LocalImpl).FullName);
 
         private static readonly LRUCache<string, string> defaultApplicationCache = new LRUCache<string, string>(100);
+        private Attributes info;
 
         public LocalImpl(string parent, string name) : base(parent, name)
         {
@@ -134,7 +136,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     {
                         if (null != openSk)
                         {
-                            return (string)openSk.GetValue(String.Empty);
+                            return (string) openSk.GetValue(String.Empty);
                         }
                     }
                 }
@@ -211,7 +213,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public override List getDefaultApplications()
         {
-            return Utils.ConvertToJavaList(Utils.OpenWithListForExtension(this.getExtension()));
+            return Utils.ConvertToJavaList(Utils.OpenWithListForExtension(getExtension()));
         }
 
         public override bool exists()
@@ -249,8 +251,8 @@ namespace Ch.Cyberduck.Ui.Controller
         public static string kind(string extension)
         {
             Shell32.SHFILEINFO shinfo = new Shell32.SHFILEINFO();
-            IntPtr hSuccess = Shell32.SHGetFileInfo(extension, 0, ref shinfo, (uint)Marshal.SizeOf(shinfo),
-                                             Shell32.SHGFI_TYPENAME | Shell32.SHGFI_USEFILEATTRIBUTES);
+            IntPtr hSuccess = Shell32.SHGetFileInfo(extension, 0, ref shinfo, (uint) Marshal.SizeOf(shinfo),
+                                                    Shell32.SHGFI_TYPENAME | Shell32.SHGFI_USEFILEATTRIBUTES);
             if (hSuccess != IntPtr.Zero)
             {
                 return Convert.ToString(shinfo.szTypeName.Trim());
@@ -269,8 +271,6 @@ namespace Ch.Cyberduck.Ui.Controller
             return kind;
         }
 
-        private Attributes info = null;
-
         public override Attributes attributes()
         {
             if (null == info)
@@ -278,16 +278,6 @@ namespace Ch.Cyberduck.Ui.Controller
                 info = new FileInfoAttributes(this);
             }
             return info;
-        }
-
-        private class FileInfoAttributes : LocalAttributes
-        {
-            private Local file;
-
-            public FileInfoAttributes(Local l) : base(l)
-            {
-                file = l;
-            }
         }
 
         /// <summary>
@@ -446,6 +436,16 @@ namespace Ch.Cyberduck.Ui.Controller
             protected override object create()
             {
                 return new LocalImpl(Environment.GetEnvironmentVariable("HOME"));
+            }
+        }
+
+        private class FileInfoAttributes : LocalAttributes
+        {
+            private Local file;
+
+            public FileInfoAttributes(Local l) : base(l)
+            {
+                file = l;
             }
         }
     }

@@ -139,14 +139,14 @@ namespace Ch.Cyberduck.Core
                 if (registry.OpenSubKey(@"SOFTWARE\Wow6432Node\Classes") != null)
                 {
                     r64 = registry.CreateSubKey(@"SOFTWARE\Wow6432Node\Classes" + association);
-                    r64.SetValue("", description);
-                    r64.SetValue("URL Protocol", "");
+                    r64.SetValue(String.Empty, description);
+                    r64.SetValue("URL Protocol", String.Empty);
 
                     defaultIcon = r64.CreateSubKey("DefaultIcon");
-                    defaultIcon.SetValue("", icon);
+                    defaultIcon.SetValue(String.Empty, icon);
 
                     command = r64.CreateSubKey(@"shell\open\command");
-                    command.SetValue("", "\"" + applicationPath + "\" \"%1\"");
+                    command.SetValue(String.Empty, "\"" + applicationPath + "\" \"%1\"");
                 }
             }
             catch (UnauthorizedAccessException e)
