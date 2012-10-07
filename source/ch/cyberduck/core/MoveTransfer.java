@@ -146,7 +146,7 @@ public class MoveTransfer extends Transfer {
             final Path destination = files.get(source);
             if(destination.attributes().isDirectory()) {
                 if(!destination.exists()) {
-                    destination.cache().put(destination.getReference(), new AttributedList<Path>());
+                    destination.cache().put(destination.getReference(), AttributedList.<Path>emptyList());
                 }
             }
         }
