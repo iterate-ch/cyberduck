@@ -1190,17 +1190,17 @@ public class S3Path extends CloudPath {
                 }
                 if(attributes().isDirectory()) {
                     if(recursive) {
-                        for(AbstractPath child : this.children()) {
+                        for(Path child : this.children()) {
                             if(!this.getSession().isConnected()) {
                                 break;
                             }
                             // Existing ACL might not be cached
-                            if(Acl.EMPTY.equals(((S3Path) child).attributes().getAcl())) {
-                                ((S3Path) child).readAcl();
+                            if(Acl.EMPTY.equals(child.attributes().getAcl())) {
+                                child.readAcl();
                             }
-                            final List<Acl.UserAndRole> existing = ((S3Path) child).attributes().getAcl().asList();
+                            final List<Acl.UserAndRole> existing = child.attributes().getAcl().asList();
                             acl.addAll(existing.toArray(new Acl.UserAndRole[existing.size()]));
-                            ((S3Path) child).writeAcl(acl, recursive);
+                            child.writeAcl(acl, recursive);
                         }
                     }
                 }
@@ -1273,7 +1273,7 @@ public class S3Path extends CloudPath {
             }
             else if(attributes().isDirectory()) {
                 List<ObjectKeyAndVersion> files = new ArrayList<ObjectKeyAndVersion>();
-                for(AbstractPath child : this.children()) {
+                for(Path child : this.children()) {
                     if(!this.getSession().isConnected()) {
                         break;
                     }
@@ -1281,7 +1281,7 @@ public class S3Path extends CloudPath {
                         child.delete();
                     }
                     else {
-                        files.add(new ObjectKeyAndVersion(((S3Path) child).getKey(),
+                        files.add(new ObjectKeyAndVersion(child.getKey(),
                                 child.attributes().getVersionId()));
                     }
                 }
@@ -1351,10 +1351,9 @@ public class S3Path extends CloudPath {
     public void rename(AbstractPath renamed) {
         try {
             if(attributes().isVolume()) {
-                log.warn("Renaming buckets is not currently supported by S3");
-                return;
+                throw new IOException("Renaming buckets is not supported");
             }
-            if(attributes().isFile() || attributes().isPlaceholder()) {
+            else if(attributes().isFile() || attributes().isPlaceholder()) {
                 this.getSession().check();
                 this.getSession().message(MessageFormat.format(Locale.localizedString("Renaming {0} to {1}", "Status"),
                         this.getName(), renamed));
@@ -1373,7 +1372,7 @@ public class S3Path extends CloudPath {
                 this.getSession().getClient().moveObject(this.getContainerName(), this.getKey(), ((S3Path) renamed).getContainerName(),
                         destination, false);
             }
-            if(attributes().isDirectory()) {
+            else if(attributes().isDirectory()) {
                 for(AbstractPath i : this.children()) {
                     if(!this.getSession().isConnected()) {
                         break;
