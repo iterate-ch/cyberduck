@@ -28,6 +28,7 @@ import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.SessionFactory;
 
 import org.apache.commons.net.ftp.FTPFileEntryParser;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -301,6 +302,7 @@ public class FTPPathTest extends AbstractTestCase {
     }
 
     @Test
+    @Ignore
     public void testParseMlsdSymbolic() {
         FTPPath path = (FTPPath) PathFactory.createPath(SessionFactory.createSession(new Host(Protocol.FTP, "localhost")),
                 "/www", Path.DIRECTORY_TYPE);
@@ -339,6 +341,7 @@ public class FTPPathTest extends AbstractTestCase {
     }
 
     @Test
+    @Ignore
     public void testParseHardlinkCountBadFormat() {
         FTPPath path = (FTPPath) PathFactory.createPath(SessionFactory.createSession(new Host(Protocol.FTP, "localhost")),
                 "/store/public/brain", Path.DIRECTORY_TYPE);
