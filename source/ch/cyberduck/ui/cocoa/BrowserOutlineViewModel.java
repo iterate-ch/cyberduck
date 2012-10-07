@@ -140,7 +140,7 @@ public class BrowserOutlineViewModel extends BrowserTableDataSource implements N
             log.warn(String.format("Index %s out of bound for %s", index, item));
             return null;
         }
-        return children.get(index.intValue()).<NSObject>getReference().unique();
+        return (NSObject) children.get(index.intValue()).getReference().unique();
     }
 
     @Override
@@ -175,7 +175,7 @@ public class BrowserOutlineViewModel extends BrowserTableDataSource implements N
                 if(-1 == draggingColumn || 0 == draggingColumn) {
                     if(destination.attributes().isDirectory()) {
                         // Drop target is directory
-                        view.setDropItem(destination.<NSObject>getReference().unique(), NSOutlineView.NSOutlineViewDropOnItemIndex);
+                        view.setDropItem((NSObject) destination.getReference().unique(), NSOutlineView.NSOutlineViewDropOnItemIndex);
                         return super.validateDrop(view, destination, row, draggingInfo);
                     }
                 }
