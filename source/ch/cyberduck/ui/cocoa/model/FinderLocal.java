@@ -19,6 +19,7 @@ package ch.cyberduck.ui.cocoa.model;
  */
 
 import ch.cyberduck.core.AbstractPath;
+import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Native;
@@ -77,28 +78,28 @@ public class FinderLocal extends Local {
         }
 
         @Override
-        protected Local create(Local parent, String name) {
+        protected Local create(final Local parent, final String name) {
             return new FinderLocal(parent, name);
         }
 
         @Override
-        protected Local create(String parent, String name) {
+        protected Local create(final String parent, final String name) {
             return new FinderLocal(parent, name);
         }
 
         @Override
-        protected Local create(String path) {
+        protected Local create(final String path) {
             return new FinderLocal(path);
         }
 
         @Override
-        protected Local create(File path) {
+        protected Local create(final File path) {
             return new FinderLocal(path);
         }
     }
 
     @Override
-    protected void setPath(String name) {
+    protected void setPath(final String name) {
         if(loadNative()) {
             super.setPath(this.resolveAlias(stringByExpandingTildeInPath(name)));
         }
@@ -108,7 +109,7 @@ public class FinderLocal extends Local {
     }
 
     @Override
-    public void setPath(String parent, String name) {
+    public void setPath(final String parent, final String name) {
         super.setPath(stringByExpandingTildeInPath(parent), name);
     }
 
@@ -136,6 +137,22 @@ public class FinderLocal extends Local {
             }
         }
         return super.getVolume();
+    }
+
+    @Override
+    public AttributedList<Local> list() {
+        final AttributedList<Local> children = new AttributedList<Local>();
+        final NSArray files = NSFileManager.defaultManager().contentsOfDirectoryAtPath_error(this.getAbsolute(), null);
+        if(null == files) {
+            log.error("Error listing children:" + this.getAbsolute());
+            return children;
+        }
+        final NSEnumerator i = files.objectEnumerator();
+        NSObject next;
+        while(((next = i.nextObject()) != null)) {
+            children.add(new FinderLocal(this.getAbsolute(), next.toString()));
+        }
+        return children;
     }
 
     @Override
@@ -174,7 +191,7 @@ public class FinderLocal extends Local {
      * Executable, readable and writable flags based on <code>NSFileManager</code>.
      */
     private class FinderLocalPermission extends Permission {
-        public FinderLocalPermission(int octal) {
+        public FinderLocalPermission(final int octal) {
             super(octal);
         }
 
@@ -223,7 +240,7 @@ public class FinderLocal extends Local {
          * @param name File manager attribute name
          * @return Null if no such file or attribute.
          */
-        private NSObject getNativeAttribute(String name) {
+        private NSObject getNativeAttribute(final String name) {
             NSDictionary dict = this.getNativeAttributes();
             if(null == dict) {
                 log.error("No such file:" + getAbsolute());
