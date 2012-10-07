@@ -42,31 +42,9 @@ public abstract class AbstractPath {
     public static final int VOLUME_TYPE = 8;
 
     /**
-     * @return True if this path denotes a directory and its file listing is cached for this session
-     * @see ch.cyberduck.core.Cache
-     */
-    public boolean isCached() {
-        return this.cache().containsKey(this.<AbstractPath>getReference())
-                && !this.cache().get(this.<AbstractPath>getReference()).attributes().isInvalid();
-    }
-
-    public abstract <T extends AbstractPath> Cache<T> cache();
-
-    /**
      * @return Descriptive features for path
      */
     public abstract Attributes attributes();
-
-    /**
-     * Clear cached listing
-     *
-     * @throws NullPointerException if session is not initialized
-     */
-    public void invalidate() {
-        if(this.attributes().isDirectory()) {
-            this.cache().invalidate(this.<AbstractPath>getReference());
-        }
-    }
 
     /**
      * Obtain a string representation of the path that is unique for versioned files.
@@ -95,7 +73,7 @@ public abstract class AbstractPath {
      *         cache.
      * @see ch.cyberduck.core.Cache#lookup(PathReference)
      */
-    public abstract <T> PathReference<T> getReference();
+    public abstract PathReference getReference();
 
     public abstract String toURL();
 
@@ -104,7 +82,7 @@ public abstract class AbstractPath {
      *
      * @return Directory listing from server
      */
-    public abstract <T extends AbstractPath> AttributedList<T> list();
+    public abstract AttributedList<? extends AbstractPath> list();
 
     /**
      * Get the cached directory listing if any or return #list instead.
@@ -113,7 +91,7 @@ public abstract class AbstractPath {
      * @return Cached directory listing as returned by the server
      * @see #list()
      */
-    public <T extends AbstractPath> AttributedList<T> children() {
+    public AttributedList<? extends AbstractPath> children() {
         return this.children(null);
     }
 
@@ -122,11 +100,10 @@ public abstract class AbstractPath {
      * No sorting applied.
      *
      * @param filter Filter to apply to directory listing
-     * @param <T>
      * @return Cached directory listing as returned by the server filtered
      * @see #list()
      */
-    public <T extends AbstractPath> AttributedList<T> children(PathFilter<T> filter) {
+    public AttributedList<? extends AbstractPath> children(PathFilter<? extends AbstractPath> filter) {
         return this.children(null, filter);
     }
 
@@ -139,11 +116,9 @@ public abstract class AbstractPath {
      * @return The children of this path or an empty list if it is not accessible for some reason
      * @see #list()
      */
-    public <T extends AbstractPath> AttributedList<T> children(Comparator<T> comparator, PathFilter<T> filter) {
-        if(!this.isCached()) {
-            this.cache().put(this.<AbstractPath>getReference(), this.list());
-        }
-        return this.<T>cache().get(this.getReference(), comparator, filter);
+    public AttributedList<? extends AbstractPath> children(final Comparator<? extends AbstractPath> comparator,
+                                                           final PathFilter<? extends AbstractPath> filter) {
+        return this.list().filter(comparator, filter);
     }
 
     public abstract char getPathDelimiter();

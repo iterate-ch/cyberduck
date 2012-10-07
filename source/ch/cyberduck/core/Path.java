@@ -45,6 +45,7 @@ import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.text.MessageFormat;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.StringTokenizer;
@@ -421,7 +422,7 @@ public abstract class Path extends AbstractPath implements Serializable {
      * @see ch.cyberduck.core.Cache#lookup(PathReference)
      */
     @Override
-    public <T> PathReference<T> getReference() {
+    public PathReference getReference() {
         if(null == reference) {
             reference = PathReferenceFactory.createPathReference(this);
         }
@@ -465,13 +466,23 @@ public abstract class Path extends AbstractPath implements Serializable {
     }
 
     @Override
-    public void invalidate() {
-        if(this.attributes().isDirectory()) {
-            if(this.getSession().isCDNSupported()) {
-                this.getSession().cdn().clear();
-            }
+    public AttributedList<Path> children() {
+        return this.children(null);
+    }
+
+    @Override
+    public AttributedList<Path> children(final PathFilter<? extends AbstractPath> filter) {
+        return this.children(null, filter);
+    }
+
+    @Override
+    public AttributedList<Path> children(final Comparator<? extends AbstractPath> comparator,
+                                         final PathFilter<? extends AbstractPath> filter) {
+        final Cache cache = this.getSession().cache();
+        if(!cache.isCached(this.getReference())) {
+            cache.put(this.getReference(), this.list());
         }
-        super.invalidate();
+        return cache.get(this.getReference()).filter(comparator, filter);
     }
 
     @Override
@@ -498,30 +509,12 @@ public abstract class Path extends AbstractPath implements Serializable {
 
     protected abstract AttributedList<Path> list(AttributedList<Path> children);
 
-    /**
-     * Accessability for #getSession.cache()
-     *
-     * @return The directory listing cache for this session
-     */
-    @Override
-    public Cache<Path> cache() {
-        return this.getSession().cache();
-    }
-
     public void writeOwner(String owner, boolean recursive) {
         throw new UnsupportedOperationException();
     }
 
     public void writeGroup(String group, boolean recursive) {
         throw new UnsupportedOperationException();
-    }
-
-    private Path update() {
-        final AttributedList<Path> l = this.getParent().children();
-        if(l.contains(this.getReference())) {
-            return l.get(this.getReference());
-        }
-        return this;
     }
 
     /**
@@ -531,22 +524,14 @@ public abstract class Path extends AbstractPath implements Serializable {
      * provider implementation.
      */
     public void readChecksum() {
-        this.getSession().message(MessageFormat.format(Locale.localizedString("Compute MD5 hash of {0}", "Status"),
-                this.getName()));
-
-        Path r = this.update();
-        attributes().setChecksum(r.attributes().getChecksum());
+        //
     }
 
     /**
      * Default implementation updating size from directory listing
      */
     public void readSize() {
-        this.getSession().message(MessageFormat.format(Locale.localizedString("Getting size of {0}", "Status"),
-                this.getName()));
-
-        Path r = this.update();
-        attributes().setSize(r.attributes().getSize());
+        //
     }
 
     @Override
@@ -560,13 +545,7 @@ public abstract class Path extends AbstractPath implements Serializable {
      * @see ch.cyberduck.core.Attributes#getModificationDate()
      */
     public void readTimestamp() {
-        this.getSession().message(MessageFormat.format(Locale.localizedString("Getting timestamp of {0}", "Status"),
-                this.getName()));
-
-        Path r = this.update();
-        attributes().setModificationDate(r.attributes().getModificationDate());
-        attributes().setCreationDate(r.attributes().getCreationDate());
-        attributes().setAccessedDate(r.attributes().getAccessedDate());
+        //
     }
 
     /**
@@ -576,11 +555,7 @@ public abstract class Path extends AbstractPath implements Serializable {
      * @see Session#isUnixPermissionsSupported()
      */
     public void readUnixPermission() {
-        this.getSession().message(MessageFormat.format(Locale.localizedString("Getting permission of {0}", "Status"),
-                this.getName()));
-
-        Path r = this.update();
-        attributes().setPermission(r.attributes().getPermission());
+        //
     }
 
 
@@ -748,7 +723,6 @@ public abstract class Path extends AbstractPath implements Serializable {
                         return TransferAction.ACTION_OVERWRITE;
                     }
                 }, options);
-                this.getParent().invalidate();
             }
             finally {
                 this.getLocal().delete(false);
@@ -1044,7 +1018,6 @@ public abstract class Path extends AbstractPath implements Serializable {
         finally {
             IOUtils.closeQuietly(in);
             IOUtils.closeQuietly(out);
-            copy.getParent().invalidate();
         }
     }
 
@@ -1078,7 +1051,7 @@ public abstract class Path extends AbstractPath implements Serializable {
             return false;
         }
         if(other instanceof Path) {
-            return this.getReference().equals(((Path) other).<Path>getReference());
+            return this.getReference().equals(((Path) other).getReference());
         }
         return false;
     }

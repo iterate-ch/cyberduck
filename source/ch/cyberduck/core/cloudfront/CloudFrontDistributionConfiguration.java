@@ -412,7 +412,7 @@ public class CloudFrontDistributionConfiguration extends HttpSession implements 
             }
             if(file.attributes().isDirectory()) {
                 if(recursive) {
-                    keys.addAll(this.getInvalidationKeys(file.<Path>children(), recursive));
+                    keys.addAll(this.getInvalidationKeys(file.children(), recursive));
                 }
             }
         }

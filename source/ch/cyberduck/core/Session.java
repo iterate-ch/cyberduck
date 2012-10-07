@@ -496,11 +496,6 @@ public abstract class Session implements TranscriptListener {
             this.check();
 
             this.sendCommand(archive.getCompressCommand(files));
-
-            // The directory listing is no more current
-            for(Path file : files) {
-                file.getParent().invalidate();
-            }
         }
         catch(IOException e) {
             this.error("Cannot create archive", e);
@@ -520,14 +515,11 @@ public abstract class Session implements TranscriptListener {
      * @param archive Archive format description
      * @param file    File to decompress
      */
-    public void unarchive(final Archive archive, Path file) {
+    public void unarchive(final Archive archive, final Path file) {
         try {
             this.check();
 
             this.sendCommand(archive.getDecompressCommand(file));
-
-            // The directory listing is no more current
-            file.getParent().invalidate();
         }
         catch(IOException e) {
             this.error("Cannot expand archive", e);
@@ -889,20 +881,17 @@ public abstract class Session implements TranscriptListener {
     /**
      * Caching files listings of previously listed directories
      */
-    private Cache<Path> cache;
+    private Cache cache = new Cache() {
+        @Override
+        public String toString() {
+            return String.format("Cache for %s", Session.this.toString());
+        }
+    };
 
     /**
      * @return The directory listing cache for this session
      */
-    public Cache<Path> cache() {
-        if(null == cache) {
-            cache = new Cache<Path>() {
-                @Override
-                public String toString() {
-                    return String.format("Cache for %s", Session.this.toString());
-                }
-            };
-        }
+    public Cache cache() {
         return this.cache;
     }
 

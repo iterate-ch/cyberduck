@@ -28,7 +28,6 @@ import org.apache.log4j.Logger;
 
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -208,7 +207,7 @@ public class SyncTransfer extends Transfer {
             else if(compare.equals(COMPARISON_LOCAL_NEWER)) {
                 _delegateFilterUpload.complete(p);
             }
-            comparisons.remove(p.<Path>getReference());
+            comparisons.remove(p.getReference());
             cache.remove(p.getReference());
         }
     };
@@ -285,7 +284,7 @@ public class SyncTransfer extends Transfer {
     /**
      * Contains both download and upload cache
      */
-    private final Cache<Path> cache = new Cache<Path>() {
+    private final Cache cache = new Cache() {
         @Override
         public AttributedList<Path> remove(PathReference reference) {
             _delegateDownload.cache().remove(reference);
@@ -307,13 +306,13 @@ public class SyncTransfer extends Transfer {
         }
 
         @Override
-        public AttributedList<Path> get(PathReference reference, Comparator<Path> c, PathFilter<Path> f) {
+        public AttributedList<Path> get(PathReference reference) {
             final Set<Path> children = new HashSet<Path>();
             if(_delegateDownload.cache().containsKey(reference)) {
-                children.addAll(_delegateDownload.cache().get(reference, c, f));
+                children.addAll(_delegateDownload.cache().get(reference));
             }
             if(_delegateUpload.cache().containsKey(reference)) {
-                children.addAll(_delegateUpload.cache().get(reference, c, f));
+                children.addAll(_delegateUpload.cache().get(reference));
             }
             return new AttributedList<Path>(children);
         }
@@ -332,7 +331,7 @@ public class SyncTransfer extends Transfer {
     };
 
     @Override
-    public Cache<Path> cache() {
+    public Cache cache() {
         return cache;
     }
 
@@ -423,7 +422,7 @@ public class SyncTransfer extends Transfer {
         }
     };
 
-    private Map<PathReference<Path>, Comparison> comparisons = Collections.<PathReference<Path>, Comparison>synchronizedMap(new LRUMap(
+    private Map<PathReference, Comparison> comparisons = Collections.<PathReference, Comparison>synchronizedMap(new LRUMap(
             Preferences.instance().getInteger("transfer.cache.size")
     ) {
         @Override
@@ -439,8 +438,8 @@ public class SyncTransfer extends Transfer {
      * @return COMPARISON_REMOTE_NEWER, COMPARISON_LOCAL_NEWER or COMPARISON_EQUAL
      */
     public Comparison compare(Path p) {
-        if(comparisons.containsKey(p.<Path>getReference())) {
-            return comparisons.get(p.<Path>getReference());
+        if(comparisons.containsKey(p.getReference())) {
+            return comparisons.get(p.getReference());
         }
         if(log.isDebugEnabled()) {
             log.debug("compare:" + p);
@@ -481,7 +480,7 @@ public class SyncTransfer extends Transfer {
             return result;
         }
         finally {
-            comparisons.put(p.<Path>getReference(), result);
+            comparisons.put(p.getReference(), result);
         }
     }
 

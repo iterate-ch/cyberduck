@@ -206,7 +206,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                     }
                     if(file.attributes().isDirectory() && getSelectedBrowserView() == browserOutlineView) {
                         // #471. Expanded item children may match search string
-                        return file.isCached();
+                        return getSession().cache().isCached(file.getReference());
                     }
                     return false;
                 }
@@ -261,12 +261,28 @@ public class BrowserController extends WindowController implements NSToolbar.Del
      * @param scroll            Scroll to current selection
      */
     public void reloadData(boolean preserveSelection, boolean scroll) {
+        this.reloadData(Collections.<Path>emptyList(), preserveSelection, scroll);
+    }
+
+    /**
+     * @param changed           Modified files. Invalidate its parents
+     * @param preserveSelection All selected files should be reselected after reloading the view
+     */
+    public void reloadData(final List<Path> changed, boolean preserveSelection) {
+        this.reloadData(changed, preserveSelection, true);
+    }
+
+    /**
+     * @param preserveSelection All selected files should be reselected after reloading the view
+     * @param scroll            Scroll to current selection
+     */
+    public void reloadData(final List<Path> changed, boolean preserveSelection, boolean scroll) {
         if(preserveSelection) {
             //Remember the previously selected paths
-            this.reloadData(this.getSelectedPaths(), scroll);
+            this.reloadData(changed, this.getSelectedPaths(), scroll);
         }
         else {
-            this.reloadData(Collections.<Path>emptyList(), scroll);
+            this.reloadData(changed, Collections.<Path>emptyList(), scroll);
         }
     }
 
@@ -277,12 +293,29 @@ public class BrowserController extends WindowController implements NSToolbar.Del
      * @see #setSelectedPaths(java.util.List)
      */
     protected void reloadData(final List<Path> selected) {
-        this.reloadData(selected, true);
+        this.reloadData(Collections.<Path>emptyList(), selected);
     }
 
-    protected void reloadData(final List<Path> selected, boolean scroll) {
+    /**
+     * Make the broser reload its content. Will make use of the cache.
+     *
+     * @param selected The items to be selected
+     * @see #setSelectedPaths(java.util.List)
+     */
+    protected void reloadData(final List<Path> changed, final List<Path> selected) {
+        this.reloadData(changed, selected, true);
+    }
+
+    protected void reloadData(final List<Path> changed, final List<Path> selected, boolean scroll) {
+        this.reloadBrowserImpl(changed, selected, scroll);
+    }
+
+    private void reloadBrowserImpl(final List<Path> changed, final List<Path> selected, boolean scroll) {
         if(log.isDebugEnabled()) {
             log.debug("reloadData:" + selected);
+        }
+        for(Path p : changed) {
+            session.cache().invalidate(p.getParent().getReference());
         }
         // Tell the browser view to reload the data. This will request all paths from the browser model
         // which will refetch paths from the server marked as invalid.
@@ -2207,17 +2240,18 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             final List<Path> s = this.getSelectedPaths();
             switch(this.browserSwitchView.selectedSegment()) {
                 case SWITCH_LIST_VIEW: {
-                    this.workdir().invalidate();
+                    this.getSession().cache().invalidate(this.workdir().getReference());
                     break;
                 }
                 case SWITCH_OUTLINE_VIEW: {
-                    this.workdir().invalidate();
+                    this.getSession().cache().invalidate(this.workdir().getReference());
                     for(int i = 0; i < browserOutlineView.numberOfRows().intValue(); i++) {
                         final Path item = this.lookup(new OutlinePathReference(browserOutlineView.itemAtRow(new NSInteger(i))));
                         if(null == item) {
+                            // Not a folder
                             continue;
                         }
-                        item.invalidate();
+                        this.getSession().cache().invalidate(item.getReference());
                     }
                     break;
                 }
@@ -2260,7 +2294,10 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         this.checkOverwrite(selected.values(), new DefaultMainAction() {
             @Override
             public void run() {
-                transfer(new CopyTransfer(selected), workdir, browser);
+                final ArrayList<Path> changed = new ArrayList<Path>();
+                changed.addAll(selected.keySet());
+                changed.addAll(selected.values());
+                transfer(new CopyTransfer(selected), changed, browser);
             }
         });
     }
@@ -2281,7 +2318,10 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         this.checkMove(selected.values(), new DefaultMainAction() {
             @Override
             public void run() {
-                transfer(new MoveTransfer(selected), workdir, true);
+                final ArrayList<Path> changed = new ArrayList<Path>();
+                changed.addAll(selected.keySet());
+                changed.addAll(selected.values());
+                transfer(new MoveTransfer(selected), changed, true);
             }
         });
     }
@@ -2469,7 +2509,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
             @Override
             public void cleanup() {
-                reloadData(false);
+                reloadData(files, false);
             }
         });
     }
@@ -2495,7 +2535,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
             @Override
             public void cleanup() {
-                reloadData(false);
+                reloadData(Collections.singletonList(selected), false);
             }
         });
     }
@@ -2706,7 +2746,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 }
                 Path root = PathFactory.createPath(getTransferSession(true), selected.getAsDictionary());
                 root.setLocal(LocalFactory.createLocal(sheet.filenames().lastObject().toString()));
-                this.transfer(new SyncTransfer(root), selected);
+                this.transfer(new SyncTransfer(root));
             }
         }
     }
@@ -2801,7 +2841,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 roots.add(PathFactory.createPath(session,
                         destination.getAbsolute(), LocalFactory.createLocal(next.toString())));
             }
-            transfer(new UploadTransfer(roots), destination);
+            transfer(new UploadTransfer(roots));
         }
         lastSelectedUploadDirectory = new File(sheet.filename()).getParent();
         uploadPanel = null;
@@ -2836,31 +2876,20 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     }
 
     /**
-     * Trasnfers the files either using the queue or using the browser session if #connection.pool.max is 1
+     * Transfers the files either using the queue or using the browser session if #connection.pool.max is 1
      *
      * @param transfer Transfer Operation
      */
     protected void transfer(final Transfer transfer) {
-        this.transfer(transfer, null);
+        this.transfer(transfer, this.getSession().getMaxConnections() == 1);
     }
 
     /**
-     * @param transfer    Transfer Operation
-     * @param destination Will reload the data for this directory in the browser after the
-     *                    transfer completes
+     * @param transfer Transfer Operation
+     * @param browser  Transfer in browser window
      */
-    protected void transfer(final Transfer transfer, final Path destination) {
-        this.transfer(transfer, destination, this.getSession().getMaxConnections() == 1);
-    }
-
-    /**
-     * @param transfer    Transfer Operation
-     * @param destination Will reload the data for this directory in the browser after the
-     *                    transfer completes
-     * @param browser     Transfer in browser window
-     */
-    protected void transfer(final Transfer transfer, final Path destination, final boolean browser) {
-        this.transfer(transfer, destination, browser, new TransferPrompt() {
+    protected void transfer(final Transfer transfer, final boolean browser) {
+        this.transfer(transfer, browser, new TransferPrompt() {
             @Override
             public TransferAction prompt() {
                 return TransferPromptController.create(BrowserController.this, transfer).prompt();
@@ -2869,32 +2898,43 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     }
 
     /**
-     * @param transfer    Transfer
-     * @param browser     Transfer in browser window
-     * @param destination Will reload the data for this directory in the browser after the
-     *                    transfer completes
-     * @param prompt      Callback for overwrite action
+     * @param transfer Transfer Operation
+     * @param browser  Transfer in browser window
      */
-    protected void transfer(final Transfer transfer, final Path destination, boolean browser,
-                            final TransferPrompt prompt) {
+    protected void transfer(final Transfer transfer, final List<Path> selected, final boolean browser) {
+        this.transfer(transfer, selected, browser, new TransferPrompt() {
+            @Override
+            public TransferAction prompt() {
+                return TransferPromptController.create(BrowserController.this, transfer).prompt();
+            }
+        });
+    }
+
+    /**
+     * @param transfer Transfer
+     * @param browser  Transfer in browser window
+     * @param prompt   Callback for overwrite action
+     */
+    protected void transfer(final Transfer transfer, boolean browser, final TransferPrompt prompt) {
+        this.transfer(transfer, transfer.getRoots(), browser, prompt);
+    }
+
+    protected void transfer(final Transfer transfer, final List<Path> changed, boolean browser, final TransferPrompt prompt) {
         transfer.addListener(new TransferAdapter() {
             @Override
             public void transferDidEnd() {
-                if(destination != null && isMounted()) {
-                    destination.invalidate();
-                    if(!transfer.isCanceled()) {
-                        invoke(new WindowMainAction(BrowserController.this) {
-                            @Override
-                            public void run() {
-                                reloadData(true);
-                            }
+                if(!transfer.isCanceled()) {
+                    invoke(new WindowMainAction(BrowserController.this) {
+                        @Override
+                        public void run() {
+                            reloadData(changed, changed, true);
+                        }
 
-                            @Override
-                            public boolean isValid() {
-                                return super.isValid() && BrowserController.this.isConnected();
-                            }
-                        });
-                    }
+                        @Override
+                        public boolean isValid() {
+                            return super.isValid() && BrowserController.this.isConnected();
+                        }
+                    });
                 }
                 transfer.removeListener(this);
             }
@@ -2948,7 +2988,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 public void run() {
                     TransferOptions options = new TransferOptions();
                     options.closeSession = false;
-                    options.invalidateCache = Cache.Lifecycle.FOREVER;
                     transfer.start(prompt, options);
                 }
 
@@ -3230,7 +3269,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 }
                 final Transfer t = new UploadTransfer(roots);
                 if(t.numberOfRoots() > 0) {
-                    this.transfer(t, workdir);
+                    this.transfer(t);
                     return true;
                 }
             }
@@ -3297,25 +3336,25 @@ public class BrowserController extends WindowController implements NSToolbar.Del
      * @param archive Archive format
      */
     private void archiveClicked(final Archive archive) {
-        final List<Path> s = this.getSelectedPaths();
-        this.checkOverwrite(Collections.singletonList(archive.getArchive(s)), new DefaultMainAction() {
+        final List<Path> selected = this.getSelectedPaths();
+        this.checkOverwrite(Collections.singletonList(archive.getArchive(selected)), new DefaultMainAction() {
             @Override
             public void run() {
                 background(new BrowserBackgroundAction(BrowserController.this) {
                     @Override
                     public void run() {
-                        session.archive(archive, s);
+                        session.archive(archive, selected);
                     }
 
                     @Override
                     public void cleanup() {
                         // Update Selection
-                        reloadData(Collections.singletonList(archive.getArchive(s)));
+                        reloadData(selected, Collections.singletonList(archive.getArchive(selected)));
                     }
 
                     @Override
                     public String getActivity() {
-                        return archive.getCompressCommand(s);
+                        return archive.getCompressCommand(selected);
                     }
                 });
             }
@@ -3325,7 +3364,8 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     @Action
     public void unarchiveButtonClicked(final ID sender) {
         final List<Path> expanded = new ArrayList<Path>();
-        for(final Path s : this.getSelectedPaths()) {
+        final List<Path> selected = this.getSelectedPaths();
+        for(final Path s : selected) {
             final Archive archive = Archive.forName(s.getName());
             if(null == archive) {
                 continue;
@@ -3343,7 +3383,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                         public void cleanup() {
                             expanded.addAll(archive.getExpanded(Collections.singletonList(s)));
                             // Update Selection
-                            reloadData(expanded);
+                            reloadData(selected, expanded);
                         }
 
                         @Override
@@ -3422,12 +3462,12 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
             @Override
             public void run() {
-                if(directory.isCached()) {
+                if(getSession().cache().isCached(directory.getReference())) {
                     //Reset the readable attribute
                     directory.children().attributes().setReadable(true);
                 }
                 // Get the directory listing in the background
-                AttributedList<AbstractPath> children = directory.children();
+                AttributedList children = directory.children();
                 if(children.attributes().isReadable() || !children.isEmpty()) {
                     // Update the working directory if listing is successful
                     workdir = directory;
@@ -3491,7 +3531,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     }
 
     /**
-     * @return The last path browsed before #getPrevoiusPath was called
+     * @return The last path browsed before #getPreviousPath was called
      * @see #getPreviousPath()
      */
     public Path getForwardPath() {
@@ -3505,7 +3545,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     }
 
     /**
-     * @return The ordered array of prevoiusly visited directories
+     * @return The ordered array of previously visited directories
      */
     public List<Path> getBackHistory() {
         return backHistory;
@@ -3519,7 +3559,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     }
 
     /**
-     * @return The ordered array of prevoiusly visited directories
+     * @return The ordered array of previously visited directories
      */
     public List<Path> getForwardHistory() {
         return forwardHistory;

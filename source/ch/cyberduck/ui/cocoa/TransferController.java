@@ -766,7 +766,6 @@ public final class TransferController extends WindowController implements NSTool
                 final TransferOptions options = new TransferOptions();
                 options.reloadRequested = reload;
                 options.resumeRequested = resume;
-                options.invalidateCache = Cache.Lifecycle.FOREVER;
                 transfer.start(new TransferPrompt() {
                     @Override
                     public TransferAction prompt() {

@@ -135,7 +135,7 @@ public abstract class TransferPromptModel extends OutlineDataSource {
             // a multitude of unecessary threads
             if(!isLoadingListingInBackground.contains(path)) {
                 if(transfer.cache().containsKey(path.getReference())) {
-                    return transfer.cache().get(path.getReference(), new NullComparator<Path>(), filter());
+                    return transfer.cache().get(path.getReference()).filter(new NullComparator<Path>(), filter());
                 }
                 isLoadingListingInBackground.add(path);
                 // Reloading a workdir that is not cached yet would cause the interface to freeze;
@@ -168,7 +168,7 @@ public abstract class TransferPromptModel extends OutlineDataSource {
                     }
                 });
             }
-            return transfer.cache().get(path.getReference(), new FilenameComparator(true), filter());
+            return transfer.cache().get(path.getReference()).filter(new FilenameComparator(true), filter());
         }
     }
 
@@ -220,13 +220,13 @@ public abstract class TransferPromptModel extends OutlineDataSource {
     @Override
     public NSObject outlineView_child_ofItem(final NSOutlineView view, NSInteger index, NSObject item) {
         if(null == item) {
-            return roots.get(index.intValue()).<NSObject>getReference().unique();
+            return (NSObject) roots.get(index.intValue()).getReference().unique();
         }
         final AttributedList<Path> children = this.children(this.lookup(new OutlinePathReference(item)));
         if(children.isEmpty()) {
             return null;
         }
-        return children.get(index.intValue()).<NSObject>getReference().unique();
+        return (NSObject) children.get(index.intValue()).getReference().unique();
     }
 
     @Override

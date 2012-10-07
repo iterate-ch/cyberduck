@@ -279,7 +279,7 @@ public class FTPPath extends Path {
             catch(IOException e) {
                 log.warn("Listing directory failed:" + e.getMessage());
                 children.attributes().setReadable(false);
-                if(this.cache().isEmpty()) {
+                if(session.cache().isEmpty()) {
                     this.error(e.getMessage(), e);
                 }
             }
@@ -539,9 +539,7 @@ public class FTPPath extends Path {
                         this.getName()));
 
                 if(this.getSession().getClient().makeDirectory(this.getAbsolute())) {
-                    this.cache().put(this.getReference(), AttributedList.<Path>emptyList());
-                    // The directory listing is no more current
-                    this.cache().get(this.getParent().getReference()).add(this);
+                    //
                 }
                 else {
                     throw new FTPException(this.getSession().getClient().getReplyString());
@@ -561,10 +559,6 @@ public class FTPPath extends Path {
                     this.getName(), renamed));
 
             if(this.getSession().getClient().rename(this.getAbsolute(), renamed.getAbsolute())) {
-                // The directory listing of the target is no more current
-                renamed.getParent().invalidate();
-                // The directory listing of the source is no more current
-                this.getParent().invalidate();
             }
             else {
                 throw new FTPException(this.getSession().getClient().getReplyString());
@@ -591,7 +585,7 @@ public class FTPPath extends Path {
                 }
                 if(-1 == attributes().getSize()) {
                     // Read the size from the directory listing
-                    final AttributedList<AbstractPath> l = this.getParent().children();
+                    final AttributedList<Path> l = this.getParent().children();
                     if(l.contains(this.getReference())) {
                         attributes().setSize(l.get(this.getReference()).attributes().getSize());
                     }
@@ -693,8 +687,6 @@ public class FTPPath extends Path {
                     throw new FTPException(this.getSession().getClient().getReplyString());
                 }
             }
-            // The directory listing is no more current
-            this.getParent().invalidate();
         }
         catch(IOException e) {
             this.error("Cannot delete {0}", e);
@@ -782,36 +774,29 @@ public class FTPPath extends Path {
         if(chmodSupported) {
             this.getSession().message(MessageFormat.format(Locale.localizedString("Changing permission of {0} to {1}", "Status"),
                     this.getName(), perm.getOctalString()));
-            try {
-                if(attributes().isFile() && !attributes().isSymbolicLink()) {
-                    if(this.getSession().getClient().sendSiteCommand("CHMOD " + perm.getOctalString() + " " + this.getAbsolute())) {
-                        this.attributes().setPermission(perm);
-                    }
-                    else {
-                        chmodSupported = false;
-                    }
+            if(attributes().isFile() && !attributes().isSymbolicLink()) {
+                if(this.getSession().getClient().sendSiteCommand("CHMOD " + perm.getOctalString() + " " + this.getAbsolute())) {
+                    this.attributes().setPermission(perm);
                 }
-                else if(attributes().isDirectory()) {
-                    if(this.getSession().getClient().sendSiteCommand("CHMOD " + perm.getOctalString() + " " + this.getAbsolute())) {
-                        this.attributes().setPermission(perm);
-                    }
-                    else {
-                        chmodSupported = false;
-                    }
-                    if(recursive) {
-                        for(AbstractPath child : this.children()) {
-                            if(!this.getSession().isConnected()) {
-                                break;
-                            }
-                            ((FTPPath) child).writeUnixPermissionImpl(perm, recursive);
-                        }
-                    }
+                else {
+                    chmodSupported = false;
                 }
             }
-            finally {
-                //this.attributes().clear(false, false, true, false);
-                ;// This will force a directory listing to parse the permissions again.
-                //this.getParent().invalidate();
+            else if(attributes().isDirectory()) {
+                if(this.getSession().getClient().sendSiteCommand("CHMOD " + perm.getOctalString() + " " + this.getAbsolute())) {
+                    this.attributes().setPermission(perm);
+                }
+                else {
+                    chmodSupported = false;
+                }
+                if(recursive) {
+                    for(AbstractPath child : this.children()) {
+                        if(!this.getSession().isConnected()) {
+                            break;
+                        }
+                        ((FTPPath) child).writeUnixPermissionImpl(perm, recursive);
+                    }
+                }
             }
         }
     }
@@ -829,41 +814,35 @@ public class FTPPath extends Path {
     private void writeModificationDateImpl(long created, long modified) throws IOException {
         this.getSession().message(MessageFormat.format(Locale.localizedString("Changing timestamp of {0} to {1}", "Status"),
                 this.getName(), DateFormatterFactory.instance().getShortFormat(modified)));
-        try {
-            final MDTMSecondsDateFormatter formatter = new MDTMSecondsDateFormatter();
-            if(this.getSession().getClient().isFeatureSupported(FTPCommand.MFMT)) {
-                if(this.getSession().getClient().setModificationTime(this.getAbsolute(),
-                        formatter.format(modified))) {
-                    this.attributes().setModificationDate(modified);
-                }
-            }
-            else {
-                if(this.getSession().isUtimeSupported()) {
-                    // The utime() function sets the access and modification times of the named
-                    // file from the structures in the argument array timep.
-                    // The access time is set to the value of the first element,
-                    // and the modification time is set to the value of the second element
-                    // Accessed date, modified date, created date
-                    if(this.getSession().getClient().sendSiteCommand("UTIME " + this.getAbsolute()
-                            + " " + formatter.format(new Date(modified))
-                            + " " + formatter.format(new Date(modified))
-                            + " " + formatter.format(new Date(created))
-                            + " UTC")) {
-                        this.attributes().setModificationDate(modified);
-                        this.attributes().setCreationDate(created);
-                    }
-                    else {
-                        this.getSession().setUtimeSupported(false);
-                        log.warn("UTIME not supported");
-                    }
-                }
 
+        final MDTMSecondsDateFormatter formatter = new MDTMSecondsDateFormatter();
+        if(this.getSession().getClient().isFeatureSupported(FTPCommand.MFMT)) {
+            if(this.getSession().getClient().setModificationTime(this.getAbsolute(),
+                    formatter.format(modified))) {
+                this.attributes().setModificationDate(modified);
             }
         }
-        finally {
-            //this.attributes().clear(true, false, false, false);
-            ;// This will force a directory listing to parse the timestamp again if MDTM is not supported.
-            //this.getParent().invalidate();
+        else {
+            if(this.getSession().isUtimeSupported()) {
+                // The utime() function sets the access and modification times of the named
+                // file from the structures in the argument array timep.
+                // The access time is set to the value of the first element,
+                // and the modification time is set to the value of the second element
+                // Accessed date, modified date, created date
+                if(this.getSession().getClient().sendSiteCommand("UTIME " + this.getAbsolute()
+                        + " " + formatter.format(new Date(modified))
+                        + " " + formatter.format(new Date(modified))
+                        + " " + formatter.format(new Date(created))
+                        + " UTC")) {
+                    this.attributes().setModificationDate(modified);
+                    this.attributes().setCreationDate(created);
+                }
+                else {
+                    this.getSession().setUtimeSupported(false);
+                    log.warn("UTIME not supported");
+                }
+            }
+
         }
     }
 
@@ -1023,8 +1002,6 @@ public class FTPPath extends Path {
                         throw new FTPException(getSession().getClient().getReplyString());
                     }
                 }
-                // The directory listing is no more current
-                this.getParent().invalidate();
             }
             catch(IOException e) {
                 this.error("Upload failed", e);

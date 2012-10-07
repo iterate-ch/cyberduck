@@ -39,7 +39,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.MessageFormat;
-import java.util.List;
 
 import ch.ethz.ssh2.SCPClient;
 import ch.ethz.ssh2.SFTPException;
@@ -117,7 +116,7 @@ public class SFTPPath extends Path {
                 this.getSession().message(MessageFormat.format(Locale.localizedString("Listing directory {0}", "Status"),
                         this.getName()));
 
-                for(SFTPv3DirectoryEntry f : (List<SFTPv3DirectoryEntry>) this.getSession().sftp().ls(this.getAbsolute())) {
+                for(SFTPv3DirectoryEntry f : this.getSession().sftp().ls(this.getAbsolute())) {
                     if(f.filename.equals(".") || f.filename.equals("..")) {
                         continue;
                     }
@@ -132,7 +131,7 @@ public class SFTPPath extends Path {
             catch(IOException e) {
                 log.warn("Listing directory failed:" + e.getMessage());
                 children.attributes().setReadable(false);
-                if(this.cache().isEmpty()) {
+                if(session.cache().isEmpty()) {
                     this.error(e.getMessage(), e);
                 }
             }
@@ -150,10 +149,6 @@ public class SFTPPath extends Path {
 
                 this.getSession().sftp().mkdir(this.getAbsolute(),
                         Integer.parseInt(new Permission(Preferences.instance().getInteger("queue.upload.permissions.folder.default")).getOctalString(), 8));
-
-                this.cache().put(this.getReference(), AttributedList.<Path>emptyList());
-                // The directory listing is no more current
-                this.cache().get(this.getParent().getReference()).add(this);
             }
             catch(IOException e) {
                 this.error("Cannot create folder {0}", e);
@@ -172,10 +167,6 @@ public class SFTPPath extends Path {
                 renamed.delete();
             }
             this.getSession().sftp().mv(this.getAbsolute(), renamed.getAbsolute());
-            // The directory listing of the target is no more current
-            renamed.getParent().invalidate();
-            // The directory listing of the source is no more current
-            this.getParent().invalidate();
         }
         catch(IOException e) {
             this.error("Cannot rename {0}", e);
@@ -204,8 +195,6 @@ public class SFTPPath extends Path {
 
                 this.getSession().sftp().rmdir(this.getAbsolute());
             }
-            // The directory listing is no more current
-            this.getParent().invalidate();
         }
         catch(IOException e) {
             this.error("Cannot delete {0}", e);
@@ -499,7 +488,6 @@ public class SFTPPath extends Path {
                     this.getName()));
 
             this.getSession().sftp().createSymlink(this.getAbsolute(), target);
-            this.getParent().invalidate();
         }
         catch(IOException e) {
             this.error("Cannot create file {0}", e);
@@ -555,8 +543,6 @@ public class SFTPPath extends Path {
                 in = this.getLocal().getInputStream();
                 out = this.write(check);
                 this.upload(out, in, throttle, listener);
-                // The directory listing is no more current
-                this.getParent().invalidate();
             }
             catch(IOException e) {
                 this.error("Upload failed", e);
@@ -589,8 +575,6 @@ public class SFTPPath extends Path {
                 catch(SFTPException ignore) {
                     log.warn(ignore.getMessage());
                 }
-                // The directory listing is no more current
-                this.getParent().invalidate();
             }
             catch(IOException e) {
                 this.error("Cannot create file {0}", e);

@@ -43,9 +43,4 @@ public final class TransferOptions {
      */
     public boolean quarantine =
             Preferences.instance().getBoolean("queue.download.quarantine");
-
-    /**
-     * When set to false, do not invalidate entries in the directory listing cache.
-     */
-    public Cache.Lifecycle invalidateCache = Cache.Lifecycle.INVALIDATED;
 }

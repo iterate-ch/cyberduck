@@ -300,14 +300,14 @@ public class CFPath extends CloudPath {
             catch(HttpException e) {
                 log.warn("Listing directory failed:" + e.getMessage());
                 children.attributes().setReadable(false);
-                if(this.cache().isEmpty()) {
+                if(session.cache().isEmpty()) {
                     this.error(e.getMessage(), e);
                 }
             }
             catch(IOException e) {
                 log.warn("Listing directory failed:" + e.getMessage());
                 children.attributes().setReadable(false);
-                if(this.cache().isEmpty()) {
+                if(session.cache().isEmpty()) {
                     this.error(e.getMessage(), e);
                 }
             }
@@ -499,9 +499,6 @@ public class CFPath extends CloudPath {
                     // Create virtual directory
                     this.getSession().getClient().createFullPath(this.getContainerName(), this.getKey());
                 }
-                this.cache().put(this.getReference(), AttributedList.<Path>emptyList());
-                // The directory listing is no more current
-                this.cache().get(this.getParent().getReference()).add(this);
             }
             catch(HttpException e) {
                 this.error("Cannot create folder {0}", e);
@@ -545,8 +542,6 @@ public class CFPath extends CloudPath {
                     }
                 }
             }
-            // The directory listing is no more current
-            this.getParent().invalidate();
         }
         catch(HttpException e) {
             this.error("Cannot delete {0}", e);
@@ -635,21 +630,15 @@ public class CFPath extends CloudPath {
 
     private void _copy(AbstractPath copy)
             throws IOException, HttpException {
-        try {
-            this.getSession().check();
-            this.getSession().message(MessageFormat.format(Locale.localizedString("Copying {0} to {1}", "Status"),
-                    this.getName(), copy));
+        this.getSession().check();
+        this.getSession().message(MessageFormat.format(Locale.localizedString("Copying {0} to {1}", "Status"),
+                this.getName(), copy));
 
-            if(this.attributes().isFile()) {
-                String destination = ((CFPath) copy).getKey();
-                this.getSession().getClient().copyObject(this.getContainerName(), this.getKey(),
-                        ((CFPath) copy).getContainerName(), destination);
-                this.status().setComplete(true);
-            }
-        }
-        finally {
-            // The directory listing is no more current
-            copy.getParent().invalidate();
+        if(this.attributes().isFile()) {
+            String destination = ((CFPath) copy).getKey();
+            this.getSession().getClient().copyObject(this.getContainerName(), this.getKey(),
+                    ((CFPath) copy).getContainerName(), destination);
+            this.status().setComplete(true);
         }
     }
 

@@ -429,7 +429,7 @@ public abstract class Transfer implements Serializable {
     public void setSelected(Path item, final boolean selected) {
         item.status().setSelected(selected);
         if(item.attributes().isDirectory()) {
-            if(item.isCached()) {
+            if(session.cache().isCached(item.getReference())) {
                 for(Path child : this.children(item)) {
                     this.setSelected(child, selected);
                 }
@@ -529,11 +529,6 @@ public abstract class Transfer implements Serializable {
             return;
         }
 
-        for(Session s : this.getSessions()) {
-            // Do not invalidate cache entries during file transfers
-            s.cache().setLifecycle(options.invalidateCache);
-        }
-
         // Determine the filter to match files against
         final TransferAction action = this.action(options.resumeRequested, options.reloadRequested);
         if(action.equals(TransferAction.ACTION_CANCEL)) {
@@ -570,10 +565,6 @@ public abstract class Transfer implements Serializable {
 
         // Transfer all files sequentially
         this.transfer(filter, options);
-
-        for(Session s : this.getSessions()) {
-            s.cache().setLifecycle(Cache.Lifecycle.INVALIDATED);
-        }
 
         this.clear(options);
 
@@ -684,7 +675,7 @@ public abstract class Transfer implements Serializable {
      * @return The cache of the underlying session
      * @see Session#cache()
      */
-    public Cache<Path> cache() {
+    public Cache cache() {
         return session.cache();
     }
 

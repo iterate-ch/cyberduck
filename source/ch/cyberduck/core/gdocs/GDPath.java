@@ -204,7 +204,7 @@ public class GDPath extends Path {
     public String getExportUri() {
         if(StringUtils.isBlank(exportUri)) {
             log.warn(String.format("Refetching Export URI for %s", this.toString()));
-            AttributedList<AbstractPath> l = this.getParent().children();
+            AttributedList<Path> l = this.getParent().children();
             if(l.contains(this.getReference())) {
                 exportUri = ((GDPath) l.get(this.getReference())).getExportUri();
             }
@@ -228,7 +228,7 @@ public class GDPath extends Path {
     public String getResourceId() {
         if(StringUtils.isBlank(resourceId)) {
             log.warn(String.format("Refetching Resource ID for %s", this.toString()));
-            AttributedList<AbstractPath> l = this.getParent().children();
+            AttributedList<Path> l = this.getParent().children();
             if(l.contains(this.getReference())) {
                 resourceId = ((GDPath) l.get(this.getReference())).getResourceId();
             }
@@ -285,7 +285,7 @@ public class GDPath extends Path {
     }
 
     protected String getUpdateSessionFeed() throws MalformedURLException {
-        return new StringBuilder(this.getCreateSessionFeed()).append("/document%3A").append(this.getDocumentId()).toString();
+        return String.format("%s/document%%3A%s", this.getCreateSessionFeed(), this.getDocumentId());
     }
 
     protected String getCreateSessionFeed() throws MalformedURLException {
@@ -548,8 +548,6 @@ public class GDPath extends Path {
                     IOUtils.closeQuietly(in);
                     IOUtils.closeQuietly(out);
                 }
-                // The directory listing is no more current
-                this.getParent().invalidate();
             }
         }
         catch(IOException e) {
@@ -777,14 +775,14 @@ public class GDPath extends Path {
             catch(ServiceException e) {
                 log.warn("Listing directory failed:" + e.getMessage());
                 children.attributes().setReadable(false);
-                if(this.cache().isEmpty()) {
+                if(session.cache().isEmpty()) {
                     this.error(e.getMessage(), e);
                 }
             }
             catch(IOException e) {
                 log.warn("Listing directory failed:" + e.getMessage());
                 children.attributes().setReadable(false);
-                if(this.cache().isEmpty()) {
+                if(session.cache().isEmpty()) {
                     this.error(e.getMessage(), e);
                 }
             }
@@ -852,6 +850,7 @@ public class GDPath extends Path {
                             final List<RevisionEntry> revisions = this.getSession().getClient().getFeed(
                                     new URL(path.getRevisionsFeed()), RevisionFeed.class).getEntries();
                             Collections.sort(revisions, new Comparator<RevisionEntry>() {
+                                @Override
                                 public int compare(RevisionEntry o1, RevisionEntry o2) {
                                     return o1.getUpdated().compareTo(o2.getUpdated());
                                 }
@@ -981,9 +980,6 @@ public class GDPath extends Path {
                     failure.initCause(e);
                     throw failure;
                 }
-                this.cache().put(this.getReference(), AttributedList.<Path>emptyList());
-                // The directory listing is no more current
-                this.cache().get(this.getParent().getReference()).add(this);
             }
             catch(IOException e) {
                 this.error("Cannot create folder {0}", e);
@@ -1019,8 +1015,6 @@ public class GDPath extends Path {
                 failure.initCause(e);
                 throw failure;
             }
-            // The directory listing is no more current
-            this.getParent().invalidate();
         }
         catch(IOException e) {
             this.error("Cannot delete {0}", e);
@@ -1074,10 +1068,6 @@ public class GDPath extends Path {
                     throw failure;
                 }
             }
-            // The directory listing of the target is no more current
-            renamed.getParent().invalidate();
-            // The directory listing of the source is no more current
-            this.getParent().invalidate();
         }
         catch(IOException e) {
             this.error("Cannot rename {0}", e);
@@ -1102,8 +1092,6 @@ public class GDPath extends Path {
                     failure.initCause(e);
                     throw failure;
                 }
-                // The directory listing is no more current
-                this.getParent().invalidate();
             }
             catch(IOException e) {
                 this.error("Cannot create file {0}", e);

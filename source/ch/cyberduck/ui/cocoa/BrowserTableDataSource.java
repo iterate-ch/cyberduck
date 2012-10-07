@@ -107,10 +107,13 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
     protected AttributedList<Path> children(final Path path) {
         synchronized(isLoadingListingInBackground) {
             // Check first if it hasn't been already requested so we don't spawn
-            // a multitude of unecessary threads
+            // a multitude of unnecessary threads
+            final Cache cache = controller.getSession().cache();
             if(!isLoadingListingInBackground.contains(path)) {
-                if(path.isCached()) {
-                    return path.cache().get(path.getReference(), controller.getComparator(), controller.getFileFilter());
+                if(cache.isCached(path.getReference())) {
+                    return cache.get(path.getReference()).filter(
+                            controller.getComparator(), controller.getFileFilter()
+                    );
                 }
                 isLoadingListingInBackground.add(path);
                 // Reloading a workdir that is not cached yet would cause the interface to freeze;
@@ -140,7 +143,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                     }
                 });
             }
-            return path.cache().get(path.getReference(), controller.getComparator(), controller.getFileFilter());
+            return cache.get(path.getReference()).filter(controller.getComparator(), controller.getFileFilter());
         }
     }
 
@@ -304,7 +307,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                     }
                     final Transfer t = new UploadTransfer(roots);
                     if(t.numberOfRoots() > 0) {
-                        controller.transfer(t, destination);
+                        controller.transfer(t);
                     }
                     return true;
                 }
@@ -551,7 +554,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
             };
             if(dock) {
                 // Drag to application icon in dock.
-                controller.transfer(transfer, null, true, new TransferPrompt() {
+                controller.transfer(transfer, true, new TransferPrompt() {
                     @Override
                     public TransferAction prompt() {
                         return TransferAction.ACTION_OVERWRITE;

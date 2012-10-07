@@ -19,7 +19,14 @@ package ch.cyberduck.core.dav;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AbstractPath;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathFactory;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Status;
+import ch.cyberduck.core.StreamListener;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
 import ch.cyberduck.core.http.HttpPath;
 import ch.cyberduck.core.http.ResponseOutputStream;
@@ -36,8 +43,6 @@ import org.apache.http.message.BasicHeader;
 import org.apache.http.protocol.HTTP;
 import org.apache.log4j.Logger;
 
-import com.googlecode.sardine.DavResource;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -47,6 +52,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import com.googlecode.sardine.DavResource;
 
 /**
  * @version $Id$
@@ -185,8 +192,6 @@ public class DAVPath extends HttpPath {
                     this.getName()));
 
             this.getSession().getClient().delete(this.toURL());
-            // The directory listing is no more current
-            this.getParent().invalidate();
         }
         catch(IOException e) {
             this.error("Cannot delete {0}", e);
@@ -218,9 +223,6 @@ public class DAVPath extends HttpPath {
             catch(IOException e) {
                 log.warn("Listing directory failed:" + e.getMessage());
                 children.attributes().setReadable(false);
-                if(this.cache().isEmpty()) {
-                    this.error(e.getMessage(), e);
-                }
             }
         }
         return children;
@@ -235,10 +237,6 @@ public class DAVPath extends HttpPath {
                         this.getName()));
 
                 this.getSession().getClient().createDirectory(this.toURL());
-
-                this.cache().put(this.getReference(), AttributedList.<Path>emptyList());
-                // The directory listing is no more current
-                this.cache().get(this.getParent().getReference()).add(this);
             }
             catch(IOException e) {
                 this.error("Cannot create folder {0}", e);
@@ -246,6 +244,7 @@ public class DAVPath extends HttpPath {
         }
     }
 
+    @Override
     public void readMetadata() {
         if(attributes().isFile()) {
             try {
@@ -264,6 +263,7 @@ public class DAVPath extends HttpPath {
         }
     }
 
+    @Override
     public void writeMetadata(Map<String, String> meta) {
         if(attributes().isFile()) {
             try {
@@ -291,11 +291,6 @@ public class DAVPath extends HttpPath {
                     this.getName(), renamed.getName()));
 
             this.getSession().getClient().move(this.toURL(), renamed.toURL());
-
-            // The directory listing of the target is no more current
-            renamed.getParent().invalidate();
-            // The directory listing of the source is no more current
-            this.getParent().invalidate();
         }
         catch(IOException e) {
             this.error("Cannot rename {0}", e);
@@ -318,10 +313,6 @@ public class DAVPath extends HttpPath {
             }
             catch(IOException e) {
                 this.error("Cannot copy {0}", e);
-            }
-            finally {
-                // The directory listing is no more current
-                copy.getParent().invalidate();
             }
         }
         else {
@@ -381,9 +372,6 @@ public class DAVPath extends HttpPath {
                     out = this.write(check);
 
                     this.upload(out, in, throttle, listener);
-
-                    // The directory listing is no more current
-                    this.getParent().invalidate();
                 }
                 finally {
                     IOUtils.closeQuietly(in);
@@ -438,12 +426,14 @@ public class DAVPath extends HttpPath {
              *
              * @return The ETag returned by the server for the uploaded object
              */
+            @Override
             public Void call(AbstractHttpEntity entity) throws IOException {
                 entity.setContentType(new BasicHeader(HTTP.CONTENT_TYPE, getLocal().getMimeType()));
                 getSession().getClient().put(toURL(), entity, headers);
                 return null;
             }
 
+            @Override
             public long getContentLength() {
                 return status().getLength() - status().getCurrent();
             }

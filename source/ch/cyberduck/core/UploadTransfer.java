@@ -164,7 +164,7 @@ public class UploadTransfer extends Transfer {
             }
             if(file.attributes().isDirectory()) {
                 if(!file.exists()) {
-                    file.cache().put(file.getReference(), AttributedList.<Path>emptyList());
+                    session.cache().put(file.getReference(), AttributedList.<Path>emptyList());
                 }
             }
         }
@@ -225,7 +225,7 @@ public class UploadTransfer extends Transfer {
      * File listing cache for children of the root paths not part of the session cache because
      * they only exist on the local file system.
      */
-    private final Cache<Path> cache = new Cache<Path>() {
+    private final Cache cache = new Cache() {
         @Override
         public void clear() {
             super.clear();
@@ -234,7 +234,7 @@ public class UploadTransfer extends Transfer {
     };
 
     @Override
-    public Cache<Path> cache() {
+    public Cache cache() {
         return cache;
     }
 

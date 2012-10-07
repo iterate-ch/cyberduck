@@ -36,6 +36,7 @@ import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import com.ibm.icu.text.Normalizer;
@@ -325,29 +326,6 @@ public abstract class Local extends AbstractPath {
      */
     public abstract boolean reveal();
 
-    /**
-     * @return Always return false
-     */
-    @Override
-    public boolean isCached() {
-        return false;
-    }
-
-    private Cache<Local> cache;
-
-    /**
-     * Local directory listings are never cached
-     *
-     * @return Always empty cache.
-     */
-    @Override
-    public Cache<Local> cache() {
-        if(null == cache) {
-            cache = new Cache<Local>();
-        }
-        return this.cache;
-    }
-
     @Override
     public AttributedList<Local> list() {
         final AttributedList<Local> children = new AttributedList<Local>();
@@ -360,6 +338,22 @@ public abstract class Local extends AbstractPath {
             children.add(LocalFactory.createLocal(file));
         }
         return children;
+    }
+
+    @Override
+    public AttributedList<Local> children() {
+        return this.children(null);
+    }
+
+    @Override
+    public AttributedList<Local> children(final PathFilter<? extends AbstractPath> filter) {
+        return this.children(null, filter);
+    }
+
+    @Override
+    public AttributedList<Local> children(final Comparator<? extends AbstractPath> comparator,
+                                          final PathFilter<? extends AbstractPath> filter) {
+        return this.list().filter(comparator, filter);
     }
 
     /**
@@ -418,7 +412,7 @@ public abstract class Local extends AbstractPath {
     }
 
     @Override
-    public PathReference<Local> getReference() {
+    public PathReference getReference() {
         return new PathReference<Local>() {
             @Override
             public Local unique() {

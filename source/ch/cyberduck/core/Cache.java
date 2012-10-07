@@ -21,40 +21,22 @@ package ch.cyberduck.core;
 import org.apache.commons.collections.map.LRUMap;
 import org.apache.log4j.Logger;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.ConcurrentModificationException;
+import java.util.Map;
 
 /**
  * A cache for remote directory listings
  *
  * @version $Id$
  */
-public class Cache<E extends AbstractPath> {
+public class Cache {
     private static final Logger log = Logger.getLogger(Cache.class);
-
-    public enum Lifecycle {
-        /**
-         * Do not invalidate entries
-         */
-        FOREVER,
-        /**
-         *
-         */
-        INVALIDATED;
-    }
-
-    /**
-     * Cache is valid as long as path is not invalidated
-     */
-    private Lifecycle lifecycle = Cache.Lifecycle.INVALIDATED;
-
-    public void setLifecycle(Lifecycle lifecycle) {
-        this.lifecycle = lifecycle;
-    }
 
     /**
      *
      */
-    private final Map<PathReference, AttributedList<E>> _impl = Collections.<PathReference, AttributedList<E>>synchronizedMap(new LRUMap(
+    private final Map<PathReference, AttributedList<Path>> _impl = Collections.<PathReference, AttributedList<Path>>synchronizedMap(new LRUMap(
             Preferences.instance().getInteger("browser.cache.size")
     ) {
         @Override
@@ -72,18 +54,16 @@ public class Cache<E extends AbstractPath> {
      * @return Null if the path is no more cached.
      * @see ch.cyberduck.core.AttributedList#get(PathReference)
      */
-    public E lookup(PathReference reference) {
-        synchronized(_impl) {
-            for(AttributedList list : _impl.values()) {
-                final AbstractPath path = list.get(reference);
-                if(null == path) {
-                    continue;
-                }
-                return (E) path;
+    public Path lookup(final PathReference reference) {
+        for(AttributedList<Path> list : _impl.values()) {
+            final Path path = list.get(reference);
+            if(null == path) {
+                continue;
             }
-            log.warn(String.format("Lookup failed for %s in cache", reference));
-            return null;
+            return path;
         }
+        log.warn(String.format("Lookup failed for %s in cache", reference));
+        return null;
     }
 
     public boolean isEmpty() {
@@ -94,7 +74,7 @@ public class Cache<E extends AbstractPath> {
      * @param reference Absolute path
      * @return True if the directory listing of this path is cached
      */
-    public boolean containsKey(PathReference reference) {
+    public boolean containsKey(final PathReference reference) {
         return _impl.containsKey(reference);
     }
 
@@ -104,77 +84,22 @@ public class Cache<E extends AbstractPath> {
      * @param reference Reference to the path in cache.
      * @return The previuosly cached directory listing
      */
-    public AttributedList<E> remove(PathReference reference) {
+    public AttributedList<Path> remove(final PathReference reference) {
         return _impl.remove(reference);
     }
 
     /**
-     * Get the children of this path using the last sorting and filter used
-     *
-     * @param reference Reference to the path in cache.
-     * @return An empty list if no cached file listing is available
-     */
-    public AttributedList<E> get(PathReference reference) {
-        final AttributedList<E> children = this.get(reference, null, null);
-        if(null == children) {
-            log.warn(String.format("No cache for %s", reference));
-            return AttributedList.emptyList();
-        }
-        return children;
-    }
-
-    /**
-     * @param reference  Absolute path
-     * @param comparator Sorting comparator to apply the the file listing. If null the list
-     *                   is returned as is from the last used comparator
-     * @param filter     Path filter to apply. All files that don't match are moved to the
-     *                   hidden attribute of the attributed list. If null the list is returned
-     *                   with the last filter applied.
+     * @param reference Absolute path
      * @return An empty list if no cached file listing is available
      * @throws ConcurrentModificationException
      *          If the caller is iterating of the cache himself
      *          and requests a new filter here.
      */
-    public AttributedList<E> get(PathReference reference, Comparator<E> comparator, PathFilter<E> filter) {
-        AttributedList<E> children = _impl.get(reference);
+    public AttributedList<Path> get(final PathReference reference) {
+        AttributedList<Path> children = _impl.get(reference);
         if(null == children) {
             log.warn(String.format("No cache for %s", reference));
             return AttributedList.emptyList();
-        }
-        boolean needsSorting = false;
-        if(null != comparator) {
-            needsSorting = !children.attributes().getComparator().equals(comparator);
-        }
-        boolean needsFiltering = false;
-        if(null != filter) {
-            needsFiltering = !children.attributes().getFilter().equals(filter);
-        }
-        if(needsSorting) {
-            // Do not sort when the list has not been filtered yet
-            if(!needsFiltering) {
-                children.sort(comparator);
-            }
-            // Saving last sorting comparator
-            children.attributes().setComparator(comparator);
-        }
-        if(needsFiltering) {
-            // Add previously hidden files to children
-            final List<E> hidden = children.attributes().getHidden();
-            children.addAll(hidden);
-            // Clear the previously set of hidden files
-            hidden.clear();
-            for(E child : children) {
-                if(!filter.accept(child)) {
-                    //child not accepted by filter; add to cached hidden files
-                    children.attributes().addHidden(child);
-                    //remove hidden file from current file listing
-                    children.remove(child);
-                }
-            }
-            // Saving last filter
-            children.attributes().setFilter(filter);
-            // Sort again because the list has changed
-            children.sort(comparator);
         }
         return children;
     }
@@ -184,17 +109,23 @@ public class Cache<E extends AbstractPath> {
      * @param children  Cached directory listing
      * @return Previous cached version
      */
-    public AttributedList<E> put(PathReference reference, AttributedList<E> children) {
+    public AttributedList<Path> put(PathReference reference, AttributedList<Path> children) {
         return _impl.put(reference, children);
+    }
+
+    /**
+     * @return True if this path denotes a directory and its file listing is cached for this session
+     * @see ch.cyberduck.core.Cache
+     */
+    public boolean isCached(final PathReference reference) {
+        return this.containsKey(reference) && !this.get(reference).attributes().isInvalid();
     }
 
     /**
      * @param reference Path reference
      */
-    public void invalidate(PathReference reference) {
-        if(lifecycle.equals(Cache.Lifecycle.INVALIDATED)) {
-            this.get(reference).attributes().setInvalid(true);
-        }
+    public void invalidate(final PathReference reference) {
+        this.get(reference).attributes().setInvalid(true);
     }
 
     /**

@@ -187,8 +187,6 @@ public class S3Path extends CloudPath {
                 destination.setAcl(this.convert(this.attributes().getAcl()));
                 this.getSession().getClient().copyVersionedObject(this.attributes().getVersionId(),
                         this.getContainerName(), this.getKey(), this.getContainerName(), destination, false);
-                // The directory listing is no more current
-                this.getParent().invalidate();
             }
             catch(ServiceException e) {
                 this.error("Cannot revert file", e);
@@ -533,8 +531,6 @@ public class S3Path extends CloudPath {
                 else {
                     this.uploadSingle(throttle, listener, object);
                 }
-                // The directory listing is no more current
-                this.getParent().invalidate();
             }
         }
         catch(ServiceException e) {
@@ -942,9 +938,7 @@ public class S3Path extends CloudPath {
 
                 if(this.isRoot()) {
                     // List all buckets
-                    for(StorageBucket bucket : this.getSession().getBuckets(
-                            this.cache().get(this.getReference()).attributes().isInvalid()
-                    )) {
+                    for(StorageBucket bucket : this.getSession().getBuckets(true)) {
                         Path p = PathFactory.createPath(this.getSession(), this.getAbsolute(), bucket.getName(),
                                 Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
                         if(null != bucket.getOwner()) {
@@ -1001,14 +995,14 @@ public class S3Path extends CloudPath {
             catch(ServiceException e) {
                 log.warn("Listing directory failed:" + e.getMessage());
                 children.attributes().setReadable(false);
-                if(this.cache().isEmpty()) {
+                if(session.cache().isEmpty()) {
                     this.error(e.getMessage(), e);
                 }
             }
             catch(IOException e) {
                 log.warn("Listing directory failed:" + e.getMessage());
                 children.attributes().setReadable(false);
-                if(this.cache().isEmpty()) {
+                if(session.cache().isEmpty()) {
                     this.error(e.getMessage(), e);
                 }
             }
@@ -1164,9 +1158,6 @@ public class S3Path extends CloudPath {
                     object.setContentType("application/x-directory");
                     this.getSession().getClient().putObject(this.getContainerName(), object);
                 }
-                this.cache().put(this.getReference(), AttributedList.<Path>emptyList());
-                // The directory listing is no more current
-                this.cache().get(this.getParent().getReference()).add(this);
             }
             catch(ServiceException e) {
                 this.error("Cannot create folder {0}", e);
@@ -1317,8 +1308,6 @@ public class S3Path extends CloudPath {
                     this.getSession().getClient().deleteBucket(container);
                 }
             }
-            // The directory listing is no more current
-            this.getParent().invalidate();
         }
         catch(ServiceException e) {
             this.error("Cannot delete {0}", e);
@@ -1393,10 +1382,6 @@ public class S3Path extends CloudPath {
                             i.getName(), i.attributes().getType()));
                 }
             }
-            // The directory listing of the target is no more current
-            renamed.getParent().invalidate();
-            // The directory listing of the source is no more current
-            this.getParent().invalidate();
         }
         catch(ServiceException e) {
             this.error("Cannot rename {0}", e);
@@ -1437,10 +1422,6 @@ public class S3Path extends CloudPath {
             }
             catch(IOException e) {
                 this.error("Cannot copy {0}", e);
-            }
-            finally {
-                // The directory listing is no more current
-                copy.getParent().invalidate();
             }
         }
         else {

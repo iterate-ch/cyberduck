@@ -246,6 +246,45 @@ public class AttributedList<E extends AbstractPath> extends CopyOnWriteArrayList
         }
     }
 
+    public AttributedList<E> filter(final Comparator comparator, final PathFilter filter) {
+        boolean needsSorting = false;
+        if(null != comparator) {
+            needsSorting = !this.attributes().getComparator().equals(comparator);
+        }
+        boolean needsFiltering = false;
+        if(null != filter) {
+            needsFiltering = !this.attributes().getFilter().equals(filter);
+        }
+        if(needsSorting) {
+            // Do not sort when the list has not been filtered yet
+            if(!needsFiltering) {
+                this.sort(comparator);
+            }
+            // Saving last sorting comparator
+            this.attributes().setComparator(comparator);
+        }
+        if(needsFiltering) {
+            // Add previously hidden files to children
+            final List<E> hidden = this.attributes().getHidden();
+            this.addAll(hidden);
+            // Clear the previously set of hidden files
+            hidden.clear();
+            for(E child : this) {
+                if(!filter.accept(child)) {
+                    //child not accepted by filter; add to cached hidden files
+                    this.attributes().addHidden(child);
+                    //remove hidden file from current file listing
+                    this.remove(child);
+                }
+            }
+            // Saving last filter
+            this.attributes().setFilter(filter);
+            // Sort again because the list has changed
+            this.sort(comparator);
+        }
+        return this;
+    }
+
     /**
      * Clear the list and all references.
      */
