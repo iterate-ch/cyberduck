@@ -67,6 +67,7 @@ public class Donation extends AbstractLicense {
     /**
      * @return True if valid license key
      */
+    @Override
     public boolean verify() {
         if(!Donation.loadNative()) {
             return false;
@@ -85,6 +86,7 @@ public class Donation extends AbstractLicense {
 
     private native boolean verify(String license);
 
+    @Override
     public String getValue(String property) {
         if(!Donation.loadNative()) {
             return null;

@@ -49,7 +49,7 @@ import java.util.Arrays;
 import java.util.Enumeration;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class Receipt extends AbstractLicense {
     private static Logger log = Logger.getLogger(Receipt.class);
@@ -85,6 +85,7 @@ public class Receipt extends AbstractLicense {
             Local receipt = LocalFactory.createLocal(Preferences.instance().getProperty("application.receipt.path"));
             if(receipt.exists()) {
                 for(Local key : receipt.children(new PathFilter<Local>() {
+                    @Override
                     public boolean accept(Local file) {
                         return "receipt".equals(file.getName());
                     }
@@ -117,6 +118,7 @@ public class Receipt extends AbstractLicense {
      *
      * @return False if receipt validation failed.
      */
+    @Override
     public boolean verify() {
         try {
             Security.addProvider(new BouncyCastleProvider());
@@ -246,6 +248,7 @@ public class Receipt extends AbstractLicense {
         return true;
     }
 
+    @Override
     public String getValue(String property) {
         return Locale.localizedString("Unknown");
     }
