@@ -65,7 +65,7 @@ public class GotoController extends AlertController {
 
         @Override
         public NSObject comboBox_objectValueForItemAtIndex(final NSComboBox sender, final NSInteger row) {
-            return ((BrowserController) parent).workdir().children(comparator, filter).get(row.intValue()).<NSObject>getReference().unique();
+            return (NSObject) ((BrowserController) parent).workdir().children(comparator, filter).get(row.intValue()).getReference().unique();
         }
     }
 
