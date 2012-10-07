@@ -55,14 +55,14 @@ NSString *CDOutlineCellIcon = @"ICON";
 
 - (void)drawInteriorWithFrame:(NSRect)cellFrame inView:(NSView *)controlView
 {
-    if([controlView isFlipped]) {
-        [icon setFlipped:YES];
+    if ([controlView isFlipped]) {
+        [icon compositeToPoint:NSMakePoint(cellFrame.origin.x + 3, cellFrame.origin.y + (cellFrame.size.height + [icon size].height) / 2)
+					 operation:NSCompositeSourceOver];
     }
-    [icon drawAtPoint:NSMakePoint(cellFrame.origin.x + 3, cellFrame.origin.y + (cellFrame.size.height - [icon size].height) / 2)
-                 fromRect:NSZeroRect
-                 operation:NSCompositeSourceOver
-                 fraction:1.0];
-    // Draw label
+    else {
+        [icon compositeToPoint:NSMakePoint(cellFrame.origin.x + 3, cellFrame.origin.y + (cellFrame.size.height - [icon size].height) / 2)
+					 operation:NSCompositeSourceOver];
+    }
 	[super drawInteriorWithFrame:NSMakeRect(cellFrame.origin.x + 6 + [icon size].width, cellFrame.origin.y, cellFrame.size.width - 6 - [icon size].width, cellFrame.size.height)
 						  inView:controlView];
 }
