@@ -18,9 +18,9 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.ui.cocoa.foundation.NSBundle;
-
 import org.apache.log4j.Logger;
+
+import java.io.File;
 
 /**
  * @version $Id$
@@ -71,10 +71,10 @@ public final class Native {
      * @return Path in application bundle
      */
     protected static String getPath(String name) {
-        final String lib = String.format("%s/Java/lib%s.dylib", NSBundle.mainBundle().resourcePath(), name);
+        final String lib = String.format("%s/lib%s.dylib", System.getProperty("java.library.path"), name);
         if(log.isInfoEnabled()) {
             log.info(String.format("Locating library %s at %s", name, lib));
         }
-        return lib;
+        return new File(lib).getAbsolutePath();
     }
 }
