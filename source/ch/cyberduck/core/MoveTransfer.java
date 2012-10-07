@@ -143,10 +143,10 @@ public class MoveTransfer extends Transfer {
                 source.status().setLength(length);
                 size += length;
             }
-            final Path destination = files.get(source);
-            if(destination.attributes().isDirectory()) {
-                if(!destination.exists()) {
-                    destination.cache().put(destination.getReference(), AttributedList.<Path>emptyList());
+            final Path dest = files.get(source);
+            if(dest.attributes().isDirectory()) {
+                if(!dest.exists()) {
+                    session.cache().put(dest.getReference(), AttributedList.<Path>emptyList());
                 }
             }
         }

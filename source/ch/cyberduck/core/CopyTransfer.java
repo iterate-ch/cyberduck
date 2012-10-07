@@ -133,6 +133,7 @@ public class CopyTransfer extends Transfer {
     }
 
     private final class CopyTransferFilter extends TransferFilter {
+        @Override
         public boolean accept(final Path source) {
             final Path destination = files.get(source);
             if(destination.attributes().isDirectory()) {
@@ -162,10 +163,10 @@ public class CopyTransfer extends Transfer {
                 files.get(source).status().setLength(length);
                 size += length;
             }
-            final Path destination = files.get(source);
-            if(destination.attributes().isDirectory()) {
-                if(!destination.exists()) {
-                    destination.cache().put(destination.getReference(), AttributedList.<Path>emptyList());
+            final Path dest = files.get(source);
+            if(dest.attributes().isDirectory()) {
+                if(!dest.exists()) {
+                    destination.cache().put(dest.getReference(), AttributedList.<Path>emptyList());
                 }
             }
         }
