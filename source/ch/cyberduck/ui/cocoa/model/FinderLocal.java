@@ -140,7 +140,7 @@ public class FinderLocal extends Local {
     }
 
     @Override
-    public AttributedList list() {
+    public AttributedList<Local> list() {
         if(Preferences.instance().getBoolean("local.list.native")) {
             final AttributedList<Local> children = new AttributedList<Local>();
             final NSArray files = NSFileManager.defaultManager().contentsOfDirectoryAtPath_error(this.getAbsolute(), null);
