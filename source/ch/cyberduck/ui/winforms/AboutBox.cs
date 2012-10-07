@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -15,13 +15,14 @@
 // Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
 // 
+
 using System;
 using System.Drawing;
 using System.Reflection;
-using ch.cyberduck.core;
 using Ch.Cyberduck.Core;
-using ch.cyberduck.core.i18n;
 using Ch.Cyberduck.Ui.Controller;
+using ch.cyberduck.core;
+using ch.cyberduck.core.i18n;
 using Path = System.IO.Path;
 
 namespace Ch.Cyberduck.Ui.Winforms
@@ -59,7 +60,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                 if (attributes.Length > 0)
                 {
                     AssemblyTitleAttribute titleAttribute = (AssemblyTitleAttribute) attributes[0];
-                    if (titleAttribute.Title != "")
+                    if (Utils.IsNotBlank(titleAttribute.Title))
                     {
                         return titleAttribute.Title;
                     }
@@ -76,7 +77,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                     Assembly.GetExecutingAssembly().GetCustomAttributes(typeof (AssemblyDescriptionAttribute), false);
                 if (attributes.Length == 0)
                 {
-                    return "";
+                    return String.Empty;
                 }
                 return ((AssemblyDescriptionAttribute) attributes[0]).Description;
             }
@@ -104,7 +105,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                     Assembly.GetExecutingAssembly().GetCustomAttributes(typeof (AssemblyCopyrightAttribute), false);
                 if (attributes.Length == 0)
                 {
-                    return "";
+                    return String.Empty;
                 }
                 return ((AssemblyCopyrightAttribute) attributes[0]).Copyright;
             }
@@ -118,7 +119,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                     Assembly.GetExecutingAssembly().GetCustomAttributes(typeof (AssemblyCompanyAttribute), false);
                 if (attributes.Length == 0)
                 {
-                    return "";
+                    return String.Empty;
                 }
                 return ((AssemblyCompanyAttribute) attributes[0]).Company;
             }

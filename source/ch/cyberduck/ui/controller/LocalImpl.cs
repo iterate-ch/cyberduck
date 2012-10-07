@@ -127,14 +127,14 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     if (null != editSk)
                     {
-                        return (string) editSk.GetValue("");
+                        return (string) editSk.GetValue(String.Empty);
                     }
 
                     using (var openSk = root.OpenSubKey("shell\\open\\command"))
                     {
                         if (null != openSk)
                         {
-                            return (string) openSk.GetValue("");
+                            return (string)openSk.GetValue(String.Empty);
                         }
                     }
                 }

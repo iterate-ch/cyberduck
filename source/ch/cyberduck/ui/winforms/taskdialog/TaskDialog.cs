@@ -106,7 +106,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Taskdialog
                 vtd.Footer = Footer;
 
                 // Radio Buttons
-                if (RadioButtons != "")
+                if (RadioButtons != String.Empty)
                 {
                     List<VistaTaskDialogButton> lst = new List<VistaTaskDialogButton>();
                     string[] arr = RadioButtons.Split(new char[] {'|'});
@@ -130,7 +130,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Taskdialog
                 }
 
                 // Custom Buttons
-                if (CommandButtons != "")
+                if (CommandButtons != String.Empty)
                 {
                     List<VistaTaskDialogButton> lst = new List<VistaTaskDialogButton>();
                     string[] arr = CommandButtons.Split(new char[] {'|'});
@@ -224,7 +224,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Taskdialog
                 vtd.NoDefaultRadioButton = false;
                 vtd.CanBeMinimized = false;
                 vtd.ShowMarqueeProgressBar = false;
-                vtd.UseCommandLinks = (CommandButtons != "");
+                vtd.UseCommandLinks = (CommandButtons != String.Empty);
                 vtd.UseCommandLinksNoIcon = false;
                 vtd.VerificationText = VerificationText;
                 vtd.VerificationFlagChecked = false;
@@ -341,8 +341,8 @@ namespace Ch.Cyberduck.Ui.Winforms.Taskdialog
                                        SysIcons MainIcon,
                                        SysIcons FooterIcon)
         {
-            return ShowTaskDialogBox(Owner, Title, MainInstruction, Content, ExpandedInfo, Footer, VerificationText, "",
-                                     "", Buttons, MainIcon, FooterIcon);
+            return ShowTaskDialogBox(Owner, Title, MainInstruction, Content, ExpandedInfo, Footer, VerificationText, String.Empty,
+                                     String.Empty, Buttons, MainIcon, FooterIcon);
         }
 
         //--------------------------------------------------------------------------------
@@ -358,8 +358,8 @@ namespace Ch.Cyberduck.Ui.Winforms.Taskdialog
                                        SysIcons MainIcon,
                                        SysIcons FooterIcon)
         {
-            return ShowTaskDialogBox(null, Title, MainInstruction, Content, ExpandedInfo, Footer, VerificationText, "",
-                                     "", Buttons, MainIcon, FooterIcon);
+            return ShowTaskDialogBox(null, Title, MainInstruction, Content, ExpandedInfo, Footer, VerificationText, String.Empty,
+                                     String.Empty, Buttons, MainIcon, FooterIcon);
         }
 
         public DialogResult MessageBox(IWin32Window Owner,
@@ -369,7 +369,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Taskdialog
                                        TaskDialogButtons Buttons,
                                        SysIcons MainIcon)
         {
-            return MessageBox(Owner, Title, MainInstruction, Content, "", "", "", Buttons, MainIcon,
+            return MessageBox(Owner, Title, MainInstruction, Content, String.Empty, String.Empty, String.Empty, Buttons, MainIcon,
                               SysIcons.Information);
         }
 
@@ -379,7 +379,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Taskdialog
                                        TaskDialogButtons Buttons,
                                        SysIcons MainIcon)
         {
-            return MessageBox(null, Title, MainInstruction, Content, "", "", "", Buttons, MainIcon, SysIcons.Information);
+            return MessageBox(null, Title, MainInstruction, Content, String.Empty, String.Empty, String.Empty, Buttons, MainIcon, SysIcons.Information);
         }
 
         //--------------------------------------------------------------------------------
@@ -405,7 +405,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Taskdialog
         {
             return ShowTaskDialogBox(Owner, Title, MainInstruction, Content, ExpandedInfo, Footer,
                                      VerificationText,
-                                     RadioButtons, "", TaskDialogButtons.OKCancel, MainIcon, FooterIcon,
+                                     RadioButtons, String.Empty, TaskDialogButtons.OKCancel, MainIcon, FooterIcon,
                                      DefaultIndex);
         }
 
@@ -425,7 +425,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Taskdialog
         {
             DialogResult res = ShowTaskDialogBox(null, Title, MainInstruction, Content, ExpandedInfo, Footer,
                                                  VerificationText,
-                                                 RadioButtons, "", TaskDialogButtons.OKCancel, MainIcon, FooterIcon,
+                                                 RadioButtons, String.Empty, TaskDialogButtons.OKCancel, MainIcon, FooterIcon,
                                                  DefaultIndex);
             if (res == DialogResult.OK)
                 return _radioButtonResult;
@@ -455,7 +455,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Taskdialog
                                          string RadioButtons,
                                          int DefaultIndex)
         {
-            return ShowRadioBox(Owner, Title, MainInstruction, Content, "", "", "", RadioButtons, SysIcons.Question,
+            return ShowRadioBox(Owner, Title, MainInstruction, Content, String.Empty, String.Empty, String.Empty, RadioButtons, SysIcons.Question,
                                 SysIcons.Information, DefaultIndex);
         }
 
@@ -465,7 +465,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Taskdialog
                                          string Content,
                                          string RadioButtons)
         {
-            return ShowRadioBox(Owner, Title, MainInstruction, Content, "", "", "", RadioButtons, SysIcons.Question,
+            return ShowRadioBox(Owner, Title, MainInstruction, Content, String.Empty, String.Empty, String.Empty, RadioButtons, SysIcons.Question,
                                 SysIcons.Information, 0);
         }
 
@@ -474,7 +474,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Taskdialog
                                          string Content,
                                          string RadioButtons)
         {
-            return ShowRadioBox(null, Title, MainInstruction, Content, "", "", "", RadioButtons, SysIcons.Question,
+            return ShowRadioBox(null, Title, MainInstruction, Content, String.Empty, String.Empty, String.Empty, RadioButtons, SysIcons.Question,
                                 SysIcons.Information, 0);
         }
 
@@ -534,7 +534,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Taskdialog
         public DialogResult ShowCommandBox(IWin32Window Owner, string Title, string MainInstruction, string Content,
                                            string CommandButtons, bool ShowCancelButton, SysIcons MainIcon)
         {
-            return ShowCommandBox(Owner, Title, MainInstruction, Content, "", "", "", CommandButtons, ShowCancelButton,
+            return ShowCommandBox(Owner, Title, MainInstruction, Content, String.Empty, String.Empty, String.Empty, CommandButtons, ShowCancelButton,
                                   MainIcon, SysIcons.Information);
         }
 

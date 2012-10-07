@@ -15,6 +15,8 @@
 // Bug fixes, suggestions and comments should be sent to:
 // yves@langisch.ch
 // 
+
+using System;
 using System.Drawing;
 using System.IO;
 using ch.cyberduck.core;
@@ -27,9 +29,9 @@ namespace Ch.Cyberduck.Ui.Controller
     public abstract class BaseItem
     {
         public Path Path;
-        private string _date = "";
-        private string _path = "";
-        private string _size = "";
+        private string _date = String.Empty;
+        private string _path = String.Empty;
+        private string _size = String.Empty;
 
 
         public string ItemPath

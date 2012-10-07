@@ -104,7 +104,7 @@ namespace Ch.Cyberduck.Core
             //
             // Unescape the entire string.
             //
-            string result = "";
+            string result = String.Empty;
             if (data[0] == '#')
             {
                 int pos = 1;
@@ -229,7 +229,7 @@ namespace Ch.Cyberduck.Core
                 throw new ParseException("invalid attribute type (expected end of data)");
             }
 
-            string result = "";
+            string result = String.Empty;
 
             //
             // RFC 1779.
@@ -316,7 +316,7 @@ namespace Ch.Cyberduck.Core
             parseAttributeValue(string data, ref int pos)
         {
             eatWhite(data, ref pos);
-            string result = "";
+            string result = String.Empty;
             if (pos >= data.Length)
             {
                 return result;
@@ -409,7 +409,7 @@ namespace Ch.Cyberduck.Core
         private static string
             parsePair(string data, ref int pos)
         {
-            string result = "";
+            string result = String.Empty;
 
             Debug.Assert(data[pos] == '\\');
             result += data[pos];
@@ -437,7 +437,7 @@ namespace Ch.Cyberduck.Core
         private static string
             parseHexPair(string data, ref int pos, bool allowEmpty)
         {
-            string result = "";
+            string result = String.Empty;
             if (pos < data.Length && hexvalid.IndexOf(data[pos]) != -1)
             {
                 result += data[pos];

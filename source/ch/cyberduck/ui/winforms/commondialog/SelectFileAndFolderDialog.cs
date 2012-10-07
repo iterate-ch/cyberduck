@@ -182,7 +182,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Commondialog
                         //This way, if the users want's to change the folder, he actually has to change something.
                         string pathToShow;
                         InitializePathDNE(Path, out openFileName.lpstrInitialDir, out pathToShow);
-                        pathToShow = pathToShow ?? "";
+                        pathToShow = pathToShow ?? String.Empty;
                         int length = Math.Min(pathToShow.Length, InteropUtil.NumberOfFileChars);
                         pathToShow.CopyTo(0, chars, 0, length);
                     }
@@ -526,7 +526,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Commondialog
             IntPtr hFileNameLabel =
                 InteropUtil.AssumeNonZero(InteropUtil.GetDlgItem(hParent, InteropUtil.ID_FileNameLabel));
 
-            if (FileNameLabel != "")
+            if (FileNameLabel != String.Empty)
             {
                 InteropUtil.SendMessageString(hFileNameLabel, InteropUtil.WM_SETTEXT, 0, FileNameLabel);
             }
@@ -539,8 +539,8 @@ namespace Ch.Cyberduck.Ui.Winforms.Commondialog
             //they are not shown on the dialog. However, we still want the buttons enabled
             //so that "esc" and "enter" have the behavior they used to. So, we just
             //clear out their text instead.
-            InteropUtil.SetWindowTextW(hOkButton, "");
-            InteropUtil.SetWindowTextW(hCancelButton, "");
+            InteropUtil.SetWindowTextW(hOkButton, String.Empty);
+            InteropUtil.SetWindowTextW(hCancelButton, String.Empty);
 
             //find our button controls            
             IntPtr hSelectButton = InteropUtil.AssumeNonZero(InteropUtil.GetDlgItem(hWnd, InteropUtil.ID_SELECT));
@@ -746,7 +746,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Commondialog
                                                        InteropUtil.ID_FileNameCombo));
                         if (m_hasDirChangeFired)
                         {
-                            InteropUtil.SetWindowTextW(fileNameCombo, "");
+                            InteropUtil.SetWindowTextW(fileNameCombo, String.Empty);
                         }
                         m_hasDirChangeFired = true;
 

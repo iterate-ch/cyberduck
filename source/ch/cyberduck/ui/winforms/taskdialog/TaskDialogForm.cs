@@ -18,11 +18,11 @@ namespace Ch.Cyberduck.Ui.Winforms.Taskdialog
     Font m_mainInstructionFont = new Font("Arial", 11.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, (byte)0);
 
     List<RadioButton> m_radioButtonCtrls = new List<RadioButton>();
-    string m_radioButtons = "";
+    string m_radioButtons = String.Empty;
     int m_initialRadioButtonIndex = 0;
 
     List<Button> m_cmdButtons = new List<Button>();
-    string m_commandButtons = "";
+    string m_commandButtons = String.Empty;
     int m_commandButtonClicked = -1;
 
     int m_defaultButtonIndex = 0;

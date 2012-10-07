@@ -92,7 +92,7 @@ namespace Ch.Cyberduck.Core
                 RegistryKey command = sftpClass.OpenSubKey(@"shell\open\command");
                 if (null != command)
                 {
-                    var value = (string) command.GetValue("");
+                    var value = (string)command.GetValue(String.Empty);
                     return (null != value && value.Contains("Cyberduck"));
                 }
             }
@@ -126,14 +126,14 @@ namespace Ch.Cyberduck.Core
             try
             {
                 r32 = registry.CreateSubKey(@"SOFTWARE\Classes\" + association);
-                r32.SetValue("", description);
-                r32.SetValue("URL Protocol", "");
+                r32.SetValue(String.Empty, description);
+                r32.SetValue("URL Protocol", String.Empty);
 
                 RegistryKey defaultIcon = r32.CreateSubKey("DefaultIcon");
-                defaultIcon.SetValue("", applicationPath);
+                defaultIcon.SetValue(String.Empty, applicationPath);
 
                 RegistryKey command = r32.CreateSubKey(@"shell\open\command");
-                command.SetValue("", "\"" + applicationPath + "\" \"%1\"");
+                command.SetValue(String.Empty, "\"" + applicationPath + "\" \"%1\"");
 
                 // If 64-bit OS, also register in the 32-bit registry area. 
                 if (registry.OpenSubKey(@"SOFTWARE\Wow6432Node\Classes") != null)

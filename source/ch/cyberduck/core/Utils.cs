@@ -528,7 +528,7 @@ namespace Ch.Cyberduck.Core
                 {
                     if (null != editSk)
                     {
-                        String cmd = (String) editSk.GetValue("");
+                        String cmd = (String)editSk.GetValue(String.Empty);
                         //todo replcae with extract exe from command
                         if (!String.IsNullOrEmpty(cmd))
                         {

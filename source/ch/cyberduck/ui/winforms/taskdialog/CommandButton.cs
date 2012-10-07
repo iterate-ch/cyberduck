@@ -112,11 +112,11 @@ namespace Ch.Cyberduck.Ui.Winforms.Taskdialog
         private string GetSmallText()
         {
             if (Text.IndexOf('\n') < 0)
-                return "";
+                return String.Empty;
 
             string s = Text;
             string[] lines = s.Split(new[] {'\n'});
-            s = "";
+            s = String.Empty;
             for (int i = 1; i < lines.Length; i++)
                 s += lines[i] + "\n";
             return s.Trim(new[] {'\n'});
@@ -134,7 +134,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Taskdialog
         private SizeF GetSmallTextSizeF()
         {
             string s = GetSmallText();
-            if (s == "") return new SizeF(0, 0);
+            if (s == String.Empty) return new SizeF(0, 0);
             int x = LEFT_MARGIN + ARROW_WIDTH + 8; // <- indent small text slightly more
             SizeF mzSize = new SizeF(Width - x - LEFT_MARGIN, 5000.0F); // presume RIGHT_MARGIN = LEFT_MARGIN
             Graphics g = Graphics.FromHwnd(Handle);
@@ -213,7 +213,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Taskdialog
                                   new Rectangle(LEFT_MARGIN + imgArrow1.Width + 5, TOP_MARGIN, (int) szL.Width,
                                                 (int) szL.Height), text_color, TextFormatFlags.Default);
 
-            if (smalltext != "")
+            if (smalltext != String.Empty)
             {
                 SizeF szS = GetSmallTextSizeF();
                 e.Graphics.DrawString(smalltext, m_smallFont, new SolidBrush(text_color),

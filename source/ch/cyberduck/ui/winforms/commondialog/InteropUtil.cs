@@ -192,7 +192,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Commondialog
             {
                 return builder.ToString();
             }
-            return "";
+            return String.Empty;
         }
 
         [DllImport("user32.dll", EntryPoint = "GetParent")]

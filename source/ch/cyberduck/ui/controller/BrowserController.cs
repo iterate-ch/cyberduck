@@ -461,7 +461,7 @@ namespace Ch.Cyberduck.Ui.Controller
             tw.Close();
 
             String ssh = String.Format(Preferences.instance().getProperty("terminal.command.ssh.args"),
-                                        identity ? "-i " + host.getCredentials().getIdentity().getAbsolute() : "",
+                                        identity ? "-i " + host.getCredentials().getIdentity().getAbsolute() : String.Empty,
                                         host.getCredentials().getUsername(),
                                         host.getHostname(),
                                         Convert.ToString(host.getPort()), tempFile);
@@ -830,7 +830,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                                                                                                               .
                                                                                                                               ToString
                                                                                                                               (),
-                                                                                                                          "");
+                                                                                                                          String.Empty);
                                                                                                           }
 
                                                                                                           Local file =
@@ -3270,7 +3270,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
             public override string getActivity()
             {
-                return String.Format(Locale.localizedString("Deleting {0}", "Status"), "");
+                return String.Format(Locale.localizedString("Deleting {0}", "Status"), String.Empty);
             }
 
             public override void cleanup()
