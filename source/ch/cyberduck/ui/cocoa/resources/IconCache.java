@@ -337,8 +337,7 @@ public final class IconCache {
         }
         if(item.attributes().isDirectory()) {
             if(overlay) {
-                if(!item.attributes().getPermission().isExecutable()
-                        || (item.isCached() && !item.cache().get(item.getReference()).attributes().isReadable())) {
+                if(!item.attributes().getPermission().isExecutable()) {
                     final NSImage badge = this.iconForName("privatefolderbadge.tiff", size);
                     return this.iconForFolder(badge, size);
                 }
