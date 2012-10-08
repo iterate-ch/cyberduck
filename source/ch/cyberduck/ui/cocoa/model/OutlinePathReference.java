@@ -48,13 +48,14 @@ public class OutlinePathReference extends PathReference<NSObject> {
     ));
 
 
-    private OutlinePathReference(AbstractPath path) {
-        String unique = path.unique();
-        if(!cache.containsKey(unique)) {
-            cache.put(unique, NSString.stringWithString(unique));
+    private OutlinePathReference(final AbstractPath path) {
+        // Unique name
+        final String name = path.unique();
+        if(!cache.containsKey(name)) {
+            cache.put(name, NSString.stringWithString(name));
         }
-        this.reference = cache.get(unique);
-        this.hashcode = unique.hashCode();
+        this.reference = cache.get(name);
+        this.hashcode = name.hashCode();
     }
 
     public OutlinePathReference(NSObject reference) {
