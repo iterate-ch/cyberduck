@@ -34,6 +34,12 @@ public class HostTest extends AbstractTestCase {
     }
 
     @Test
+    public void testDictionary() {
+        final Host h = new Host(Protocol.WEBDAV, "h", 66);
+        assertEquals(h, new Host(h.getAsDictionary()));
+    }
+
+    @Test
     public void testParseURLFull() {
         {
             String url = "sftp://user:pass@hostname/path/to/file";
