@@ -4,7 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.TimeZone;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class MDTMSecondsDateFormatter extends AbstractDateFormatter {
 
@@ -15,7 +15,7 @@ public class MDTMSecondsDateFormatter extends AbstractDateFormatter {
             new SimpleDateFormat("yyyyMMddHHmmss");
 
     static {
-        tsFormatSeconds.setTimeZone(TimeZone.getTimeZone("UTC"));
+        tsFormatSeconds.setTimeZone(TimeZone.getDefault());
     }
 
     public MDTMSecondsDateFormatter() {

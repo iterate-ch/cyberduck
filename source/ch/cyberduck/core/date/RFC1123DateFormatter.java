@@ -4,7 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.TimeZone;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class RFC1123DateFormatter extends AbstractDateFormatter {
 
