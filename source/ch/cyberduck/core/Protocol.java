@@ -47,7 +47,8 @@ public abstract class Protocol {
     /**
      * Provider identification
      *
-     * @return Null if no vendor specific profile
+     * @return Identifier if no vendor specific profile
+     * @see #getIdentifier()
      */
     public String getProvider() {
         return this.getIdentifier();
