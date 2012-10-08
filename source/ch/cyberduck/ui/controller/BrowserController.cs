@@ -1290,8 +1290,6 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             // disconnect/stop button update
             View.ActivityRunning = IsActivityRunning();
-            View.ShowActivityEnabled = IsActivityRunning() || IsMounted();
-
             if (!IsConnected())
             {
                 return IsActivityRunning();
