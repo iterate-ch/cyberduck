@@ -25,49 +25,59 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class ProxyTest extends AbstractTestCase {
 
     @Test
     public void testWildcard() {
         AbstractProxy p = new AbstractProxy() {
+            @Override
             public boolean usePassiveFTP() {
                 throw new UnsupportedOperationException();
             }
 
+            @Override
             public boolean isSOCKSProxyEnabled(Host host) {
                 throw new UnsupportedOperationException();
             }
 
+            @Override
             public String getSOCKSProxyHost(Host host) {
                 throw new UnsupportedOperationException();
             }
 
+            @Override
             public int getSOCKSProxyPort(Host host) {
                 throw new UnsupportedOperationException();
             }
 
+            @Override
             public boolean isHTTPProxyEnabled(Host host) {
                 throw new UnsupportedOperationException();
             }
 
+            @Override
             public String getHTTPProxyHost(Host host) {
                 throw new UnsupportedOperationException();
             }
 
+            @Override
             public int getHTTPProxyPort(Host host) {
                 throw new UnsupportedOperationException();
             }
 
+            @Override
             public boolean isHTTPSProxyEnabled(Host host) {
                 throw new UnsupportedOperationException();
             }
 
+            @Override
             public String getHTTPSProxyHost(Host host) {
                 throw new UnsupportedOperationException();
             }
 
+            @Override
             public int getHTTPSProxyPort(Host host) {
                 throw new UnsupportedOperationException();
             }
