@@ -20,7 +20,6 @@ package ch.cyberduck.ui.action;
  */
 
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.http.HttpPath;
 import ch.cyberduck.core.i18n.Locale;
 
 import org.apache.commons.lang.StringUtils;
@@ -47,7 +46,7 @@ public abstract class WriteMetadataWorker extends Worker<Map<String, String>> {
      */
     private Map<String, String> metadata;
 
-    protected WriteMetadataWorker(List<Path> files, Map<String, String> metadata) {
+    protected WriteMetadataWorker(final List<Path> files, final Map<String, String> metadata) {
         this.files = files;
         this.metadata = metadata;
     }
@@ -61,22 +60,22 @@ public abstract class WriteMetadataWorker extends Worker<Map<String, String>> {
     @Override
     public Map<String, String> run() {
         for(Path next : files) {
-            Map<String, String> updated = new HashMap<String, String>(metadata);
-            for(String key : updated.keySet()) {
-                // Prune metadata from entries which are unique to a single file.
-                // For example md5-hash
-                if(StringUtils.isBlank(updated.get(key))) {
+            final Map<String, String> updated = new HashMap<String, String>(metadata);
+            for(Map.Entry<String, String> entry : updated.entrySet()) {
+                // Prune metadata from entries which are unique to a single file. For example md5-hash.
+                if(StringUtils.isBlank(entry.getValue())) {
                     // Reset with previous value
-                    updated.put(key, next.attributes().getMetadata().get(key));
+                    updated.put(entry.getKey(), next.attributes().getMetadata().get(entry.getKey()));
                 }
             }
             if(updated.equals(next.attributes().getMetadata())) {
                 if(log.isInfoEnabled()) {
                     log.info("Skip writing equal metadata for " + next);
                 }
-                return metadata;
             }
-            ((HttpPath) next).writeMetadata(updated);
+            else {
+                next.writeMetadata(updated);
+            }
         }
         return metadata;
     }

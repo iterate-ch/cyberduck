@@ -20,7 +20,6 @@ package ch.cyberduck.ui.action;
  */
 
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.http.HttpPath;
 import ch.cyberduck.core.i18n.Locale;
 
 import org.apache.log4j.Logger;
@@ -36,27 +35,12 @@ import java.util.Map;
 public abstract class ReadMetadataWorker extends Worker<Map<String, String>> {
     private static Logger log = Logger.getLogger(ReadMetadataWorker.class);
 
-    private Map<String, Integer> count = new HashMap<String, Integer>();
-    private Map<String, String> updated = new HashMap<String, String>() {
-        private static final long serialVersionUID = 832792761300696739L;
-
-        @Override
-        public String put(String key, String value) {
-            int n = 0;
-            if(count.containsKey(key)) {
-                n = count.get(key);
-            }
-            count.put(key, ++n);
-            return super.put(key, value);
-        }
-    };
-
     /**
      * Selected files.
      */
     private List<Path> files;
 
-    public ReadMetadataWorker(List<Path> files) {
+    public ReadMetadataWorker(final List<Path> files) {
         this.files = files;
     }
 
@@ -65,23 +49,35 @@ public abstract class ReadMetadataWorker extends Worker<Map<String, String>> {
      */
     @Override
     public Map<String, String> run() {
+        final Map<String, Integer> count = new HashMap<String, Integer>();
+        final Map<String, String> updated = new HashMap<String, String>() {
+            @Override
+            public String put(String key, String value) {
+                int n = 0;
+                if(count.containsKey(key)) {
+                    n = count.get(key);
+                }
+                count.put(key, ++n);
+                return super.put(key, value);
+            }
+        };
         for(Path next : files) {
             // Reading HTTP headers custom metadata
             if(next.attributes().getMetadata().isEmpty()) {
-                ((HttpPath) next).readMetadata();
+                next.readMetadata();
             }
             final Map<String, String> metadata = next.attributes().getMetadata();
-            for(String key : metadata.keySet()) {
+            for(Map.Entry<String, String> entry : metadata.entrySet()) {
                 // Prune metadata from entries which are unique to a single file.
                 // For example md5-hash
-                if(updated.containsKey(key)) {
-                    if(!metadata.get(key).equals(updated.get(key))) {
-                        log.info(String.format("Nullify %s from metadata because value is not equal for selected files.", key));
-                        updated.put(key, null);
+                if(updated.containsKey(entry.getKey())) {
+                    if(!entry.getValue().equals(updated.get(entry.getKey()))) {
+                        log.info(String.format("Nullify %s from metadata because value is not equal for selected files.", entry));
+                        updated.put(entry.getKey(), null);
                         continue;
                     }
                 }
-                updated.put(key, metadata.get(key));
+                updated.put(entry.getKey(), entry.getValue());
             }
         }
         for(String key : count.keySet()) {
