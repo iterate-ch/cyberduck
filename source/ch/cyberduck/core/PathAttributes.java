@@ -451,12 +451,7 @@ public class PathAttributes extends Attributes implements Serializable {
         if(o == null || getClass() != o.getClass()) {
             return false;
         }
-        if(!super.equals(o)) {
-            return false;
-        }
-
         PathAttributes that = (PathAttributes) o;
-
         if(modified != that.modified) {
             return false;
         }
@@ -478,7 +473,6 @@ public class PathAttributes extends Attributes implements Serializable {
         if(versionId != null ? !versionId.equals(that.versionId) : that.versionId != null) {
             return false;
         }
-
         return true;
     }
 
