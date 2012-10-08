@@ -129,6 +129,7 @@ public class GDSession extends SSLSession {
     protected class CustomTrustRequestFactory extends GoogleGDataRequest.Factory {
         public CustomTrustRequestFactory() {
             this.setConnectionSource(new HttpUrlConnectionSource() {
+                @Override
                 public HttpURLConnection openConnection(URL url) throws IOException {
                     return getConnection(url);
                 }
@@ -180,6 +181,7 @@ public class GDSession extends SSLSession {
             ((HttpsURLConnection) c).setSSLSocketFactory(new CustomTrustSSLProtocolSocketFactory(
                     this.getTrustManager(url.getHost())));
             ((HttpsURLConnection) c).setHostnameVerifier(new HostnameVerifier() {
+                @Override
                 public boolean verify(String s, javax.net.ssl.SSLSession sslSession) {
                     return true;
                 }

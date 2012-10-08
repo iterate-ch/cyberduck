@@ -69,6 +69,8 @@ public class FTPSession extends SSLSession {
 
     private FTPClient client;
 
+    private TimeZone tz;
+
     /**
      * Listing parser
      */
@@ -114,8 +116,6 @@ public class FTPSession extends SSLSession {
         }
         return host.getTimezone();
     }
-
-    private TimeZone tz;
 
     /**
      * @return Directory listing parser depending on response for SYST command
@@ -307,6 +307,7 @@ public class FTPSession extends SSLSession {
     }
 
     private ProtocolCommandListener listener = new ProtocolCommandListener() {
+        @Override
         public void protocolCommandSent(ProtocolCommandEvent event) {
             String message = StringUtils.chomp(event.getMessage());
             if(message.startsWith("PASS")) {
@@ -315,6 +316,7 @@ public class FTPSession extends SSLSession {
             FTPSession.this.log(true, message);
         }
 
+        @Override
         public void protocolReplyReceived(ProtocolCommandEvent event) {
             FTPSession.this.log(false, StringUtils.chomp(event.getMessage()));
         }
@@ -366,7 +368,7 @@ public class FTPSession extends SSLSession {
                 = new CustomTrustSSLProtocolSocketFactory(this.getTrustManager(this.getHost().getHostname(true)));
 
         this.client = new
-				FTPClient(f, f.getSSLContext());
+                FTPClient(f, f.getSSLContext());
 
         this.configure(this.getClient());
         this.getClient().connect(host.getHostname(true), host.getPort());

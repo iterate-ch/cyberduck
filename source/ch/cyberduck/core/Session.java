@@ -56,6 +56,38 @@ public abstract class Session implements TranscriptListener {
      */
     protected Host host;
 
+    /**
+     * Caching files listings of previously listed directories
+     */
+    private Cache cache = new Cache() {
+        @Override
+        public String toString() {
+            return String.format("Cache for %s", Session.this.toString());
+        }
+    };
+
+    private UseragentProvider ua = new PreferencesUseragentProvider();
+
+    private boolean unsecurewarning =
+            Preferences.instance().getBoolean("connection.unsecure.warning");
+
+    private Set<ConnectionListener> connectionListeners
+            = Collections.synchronizedSet(new HashSet<ConnectionListener>());
+
+    private Set<TranscriptListener> transcriptListeners
+            = Collections.synchronizedSet(new HashSet<TranscriptListener>());
+
+    private Set<ProgressListener> progressListeners
+            = Collections.synchronizedSet(new HashSet<ProgressListener>());
+
+    private Set<ErrorListener> errorListeners
+            = Collections.synchronizedSet(new HashSet<ErrorListener>());
+
+    /**
+     * Connection attempt being made.
+     */
+    private boolean opening;
+
     protected Session(Host h) {
         this.host = h;
     }
@@ -66,8 +98,6 @@ public abstract class Session implements TranscriptListener {
      * @throws ConnectionCanceledException If the connection is alreay closed
      */
     protected abstract <C> C getClient() throws ConnectionCanceledException;
-
-    private UseragentProvider ua = new PreferencesUseragentProvider();
 
     public String getUserAgent() {
         return ua.get();
@@ -180,9 +210,6 @@ public abstract class Session implements TranscriptListener {
             }
         }
     }
-
-    private boolean unsecurewarning =
-            Preferences.instance().getBoolean("connection.unsecure.warning");
 
     public boolean isUnsecurewarning() {
         return unsecurewarning;
@@ -539,8 +566,6 @@ public abstract class Session implements TranscriptListener {
         return true;
     }
 
-    private boolean opening;
-
     /**
      * @return True if a connection attempt is currently being made. False if the connection
      *         has already been established or is closed.
@@ -548,9 +573,6 @@ public abstract class Session implements TranscriptListener {
     public boolean isOpening() {
         return opening;
     }
-
-    private Set<ConnectionListener> connectionListeners
-            = Collections.synchronizedSet(new HashSet<ConnectionListener>());
 
     public void addConnectionListener(ConnectionListener listener) {
         connectionListeners.add(listener);
@@ -580,7 +602,7 @@ public abstract class Session implements TranscriptListener {
         // Configuring proxy if any
         ProxyFactory.instance().configure(host);
 
-        Resolver resolver = this.getResolver();
+        final Resolver resolver = this.getResolver();
         this.message(MessageFormat.format(Locale.localizedString("Resolving {0}", "Status"),
                 host.getHostname()));
 
@@ -608,7 +630,7 @@ public abstract class Session implements TranscriptListener {
         // Update status flag
         opening = false;
 
-        HistoryCollection history = HistoryCollection.defaultCollection();
+        final HistoryCollection history = HistoryCollection.defaultCollection();
         history.add(new Host(host.getAsDictionary()));
 
         for(ConnectionListener listener : connectionListeners.toArray(new ConnectionListener[connectionListeners.size()])) {
@@ -650,14 +672,11 @@ public abstract class Session implements TranscriptListener {
         opening = false;
     }
 
-    private Set<TranscriptListener> transcriptListeners
-            = Collections.synchronizedSet(new HashSet<TranscriptListener>());
-
-    public void addTranscriptListener(TranscriptListener listener) {
+    public void addTranscriptListener(final TranscriptListener listener) {
         transcriptListeners.add(listener);
     }
 
-    public void removeTranscriptListener(TranscriptListener listener) {
+    public void removeTranscriptListener(final TranscriptListener listener) {
         transcriptListeners.remove(listener);
     }
 
@@ -668,7 +687,7 @@ public abstract class Session implements TranscriptListener {
      * @see TranscriptListener
      */
     @Override
-    public void log(boolean request, final String message) {
+    public void log(final boolean request, final String message) {
         if(log.isInfoEnabled()) {
             log.info(message);
         }
@@ -815,18 +834,15 @@ public abstract class Session implements TranscriptListener {
      * @param files List of files
      * @return A list of role names.
      */
-    public List<Acl.Role> getAvailableAclRoles(List<Path> files) {
+    public List<Acl.Role> getAvailableAclRoles(final List<Path> files) {
         return Collections.emptyList();
     }
 
-    private Set<ProgressListener> progressListeners
-            = Collections.synchronizedSet(new HashSet<ProgressListener>());
-
-    public void addProgressListener(ProgressListener listener) {
+    public void addProgressListener(final ProgressListener listener) {
         progressListeners.add(listener);
     }
 
-    public void removeProgressListener(ProgressListener listener) {
+    public void removeProgressListener(final ProgressListener listener) {
         progressListeners.remove(listener);
     }
 
@@ -845,14 +861,11 @@ public abstract class Session implements TranscriptListener {
         }
     }
 
-    private Set<ErrorListener> errorListeners
-            = Collections.synchronizedSet(new HashSet<ErrorListener>());
-
-    public void addErrorListener(ErrorListener listener) {
+    public void addErrorListener(final ErrorListener listener) {
         errorListeners.add(listener);
     }
 
-    public void removeErrorListener(ErrorListener listener) {
+    public void removeErrorListener(final ErrorListener listener) {
         errorListeners.remove(listener);
     }
 
@@ -867,26 +880,16 @@ public abstract class Session implements TranscriptListener {
      * @param message The error message to be displayed in the alert sheet
      * @param e       The cause of the error
      */
-    public void error(Path path, String message, Throwable e) {
+    public void error(final Path path, final String message, final Throwable e) {
         this.error(new BackgroundException(this.getHost(), path, message, e));
     }
 
-    public void error(BackgroundException failure) {
+    public void error(final BackgroundException failure) {
         this.message(failure.getMessage());
         for(ErrorListener listener : errorListeners.toArray(new ErrorListener[errorListeners.size()])) {
             listener.error(failure);
         }
     }
-
-    /**
-     * Caching files listings of previously listed directories
-     */
-    private Cache cache = new Cache() {
-        @Override
-        public String toString() {
-            return String.format("Cache for %s", Session.this.toString());
-        }
-    };
 
     /**
      * @return The directory listing cache for this session

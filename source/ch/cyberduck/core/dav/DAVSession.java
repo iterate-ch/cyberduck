@@ -227,6 +227,7 @@ public class DAVSession extends HttpSession {
         AbstractHttpClient client = this.http();
         client.setCredentialsProvider(provider);
         client.addRequestInterceptor(new HttpRequestInterceptor() {
+            @Override
             public void process(HttpRequest request, HttpContext context) throws HttpException, IOException {
                 if(provider.isCanceled()) {
                     throw new LoginCanceledException();
@@ -237,6 +238,7 @@ public class DAVSession extends HttpSession {
             /**
              * Clear the credentials from the authentication state upon failed login to make sure a retry attempt is made.
              */
+            @Override
             public void process(final HttpResponse r, final HttpContext context) throws HttpException, IOException {
                 final int code = r.getStatusLine().getStatusCode();
                 if(code == HttpStatus.SC_UNAUTHORIZED) {
