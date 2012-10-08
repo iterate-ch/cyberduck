@@ -66,8 +66,6 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Connecting to S3 service with plain HTTP.
- *
  * @version $Id$
  */
 public class S3Session extends CloudSession {
@@ -293,15 +291,19 @@ public class S3Session extends CloudSession {
                 && hostname.endsWith(host.getProtocol().getDefaultHostname())) {
             // The user specified a DNS bucket endpoint. Connect to the default hostname instead.
             configuration.setProperty("s3service.s3-endpoint", host.getProtocol().getDefaultHostname());
+            configuration.setProperty("s3service.enable-storage-classes", String.valueOf(true));
         }
         else {
             // Standard configuration
             configuration.setProperty("s3service.s3-endpoint", hostname);
             configuration.setProperty("s3service.disable-dns-buckets", String.valueOf(true));
+            configuration.setProperty("s3service.enable-storage-classes", String.valueOf(false));
+        }
+        if(StringUtils.isNotBlank(host.getProtocol().getContext())) {
+            configuration.setProperty("s3service.s3-endpoint-virtual-path", Path.normalize(host.getProtocol().getContext()));
         }
         configuration.setProperty("s3service.s3-endpoint-http-port", String.valueOf(host.getPort()));
         configuration.setProperty("s3service.s3-endpoint-https-port", String.valueOf(host.getPort()));
-        configuration.setProperty("s3service.enable-storage-classes", String.valueOf(true));
         configuration.setProperty("s3service.https-only", String.valueOf(host.getProtocol().isSecure()));
         // The maximum number of retries that will be attempted when an S3 connection fails
         // with an InternalServer error. To disable retries of InternalError failures, set this to 0.

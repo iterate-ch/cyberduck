@@ -2573,8 +2573,6 @@ source/ch/cyberduck/core/cloud/CloudPath.java -text
 source/ch/cyberduck/core/cloud/CloudSession.java -text
 source/ch/cyberduck/core/collections/IndexedLinkedList.cs -text
 source/ch/cyberduck/core/collections/LRUCache.cs -text
-source/ch/cyberduck/core/eucalyptus/ECPath.java -text
-source/ch/cyberduck/core/eucalyptus/ECSession.java -text
 source/ch/cyberduck/core/importer/CDTransmitImporter.h -text
 source/ch/cyberduck/core/importer/CDTransmitImporter.m -text
 source/ch/cyberduck/core/s3/S3Path.java -text
