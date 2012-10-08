@@ -20,7 +20,7 @@ public class CredentialsTest {
         Credentials c = new DefaultCredentials();
         c.setIdentity(LocalFactory.createLocal("~/.ssh/unknown.rsa"));
         assertFalse(c.isPublicKeyAuthentication());
-        final Local t = LocalFactory.createLocal(Preferences.instance().getProperty("tmp.dir"), "~/.ssh/id_rsa");
+        final Local t = LocalFactory.createLocal(Preferences.instance().getProperty("tmp.dir"), "id_rsa");
         t.touch();
         c.setIdentity(t);
         assertTrue(c.isPublicKeyAuthentication());
