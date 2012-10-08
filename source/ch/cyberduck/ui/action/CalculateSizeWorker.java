@@ -46,9 +46,6 @@ public abstract class CalculateSizeWorker extends Worker<Long> {
     public Long run() {
         for(Path next : files) {
             next.attributes().setSize(this.calculateSize(next));
-            if(!next.getSession().isConnected()) {
-                break;
-            }
         }
         return total;
     }
