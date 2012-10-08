@@ -227,8 +227,8 @@ public class FTPPathTest extends AbstractTestCase {
         boolean success = path.parseMlsdResponse(children, Arrays.asList(replies));
         assertTrue(success);
         assertEquals(1, children.size());
-        Calendar date = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-        date.set(1999, 0, 12, 3, 30, 45);
+        Calendar date = Calendar.getInstance(TimeZone.getDefault());
+        date.set(1999, Calendar.JANUARY, 12, 3, 30, 45);
         date.set(Calendar.MILLISECOND, 0);
         assertEquals(date.getTime().getTime(), children.get(0).attributes().getModificationDate());
     }
