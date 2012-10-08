@@ -104,15 +104,6 @@ public abstract class AbstractLoginController implements LoginController {
 
     @Override
     public void success(Host host) {
-        Credentials credentials = host.getCredentials();
-        if(credentials.isAnonymousLogin()) {
-            log.info("Do not write anonymous credentials to Keychain");
-            return;
-        }
-        if(!credentials.isUseKeychain()) {
-            log.info("Do not write credentials to Keychain");
-            return;
-        }
         KeychainFactory.instance().save(host);
     }
 

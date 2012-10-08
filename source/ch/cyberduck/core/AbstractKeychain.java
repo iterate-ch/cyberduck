@@ -82,17 +82,29 @@ public abstract class AbstractKeychain {
             log.warn("No hostname given");
             return;
         }
-        Credentials credentials = host.getCredentials();
+        final Credentials credentials = host.getCredentials();
+        if(!credentials.isUseKeychain()) {
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Skip writing credentials for host %s", host.getHostname()));
+            }
+            return;
+        }
         if(StringUtils.isEmpty(credentials.getUsername())) {
-            log.warn("No username given");
+            log.warn(String.format("No username in credentials for host %s", host.getHostname()));
             return;
         }
         if(StringUtils.isEmpty(credentials.getPassword())) {
-            log.warn("No password given");
+            log.warn(String.format("No password in credentials for host %s", host.getHostname()));
+            return;
+        }
+        if(credentials.isAnonymousLogin()) {
+            if(log.isInfoEnabled()) {
+                log.info(String.format("Do not write anonymous credentials for host %s", host.getHostname()));
+            }
             return;
         }
         if(log.isInfoEnabled()) {
-            log.info(String.format("Add password to Keychain for %s", host));
+            log.info(String.format("Add password for host %s", host));
         }
         if(credentials.isPublicKeyAuthentication()) {
             this.addPassword(host.getHostname(), credentials.getIdentity().getAbbreviatedPath(),
