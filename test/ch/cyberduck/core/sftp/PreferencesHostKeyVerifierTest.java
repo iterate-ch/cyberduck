@@ -8,14 +8,13 @@ import org.junit.Test;
 import junit.framework.Assert;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class PreferencesHostKeyVerifierTest extends AbstractTestCase {
 
     @Test
     public void testVerifyServerHostKey() throws Exception {
         PreferencesHostKeyVerifier v = new PreferencesHostKeyVerifier() {
-
             @Override
             protected boolean isUnknownKeyAccepted(String hostname, int port, String serverHostKeyAlgorithm, byte[] serverHostKey) throws ConnectionCanceledException {
                 return false;
