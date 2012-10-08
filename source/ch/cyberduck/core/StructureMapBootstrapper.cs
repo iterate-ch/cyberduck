@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2011 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -19,7 +19,6 @@
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Winforms;
 using Ch.Cyberduck.Ui.Winforms.Controls;
-using Ch.Cyberduck.ui.winforms;
 using StructureMap;
 
 namespace Ch.Cyberduck.Core
@@ -31,33 +30,34 @@ namespace Ch.Cyberduck.Core
         public void BootstrapStructureMap()
         {
             ObjectFactory.Initialize(x =>
-                                         {
-                                             x.For<IBrowserView>().Use<BrowserForm>();
-                                             x.For<IInfoView>().Use<InfoForm>();
-                                             x.For<IActivityView>().Use<ActivityForm>();
-                                             x.For<ILoginView>().Use<LoginForm>();
-                                             x.For<IBookmarkView>().Use<BookmarkForm>();
-                                             x.For<IConnectionView>().Use<ConnectionForm>();
-                                             x.For<ITransferPromptView>().Use<TransferPromptForm>();
-                                             x.For<IErrorView>().Use<ErrorForm>();
+                {
+                    x.For<IBrowserView>().Use<BrowserForm>();
+                    x.For<IInfoView>().Use<InfoForm>();
+                    x.For<IActivityView>().Use<ActivityForm>();
+                    x.For<ILoginView>().Use<LoginForm>();
+                    x.For<IBookmarkView>().Use<BookmarkForm>();
+                    x.For<IConnectionView>().Use<ConnectionForm>();
+                    x.For<ITransferPromptView>().Use<TransferPromptForm>();
+                    x.For<IErrorView>().Use<ErrorForm>();
 
-                                             // Singletons
-                                             x.For<INewFolderPromptView>().Singleton().Use<NewFolderPromptForm>();
-                                             x.For<ICreateFilePromptView>().Singleton().Use<CreateFilePromptForm>();
-                                             x.For<IGotoPromptView>().Singleton().Use<GotoPromptForm>();
-                                             x.For<IDuplicateFilePromptView>().Singleton().Use<DuplicateFilePromptForm>();
-                                             x.For<IPreferencesView>().Singleton().Use<PreferencesForm>();
-                                             x.For<IDonationView>().Singleton().Use<DonationForm>();
+                    // Singletons
+                    x.For<INewFolderPromptView>().Singleton().Use<NewFolderPromptForm>();
+                    x.For<ICreateFilePromptView>().Singleton().Use<CreateFilePromptForm>();
+                    x.For<ICreateSymlinkPromptView>().Singleton().Use<CreateSymlinkPromptForm>();
+                    x.For<IGotoPromptView>().Singleton().Use<GotoPromptForm>();
+                    x.For<IDuplicateFilePromptView>().Singleton().Use<DuplicateFilePromptForm>();
+                    x.For<IPreferencesView>().Singleton().Use<PreferencesForm>();
+                    x.For<IDonationView>().Singleton().Use<DonationForm>();
 
-                                             // might be a singleton
-                                             x.For<IUpdateView>().Use<UpdateForm>();
+                    // might be a singleton
+                    x.For<IUpdateView>().Use<UpdateForm>();
 
-                                             //x.For<ITransferView>().TheDefault.Is.Object(MockRepository.GenerateMock<ITransferView>()); 
-                                             //x.For<IProgressView>().TheDefault.Is.Object(MockRepository.GenerateMock<IProgressView>()); 
+                    //x.For<ITransferView>().TheDefault.Is.Object(MockRepository.GenerateMock<ITransferView>()); 
+                    //x.For<IProgressView>().TheDefault.Is.Object(MockRepository.GenerateMock<IProgressView>()); 
 
-                                             x.For<ITransferView>().Use<TransferForm>();
-                                             x.For<IProgressView>().Use<TransferControl>();
-                                         });
+                    x.For<ITransferView>().Use<TransferForm>();
+                    x.For<IProgressView>().Use<TransferControl>();
+                });
         }
 
         public static void Restart()

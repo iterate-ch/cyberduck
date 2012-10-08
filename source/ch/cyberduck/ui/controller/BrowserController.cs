@@ -1,5 +1,5 @@
 // 
-// Copyright (c) 2010-2011 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -136,6 +136,8 @@ namespace Ch.Cyberduck.Ui.Controller
             View.ValidateNewFolder += View_ValidateNewFolder;
             View.NewFile += View_NewFile;
             View.ValidateNewFile += View_ValidateNewFile;
+            View.NewSymbolicLink += View_NewSymbolicLink;
+            View.ValidateNewSymbolicLink += View_ValidateNewSymbolicLink;
             View.RenameFile += View_RenameFile;
             View.ValidateRenameFile += View_ValidateRenameFile;
             View.DuplicateFile += View_DuplicateFile;
@@ -412,6 +414,18 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
+        private void View_NewSymbolicLink()
+        {
+            CreateSymlinkController slc =
+                new CreateSymlinkController(ObjectFactory.GetInstance<ICreateSymlinkPromptView>(), this);
+            slc.Show();
+        }
+
+        private bool View_ValidateNewSymbolicLink()
+        {
+            return IsMounted() && getSession().isCreateSymlinkSupported() && SelectedPaths.Count == 1;
+        }
+
         private void View_SortBookmarksByProtocol()
         {
             BookmarkCollection.defaultCollection().sortByProtocol();
@@ -461,10 +475,12 @@ namespace Ch.Cyberduck.Ui.Controller
             tw.Close();
 
             String ssh = String.Format(Preferences.instance().getProperty("terminal.command.ssh.args"),
-                                        identity ? "-i " + host.getCredentials().getIdentity().getAbsolute() : String.Empty,
-                                        host.getCredentials().getUsername(),
-                                        host.getHostname(),
-                                        Convert.ToString(host.getPort()), tempFile);
+                                       identity
+                                           ? "-i " + host.getCredentials().getIdentity().getAbsolute()
+                                           : String.Empty,
+                                       host.getCredentials().getUsername(),
+                                       host.getHostname(),
+                                       Convert.ToString(host.getPort()), tempFile);
 
             Utils.StartProcess(Preferences.instance().getProperty("terminal.command.ssh"), ssh);
         }
@@ -783,74 +799,70 @@ namespace Ch.Cyberduck.Ui.Controller
         private DataObject View_HostDrag(ObjectListView list)
         {
             DataObject data = new DataObject(DataFormats.FileDrop, new[]
-                                                                       {
-                                                                           CreateAndWatchTemporaryFile(
-                                                                               delegate(object sender,
-                                                                                        FileSystemEventArgs args)
-                                                                                   {
-                                                                                       Invoke(delegate
-                                                                                                  {
-                                                                                                      dropFolder =
-                                                                                                          System.IO.Path
-                                                                                                              .
-                                                                                                              GetDirectoryName
-                                                                                                              (
-                                                                                                                  args.
-                                                                                                                      FullPath);
-                                                                                                      foreach (
-                                                                                                          Host host in
-                                                                                                              View.
-                                                                                                                  SelectedBookmarks
-                                                                                                          )
-                                                                                                      {
-                                                                                                          string
-                                                                                                              filename =
-                                                                                                                  host.
-                                                                                                                      getNickname
-                                                                                                                      () +
-                                                                                                                  ".duck";
-                                                                                                          foreach (
-                                                                                                              char c in
-                                                                                                                  System
-                                                                                                                      .
-                                                                                                                      IO
-                                                                                                                      .
-                                                                                                                      Path
-                                                                                                                      .
-                                                                                                                      GetInvalidFileNameChars
-                                                                                                                      ()
-                                                                                                              )
-                                                                                                          {
-                                                                                                              filename =
-                                                                                                                  filename
-                                                                                                                      .
-                                                                                                                      Replace
-                                                                                                                      (
-                                                                                                                          c
-                                                                                                                              .
-                                                                                                                              ToString
-                                                                                                                              (),
-                                                                                                                          String.Empty);
-                                                                                                          }
+                {
+                    CreateAndWatchTemporaryFile(
+                        delegate(object sender,
+                                 FileSystemEventArgs args)
+                            {
+                                Invoke(delegate
+                                    {
+                                        dropFolder =
+                                            System.IO.Path
+                                                .
+                                                GetDirectoryName
+                                                (
+                                                    args.
+                                                        FullPath);
+                                        foreach (
+                                            Host host in
+                                                View.
+                                                    SelectedBookmarks
+                                            )
+                                        {
+                                            string
+                                                filename =
+                                                    host.
+                                                        getNickname
+                                                        () +
+                                                    ".duck";
+                                            foreach (
+                                                char c in
+                                                    System.IO.Path
+                                                        .
+                                                        GetInvalidFileNameChars
+                                                        ()
+                                                )
+                                            {
+                                                filename =
+                                                    filename
+                                                        .
+                                                        Replace
+                                                        (
+                                                            c
+                                                                .
+                                                                ToString
+                                                                (),
+                                                            String.Empty);
+                                            }
 
-                                                                                                          Local file =
-                                                                                                              LocalFactory
-                                                                                                                  .
-                                                                                                                  createLocal
-                                                                                                                  (
-                                                                                                                      dropFolder,
-                                                                                                                      filename);
-                                                                                                          HostWriterFactory
-                                                                                                              .instance()
-                                                                                                              .
-                                                                                                              write(
-                                                                                                                  host,
-                                                                                                                  file);
-                                                                                                      }
-                                                                                                  });
-                                                                                   }
-                                                                               )
-                                                                       });
+                                            Local file =
+                                                LocalFactory
+                                                    .
+                                                    createLocal
+                                                    (
+                                                        dropFolder,
+                                                        filename);
+                                            HostWriterFactory
+                                                .instance()
+                                                .
+                                                write(
+                                                    host,
+                                                    file);
+                                        }
+                                    });
+                            }
+                                                                       )
+                });
             return data;
         }
 
@@ -1573,9 +1585,9 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     continue;
                 }
-                if(CheckOverwrite(Utils.ConvertFromJavaList<Path>(archive.getExpanded(new ArrayList {selected}))))
+                if (CheckOverwrite(Utils.ConvertFromJavaList<Path>(archive.getExpanded(new ArrayList {selected}))))
                 {
-                    this.background(new UnarchiveAction(this, archive, selected, expanded));
+                    background(new UnarchiveAction(this, archive, selected, expanded));
                 }
             }
         }
@@ -1608,8 +1620,9 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             Archive archive = Archive.forName(createArchiveEventArgs.ArchiveName);
             List<Path> selected = SelectedPaths;
-            if(CheckOverwrite(new List<Path> {archive.getArchive(Utils.ConvertToJavaList(selected))})) {
-                this.background(new CreateArchiveAction(this, archive, selected));
+            if (CheckOverwrite(new List<Path> {archive.getArchive(Utils.ConvertToJavaList(selected))}))
+            {
+                background(new CreateArchiveAction(this, archive, selected));
             }
         }
 
@@ -1684,17 +1697,17 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 Session session = getTransferSession();
                 Utils.ApplyPerItemForwardDelegate<Path> apply = delegate(Path item)
-                                                                    {
-                                                                        Path path = PathFactory.createPath(session,
-                                                                                                           item.
-                                                                                                               getAsDictionary
-                                                                                                               ());
-                                                                        path.setLocal(
-                                                                            LocalFactory.createLocal(folderName,
-                                                                                                     path.getLocal().
-                                                                                                         getName()));
-                                                                        return path;
-                                                                    };
+                    {
+                        Path path = PathFactory.createPath(session,
+                                                           item.
+                                                               getAsDictionary
+                                                               ());
+                        path.setLocal(
+                            LocalFactory.createLocal(folderName,
+                                                     path.getLocal().
+                                                         getName()));
+                        return path;
+                    };
                 Transfer q = new DownloadTransfer(Utils.ConvertToJavaList(SelectedPaths, apply));
                 transfer(q);
             }
@@ -1838,24 +1851,24 @@ namespace Ch.Cyberduck.Ui.Controller
         private DataObject View_BrowserDrag(ObjectListView listView)
         {
             DataObject data = new DataObject(DataFormats.FileDrop, new[]
-                                                                       {
-                                                                           CreateAndWatchTemporaryFile(
-                                                                               delegate(object sender,
-                                                                                        FileSystemEventArgs args)
-                                                                                   {
-                                                                                       dropFolder =
-                                                                                           System.IO.Path.
-                                                                                               GetDirectoryName(
-                                                                                                   args.FullPath);
-                                                                                       Invoke(
-                                                                                           () =>
-                                                                                           Download(SelectedPaths,
-                                                                                                    LocalFactory.
-                                                                                                        createLocal(
-                                                                                                            dropFolder)));
-                                                                                   }
-                                                                               )
-                                                                       });
+                {
+                    CreateAndWatchTemporaryFile(
+                        delegate(object sender,
+                                 FileSystemEventArgs args)
+                            {
+                                dropFolder =
+                                    System.IO.Path.
+                                        GetDirectoryName(
+                                            args.FullPath);
+                                Invoke(
+                                    () =>
+                                    Download(SelectedPaths,
+                                             LocalFactory.
+                                                 createLocal(
+                                                     dropFolder)));
+                            }
+                                                                       )
+                });
             return data;
         }
 
@@ -2195,7 +2208,8 @@ namespace Ch.Cyberduck.Ui.Controller
         /// </summary>
         /// <param name="transfer"></param>
         /// <param name="destination"></param>
-        public void transfer(Transfer transfer, Path destination) {
+        public void transfer(Transfer transfer, Path destination)
+        {
             this.transfer(transfer, destination, getSession().getMaxConnections() == 1);
         }
 
@@ -2210,22 +2224,6 @@ namespace Ch.Cyberduck.Ui.Controller
             this.transfer(transfer, destination, useBrowserConnection, new LazyTransferPrompt(this, transfer));
         }
 
-        private class LazyTransferPrompt : TransferPrompt
-        {
-            private readonly BrowserController _controller;
-            private readonly Transfer _transfer;
-
-            public LazyTransferPrompt(BrowserController controller, Transfer transfer)
-            {
-                _transfer = transfer;
-                _controller = controller;
-            }
-
-            public TransferAction prompt()
-            {
-                return TransferPromptController.Create(_controller, _transfer).prompt();
-            }
-        }
         /// <summary>
         /// 
         /// </summary>
@@ -2401,11 +2399,11 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 // Clear the browser view if no working directory is given
                 Invoke(delegate
-                           {
-                               Workdir = null;
-                               UpdateNavigationPaths();
-                               ReloadData(false);
-                           });
+                    {
+                        Workdir = null;
+                        UpdateNavigationPaths();
+                        ReloadData(false);
+                    });
                 return;
             }
             Background(new WorkdirAction(this, directory, selected));
@@ -2467,12 +2465,12 @@ namespace Ch.Cyberduck.Ui.Controller
         public void Mount(Host host)
         {
             CallbackDelegate callbackDelegate = delegate
-                                                    {
-                                                        // The browser has no session, we are allowed to proceed
-                                                        // Initialize the browser with the new session attaching all listeners
-                                                        Session session = Init(host);
-                                                        background(new MountAction(this, session, host));
-                                                    };
+                {
+                    // The browser has no session, we are allowed to proceed
+                    // Initialize the browser with the new session attaching all listeners
+                    Session session = Init(host);
+                    background(new MountAction(this, session, host));
+                };
             Unmount(callbackDelegate);
         }
 
@@ -2560,14 +2558,14 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 BrowserController c = controller;
                 if (!controller.Unmount(delegate(DialogResult result)
-                                            {
-                                                if (DialogResult.OK == result)
-                                                {
-                                                    c.View.Dispose();
-                                                    return true;
-                                                }
-                                                return false;
-                                            }, delegate { }))
+                    {
+                        if (DialogResult.OK == result)
+                        {
+                            c.View.Dispose();
+                            return true;
+                        }
+                        return false;
+                    }, delegate { }))
                 {
                     return false; // Disconnect cancelled
                 }
@@ -2583,15 +2581,15 @@ namespace Ch.Cyberduck.Ui.Controller
         public bool Unmount(CallbackDelegate disconnected)
         {
             return Unmount(result =>
-                               {
-                                   if (DialogResult.OK == result)
-                                   {
-                                       UnmountImpl(disconnected);
-                                       return true;
-                                   }
-                                   // No unmount yet
-                                   return false;
-                               }, disconnected);
+                {
+                    if (DialogResult.OK == result)
+                    {
+                        UnmountImpl(disconnected);
+                        return true;
+                    }
+                    // No unmount yet
+                    return false;
+                }, disconnected);
         }
 
         /// <summary>
@@ -2614,21 +2612,21 @@ namespace Ch.Cyberduck.Ui.Controller
                                                      true,
                                                      Locale.localizedString("Don't ask again", "Configuration"),
                                                      SysIcons.Question, delegate(int option, bool verificationChecked)
-                                                                            {
-                                                                                if (verificationChecked)
-                                                                                {
-                                                                                    // Never show again.
-                                                                                    Preferences.instance().setProperty(
-                                                                                        "browser.confirmDisconnect",
-                                                                                        false);
-                                                                                }
-                                                                                switch (option)
-                                                                                {
-                                                                                    case 0: // Disconnect
-                                                                                        unmountImpl(DialogResult.OK);
-                                                                                        break;
-                                                                                }
-                                                                            });
+                                                         {
+                                                             if (verificationChecked)
+                                                             {
+                                                                 // Never show again.
+                                                                 Preferences.instance().setProperty(
+                                                                     "browser.confirmDisconnect",
+                                                                     false);
+                                                             }
+                                                             switch (option)
+                                                             {
+                                                                 case 0: // Disconnect
+                                                                     unmountImpl(DialogResult.OK);
+                                                                     break;
+                                                             }
+                                                         });
                     return DialogResult.OK == result;
                 }
                 UnmountImpl(disconnected);
@@ -2804,7 +2802,8 @@ namespace Ch.Cyberduck.Ui.Controller
         /// </param>
         protected internal void RenamePaths(IDictionary<Path, Path> selected)
         {
-            if(CheckMove(selected.Values))  {
+            if (CheckMove(selected.Values))
+            {
                 MoveTransfer move = new MoveTransfer(Utils.ConvertToJavaMap(selected));
                 transfer(move, Workdir, true);
             }
@@ -3031,7 +3030,8 @@ namespace Ch.Cyberduck.Ui.Controller
         ///<param name="browser"></param>
         protected internal void DuplicatePaths(IDictionary<Path, Path> selected, bool browser)
         {
-            if(CheckMove(selected.Values)) {
+            if (CheckMove(selected.Values))
+            {
                 CopyTransfer copy = new CopyTransfer(Utils.ConvertToJavaMap(selected));
                 transfer(copy, Workdir, browser);
             }
@@ -3136,26 +3136,26 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 _controller._sessionShouldBeConnected = true;
                 AsyncDelegate mainAction = delegate
-                                               {
-                                                   _controller.View.RefreshBookmark(_controller.getSession().getHost());
-                                                   _controller.View.WindowTitle = _host.getNickname();
-                                               };
+                    {
+                        _controller.View.RefreshBookmark(_controller.getSession().getHost());
+                        _controller.View.WindowTitle = _host.getNickname();
+                    };
                 _controller.Invoke(new SimpleWindowMainAction(mainAction, _controller));
             }
 
             public void connectionDidOpen()
             {
                 AsyncDelegate mainAction = delegate
-                                               {
-                                                   _controller.View.RefreshBookmark(_controller.getSession().getHost());
-                                                   ch.cyberduck.ui.growl.Growl.instance().notify("Connection opened",
-                                                                                                 _host.getHostname());
+                    {
+                        _controller.View.RefreshBookmark(_controller.getSession().getHost());
+                        ch.cyberduck.ui.growl.Growl.instance().notify("Connection opened",
+                                                                      _host.getHostname());
 
-                                                   _controller.View.SecureConnection = _controller._session.isSecure();
-                                                   _controller.View.CertBasedConnection =
-                                                       _controller._session is SSLSession;
-                                                   _controller.View.SecureConnectionVisible = true;
-                                               };
+                        _controller.View.SecureConnection = _controller._session.isSecure();
+                        _controller.View.CertBasedConnection =
+                            _controller._session is SSLSession;
+                        _controller.View.SecureConnectionVisible = true;
+                    };
                 _controller.Invoke(new SimpleWindowMainAction(mainAction, _controller));
             }
 
@@ -3167,17 +3167,17 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 _controller._sessionShouldBeConnected = false;
                 AsyncDelegate mainAction = delegate
-                                               {
-                                                   _controller.View.RefreshBookmark(_controller.getSession().getHost());
-                                                   if (!_controller.IsMounted())
-                                                   {
-                                                       _controller.View.WindowTitle =
-                                                           Preferences.instance().getProperty(
-                                                               "application.name");
-                                                   }
-                                                   _controller.View.SecureConnectionVisible = false;
-                                                   _controller.UpdateStatusLabel();
-                                               };
+                    {
+                        _controller.View.RefreshBookmark(_controller.getSession().getHost());
+                        if (!_controller.IsMounted())
+                        {
+                            _controller.View.WindowTitle =
+                                Preferences.instance().getProperty(
+                                    "application.name");
+                        }
+                        _controller.View.SecureConnectionVisible = false;
+                        _controller.UpdateStatusLabel();
+                    };
                 _controller.Invoke(new SimpleWindowMainAction(mainAction, _controller));
             }
         }
@@ -3380,6 +3380,23 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
+        private class LazyTransferPrompt : TransferPrompt
+        {
+            private readonly BrowserController _controller;
+            private readonly Transfer _transfer;
+
+            public LazyTransferPrompt(BrowserController controller, Transfer transfer)
+            {
+                _transfer = transfer;
+                _controller = controller;
+            }
+
+            public TransferAction prompt()
+            {
+                return TransferPromptController.Create(_controller, _transfer).prompt();
+            }
+        }
+
         private class MountAction : BrowserBackgroundAction
         {
             private readonly Host _host;
@@ -3439,6 +3456,69 @@ namespace Ch.Cyberduck.Ui.Controller
                 _laststatus = msg;
                 AsyncDelegate updateLabel = delegate { _controller.View.StatusLabel = msg; };
                 _controller.Invoke(updateLabel);
+            }
+        }
+
+        internal class ProgressTransferAdapter : TransferAdapter
+        {
+            private const long Delay = 0;
+            private const long Period = 500; //in milliseconds
+            private readonly BrowserController _controller;
+            private readonly Speedometer _meter;
+            private readonly Timer _timer;
+            private readonly Transfer _transfer;
+
+            public ProgressTransferAdapter(BrowserController controller, Transfer transfer)
+            {
+                _meter = new Speedometer(transfer);
+                _controller = controller;
+                _timer = new Timer(timerCallback, null, Timeout.Infinite, Period);
+                _transfer = transfer;
+            }
+
+            private void timerCallback(object state)
+            {
+                _controller.Invoke(delegate { _controller.View.StatusLabel = _meter.getProgress(); });
+            }
+
+            public override void willTransferPath(Path path)
+            {
+                _meter.reset();
+                _timer.Change(Delay, Period);
+            }
+
+            public override void didTransferPath(Path path)
+            {
+                _timer.Change(Timeout.Infinite, Period);
+                _meter.reset();
+            }
+
+            public override void bandwidthChanged(BandwidthThrottle bandwidth)
+            {
+                _meter.reset();
+            }
+
+            public override void transferDidEnd()
+            {
+                _transfer.removeListener(this);
+            }
+
+            internal class ProgressTimerRunnable : Runnable
+            {
+                private readonly BrowserController _controller;
+                private readonly Speedometer _meter;
+
+                public ProgressTimerRunnable(BrowserController controller, Speedometer meter)
+                {
+                    _controller = controller;
+                    _meter = meter;
+                }
+
+                public void run()
+                {
+                    AsyncDelegate mainAction = delegate { _controller.View.StatusLabel = _meter.getProgress(); };
+                    _controller.Invoke(mainAction);
+                }
             }
         }
 
@@ -3517,69 +3597,6 @@ namespace Ch.Cyberduck.Ui.Controller
             public override string getActivity()
             {
                 return String.Format(Locale.localizedString("Reverting {0}", "Status"), _selected.getName());
-            }
-        }
-
-        internal class ProgressTransferAdapter : TransferAdapter
-        {
-            private const long Delay = 0;
-            private const long Period = 500; //in milliseconds
-            private readonly BrowserController _controller;
-            private readonly Speedometer _meter;
-            private readonly Timer _timer;
-            private readonly Transfer _transfer;
-
-            public ProgressTransferAdapter(BrowserController controller, Transfer transfer)
-            {
-                _meter = new Speedometer(transfer);
-                _controller = controller;
-                _timer = new Timer(timerCallback, null, Timeout.Infinite, Period);
-                _transfer = transfer;
-            }
-
-            private void timerCallback(object state)
-            {
-                _controller.Invoke(delegate { _controller.View.StatusLabel = _meter.getProgress(); });
-            }
-
-            public override void willTransferPath(Path path)
-            {
-                _meter.reset();
-                _timer.Change(Delay, Period);
-            }
-
-            public override void didTransferPath(Path path)
-            {
-                _timer.Change(Timeout.Infinite, Period);
-                _meter.reset();
-            }
-
-            public override void bandwidthChanged(BandwidthThrottle bandwidth)
-            {
-                _meter.reset();
-            }
-
-            public override void transferDidEnd()
-            {
-                _transfer.removeListener(this);
-            }
-
-            internal class ProgressTimerRunnable : Runnable
-            {
-                private readonly BrowserController _controller;
-                private readonly Speedometer _meter;
-
-                public ProgressTimerRunnable(BrowserController controller, Speedometer meter)
-                {
-                    _controller = controller;
-                    _meter = meter;
-                }
-
-                public void run()
-                {
-                    AsyncDelegate mainAction = delegate { _controller.View.StatusLabel = _meter.getProgress(); };
-                    _controller.Invoke(mainAction);
-                }
             }
         }
 

@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2011 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -205,31 +205,31 @@ namespace Ch.Cyberduck.Ui.Winforms
 
             // restore additional UI settings
             Load += delegate
-                        {
-                            //correct width for disconnect button                            
-                            Size preferredSize = disconnectStripButton.GetPreferredSize(Size.Empty);
-                            disconnectStripButton.AutoSize = false;
-                            disconnectStripButton.Width = preferredSize.Width;
-                            splitContainer.SplitterDistance = PersistenceHandler.Get("splitter.distance", 400);
+                {
+                    //correct width for disconnect button                            
+                    Size preferredSize = disconnectStripButton.GetPreferredSize(Size.Empty);
+                    disconnectStripButton.AutoSize = false;
+                    disconnectStripButton.Width = preferredSize.Width;
+                    splitContainer.SplitterDistance = PersistenceHandler.Get("splitter.distance", 400);
 
-                            Menu = mainMenu;
+                    Menu = mainMenu;
 
-                            //add menu shortcuts, needs to be done in the Load event handler
-                            ConfigureShortcuts();
-                        };
+                    //add menu shortcuts, needs to be done in the Load event handler
+                    ConfigureShortcuts();
+                };
 
             Closed += delegate
-                          {
-                              //we save the state of the last browser form
-                              //this might be improved by some other logic
-                              if (MainController.Browsers.Count == 1)
-                              {
-                                  SaveUiSettings();
-                              }
-                              BookmarkCollection.defaultCollection().removeListener(bookmarkMenuCollectionListener);
-                              HistoryCollection.defaultCollection().removeListener(historyMenuCollectionListener);
-                              RendezvousCollection.defaultCollection().removeListener(bonjourMenuCollectionListener);
-                          };
+                {
+                    //we save the state of the last browser form
+                    //this might be improved by some other logic
+                    if (MainController.Browsers.Count == 1)
+                    {
+                        SaveUiSettings();
+                    }
+                    BookmarkCollection.defaultCollection().removeListener(bookmarkMenuCollectionListener);
+                    HistoryCollection.defaultCollection().removeListener(historyMenuCollectionListener);
+                    RendezvousCollection.defaultCollection().removeListener(bonjourMenuCollectionListener);
+                };
 
             if (LicenseFactory.find().Equals(LicenseFactory.EMPTY_LICENSE))
             {
@@ -262,6 +262,8 @@ namespace Ch.Cyberduck.Ui.Winforms
         public event DropHandler BrowserDropped;
         public event ModelDropHandler BrowserModelDropped;
         public event ValidateCommand ValidateNewFile;
+        public event VoidHandler NewSymbolicLink;
+        public event ValidateCommand ValidateNewSymbolicLink;
         public event RenamePathname RenameFile;
         public event ValidateCommand ValidateRenameFile;
         public event VoidHandler Delete;
@@ -372,6 +374,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         public event VoidHandler SortBookmarksByHostname;
         public event VoidHandler RevertFile;
         public event ValidateCommand ValidateRevertFile;
+
 
         public bool HiddenFilesVisible
         {
@@ -1066,15 +1069,15 @@ namespace Ch.Cyberduck.Ui.Winforms
                 {
                     KeyValuePair<string, List<string>> pair1 = pair;
                     item.Click += delegate
-                                      {
-                                          StringBuilder sb = new StringBuilder();
-                                          for (int i = 0; i < pair1.Value.Count; i++)
-                                          {
-                                              if (i > 0) sb.Append(Environment.NewLine);
-                                              sb.Append(pair1.Value[i]);
-                                          }
-                                          Clipboard.SetText(sb.ToString());
-                                      };
+                        {
+                            StringBuilder sb = new StringBuilder();
+                            for (int i = 0; i < pair1.Value.Count; i++)
+                            {
+                                if (i > 0) sb.Append(Environment.NewLine);
+                                sb.Append(pair1.Value[i]);
+                            }
+                            Clipboard.SetText(sb.ToString());
+                        };
                     foreach (string url in pair.Value)
                     {
                         mainItem.MenuItems.Add(url).Enabled = false;
@@ -1109,12 +1112,12 @@ namespace Ch.Cyberduck.Ui.Winforms
                 {
                     KeyValuePair<string, List<string>> pair1 = pair;
                     item.Click += delegate
-                                      {
-                                          for (int i = 0; i < pair1.Value.Count; i++)
-                                          {
-                                              Utils.StartProcess(pair1.Value[i]);
-                                          }
-                                      };
+                        {
+                            for (int i = 0; i < pair1.Value.Count; i++)
+                            {
+                                Utils.StartProcess(pair1.Value[i]);
+                            }
+                        };
                     foreach (string url in pair.Value)
                     {
                         mainItem.MenuItems.Add(url).Enabled = false;
@@ -1191,15 +1194,15 @@ namespace Ch.Cyberduck.Ui.Winforms
 
             openConnectionToolStripMenuItem1.CheckOnClick = true;
             h = delegate
-                    {
-                        openConnectionToolbarMenuItem.Checked = !openConnectionToolbarMenuItem.Checked;
-                        openConnectionToolStripButton.Visible =
-                            !openConnectionToolStripButton.Visible;
-                        UpdateSeparators();
-                        Preferences.instance().setProperty(
-                            "browser.toolbar.openconnection",
-                            openConnectionToolStripButton.Visible);
-                    };
+                {
+                    openConnectionToolbarMenuItem.Checked = !openConnectionToolbarMenuItem.Checked;
+                    openConnectionToolStripButton.Visible =
+                        !openConnectionToolStripButton.Visible;
+                    UpdateSeparators();
+                    Preferences.instance().setProperty(
+                        "browser.toolbar.openconnection",
+                        openConnectionToolStripButton.Visible);
+                };
             openConnectionToolStripMenuItem1.Click += h;
             openConnectionToolbarMenuItem.Click += h;
             m = new MenuItem(openConnectionToolbarMenuItem.Text, h);
@@ -1209,15 +1212,15 @@ namespace Ch.Cyberduck.Ui.Winforms
 
             quickConnectToolStripMenuItem.CheckOnClick = true;
             h = delegate
-                    {
-                        quickConnectToolbarMenuItem.Checked = !quickConnectToolbarMenuItem.Checked;
-                        quickConnectToolStripComboBox.Visible =
-                            !quickConnectToolStripComboBox.Visible;
-                        UpdateSeparators();
-                        Preferences.instance().setProperty(
-                            "browser.toolbar.quickconnect",
-                            quickConnectToolStripComboBox.Visible);
-                    };
+                {
+                    quickConnectToolbarMenuItem.Checked = !quickConnectToolbarMenuItem.Checked;
+                    quickConnectToolStripComboBox.Visible =
+                        !quickConnectToolStripComboBox.Visible;
+                    UpdateSeparators();
+                    Preferences.instance().setProperty(
+                        "browser.toolbar.quickconnect",
+                        quickConnectToolStripComboBox.Visible);
+                };
             quickConnectToolStripMenuItem.Click += h;
             quickConnectToolbarMenuItem.Click += h;
             m = new MenuItem(quickConnectToolbarMenuItem.Text, h);
@@ -1226,15 +1229,15 @@ namespace Ch.Cyberduck.Ui.Winforms
 
             actionToolStripMenuItem.CheckOnClick = true;
             h = delegate
-                    {
-                        actionContextToolbarMenuItem.Checked = !actionContextToolbarMenuItem.Checked;
-                        actionToolStripDropDownButton.Visible =
-                            !actionToolStripDropDownButton.Visible;
-                        UpdateSeparators();
-                        Preferences.instance().setProperty(
-                            "browser.toolbar.action",
-                            actionToolStripDropDownButton.Visible);
-                    };
+                {
+                    actionContextToolbarMenuItem.Checked = !actionContextToolbarMenuItem.Checked;
+                    actionToolStripDropDownButton.Visible =
+                        !actionToolStripDropDownButton.Visible;
+                    UpdateSeparators();
+                    Preferences.instance().setProperty(
+                        "browser.toolbar.action",
+                        actionToolStripDropDownButton.Visible);
+                };
             actionToolStripMenuItem.Click += h;
             actionContextToolbarMenuItem.Click += h;
             m = new MenuItem(actionContextToolbarMenuItem.Text, h);
@@ -1244,14 +1247,14 @@ namespace Ch.Cyberduck.Ui.Winforms
 
             infoToolStripMenuItem1.CheckOnClick = true;
             h = delegate
-                    {
-                        infoToolbarMenuItem.Checked = !infoToolbarMenuItem.Checked;
-                        infoToolStripButton.Visible = !infoToolStripButton.Visible;
-                        UpdateSeparators();
-                        Preferences.instance().setProperty(
-                            "browser.toolbar.info",
-                            infoToolStripButton.Visible);
-                    };
+                {
+                    infoToolbarMenuItem.Checked = !infoToolbarMenuItem.Checked;
+                    infoToolStripButton.Visible = !infoToolStripButton.Visible;
+                    UpdateSeparators();
+                    Preferences.instance().setProperty(
+                        "browser.toolbar.info",
+                        infoToolStripButton.Visible);
+                };
             infoToolStripMenuItem1.Click += h;
             infoToolbarMenuItem.Click += h;
             m = new MenuItem(infoToolbarMenuItem.Text, h);
@@ -1260,14 +1263,14 @@ namespace Ch.Cyberduck.Ui.Winforms
 
             refreshToolStripMenuItem1.CheckOnClick = true;
             h = delegate
-                    {
-                        refreshToolbarMenuItem.Checked = !refreshToolbarMenuItem.Checked;
-                        refreshToolStripButton.Visible = !refreshToolStripButton.Visible;
-                        UpdateSeparators();
-                        Preferences.instance().setProperty(
-                            "browser.toolbar.refresh",
-                            refreshToolStripButton.Visible);
-                    };
+                {
+                    refreshToolbarMenuItem.Checked = !refreshToolbarMenuItem.Checked;
+                    refreshToolStripButton.Visible = !refreshToolStripButton.Visible;
+                    UpdateSeparators();
+                    Preferences.instance().setProperty(
+                        "browser.toolbar.refresh",
+                        refreshToolStripButton.Visible);
+                };
             refreshToolStripMenuItem1.Click += h;
             refreshToolbarMenuItem.Click += h;
             m = new MenuItem(refreshToolbarMenuItem.Text, h);
@@ -1277,14 +1280,14 @@ namespace Ch.Cyberduck.Ui.Winforms
 
             editToolStripMenuItem1.CheckOnClick = true;
             h = delegate
-                    {
-                        editToolbarMenuItem.Checked = !editToolbarMenuItem.Checked;
-                        editToolStripSplitButton.Visible = !editToolStripSplitButton.Visible;
-                        UpdateSeparators();
-                        Preferences.instance().setProperty(
-                            "browser.toolbar.edit",
-                            editToolStripSplitButton.Visible);
-                    };
+                {
+                    editToolbarMenuItem.Checked = !editToolbarMenuItem.Checked;
+                    editToolStripSplitButton.Visible = !editToolStripSplitButton.Visible;
+                    UpdateSeparators();
+                    Preferences.instance().setProperty(
+                        "browser.toolbar.edit",
+                        editToolStripSplitButton.Visible);
+                };
             editToolStripMenuItem1.Click += h;
             editToolbarMenuItem.Click += h;
             m = new MenuItem(editToolbarMenuItem.Text, h);
@@ -1293,16 +1296,16 @@ namespace Ch.Cyberduck.Ui.Winforms
 
             openInWebBrowserToolStripMenuItem.CheckOnClick = true;
             h = delegate
-                    {
-                        openInWebBrowserToolbarMenuItem.Checked =
-                            !openInWebBrowserToolbarMenuItem.Checked;
-                        openInBrowserToolStripButton.Visible =
-                            !openInBrowserToolStripButton.Visible;
-                        UpdateSeparators();
-                        Preferences.instance().setProperty(
-                            "browser.toolbar.openinbrowser",
-                            openInBrowserToolStripButton.Visible);
-                    };
+                {
+                    openInWebBrowserToolbarMenuItem.Checked =
+                        !openInWebBrowserToolbarMenuItem.Checked;
+                    openInBrowserToolStripButton.Visible =
+                        !openInBrowserToolStripButton.Visible;
+                    UpdateSeparators();
+                    Preferences.instance().setProperty(
+                        "browser.toolbar.openinbrowser",
+                        openInBrowserToolStripButton.Visible);
+                };
             openInWebBrowserToolStripMenuItem.Click += h;
             openInWebBrowserToolbarMenuItem.Click += h;
             m = new MenuItem(openInWebBrowserToolbarMenuItem.Text, h);
@@ -1311,16 +1314,16 @@ namespace Ch.Cyberduck.Ui.Winforms
 
             openInTerminalToolStripMenuItem.CheckOnClick = true;
             h = delegate
-                    {
-                        openInTerminalToolbarMenuItem.Checked =
-                            !openInTerminalToolbarMenuItem.Checked;
-                        openInTerminalToolStripButton.Visible =
-                            !openInTerminalToolStripButton.Visible;
-                        UpdateSeparators();
-                        Preferences.instance().setProperty(
-                            "browser.toolbar.openinterminal",
-                            openInTerminalToolStripButton.Visible);
-                    };
+                {
+                    openInTerminalToolbarMenuItem.Checked =
+                        !openInTerminalToolbarMenuItem.Checked;
+                    openInTerminalToolStripButton.Visible =
+                        !openInTerminalToolStripButton.Visible;
+                    UpdateSeparators();
+                    Preferences.instance().setProperty(
+                        "browser.toolbar.openinterminal",
+                        openInTerminalToolStripButton.Visible);
+                };
             openInTerminalToolStripMenuItem.Click += h;
             openInTerminalToolbarMenuItem.Click += h;
             m = new MenuItem(openInTerminalToolbarMenuItem.Text, h);
@@ -1329,15 +1332,15 @@ namespace Ch.Cyberduck.Ui.Winforms
 
             newFolderToolStripMenuItem1.CheckOnClick = true;
             h = delegate
-                    {
-                        newFolderToolbarMenuItem.Checked = !newFolderToolbarMenuItem.Checked;
-                        newFolderToolStripButton.Visible =
-                            !newFolderToolStripButton.Visible;
-                        UpdateSeparators();
-                        Preferences.instance().setProperty(
-                            "browser.toolbar.newfolder",
-                            newFolderToolStripButton.Visible);
-                    };
+                {
+                    newFolderToolbarMenuItem.Checked = !newFolderToolbarMenuItem.Checked;
+                    newFolderToolStripButton.Visible =
+                        !newFolderToolStripButton.Visible;
+                    UpdateSeparators();
+                    Preferences.instance().setProperty(
+                        "browser.toolbar.newfolder",
+                        newFolderToolStripButton.Visible);
+                };
             newFolderToolStripMenuItem1.Click += h;
             newFolderToolbarMenuItem.Click += h;
             m = new MenuItem(newFolderToolbarMenuItem.Text, h);
@@ -1346,14 +1349,14 @@ namespace Ch.Cyberduck.Ui.Winforms
 
             deleteToolStripMenuItem1.CheckOnClick = true;
             h = delegate
-                    {
-                        deleteToolbarMenuItem.Checked = !deleteToolbarMenuItem.Checked;
-                        deleteToolStripButton.Visible = !deleteToolStripButton.Visible;
-                        UpdateSeparators();
-                        Preferences.instance().setProperty(
-                            "browser.toolbar.delete",
-                            deleteToolStripButton.Visible);
-                    };
+                {
+                    deleteToolbarMenuItem.Checked = !deleteToolbarMenuItem.Checked;
+                    deleteToolStripButton.Visible = !deleteToolStripButton.Visible;
+                    UpdateSeparators();
+                    Preferences.instance().setProperty(
+                        "browser.toolbar.delete",
+                        deleteToolStripButton.Visible);
+                };
             deleteToolStripMenuItem1.Click += h;
             deleteToolbarMenuItem.Click += h;
             m = new MenuItem(deleteToolbarMenuItem.Text, h);
@@ -1363,15 +1366,15 @@ namespace Ch.Cyberduck.Ui.Winforms
 
             downloadToolStripMenuItem1.CheckOnClick = true;
             h = delegate
-                    {
-                        downloadToolbarMenuItem.Checked = !downloadToolbarMenuItem.Checked;
-                        downloadToolStripButton.Visible =
-                            !downloadToolStripButton.Visible;
-                        UpdateSeparators();
-                        Preferences.instance().setProperty(
-                            "browser.toolbar.download",
-                            downloadToolStripButton.Visible);
-                    };
+                {
+                    downloadToolbarMenuItem.Checked = !downloadToolbarMenuItem.Checked;
+                    downloadToolStripButton.Visible =
+                        !downloadToolStripButton.Visible;
+                    UpdateSeparators();
+                    Preferences.instance().setProperty(
+                        "browser.toolbar.download",
+                        downloadToolStripButton.Visible);
+                };
             downloadToolStripMenuItem1.Click += h;
             downloadToolbarMenuItem.Click += h;
             m = new MenuItem(downloadToolbarMenuItem.Text, h);
@@ -1380,14 +1383,14 @@ namespace Ch.Cyberduck.Ui.Winforms
 
             uploadToolStripMenuItem1.CheckOnClick = true;
             h = delegate
-                    {
-                        uploadToolbarMenuItem.Checked = !uploadToolbarMenuItem.Checked;
-                        uploadToolStripButton.Visible = !uploadToolStripButton.Visible;
-                        UpdateSeparators();
-                        Preferences.instance().setProperty(
-                            "browser.toolbar.upload",
-                            uploadToolStripButton.Visible);
-                    };
+                {
+                    uploadToolbarMenuItem.Checked = !uploadToolbarMenuItem.Checked;
+                    uploadToolStripButton.Visible = !uploadToolStripButton.Visible;
+                    UpdateSeparators();
+                    Preferences.instance().setProperty(
+                        "browser.toolbar.upload",
+                        uploadToolStripButton.Visible);
+                };
             uploadToolStripMenuItem1.Click += h;
             uploadToolbarMenuItem.Click += h;
             m = new MenuItem(uploadToolbarMenuItem.Text, h);
@@ -1396,15 +1399,15 @@ namespace Ch.Cyberduck.Ui.Winforms
 
             transfersToolStripMenuItem1.CheckOnClick = true;
             h = delegate
-                    {
-                        transfersToolbarMenuItem.Checked = !transfersToolbarMenuItem.Checked;
-                        transfersToolStripButton.Visible =
-                            !transfersToolStripButton.Visible;
-                        UpdateSeparators();
-                        Preferences.instance().setProperty(
-                            "browser.toolbar.transfers",
-                            transfersToolStripButton.Visible);
-                    };
+                {
+                    transfersToolbarMenuItem.Checked = !transfersToolbarMenuItem.Checked;
+                    transfersToolStripButton.Visible =
+                        !transfersToolStripButton.Visible;
+                    UpdateSeparators();
+                    Preferences.instance().setProperty(
+                        "browser.toolbar.transfers",
+                        transfersToolStripButton.Visible);
+                };
             transfersToolStripMenuItem1.Click += h;
             transfersToolbarMenuItem.Click += h;
             m = new MenuItem(transfersToolbarMenuItem.Text, h);
@@ -1471,56 +1474,56 @@ namespace Ch.Cyberduck.Ui.Winforms
         private void ConfigureBookmarkCommands()
         {
             Commands.Add(new ToolStripItem[]
-                             {
-                                 viewBookmarksToolStripMenuItem
-                             }, new[] {toggleBookmarksMainMenuItem}, (sender, args) => ToggleBookmarks(), () => true);
+                {
+                    viewBookmarksToolStripMenuItem
+                }, new[] {toggleBookmarksMainMenuItem}, (sender, args) => ToggleBookmarks(), () => true);
             Commands.Add(new ToolStripItem[]
-                             {
-                             }, new[] {sortByHostnameMainMenuItem, sortByHostnameBookmarkContextMenuItem},
+                {
+                }, new[] {sortByHostnameMainMenuItem, sortByHostnameBookmarkContextMenuItem},
                          (sender, args) => SortBookmarksByHostname(), () => true);
             Commands.Add(new ToolStripItem[]
-                             {
-                             }, new[] {sortByNicknameMainMenuItem, sortByNicknameBookmarkContextMenuItem},
+                {
+                }, new[] {sortByNicknameMainMenuItem, sortByNicknameBookmarkContextMenuItem},
                          (sender, args) => SortBookmarksByNickname(), () => true);
             Commands.Add(new ToolStripItem[]
-                             {
-                             }, new[] {sortByProtocolMainMenuItem, sortByProtocolBookmarkContextMenuItem},
+                {
+                }, new[] {sortByProtocolMainMenuItem, sortByProtocolBookmarkContextMenuItem},
                          (sender, args) => SortBookmarksByProtocol(), () => true);
             Commands.Add(new ToolStripItem[]
-                             {
-                                 connectBookmarkContextToolStripMenuItem,
-                             }, new[] {connectBookmarkContextMenuItem},
+                {
+                    connectBookmarkContextToolStripMenuItem,
+                }, new[] {connectBookmarkContextMenuItem},
                          (sender, args) =>
                          ConnectBookmark(this, new ConnectBookmarkArgs(bookmarkListView.SelectedObject as Host)),
                          () => ValidateConnectBookmark());
             Commands.Add(new ToolStripItem[]
-                             {
-                                 newBookmarkToolStripMenuItem,
-                                 newBookmarkContextToolStripMenuItem,
-                                 newBookmarkContextToolStripMenuItem1,
-                                 newBookmarkToolStripButton
-                             },
+                {
+                    newBookmarkToolStripMenuItem,
+                    newBookmarkContextToolStripMenuItem,
+                    newBookmarkContextToolStripMenuItem1,
+                    newBookmarkToolStripButton
+                },
                          new[] {newBookmarkContextMenuItem, newBookmarkMainMenuItem, newBookmarkBrowserContextMenuItem},
                          (sender, args) => NewBookmark(), () => ValidateNewBookmark());
             Commands.Add(new ToolStripItem[]
-                             {
-                                 editBookmarkToolStripMenuItem,
-                                 editBookmarkContextToolStripMenuItem1,
-                                 editBookmarkToolStripButton
-                             }, new[] {editBookmarkMainMenuItem, editBookmarkContextMenuItem},
+                {
+                    editBookmarkToolStripMenuItem,
+                    editBookmarkContextToolStripMenuItem1,
+                    editBookmarkToolStripButton
+                }, new[] {editBookmarkMainMenuItem, editBookmarkContextMenuItem},
                          (sender, args) => EditBookmark(), () => ValidateEditBookmark());
             Commands.Add(new ToolStripItem[]
-                             {
-                                 deleteBookmarkToolStripMenuItem,
-                                 deleteBookmarkContextToolStripMenuItem1,
-                                 deleteBookmarkToolStripButton
-                             }, new[] {deleteBookmarkContextMenuItem, deleteBookmarkMainMenuItem},
+                {
+                    deleteBookmarkToolStripMenuItem,
+                    deleteBookmarkContextToolStripMenuItem1,
+                    deleteBookmarkToolStripButton
+                }, new[] {deleteBookmarkContextMenuItem, deleteBookmarkMainMenuItem},
                          (sender, args) => DeleteBookmark(), () => ValidateDeleteBookmark());
             Commands.Add(new ToolStripItem[]
-                             {
-                                 duplicateBookmarkToolStripMenuItem1,
-                                 duplicateBookmarkToolStripMenuItem
-                             }, new[] {duplicateBookmarkContextMenuItem, duplicateBookmarkMainMenuItem},
+                {
+                    duplicateBookmarkToolStripMenuItem1,
+                    duplicateBookmarkToolStripMenuItem
+                }, new[] {duplicateBookmarkContextMenuItem, duplicateBookmarkMainMenuItem},
                          (sender, args) => DuplicateBookmark(), () => ValidateDuplicateBookmark());
         }
 
@@ -1592,68 +1595,68 @@ namespace Ch.Cyberduck.Ui.Winforms
         private void ConfigureGoCommands()
         {
             Commands.Add(new ToolStripItem[]
-                             {
-                                 refreshToolStripMenuItem,
-                                 refreshContextToolStripMenuItem,
-                                 refreshToolStripButton
-                             }, new[] {refreshMainMenuItem, refreshBrowserContextMenuItem},
+                {
+                    refreshToolStripMenuItem,
+                    refreshContextToolStripMenuItem,
+                    refreshToolStripButton
+                }, new[] {refreshMainMenuItem, refreshBrowserContextMenuItem},
                          (sender, args) => RefreshBrowser(), () => ValidateRefresh());
             Commands.Add(new ToolStripItem[]
-                             {
-                                 gotoFolderToolStripMenuItem
-                             }, new[] {goToFolderMainMenuItem},
+                {
+                    gotoFolderToolStripMenuItem
+                }, new[] {goToFolderMainMenuItem},
                          (sender, args) => GotoFolder(), () => ValidateGotoFolder());
             Commands.Add(new ToolStripItem[]
-                             {
-                                 backToolStripMenuItem
-                             }, new Control[] {historyBackButton}, new[] {backMainMenuItem},
+                {
+                    backToolStripMenuItem
+                }, new Control[] {historyBackButton}, new[] {backMainMenuItem},
                          (sender, args) => HistoryBack(), () => ValidateHistoryBack());
             Commands.Add(new ToolStripItem[]
-                             {
-                                 forwardToolStripMenuItem
-                             }, new Control[]
-                                    {
-                                        historyForwardButton
-                                    }, new[] {forwardMainMenuItem},
+                {
+                    forwardToolStripMenuItem
+                }, new Control[]
+                    {
+                        historyForwardButton
+                    }, new[] {forwardMainMenuItem},
                          (sender, args) => HistoryForward(), () => ValidateHistoryForward());
             Commands.Add(new ToolStripItem[]
-                             {
-                                 enclosingFolderToolStripMenuItem
-                             }, new Control[]
-                                    {
-                                        parentPathButton
-                                    }, new[] {enclosingFolderMainMenuItem},
+                {
+                    enclosingFolderToolStripMenuItem
+                }, new Control[]
+                    {
+                        parentPathButton
+                    }, new[] {enclosingFolderMainMenuItem},
                          (sender, args) => FolderUp(), () => ValidateFolderUp());
             Commands.Add(new ToolStripItem[]
-                             {
-                                 insideToolStripMenuItem
-                             }, new[] {insideMainMenuItem},
+                {
+                    insideToolStripMenuItem
+                }, new[] {insideMainMenuItem},
                          (sender, args) => FolderInside(), () => ValidateFolderInside());
             Commands.Add(new ToolStripItem[]
-                             {
-                                 searchToolStripMenuItem
-                             }, new[] {searchMainMenuItem},
+                {
+                    searchToolStripMenuItem
+                }, new[] {searchMainMenuItem},
                          (sender, args) => Search(), () => ValidateSearchField());
             Commands.Add(new ToolStripItem[]
-                             {
-                                 sendCommandToolStripMenuItem
-                             }, new[] {sendCommandMainMenuItem},
+                {
+                    sendCommandToolStripMenuItem
+                }, new[] {sendCommandMainMenuItem},
                          (sender, args) => SendCustomCommand(), () => ValidateSendCustomCommand());
             Commands.Add(new ToolStripItem[]
-                             {
-                                 openInTerminalToolStripButton
-                             }, new[] {openInTerminalMainMenuItem},
+                {
+                    openInTerminalToolStripButton
+                }, new[] {openInTerminalMainMenuItem},
                          (sender, args) => OpenInTerminal(), () => ValidateOpenInTerminal());
             Commands.Add(new ToolStripItem[]
-                             {
-                                 stopToolStripMenuItem
-                             }, new[] {stopMainMenuItem},
+                {
+                    stopToolStripMenuItem
+                }, new[] {stopMainMenuItem},
                          (sender, args) => Stop(), () => ValidateStop());
             Commands.Add(new ToolStripItem[]
-                             {
-                                 disconnectToolStripMenuItem,
-                                 disconnectStripButton
-                             }, new[] {disconnectMainMenuItem},
+                {
+                    disconnectToolStripMenuItem,
+                    disconnectStripButton
+                }, new[] {disconnectMainMenuItem},
                          (sender, args) => Disconnect(), () => ValidateDisconnect());
 
             vistaMenu1.SetImage(refreshMainMenuItem, IconCache.Instance.IconForName("reload", 16));
@@ -1666,73 +1669,73 @@ namespace Ch.Cyberduck.Ui.Winforms
         private void ConfigureViewCommands()
         {
             Commands.Add(new ToolStripItem[]
-                             {
-                                 toggleToolbarToolStripMenuItem
-                             }, new[] {toggleToolbarMainMenuItem},
+                {
+                    toggleToolbarToolStripMenuItem
+                }, new[] {toggleToolbarMainMenuItem},
                          (sender, args) => ToggleToolbar(), () => true);
             Commands.Add(new ToolStripItem[]
-                             {
-                                 showHiddenFilesToolStripMenuItem
-                             }, new[] {showHiddenFilesMainMenuItem},
+                {
+                    showHiddenFilesToolStripMenuItem
+                }, new[] {showHiddenFilesMainMenuItem},
                          (sender, args) => ShowHiddenFiles(), () => true);
             Commands.Add(new ToolStripItem[]
-                             {
-                                 textEncodingToolStripMenuItem
-                             }, new[] {textEncodingMainMenuItem},
+                {
+                    textEncodingToolStripMenuItem
+                }, new[] {textEncodingMainMenuItem},
                          null, () => ValidateTextEncoding());
             Commands.Add(new ToolStripItem[]
-                             {
-                                 toggleLogDrawerToolStripMenuItem
-                             }, new[] {toggleLogDrawerMainMenuItem},
+                {
+                    toggleLogDrawerToolStripMenuItem
+                }, new[] {toggleLogDrawerMainMenuItem},
                          (sender, args) => ToggleLogDrawer(), () => true);
         }
 
         private void ConfigureWindowCommands()
         {
             Commands.Add(new ToolStripItem[]
-                             {
-                                 transfersToolStripMenuItem,
-                                 transfersToolStripButton
-                             }, new[] {transfersMainMenuItem},
+                {
+                    transfersToolStripMenuItem,
+                    transfersToolStripButton
+                }, new[] {transfersMainMenuItem},
                          (sender, args) => ShowTransfers(), () => true);
             Commands.Add(new ToolStripItem[]
-                             {
-                                 activitiyToolStripMenuItem,
-                             }, new[] {activityMainMenuItem},
+                {
+                    activitiyToolStripMenuItem,
+                }, new[] {activityMainMenuItem},
                          (sender, args) => ((Form) ActivityController.Instance.View).Show(), () => false);
             Commands.Add(new ToolStripItem[]
-                             {
-                                 minimizeToolStripMenuItem,
-                             }, new[] {minimizeMainMenuItem},
+                {
+                    minimizeToolStripMenuItem,
+                }, new[] {minimizeMainMenuItem},
                          (sender, args) => WindowState = FormWindowState.Minimized, () => true);
         }
 
         private void ConfigureEditCommands()
         {
             Commands.Add(new ToolStripItem[]
-                             {
-                                 cutToolStripMenuItem
-                             }, new[] {cutMainMenuItem},
+                {
+                    cutToolStripMenuItem
+                }, new[] {cutMainMenuItem},
                          (sender, args) => Cut(), () => ValidateCut());
             Commands.Add(new ToolStripItem[]
-                             {
-                                 copyToolStripMenuItem
-                             }, new[] {copyMainMenuItem},
+                {
+                    copyToolStripMenuItem
+                }, new[] {copyMainMenuItem},
                          (sender, args) => Copy(), () => ValidateCopy());
             Commands.Add(new ToolStripItem[]
-                             {
-                                 pasteToolStripMenuItem
-                             }, new[] {pasteMainMenuItem},
+                {
+                    pasteToolStripMenuItem
+                }, new[] {pasteMainMenuItem},
                          (sender, args) => Paste(), () => ValidatePaste());
             Commands.Add(new ToolStripItem[]
-                             {
-                                 selectAllToolStripMenuItem
-                             }, new[] {selectAllMainMenuItem},
+                {
+                    selectAllToolStripMenuItem
+                }, new[] {selectAllMainMenuItem},
                          (o, eventArgs) => { }, () => true); // Tree component handles the selectAll command
             Commands.Add(new ToolStripItem[]
-                             {
-                                 preferencesToolStripMenuItem
-                             }, new[] {preferencesMainMenuItem},
+                {
+                    preferencesToolStripMenuItem
+                }, new[] {preferencesMainMenuItem},
                          (o, eventArgs) => ShowPreferences(), () => true);
         }
 
@@ -1860,15 +1863,15 @@ namespace Ch.Cyberduck.Ui.Winforms
             activated(this, EventArgs.Empty);
 
             Deactivate += delegate
-                              {
-                                  foreach (ToolStripItem item in contextMenuStrip.Items)
-                                  {
-                                      if (item is ToolStripMenuItem)
-                                      {
-                                          (item as ToolStripMenuItem).ShortcutKeys = Keys.None;
-                                      }
-                                  }
-                              };
+                {
+                    foreach (ToolStripItem item in contextMenuStrip.Items)
+                    {
+                        if (item is ToolStripMenuItem)
+                        {
+                            (item as ToolStripMenuItem).ShortcutKeys = Keys.None;
+                        }
+                    }
+                };
 
             #endregion
 
@@ -1876,29 +1879,29 @@ namespace Ch.Cyberduck.Ui.Winforms
 
             //All doubly assigned shortcuts are falsely active in all child forms
             activated = delegate
-                            {
-                                ConfigureShortcut(connectBookmarkContextToolStripMenuItem,
-                                                  connectBookmarkContextMenuItem, Keys.None,
-                                                  ShortcutToText(Keys.Enter, String.Empty));
-                                ConfigureShortcut(newBookmarkContextToolStripMenuItem1, newBookmarkContextMenuItem,
-                                                  newBookmarkToolStripMenuItem.ShortcutKeys);
-                                ConfigureShortcut(editBookmarkContextToolStripMenuItem1, editBookmarkContextMenuItem,
-                                                  editBookmarkToolStripMenuItem.ShortcutKeys);
-                                //todo deleteBookmarkContextToolStripMenuItem1.ShortcutKeys =
-                            };
+                {
+                    ConfigureShortcut(connectBookmarkContextToolStripMenuItem,
+                                      connectBookmarkContextMenuItem, Keys.None,
+                                      ShortcutToText(Keys.Enter, String.Empty));
+                    ConfigureShortcut(newBookmarkContextToolStripMenuItem1, newBookmarkContextMenuItem,
+                                      newBookmarkToolStripMenuItem.ShortcutKeys);
+                    ConfigureShortcut(editBookmarkContextToolStripMenuItem1, editBookmarkContextMenuItem,
+                                      editBookmarkToolStripMenuItem.ShortcutKeys);
+                    //todo deleteBookmarkContextToolStripMenuItem1.ShortcutKeys =
+                };
             Activated += activated;
             activated(this, EventArgs.Empty);
 
             Deactivate += delegate
-                              {
-                                  foreach (ToolStripItem item in bookmarkContextMenuStrip.Items)
-                                  {
-                                      if (item is ToolStripMenuItem)
-                                      {
-                                          (item as ToolStripMenuItem).ShortcutKeys = Keys.None;
-                                      }
-                                  }
-                              };
+                {
+                    foreach (ToolStripItem item in bookmarkContextMenuStrip.Items)
+                    {
+                        if (item is ToolStripMenuItem)
+                        {
+                            (item as ToolStripMenuItem).ShortcutKeys = Keys.None;
+                        }
+                    }
+                };
 
             #endregion
         }
@@ -1921,69 +1924,74 @@ namespace Ch.Cyberduck.Ui.Winforms
         private void ConfigureFileCommands()
         {
             Commands.Add(new ToolStripItem[]
-                             {
-                                 newBrowserToolStripMenuItem
-                             },
+                {
+                    newBrowserToolStripMenuItem
+                },
                          new[] {newBrowserMainMenuItem},
                          (sender, args) => NewBrowser(this, new NewBrowserEventArgs(false)), () => true);
             Commands.Add(new ToolStripItem[]
-                             {
-                                 newBrowserContextToolStripMenuItem
-                             },
+                {
+                    newBrowserContextToolStripMenuItem
+                },
                          new[] {newBrowserBrowserContextMenuItem},
                          (sender, args) => NewBrowser(this, new NewBrowserEventArgs(true)), () => ValidateNewBrowser());
             Commands.Add(new ToolStripItem[]
-                             {
-                                 openConnectionToolStripMenuItem,
-                                 openConnectionToolStripButton
-                             },
+                {
+                    openConnectionToolStripMenuItem,
+                    openConnectionToolStripButton
+                },
                          new[] {openConnectionMainMenuItem},
                          (sender, args) => OpenConnection(), () => ValidateOpenConnection());
             Commands.Add(new ToolStripItem[]
-                             {
-                                 newDownloadToolStripMenuItem
-                             },
+                {
+                    newDownloadToolStripMenuItem
+                },
                          new[] {newDownloadMainMenuItem},
                          (sender, args) => NewDownload(), () => ValidateNewDownload());
             Commands.Add(new ToolStripItem[]
-                             {
-                                 newFolderToolStripMenuItem,
-                                 newFolderContextToolStripMenuItem,
-                                 newFolderToolStripButton
-                             }, new[] {newFolderMainMenuItem, newFolderBrowserContextMenuItem},
+                {
+                    newFolderToolStripMenuItem,
+                    newFolderContextToolStripMenuItem,
+                    newFolderToolStripButton
+                }, new[] {newFolderMainMenuItem, newFolderBrowserContextMenuItem},
                          (sender, args) => NewFolder(), () => ValidateNewFolder());
             Commands.Add(new ToolStripItem[]
-                             {
-                                 newFileToolStripMenuItem,
-                                 newFileContextToolStripMenuItem
-                             }, new[] {newFileMainMenuItem, newFileBrowserContextMenuItem},
+                {
+                    newFileToolStripMenuItem,
+                    newFileContextToolStripMenuItem
+                }, new[] {newFileMainMenuItem, newFileBrowserContextMenuItem},
                          (sender, args) => NewFile(), () => ValidateNewFile());
             Commands.Add(new ToolStripItem[]
-                             {
-                                 renameFileToolStripMenuItem,
-                                 renameContextToolStripMenuItem
-                             }, new[] {renameMainMenuItem, renameBrowserContextMenuItem},
+                {
+                    newSymlinkContextToolStripMenuItem
+                }, new[] {newSymbolicLinkMainMenuItem, newSymlinkBrowserContextMenuItem},
+                         (sender, args) => NewSymbolicLink(), () => ValidateNewSymbolicLink());
+            Commands.Add(new ToolStripItem[]
+                {
+                    renameFileToolStripMenuItem,
+                    renameContextToolStripMenuItem
+                }, new[] {renameMainMenuItem, renameBrowserContextMenuItem},
                          (o, eventArgs) => browser.EditSubItem((OLVListItem) browser.FocusedItem, 0),
                          () => ValidateRenameFile());
             Commands.Add(new ToolStripItem[]
-                             {
-                                 duplicateFileToolStripMenuItem,
-                                 duplicateFileContextToolStripMenuItem
-                             }, new[] {duplicateMainMenuItem, duplicateFileBrowserContextMenuItem},
+                {
+                    duplicateFileToolStripMenuItem,
+                    duplicateFileContextToolStripMenuItem
+                }, new[] {duplicateMainMenuItem, duplicateFileBrowserContextMenuItem},
                          (sender, args) => DuplicateFile(), () => ValidateDuplicateFile());
             Commands.Add(new ToolStripItem[]
-                             {
-                                 openWebURLToolStripMenuItem,
-                                 openURLContextToolStripMenuItem,
-                                 openInBrowserToolStripButton
-                             }, new MenuItem[] {},
+                {
+                    openWebURLToolStripMenuItem,
+                    openURLContextToolStripMenuItem,
+                    openInBrowserToolStripButton
+                }, new MenuItem[] {},
                          (sender, args) => OpenUrl(), () => ValidateOpenWebUrl());
             Commands.Add(new ToolStripItem[]
-                             {
-                                 editWithToolStripMenuItem,
-                                 editContextToolStripMenuItem,
-                                 editToolStripSplitButton
-                             }, new[] {editMainMenuItem, editBrowserContextMenuItem},
+                {
+                    editWithToolStripMenuItem,
+                    editContextToolStripMenuItem,
+                    editToolStripSplitButton
+                }, new[] {editMainMenuItem, editBrowserContextMenuItem},
                          (sender, args) =>
                              {
                                  if (sender == editToolStripSplitButton &&
@@ -1994,73 +2002,73 @@ namespace Ch.Cyberduck.Ui.Winforms
                                  EditEvent(null);
                              }, () => ValidateEditWith());
             Commands.Add(new ToolStripItem[]
-                             {
-                                 infoToolStripMenuItem,
-                                 infoToolStripButton,
-                                 infoContextToolStripMenuItem
-                             }, new[] {infoMainMenuItem, infoBrowserContextMenuItem},
+                {
+                    infoToolStripMenuItem,
+                    infoToolStripButton,
+                    infoContextToolStripMenuItem
+                }, new[] {infoMainMenuItem, infoBrowserContextMenuItem},
                          (sender, args) => ShowInspector(), () => ValidateShowInspector());
             Commands.Add(new ToolStripItem[]
-                             {
-                                 downloadToolStripMenuItem,
-                                 downloadContextToolStripMenuItem
-                             }, new[] {downloadMainMenuItem, downloadBrowserContextMenuItem},
+                {
+                    downloadToolStripMenuItem,
+                    downloadContextToolStripMenuItem
+                }, new[] {downloadMainMenuItem, downloadBrowserContextMenuItem},
                          (sender, args) => Download(), () => ValidateDownload());
             Commands.Add(new ToolStripItem[]
-                             {
-                                 downloadAsToolStripMenuItem,
-                                 downloadAsContextToolStripMenuItem
-                             }, new[] {downloadAsMainMenuItem, downloadAsBrowserContextMenuItem},
+                {
+                    downloadAsToolStripMenuItem,
+                    downloadAsContextToolStripMenuItem
+                }, new[] {downloadAsMainMenuItem, downloadAsBrowserContextMenuItem},
                          (sender, args) => DownloadAs(), () => ValidateDownloadAs());
             Commands.Add(new ToolStripItem[]
-                             {
-                                 downloadToToolStripMenuItem,
-                                 downloadToContextToolStripMenuItem,
-                                 downloadToolStripButton
-                             }, new[] {downloadToMainMenuItem, downloadToBrowserContextMenuItem},
+                {
+                    downloadToToolStripMenuItem,
+                    downloadToContextToolStripMenuItem,
+                    downloadToolStripButton
+                }, new[] {downloadToMainMenuItem, downloadToBrowserContextMenuItem},
                          (sender, args) => DownloadTo(), () => ValidateDownloadTo());
             Commands.Add(new ToolStripItem[]
-                             {
-                                 uploadToolStripMenuItem,
-                                 uploadContextToolStripMenuItem,
-                                 uploadToolStripButton
-                             }, new[] {uploadMainMenuItem, uploadBrowserContextMenuItem},
+                {
+                    uploadToolStripMenuItem,
+                    uploadContextToolStripMenuItem,
+                    uploadToolStripButton
+                }, new[] {uploadMainMenuItem, uploadBrowserContextMenuItem},
                          (sender, args) => Upload(), () => ValidateUpload());
             Commands.Add(new ToolStripItem[]
-                             {
-                                 synchronizeToolStripMenuItem,
-                                 synchronizeContextToolStripMenuItem
-                             }, new[] {synchronizeMainMenuItem, synchronizeBrowserContextMenuItem},
+                {
+                    synchronizeToolStripMenuItem,
+                    synchronizeContextToolStripMenuItem
+                }, new[] {synchronizeMainMenuItem, synchronizeBrowserContextMenuItem},
                          (sender, args) => Synchronize(), () => ValidateSynchronize());
             Commands.Add(new ToolStripItem[]
-                             {
-                                 deleteToolStripMenuItem,
-                                 deleteContextToolStripMenuItem,
-                                 deleteToolStripButton
-                             }, new[] {deleteMainMenuItem, deleteBrowserContextMenuItem},
+                {
+                    deleteToolStripMenuItem,
+                    deleteContextToolStripMenuItem,
+                    deleteToolStripButton
+                }, new[] {deleteMainMenuItem, deleteBrowserContextMenuItem},
                          (sender, args) => Delete(), () => ValidateDelete());
             Commands.Add(new ToolStripItem[]
-                             {
-                                 revertToolStripMenuItem,
-                                 revertContxtStripMenuItem
-                             }, new[] {revertMainMenuItem, revertBrowserContextMenuItem}, (sender, args) => RevertFile(),
+                {
+                    revertToolStripMenuItem,
+                    revertContxtStripMenuItem
+                }, new[] {revertMainMenuItem, revertBrowserContextMenuItem}, (sender, args) => RevertFile(),
                          () => ValidateRevertFile());
             Commands.Add(new ToolStripItem[]
-                             {
-                                 createArchiveToolStripMenuItem,
-                                 createArchiveContextToolStripMenuItem
-                             }, new[] {createArchiveMainMenuItem, createArchiveBrowserContextMenuItem},
+                {
+                    createArchiveToolStripMenuItem,
+                    createArchiveContextToolStripMenuItem
+                }, new[] {createArchiveMainMenuItem, createArchiveBrowserContextMenuItem},
                          (sender, args) => { }, () => ValidateCreateArchive());
             Commands.Add(new ToolStripItem[]
-                             {
-                                 expandArchiveToolStripMenuItem,
-                                 expandArchiveContextToolStripMenuItem
-                             }, new[] {expandArchiveMainMenuItem, expandArchiveBrowserContextMnuItem},
+                {
+                    expandArchiveToolStripMenuItem,
+                    expandArchiveContextToolStripMenuItem
+                }, new[] {expandArchiveMainMenuItem, expandArchiveBrowserContextMnuItem},
                          (sender, args) => ExpandArchive(), () => ValidateExpandArchive());
             Commands.Add(new ToolStripItem[]
-                             {
-                                 exitToolStripMenuItem
-                             }, new[] {exitMainMenuItem},
+                {
+                    exitToolStripMenuItem
+                }, new[] {exitMainMenuItem},
                          (sender, args) => Exit(), () => true);
 
             vistaMenu1.SetImage(openConnectionMainMenuItem, IconCache.Instance.IconForName("connect", 16));
@@ -2407,87 +2415,87 @@ namespace Ch.Cyberduck.Ui.Winforms
             public void collectionItemAdded(object obj)
             {
                 _form.Invoke(new AsyncController.AsyncDelegate(delegate
-                                                                   {
-                                                                       int pos =
-                                                                           BookmarkCollection.defaultCollection().
-                                                                               indexOf(obj);
-                                                                       Host h = (Host) obj;
-                                                                       MenuItem i = new MenuItem(h.getNickname());
-                                                                       i.Tag = h;
-                                                                       i.Click +=
-                                                                           (o, args) =>
-                                                                           _form.ConnectBookmark(this,
-                                                                                                 new ConnectBookmarkArgs
-                                                                                                     (h));
-                                                                       _form.menuItem64.MenuItems.Add(
-                                                                           _bookmarkStartPosition + pos, i);
-                                                                       _form.vistaMenu1.SetImage(i,
-                                                                                                 _icons[
-                                                                                                     h.getProtocol()
-                                                                                                         .
-                                                                                                         getProvider
-                                                                                                         ()]);
-                                                                   }));
+                    {
+                        int pos =
+                            BookmarkCollection.defaultCollection().
+                                indexOf(obj);
+                        Host h = (Host) obj;
+                        MenuItem i = new MenuItem(h.getNickname());
+                        i.Tag = h;
+                        i.Click +=
+                            (o, args) =>
+                            _form.ConnectBookmark(this,
+                                                  new ConnectBookmarkArgs
+                                                      (h));
+                        _form.menuItem64.MenuItems.Add(
+                            _bookmarkStartPosition + pos, i);
+                        _form.vistaMenu1.SetImage(i,
+                                                  _icons[
+                                                      h.getProtocol()
+                                                          .
+                                                          getProvider
+                                                          ()]);
+                    }));
             }
 
             public void collectionItemRemoved(object obj)
             {
                 _form.Invoke(new AsyncController.AsyncDelegate(delegate
-                                                                   {
-                                                                       int pos =
-                                                                           BookmarkCollection.defaultCollection().
-                                                                               indexOf(obj);
-                                                                       Host h = (Host) obj;
-                                                                       MenuItem i = new MenuItem(h.getNickname());
-                                                                       i.Tag = h;
-                                                                       i.Click +=
-                                                                           (o, args) =>
-                                                                           _form.ConnectBookmark(this,
-                                                                                                 new ConnectBookmarkArgs
-                                                                                                     (h));
-                                                                       _form.menuItem64.MenuItems.Add(
-                                                                           _bookmarkStartPosition + pos, i);
-                                                                       _form.vistaMenu1.SetImage(i,
-                                                                                                 _icons[
-                                                                                                     h.getProtocol().
-                                                                                                         getProvider()
-                                                                                                     ]);
+                    {
+                        int pos =
+                            BookmarkCollection.defaultCollection().
+                                indexOf(obj);
+                        Host h = (Host) obj;
+                        MenuItem i = new MenuItem(h.getNickname());
+                        i.Tag = h;
+                        i.Click +=
+                            (o, args) =>
+                            _form.ConnectBookmark(this,
+                                                  new ConnectBookmarkArgs
+                                                      (h));
+                        _form.menuItem64.MenuItems.Add(
+                            _bookmarkStartPosition + pos, i);
+                        _form.vistaMenu1.SetImage(i,
+                                                  _icons[
+                                                      h.getProtocol().
+                                                          getProvider()
+                                                      ]);
 
 
-                                                                       foreach (
-                                                                           MenuItem item in _form.menuItem64.MenuItems)
-                                                                       {
-                                                                           if (obj.Equals(item.Tag))
-                                                                           {
-                                                                               _form.menuItem64.MenuItems.Remove(item);
-                                                                               break;
-                                                                           }
-                                                                       }
-                                                                   }));
+                        foreach (
+                            MenuItem item in _form.menuItem64.MenuItems)
+                        {
+                            if (obj.Equals(item.Tag))
+                            {
+                                _form.menuItem64.MenuItems.Remove(item);
+                                break;
+                            }
+                        }
+                    }));
             }
 
             public void collectionItemChanged(object obj)
             {
                 _form.Invoke(new AsyncController.AsyncDelegate(delegate
-                                                                   {
-                                                                       foreach (
-                                                                           MenuItem item in _form.menuItem64.MenuItems)
-                                                                       {
-                                                                           if (obj.Equals(item.Tag))
-                                                                           {
-                                                                               Host h = (Host) obj;
-                                                                               item.Text = h.getNickname();
-                                                                               _form.vistaMenu1.SetImage(item,
-                                                                                                         _icons[
-                                                                                                             h.
-                                                                                                                 getProtocol
-                                                                                                                 ().
-                                                                                                                 getProvider
-                                                                                                                 ()]);
-                                                                               break;
-                                                                           }
-                                                                       }
-                                                                   }));
+                    {
+                        foreach (
+                            MenuItem item in _form.menuItem64.MenuItems)
+                        {
+                            if (obj.Equals(item.Tag))
+                            {
+                                Host h = (Host) obj;
+                                item.Text = h.getNickname();
+                                _form.vistaMenu1.SetImage(item,
+                                                          _icons[
+                                                              h.
+                                                                  getProtocol
+                                                                  ().
+                                                                  getProvider
+                                                                  ()]);
+                                break;
+                            }
+                        }
+                    }));
             }
 
             public void BuildMenuItems()
@@ -2568,13 +2576,13 @@ namespace Ch.Cyberduck.Ui.Winforms
             {
                 _form = form;
                 _timer.Tick += delegate
-                                   {
-                                       if (null != _currentDropTarget)
-                                       {
-                                           ((TreeListView) ListView).Expand(_currentDropTarget);
-                                       }
-                                       _timer.Stop();
-                                   };
+                    {
+                        if (null != _currentDropTarget)
+                        {
+                            ((TreeListView) ListView).Expand(_currentDropTarget);
+                        }
+                        _timer.Stop();
+                    };
                 CanDropOnBackground = true;
                 FeedbackColor = Color.LightBlue;
                 AcceptExternal = true;
@@ -2920,75 +2928,75 @@ namespace Ch.Cyberduck.Ui.Winforms
             public void collectionItemAdded(object obj)
             {
                 _form.Invoke(new AsyncController.AsyncDelegate(delegate
-                                                                   {
-                                                                       if (_collection.size() == 1)
-                                                                       {
-                                                                           BuildMenuItems();
-                                                                       }
-                                                                       else
-                                                                       {
-                                                                           int pos = _collection.indexOf(obj);
-                                                                           Host h = (Host) obj;
-                                                                           MenuItem i = new MenuItem(h.getNickname());
-                                                                           i.Tag = h;
-                                                                           i.Click +=
-                                                                               (o, args) =>
-                                                                               _form.ConnectBookmark(this,
-                                                                                                     new ConnectBookmarkArgs
-                                                                                                         (h));
-                                                                           _menu.MenuItems.Add(pos, i);
-                                                                           _form.vistaMenu1.SetImage(i,
-                                                                                                     _icons[
-                                                                                                         h.getProtocol()
-                                                                                                             .
-                                                                                                             getProvider
-                                                                                                             ()]);
-                                                                       }
-                                                                   }));
+                    {
+                        if (_collection.size() == 1)
+                        {
+                            BuildMenuItems();
+                        }
+                        else
+                        {
+                            int pos = _collection.indexOf(obj);
+                            Host h = (Host) obj;
+                            MenuItem i = new MenuItem(h.getNickname());
+                            i.Tag = h;
+                            i.Click +=
+                                (o, args) =>
+                                _form.ConnectBookmark(this,
+                                                      new ConnectBookmarkArgs
+                                                          (h));
+                            _menu.MenuItems.Add(pos, i);
+                            _form.vistaMenu1.SetImage(i,
+                                                      _icons[
+                                                          h.getProtocol()
+                                                              .
+                                                              getProvider
+                                                              ()]);
+                        }
+                    }));
             }
 
             public void collectionItemRemoved(object obj)
             {
                 _form.Invoke(new AsyncController.AsyncDelegate(delegate
-                                                                   {
-                                                                       foreach (MenuItem item in _menu.MenuItems)
-                                                                       {
-                                                                           if (obj.Equals(item.Tag))
-                                                                           {
-                                                                               _menu.MenuItems.Remove(item);
-                                                                               break;
-                                                                           }
-                                                                       }
-                                                                       if (
-                                                                           _collection.size() == 0)
-                                                                       {
-                                                                           BuildMenuItems();
-                                                                       }
-                                                                   }));
+                    {
+                        foreach (MenuItem item in _menu.MenuItems)
+                        {
+                            if (obj.Equals(item.Tag))
+                            {
+                                _menu.MenuItems.Remove(item);
+                                break;
+                            }
+                        }
+                        if (
+                            _collection.size() == 0)
+                        {
+                            BuildMenuItems();
+                        }
+                    }));
             }
 
             public void collectionItemChanged(object obj)
             {
                 _form.Invoke(new AsyncController.AsyncDelegate(delegate
-                                                                   {
-                                                                       foreach (
-                                                                           MenuItem item in _menu.MenuItems)
-                                                                       {
-                                                                           if (obj.Equals(item.Tag))
-                                                                           {
-                                                                               Host h = (Host) obj;
-                                                                               item.Text = h.getNickname();
-                                                                               _form.vistaMenu1.SetImage(item,
-                                                                                                         _icons[
-                                                                                                             h.
-                                                                                                                 getProtocol
-                                                                                                                 ().
-                                                                                                                 getIdentifier
-                                                                                                                 ()]);
-                                                                               break;
-                                                                           }
-                                                                       }
-                                                                   }));
+                    {
+                        foreach (
+                            MenuItem item in _menu.MenuItems)
+                        {
+                            if (obj.Equals(item.Tag))
+                            {
+                                Host h = (Host) obj;
+                                item.Text = h.getNickname();
+                                _form.vistaMenu1.SetImage(item,
+                                                          _icons[
+                                                              h.
+                                                                  getProtocol
+                                                                  ().
+                                                                  getIdentifier
+                                                                  ()]);
+                                break;
+                            }
+                        }
+                    }));
             }
 
             public void BuildMenuItems()

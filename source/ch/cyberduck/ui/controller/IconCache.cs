@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2011 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -15,6 +15,7 @@
 // Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
 // 
+
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -23,9 +24,9 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using ch.cyberduck.core;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Core.Collections;
+using ch.cyberduck.core;
 using org.apache.commons.io;
 using org.apache.log4j;
 using Path = ch.cyberduck.core.Path;
@@ -46,6 +47,7 @@ namespace Ch.Cyberduck.Ui.Controller
             /// Specify large icon - 32 pixels by 32 pixels.
             /// </summary>
             Large = 0,
+
             /// <summary>
             /// Specify small icon - 16 pixels by 16 pixels.
             /// </summary>
@@ -92,6 +94,11 @@ namespace Ch.Cyberduck.Ui.Controller
             Graphics gra = Graphics.FromImage(cloned);
             gra.DrawImage(overlay, new Point(0, 0));
             return (Bitmap) cloned;
+        }
+
+        public Bitmap OverlayIcon(string file, string overlay, IconSize size)
+        {
+            return OverlayImages(IconForFilename(file, size), IconForName(overlay, size));
         }
 
         /// <summary>
@@ -568,6 +575,7 @@ namespace Ch.Cyberduck.Ui.Controller
             /// Specify open folder.
             /// </summary>
             Open = 0,
+
             /// <summary>
             /// Specify closed folder.
             /// </summary>
@@ -693,7 +701,7 @@ namespace Ch.Cyberduck.Ui.Controller
             public uint dwAttributes;
             [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 260)] public string szDisplayName;
             [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 80)] public string szTypeName;
-        } ;
+        };
 
         [StructLayout(LayoutKind.Sequential)]
         public struct SHITEMID

@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2011 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -15,13 +15,14 @@
 // Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
 // 
+
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using BrightIdeasSoftware;
-using ch.cyberduck.core;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Ui.Winforms.Controls;
+using ch.cyberduck.core;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -31,7 +32,7 @@ namespace Ch.Cyberduck.Ui.Controller
         Bookmark,
         History,
         Bonjour
-    } ;
+    };
 
     public interface IBrowserView : IBookmarkManagerView
     {
@@ -118,6 +119,8 @@ namespace Ch.Cyberduck.Ui.Controller
         event ValidateCommand ValidateNewFolder;
         event VoidHandler NewFile;
         event ValidateCommand ValidateNewFile;
+        event VoidHandler NewSymbolicLink;
+        event ValidateCommand ValidateNewSymbolicLink;
         event RenamePathname RenameFile;
         event ValidateCommand ValidateRenameFile;
         event VoidHandler DuplicateFile;

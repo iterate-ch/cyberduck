@@ -40,6 +40,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.menuItem6 = new System.Windows.Forms.MenuItem();
             this.newFolderMainMenuItem = new System.Windows.Forms.MenuItem();
             this.newFileMainMenuItem = new System.Windows.Forms.MenuItem();
+            this.newSymbolicLinkMainMenuItem = new System.Windows.Forms.MenuItem();
             this.renameMainMenuItem = new System.Windows.Forms.MenuItem();
             this.duplicateMainMenuItem = new System.Windows.Forms.MenuItem();
             this.menuItem11 = new System.Windows.Forms.MenuItem();
@@ -274,6 +275,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.synchronizeContextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.newFolderContextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.newFileContextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.newSymlinkContextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.expandArchiveContextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
@@ -379,6 +381,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.synchronizeBrowserContextMenuItem = new System.Windows.Forms.MenuItem();
             this.newFolderBrowserContextMenuItem = new System.Windows.Forms.MenuItem();
             this.newFileBrowserContextMenuItem = new System.Windows.Forms.MenuItem();
+            this.newSymlinkBrowserContextMenuItem = new System.Windows.Forms.MenuItem();
             this.menuItem110 = new System.Windows.Forms.MenuItem();
             this.createArchiveBrowserContextMenuItem = new System.Windows.Forms.MenuItem();
             this.expandArchiveBrowserContextMnuItem = new System.Windows.Forms.MenuItem();
@@ -449,6 +452,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.menuItem6,
             this.newFolderMainMenuItem,
             this.newFileMainMenuItem,
+            this.newSymbolicLinkMainMenuItem,
             this.renameMainMenuItem,
             this.duplicateMainMenuItem,
             this.menuItem11,
@@ -508,115 +512,120 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.newFileMainMenuItem.Index = 6;
             this.newFileMainMenuItem.Text = "New File…";
             // 
+            // newSymbolicLinkMainMenuItem
+            // 
+            this.newSymbolicLinkMainMenuItem.Index = 7;
+            this.newSymbolicLinkMainMenuItem.Text = "New Symbolic Link…";
+            // 
             // renameMainMenuItem
             // 
-            this.renameMainMenuItem.Index = 7;
+            this.renameMainMenuItem.Index = 8;
             this.renameMainMenuItem.Text = "Rename…";
             // 
             // duplicateMainMenuItem
             // 
-            this.duplicateMainMenuItem.Index = 8;
+            this.duplicateMainMenuItem.Index = 9;
             this.duplicateMainMenuItem.Text = "Duplicate…";
             // 
             // menuItem11
             // 
-            this.menuItem11.Index = 9;
+            this.menuItem11.Index = 10;
             this.menuItem11.Text = "-";
             // 
             // openUrlMainMenuItem
             // 
-            this.openUrlMainMenuItem.Index = 10;
+            this.openUrlMainMenuItem.Index = 11;
             this.openUrlMainMenuItem.Text = "Open URL";
             // 
             // editMainMenuItem
             // 
-            this.editMainMenuItem.Index = 11;
+            this.editMainMenuItem.Index = 12;
             this.editMainMenuItem.Text = "Edit With";
             // 
             // infoMainMenuItem
             // 
-            this.infoMainMenuItem.Index = 12;
+            this.infoMainMenuItem.Index = 13;
             this.infoMainMenuItem.Text = "Info";
             // 
             // menuItem2
             // 
-            this.menuItem2.Index = 13;
+            this.menuItem2.Index = 14;
             this.menuItem2.Text = "-";
             // 
             // downloadMainMenuItem
             // 
-            this.downloadMainMenuItem.Index = 14;
+            this.downloadMainMenuItem.Index = 15;
             this.downloadMainMenuItem.Text = "Download";
             // 
             // downloadAsMainMenuItem
             // 
-            this.downloadAsMainMenuItem.Index = 15;
+            this.downloadAsMainMenuItem.Index = 16;
             this.downloadAsMainMenuItem.Text = "Download As…";
             // 
             // downloadToMainMenuItem
             // 
-            this.downloadToMainMenuItem.Index = 16;
+            this.downloadToMainMenuItem.Index = 17;
             this.downloadToMainMenuItem.Text = "Download To…";
             // 
             // uploadMainMenuItem
             // 
-            this.uploadMainMenuItem.Index = 17;
+            this.uploadMainMenuItem.Index = 18;
             this.uploadMainMenuItem.Text = "Upload…";
             // 
             // synchronizeMainMenuItem
             // 
-            this.synchronizeMainMenuItem.Index = 18;
+            this.synchronizeMainMenuItem.Index = 19;
             this.synchronizeMainMenuItem.Text = "Synchronize…";
             // 
             // menuItem21
             // 
-            this.menuItem21.Index = 19;
+            this.menuItem21.Index = 20;
             this.menuItem21.Text = "-";
             // 
             // deleteMainMenuItem
             // 
-            this.deleteMainMenuItem.Index = 20;
+            this.deleteMainMenuItem.Index = 21;
             this.deleteMainMenuItem.Text = "Delete";
             // 
             // revertMainMenuItem
             // 
-            this.revertMainMenuItem.Index = 21;
+            this.revertMainMenuItem.Index = 22;
             this.revertMainMenuItem.Text = "Revert";
             // 
             // menuItem24
             // 
-            this.menuItem24.Index = 22;
+            this.menuItem24.Index = 23;
             this.menuItem24.Text = "-";
             // 
             // createArchiveMainMenuItem
             // 
-            this.createArchiveMainMenuItem.Index = 23;
+            this.createArchiveMainMenuItem.Index = 24;
             this.createArchiveMainMenuItem.Text = "Create Archive";
             // 
             // expandArchiveMainMenuItem
             // 
-            this.expandArchiveMainMenuItem.Index = 24;
+            this.expandArchiveMainMenuItem.Index = 25;
             this.expandArchiveMainMenuItem.Text = "Expand Archive";
             // 
             // menuItem27
             // 
-            this.menuItem27.Index = 25;
+            this.menuItem27.Index = 26;
             this.menuItem27.Text = "-";
             // 
             // printMainMenuItem
             // 
             this.printMainMenuItem.Enabled = false;
-            this.printMainMenuItem.Index = 26;
+            this.printMainMenuItem.Index = 27;
             this.printMainMenuItem.Text = "Print…";
             // 
             // menuItem29
             // 
-            this.menuItem29.Index = 27;
+            this.menuItem29.Index = 28;
             this.menuItem29.Text = "-";
             // 
             // exitMainMenuItem
             // 
-            this.exitMainMenuItem.Index = 28;
+            this.exitMainMenuItem.Index = 29;
             this.exitMainMenuItem.Text = "Exit";
             // 
             // mainMenuItem2
@@ -1856,7 +1865,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.createArchiveContextToolStripMenuItem.DropDown = this.archiveMenuStrip;
             this.createArchiveContextToolStripMenuItem.Name = "createArchiveContextToolStripMenuItem";
-            this.createArchiveContextToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+            this.createArchiveContextToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
             this.createArchiveContextToolStripMenuItem.Text = "Create Archive";
             // 
             // editorMenuStrip
@@ -1895,7 +1904,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.editContextToolStripMenuItem.DropDown = this.editorMenuStrip;
             this.editContextToolStripMenuItem.Name = "editContextToolStripMenuItem";
-            this.editContextToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+            this.editContextToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
             this.editContextToolStripMenuItem.Text = "Edit With";
             // 
             // toolBar
@@ -1997,6 +2006,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.synchronizeContextToolStripMenuItem,
             this.newFolderContextToolStripMenuItem,
             this.newFileContextToolStripMenuItem,
+            this.newSymlinkContextToolStripMenuItem,
             this.toolStripSeparator4,
             this.createArchiveContextToolStripMenuItem,
             this.expandArchiveContextToolStripMenuItem,
@@ -2007,150 +2017,155 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.newBrowserContextToolStripMenuItem,
             this.newBookmarkContextToolStripMenuItem});
             this.contextMenuStrip.Name = "contextMenuStrip1";
-            this.contextMenuStrip.OwnerItem = this.actionToolStripDropDownButton;
-            this.contextMenuStrip.Size = new System.Drawing.Size(156, 486);
+            this.contextMenuStrip.Size = new System.Drawing.Size(185, 508);
             // 
             // refreshContextToolStripMenuItem
             // 
             this.refreshContextToolStripMenuItem.Name = "refreshContextToolStripMenuItem";
-            this.refreshContextToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+            this.refreshContextToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
             this.refreshContextToolStripMenuItem.Text = "Refresh";
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(152, 6);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(181, 6);
             // 
             // infoContextToolStripMenuItem
             // 
             this.infoContextToolStripMenuItem.Name = "infoContextToolStripMenuItem";
-            this.infoContextToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+            this.infoContextToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
             this.infoContextToolStripMenuItem.Text = "Info";
             // 
             // renameContextToolStripMenuItem
             // 
             this.renameContextToolStripMenuItem.Name = "renameContextToolStripMenuItem";
-            this.renameContextToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+            this.renameContextToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
             this.renameContextToolStripMenuItem.Text = "Rename…";
             // 
             // duplicateFileContextToolStripMenuItem
             // 
             this.duplicateFileContextToolStripMenuItem.Name = "duplicateFileContextToolStripMenuItem";
-            this.duplicateFileContextToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+            this.duplicateFileContextToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
             this.duplicateFileContextToolStripMenuItem.Text = "Duplicate…";
             // 
             // toolStripSeparator26
             // 
             this.toolStripSeparator26.Name = "toolStripSeparator26";
-            this.toolStripSeparator26.Size = new System.Drawing.Size(152, 6);
+            this.toolStripSeparator26.Size = new System.Drawing.Size(181, 6);
             // 
             // downloadContextToolStripMenuItem
             // 
             this.downloadContextToolStripMenuItem.Name = "downloadContextToolStripMenuItem";
-            this.downloadContextToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+            this.downloadContextToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
             this.downloadContextToolStripMenuItem.Text = "Download";
             // 
             // downloadAsContextToolStripMenuItem
             // 
             this.downloadAsContextToolStripMenuItem.Name = "downloadAsContextToolStripMenuItem";
-            this.downloadAsContextToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+            this.downloadAsContextToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
             this.downloadAsContextToolStripMenuItem.Text = "Download As…";
             // 
             // downloadToContextToolStripMenuItem
             // 
             this.downloadToContextToolStripMenuItem.Name = "downloadToContextToolStripMenuItem";
-            this.downloadToContextToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+            this.downloadToContextToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
             this.downloadToContextToolStripMenuItem.Text = "Download To…";
             // 
             // toolStripSeparator27
             // 
             this.toolStripSeparator27.Name = "toolStripSeparator27";
-            this.toolStripSeparator27.Size = new System.Drawing.Size(152, 6);
+            this.toolStripSeparator27.Size = new System.Drawing.Size(181, 6);
             // 
             // deleteContextToolStripMenuItem
             // 
             this.deleteContextToolStripMenuItem.Name = "deleteContextToolStripMenuItem";
-            this.deleteContextToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+            this.deleteContextToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
             this.deleteContextToolStripMenuItem.Text = "Delete";
             // 
             // revertContxtStripMenuItem
             // 
             this.revertContxtStripMenuItem.Name = "revertContxtStripMenuItem";
-            this.revertContxtStripMenuItem.Size = new System.Drawing.Size(155, 22);
+            this.revertContxtStripMenuItem.Size = new System.Drawing.Size(184, 22);
             this.revertContxtStripMenuItem.Text = "Revert";
             // 
             // toolStripSeparator3
             // 
             this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(152, 6);
+            this.toolStripSeparator3.Size = new System.Drawing.Size(181, 6);
             // 
             // uploadContextToolStripMenuItem
             // 
             this.uploadContextToolStripMenuItem.Name = "uploadContextToolStripMenuItem";
-            this.uploadContextToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+            this.uploadContextToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
             this.uploadContextToolStripMenuItem.Text = "Upload…";
             // 
             // synchronizeContextToolStripMenuItem
             // 
             this.synchronizeContextToolStripMenuItem.Name = "synchronizeContextToolStripMenuItem";
-            this.synchronizeContextToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+            this.synchronizeContextToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
             this.synchronizeContextToolStripMenuItem.Text = "Synchronize…";
             // 
             // newFolderContextToolStripMenuItem
             // 
             this.newFolderContextToolStripMenuItem.Name = "newFolderContextToolStripMenuItem";
-            this.newFolderContextToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+            this.newFolderContextToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
             this.newFolderContextToolStripMenuItem.Text = "New Folder…";
             // 
             // newFileContextToolStripMenuItem
             // 
             this.newFileContextToolStripMenuItem.Name = "newFileContextToolStripMenuItem";
-            this.newFileContextToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+            this.newFileContextToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
             this.newFileContextToolStripMenuItem.Text = "New File…";
+            // 
+            // newSymlinkContextToolStripMenuItem
+            // 
+            this.newSymlinkContextToolStripMenuItem.Name = "newSymlinkContextToolStripMenuItem";
+            this.newSymlinkContextToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
+            this.newSymlinkContextToolStripMenuItem.Text = "New Symbolic Link…";
             // 
             // toolStripSeparator4
             // 
             this.toolStripSeparator4.Name = "toolStripSeparator4";
-            this.toolStripSeparator4.Size = new System.Drawing.Size(152, 6);
+            this.toolStripSeparator4.Size = new System.Drawing.Size(181, 6);
             // 
             // expandArchiveContextToolStripMenuItem
             // 
             this.expandArchiveContextToolStripMenuItem.Name = "expandArchiveContextToolStripMenuItem";
-            this.expandArchiveContextToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+            this.expandArchiveContextToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
             this.expandArchiveContextToolStripMenuItem.Text = "Expand Archive";
             // 
             // toolStripSeparator5
             // 
             this.toolStripSeparator5.Name = "toolStripSeparator5";
-            this.toolStripSeparator5.Size = new System.Drawing.Size(152, 6);
+            this.toolStripSeparator5.Size = new System.Drawing.Size(181, 6);
             // 
             // copyURLContextToolStripMenuItem
             // 
             this.copyURLContextToolStripMenuItem.Name = "copyURLContextToolStripMenuItem";
-            this.copyURLContextToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+            this.copyURLContextToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
             this.copyURLContextToolStripMenuItem.Text = "Copy URL";
             // 
             // openURLContextToolStripMenuItem
             // 
             this.openURLContextToolStripMenuItem.Name = "openURLContextToolStripMenuItem";
-            this.openURLContextToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+            this.openURLContextToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
             this.openURLContextToolStripMenuItem.Text = "Open URL";
             // 
             // toolStripSeparator6
             // 
             this.toolStripSeparator6.Name = "toolStripSeparator6";
-            this.toolStripSeparator6.Size = new System.Drawing.Size(152, 6);
+            this.toolStripSeparator6.Size = new System.Drawing.Size(181, 6);
             // 
             // newBrowserContextToolStripMenuItem
             // 
             this.newBrowserContextToolStripMenuItem.Name = "newBrowserContextToolStripMenuItem";
-            this.newBrowserContextToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+            this.newBrowserContextToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
             this.newBrowserContextToolStripMenuItem.Text = "New Browser";
             // 
             // newBookmarkContextToolStripMenuItem
             // 
             this.newBookmarkContextToolStripMenuItem.Name = "newBookmarkContextToolStripMenuItem";
-            this.newBookmarkContextToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+            this.newBookmarkContextToolStripMenuItem.Size = new System.Drawing.Size(184, 22);
             this.newBookmarkContextToolStripMenuItem.Text = "New Bookmark";
             // 
             // toolStripSeparatorAfterAction
@@ -2326,7 +2341,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.managedBrowserPanel1.Controls.Add(this.splitContainer);
             this.managedBrowserPanel1.Location = new System.Drawing.Point(0, 0);
             this.managedBrowserPanel1.Name = "managedBrowserPanel1";
-            this.managedBrowserPanel1.Size = new System.Drawing.Size(0, 0);
+            this.managedBrowserPanel1.Size = new System.Drawing.Size(1028, 497);
             this.managedBrowserPanel1.Text = "managedBrowserPanel1";
             // 
             // splitContainer
@@ -2346,8 +2361,8 @@ namespace Ch.Cyberduck.Ui.Winforms
             // 
             this.splitContainer.Panel2.Controls.Add(this.transcriptBox);
             this.splitContainer.Panel2MinSize = 50;
-            this.splitContainer.Size = new System.Drawing.Size(0, 0);
-            this.splitContainer.SplitterDistance = 0;
+            this.splitContainer.Size = new System.Drawing.Size(1028, 497);
+            this.splitContainer.SplitterDistance = 444;
             this.splitContainer.SplitterWidth = 3;
             this.splitContainer.TabIndex = 2;
             // 
@@ -2378,7 +2393,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.browser.Name = "browser";
             this.browser.OwnerDraw = true;
             this.browser.ShowGroups = false;
-            this.browser.Size = new System.Drawing.Size(0, 0);
+            this.browser.Size = new System.Drawing.Size(1028, 444);
             this.browser.TabIndex = 15;
             this.browser.UseCompatibleStateImageBehavior = false;
             this.browser.View = System.Windows.Forms.View.Details;
@@ -2439,7 +2454,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.transcriptBox.Location = new System.Drawing.Point(0, 0);
             this.transcriptBox.Name = "transcriptBox";
             this.transcriptBox.ReadOnly = true;
-            this.transcriptBox.Size = new System.Drawing.Size(0, 51);
+            this.transcriptBox.Size = new System.Drawing.Size(1028, 50);
             this.transcriptBox.TabIndex = 0;
             this.transcriptBox.Text = "";
             this.transcriptBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.transcriptBox_KeyDown);
@@ -2908,6 +2923,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.synchronizeBrowserContextMenuItem,
             this.newFolderBrowserContextMenuItem,
             this.newFileBrowserContextMenuItem,
+            this.newSymlinkBrowserContextMenuItem,
             this.menuItem110,
             this.createArchiveBrowserContextMenuItem,
             this.expandArchiveBrowserContextMnuItem,
@@ -3008,49 +3024,54 @@ namespace Ch.Cyberduck.Ui.Winforms
             this.newFileBrowserContextMenuItem.Index = 17;
             this.newFileBrowserContextMenuItem.Text = "New File…";
             // 
+            // newSymlinkBrowserContextMenuItem
+            // 
+            this.newSymlinkBrowserContextMenuItem.Index = 18;
+            this.newSymlinkBrowserContextMenuItem.Text = "New Symbolic Link…";
+            // 
             // menuItem110
             // 
-            this.menuItem110.Index = 18;
+            this.menuItem110.Index = 19;
             this.menuItem110.Text = "-";
             // 
             // createArchiveBrowserContextMenuItem
             // 
-            this.createArchiveBrowserContextMenuItem.Index = 19;
+            this.createArchiveBrowserContextMenuItem.Index = 20;
             this.createArchiveBrowserContextMenuItem.Text = "Create Archive";
             // 
             // expandArchiveBrowserContextMnuItem
             // 
-            this.expandArchiveBrowserContextMnuItem.Index = 20;
+            this.expandArchiveBrowserContextMnuItem.Index = 21;
             this.expandArchiveBrowserContextMnuItem.Text = "Expand Archive";
             // 
             // menuItem113
             // 
-            this.menuItem113.Index = 21;
+            this.menuItem113.Index = 22;
             this.menuItem113.Text = "-";
             // 
             // copyUrlBrowserContextMenuItem
             // 
-            this.copyUrlBrowserContextMenuItem.Index = 22;
+            this.copyUrlBrowserContextMenuItem.Index = 23;
             this.copyUrlBrowserContextMenuItem.Text = "Copy URL";
             // 
             // openUrlBrowserContextMenuItem
             // 
-            this.openUrlBrowserContextMenuItem.Index = 23;
+            this.openUrlBrowserContextMenuItem.Index = 24;
             this.openUrlBrowserContextMenuItem.Text = "Open URL";
             // 
             // menuItem116
             // 
-            this.menuItem116.Index = 24;
+            this.menuItem116.Index = 25;
             this.menuItem116.Text = "-";
             // 
             // newBrowserBrowserContextMenuItem
             // 
-            this.newBrowserBrowserContextMenuItem.Index = 25;
+            this.newBrowserBrowserContextMenuItem.Index = 26;
             this.newBrowserBrowserContextMenuItem.Text = "New Browser";
             // 
             // newBookmarkBrowserContextMenuItem
             // 
-            this.newBookmarkBrowserContextMenuItem.Index = 26;
+            this.newBookmarkBrowserContextMenuItem.Index = 27;
             this.newBookmarkBrowserContextMenuItem.Text = "New Bookmark";
             // 
             // bookmarkContextMenu
@@ -3544,6 +3565,9 @@ namespace Ch.Cyberduck.Ui.Winforms
         private System.Windows.Forms.MenuItem sortByNicknameBookmarkContextMenuItem;
         private System.Windows.Forms.MenuItem sortByHostnameBookmarkContextMenuItem;
         private System.Windows.Forms.MenuItem sortByProtocolBookmarkContextMenuItem;
+        private System.Windows.Forms.MenuItem newSymbolicLinkMainMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem newSymlinkContextToolStripMenuItem;
+        private System.Windows.Forms.MenuItem newSymlinkBrowserContextMenuItem;
     }
 }
 

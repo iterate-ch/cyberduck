@@ -37,7 +37,6 @@
             this.ClientSize = new System.Drawing.Size(462, 133);
             this.MinimumSize = new System.Drawing.Size(464, 167);
             this.Name = "NewFolderPromptForm";
-            this.Text = "Go to folder";
             this.ResumeLayout(false);
 
         }
