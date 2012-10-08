@@ -30,7 +30,7 @@ import static org.junit.Assert.assertTrue;
 public class PermissionTest extends AbstractTestCase {
 
     @Test
-    public void testClone() throws Exception {
+    public void testGetAsDictionary() throws Exception {
         {
             Permission p = new Permission("rwxrwxrwx");
             assertEquals(p, new Permission(p.getAsDictionary()));
@@ -50,10 +50,8 @@ public class PermissionTest extends AbstractTestCase {
     @Test
     @Ignore
     public void testSetUid() {
-        {
-            Permission p = new Permission(4755);
-            assertTrue(p.isSetuid());
-        }
+        Permission p = new Permission(4755);
+        assertTrue(p.isSetuid());
     }
 
     /**
@@ -62,10 +60,8 @@ public class PermissionTest extends AbstractTestCase {
     @Test
     @Ignore
     public void testSetGid() {
-        {
-            Permission p = new Permission(2755);
-            assertTrue(p.isSetgid());
-        }
+        Permission p = new Permission(2755);
+        assertTrue(p.isSetgid());
     }
 
     /**
@@ -74,9 +70,7 @@ public class PermissionTest extends AbstractTestCase {
     @Test
     @Ignore
     public void testSetSticky() {
-        {
-            Permission p = new Permission(1755);
-            assertTrue(p.isSticky());
-        }
+        Permission p = new Permission(1755);
+        assertTrue(p.isSticky());
     }
 }
