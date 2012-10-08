@@ -45,21 +45,21 @@ public abstract class ThirdpartyBookmarkCollection extends AbstractHostCollectio
         Local file = this.getFile();
         if(file.exists()) {
             if(log.isInfoEnabled()) {
-                log.info("Found bookmarks file: " + file.getAbsolute());
+                log.info(String.format("Found bookmarks file at %s", file.getAbsolute()));
             }
             if(Preferences.instance().getBoolean(this.getConfiguration())) {
                 // Prevously imported
                 String checksum = Preferences.instance().getProperty(this.getConfiguration() + ".checksum");
-                log.debug("Saved prevous checksum:" + checksum);
+                log.debug("Saved previous checksum:" + checksum);
                 if(StringUtils.isNotBlank(checksum)) {
                     if(checksum.equals(this.getChecksum())) {
                         if(log.isInfoEnabled()) {
-                            log.info("Skip already imported bookmarks:" + file.getAbsolute());
+                            log.info(String.format("Skip already imported bookmarks in %s", file.getAbsolute()));
                         }
                     }
                     else {
                         if(log.isInfoEnabled()) {
-                            log.info("Checksum changed for bookmarks file:" + file.getAbsolute());
+                            log.info(String.format("Checksum changed for bookmarks file at %s", file.getAbsolute()));
                         }
                         // Should filter existing bookmarks
                         // this.parse(file);
