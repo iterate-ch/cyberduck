@@ -22,7 +22,6 @@ import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -49,7 +48,7 @@ public class AttributedList<E extends AbstractPath> extends CopyOnWriteArrayList
      * Initialize an attributed list with default attributes
      */
     public AttributedList() {
-        this(Collections.<E>emptyList());
+        //
     }
 
     /**
@@ -69,7 +68,7 @@ public class AttributedList<E extends AbstractPath> extends CopyOnWriteArrayList
      * @see PathFilter
      * @see ch.cyberduck.ui.BrowserComparator
      */
-    public class Attributes<E> {
+    public final class Attributes<E> {
 
         /**
          * Sort the file listing using this comparator.
