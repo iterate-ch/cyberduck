@@ -4,6 +4,14 @@
     <dict>
         <key>Protocol</key>
         <string>s3</string>
+        <key>Vendor</key>
+        <string>eucalyptus</string>
+        <key>Description</key>
+        <string>Eucalyptus Walrus S3</string>
+        <key>Default Hostname</key>
+        <string>ecc.eucalyptus.com</string>
+        <key>Default Port</key>
+       	<string>8773</string>
         <key>Context</key>
         <string>/services/Walrus</string>
     </dict>
