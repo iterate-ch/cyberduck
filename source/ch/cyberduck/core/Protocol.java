@@ -18,33 +18,13 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.cf.CFPath;
-import ch.cyberduck.core.cf.CFSession;
-import ch.cyberduck.core.dav.DAVPath;
-import ch.cyberduck.core.dav.DAVSession;
-import ch.cyberduck.core.eucalyptus.ECPath;
-import ch.cyberduck.core.eucalyptus.ECSession;
-import ch.cyberduck.core.ftp.FTPPath;
-import ch.cyberduck.core.ftp.FTPSession;
-import ch.cyberduck.core.gdocs.GDPath;
-import ch.cyberduck.core.gdocs.GDSession;
-import ch.cyberduck.core.gstorage.GSPath;
-import ch.cyberduck.core.gstorage.GSSession;
 import ch.cyberduck.core.i18n.Locale;
-import ch.cyberduck.core.s3.S3Path;
-import ch.cyberduck.core.s3.S3Session;
-import ch.cyberduck.core.sftp.SFTPPath;
-import ch.cyberduck.core.sftp.SFTPSession;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.jets3t.service.CloudFrontService;
-import org.jets3t.service.Constants;
-import org.jets3t.service.model.S3Bucket;
 
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
-import java.net.URI;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
@@ -54,6 +34,7 @@ import java.util.Set;
  * @version $Id$
  */
 public abstract class Protocol {
+
     private static Logger log = Logger.getLogger(Protocol.class);
 
     /**
@@ -91,8 +72,7 @@ public abstract class Protocol {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Register protocol %s", this.getIdentifier()));
         }
-        SessionFactory.addFactory(this, this.getSessionFactory());
-        PathFactory.addFactory(this, this.getPathFactory());
+        ProtocolFactory.register(this);
     }
 
     /**
@@ -221,16 +201,6 @@ public abstract class Protocol {
     }
 
     /**
-     * @return Factory to create session instances
-     */
-    public abstract SessionFactory getSessionFactory();
-
-    /**
-     * @return Factory to create path instances
-     */
-    public abstract PathFactory getPathFactory();
-
-    /**
      * Check login credentials for validity for this protocol.
      *
      * @param credentials Login credentials
@@ -246,6 +216,27 @@ public abstract class Protocol {
      */
     public int getDefaultPort() {
         return this.getScheme().getPort();
+    }
+
+    /**
+     * @return Authentication path
+     */
+    public String getContext() {
+        return null;
+    }
+
+    public Type getType() {
+        return Type.valueOf(this.getIdentifier());
+    }
+
+    public enum Type {
+        ftp,
+        sftp,
+        s3,
+        googlestorage,
+        googledrive,
+        swift,
+        dav
     }
 
     public static final Protocol SFTP = new Protocol() {
@@ -291,16 +282,6 @@ public abstract class Protocol {
         public String icon() {
             return FTP_TLS.icon();
         }
-
-        @Override
-        public SessionFactory getSessionFactory() {
-            return SFTPSession.factory();
-        }
-
-        @Override
-        public PathFactory getPathFactory() {
-            return SFTPPath.factory();
-        }
     };
 
     public static final Protocol SCP = new Protocol() {
@@ -317,16 +298,6 @@ public abstract class Protocol {
         @Override
         public Scheme getScheme() {
             return Scheme.sftp;
-        }
-
-        @Override
-        public SessionFactory getSessionFactory() {
-            throw new RuntimeException();
-        }
-
-        @Override
-        public PathFactory getPathFactory() {
-            throw new RuntimeException();
         }
 
         @Override
@@ -376,22 +347,17 @@ public abstract class Protocol {
             return StringUtils.isNotBlank(credentials.getUsername())
                     && null != credentials.getPassword();
         }
-
-        @Override
-        public SessionFactory getSessionFactory() {
-            return FTPSession.factory();
-        }
-
-        @Override
-        public PathFactory getPathFactory() {
-            return FTPPath.factory();
-        }
     };
 
     public static final Protocol FTP_TLS = new Protocol() {
         @Override
         public String getIdentifier() {
             return this.getScheme().name();
+        }
+
+        @Override
+        public Type getType() {
+            return Type.ftp;
         }
 
         @Override
@@ -433,16 +399,6 @@ public abstract class Protocol {
         public boolean isConnectModeConfigurable() {
             return true;
         }
-
-        @Override
-        public SessionFactory getSessionFactory() {
-            return FTPSession.factory();
-        }
-
-        @Override
-        public PathFactory getPathFactory() {
-            return FTPPath.factory();
-        }
     };
 
     public static final Protocol S3_SSL = new Protocol() {
@@ -478,19 +434,21 @@ public abstract class Protocol {
 
         @Override
         public String getDefaultHostname() {
-            return Constants.S3_DEFAULT_HOSTNAME;
+            return "s3.amazonaws.com";
         }
 
         @Override
         public Set<String> getLocations() {
             return new HashSet<String>(Arrays.asList(
                     "US",
-                    S3Bucket.LOCATION_EUROPE,
-                    S3Bucket.LOCATION_US_WEST_NORTHERN_CALIFORNIA,
-                    S3Bucket.LOCATION_US_WEST_OREGON,
-                    S3Bucket.LOCATION_ASIA_PACIFIC_SINGAPORE,
-                    S3Bucket.LOCATION_ASIA_PACIFIC_TOKYO,
-                    S3Bucket.LOCATION_SOUTH_AMERICA_EAST
+                    "EU",
+                    "us-west-1",
+                    "us-west-2",
+                    "ap-southeast-1",
+                    "ap-northeast-1",
+                    "sa-east-1",
+                    "s3-us-gov-west-1",
+                    "s3-fips-us-gov-west-1"
             ));
         }
 
@@ -512,16 +470,6 @@ public abstract class Protocol {
         @Override
         public String favicon() {
             return this.icon();
-        }
-
-        @Override
-        public SessionFactory getSessionFactory() {
-            return S3Session.factory();
-        }
-
-        @Override
-        public PathFactory getPathFactory() {
-            return S3Path.factory();
         }
     };
 
@@ -553,7 +501,7 @@ public abstract class Protocol {
 
         @Override
         public String getDefaultHostname() {
-            return URI.create(CloudFrontService.ENDPOINT).getHost();
+            return "cloudfront.amazonaws.com";
         }
 
         @Override
@@ -564,16 +512,6 @@ public abstract class Protocol {
         @Override
         public String getPasswordPlaceholder() {
             return Locale.localizedString("Secret Access Key", "S3");
-        }
-
-        @Override
-        public SessionFactory getSessionFactory() {
-            return null;
-        }
-
-        @Override
-        public PathFactory getPathFactory() {
-            return null;
         }
     };
 
@@ -627,16 +565,6 @@ public abstract class Protocol {
         public String icon() {
             return S3_SSL.icon();
         }
-
-        @Override
-        public SessionFactory getSessionFactory() {
-            return ECSession.factory();
-        }
-
-        @Override
-        public PathFactory getPathFactory() {
-            return ECPath.factory();
-        }
     };
 
     public static final Protocol WEBDAV = new Protocol() {
@@ -679,16 +607,6 @@ public abstract class Protocol {
         public boolean validate(Credentials credentials) {
             return FTP.validate(credentials);
         }
-
-        @Override
-        public SessionFactory getSessionFactory() {
-            return DAVSession.factory();
-        }
-
-        @Override
-        public PathFactory getPathFactory() {
-            return DAVPath.factory();
-        }
     };
 
     public static final Protocol WEBDAV_SSL = new Protocol() {
@@ -705,6 +623,11 @@ public abstract class Protocol {
         @Override
         public String getIdentifier() {
             return "davs";
+        }
+
+        @Override
+        public Type getType() {
+            return Type.dav;
         }
 
         @Override
@@ -731,16 +654,6 @@ public abstract class Protocol {
         public boolean validate(Credentials credentials) {
             return FTP.validate(credentials);
         }
-
-        @Override
-        public SessionFactory getSessionFactory() {
-            return DAVSession.factory();
-        }
-
-        @Override
-        public PathFactory getPathFactory() {
-            return DAVPath.factory();
-        }
     };
 
     public static final Protocol CLOUDFILES = new Protocol() {
@@ -757,6 +670,11 @@ public abstract class Protocol {
         @Override
         public String getIdentifier() {
             return "cf";
+        }
+
+        @Override
+        public Type getType() {
+            return Type.swift;
         }
 
         @Override
@@ -797,16 +715,6 @@ public abstract class Protocol {
         @Override
         public String getPasswordPlaceholder() {
             return Locale.localizedString("API Access Key", "Mosso");
-        }
-
-        @Override
-        public SessionFactory getSessionFactory() {
-            return CFSession.factory();
-        }
-
-        @Override
-        public PathFactory getPathFactory() {
-            return CFPath.factory();
         }
     };
 
@@ -860,16 +768,6 @@ public abstract class Protocol {
         public String getPasswordPlaceholder() {
             return Locale.localizedString("API Access Key", "Mosso");
         }
-
-        @Override
-        public SessionFactory getSessionFactory() {
-            return CFSession.factory();
-        }
-
-        @Override
-        public PathFactory getPathFactory() {
-            return CFPath.factory();
-        }
     };
 
     public static final Protocol GDOCS_SSL = new Protocol() {
@@ -886,6 +784,11 @@ public abstract class Protocol {
         @Override
         public String getIdentifier() {
             return "gd";
+        }
+
+        @Override
+        public Type getType() {
+            return Type.googledrive;
         }
 
         @Override
@@ -956,16 +859,6 @@ public abstract class Protocol {
             }
             return false;
         }
-
-        @Override
-        public SessionFactory getSessionFactory() {
-            return GDSession.factory();
-        }
-
-        @Override
-        public PathFactory getPathFactory() {
-            return GDPath.factory();
-        }
     };
 
     public static final Protocol GOOGLESTORAGE_SSL = new Protocol() {
@@ -1007,7 +900,7 @@ public abstract class Protocol {
         @Override
         public Set<String> getLocations() {
             return new HashSet<String>(Arrays.asList(
-                    "US", S3Bucket.LOCATION_EUROPE
+                    "US", "EU"
             ));
         }
 
@@ -1044,16 +937,6 @@ public abstract class Protocol {
         @Override
         public String favicon() {
             return this.icon();
-        }
-
-        @Override
-        public SessionFactory getSessionFactory() {
-            return GSSession.factory();
-        }
-
-        @Override
-        public PathFactory getPathFactory() {
-            return GSPath.factory();
         }
     };
 }

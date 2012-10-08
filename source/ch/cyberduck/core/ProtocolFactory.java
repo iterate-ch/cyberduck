@@ -27,7 +27,9 @@ import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @version $Id$
@@ -35,32 +37,28 @@ import java.util.List;
 public final class ProtocolFactory {
     private static Logger log = Logger.getLogger(ProtocolFactory.class);
 
+    /**
+     * Ordered list of supported protocols.
+     */
+    private static final Set<Protocol> protocols
+            = new LinkedHashSet<Protocol>();
+
     private ProtocolFactory() {
         //
     }
 
-    /**
-     *
-     */
     public static void register() {
         // Order determines list in connection dropdown
-        Protocol.FTP.register();
-        Protocol.FTP_TLS.register();
-
-        Protocol.SFTP.register();
-
-        Protocol.WEBDAV.register();
-        Protocol.WEBDAV_SSL.register();
-
-        Protocol.S3_SSL.register();
-
-        Protocol.GOOGLESTORAGE_SSL.register();
-        Protocol.EUCALYPTUS.register();
-
-        Protocol.CLOUDFILES.register();
-        Protocol.SWIFT.register();
-
-        Protocol.GDOCS_SSL.register();
+        register(Protocol.FTP);
+        register(Protocol.FTP_TLS);
+        register(Protocol.SFTP);
+        register(Protocol.WEBDAV);
+        register(Protocol.WEBDAV_SSL);
+        register(Protocol.S3_SSL);
+        register(Protocol.GOOGLESTORAGE_SSL);
+        register(Protocol.CLOUDFILES);
+        register(Protocol.SWIFT);
+        register(Protocol.GDOCS_SSL);
 
         // Load thirdparty protocols
         final Local profiles = LocalFactory.createLocal(Preferences.instance().getProperty("application.support.path"), "Profiles");
@@ -78,9 +76,14 @@ public final class ProtocolFactory {
                 if(log.isInfoEnabled()) {
                     log.info(String.format("Adding thirdparty protocol %s", protocol));
                 }
+                // Replace previous possibly disable protocol in Preferences
                 protocol.register();
             }
         }
+    }
+
+    public static void register(Protocol p) {
+        protocols.add(p);
     }
 
     /**
@@ -95,7 +98,7 @@ public final class ProtocolFactory {
      * @return List of protocols
      */
     public static List<Protocol> getKnownProtocols(boolean filter) {
-        List<Protocol> list = new ArrayList<Protocol>(SessionFactory.getRegisteredProtocols());
+        List<Protocol> list = new ArrayList<Protocol>(protocols);
         if(filter) {
             // Remove protocols not enabled
             for(Iterator<Protocol> iter = list.iterator(); iter.hasNext(); ) {

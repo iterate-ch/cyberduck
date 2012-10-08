@@ -240,6 +240,15 @@ public class Profile extends Protocol implements Serializable {
     }
 
     @Override
+    public String getContext() {
+        final String v = this.getValue("Context");
+        if(StringUtils.isBlank(v)) {
+            return parent.getContext();
+        }
+        return v;
+    }
+
+    @Override
     public boolean isPortConfigurable() {
         return parent.isPortConfigurable();
     }
@@ -267,16 +276,6 @@ public class Profile extends Protocol implements Serializable {
     @Override
     public boolean validate(Credentials credentials) {
         return parent.validate(credentials);
-    }
-
-    @Override
-    public SessionFactory getSessionFactory() {
-        return parent.getSessionFactory();
-    }
-
-    @Override
-    public PathFactory getPathFactory() {
-        return parent.getPathFactory();
     }
 
     @Override
