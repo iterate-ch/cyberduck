@@ -117,9 +117,7 @@ public abstract class Protocol {
         if(o == null || getClass() != o.getClass()) {
             return false;
         }
-
         Protocol protocol = (Protocol) o;
-
         if(this.getIdentifier() != null ? !this.getIdentifier().equals(protocol.getIdentifier()) : protocol.getIdentifier() != null) {
             return false;
         }
@@ -129,7 +127,6 @@ public abstract class Protocol {
         if(this.getProvider() != null ? !this.getProvider().equals(protocol.getProvider()) : protocol.getProvider() != null) {
             return false;
         }
-
         return true;
     }
 

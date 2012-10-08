@@ -874,7 +874,7 @@ public class Host implements Serializable {
         if(other instanceof Host) {
             return this.getUuid().equals(((Host) other).getUuid());
         }
-        return super.equals(other);
+        return false;
     }
 
     @Override

@@ -911,7 +911,7 @@ public abstract class Session implements TranscriptListener {
             return host.getHostname().equals(((Session) other).getHost().getHostname())
                     && host.getProtocol().equals(((Session) other).getHost().getProtocol());
         }
-        return super.equals(other);
+        return false;
     }
 
     @Override
