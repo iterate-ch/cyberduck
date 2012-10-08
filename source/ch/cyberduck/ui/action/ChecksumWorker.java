@@ -47,15 +47,12 @@ public abstract class ChecksumWorker extends Worker<List<String>> {
         List<String> checksum = new ArrayList<String>();
         for(Path file : files) {
             if(StringUtils.isBlank(file.attributes().getChecksum())) {
-                if(file.getSession().isChecksumSupported()) {
-                    file.readChecksum();
-                }
+                file.readChecksum();
             }
             checksum.add(file.attributes().getChecksum());
         }
         return checksum;
     }
-
 
     @Override
     public String getActivity() {
