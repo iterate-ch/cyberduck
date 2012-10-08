@@ -134,7 +134,12 @@ public class CFSession extends CloudSession implements DistributionConfiguration
             authentication.append(host.getHostname());
         }
         authentication.append(":").append(host.getPort());
-        authentication.append(Preferences.instance().getProperty("cf.authentication.context"));
+        if(StringUtils.isBlank(host.getProtocol().getContext())) {
+            authentication.append(Path.normalize(Preferences.instance().getProperty("cf.authentication.context")));
+        }
+        else {
+            authentication.append(Path.normalize(host.getProtocol().getContext()));
+        }
         if(log.isInfoEnabled()) {
             log.info(String.format("Using authentication URL %s", authentication.toString()));
         }
