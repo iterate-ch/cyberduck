@@ -69,6 +69,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 
 /**
  * @version $Id$
@@ -1100,7 +1101,7 @@ public class InfoController extends ToolbarWindowController {
     public void metadataAddExpiresClicked(ID sender) {
         final Calendar time = Calendar.getInstance();
         time.add(Calendar.SECOND, Preferences.instance().getInteger("s3.cache.seconds"));
-        this.addMetadataItem("Expires", new RFC1123DateFormatter().format(time.getTime()));
+        this.addMetadataItem("Expires", new RFC1123DateFormatter().format(time.getTime(), TimeZone.getDefault()));
     }
 
     @Action

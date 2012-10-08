@@ -2,10 +2,12 @@ package ch.cyberduck.core.date;
 
 import org.junit.Test;
 
+import java.util.TimeZone;
+
 import static org.junit.Assert.assertEquals;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class MDTMSecondsDateFormatterTest {
 
@@ -16,6 +18,6 @@ public class MDTMSecondsDateFormatterTest {
 
     @Test
     public void testPrint() throws Exception {
-        assertEquals("19941201170000", new MDTMSecondsDateFormatter().format((long) 7.862976E11));
+        assertEquals("19941201170000", new MDTMSecondsDateFormatter().format((long) 7.862976E11, TimeZone.getDefault()));
     }
 }

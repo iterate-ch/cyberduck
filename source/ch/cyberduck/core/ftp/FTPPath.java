@@ -53,6 +53,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -818,7 +819,7 @@ public class FTPPath extends Path {
         final MDTMSecondsDateFormatter formatter = new MDTMSecondsDateFormatter();
         if(this.getSession().getClient().isFeatureSupported(FTPCommand.MFMT)) {
             if(this.getSession().getClient().setModificationTime(this.getAbsolute(),
-                    formatter.format(modified))) {
+                    formatter.format(modified, TimeZone.getTimeZone("UTC")))) {
                 this.attributes().setModificationDate(modified);
             }
         }
@@ -830,9 +831,9 @@ public class FTPPath extends Path {
                 // and the modification time is set to the value of the second element
                 // Accessed date, modified date, created date
                 if(this.getSession().getClient().sendSiteCommand("UTIME " + this.getAbsolute()
-                        + " " + formatter.format(new Date(modified))
-                        + " " + formatter.format(new Date(modified))
-                        + " " + formatter.format(new Date(created))
+                        + " " + formatter.format(new Date(modified), TimeZone.getTimeZone("UTC"))
+                        + " " + formatter.format(new Date(modified), TimeZone.getTimeZone("UTC"))
+                        + " " + formatter.format(new Date(created), TimeZone.getTimeZone("UTC"))
                         + " UTC")) {
                     this.attributes().setModificationDate(modified);
                     this.attributes().setCreationDate(created);

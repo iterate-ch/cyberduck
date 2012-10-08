@@ -2,15 +2,17 @@ package ch.cyberduck.core.date;
 
 import java.text.ParseException;
 import java.util.Date;
+import java.util.TimeZone;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public interface DateFormatter {
 
-    public String format(Date input);
+    String format(Date input, TimeZone zone);
+
+    String format(long milliseconds, TimeZone zone);
 
     Date parse(String input) throws ParseException;
 
-    String format(long milliseconds);
 }

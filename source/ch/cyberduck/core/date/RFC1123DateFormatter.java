@@ -1,7 +1,6 @@
 package ch.cyberduck.core.date;
 
 import java.text.SimpleDateFormat;
-import java.util.TimeZone;
 
 /**
  * @version $Id$
@@ -14,10 +13,6 @@ public class RFC1123DateFormatter extends AbstractDateFormatter {
      */
     private static final SimpleDateFormat rfc1123 =
             new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z", java.util.Locale.ENGLISH);
-
-    static {
-        rfc1123.setTimeZone(TimeZone.getDefault());
-    }
 
     public RFC1123DateFormatter() {
         super(rfc1123);

@@ -2,10 +2,12 @@ package ch.cyberduck.core.date;
 
 import org.junit.Test;
 
+import java.util.TimeZone;
+
 import static org.junit.Assert.assertEquals;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class RFC1123DateFormatterTest {
 
@@ -16,6 +18,6 @@ public class RFC1123DateFormatterTest {
 
     @Test
     public void testPrint() throws Exception {
-        assertEquals("Thu, 01 Dec 1994 17:00:00 CET", new RFC1123DateFormatter().format((long) 7.862976E11));
+        assertEquals("Thu, 01 Dec 1994 17:00:00 CET", new RFC1123DateFormatter().format((long) 7.862976E11, TimeZone.getDefault()));
     }
 }

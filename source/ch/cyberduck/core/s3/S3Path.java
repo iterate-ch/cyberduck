@@ -280,7 +280,7 @@ public class S3Path extends CloudPath {
             // copy-in-place  (with the same bucket and object names for source and destination)
             // to update an object's metadata while leaving the object's data unchanged.
             final StorageObject target = this.getDetails();
-            target.addMetadata(METADATA_HEADER_EXPIRES, new RFC1123DateFormatter().format(expiration));
+            target.addMetadata(METADATA_HEADER_EXPIRES, new RFC1123DateFormatter().format(expiration, TimeZone.getTimeZone("UTC")));
             this.getSession().getClient().updateObjectMetadata(this.getContainerName(), target);
         }
         catch(ServiceException e) {

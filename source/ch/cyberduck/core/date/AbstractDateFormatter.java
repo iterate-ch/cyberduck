@@ -3,9 +3,10 @@ package ch.cyberduck.core.date;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.Date;
+import java.util.TimeZone;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public abstract class AbstractDateFormatter implements DateFormatter {
 
@@ -16,15 +17,17 @@ public abstract class AbstractDateFormatter implements DateFormatter {
     }
 
     @Override
-    public String format(final Date input) {
+    public String format(final Date input, final TimeZone zone) {
         synchronized(format) {
+            format.setTimeZone(zone);
             return format.format(input);
         }
     }
 
     @Override
-    public String format(final long milliseconds) {
+    public String format(final long milliseconds, final TimeZone zone) {
         synchronized(format) {
+            format.setTimeZone(zone);
             return format.format(milliseconds);
         }
     }
