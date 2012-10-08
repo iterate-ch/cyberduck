@@ -25,6 +25,14 @@ import static org.junit.Assert.assertEquals;
 public class PathTest extends AbstractTestCase {
 
     @Test
+    public void testDictionary() {
+        final Session s = SessionFactory.createSession(new Host("localhost"));
+        Path path = PathFactory.createPath(s,
+                "/path", Path.DIRECTORY_TYPE);
+        assertEquals(path, PathFactory.createPath(s, path.getAsDictionary()));
+    }
+
+    @Test
     public void testNormalize() throws Exception {
         Path path = PathFactory.createPath(SessionFactory.createSession(new Host("localhost")),
                 "/path/to/remove/..", Path.DIRECTORY_TYPE);
