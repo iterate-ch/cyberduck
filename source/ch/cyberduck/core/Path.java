@@ -47,6 +47,7 @@ import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.regex.Pattern;
@@ -576,6 +577,20 @@ public abstract class Path extends AbstractPath implements Serializable {
      * Read the ACL of the bucket or object
      */
     public void readAcl() {
+        //
+    }
+
+    /**
+     * Read modifiable HTTP header metatdata key and values
+     */
+    public void readMetadata() {
+        //
+    }
+
+    /**
+     * @param meta Modifiable HTTP header metatdata key and values
+     */
+    public void writeMetadata(Map<String, String> meta) {
         throw new UnsupportedOperationException();
     }
 

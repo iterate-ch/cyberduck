@@ -28,7 +28,6 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ThreadFactory;
 
@@ -71,6 +70,7 @@ public abstract class HttpPath extends Path {
     private final ThreadFactory factory = new ThreadFactory() {
         private int threadCount = 1;
 
+        @Override
         public Thread newThread(Runnable r) {
             Thread thread = new Thread(r);
             thread.setName("http-" + threadCount++);
@@ -99,6 +99,7 @@ public abstract class HttpPath extends Path {
                 }
             };
             final FutureHttpResponse<T> target = new FutureHttpResponse<T>() {
+                @Override
                 public void run() {
                     // Need batcher for logging messages up to the interface
                     final ActionOperationBatcher autorelease = ActionOperationBatcherFactory.get();
@@ -157,16 +158,6 @@ public abstract class HttpPath extends Path {
             throw failure;
         }
     }
-
-    /**
-     * Read modifiable HTTP header metatdata key and values
-     */
-    public abstract void readMetadata();
-
-    /**
-     * @param meta Modifiable HTTP header metatdata key and values
-     */
-    public abstract void writeMetadata(Map<String, String> meta);
 
     @Override
     public String toURL() {
