@@ -72,8 +72,10 @@ public abstract class WriteAclWorker extends Worker<Acl> {
                     }
                     return acl;
                 }
-                // Additional entry added
-                next.writeAcl(acl, recursive);
+                else {
+                    // Additional entry added
+                    next.writeAcl(acl, recursive);
+                }
             }
         }
         return acl;
