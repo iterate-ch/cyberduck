@@ -48,6 +48,7 @@ public abstract class MemoryHostKeyVerifier extends HostKeyController {
         return false;
     }
 
+    @Override
     public boolean verifyServerHostKey(final String hostname, final int port, final String serverHostKeyAlgorithm,
                                        final byte[] serverHostKey) throws IOException {
         final int result = this.getDatabase().verifyHostkey(hostname, serverHostKeyAlgorithm, serverHostKey);
