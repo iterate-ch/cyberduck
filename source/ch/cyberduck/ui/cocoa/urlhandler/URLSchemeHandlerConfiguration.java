@@ -53,12 +53,12 @@ public class URLSchemeHandlerConfiguration {
     /**
      * Register this bundle identifier as the default application for all schemes
      *
-     * @param scheme           The protocol identifier
+     * @param schemes          The protocol identifier
      * @param bundleIdentifier The bundle identifier of the application
      */
-    public void setDefaultHandlerForURLScheme(String[] scheme, String bundleIdentifier) {
-        for(String aScheme : scheme) {
-            this.setDefaultHandlerForURLScheme(aScheme, bundleIdentifier);
+    public void setDefaultHandlerForURLScheme(String[] schemes, String bundleIdentifier) {
+        for(String scheme : schemes) {
+            this.setDefaultHandlerForURLScheme(scheme, bundleIdentifier);
         }
     }
 
