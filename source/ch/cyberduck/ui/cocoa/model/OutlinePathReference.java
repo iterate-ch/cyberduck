@@ -81,16 +81,10 @@ public class OutlinePathReference extends PathReference<NSObject> {
         if(o == null || getClass() != o.getClass()) {
             return false;
         }
-        if(!super.equals(o)) {
-            return false;
-        }
-
         final OutlinePathReference that = (OutlinePathReference) o;
-
         if(hashcode != that.hashcode) {
             return false;
         }
-
         return true;
     }
 
