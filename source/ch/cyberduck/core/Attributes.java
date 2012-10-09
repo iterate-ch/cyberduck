@@ -98,7 +98,7 @@ public abstract class Attributes {
     public abstract String getChecksum();
 
     /**
-     * A version identifiying a particular revision of a file
+     * A version identifying a particular revision of a file
      * with the same path.
      *
      * @return Version Identifier or null if not versioned.
