@@ -19,11 +19,9 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.i18n.Locale;
-import ch.cyberduck.ui.cocoa.BrowserTableDataSource;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.jets3t.service.model.S3Object;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import java.security.Security;
@@ -274,7 +272,7 @@ public abstract class Preferences {
         defaults.put("browser.columnGroup", String.valueOf(false));
         defaults.put("browser.columnPermissions", String.valueOf(false));
 
-        defaults.put("browser.sort.column", BrowserTableDataSource.FILENAME_COLUMN);
+        defaults.put("browser.sort.column", "FILENAME");
         defaults.put("browser.sort.ascending", String.valueOf(true));
 
         defaults.put("browser.alternatingRows", String.valueOf(false));
@@ -381,13 +379,13 @@ public abstract class Preferences {
         /**
          * Action when duplicate file exists
          */
-        defaults.put("queue.download.fileExists", TransferAction.ACTION_CALLBACK.toString());
-        defaults.put("queue.upload.fileExists", TransferAction.ACTION_CALLBACK.toString());
+        defaults.put("queue.download.fileExists", "ask");
+        defaults.put("queue.upload.fileExists", "ask");
         /**
          * When triggered manually using 'Reload' in the Transfer window
          */
-        defaults.put("queue.download.reload.fileExists", TransferAction.ACTION_CALLBACK.toString());
-        defaults.put("queue.upload.reload.fileExists", TransferAction.ACTION_CALLBACK.toString());
+        defaults.put("queue.download.reload.fileExists", "ask");
+        defaults.put("queue.upload.reload.fileExists", "ask");
 
         defaults.put("queue.upload.changePermissions", String.valueOf(true));
         defaults.put("queue.upload.permissions.useDefault", String.valueOf(false));
@@ -476,8 +474,8 @@ public abstract class Preferences {
         /**
          * Default synchronize action selected in the sync dialog
          */
-        defaults.put("queue.sync.action.default", SyncTransfer.ACTION_UPLOAD.toString());
-        defaults.put("queue.prompt.action.default", TransferAction.ACTION_OVERWRITE.toString());
+        defaults.put("queue.sync.action.default", "upload");
+        defaults.put("queue.prompt.action.default", "overwrite");
 
         defaults.put("queue.logDrawer.isOpen", String.valueOf(false));
         defaults.put("queue.logDrawer.size.height", String.valueOf(200));
@@ -540,7 +538,7 @@ public abstract class Preferences {
         /**
          * Default redundancy level
          */
-        defaults.put("s3.storage.class", S3Object.STORAGE_CLASS_STANDARD);
+        defaults.put("s3.storage.class", "STANDARD");
         //defaults.put("s3.encryption.algorithm", "AES256");
         defaults.put("s3.encryption.algorithm", StringUtils.EMPTY);
 
