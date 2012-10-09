@@ -22,9 +22,15 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.serializer.Serializer;
-import ch.cyberduck.ui.DateFormatterFactory;
+import ch.cyberduck.core.transfer.TransferPathFilter;
+import ch.cyberduck.core.transfer.upload.MoveRemoteFilter;
+import ch.cyberduck.core.transfer.upload.OverwriteFilter;
+import ch.cyberduck.core.transfer.upload.RegexFilter;
+import ch.cyberduck.core.transfer.upload.RenameFilter;
+import ch.cyberduck.core.transfer.upload.ResumeFilter;
+import ch.cyberduck.core.transfer.upload.SkipFilter;
+import ch.cyberduck.core.transfer.upload.UploadSymlinkResolver;
 
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -32,14 +38,14 @@ import java.text.MessageFormat;
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
 
 /**
  * @version $Id$
  */
 public class UploadTransfer extends Transfer {
-    private static Logger log = Logger.getLogger(UploadTransfer.class);
+    private static final Logger log = Logger.getLogger(UploadTransfer.class);
+
+    private RegexFilter filter = new RegexFilter();
 
     public UploadTransfer(Path root) {
         super(root);
@@ -121,106 +127,6 @@ public class UploadTransfer extends Transfer {
         this.setRoots(normalized);
     }
 
-    private abstract class UploadTransferFilter extends TransferFilter {
-        @Override
-        public boolean accept(final Path file) {
-            if(!file.getLocal().exists()) {
-                return false;
-            }
-            if(file.getLocal().attributes().isSymbolicLink()) {
-                if(!UploadTransfer.this.isSymlinkSupported(file)) {
-                    final AbstractPath target = file.getLocal().getSymlinkTarget();
-                    // Do not transfer files referenced from symlinks pointing to files also included
-                    for(Path root : roots) {
-                        if(target.isChild(root.getLocal())) {
-                            return false;
-                        }
-                    }
-                }
-            }
-            return true;
-        }
-
-        @Override
-        public void prepare(Path file) {
-            if(file.attributes().isFile()) {
-                if(file.getLocal().attributes().isSymbolicLink()) {
-                    if(!UploadTransfer.this.isSymlinkSupported(file)) {
-                        // A server will resolve the symbolic link when the file is requested.
-                        final AbstractPath target = file.getLocal().getSymlinkTarget();
-                        size += target.attributes().getSize();
-                    }
-                    // No file size increase for symbolic link to be created on the server
-                }
-                else {
-                    // Read file size
-                    final long length = file.getLocal().attributes().getSize();
-                    file.status().setLength(length);
-                    size += length;
-                    if(file.status().isResume()) {
-                        transferred += file.attributes().getSize();
-                    }
-                }
-            }
-            if(file.attributes().isDirectory()) {
-                if(!file.exists()) {
-                    session.cache().put(file.getReference(), AttributedList.<Path>emptyList());
-                }
-            }
-        }
-
-        /**
-         * Post process
-         */
-        @Override
-        public void complete(Path file) {
-            if(!file.status().isCanceled()) {
-                if(session.isAclSupported()) {
-                    // Currently handled in S3 only.
-                }
-                if(session.isUnixPermissionsSupported()) {
-                    if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
-                        Permission permission = file.attributes().getPermission();
-                        if(!Permission.EMPTY.equals(permission)) {
-                            file.writeUnixPermission(permission, false);
-                        }
-                    }
-                }
-                if(file.getSession().isWriteTimestampSupported()) {
-                    if(Preferences.instance().getBoolean("queue.upload.preserveDate")) {
-                        // Read timestamps from local file
-                        file.writeTimestamp(file.getLocal().attributes().getCreationDate(),
-                                file.getLocal().attributes().getModificationDate(),
-                                file.getLocal().attributes().getAccessedDate());
-                    }
-                }
-            }
-        }
-    }
-
-    private final PathFilter<Local> exclusionRegexFilter = new PathFilter<Local>() {
-        private final Pattern pattern
-                = Pattern.compile(Preferences.instance().getProperty("queue.upload.skip.regex"));
-
-        @Override
-        public boolean accept(Local child) {
-            if(child.attributes().isDuplicate()) {
-                return false;
-            }
-            try {
-                if(Preferences.instance().getBoolean("queue.upload.skip.enable")) {
-                    if(pattern.matcher(child.getName()).matches()) {
-                        return false;
-                    }
-                }
-            }
-            catch(PatternSyntaxException e) {
-                log.warn(e.getMessage());
-            }
-            return true;
-        }
-    };
-
     /**
      * File listing cache for children of the root paths not part of the session cache because
      * they only exist on the local file system.
@@ -243,8 +149,7 @@ public class UploadTransfer extends Transfer {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Children for %s", parent));
         }
-        if(parent.getLocal().attributes().isSymbolicLink()
-                && this.isSymlinkSupported(parent)) {
+        if(parent.getLocal().attributes().isSymbolicLink() && new UploadSymlinkResolver(roots).resolve(parent)) {
             if(log.isDebugEnabled()) {
                 log.debug("Do not list children for symbolic link:" + parent);
             }
@@ -257,7 +162,7 @@ public class UploadTransfer extends Transfer {
             }
             else {
                 final AttributedList<Path> children = new AttributedList<Path>();
-                for(AbstractPath child : parent.getLocal().children(exclusionRegexFilter)) {
+                for(AbstractPath child : parent.getLocal().children(filter)) {
                     final Local local = LocalFactory.createLocal(child.getAbsolute());
                     Path upload = PathFactory.createPath(session, parent.getAbsolute(), local);
                     if(upload.exists()) {
@@ -282,164 +187,26 @@ public class UploadTransfer extends Transfer {
         return true;
     }
 
-    private final TransferFilter OVERWRITE_FILTER = new UploadTransferFilter() {
-        @Override
-        public boolean accept(final Path file) {
-            if(file.attributes().isDirectory()) {
-                // Do not attempt to create a directory that already exists
-                if(file.exists()) {
-                    return false;
-                }
-            }
-            return super.accept(file);
-        }
-
-        @Override
-        public void prepare(final Path file) {
-            if(file.attributes().isFile()) {
-                file.status().setResume(false);
-            }
-            super.prepare(file);
-        }
-
-    };
-
-    /**
-     * Append to existing file.
-     */
-    private final TransferFilter RESUME_FILTER = new UploadTransferFilter() {
-        @Override
-        public boolean accept(final Path file) {
-            if(file.attributes().isDirectory()) {
-                // Do not attempt to create a directory that already exists
-                if(file.exists()) {
-                    return false;
-                }
-            }
-            if(file.getLocal().attributes().getSize() == file.attributes().getSize()) {
-                // No need to resume completed transfers
-                file.status().setComplete(true);
-                return false;
-            }
-            return super.accept(file);
-        }
-
-        @Override
-        public void prepare(final Path file) {
-            if(file.exists()) {
-                if(file.attributes().getSize() == -1) {
-                    file.readSize();
-                }
-            }
-            if(file.attributes().isFile()) {
-                boolean resume = file.isUploadResumable();
-                file.status().setResume(resume);
-                if(resume) {
-                    if(file.attributes().getSize() == -1) {
-                        log.warn("Unknown remote size for:" + file.getAbsolute());
-                    }
-                    else {
-                        file.status().setCurrent(file.attributes().getSize());
-                    }
-                }
-            }
-            super.prepare(file);
-        }
-    };
-
-    private final TransferFilter RENAME_FILTER = new UploadTransferFilter() {
-        @Override
-        public void prepare(final Path file) {
-            if(file.exists()) {
-                final String parent = file.getParent().getAbsolute();
-                final String filename = file.getName();
-                int no = 0;
-                while(file.exists()) {
-                    no++;
-                    String proposal = FilenameUtils.getBaseName(filename) + "-" + no;
-                    if(StringUtils.isNotBlank(FilenameUtils.getExtension(filename))) {
-                        proposal += "." + FilenameUtils.getExtension(filename);
-                    }
-                    file.setPath(parent, proposal);
-                }
-                if(log.isInfoEnabled()) {
-                    log.info(String.format("Changed local name from %s to %s", filename, file.getName()));
-                }
-            }
-            if(file.attributes().isFile()) {
-                file.status().setResume(false);
-            }
-            super.prepare(file);
-        }
-    };
-
-    /**
-     * Rename existing file on server if there is a conflict.
-     */
-    private final TransferFilter RENAME_EXISTING_FILTER = new UploadTransferFilter() {
-        @Override
-        public boolean accept(final Path p) {
-            if(p.getSession().isRenameSupported(p)) {
-                return super.accept(p);
-            }
-            return false;
-        }
-
-        @Override
-        public void prepare(final Path file) {
-            Path renamed = file;
-            while(renamed.exists()) {
-                String proposal = MessageFormat.format(Preferences.instance().getProperty("queue.upload.file.rename.format"),
-                        FilenameUtils.getBaseName(file.getName()),
-                        DateFormatterFactory.instance().getLongFormat(System.currentTimeMillis(), false).replace(Path.DELIMITER, ':'),
-                        StringUtils.isNotEmpty(file.getExtension()) ? "." + file.getExtension() : StringUtils.EMPTY);
-                renamed = PathFactory.createPath(file.getSession(), renamed.getParent().getAbsolute(),
-                        proposal, file.attributes().getType());
-            }
-            if(!renamed.equals(file)) {
-                file.rename(renamed);
-            }
-            if(file.attributes().isFile()) {
-                file.status().setResume(false);
-            }
-            super.prepare(file);
-        }
-    };
-
-    /**
-     * Skip files that already exist on the server.
-     */
-    private final TransferFilter SKIP_FILTER = new UploadTransferFilter() {
-        @Override
-        public boolean accept(final Path file) {
-            if(file.exists()) {
-                // Set completion status for skipped files
-                file.status().setComplete(true);
-                return false;
-            }
-            return super.accept(file);
-        }
-    };
-
     @Override
-    public TransferFilter filter(final TransferAction action) {
+    public TransferPathFilter filter(final TransferAction action) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Filter transfer with action %s", action.toString()));
         }
+        final UploadSymlinkResolver resolver = new UploadSymlinkResolver(roots);
         if(action.equals(TransferAction.ACTION_OVERWRITE)) {
-            return OVERWRITE_FILTER;
+            return new OverwriteFilter(resolver);
         }
         if(action.equals(TransferAction.ACTION_RESUME)) {
-            return RESUME_FILTER;
+            return new ResumeFilter(resolver);
         }
         if(action.equals(TransferAction.ACTION_RENAME)) {
-            return RENAME_FILTER;
+            return new RenameFilter(resolver);
         }
         if(action.equals(TransferAction.ACTION_RENAME_EXISTING)) {
-            return RENAME_EXISTING_FILTER;
+            return new MoveRemoteFilter(resolver);
         }
         if(action.equals(TransferAction.ACTION_SKIP)) {
-            return SKIP_FILTER;
+            return new SkipFilter(resolver);
         }
         if(action.equals(TransferAction.ACTION_CALLBACK)) {
             for(Path upload : this.getRoots()) {
@@ -466,7 +233,9 @@ public class UploadTransfer extends Transfer {
 
     @Override
     public TransferAction action(final boolean resumeRequested, final boolean reloadRequested) {
-        log.debug(String.format("Resume=%s,Reload=%s", resumeRequested, reloadRequested));
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Resume=%s,Reload=%s", resumeRequested, reloadRequested));
+        }
         if(resumeRequested) {
             // Force resume
             return TransferAction.ACTION_RESUME;
@@ -482,27 +251,12 @@ public class UploadTransfer extends Transfer {
         );
     }
 
-    private boolean isSymlinkSupported(Path file) {
-        if(Preferences.instance().getBoolean("local.symboliclink.resolve")) {
-            // Resolve links instead
-            return false;
-        }
-        // Create symbolic link only if supported by the host
-        if(session.isCreateSymlinkSupported()) {
-            final AbstractPath target = file.getLocal().getSymlinkTarget();
-            // Only create symbolic link if target is included in the upload
-            for(Path root : roots) {
-                if(target.isChild(root.getLocal())) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
 
     @Override
-    protected void transfer(Path file, TransferOptions options) {
-        log.debug("transfer:" + file);
+    protected void transfer(final Path file, final TransferOptions options) {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Upload file %s", file.getName()));
+        }
         if(session.isUnixPermissionsSupported()) {
             if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
                 if(file.exists()) {
@@ -531,12 +285,12 @@ public class UploadTransfer extends Transfer {
                 }
             }
         }
-        if(file.getLocal().attributes().isSymbolicLink() && this.isSymlinkSupported(file)) {
+        if(file.getLocal().attributes().isSymbolicLink() && new UploadSymlinkResolver(roots).resolve(file)) {
             // Make relative symbolic link
             final String target = StringUtils.substringAfter(file.getLocal().getSymlinkTarget().getAbsolute(),
                     file.getLocal().getParent().getAbsolute() + Path.DELIMITER);
             if(log.isDebugEnabled()) {
-                log.debug("Symlink " + file + ":" + target);
+                log.debug(String.format("Create symbolic link from %s to %s", file, target));
             }
             file.symlink(target);
             file.status().setComplete(true);

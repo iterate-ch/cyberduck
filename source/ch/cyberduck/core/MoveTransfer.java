@@ -22,6 +22,8 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.serializer.Serializer;
+import ch.cyberduck.core.transfer.TransferPathFilter;
+import ch.cyberduck.core.transfer.move.MoveTransferFilter;
 
 import org.apache.log4j.Logger;
 
@@ -89,8 +91,7 @@ public class MoveTransfer extends Transfer {
             for(Iterator<Path> normalizedIter = normalized.keySet().iterator(); normalizedIter.hasNext(); ) {
                 Path n = normalizedIter.next();
                 if(f.isChild(n)) {
-                    // The selected file is a child of a directory
-                    // already included for deletion
+                    // The selected file is a child of a directory already included for deletion
                     duplicate = true;
                     break;
                 }
@@ -119,53 +120,13 @@ public class MoveTransfer extends Transfer {
         return TransferAction.ACTION_OVERWRITE;
     }
 
-    private final class MoveTransferFilter extends TransferFilter {
-        @Override
-        public boolean accept(final Path source) {
-            final Path destination = files.get(source);
-            if(destination.attributes().isDirectory()) {
-                // Do not attempt to create a directory that already exists
-                if(destination.exists()) {
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        @Override
-        public void prepare(final Path source) {
-            if(source.attributes().isFile()) {
-                source.status().setResume(false);
-            }
-            if(source.attributes().isFile()) {
-                final long length = source.attributes().getSize();
-                // Download
-                source.status().setLength(length);
-                size += length;
-            }
-            final Path dest = files.get(source);
-            if(dest.attributes().isDirectory()) {
-                if(!dest.exists()) {
-                    session.cache().put(dest.getReference(), AttributedList.<Path>emptyList());
-                }
-            }
-        }
-
-        @Override
-        public void complete(Path p) {
-            //
-        }
-    }
-
-    private final TransferFilter MOVE_FILTER = new MoveTransferFilter();
-
     @Override
-    public TransferFilter filter(final TransferAction action) {
+    public TransferPathFilter filter(final TransferAction action) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Filter transfer with action %s", action.toString()));
         }
         if(action.equals(TransferAction.ACTION_OVERWRITE)) {
-            return MOVE_FILTER;
+            return new MoveTransferFilter(files);
         }
         return super.filter(action);
     }

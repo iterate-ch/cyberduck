@@ -21,17 +21,18 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.ftp.FTPPath;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.serializer.Serializer;
+import ch.cyberduck.core.synchronization.CompareService;
+import ch.cyberduck.core.synchronization.Comparison;
+import ch.cyberduck.core.transfer.TransferPathFilter;
 
 import org.apache.commons.collections.map.AbstractLinkedMap;
 import org.apache.commons.collections.map.LRUMap;
 import org.apache.log4j.Logger;
 
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.TimeZone;
 
 /**
  * @version $Id$
@@ -160,26 +161,26 @@ public class SyncTransfer extends Transfer {
         }
     };
 
-    private TransferFilter filter = new TransferFilter() {
+    private TransferPathFilter filter = new TransferPathFilter() {
         /**
          * Download delegate filter
          */
-        private TransferFilter _delegateFilterDownload
+        private TransferPathFilter _delegateFilterDownload
                 = _delegateDownload.filter(TransferAction.ACTION_OVERWRITE);
 
         /**
          * Upload delegate filter
          */
-        private TransferFilter _delegateFilterUpload
+        private TransferPathFilter _delegateFilterUpload
                 = _delegateUpload.filter(TransferAction.ACTION_OVERWRITE);
 
         @Override
         public void prepare(Path p) {
             final Comparison compare = SyncTransfer.this.compare(p);
-            if(compare.equals(COMPARISON_REMOTE_NEWER)) {
+            if(compare.equals(Comparison.REMOTE_NEWER)) {
                 _delegateFilterDownload.prepare(p);
             }
-            else if(compare.equals(COMPARISON_LOCAL_NEWER)) {
+            else if(compare.equals(Comparison.LOCAL_NEWER)) {
                 _delegateFilterUpload.prepare(p);
             }
         }
@@ -187,11 +188,11 @@ public class SyncTransfer extends Transfer {
         @Override
         public boolean accept(Path p) {
             final Comparison compare = SyncTransfer.this.compare(p);
-            if(compare.equals(COMPARISON_REMOTE_NEWER)) {
+            if(compare.equals(Comparison.REMOTE_NEWER)) {
                 // Ask the download delegate for inclusion
                 return _delegateFilterDownload.accept(p);
             }
-            else if(compare.equals(COMPARISON_LOCAL_NEWER)) {
+            else if(compare.equals(Comparison.LOCAL_NEWER)) {
                 // Ask the upload delegate for inclusion
                 return _delegateFilterUpload.accept(p);
             }
@@ -201,10 +202,10 @@ public class SyncTransfer extends Transfer {
         @Override
         public void complete(Path p) {
             final Comparison compare = SyncTransfer.this.compare(p);
-            if(compare.equals(COMPARISON_REMOTE_NEWER)) {
+            if(compare.equals(Comparison.REMOTE_NEWER)) {
                 _delegateFilterDownload.complete(p);
             }
-            else if(compare.equals(COMPARISON_LOCAL_NEWER)) {
+            else if(compare.equals(Comparison.LOCAL_NEWER)) {
                 _delegateFilterUpload.complete(p);
             }
             comparisons.remove(p.getReference());
@@ -213,7 +214,7 @@ public class SyncTransfer extends Transfer {
     };
 
     @Override
-    public TransferFilter filter(final TransferAction action) {
+    public TransferPathFilter filter(final TransferAction action) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Filter transfer with action %s", action.toString()));
         }
@@ -258,25 +259,25 @@ public class SyncTransfer extends Transfer {
      * @param path File
      */
     @Override
-    public boolean isSkipped(Path path) {
+    public boolean isSkipped(final Path path) {
         boolean skipped = false;
         final Comparison comparison = this.compare(path);
         // Updating default skip settings for actual transfer
-        if(COMPARISON_EQUAL.equals(comparison)) {
+        if(Comparison.EQUAL.equals(comparison)) {
             skipped = path.attributes().isFile();
         }
         else {
             if(path.attributes().isFile()) {
-                if(comparison.equals(COMPARISON_REMOTE_NEWER)) {
+                if(comparison.equals(Comparison.REMOTE_NEWER)) {
                     skipped = this.getAction().equals(ACTION_UPLOAD);
                 }
-                else if(comparison.equals(COMPARISON_LOCAL_NEWER)) {
+                else if(comparison.equals(Comparison.LOCAL_NEWER)) {
                     skipped = this.getAction().equals(ACTION_DOWNLOAD);
                 }
             }
         }
         if(log.isDebugEnabled()) {
-            log.debug("isSkipped:" + skipped + "," + path);
+            log.debug(String.format("Skip file %s:%s", path.getAbsolute(), skipped));
         }
         return skipped;
     }
@@ -346,10 +347,10 @@ public class SyncTransfer extends Transfer {
     protected void transfer(final Path file, TransferOptions options) {
         log.debug("transfer:" + file);
         final Comparison compare = this.compare(file);
-        if(compare.equals(COMPARISON_REMOTE_NEWER)) {
+        if(compare.equals(Comparison.REMOTE_NEWER)) {
             _delegateDownload.transfer(file, options);
         }
-        else if(compare.equals(COMPARISON_LOCAL_NEWER)) {
+        else if(compare.equals(Comparison.LOCAL_NEWER)) {
             _delegateUpload.transfer(file, options);
         }
     }
@@ -370,58 +371,6 @@ public class SyncTransfer extends Transfer {
         super.reset();
     }
 
-    /**
-     *
-     */
-    public static class Comparison {
-        @Override
-        public boolean equals(Object other) {
-            return super.equals(other);
-        }
-
-        @Override
-        public int hashCode() {
-            return super.hashCode();
-        }
-    }
-
-    /**
-     * Remote file is newer or local file does not exist
-     */
-    public static final Comparison COMPARISON_REMOTE_NEWER = new Comparison() {
-        @Override
-        public String toString() {
-            return "COMPARISON_REMOTE_NEWER";
-        }
-    };
-    /**
-     * Local file is newer or remote file does not exist
-     */
-    public static final Comparison COMPARISON_LOCAL_NEWER = new Comparison() {
-        @Override
-        public String toString() {
-            return "COMPARISON_LOCAL_NEWER";
-        }
-    };
-    /**
-     * Files are identical or directories
-     */
-    public static final Comparison COMPARISON_EQUAL = new Comparison() {
-        @Override
-        public String toString() {
-            return "COMPARISON_EQUAL";
-        }
-    };
-    /**
-     * Files differ in size
-     */
-    private static final Comparison COMPARISON_UNEQUAL = new Comparison() {
-        @Override
-        public String toString() {
-            return "COMPARISON_UNEQUAL";
-        }
-    };
-
     private Map<PathReference, Comparison> comparisons = Collections.<PathReference, Comparison>synchronizedMap(new LRUMap(
             Preferences.instance().getInteger("transfer.cache.size")
     ) {
@@ -435,154 +384,20 @@ public class SyncTransfer extends Transfer {
 
     /**
      * @param p The path to compare
-     * @return COMPARISON_REMOTE_NEWER, COMPARISON_LOCAL_NEWER or COMPARISON_EQUAL
+     * @return Comparison.REMOTE_NEWER, Comparison.LOCAL_NEWER or COMPARISON_EQUAL
      */
-    public Comparison compare(Path p) {
+    public Comparison compare(final Path p) {
         if(comparisons.containsKey(p.getReference())) {
             return comparisons.get(p.getReference());
         }
         if(log.isDebugEnabled()) {
-            log.debug("compare:" + p);
+            log.debug(String.format("Compare path %s with local", p.getName()));
         }
-        Comparison result = COMPARISON_EQUAL;
-        try {
-            if(p.getLocal().exists() && p.exists()) {
-                if(Preferences.instance().getBoolean("queue.sync.compare.hash")) {
-                    // MD5/ETag Checksum is supported
-                    Comparison comparison = this.compareChecksum(p);
-                    if(!COMPARISON_UNEQUAL.equals(comparison)) {
-                        // Decision is available
-                        return result = comparison;
-                    }
-                }
-                if(Preferences.instance().getBoolean("queue.sync.compare.size")) {
-                    Comparison comparison = this.compareSize(p);
-                    if(!COMPARISON_UNEQUAL.equals(comparison)) {
-                        // Decision is available
-                        return result = comparison;
-                    }
-                }
-                // Default comparison is using timestamp of file.
-                Comparison comparison = this.compareTimestamp(p);
-                if(!COMPARISON_UNEQUAL.equals(comparison)) {
-                    // Decision is available
-                    return result = comparison;
-                }
-            }
-            else if(p.exists()) {
-                // Only the remote file exists
-                return result = COMPARISON_REMOTE_NEWER;
-            }
-            else if(p.getLocal().exists()) {
-                // Only the local file exists
-                return result = COMPARISON_LOCAL_NEWER;
-            }
-            return result;
-        }
-        finally {
-            comparisons.put(p.getReference(), result);
-        }
+        final Comparison result = new CompareService().compare(p);
+        comparisons.put(p.getReference(), result);
+        return result;
     }
 
-    private Comparison compareSize(Path p) {
-        if(log.isDebugEnabled()) {
-            log.debug("compareSize:" + p);
-        }
-        if(p.attributes().isFile()) {
-            if(p.attributes().getSize() == -1) {
-                p.readSize();
-            }
-            //fist make sure both files are larger than 0 bytes
-            if(p.attributes().getSize() == 0 && p.getLocal().attributes().getSize() == 0) {
-                return COMPARISON_EQUAL;
-            }
-            if(p.attributes().getSize() == 0) {
-                return COMPARISON_LOCAL_NEWER;
-            }
-            if(p.getLocal().attributes().getSize() == 0) {
-                return COMPARISON_REMOTE_NEWER;
-            }
-            if(p.attributes().getSize() == p.getLocal().attributes().getSize()) {
-                return COMPARISON_EQUAL;
-            }
-        }
-        //different file size - further comparison check
-        return COMPARISON_UNEQUAL;
-    }
-
-    private Comparison compareChecksum(Path p) {
-        if(log.isDebugEnabled()) {
-            log.debug("compareHash:" + p);
-        }
-        if(p.attributes().isFile()) {
-            if(null == p.attributes().getChecksum()) {
-                if(p.getSession().isChecksumSupported()) {
-                    p.readChecksum();
-                }
-            }
-            if(null == p.attributes().getChecksum()) {
-                log.warn("No checksum available for comparison:" + p);
-                return COMPARISON_UNEQUAL;
-            }
-            //fist make sure both files are larger than 0 bytes
-            if(p.attributes().getChecksum().equals(p.getLocal().attributes().getChecksum())) {
-                return COMPARISON_EQUAL;
-            }
-        }
-        //different sum - further comparison check
-        return COMPARISON_UNEQUAL;
-    }
-
-    private Comparison compareTimestamp(Path p) {
-        if(log.isDebugEnabled()) {
-            log.debug("compareTimestamp:" + p);
-        }
-        if(-1 == p.attributes().getModificationDate()) {
-            if(p.getSession().isReadTimestampSupported()) {
-                // Make sure we have a UTC timestamp
-                p.readTimestamp();
-            }
-        }
-        if(-1 == p.attributes().getModificationDate()) {
-            log.warn("No modification date available for comparison:" + p);
-            return COMPARISON_UNEQUAL;
-        }
-        final Calendar remote = this.asCalendar(p.attributes().getModificationDate(), Calendar.SECOND);
-        final Calendar local = this.asCalendar(p.getLocal().attributes().getModificationDate(), Calendar.SECOND);
-        if(local.before(remote)) {
-            return COMPARISON_REMOTE_NEWER;
-        }
-        if(local.after(remote)) {
-            return COMPARISON_LOCAL_NEWER;
-        }
-        //same timestamp
-        return COMPARISON_EQUAL;
-    }
-
-    private Calendar asCalendar(final long timestamp, final int precision) {
-        if(log.isDebugEnabled()) {
-            log.debug("asCalendar:" + timestamp);
-        }
-        Calendar c = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-        c.setTimeInMillis(timestamp);
-        if(precision == Calendar.MILLISECOND) {
-            return c;
-        }
-        c.clear(Calendar.MILLISECOND);
-        if(precision == Calendar.SECOND) {
-            return c;
-        }
-        c.clear(Calendar.SECOND);
-        if(precision == Calendar.MINUTE) {
-            return c;
-        }
-        c.clear(Calendar.MINUTE);
-        if(precision == Calendar.HOUR) {
-            return c;
-        }
-        c.clear(Calendar.HOUR);
-        return c;
-    }
 
     @Override
     public String getStatus() {

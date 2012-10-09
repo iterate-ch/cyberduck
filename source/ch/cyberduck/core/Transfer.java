@@ -24,6 +24,7 @@ import ch.cyberduck.core.serializer.Deserializer;
 import ch.cyberduck.core.serializer.DeserializerFactory;
 import ch.cyberduck.core.serializer.Serializer;
 import ch.cyberduck.core.serializer.SerializerFactory;
+import ch.cyberduck.core.transfer.TransferPathFilter;
 import ch.cyberduck.ui.growl.Growl;
 
 import org.apache.log4j.Logger;
@@ -40,7 +41,7 @@ import java.util.Set;
  * @version $Id$
  */
 public abstract class Transfer implements Serializable {
-    private static Logger log = Logger.getLogger(Transfer.class);
+    private static final Logger log = Logger.getLogger(Transfer.class);
 
     /**
      * Files and folders initially selected to be part of this transfer
@@ -59,11 +60,11 @@ public abstract class Transfer implements Serializable {
 
     /**
      * The transfer has been canceled and should
-     * not continue any forther processing
+     * not continue any further processing
      */
     private boolean canceled;
 
-    // Backward compatibilty for serializaton
+    // Backward compatibility for serialization
     public static final int KIND_DOWNLOAD = 0;
     public static final int KIND_UPLOAD = 1;
     public static final int KIND_SYNC = 2;
@@ -71,7 +72,7 @@ public abstract class Transfer implements Serializable {
     public static final int KIND_MOVE = 4;
 
     protected Transfer() {
-        ;
+        //
     }
 
     /**
@@ -342,31 +343,11 @@ public abstract class Transfer implements Serializable {
         return this.getRoot().getName();
     }
 
-    protected abstract static class TransferFilter implements PathFilter<Path> {
-        /**
-         * Called before the file will actually get transferred. Should prepare for the transfer
-         * such as calculating its size.
-         * Must only be called exactly once for each file.
-         * Must only be called if #accept for the file returns true
-         *
-         * @param p File
-         * @see PathFilter#accept(AbstractPath)
-         */
-        public abstract void prepare(Path p);
-
-        /**
-         * Post processing.
-         *
-         * @param p File
-         */
-        public abstract void complete(Path p);
-    }
-
     /**
      * @param action Transfer action for duplicate files
      * @return Null if the filter could not be determined and the transfer should be canceled instead
      */
-    public TransferFilter filter(final TransferAction action) {
+    public TransferPathFilter filter(final TransferAction action) {
         if(action.equals(TransferAction.ACTION_CANCEL)) {
             return null;
         }
@@ -385,7 +366,7 @@ public abstract class Transfer implements Serializable {
      *
      * @param r Key
      * @return Lookup from cache
-     * @see ch.cyberduck.core.Cache#lookup(PathReference)
+     * @see ch.cyberduck.core.Cache#lookup(ch.cyberduck.core.PathReference)
      */
     public Path lookup(PathReference r) {
         for(Path root : roots) {
@@ -447,7 +428,7 @@ public abstract class Transfer implements Serializable {
      * @param filter  Filter to apply to exclude files from transfer
      * @param options Quarantine option
      */
-    protected void transfer(final Path p, final TransferFilter filter, final TransferOptions options) {
+    protected void transfer(final Path p, final TransferPathFilter filter, final TransferOptions options) {
         if(!this.isIncluded(p)) {
             if(log.isInfoEnabled()) {
                 log.info(String.format("Not included in transfer:%s", p.getAbsolute()));
@@ -548,7 +529,7 @@ public abstract class Transfer implements Serializable {
         }
 
         // Get the transfer filter from the concret transfer class
-        final TransferFilter filter = this.filter(action);
+        final TransferPathFilter filter = this.filter(action);
         if(null == filter) {
             // The user has canceled choosing a transfer filter
             this.cancel();
@@ -593,7 +574,7 @@ public abstract class Transfer implements Serializable {
         return true;
     }
 
-    protected void transfer(final TransferFilter filter, final TransferOptions options) {
+    protected void transfer(final TransferPathFilter filter, final TransferOptions options) {
         for(Path next : roots) {
             this.transfer(next, filter, options);
         }
@@ -605,7 +586,7 @@ public abstract class Transfer implements Serializable {
      * @param p      File
      * @param filter Filter to apply to exclude files from transfer
      */
-    private void prepare(Path p, final TransferFilter filter) {
+    private void prepare(final Path p, final TransferPathFilter filter) {
         log.debug("prepare:" + p);
         if(!this.check()) {
             return;
@@ -625,6 +606,12 @@ public abstract class Transfer implements Serializable {
             }
             session.message(MessageFormat.format(Locale.localizedString("Prepare {0}", "Status"), p.getName()));
             filter.prepare(p);
+            // Add transfer length to total bytes
+            size += p.status().getLength();
+            if(p.status().isResume()) {
+                // Add skipped bytes
+                transferred += p.attributes().getSize();
+            }
         }
 
         if(p.attributes().isDirectory()) {

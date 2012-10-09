@@ -22,6 +22,8 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.serializer.Serializer;
+import ch.cyberduck.core.transfer.TransferPathFilter;
+import ch.cyberduck.core.transfer.copy.CopyTransferFilter;
 
 import org.apache.log4j.Logger;
 
@@ -37,7 +39,7 @@ import java.util.Map;
  * @version $Id$
  */
 public class CopyTransfer extends Transfer {
-    private static Logger log = Logger.getLogger(CopyTransfer.class);
+    private static final Logger log = Logger.getLogger(CopyTransfer.class);
 
     /**
      * Mapping source to destination files
@@ -132,60 +134,13 @@ public class CopyTransfer extends Transfer {
         return TransferAction.ACTION_OVERWRITE;
     }
 
-    private final class CopyTransferFilter extends TransferFilter {
-        @Override
-        public boolean accept(final Path source) {
-            final Path destination = files.get(source);
-            if(destination.attributes().isDirectory()) {
-                // Do not attempt to create a directory that already exists
-                if(destination.exists()) {
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        @Override
-        public void prepare(Path source) {
-            if(source.attributes().isFile()) {
-                source.status().setResume(false);
-            }
-            if(source.attributes().getSize() == -1) {
-                // Read file size
-                source.readSize();
-            }
-            if(source.attributes().isFile()) {
-                final long length = source.attributes().getSize();
-                // Download
-                source.status().setLength(length);
-                size += length;
-                // Upload
-                files.get(source).status().setLength(length);
-                size += length;
-            }
-            final Path dest = files.get(source);
-            if(dest.attributes().isDirectory()) {
-                if(!dest.exists()) {
-                    destination.cache().put(dest.getReference(), AttributedList.<Path>emptyList());
-                }
-            }
-        }
-
-        @Override
-        public void complete(Path p) {
-            ;
-        }
-    }
-
-    private final TransferFilter COPY_FILTER = new CopyTransferFilter();
-
     @Override
-    public TransferFilter filter(final TransferAction action) {
+    public TransferPathFilter filter(final TransferAction action) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Filter transfer with action %s", action.toString()));
         }
         if(action.equals(TransferAction.ACTION_OVERWRITE)) {
-            return COPY_FILTER;
+            return new CopyTransferFilter(files);
         }
         return super.filter(action);
     }
