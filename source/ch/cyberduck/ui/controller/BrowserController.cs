@@ -18,6 +18,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.IO;
 using System.Threading;
@@ -1445,11 +1446,11 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             if (IsMounted())
             {
-                Workdir.invalidate();
+                getSession().cache().invalidate(Workdir.getReference());
                 foreach (TreePathReference reference in View.VisiblePaths)
                 {
                     if (null == reference) continue;
-                    reference.Unique.invalidate();
+                    getSession().cache().invalidate(reference);
                 }
                 ReloadData(SelectedPaths);
             }
@@ -1653,7 +1654,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 Path root = PathFactory.createPath(getTransferSession(true), selection.getAsDictionary());
                 root.setLocal(LocalFactory.createLocal(folder));
                 Transfer q = new SyncTransfer(root);
-                transfer(q, selection);
+                transfer(q);
             }
         }
 
@@ -1684,7 +1685,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                                                                        destination.getAbsolute(),
                                                                                        LocalFactory.createLocal(path)));
             Transfer q = new UploadTransfer(roots);
-            transfer(q, destination);
+            transfer(q);
         }
 
         private void View_DownloadTo()
@@ -1938,7 +1939,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 UploadTransfer q = new UploadTransfer(Utils.ConvertToJavaList(roots));
                 if (q.numberOfRoots() > 0)
                 {
-                    transfer(q, destination);
+                    transfer(q);
                 }
             }
         }
@@ -2198,7 +2199,7 @@ namespace Ch.Cyberduck.Ui.Controller
         /// <param name="transfer"></param>
         public void transfer(Transfer transfer)
         {
-            this.transfer(transfer, null);
+            this.transfer(transfer, getSession().getMaxConnections() == 1);
         }
 
         /// <summary>
@@ -2206,9 +2207,9 @@ namespace Ch.Cyberduck.Ui.Controller
         /// </summary>
         /// <param name="transfer"></param>
         /// <param name="destination"></param>
-        public void transfer(Transfer transfer, Path destination)
+        public void transfer(Transfer transfer, bool browser)
         {
-            this.transfer(transfer, destination, getSession().getMaxConnections() == 1);
+            this.transfer(transfer, browser, new LazyTransferPrompt(this, transfer));
         }
 
         /// <summary>
@@ -2217,9 +2218,9 @@ namespace Ch.Cyberduck.Ui.Controller
         /// <param name="transfer"></param>
         /// <param name="destination"></param>
         /// <param name="useBrowserConnection"></param>
-        public void transfer(Transfer transfer, Path destination, bool useBrowserConnection)
+        public void transfer(Transfer transfer, List<Path> selected, bool browser)
         {
-            this.transfer(transfer, destination, useBrowserConnection, new LazyTransferPrompt(this, transfer));
+            this.transfer(transfer, selected, browser, new LazyTransferPrompt(this, transfer));
         }
 
         /// <summary>
@@ -2229,10 +2230,15 @@ namespace Ch.Cyberduck.Ui.Controller
         /// <param name="destination"></param>
         /// <param name="useBrowserConnection"></param>
         /// <param name="prompt"></param>
-        public void transfer(Transfer transfer, Path destination, bool useBrowserConnection, TransferPrompt prompt)
+        public void transfer(Transfer transfer, bool browser, TransferPrompt prompt)
         {
-            transfer.addListener(new ReloadTransferAdapter(this, transfer, destination));
-            if (useBrowserConnection)
+            this.transfer(transfer, Utils.ConvertFromJavaList<Path>(transfer.getRoots()), browser, prompt);
+        }
+
+        public void transfer(Transfer transfer, ICollection<Path> changed, bool browser, TransferPrompt prompt)
+        {
+            transfer.addListener(new ReloadTransferAdapter(this, transfer, changed));
+            if (browser)
             {
                 transfer.addListener(new ProgressTransferAdapter(this, transfer));
                 Background(new TransferBrowserBackgroundAction(this, prompt, transfer));
@@ -2304,12 +2310,33 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
-        public void RefreshParentPaths(ICollection<Path> paths, List<TreePathReference> selected)
+        public void RefreshParentPath(Path changed)
+        {
+            RefreshParentPaths(new Collection<Path>{changed});
+        }
+
+        public void RefreshParentPaths(ICollection<Path> changed)
+        {
+            RefreshParentPaths(changed, new List<TreePathReference>());
+        }
+
+        public void RefreshParentPaths(ICollection<Path> changed, ICollection<Path> selected)
+        {
+            List<TreePathReference> s = new List<TreePathReference>();
+            foreach (Path path in selected)
+            {
+                s.Add(new TreePathReference(path));
+            }
+            RefreshParentPaths(changed, s);
+        }
+
+        public void RefreshParentPaths(ICollection<Path> changed, List<TreePathReference> selected)
         {
             bool rootRefreshed = false; //prevent multiple root updates
-            foreach (Path path in paths)
+            foreach (Path path in changed)
             {
                 Path parent = path.getParent();
+                getSession().cache().invalidate(parent.getReference());                
                 if (Workdir.equals(parent))
                 {
                     if (rootRefreshed)
@@ -2758,7 +2785,7 @@ namespace Ch.Cyberduck.Ui.Controller
         /// <summary>
         ///
         /// </summary>
-        /// <returns>The last path browsed before #getPrevoiusPath was called</returns>
+        /// <returns>The last path browsed before #getPreviousPath was called</returns>
         public Path GetForwardPath()
         {
             int size = _forwardHistory.Count;
@@ -2803,7 +2830,10 @@ namespace Ch.Cyberduck.Ui.Controller
             if (CheckMove(selected.Values))
             {
                 MoveTransfer move = new MoveTransfer(Utils.ConvertToJavaMap(selected));
-                transfer(move, Workdir, true);
+                List<Path> changed = new List<Path>();
+                changed.AddRange(selected.Keys);
+                changed.AddRange(selected.Values);
+                transfer(move, changed, true);
             }
         }
 
@@ -2952,7 +2982,7 @@ namespace Ch.Cyberduck.Ui.Controller
             else
             {
                 // Setting up a custom filter for the directory listing
-                FilenameFilter = new CustomPathFilter(searchString);
+                FilenameFilter = new CustomPathFilter(searchString, this);
             }
             ReloadData(true);
         }
@@ -3028,10 +3058,13 @@ namespace Ch.Cyberduck.Ui.Controller
         ///<param name="browser"></param>
         protected internal void DuplicatePaths(IDictionary<Path, Path> selected, bool browser)
         {
-            if (CheckMove(selected.Values))
+            if (CheckOverwrite(selected.Values))
             {
                 CopyTransfer copy = new CopyTransfer(Utils.ConvertToJavaMap(selected));
-                transfer(copy, Workdir, browser);
+                List<Path> changed = new List<Path>();
+                changed.AddRange(selected.Keys);
+                changed.AddRange(selected.Values);
+                transfer(copy, changed, browser);
             }
         }
 
@@ -3183,40 +3216,44 @@ namespace Ch.Cyberduck.Ui.Controller
         private class CreateArchiveAction : BrowserBackgroundAction
         {
             private readonly Archive _archive;
-            private readonly List _selected;
+            private readonly List _selectedJava;
+            private readonly ICollection<Path> _selected;
 
-            public CreateArchiveAction(BrowserController controller, Archive archive, IEnumerable<Path> selected)
+            public CreateArchiveAction(BrowserController controller, Archive archive, ICollection<Path> selected)
                 : base(controller)
             {
                 _archive = archive;
-                _selected = Utils.ConvertToJavaList(selected);
+                _selectedJava = Utils.ConvertToJavaList(selected);
+                _selected = selected;
             }
 
             public override void run()
             {
-                BrowserController._session.archive(_archive, _selected);
+                BrowserController._session.archive(_archive, _selectedJava);
             }
 
             public override string getActivity()
             {
-                return _archive.getCompressCommand(_selected);
+                return _archive.getCompressCommand(_selectedJava);
             }
 
             public override void cleanup()
             {
-                BrowserController.RefreshParentPaths(new List<Path> {_archive.getArchive(_selected)},
+                BrowserController.RefreshParentPaths(_selected,
                                                      new List<TreePathReference>
-                                                         {new TreePathReference(_archive.getArchive(_selected))});
+                                                         {new TreePathReference(_archive.getArchive(_selectedJava))});
             }
         }
 
         private class CustomPathFilter : PathFilter, IModelFilter
         {
             private readonly String _searchString;
+            private readonly BrowserController _controller;
 
-            public CustomPathFilter(String searchString)
+            public CustomPathFilter(String searchString, BrowserController controller)
             {
                 _searchString = searchString;
+                _controller = controller;
             }
 
             public bool Filter(object modelObject)
@@ -3234,7 +3271,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 if (file.attributes().isDirectory())
                 {
                     // #471. Expanded item childs may match search string
-                    return file.isCached();
+                    return _controller.getSession().cache().isCached(file.getReference());
                 }
                 return false;
             }
@@ -3273,7 +3310,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
             public override void cleanup()
             {
-                BrowserController.RefreshParentPaths(_normalized, new List<TreePathReference>());
+                BrowserController.RefreshParentPaths(_normalized);
             }
         }
 
@@ -3523,24 +3560,23 @@ namespace Ch.Cyberduck.Ui.Controller
         internal class ReloadTransferAdapter : TransferAdapter
         {
             private readonly BrowserController _controller;
-            private readonly Path _destination;
+            private readonly ICollection<Path> _changed;
             private readonly Transfer _transfer;
 
-            public ReloadTransferAdapter(BrowserController controller, Transfer transfer, Path destination)
+            public ReloadTransferAdapter(BrowserController controller, Transfer transfer, ICollection<Path> changed)
             {
                 _controller = controller;
                 _transfer = transfer;
-                _destination = destination;
+                _changed = changed;
             }
 
             public override void transferDidEnd()
             {
-                if (_destination != null && _controller.IsMounted())
+                if (!_transfer.isCanceled())
                 {
-                    _destination.invalidate();
                     if (!_transfer.isCanceled())
                     {
-                        _controller.invoke(new ReloadAction(_controller, _destination));
+                        _controller.invoke(new ReloadAction(_controller, _changed));
                     }
                 }
                 _transfer.removeListener(this);
@@ -3548,12 +3584,12 @@ namespace Ch.Cyberduck.Ui.Controller
 
             private class ReloadAction : WindowMainAction
             {
-                private readonly Path _p;
+                private readonly ICollection<Path> _changed;
 
-                public ReloadAction(BrowserController c, Path p)
+                public ReloadAction(BrowserController c, ICollection<Path> changed)
                     : base(c)
                 {
-                    _p = p;
+                    _changed = changed;
                 }
 
                 public override bool isValid()
@@ -3563,7 +3599,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
                 public override void run()
                 {
-                    ((BrowserController) Controller).RefreshObject(_p, true);
+                    ((BrowserController) Controller).RefreshParentPaths(_changed, _changed);
                 }
             }
         }
@@ -3589,7 +3625,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
             public override void cleanup()
             {
-                BrowserController.RefreshObject(_selected, false);
+                BrowserController.RefreshParentPaths(new Collection<Path>(){_selected}, new Collection<Path>());
             }
 
             public override string getActivity()
@@ -3617,7 +3653,6 @@ namespace Ch.Cyberduck.Ui.Controller
                 Log.debug("run: " + getActivity());
                 TransferOptions options = new TransferOptions();
                 options.closeSession = false;
-                options.invalidateCache = Cache.Lifecycle.FOREVER;
                 _transfer.start(_prompt, options);
             }
 
@@ -3668,12 +3703,7 @@ namespace Ch.Cyberduck.Ui.Controller
             public override void cleanup()
             {
                 _expanded.AddRange(Utils.ConvertFromJavaList<Path>(_archive.getExpanded(new ArrayList {_selected})));
-                List<TreePathReference> selected = new List<TreePathReference>();
-                foreach (Path p in _expanded)
-                {
-                    selected.Add(new TreePathReference(p));
-                }
-                BrowserController.RefreshParentPaths(_expanded, selected);
+                BrowserController.RefreshParentPaths(_expanded, _expanded);
             }
         }
 
@@ -3781,14 +3811,14 @@ namespace Ch.Cyberduck.Ui.Controller
 
             public override void run()
             {
-                if (_directory.isCached())
+                AttributedList children = _directory.children();
+                if (BrowserController.getSession().cache().isCached(_directory.getReference()))
                 {
                     //Reset the readable attribute
-                    _directory.children().attributes().setReadable(true);
+                    children.attributes().setReadable(true);
                 }
                 // Get the directory listing in the background
-                _directory.children();
-                if (_directory.children().attributes().isReadable())
+                if (children.attributes().isReadable() || !children.isEmpty())
                 {
                     // Update the working directory if listing is successful
                     BrowserController._workdir = _directory;

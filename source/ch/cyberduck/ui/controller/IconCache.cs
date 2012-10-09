@@ -137,8 +137,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 if (OverlayFolderImage)
                 {
-                    if (!path.attributes().getPermission().isExecutable()
-                        || (path.isCached() && !path.cache().get(path.getReference()).attributes().isReadable()))
+                    if (!path.attributes().getPermission().isExecutable())
                     {
                         return IconForFolder(IconForName("privatefolderbadge", size), size);
                     }

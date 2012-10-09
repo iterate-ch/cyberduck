@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2011 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -43,16 +43,17 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public IEnumerable<TreePathReference> ChildrenGetter(object reference)
         {
-            AbstractPath path = ((TreePathReference) reference).Unique;
+            AbstractPath path = GetPath((TreePathReference) reference);
             AttributedList list;
             lock (_isLoadingListingInBackground)
             {
+                Cache cache = _controller.getSession().cache();
                 if (!_isLoadingListingInBackground.Contains(path))
                 {
-                    if (path.isCached())
+                    if (cache.isCached(path.getReference()))
                     {
-                        list = path.cache().get(path.getReference(), _controller.FilenameComparator,
-                                                _controller.FilenameFilter);
+                        list = cache.get(path.getReference()).filter(_controller.FilenameComparator,
+                                                                     _controller.FilenameFilter);
                         for (int i = 0; i < list.size(); i++)
                         {
                             yield return new TreePathReference((Path) list.get(i));
@@ -67,7 +68,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     _controller.Background(new ChildGetterBrowserBackgrounAction(_controller, path,
                                                                                  _isLoadingListingInBackground));
                 }
-                list = path.cache().get(path.getReference(), _controller.FilenameComparator, _controller.FilenameFilter);
+                list = cache.get(path.getReference()).filter(_controller.FilenameComparator, _controller.FilenameFilter);
 //                if (list.size() == 0)
 //                {
 //                    yield return

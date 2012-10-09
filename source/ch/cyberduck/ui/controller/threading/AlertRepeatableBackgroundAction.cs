@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -15,15 +15,15 @@
 // Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
 // 
+
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-using ch.cyberduck.core;
 using Ch.Cyberduck.Core;
+using StructureMap;
+using ch.cyberduck.core;
 using ch.cyberduck.core.i18n;
 using ch.cyberduck.core.threading;
-using Ch.Cyberduck.Ui.Winforms.Taskdialog;
-using StructureMap;
 
 namespace Ch.Cyberduck.Ui.Controller.Threading
 {
@@ -58,38 +58,38 @@ namespace Ch.Cyberduck.Ui.Controller.Threading
         protected void Alert()
         {
             _controller.Invoke(delegate
-                                   {
-                                       if (this.getExceptions().size() == 1)
-                                       {
-                                           BackgroundException failure =
-                                               this.getExceptions().get(0) as BackgroundException;
-                                           string footer = Preferences.instance().getProperty("website.help");
-                                           if (null != failure.getPath())
-                                           {
-                                               footer = Preferences.instance().getProperty("website.help") + "/" +
-                                                        failure.getPath().getSession().getHost().getProtocol().
-                                                            getProvider();
-                                           }
-                                           DialogResult result =
-                                               _controller.WarningBox(failure.getReadableTitle(),
-                                                                      failure.getMessage(),
-                                                                      failure.getDetailedCauseMessage(),
-                                                                      hasTranscript() ? this.getTranscript() : null,
-                                                                      String.Format("{0}", Locale.localizedString("Try Again", "Alert")),
-                                                                      true, footer);
-                                           Callback(result);
-                                       }
-                                       else
-                                       {
-                                           ICollection<BackgroundException> backgroundExceptions =
-                                               Utils.ConvertFromJavaList<BackgroundException>(getExceptions());
-                                           ErrorController errorController =
-                                               new ErrorController(ObjectFactory.GetInstance<IErrorView>(),
-                                                                   backgroundExceptions, getTranscript());
-                                           DialogResult result = errorController.View.ShowDialog(_controller.View);
-                                           Callback(result);
-                                       }
-                                   }, true);
+                {
+                    if (getExceptions().size() == 1)
+                    {
+                        BackgroundException failure =
+                            getExceptions().get(0) as BackgroundException;
+                        string footer = Preferences.instance().getProperty("website.help");
+                        if (null != failure.getPath())
+                        {
+                            footer = Preferences.instance().getProperty("website.help") + "/" +
+                                     failure.getPath().getSession().getHost().getProtocol().
+                                         getProvider();
+                        }
+                        DialogResult result =
+                            _controller.WarningBox(failure.getReadableTitle(),
+                                                   failure.getMessage(),
+                                                   failure.getDetailedCauseMessage(),
+                                                   hasTranscript() ? getTranscript() : null,
+                                                   String.Format("{0}", Locale.localizedString("Try Again", "Alert")),
+                                                   true, footer);
+                        Callback(result);
+                    }
+                    else
+                    {
+                        ICollection<BackgroundException> backgroundExceptions =
+                            Utils.ConvertFromJavaList<BackgroundException>(getExceptions());
+                        ErrorController errorController =
+                            new ErrorController(ObjectFactory.GetInstance<IErrorView>(),
+                                                backgroundExceptions, getTranscript());
+                        DialogResult result = errorController.View.ShowDialog(_controller.View);
+                        Callback(result);
+                    }
+                }, true);
         }
 
         private void Callback(DialogResult result)
@@ -105,7 +105,10 @@ namespace Ch.Cyberduck.Ui.Controller.Threading
                     {
                         continue;
                     }
-                    workdir.invalidate();
+                    foreach (Session session in Utils.ConvertFromJavaList<Session>(getSessions()))
+                    {
+                        session.cache().invalidate(workdir.getReference());
+                    }
                 }
                 reset();
                 // Re-run the action with the previous lock used

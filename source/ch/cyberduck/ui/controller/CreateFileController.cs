@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -15,12 +15,13 @@
 // Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
 // 
+
 using System;
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Windows.Forms;
+using Ch.Cyberduck.Ui.Controller.Threading;
 using ch.cyberduck.core;
 using ch.cyberduck.core.i18n;
-using Ch.Cyberduck.Ui.Controller.Threading;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -62,12 +63,12 @@ namespace Ch.Cyberduck.Ui.Controller
                 _edit = edit;
                 _file = PathFactory.createPath(controller.getSession(),
                                                _workdir.getAbsolute(),
-                                               _filename, Path.FILE_TYPE);
+                                               _filename, AbstractPath.FILE_TYPE);
             }
 
             public override void run()
             {
-                _file.touch();                
+                _file.touch();
                 if (_file.exists())
                 {
                     if (_edit)
@@ -84,20 +85,12 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     BrowserController.ShowHiddenFiles = true;
                 }
-                BrowserController.RefreshObject(_workdir, new List<TreePathReference>(){new TreePathReference(_file)});
+                BrowserController.RefreshParentPaths(new Collection<Path> {_file}, new Collection<Path> {_file});
             }
 
             public override string getActivity()
             {
                 return String.Format(Locale.localizedString("Uploading {0}", "Status"), _file.getName());
-            }
-
-            private class OverwriteTransferPrompt : TransferPrompt
-            {
-                public TransferAction prompt()
-                {
-                    return TransferAction.ACTION_OVERWRITE;
-                }
             }
         }
     }

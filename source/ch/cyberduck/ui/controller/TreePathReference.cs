@@ -22,43 +22,21 @@ namespace Ch.Cyberduck.Ui.Controller
 {
     public class TreePathReference : PathReference
     {
-        private readonly AbstractPath _reference;
+        private readonly AbstractPath _path;
 
-        public TreePathReference(AbstractPath reference)
+        public TreePathReference(AbstractPath path)
         {
-            _reference = reference;
+            _path = path;
         }
 
         public Path Unique
         {
-            get { return (Path) _reference; }
+            get { return (Path) _path; }
         }
 
         public static void Register()
         {
             PathReferenceFactory.addFactory(ch.cyberduck.core.Factory.NATIVE_PLATFORM, new Factory());
-        }
-
-        public override object unique()
-        {
-            return _reference.unique();
-        }
-
-        public override bool equals(object other)
-        {
-            if (null == other || !(other is TreePathReference))
-            {
-                return false;
-            }
-
-            //workaround for a caching issue in TreeListView.Tree class
-            //see https://sourceforge.net/projects/objectlistview/forums/forum/812922/topic/3912372            
-            if (((Path) (other as TreePathReference)._reference).getSession() != ((Path) _reference).getSession())
-            {
-                return false;
-            }
-
-            return base.equals(other);
         }
 
         private class Factory : PathReferenceFactory
@@ -72,6 +50,11 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 return new TreePathReference(ap);
             }
+        }
+
+        public override object unique()
+        {
+            return _path.unique();
         }
     }
 }

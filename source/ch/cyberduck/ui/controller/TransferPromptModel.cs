@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2011 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -15,15 +15,16 @@
 // Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
 // 
+
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
+using Ch.Cyberduck.Ui.Winforms;
 using ch.cyberduck.core;
 using ch.cyberduck.core.i18n;
 using ch.cyberduck.core.threading;
 using ch.cyberduck.ui;
-using Ch.Cyberduck.Ui.Winforms;
 using org.apache.log4j;
 
 namespace Ch.Cyberduck.Ui.Controller
@@ -73,7 +74,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     if (Transfer.cache().containsKey(path.getReference()))
                     {
-                        list = Transfer.cache().get(path.getReference(), new NullComparator(), Filter());
+                        list = Transfer.cache().get(path.getReference()).filter(new NullComparator(), Filter());
                         for (int i = 0; i < list.size(); i++)
                         {
                             yield return new TreePathReference((Path) list.get(i));
@@ -88,7 +89,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                                                                         _isLoadingListingInBackground));
                 }
             }
-            list = Transfer.cache().get(path.getReference(), new FilenameComparator(true), Filter());
+            list = Transfer.cache().get(path.getReference()).filter(new FilenameComparator(true), Filter());
             for (int i = 0; i < list.size(); i++)
             {
                 yield return new TreePathReference((Path) list.get(i));
@@ -238,10 +239,10 @@ namespace Ch.Cyberduck.Ui.Controller
             public override void finish()
             {
                 AsyncController.AsyncDelegate mainAction = delegate
-                                                               {
-                                                                   _controller.View.StopActivityAnimation();
-                                                                   _controller.UpdateStatusLabel();
-                                                               };
+                    {
+                        _controller.View.StopActivityAnimation();
+                        _controller.UpdateStatusLabel();
+                    };
                 _controller.Invoke(mainAction);
             }
         }
