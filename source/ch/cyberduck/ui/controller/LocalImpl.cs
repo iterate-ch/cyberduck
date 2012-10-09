@@ -342,7 +342,7 @@ namespace Ch.Cyberduck.Ui.Controller
             ;
         }
 
-        protected override void setPath(string parent, string name)
+        public override void setPath(string parent, string name)
         {
             string p = MakeValidPath(parent);
             string n = MakeValidFilename(name);
