@@ -132,7 +132,9 @@ public abstract class TransferPromptController extends SheetController implement
 
     @Override
     public void callback(final int returncode) {
-        log.debug("callback:" + returncode);
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Callback with return code %d", returncode));
+        }
         if(returncode == CANCEL_OPTION) { // Abort
             action = TransferAction.ACTION_CANCEL;
         }
@@ -143,7 +145,9 @@ public abstract class TransferPromptController extends SheetController implement
      * Reload the files in the prompt dialog
      */
     public void reloadData() {
-        log.debug("reloadData");
+        if(log.isDebugEnabled()) {
+            log.debug("Reload table view");
+        }
         statusIndicator.startAnimation(null);
         browserView.reloadData();
         statusIndicator.stopAnimation(null);
@@ -154,7 +158,9 @@ public abstract class TransferPromptController extends SheetController implement
 
     @Override
     public TransferAction prompt() {
-        log.debug("prompt:" + transfer);
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Prompt for transfer action of %s", transfer.getName()));
+        }
         for(Path next : transfer.getRoots()) {
             if(browserModel.filter().accept(next)) {
                 browserModel.add(next);
@@ -202,22 +208,22 @@ public abstract class TransferPromptController extends SheetController implement
 
             @Override
             public void enterKeyPressed(final ID sender) {
-                ;
+                //
             }
 
             @Override
             public void deleteKeyPressed(final ID sender) {
-                ;
+                //
             }
 
             @Override
             public void tableColumnClicked(NSTableView view, NSTableColumn tableColumn) {
-                ;
+                //
             }
 
             @Override
             public void tableRowDoubleClicked(final ID sender) {
-                ;
+                //
             }
 
             @Override
