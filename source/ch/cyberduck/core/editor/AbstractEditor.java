@@ -51,9 +51,9 @@ public abstract class AbstractEditor {
     protected Path edited;
 
     /**
-     *
+     * Store checksum of downloaded file to detect modifications
      */
-    private String lastchecksum;
+    private String checksum;
 
     public AbstractEditor(final Path path) {
         // Create a copy of the path as to not interfere with the browser. #5524
@@ -141,7 +141,7 @@ public abstract class AbstractEditor {
                 if(edited.status().isComplete()) {
                     edited.getSession().message(MessageFormat.format(
                             Locale.localizedString("Compute MD5 hash of {0}", "Status"), edited.getName()));
-                    lastchecksum = edited.getLocal().attributes().getChecksum();
+                    checksum = edited.getLocal().attributes().getChecksum();
                 }
             }
 
@@ -181,13 +181,13 @@ public abstract class AbstractEditor {
                 // If checksum still the same no need for save
                 edited.getSession().message(MessageFormat.format(
                         Locale.localizedString("Compute MD5 hash of {0}", "Status"), edited.getName()));
-                if(lastchecksum.equals(edited.getLocal().attributes().getChecksum())) {
+                if(checksum.equals(edited.getLocal().attributes().getChecksum())) {
                     if(log.isInfoEnabled()) {
                         log.info(String.format("File %s not modified", edited.getLocal()));
                     }
                     return;
                 }
-                lastchecksum = edited.getLocal().attributes().getChecksum();
+                checksum = edited.getLocal().attributes().getChecksum();
                 final TransferOptions options = new TransferOptions();
                 options.closeSession = false;
                 final Transfer upload = new UploadTransfer(edited) {
