@@ -47,7 +47,7 @@ public class Status {
     private long current = 0;
 
     /**
-     * Content length
+     * Transfer size. May be less than the file size in attributes or 0 if creating symbolic links.
      */
     private long length;
 
