@@ -65,12 +65,14 @@ public class CacheTest extends AbstractTestCase {
                 return u;
             }
         }, new AttributedList<Path>());
-        assertTrue(cache.containsKey(new PathReference() {
+        final PathReference reference = new PathReference() {
             @Override
             public Object unique() {
                 return u;
             }
-        }));
+        };
+        assertTrue(cache.containsKey(reference));
+        assertTrue(cache.isCached(reference));
     }
 
     @Test
@@ -88,5 +90,7 @@ public class CacheTest extends AbstractTestCase {
         assertFalse(cache.get(reference).attributes().isInvalid());
         cache.invalidate(reference);
         assertTrue(cache.get(reference).attributes().isInvalid());
+        assertTrue(cache.containsKey(reference));
+        assertFalse(cache.isCached(reference));
     }
 }
