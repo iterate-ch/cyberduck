@@ -23,17 +23,15 @@ import ch.cyberduck.core.PathFilter;
 import ch.cyberduck.core.Status;
 import ch.cyberduck.core.SyncTransfer;
 import ch.cyberduck.core.Transfer;
+import ch.cyberduck.core.synchronization.Comparison;
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.resources.IconCache;
-
-import org.apache.log4j.Logger;
 
 /**
  * @version $Id$
  */
 public class SyncPromptModel extends TransferPromptModel {
-    private static final Logger log = Logger.getLogger(SyncPromptModel.class);
 
     public SyncPromptModel(TransferPromptController c, Transfer transfer) {
         super(c, transfer);
@@ -58,7 +56,6 @@ public class SyncPromptModel extends TransferPromptModel {
             filter = new PromptFilter() {
                 @Override
                 public boolean accept(Path child) {
-                    log.debug("accept:" + child);
                     return super.accept(child);
                 }
             };
@@ -80,22 +77,22 @@ public class SyncPromptModel extends TransferPromptModel {
         final NSObject cached = tableViewCache.get(item, identifier);
         if(null == cached) {
             if(identifier.equals(SIZE_COLUMN)) {
-                SyncTransfer.Comparison compare = ((SyncTransfer) transfer).compare(item);
+                Comparison compare = ((SyncTransfer) transfer).compare(item);
                 return tableViewCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(Status.getSizeAsString(
-                        compare.equals(SyncTransfer.COMPARISON_REMOTE_NEWER) ? item.attributes().getSize() : item.getLocal().attributes().getSize()),
+                        compare.equals(Comparison.REMOTE_NEWER) ? item.attributes().getSize() : item.getLocal().attributes().getSize()),
                         TableCellAttributes.browserFontRightAlignment()));
             }
             if(identifier.equals(SYNC_COLUMN)) {
-                SyncTransfer.Comparison compare = ((SyncTransfer) transfer).compare(item);
+                Comparison compare = ((SyncTransfer) transfer).compare(item);
                 if(item.attributes().isDirectory()) {
                     if(item.exists() && item.getLocal().exists()) {
                         return null;
                     }
                 }
-                if(compare.equals(SyncTransfer.COMPARISON_REMOTE_NEWER)) {
+                if(compare.equals(Comparison.REMOTE_NEWER)) {
                     return tableViewCache.put(item, identifier, IconCache.iconNamed("transfer-download.tiff", 16));
                 }
-                if(compare.equals(SyncTransfer.COMPARISON_LOCAL_NEWER)) {
+                if(compare.equals(Comparison.LOCAL_NEWER)) {
                     return tableViewCache.put(item, identifier, IconCache.iconNamed("transfer-upload.tiff", 16));
                 }
                 return null;
