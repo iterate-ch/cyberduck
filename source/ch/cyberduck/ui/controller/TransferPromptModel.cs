@@ -57,14 +57,14 @@ namespace Ch.Cyberduck.Ui.Controller
             _roots.Add(p);
         }
 
-        public bool CanExpand(object reference)
+        public bool CanExpand(object path)
         {
-            return GetPath(((TreePathReference) reference)).attributes().isDirectory();
+            return ((Path) path).attributes().isDirectory();
         }
 
-        public IEnumerable<TreePathReference> ChildrenGetter(object reference)
+        public IEnumerable<Path> ChildrenGetter(object p)
         {
-            Path path = ((TreePathReference) reference).Unique;
+            Path path = ((Path) p);
             AttributedList list;
             lock (_isLoadingListingInBackground)
             {
@@ -77,7 +77,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         list = Transfer.cache().get(path.getReference()).filter(new NullComparator(), Filter());
                         for (int i = 0; i < list.size(); i++)
                         {
-                            yield return new TreePathReference((Path) list.get(i));
+                            yield return (Path) list.get(i);
                         }
                         yield break;
                     }
@@ -92,30 +92,19 @@ namespace Ch.Cyberduck.Ui.Controller
             list = Transfer.cache().get(path.getReference()).filter(new FilenameComparator(true), Filter());
             for (int i = 0; i < list.size(); i++)
             {
-                yield return new TreePathReference((Path) list.get(i));
+                yield return (Path) list.get(i);
             }
             yield break;
         }
 
-        protected Path GetPath(TreePathReference path)
+        public object GetName(Path path)
         {
-            Path result = Transfer.lookup(path);
-            if (null == result)
-            {
-                // cache is being updated
-                result = path.Unique;
-            }
-            return result;
+            return path.getName();
         }
 
-        public object GetName(TreePathReference reference)
+        public object GetModified(Path path)
         {
-            return GetPath(reference).getName();
-        }
-
-        public object GetModified(TreePathReference reference)
-        {
-            long modificationDate = GetPath(reference).attributes().getModificationDate();
+            long modificationDate = path.attributes().getModificationDate();
             if (modificationDate != -1)
             {
                 return UserDefaultsDateFormatter.ConvertJavaMiliSecondToDateTime(modificationDate);
@@ -123,21 +112,21 @@ namespace Ch.Cyberduck.Ui.Controller
             return UNKNOWN;
         }
 
-        public abstract object GetSize(TreePathReference reference);
+        public abstract object GetSize(Path path);
 
         public string GetSizeAsString(object size)
         {
             return Status.getSizeAsString((long) size);
         }
 
-        public object GetIcon(TreePathReference reference)
+        public object GetIcon(Path path)
         {
-            return IconCache.Instance.IconForPath(GetPath(reference), IconCache.IconSize.Small);
+            return IconCache.Instance.IconForPath(path, IconCache.IconSize.Small);
         }
 
-        public CheckState GetCheckState(Object reference)
+        public CheckState GetCheckState(Object path)
         {
-            bool included = Transfer.isIncluded(GetPath((TreePathReference) reference)) &&
+            bool included = Transfer.isIncluded((Path) path) &&
                             !_controller.Action.equals(TransferAction.ACTION_SKIP);
             if (included)
             {
@@ -146,17 +135,17 @@ namespace Ch.Cyberduck.Ui.Controller
             return CheckState.Unchecked;
         }
 
-        public IEnumerable<TreePathReference> GetEnumerator()
+        public IEnumerable<Path> GetEnumerator()
         {
             foreach (Path path in _roots)
             {
-                yield return new TreePathReference(path);
+                yield return path;
             }
         }
 
-        public CheckState SetCheckState(object reference, CheckState newValue)
+        public CheckState SetCheckState(object p, CheckState newValue)
         {
-            Path path = GetPath((TreePathReference) reference);
+            Path path = (Path) p;
             if (!Transfer.isSkipped(path))
             {
                 Transfer.setSelected(path, newValue == CheckState.Checked ? true : false);
@@ -167,34 +156,32 @@ namespace Ch.Cyberduck.Ui.Controller
             return newValue == CheckState.Checked ? CheckState.Unchecked : CheckState.Checked;
         }
 
-        public abstract object GetWarningImage(TreePathReference reference);
+        public abstract object GetWarningImage(Path path);
 
-        public virtual object GetCreateImage(TreePathReference reference)
+        public virtual object GetCreateImage(Path path)
         {
             return null;
         }
 
-        public virtual object GetSyncGetter(TreePathReference reference)
+        public virtual object GetSyncGetter(Path path)
         {
             return null;
         }
 
-        public bool IsActive(TreePathReference reference)
+        public bool IsActive(Path path)
         {
-            return Transfer.isIncluded(GetPath(reference));
+            return Transfer.isIncluded(path);
         }
 
         private class ChildGetterTransferPromptBackgrounAction : AbstractBackgroundAction
         {
             private readonly TransferPromptController _controller;
-            private readonly List<Path> _isLoadingListingInBackground;
+            private readonly IList<Path> _isLoadingListingInBackground;
             private readonly Path _path;
             private readonly Transfer _transfer;
 
-            public ChildGetterTransferPromptBackgrounAction(TransferPromptController controller,
-                                                            Transfer transfer,
-                                                            Path path,
-                                                            List<Path> isLoadingListingInBackground)
+            public ChildGetterTransferPromptBackgrounAction(TransferPromptController controller, Transfer transfer,
+                                                            Path path, IList<Path> isLoadingListingInBackground)
             {
                 _controller = controller;
                 _transfer = transfer;

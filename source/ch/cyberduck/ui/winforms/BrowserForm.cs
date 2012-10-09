@@ -559,7 +559,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             }
         }
 
-        public void SetBrowserModel(IEnumerable<TreePathReference> model)
+        public void SetBrowserModel(IEnumerable<Path> model)
         {
             // Clear the cache in order to avoid strange side effects
             browser.ClearCachedInfo();
@@ -582,12 +582,12 @@ namespace Ch.Cyberduck.Ui.Winforms
             }
         }
 
-        public void RefreshBrowserObject(TreePathReference path)
+        public void RefreshBrowserObject(Path path)
         {
             browser.RefreshObject(path);
         }
 
-        public void RefreshBrowserObjects(List<TreePathReference> list)
+        public void RefreshBrowserObjects(List<Path> list)
         {
             browser.RefreshObjects(list);
         }
@@ -597,19 +597,19 @@ namespace Ch.Cyberduck.Ui.Winforms
             browser.Invalidate();
         }
 
-        public TypedColumn<TreePathReference>.TypedAspectGetterDelegate ModelFilenameGetter
+        public TypedColumn<Path>.TypedAspectGetterDelegate ModelFilenameGetter
         {
-            set { new TypedColumn<TreePathReference>(treeColumnName) {AspectGetter = value}; }
+            set { new TypedColumn<Path>(treeColumnName) {AspectGetter = value}; }
         }
 
-        public TypedColumn<TreePathReference>.TypedImageGetterDelegate ModelIconGetter
+        public TypedColumn<Path>.TypedImageGetterDelegate ModelIconGetter
         {
-            set { new TypedColumn<TreePathReference>(treeColumnName) {ImageGetter = value}; }
+            set { new TypedColumn<Path>(treeColumnName) {ImageGetter = value}; }
         }
 
-        public TypedColumn<TreePathReference>.TypedAspectGetterDelegate ModelSizeGetter
+        public TypedColumn<Path>.TypedAspectGetterDelegate ModelSizeGetter
         {
-            set { new TypedColumn<TreePathReference>(treeColumnSize) {AspectGetter = value}; }
+            set { new TypedColumn<Path>(treeColumnSize) {AspectGetter = value}; }
         }
 
         public AspectToStringConverterDelegate ModelSizeAsStringGetter
@@ -622,9 +622,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             set { browser.CanExpandGetter = value; }
         }
 
-        public TypedColumn<TreePathReference>.TypedAspectGetterDelegate ModelModifiedGetter
+        public TypedColumn<Path>.TypedAspectGetterDelegate ModelModifiedGetter
         {
-            set { new TypedColumn<TreePathReference>(treeColumnModified) {AspectGetter = value}; }
+            set { new TypedColumn<Path>(treeColumnModified) {AspectGetter = value}; }
         }
 
         public AspectToStringConverterDelegate ModelModifiedAsStringGetter
@@ -632,24 +632,24 @@ namespace Ch.Cyberduck.Ui.Winforms
             set { treeColumnModified.AspectToStringConverter = value; }
         }
 
-        public TypedColumn<TreePathReference>.TypedAspectGetterDelegate ModelOwnerGetter
+        public TypedColumn<Path>.TypedAspectGetterDelegate ModelOwnerGetter
         {
-            set { new TypedColumn<TreePathReference>(treeColumnOwner) {AspectGetter = value}; }
+            set { new TypedColumn<Path>(treeColumnOwner) {AspectGetter = value}; }
         }
 
-        public TypedColumn<TreePathReference>.TypedAspectGetterDelegate ModelGroupGetter
+        public TypedColumn<Path>.TypedAspectGetterDelegate ModelGroupGetter
         {
-            set { new TypedColumn<TreePathReference>(treeColumnGroup) {AspectGetter = value}; }
+            set { new TypedColumn<Path>(treeColumnGroup) {AspectGetter = value}; }
         }
 
-        public TypedColumn<TreePathReference>.TypedAspectGetterDelegate ModelPermissionsGetter
+        public TypedColumn<Path>.TypedAspectGetterDelegate ModelPermissionsGetter
         {
-            set { new TypedColumn<TreePathReference>(treeColumnPermissions) {AspectGetter = value}; }
+            set { new TypedColumn<Path>(treeColumnPermissions) {AspectGetter = value}; }
         }
 
-        public TypedColumn<TreePathReference>.TypedAspectGetterDelegate ModelKindGetter
+        public TypedColumn<Path>.TypedAspectGetterDelegate ModelKindGetter
         {
-            set { new TypedColumn<TreePathReference>(treeColumnKind) {AspectGetter = value}; }
+            set { new TypedColumn<Path>(treeColumnKind) {AspectGetter = value}; }
         }
 
         public MulticolorTreeListView.ActiveGetterDelegate ModelActiveGetter
@@ -740,10 +740,18 @@ namespace Ch.Cyberduck.Ui.Winforms
             set { statusLabel.Text = value; }
         }
 
-        public List<TreePathReference> SelectedPaths
+        public IList<Path> SelectedPaths
         {
-            get { return new List<TreePathReference>(new ListAdapter<TreePathReference>(browser.SelectedObjects)); }
-            set { browser.SelectedObjects = value; }
+            get { return new List<Path>(new ListAdapter<Path>(browser.SelectedObjects)); }
+            set
+            {
+                ArrayList s = new ArrayList();
+                foreach (Path path in value)
+                {
+                    s.Add(path);
+                }
+                browser.SelectedObjects = s;
+            }
         }
 
         public List<Host> SelectedBookmarks
@@ -781,15 +789,15 @@ namespace Ch.Cyberduck.Ui.Winforms
             searchTextBox.Focus();
         }
 
-        public List<TreePathReference> VisiblePaths
+        public IList<Path> VisiblePaths
         {
             get
             {
                 int count = browser.GetItemCount();
-                List<TreePathReference> paths = new List<TreePathReference>(count);
+                IList<Path> paths = new List<Path>(count);
                 for (int i = 0; i < browser.GetItemCount(); i++)
                 {
-                    paths.Add((TreePathReference) browser.GetModelObject(i));
+                    paths.Add((Path) browser.GetModelObject(i));
                 }
                 return paths;
             }
@@ -1053,7 +1061,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             PopulateCopyUrlMenuItemPopup(sender as MenuItem, GetCopyUrls());
         }
 
-        private void PopulateCopyUrlMenuItemPopup(MenuItem mainItem, List<KeyValuePair<String, List<String>>> items)
+        private void PopulateCopyUrlMenuItemPopup(MenuItem mainItem, IList<KeyValuePair<string, List<string>>> items)
         {
             mainItem.MenuItems.Clear();
             int c = 0;
@@ -1096,7 +1104,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             PopulateOpenUrlMenuItemPopup(sender as MenuItem, GetOpenUrls());
         }
 
-        private void PopulateOpenUrlMenuItemPopup(MenuItem mainItem, List<KeyValuePair<String, List<String>>> items)
+        private void PopulateOpenUrlMenuItemPopup(MenuItem mainItem, IList<KeyValuePair<string, List<string>>> items)
         {
             mainItem.MenuItems.Clear();
             int c = 0;
@@ -2254,7 +2262,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         /// <param name="e"></param>
         private void bookmarkToolStripMenuItem_DropDownOpening(object sender, EventArgs e)
         {
-            List<Host> bookmarks = GetBookmarks();
+            IList<Host> bookmarks = GetBookmarks();
 
             //all fix items
             List<ToolStripItem> fix = new List<ToolStripItem>();
@@ -2286,7 +2294,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         private void historyMenuStrip_Opening(object sender, CancelEventArgs e)
         {
-            List<Host> history = GetHistory();
+            IList<Host> history = GetHistory();
 
             historyMenuStrip.Items.Clear();
             if (history.Count > 0)
@@ -2382,7 +2390,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         private void browser_CellEditFinishing(object sender, CellEditEventArgs e)
         {
-            e.Cancel = RenameFile(((TreePathReference) e.RowObject).Unique, (String) e.NewValue);
+            e.Cancel = RenameFile((Path) e.RowObject, (String) e.NewValue);
         }
 
         private void browser_BeforeLabelEdit(object sender, LabelEditEventArgs e)
@@ -2722,7 +2730,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 
             public bool Filter(object modelObject)
             {
-                return _del.accept(((TreePathReference) modelObject).Unique);
+                return _del.accept(((Path) modelObject));
             }
         }
 

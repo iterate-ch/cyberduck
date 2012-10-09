@@ -50,10 +50,10 @@ namespace Ch.Cyberduck.Ui.Controller
         private readonly BrowserController _controller;
         private readonly string _multipleFilesString = "(" + Locale.localizedString("Multiple files") + ")";
         private BindingList<UserAndRoleEntry> _acl = new BindingList<UserAndRoleEntry>();
-        private List<Path> _files;
+        private IList<Path> _files;
         private BindingList<CustomHeaderEntry> _metadata = new BindingList<CustomHeaderEntry>();
 
-        private InfoController(BrowserController controller, List<Path> files)
+        private InfoController(BrowserController controller, IList<Path> files)
         {
             View = ObjectFactory.GetInstance<IInfoView>();
             _controller = controller;
@@ -75,7 +75,7 @@ namespace Ch.Cyberduck.Ui.Controller
             get { return Preferences.instance().getBoolean("browser.info.isInspector"); }
         }
 
-        public List<Path> Files
+        public IList<Path> Files
         {
             private get { return _files; }
             set
@@ -135,6 +135,7 @@ namespace Ch.Cyberduck.Ui.Controller
             get
             {
                 if (_files.Count == 0) return null;
+
                 return _files[0];
             }
         }
@@ -1520,7 +1521,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
             private static readonly object SyncRoot = new Object();
 
-            public static InfoController Create(BrowserController controller, List<Path> files)
+            public static InfoController Create(BrowserController controller, IList<Path> files)
             {
                 if (Preferences.instance().getBoolean("browser.info.isInspector"))
                 {
@@ -2101,7 +2102,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private class RecursiveSizeAction : InfoBackgroundAction
         {
             public RecursiveSizeAction(BrowserController controller, InfoController infoController,
-                                       List<Path> files)
+                                       IList<Path> files)
                 : base(controller, new InnerCalculateSizeWorker(infoController, Utils.ConvertToJavaList(files)))
             {
             }
@@ -2438,13 +2439,13 @@ namespace Ch.Cyberduck.Ui.Controller
             private readonly Distribution.Method _deliveryMethod;
             private readonly bool _distribution;
             private readonly string _distributionLogging;
-            private readonly List<Path> _files;
+            private readonly IList<Path> _files;
             private readonly InfoController _infoController;
             private readonly bool _logging;
             private readonly IInfoView _view;
 
             public WriteDistributionBackgroundAction(BrowserController browserController, InfoController infoController,
-                                                     List<Path> files) : base(browserController)
+                                                     IList<Path> files) : base(browserController)
             {
                 _files = files;
                 _infoController = infoController;

@@ -36,39 +36,39 @@ namespace Ch.Cyberduck.Ui.Controller
             _controller = controller;
         }
 
-        public bool CanExpand(object reference)
+        public bool CanExpand(object path)
         {
-            return GetPath(((TreePathReference) reference)).attributes().isDirectory();
+            return ((Path) path).attributes().isDirectory();
         }
 
-        public IEnumerable<TreePathReference> ChildrenGetter(object reference)
+        public IEnumerable<Path> ChildrenGetter(object path)
         {
-            AbstractPath path = GetPath((TreePathReference) reference);
+            Path p = (Path) path;
             AttributedList list;
             lock (_isLoadingListingInBackground)
             {
                 Cache cache = _controller.getSession().cache();
-                if (!_isLoadingListingInBackground.Contains(path))
+                if (!_isLoadingListingInBackground.Contains(p))
                 {
-                    if (cache.isCached(path.getReference()))
+                    if (cache.isCached(p.getReference()))
                     {
-                        list = cache.get(path.getReference()).filter(_controller.FilenameComparator,
-                                                                     _controller.FilenameFilter);
+                        list = cache.get(p.getReference()).filter(_controller.FilenameComparator,
+                                                                  _controller.FilenameFilter);
                         for (int i = 0; i < list.size(); i++)
                         {
-                            yield return new TreePathReference((Path) list.get(i));
+                            yield return (Path) list.get(i);
                         }
                         yield break;
                     }
-                    _isLoadingListingInBackground.Add(path);
+                    _isLoadingListingInBackground.Add(p);
                     // Reloading a workdir that is not cached yet would cause the interface to freeze;
                     // Delay until path is cached in the background
                     // switch to blocking children fetching
                     //path.childs();
-                    _controller.Background(new ChildGetterBrowserBackgrounAction(_controller, path,
+                    _controller.Background(new ChildGetterBrowserBackgrounAction(_controller, p,
                                                                                  _isLoadingListingInBackground));
                 }
-                list = cache.get(path.getReference()).filter(_controller.FilenameComparator, _controller.FilenameFilter);
+                list = cache.get(p.getReference()).filter(_controller.FilenameComparator, _controller.FilenameFilter);
 //                if (list.size() == 0)
 //                {
 //                    yield return
@@ -79,14 +79,14 @@ namespace Ch.Cyberduck.Ui.Controller
 //                {
                 for (int i = 0; i < list.size(); i++)
                 {
-                    yield return new TreePathReference((Path) list.get(i));
+                    yield return (Path) list.get(i);
                 }
 //                }
                 yield break;
             }
         }
 
-        public IEnumerable<TreePathReference> GetEnumerator()
+        public IEnumerable<Path> GetEnumerator()
         {
             if (null == _controller.Workdir)
                 yield break;
@@ -94,23 +94,23 @@ namespace Ch.Cyberduck.Ui.Controller
             AttributedList list = _controller.Workdir.children(_controller.FilenameFilter);
             for (int i = 0; i < list.size(); i++)
             {
-                yield return new TreePathReference((Path) list.get(i));
+                yield return (Path) list.get(i);
             }
         }
 
-        public object GetName(TreePathReference path)
+        public object GetName(Path path)
         {
-            return GetPath(path).getName();
+            return path.getName();
         }
 
-        public object GetIcon(TreePathReference path)
+        public object GetIcon(Path path)
         {
-            return IconCache.Instance.IconForPath(GetPath(path) as Path, IconCache.IconSize.Small);
+            return IconCache.Instance.IconForPath(path, IconCache.IconSize.Small);
         }
 
-        public object GetModified(TreePathReference path)
+        public object GetModified(Path path)
         {
-            long modificationDate = GetPath(path).attributes().getModificationDate();
+            long modificationDate = path.attributes().getModificationDate();
             if (modificationDate != -1)
             {
                 return UserDefaultsDateFormatter.ConvertJavaMiliSecondToDateTime(modificationDate);
@@ -128,20 +128,9 @@ namespace Ch.Cyberduck.Ui.Controller
             return _unknown;
         }
 
-        private AbstractPath GetPath(TreePathReference path)
+        public object GetSize(Path path)
         {
-            AbstractPath result = _controller.getSession().cache().lookup(path);
-            if (null == result)
-            {
-                // cache is being updated
-                result = path.Unique;
-            }
-            return result;
-        }
-
-        public object GetSize(TreePathReference path)
-        {
-            return GetPath(path).attributes().getSize();
+            return path.attributes().getSize();
         }
 
         public string GetSizeAsString(object size)
@@ -149,19 +138,19 @@ namespace Ch.Cyberduck.Ui.Controller
             return Status.getSizeAsString((long) size);
         }
 
-        public object GetOwner(TreePathReference path)
+        public object GetOwner(Path path)
         {
-            return GetPath(path).attributes().getOwner();
+            return path.attributes().getOwner();
         }
 
-        public object GetGroup(TreePathReference path)
+        public object GetGroup(Path path)
         {
-            return GetPath(path).attributes().getGroup();
+            return path.attributes().getGroup();
         }
 
-        public object GetPermission(TreePathReference path)
+        public object GetPermission(Path path)
         {
-            Permission permission = GetPath(path).attributes().getPermission();
+            Permission permission = path.attributes().getPermission();
             if (null == permission)
             {
                 return _unknown;
@@ -169,24 +158,24 @@ namespace Ch.Cyberduck.Ui.Controller
             return permission.toString();
         }
 
-        public object GetKind(TreePathReference path)
+        public object GetKind(Path path)
         {
-            return GetPath(path).kind();
+            return path.kind();
         }
 
-        public bool GetActive(TreePathReference reference)
+        public bool GetActive(Path path)
         {
-            return _controller.IsConnected() && BrowserController.HiddenFilter.accept(GetPath(reference));
+            return _controller.IsConnected() && BrowserController.HiddenFilter.accept(path);
         }
 
         private class ChildGetterBrowserBackgrounAction : BrowserBackgroundAction
         {
             private readonly BrowserController _controller;
             private readonly List<AbstractPath> _isLoadingListingInBackground;
-            private readonly AbstractPath _path;
+            private readonly Path _path;
 
             public ChildGetterBrowserBackgrounAction(BrowserController controller,
-                                                     AbstractPath path,
+                                                     Path path,
                                                      List<AbstractPath> isLoadingListingInBackground)
                 : base(controller)
             {
@@ -197,7 +186,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
             public override void run()
             {
-                _path.children();
+                _controller.getSession().cache().lookup(_path.getReference()).children();
             }
 
             public override string getActivity()
@@ -210,7 +199,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 lock (_isLoadingListingInBackground)
                 {
                     _isLoadingListingInBackground.Remove(_path);
-                    _controller.RefreshObject(_path as Path, true);
+                    _controller.RefreshObject(_path, true);
                 }
                 base.cleanup();
             }

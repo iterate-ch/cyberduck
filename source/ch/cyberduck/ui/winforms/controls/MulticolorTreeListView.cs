@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2011 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -19,7 +19,7 @@
 using System.Drawing;
 using System.Windows.Forms;
 using BrightIdeasSoftware;
-using Ch.Cyberduck.Ui.Controller;
+using ch.cyberduck.core;
 using ch.cyberduck.core.i18n;
 using ch.cyberduck.ui;
 using org.apache.commons.io;
@@ -31,7 +31,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Controls
     /// </summary>
     public class MulticolorTreeListView : TreeListView
     {
-        public delegate bool ActiveGetterDelegate(TreePathReference reference);
+        public delegate bool ActiveGetterDelegate(Path path);
 
         private const int IconSize = 16;
 
@@ -61,10 +61,10 @@ namespace Ch.Cyberduck.Ui.Winforms.Controls
         protected override void OnDrawSubItem(DrawListViewSubItemEventArgs e)
         {
             object o = ((OLVListItem) e.Item).RowObject;
-            if (o is TreePathReference)
+            if (o is Path)
             {
-                TreePathReference r = (TreePathReference) o;
-                e.Item.ForeColor = ActiveGetter(r) ? ActiveForegroudColor : InactiveForegroudColor;
+                Path path = (Path) o;
+                e.Item.ForeColor = ActiveGetter(path) ? ActiveForegroudColor : InactiveForegroudColor;
             }
             base.OnDrawSubItem(e);
         }

@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2011 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -15,6 +15,7 @@
 // Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
 // 
+
 using System;
 using ch.cyberduck.core;
 
@@ -29,14 +30,14 @@ namespace Ch.Cyberduck.Ui.Controller
             _path = path;
         }
 
-        public Path Unique
-        {
-            get { return (Path) _path; }
-        }
-
         public static void Register()
         {
             PathReferenceFactory.addFactory(ch.cyberduck.core.Factory.NATIVE_PLATFORM, new Factory());
+        }
+
+        public override object unique()
+        {
+            return _path.unique();
         }
 
         private class Factory : PathReferenceFactory
@@ -50,11 +51,6 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 return new TreePathReference(ap);
             }
-        }
-
-        public override object unique()
-        {
-            return _path.unique();
         }
     }
 }

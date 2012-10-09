@@ -42,7 +42,7 @@ namespace Ch.Cyberduck.Ui.Controller
         string WindowTitle { set; }
         string StatusLabel { set; }
 
-        List<TreePathReference> SelectedPaths { get; set; }
+        IList<Path> SelectedPaths { get; set; }
         List<Host> SelectedBookmarks { get; }
         int NumberOfFiles { get; }
         int NumberOfBookmarks { get; }
@@ -67,22 +67,22 @@ namespace Ch.Cyberduck.Ui.Controller
 
         PathFilter FilenameFilter { set; }
         string SearchString { set; get; }
-        List<TreePathReference> VisiblePaths { get; }
+        IList<Path> VisiblePaths { get; }
         bool ToolbarVisible { set; get; }
         TreeListView.CanExpandGetterDelegate ModelCanExpandDelegate { set; }
         TreeListView.ChildrenGetterDelegate ModelChildrenGetterDelegate { set; }
 
-        TypedColumn<TreePathReference>.TypedAspectGetterDelegate ModelFilenameGetter { set; }
-        TypedColumn<TreePathReference>.TypedImageGetterDelegate ModelIconGetter { set; }
-        TypedColumn<TreePathReference>.TypedAspectGetterDelegate ModelSizeGetter { set; }
+        TypedColumn<Path>.TypedAspectGetterDelegate ModelFilenameGetter { set; }
+        TypedColumn<Path>.TypedImageGetterDelegate ModelIconGetter { set; }
+        TypedColumn<Path>.TypedAspectGetterDelegate ModelSizeGetter { set; }
         AspectToStringConverterDelegate ModelSizeAsStringGetter { set; }
-        TypedColumn<TreePathReference>.TypedAspectGetterDelegate ModelModifiedGetter { set; }
+        TypedColumn<Path>.TypedAspectGetterDelegate ModelModifiedGetter { set; }
         AspectToStringConverterDelegate ModelModifiedAsStringGetter { set; }
 
-        TypedColumn<TreePathReference>.TypedAspectGetterDelegate ModelOwnerGetter { set; }
-        TypedColumn<TreePathReference>.TypedAspectGetterDelegate ModelGroupGetter { set; }
-        TypedColumn<TreePathReference>.TypedAspectGetterDelegate ModelPermissionsGetter { set; }
-        TypedColumn<TreePathReference>.TypedAspectGetterDelegate ModelKindGetter { set; }
+        TypedColumn<Path>.TypedAspectGetterDelegate ModelOwnerGetter { set; }
+        TypedColumn<Path>.TypedAspectGetterDelegate ModelGroupGetter { set; }
+        TypedColumn<Path>.TypedAspectGetterDelegate ModelPermissionsGetter { set; }
+        TypedColumn<Path>.TypedAspectGetterDelegate ModelKindGetter { set; }
 
         MulticolorTreeListView.ActiveGetterDelegate ModelActiveGetter { set; }
         event EventHandler<ChangeBrowserViewArgs> ChangeBrowserView;
@@ -228,9 +228,9 @@ namespace Ch.Cyberduck.Ui.Controller
         event DragHandler HostDrag;
         event EndDragHandler HostEndDrag;
 
-        void SetBrowserModel(IEnumerable<TreePathReference> model);
-        void RefreshBrowserObject(TreePathReference path);
-        void RefreshBrowserObjects(List<TreePathReference> list);
+        void SetBrowserModel(IEnumerable<Path> model);
+        void RefreshBrowserObject(Path path);
+        void RefreshBrowserObjects(List<Path> list);
         void BrowserActiveStateChanged();
 
         void AddTranscriptEntry(bool request, string entry);

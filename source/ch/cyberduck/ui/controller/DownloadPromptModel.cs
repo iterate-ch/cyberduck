@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -15,6 +15,7 @@
 // Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
 // 
+
 using ch.cyberduck.core;
 using org.apache.log4j;
 
@@ -39,21 +40,20 @@ namespace Ch.Cyberduck.Ui.Controller
             return _filter;
         }
 
-        public override object GetSize(TreePathReference reference)
+        public override object GetSize(Path path)
         {
-            return GetPath(reference).getLocal().attributes().getSize();
+            return path.getLocal().attributes().getSize();
         }
 
-        public override object GetWarningImage(TreePathReference reference)
+        public override object GetWarningImage(Path path)
         {
-            Path p = GetPath(reference);
-            if (p.attributes().isFile())
+            if (path.attributes().isFile())
             {
-                if (p.attributes().getSize() == 0)
+                if (path.attributes().getSize() == 0)
                 {
                     return AlertIcon;
                 }
-                if (p.getLocal().attributes().getSize() > p.attributes().getSize())
+                if (path.getLocal().attributes().getSize() > path.attributes().getSize())
                 {
                     return AlertIcon;
                 }

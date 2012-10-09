@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -15,32 +15,39 @@
 // Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
 // 
+
 using System;
 using System.Collections.Generic;
+using System.Windows.Forms;
 using BrightIdeasSoftware;
 using ch.cyberduck.core;
 using ch.cyberduck.ui;
-using java.util;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
     public delegate void VoidHandler();
 
-    public delegate System.Windows.Forms.DataObject DragHandler(ObjectListView list);
-    public delegate void EndDragHandler(System.Windows.Forms.DataObject data);
+    public delegate DataObject DragHandler(ObjectListView list);
+
+    public delegate void EndDragHandler(DataObject data);
 
     public delegate void DropHandler(OlvDropEventArgs dropArgs);
+
     public delegate void ModelDropHandler(ModelDropEventArgs dropArgs);
 
     public delegate bool RenamePathname(Path path, string newName);
+
     public delegate void EditWithHandler(String exe);
 
     public delegate IList<KeyValuePair<string, string>> EditorsHandler();
 
-    public delegate List<string> ArchivesHandler();
-    public delegate List<KeyValuePair<String, List<String>>> CopyUrlHandler();
-    public delegate List<KeyValuePair<String, List<String>>> OpenUrlHandler();
-    public delegate List<Host> BookmarksHandler();
+    public delegate IList<string> ArchivesHandler();
+
+    public delegate IList<KeyValuePair<String, List<String>>> CopyUrlHandler();
+
+    public delegate IList<KeyValuePair<String, List<String>>> OpenUrlHandler();
+
+    public delegate IList<Host> BookmarksHandler();
 
     public delegate void SetComparatorHandler(BrowserComparator comparator);
 

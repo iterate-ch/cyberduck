@@ -1,5 +1,5 @@
-﻿﻿﻿﻿//
-// Copyright (c) 2010 Yves Langisch. All rights reserved.
+﻿// 
+// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -15,16 +15,17 @@
 // Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
 // 
+
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-using ch.cyberduck.core;
 using Ch.Cyberduck.Core;
+using StructureMap;
+using ch.cyberduck.core;
 using ch.cyberduck.core.i18n;
 using ch.cyberduck.ui;
 using ch.cyberduck.ui.controller;
 using org.apache.log4j;
-using StructureMap;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -67,57 +68,59 @@ namespace Ch.Cyberduck.Ui.Controller
             }
 
             AsyncDelegate wireAction = delegate
-                                           {
-                                               _progressListener = new StatusLabelProgressListener(this);
-                                               foreach(Session s in Utils.ConvertFromJavaList<Session>(Transfer.getSessions())) {
-                                                   s.addProgressListener(_progressListener);
-                                               }
+                {
+                    _progressListener = new StatusLabelProgressListener(this);
+                    foreach (Session s in Utils.ConvertFromJavaList<Session>(Transfer.getSessions()))
+                    {
+                        s.addProgressListener(_progressListener);
+                    }
 
-                                               View.ToggleDetailsEvent += View_ToggleDetailsEvent;
-                                               View.DetailsVisible = Preferences.instance().getBoolean(
-                                                   "transfer.toggle.details");
+                    View.ToggleDetailsEvent += View_ToggleDetailsEvent;
+                    View.DetailsVisible = Preferences.instance().getBoolean(
+                        "transfer.toggle.details");
 
-                                               View.ChangedActionEvent += View_ChangedActionEvent;
-                                               View.ChangedSelectionEvent += View_ChangedSelectionEvent;
+                    View.ChangedActionEvent += View_ChangedActionEvent;
+                    View.ChangedSelectionEvent += View_ChangedSelectionEvent;
 
-                                               View.ModelCanExpandDelegate = TransferPromptModel.CanExpand;
-                                               View.ModelChildrenGetterDelegate = TransferPromptModel.ChildrenGetter;
-                                               View.ModelCheckStateGetter = TransferPromptModel.GetCheckState;
-                                               View.ModelCheckStateSetter = TransferPromptModel.SetCheckState;
-                                               View.ModelSizeGetter = TransferPromptModel.GetSize;
-                                               View.ModelSizeAsStringGetter = TransferPromptModel.GetSizeAsString;
-                                               View.ModelFilenameGetter = TransferPromptModel.GetName;
-                                               View.ModelIconGetter = TransferPromptModel.GetIcon;
-                                               View.ModelWarningGetter = TransferPromptModel.GetWarningImage;
-                                               View.ModelCreateGetter = TransferPromptModel.GetCreateImage;
-                                               View.ModelSyncGetter = TransferPromptModel.GetSyncGetter;
-                                               View.ModelActiveGetter = TransferPromptModel.IsActive;
+                    View.ModelCanExpandDelegate = TransferPromptModel.CanExpand;
+                    View.ModelChildrenGetterDelegate = TransferPromptModel.ChildrenGetter;
+                    View.ModelCheckStateGetter = TransferPromptModel.GetCheckState;
+                    View.ModelCheckStateSetter = TransferPromptModel.SetCheckState;
+                    View.ModelSizeGetter = TransferPromptModel.GetSize;
+                    View.ModelSizeAsStringGetter = TransferPromptModel.GetSizeAsString;
+                    View.ModelFilenameGetter = TransferPromptModel.GetName;
+                    View.ModelIconGetter = TransferPromptModel.GetIcon;
+                    View.ModelWarningGetter = TransferPromptModel.GetWarningImage;
+                    View.ModelCreateGetter = TransferPromptModel.GetCreateImage;
+                    View.ModelSyncGetter = TransferPromptModel.GetSyncGetter;
+                    View.ModelActiveGetter = TransferPromptModel.IsActive;
 
-                                               View.ItemsChanged += UpdateStatusLabel;
-                                               View.SetModel(TransferPromptModel.GetEnumerator());
+                    View.ItemsChanged += UpdateStatusLabel;
+                    View.SetModel(TransferPromptModel.GetEnumerator());
 
-                                               //select first one if there is any
-                                               IEnumerator<TreePathReference> en =
-                                                   TransferPromptModel.GetEnumerator().GetEnumerator();
-                                               if (en.MoveNext())
-                                               {
-                                                   View.SelectedPath = en.Current;
-                                               }
+                    //select first one if there is any
+                    IEnumerator<Path> en =
+                        TransferPromptModel.GetEnumerator().GetEnumerator();
+                    if (en.MoveNext())
+                    {
+                        View.SelectedPath = en.Current;
+                    }
 
-                                               DialogResult result = View.ShowDialog(_parent.View);
+                    DialogResult result = View.ShowDialog(_parent.View);
 
-                                               if (result == DialogResult.Cancel)
-                                               {
-                                                   Action = TransferAction.ACTION_CANCEL;
-                                               }
-                                           };
+                    if (result == DialogResult.Cancel)
+                    {
+                        Action = TransferAction.ACTION_CANCEL;
+                    }
+                };
             _parent.Invoke(wireAction, true);
             return Action;
         }
 
         protected override void Invalidate()
         {
-            foreach(Session s in Utils.ConvertFromJavaList<Session>(Transfer.getSessions())) {
+            foreach (Session s in Utils.ConvertFromJavaList<Session>(Transfer.getSessions()))
+            {
                 s.removeProgressListener(_progressListener);
             }
         }
@@ -137,7 +140,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             if (View.SelectedPath != null)
             {
-                Path selected = View.SelectedPath.Unique;
+                Path selected = View.SelectedPath;
                 if (null != selected)
                 {
                     View.LocalFileUrl = selected.getLocal().getAbsolute();
@@ -219,15 +222,18 @@ namespace Ch.Cyberduck.Ui.Controller
             actions.Add(TransferAction.ACTION_SKIP, TransferAction.ACTION_SKIP.getLocalizableString());
 
             bool renameSupported = true;
-            foreach(Session s in Utils.ConvertFromJavaList<Session>(Transfer.getSessions())) {
-                if(!s.isRenameSupported(Transfer.getRoot())) {
+            foreach (Session s in Utils.ConvertFromJavaList<Session>(Transfer.getSessions()))
+            {
+                if (!s.isRenameSupported(Transfer.getRoot()))
+                {
                     renameSupported = false;
                     break;
                 }
             }
             if (renameSupported)
             {
-                actions.Add(TransferAction.ACTION_RENAME_EXISTING, TransferAction.ACTION_RENAME_EXISTING.getLocalizableString());
+                actions.Add(TransferAction.ACTION_RENAME_EXISTING,
+                            TransferAction.ACTION_RENAME_EXISTING.getLocalizableString());
             }
             View.PopulateActions(actions);
 
@@ -260,9 +266,9 @@ namespace Ch.Cyberduck.Ui.Controller
             throw new ArgumentException(transfer.toString());
         }
 
-        public void RefreshObject(AbstractPath path)
+        public void RefreshObject(Path path)
         {
-            AsyncDelegate refreshAction = () => View.RefreshBrowserObject(new TreePathReference(path));
+            AsyncDelegate refreshAction = () => View.RefreshBrowserObject(path);
             Invoke(refreshAction);
         }
 
@@ -277,7 +283,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
             public void message(string msg)
             {
-                _controller.Invoke(new AsyncDelegate(delegate { _controller.View.StatusLabel = msg; }));
+                _controller.Invoke(delegate { _controller.View.StatusLabel = msg; });
             }
         }
     }

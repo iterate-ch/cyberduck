@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -15,6 +15,7 @@
 // Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
 // 
+
 using ch.cyberduck.core;
 using org.apache.log4j;
 
@@ -47,30 +48,28 @@ namespace Ch.Cyberduck.Ui.Controller
             }
         }
 
-        public override object GetSize(TreePathReference reference)
+        public override object GetSize(Path path)
         {
-            Path p = GetPath(reference);
-            SyncTransfer.Comparison compare = ((SyncTransfer) Transfer).compare(p);
+            SyncTransfer.Comparison compare = ((SyncTransfer) Transfer).compare(path);
             return compare.equals(SyncTransfer.COMPARISON_REMOTE_NEWER)
-                       ? p.attributes().getSize()
-                       : p.getLocal().attributes().getSize();
+                       ? path.attributes().getSize()
+                       : path.getLocal().attributes().getSize();
         }
 
-        public override object GetWarningImage(TreePathReference reference)
+        public override object GetWarningImage(Path path)
         {
-            Path p = GetPath(reference);
-            if (p.attributes().isFile())
+            if (path.attributes().isFile())
             {
-                if (p.exists())
+                if (path.exists())
                 {
-                    if (p.attributes().getSize() == 0)
+                    if (path.attributes().getSize() == 0)
                     {
                         return AlertIcon;
                     }
                 }
-                if (p.getLocal().exists())
+                if (path.getLocal().exists())
                 {
-                    if (p.getLocal().attributes().getSize() == 0)
+                    if (path.getLocal().attributes().getSize() == 0)
                     {
                         return AlertIcon;
                     }
@@ -79,25 +78,25 @@ namespace Ch.Cyberduck.Ui.Controller
             return null;
         }
 
-        public override object GetCreateImage(TreePathReference reference)
+        public override object GetCreateImage(Path path)
         {
-            Path p = GetPath(reference);
-            if (!(p.exists() && p.getLocal().exists()))
+            if (!(path.exists() && path.getLocal().exists()))
             {
                 return IconCache.Instance.IconForName("plus");
             }
             return null;
         }
 
-        public override object GetSyncGetter(TreePathReference reference)
+        public override object GetSyncGetter(Path path)
         {
-            Path p = (reference).Unique;
-            if(p.attributes().isDirectory()) {
-                if(p.exists() && p.getLocal().exists()) {
+            if (path.attributes().isDirectory())
+            {
+                if (path.exists() && path.getLocal().exists())
+                {
                     return null;
                 }
             }
-            SyncTransfer.Comparison compare = ((SyncTransfer) Transfer).compare(p);
+            SyncTransfer.Comparison compare = ((SyncTransfer) Transfer).compare(path);
             if (compare.equals(SyncTransfer.COMPARISON_REMOTE_NEWER))
             {
                 return IconCache.Instance.IconForName("transfer-download", 16);

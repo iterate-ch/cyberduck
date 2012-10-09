@@ -310,10 +310,10 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             get
             {
-                List<TreePathReference> selectedPaths = View.SelectedPaths;
+                IList<Path> selectedPaths = View.SelectedPaths;
                 if (selectedPaths.Count > 0)
                 {
-                    return selectedPaths[0].Unique;
+                    return selectedPaths[0];
                 }
                 return null;
             }
@@ -341,18 +341,13 @@ namespace Ch.Cyberduck.Ui.Controller
         /// <value>
         ///   All selected paths or an empty list if there is no selection
         /// </value>
-        public List<Path> SelectedPaths
+        public IList<Path> SelectedPaths
         {
             get
             {
                 if (IsMounted())
                 {
-                    List<Path> selected = new List<Path>();
-                    foreach (TreePathReference reference in View.SelectedPaths)
-                    {
-                        selected.Add(reference.Unique);
-                    }
-                    return selected;
+                    return View.SelectedPaths;
                 }
                 return new List<Path>();
             }
@@ -513,7 +508,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private List<KeyValuePair<String, List<String>>> View_GetCopyUrls()
         {
             List<KeyValuePair<String, List<String>>> items = new List<KeyValuePair<String, List<String>>>();
-            List<TreePathReference> selected = View.SelectedPaths;
+            IList<Path> selected = View.SelectedPaths;
             if (selected.Count == 0)
             {
                 items.Add(
@@ -530,19 +525,19 @@ namespace Ch.Cyberduck.Ui.Controller
                         new KeyValuePair<string, List<string>>(descUrl.getHelp(), new List<string>());
                     items.Add(entry);
 
-                    foreach (TreePathReference reference in selected)
+                    foreach (Path path in selected)
                     {
-                        entry.Value.Add(((AbstractPath.DescriptiveUrl) reference.Unique.getURLs().toArray()[i]).getUrl());
+                        entry.Value.Add(((AbstractPath.DescriptiveUrl) path.getURLs().toArray()[i]).getUrl());
                     }
                 }
             }
             return items;
         }
 
-        private List<KeyValuePair<String, List<String>>> View_GetOpenUrls()
+        private IList<KeyValuePair<string, List<string>>> View_GetOpenUrls()
         {
-            List<KeyValuePair<String, List<String>>> items = new List<KeyValuePair<String, List<String>>>();
-            List<TreePathReference> selected = View.SelectedPaths;
+            IList<KeyValuePair<String, List<String>>> items = new List<KeyValuePair<String, List<String>>>();
+            IList<Path> selected = View.SelectedPaths;
             if (selected.Count == 0)
             {
                 items.Add(
@@ -560,10 +555,10 @@ namespace Ch.Cyberduck.Ui.Controller
                         new KeyValuePair<string, List<string>>(descUrl.getHelp(), new List<string>());
                     items.Add(entry);
 
-                    foreach (TreePathReference reference in selected)
+                    foreach (Path path in selected)
                     {
                         entry.Value.Add(
-                            ((AbstractPath.DescriptiveUrl) reference.Unique.getHttpURLs().toArray()[i]).getUrl());
+                            ((AbstractPath.DescriptiveUrl) path.getHttpURLs().toArray()[i]).getUrl());
                     }
                 }
             }
@@ -875,7 +870,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 switch (args.DropTargetLocation)
                 {
                     case DropTargetLocation.Item:
-                        destination = ((TreePathReference) args.DropTargetItem.RowObject).Unique;
+                        destination = (Path) args.DropTargetItem.RowObject;
                         if (!destination.attributes().isDirectory())
                         {
                             //dragging over file
@@ -896,9 +891,8 @@ namespace Ch.Cyberduck.Ui.Controller
                     args.DropTargetLocation = DropTargetLocation.None;
                     return;
                 }
-                foreach (TreePathReference sourceTreePath in args.SourceModels)
+                foreach (Path sourcePath in args.SourceModels)
                 {
-                    Path sourcePath = sourceTreePath.Unique;
                     if (destination.getSession().equals(sourcePath.getSession()))
                     {
                         // Use drag action from user
@@ -936,7 +930,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
                 else
                 {
-                    args.DropTargetItem = args.ListView.ModelToItem(new TreePathReference(destination));
+                    args.DropTargetItem = args.ListView.ModelToItem(destination);
                 }
             }
         }
@@ -951,7 +945,7 @@ namespace Ch.Cyberduck.Ui.Controller
             switch (dropargs.DropTargetLocation)
             {
                 case DropTargetLocation.Item:
-                    destination = ((TreePathReference) dropargs.DropTargetItem.RowObject).Unique;
+                    destination = (Path) dropargs.DropTargetItem.RowObject;
                     break;
                 case DropTargetLocation.Background:
                     destination = Workdir;
@@ -968,10 +962,10 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     // Drag to browser windows with different session or explicit copy requested by user.
                     Session target = getTransferSession();
-                    foreach (TreePathReference reference in dropargs.SourceModels)
+                    foreach (Path path in dropargs.SourceModels)
                     {
-                        Session source = SessionFactory.createSession(reference.Unique.getSession().getHost());
-                        Path next = PathFactory.createPath(source, reference.Unique.getAsDictionary());
+                        Session source = SessionFactory.createSession(path.getSession().getHost());
+                        Path next = PathFactory.createPath(source, path.getAsDictionary());
                         Path renamed = PathFactory.createPath(target, destination.getAbsolute(), next.getName(),
                                                               next.attributes().getType());
                         files.Add(next, renamed);
@@ -982,9 +976,9 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     Session session = getSession();
                     // The file should be renamed
-                    foreach (TreePathReference reference in dropargs.SourceModels)
+                    foreach (Path path in dropargs.SourceModels)
                     {
-                        Path next = PathFactory.createPath(session, reference.Unique.getAsDictionary());
+                        Path next = PathFactory.createPath(session, path.getAsDictionary());
                         Path renamed = PathFactory.createPath(session, destination.getAbsolute(), next.getName(),
                                                               next.attributes().getType());
                         files.Add(next, renamed);
@@ -1410,12 +1404,12 @@ namespace Ch.Cyberduck.Ui.Controller
         /// Download to default download directory.
         /// </summary>
         /// <param name="downloads"></param>
-        public void Download(List<Path> downloads)
+        public void Download(IList<Path> downloads)
         {
             Download(downloads, null);
         }
 
-        public void Download(List<Path> downloads, Local downloadFolder)
+        public void Download(IList<Path> downloads, Local downloadFolder)
         {
             Session session = getTransferSession();
             List roots = new Collection();
@@ -1447,10 +1441,10 @@ namespace Ch.Cyberduck.Ui.Controller
             if (IsMounted())
             {
                 getSession().cache().invalidate(Workdir.getReference());
-                foreach (TreePathReference reference in View.VisiblePaths)
+                foreach (Path path in View.VisiblePaths)
                 {
-                    if (null == reference) continue;
-                    getSession().cache().invalidate(reference);
+                    if (null == path) continue;
+                    getSession().cache().invalidate(path.getReference());
                 }
                 ReloadData(SelectedPaths);
             }
@@ -1618,7 +1612,7 @@ namespace Ch.Cyberduck.Ui.Controller
         private void View_CreateArchive(object sender, CreateArchiveEventArgs createArchiveEventArgs)
         {
             Archive archive = Archive.forName(createArchiveEventArgs.ArchiveName);
-            List<Path> selected = SelectedPaths;
+            IList<Path> selected = SelectedPaths;
             if (CheckOverwrite(new List<Path> {archive.getArchive(Utils.ConvertToJavaList(selected))}))
             {
                 background(new CreateArchiveAction(this, archive, selected));
@@ -1906,7 +1900,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 switch (e.DropTargetLocation)
                 {
                     case DropTargetLocation.Item:
-                        destination = ((TreePathReference) e.DropTargetItem.RowObject).Unique;
+                        destination = (Path) e.DropTargetItem.RowObject;
                         break;
                     case DropTargetLocation.Background:
                         destination = Workdir;
@@ -1959,7 +1953,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     switch (args.DropTargetLocation)
                     {
                         case DropTargetLocation.Item:
-                            destination = ((TreePathReference) args.DropTargetItem.RowObject).Unique;
+                            destination = (Path) args.DropTargetItem.RowObject;
                             if (!destination.attributes().isDirectory())
                             {
                                 //dragging over file
@@ -1989,7 +1983,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     }
                     else
                     {
-                        args.DropTargetItem = args.ListView.ModelToItem(new TreePathReference(destination));
+                        args.DropTargetItem = args.ListView.ModelToItem(destination);
                     }
                     (args.DataObject as DataObject).SetDropDescription((DropImageType) args.Effect, "Copy to %1",
                                                                        destination.getName());
@@ -2004,7 +1998,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_ShowInspector()
         {
-            List<Path> selected = SelectedPaths;
+            IList<Path> selected = SelectedPaths;
             if (selected.Count > 0)
             {
                 if (Preferences.instance().getBoolean("browser.info.isInspector"))
@@ -2066,7 +2060,7 @@ namespace Ch.Cyberduck.Ui.Controller
             UpdateEditIcon();
 
             // update inspector content if available
-            List<Path> selectedPaths = SelectedPaths;
+            IList<Path> selectedPaths = SelectedPaths;
 
             if (Preferences.instance().getBoolean("browser.info.isInspector"))
             {
@@ -2232,10 +2226,10 @@ namespace Ch.Cyberduck.Ui.Controller
         /// <param name="prompt"></param>
         public void transfer(Transfer transfer, bool browser, TransferPrompt prompt)
         {
-            this.transfer(transfer, Utils.ConvertFromJavaList<Path>(transfer.getRoots()), browser, prompt);
+            this.transfer(transfer, Utils.ConvertFromJavaList<Path>(transfer.getRoots(), null), browser, prompt);
         }
 
-        public void transfer(Transfer transfer, ICollection<Path> changed, bool browser, TransferPrompt prompt)
+        public void transfer(Transfer transfer, IList<Path> changed, bool browser, TransferPrompt prompt)
         {
             transfer.addListener(new ReloadTransferAdapter(this, transfer, changed));
             if (browser)
@@ -2312,82 +2306,53 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public void RefreshParentPath(Path changed)
         {
-            RefreshParentPaths(new Collection<Path>{changed});
+            RefreshParentPaths(new Collection<Path> {changed});
         }
 
-        public void RefreshParentPaths(ICollection<Path> changed)
+        public void RefreshParentPaths(IList<Path> changed)
         {
-            RefreshParentPaths(changed, new List<TreePathReference>());
+            RefreshParentPaths(changed, new List<Path>());
         }
 
-        public void RefreshParentPaths(ICollection<Path> changed, ICollection<Path> selected)
-        {
-            List<TreePathReference> s = new List<TreePathReference>();
-            foreach (Path path in selected)
-            {
-                s.Add(new TreePathReference(path));
-            }
-            RefreshParentPaths(changed, s);
-        }
-
-        public void RefreshParentPaths(ICollection<Path> changed, List<TreePathReference> selected)
+        public void RefreshParentPaths(IList<Path> changed, IList<Path> selected)
         {
             bool rootRefreshed = false; //prevent multiple root updates
             foreach (Path path in changed)
             {
                 Path parent = path.getParent();
-                getSession().cache().invalidate(parent.getReference());                
+                getSession().cache().invalidate(parent.getReference());
                 if (Workdir.equals(parent))
                 {
                     if (rootRefreshed)
                     {
                         continue;
                     }
-                    View.SetBrowserModel(_browserModel.ChildrenGetter(new TreePathReference(parent)));
+                    View.SetBrowserModel(_browserModel.ChildrenGetter(parent));
                     rootRefreshed = true;
                 }
                 else
                 {
-                    View.RefreshBrowserObject(new TreePathReference(parent));
+                    View.RefreshBrowserObject(parent);
                 }
             }
             View.SelectedPaths = selected;
         }
 
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="path"></param>
-        /// <returns>null if not mounted or lookup fails</returns>
-        public Path Lookup(TreePathReference path)
-        {
-            if (IsMounted())
-            {
-                return (Path) _session.cache().lookup(path);
-            }
-            return null;
-        }
-
-        protected void ReloadData(ICollection<Path> selected)
+        protected void ReloadData(IList<Path> selected)
         {
             if (null != Workdir)
             {
-                IEnumerable<TreePathReference> children = _browserModel.ChildrenGetter(new TreePathReference(Workdir));
+                IEnumerable<Path> children = _browserModel.ChildrenGetter(Workdir);
                 //clear selection before resetting model. Otherwise we have weird selection effects.
-                View.SelectedPaths = new List<TreePathReference>();
+                View.SelectedPaths = new List<Path>();
                 View.SetBrowserModel(children);
-                List<TreePathReference> s = new List<TreePathReference>();
-                foreach (Path p in selected)
+                View.SelectedPaths = selected;
+                List<Path> toUpdate = new List<Path>();
+                foreach (Path path in View.VisiblePaths)
                 {
-                    s.Add(new TreePathReference(p));
-                }
-                View.SelectedPaths = s; //restore selection
-                List<TreePathReference> toUpdate = new List<TreePathReference>();
-                foreach (TreePathReference reference in View.VisiblePaths)
-                {
-                    if (reference.Unique.attributes().isDirectory())
+                    if (path.attributes().isDirectory())
                     {
-                        toUpdate.Add(reference);
+                        toUpdate.Add(path);
                     }
                 }
                 View.RefreshBrowserObjects(toUpdate);
@@ -2462,25 +2427,25 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             else
             {
-                RefreshObject(path, new List<TreePathReference>());
+                RefreshObject(path, new List<Path>());
             }
         }
 
-        public void RefreshObject(Path path, List<TreePathReference> selected)
+        public void RefreshObject(Path path, IList<Path> selected)
         {
             if (Workdir.Equals(path))
             {
-                View.SetBrowserModel(_browserModel.ChildrenGetter(new TreePathReference(path)));
+                View.SetBrowserModel(_browserModel.ChildrenGetter(path));
             }
             else
             {
                 if (!path.attributes().isDirectory())
                 {
-                    View.RefreshBrowserObject(new TreePathReference(path.getParent()));
+                    View.RefreshBrowserObject(path.getParent());
                 }
                 else
                 {
-                    View.RefreshBrowserObject(new TreePathReference(path));
+                    View.RefreshBrowserObject(path);
                 }
             }
             View.SelectedPaths = selected;
@@ -3216,10 +3181,10 @@ namespace Ch.Cyberduck.Ui.Controller
         private class CreateArchiveAction : BrowserBackgroundAction
         {
             private readonly Archive _archive;
+            private readonly IList<Path> _selected;
             private readonly List _selectedJava;
-            private readonly ICollection<Path> _selected;
 
-            public CreateArchiveAction(BrowserController controller, Archive archive, ICollection<Path> selected)
+            public CreateArchiveAction(BrowserController controller, Archive archive, IList<Path> selected)
                 : base(controller)
             {
                 _archive = archive;
@@ -3240,15 +3205,15 @@ namespace Ch.Cyberduck.Ui.Controller
             public override void cleanup()
             {
                 BrowserController.RefreshParentPaths(_selected,
-                                                     new List<TreePathReference>
-                                                         {new TreePathReference(_archive.getArchive(_selectedJava))});
+                                                     new List<Path>
+                                                         {_archive.getArchive(_selectedJava)});
             }
         }
 
         private class CustomPathFilter : PathFilter, IModelFilter
         {
-            private readonly String _searchString;
             private readonly BrowserController _controller;
+            private readonly String _searchString;
 
             public CustomPathFilter(String searchString, BrowserController controller)
             {
@@ -3258,7 +3223,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
             public bool Filter(object modelObject)
             {
-                return accept(((TreePathReference) modelObject).Unique);
+                return accept((Path) modelObject);
             }
 
             public bool accept(AbstractPath file)
@@ -3559,11 +3524,11 @@ namespace Ch.Cyberduck.Ui.Controller
 
         internal class ReloadTransferAdapter : TransferAdapter
         {
+            private readonly IList<Path> _changed;
             private readonly BrowserController _controller;
-            private readonly ICollection<Path> _changed;
             private readonly Transfer _transfer;
 
-            public ReloadTransferAdapter(BrowserController controller, Transfer transfer, ICollection<Path> changed)
+            public ReloadTransferAdapter(BrowserController controller, Transfer transfer, IList<Path> changed)
             {
                 _controller = controller;
                 _transfer = transfer;
@@ -3584,9 +3549,9 @@ namespace Ch.Cyberduck.Ui.Controller
 
             private class ReloadAction : WindowMainAction
             {
-                private readonly ICollection<Path> _changed;
+                private readonly IList<Path> _changed;
 
-                public ReloadAction(BrowserController c, ICollection<Path> changed)
+                public ReloadAction(BrowserController c, IList<Path> changed)
                     : base(c)
                 {
                     _changed = changed;
@@ -3625,7 +3590,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
             public override void cleanup()
             {
-                BrowserController.RefreshParentPaths(new Collection<Path>(){_selected}, new Collection<Path>());
+                BrowserController.RefreshParentPaths(new Collection<Path> {_selected}, new Collection<Path>());
             }
 
             public override string getActivity()
@@ -3742,9 +3707,9 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private class UpdateInspectorAction : BrowserBackgroundAction
         {
-            private readonly List<Path> _selected;
+            private readonly IList<Path> _selected;
 
-            public UpdateInspectorAction(BrowserController controller, List<Path> selected)
+            public UpdateInspectorAction(BrowserController controller, IList<Path> selected)
                 : base(controller)
             {
                 _selected = selected;

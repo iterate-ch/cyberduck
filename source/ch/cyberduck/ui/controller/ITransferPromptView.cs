@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -15,11 +15,11 @@
 // Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
 // 
+
 using System.Collections.Generic;
 using BrightIdeasSoftware;
-using ch.cyberduck.core;
-using ch.cyberduck.ui.controller;
 using Ch.Cyberduck.Ui.Winforms.Controls;
+using ch.cyberduck.core;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -27,7 +27,7 @@ namespace Ch.Cyberduck.Ui.Controller
     {
         string Title { set; }
         TransferAction SelectedAction { get; set; }
-        TreePathReference SelectedPath { get; set; }
+        Path SelectedPath { get; set; }
         string LocalFileUrl { set; }
         string LocalFileSize { set; }
         string LocalFileModificationDate { set; }
@@ -43,17 +43,17 @@ namespace Ch.Cyberduck.Ui.Controller
         TreeListView.CanExpandGetterDelegate ModelCanExpandDelegate { set; }
         TreeListView.ChildrenGetterDelegate ModelChildrenGetterDelegate { set; }
 
-        TypedColumn<TreePathReference>.TypedImageGetterDelegate ModelIconGetter { set; }
-        TypedColumn<TreePathReference>.TypedAspectGetterDelegate ModelFilenameGetter { set; }
-        TypedColumn<TreePathReference>.TypedAspectGetterDelegate ModelSizeGetter { set; }
+        TypedColumn<Path>.TypedImageGetterDelegate ModelIconGetter { set; }
+        TypedColumn<Path>.TypedAspectGetterDelegate ModelFilenameGetter { set; }
+        TypedColumn<Path>.TypedAspectGetterDelegate ModelSizeGetter { set; }
         AspectToStringConverterDelegate ModelSizeAsStringGetter { set; }
-        TypedColumn<TreePathReference>.TypedImageGetterDelegate ModelWarningGetter { set; }
-        TypedColumn<TreePathReference>.TypedImageGetterDelegate ModelCreateGetter { set; }
-        TypedColumn<TreePathReference>.TypedImageGetterDelegate ModelSyncGetter { set; }
+        TypedColumn<Path>.TypedImageGetterDelegate ModelWarningGetter { set; }
+        TypedColumn<Path>.TypedImageGetterDelegate ModelCreateGetter { set; }
+        TypedColumn<Path>.TypedImageGetterDelegate ModelSyncGetter { set; }
         MulticolorTreeListView.ActiveGetterDelegate ModelActiveGetter { set; }
         string StatusLabel { set; }
-        void SetModel(IEnumerable<TreePathReference> model);
-        void RefreshBrowserObject(TreePathReference reference);
+        void SetModel(IEnumerable<Path> model);
+        void RefreshBrowserObject(Path path);
         void PopulateActions(IDictionary<TransferAction, string> actions);
 
         event VoidHandler ChangedActionEvent;

@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -15,15 +15,16 @@
 // Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
 // 
+
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using BrightIdeasSoftware;
-using ch.cyberduck.core;
-using ch.cyberduck.core.i18n;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Winforms.Controls;
+using ch.cyberduck.core;
+using ch.cyberduck.core.i18n;
 
 namespace Ch.Cyberduck.Ui.Winforms
 {
@@ -60,17 +61,17 @@ namespace Ch.Cyberduck.Ui.Winforms
             //due to the checkbox feature the highlight bar is not being redrawn properly -> redraw the entire control instead
             //todo report this bug to the ObjectListView forum
             browser.SelectedIndexChanged += delegate
-                                                {
-                                                    if (null != browser.SelectedItem)
-                                                    {
-                                                        browser.Invalidate(browser.SelectedItem.Bounds);
-                                                        if (null != _lastSelectedListViewItem)
-                                                        {
-                                                            browser.Invalidate(_lastSelectedListViewItem.Bounds);
-                                                        }
-                                                        _lastSelectedListViewItem = browser.SelectedItem;
-                                                    }
-                                                };
+                {
+                    if (null != browser.SelectedItem)
+                    {
+                        browser.Invalidate(browser.SelectedItem.Bounds);
+                        if (null != _lastSelectedListViewItem)
+                        {
+                            browser.Invalidate(_lastSelectedListViewItem.Bounds);
+                        }
+                        _lastSelectedListViewItem = browser.SelectedItem;
+                    }
+                };
 
             ScaledImageRenderer sir = new ScaledImageRenderer();
 
@@ -95,18 +96,18 @@ namespace Ch.Cyberduck.Ui.Winforms
             get { return new[] {"Prompt"}; }
         }
 
-        public void SetModel(IEnumerable<TreePathReference> model)
+        public void SetModel(IEnumerable<Path> model)
         {
             browser.ClearCachedInfo();
             browser.SetObjects(model);
             //browser.Roots = model;            
         }
 
-        public void RefreshBrowserObject(TreePathReference reference)
+        public void RefreshBrowserObject(Path path)
         {
-            if (reference != null)
+            if (path != null)
             {
-                browser.RefreshObject(reference);
+                browser.RefreshObject(path);
             }
             else
             {
@@ -170,9 +171,9 @@ namespace Ch.Cyberduck.Ui.Winforms
             set { comboBoxAction.SelectedValue = value; }
         }
 
-        public TreePathReference SelectedPath
+        public Path SelectedPath
         {
-            get { return (TreePathReference) browser.SelectedObject; }
+            get { return (Path) browser.SelectedObject; }
             set { browser.SelectedObject = value; }
         }
 
@@ -226,23 +227,23 @@ namespace Ch.Cyberduck.Ui.Winforms
             set { browser.ChildrenGetter = value; }
         }
 
-        public TypedColumn<TreePathReference>.TypedAspectGetterDelegate ModelFilenameGetter
+        public TypedColumn<Path>.TypedAspectGetterDelegate ModelFilenameGetter
         {
-            set { new TypedColumn<TreePathReference>(treeColumnName) {AspectGetter = value}; }
+            set { new TypedColumn<Path>(treeColumnName) {AspectGetter = value}; }
         }
 
-        public TypedColumn<TreePathReference>.TypedImageGetterDelegate ModelIconGetter
+        public TypedColumn<Path>.TypedImageGetterDelegate ModelIconGetter
         {
             set
             {
-                new TypedColumn<TreePathReference>(treeColumnName)
+                new TypedColumn<Path>(treeColumnName)
                     {ImageGetter = value};
             }
         }
 
-        public TypedColumn<TreePathReference>.TypedAspectGetterDelegate ModelSizeGetter
+        public TypedColumn<Path>.TypedAspectGetterDelegate ModelSizeGetter
         {
-            set { new TypedColumn<TreePathReference>(treeColumnSize) {AspectGetter = value}; }
+            set { new TypedColumn<Path>(treeColumnSize) {AspectGetter = value}; }
         }
 
         public AspectToStringConverterDelegate ModelSizeAsStringGetter
@@ -250,19 +251,19 @@ namespace Ch.Cyberduck.Ui.Winforms
             set { treeColumnSize.AspectToStringConverter = value; }
         }
 
-        public TypedColumn<TreePathReference>.TypedImageGetterDelegate ModelWarningGetter
+        public TypedColumn<Path>.TypedImageGetterDelegate ModelWarningGetter
         {
-            set { new TypedColumn<TreePathReference>(treeColumnWarning) {ImageGetter = value}; }
+            set { new TypedColumn<Path>(treeColumnWarning) {ImageGetter = value}; }
         }
 
-        public TypedColumn<TreePathReference>.TypedImageGetterDelegate ModelCreateGetter
+        public TypedColumn<Path>.TypedImageGetterDelegate ModelCreateGetter
         {
-            set { new TypedColumn<TreePathReference>(treeColumnCreate) {ImageGetter = value}; }
+            set { new TypedColumn<Path>(treeColumnCreate) {ImageGetter = value}; }
         }
 
-        public TypedColumn<TreePathReference>.TypedImageGetterDelegate ModelSyncGetter
+        public TypedColumn<Path>.TypedImageGetterDelegate ModelSyncGetter
         {
-            set { new TypedColumn<TreePathReference>(treeColumnSync) {ImageGetter = value}; }
+            set { new TypedColumn<Path>(treeColumnSync) {ImageGetter = value}; }
         }
 
         public MulticolorTreeListView.ActiveGetterDelegate ModelActiveGetter
