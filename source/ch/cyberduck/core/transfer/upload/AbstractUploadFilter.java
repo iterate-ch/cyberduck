@@ -5,19 +5,20 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.transfer.SymlinkResolver;
 import ch.cyberduck.core.transfer.TransferPathFilter;
 
 import org.apache.log4j.Logger;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public abstract class AbstractUploadFilter extends TransferPathFilter {
     private static final Logger log = Logger.getLogger(AbstractUploadFilter.class);
 
-    private UploadSymlinkResolver symlinkResolver;
+    private SymlinkResolver symlinkResolver;
 
-    public AbstractUploadFilter(final UploadSymlinkResolver symlinkResolver) {
+    public AbstractUploadFilter(final SymlinkResolver symlinkResolver) {
         this.symlinkResolver = symlinkResolver;
     }
 

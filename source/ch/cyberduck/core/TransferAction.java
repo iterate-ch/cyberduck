@@ -134,6 +134,21 @@ public abstract class TransferAction {
         }
     };
 
+    /**
+     * Automatically decide the transfer action using the comparision service for paths.
+     */
+    public static final TransferAction ACTION_COMPARISON = new TransferAction() {
+        @Override
+        public String toString() {
+            return "compare";
+        }
+
+        @Override
+        public String getLocalizableString() {
+            return Locale.localizedString("Compare");
+        }
+    };
+
     public static final TransferAction ACTION_CANCEL = new TransferAction() {
         @Override
         public String toString() {

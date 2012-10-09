@@ -23,6 +23,7 @@ import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.serializer.Serializer;
 import ch.cyberduck.core.transfer.TransferPathFilter;
+import ch.cyberduck.core.transfer.upload.CompareFilter;
 import ch.cyberduck.core.transfer.upload.MoveRemoteFilter;
 import ch.cyberduck.core.transfer.upload.OverwriteFilter;
 import ch.cyberduck.core.transfer.upload.RegexFilter;
@@ -207,6 +208,9 @@ public class UploadTransfer extends Transfer {
         }
         if(action.equals(TransferAction.ACTION_SKIP)) {
             return new SkipFilter(resolver);
+        }
+        if(action.equals(TransferAction.ACTION_COMPARISON)) {
+            return new CompareFilter(resolver);
         }
         if(action.equals(TransferAction.ACTION_CALLBACK)) {
             for(Path upload : this.getRoots()) {

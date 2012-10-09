@@ -9,7 +9,7 @@ import ch.cyberduck.core.transfer.SymlinkResolver;
 import java.util.List;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class UploadSymlinkResolver implements SymlinkResolver {
 

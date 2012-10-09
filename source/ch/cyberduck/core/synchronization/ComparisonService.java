@@ -10,10 +10,10 @@ import org.apache.log4j.Logger;
 import java.util.Calendar;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
-public class CompareService {
-    private static Logger log = Logger.getLogger(CompareService.class);
+public class ComparisonService {
+    private static Logger log = Logger.getLogger(ComparisonService.class);
 
     private CalendarService calendarService = new CalendarService();
 
