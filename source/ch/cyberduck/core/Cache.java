@@ -109,7 +109,7 @@ public class Cache {
      * @param children  Cached directory listing
      * @return Previous cached version
      */
-    public AttributedList<Path> put(PathReference reference, AttributedList<Path> children) {
+    public AttributedList<Path> put(final PathReference reference, final AttributedList<Path> children) {
         return _impl.put(reference, children);
     }
 
