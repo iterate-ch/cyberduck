@@ -57,7 +57,14 @@ public class Profile extends Protocol implements Serializable {
     @Override
     public <T> void init(T serialized) {
         dict = DeserializerFactory.createDeserializer(serialized);
-        parent = ProtocolFactory.forName(dict.stringForKey("Protocol"));
+        final String protocol = this.getValue("Protocol");
+        if(StringUtils.isBlank(protocol)) {
+            log.error("Missing protocol in profile");
+            parent = ProtocolFactory.forName(Preferences.instance().getProperty("connection.protocol.default"));
+        }
+        else {
+            parent = ProtocolFactory.forName(protocol);
+        }
     }
 
     @Override
@@ -79,13 +86,12 @@ public class Profile extends Protocol implements Serializable {
     }
 
     /**
-     * Custom profile always enabled.
-     *
-     * @return True
+     * @return False if missing required fields in profile.
      */
     @Override
     public boolean isEnabled() {
-        return true;
+        return StringUtils.isNotBlank(this.getValue("Protocol"))
+                && StringUtils.isNotBlank(this.getValue("Vendor"));
     }
 
     private String getValue(String key) {
@@ -130,11 +136,7 @@ public class Profile extends Protocol implements Serializable {
 
     @Override
     public String getProvider() {
-        final String v = this.getValue("Vendor");
-        if(StringUtils.isBlank(v)) {
-            return parent.getProvider();
-        }
-        return v;
+        return this.getValue("Vendor");
     }
 
     @Override
