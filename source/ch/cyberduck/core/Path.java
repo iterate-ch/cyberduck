@@ -905,7 +905,7 @@ public abstract class Path extends AbstractPath implements Serializable {
 
         // Only update the file custom icon if the size is > 5MB. Otherwise creating too much
         // overhead when transferring a large amount of files
-        final boolean updateIcon = attributes().getSize() > Status.MEGA * 5;
+        final boolean updateIcon = this.attributes().getSize() > Status.MEGA * 5;
 
         final Local local = this.getLocal();
         // Set the first progress icon
