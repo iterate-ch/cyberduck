@@ -76,8 +76,7 @@ public class AttributedList<E extends AbstractPath> extends CopyOnWriteArrayList
         private Comparator<E> comparator;
 
         /**
-         * The filter to apply to the directory listing
-         * excluding files from display.
+         * The filter to apply to the directory listing excluding files from display.
          */
         private PathFilter filter;
 
@@ -270,9 +269,9 @@ public class AttributedList<E extends AbstractPath> extends CopyOnWriteArrayList
             hidden.clear();
             for(E child : this) {
                 if(!filter.accept(child)) {
-                    //child not accepted by filter; add to cached hidden files
+                    // Child not accepted by filter; add to cached hidden files
                     this.attributes().addHidden(child);
-                    //remove hidden file from current file listing
+                    // Remove hidden file from current file listing
                     this.remove(child);
                 }
             }

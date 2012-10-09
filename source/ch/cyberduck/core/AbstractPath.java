@@ -188,7 +188,7 @@ public abstract class AbstractPath {
      * @param parent The parent directory
      * @param name   The relative filename
      */
-    protected void setPath(final String parent, final String name) {
+    public void setPath(final String parent, final String name) {
         final String p;
         if(StringUtils.isBlank(parent)) {
             p = String.valueOf(this.getPathDelimiter());
