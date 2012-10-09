@@ -7,7 +7,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class NullPath extends Path {
 
@@ -22,7 +22,7 @@ public class NullPath extends Path {
 
     @Override
     public Session getSession() {
-        throw new UnsupportedOperationException();
+        return new NullSession(new Host("test"));
     }
 
     @Override
