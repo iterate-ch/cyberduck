@@ -63,7 +63,7 @@ public abstract class Protocol {
     }
 
     public boolean isEnabled() {
-        return Preferences.instance().getBoolean(String.format("protocol.%s.enable", this.getIdentifier()));
+        return true;
     }
 
     /**
@@ -513,58 +513,6 @@ public abstract class Protocol {
         @Override
         public String getPasswordPlaceholder() {
             return Locale.localizedString("Secret Access Key", "S3");
-        }
-    };
-
-    public static final Protocol EUCALYPTUS = new Protocol() {
-        @Override
-        public String getName() {
-            return "S3";
-        }
-
-        @Override
-        public String getDescription() {
-            return Locale.localizedString("Eucalyptus Walrus S3", "S3");
-        }
-
-        @Override
-        public String getIdentifier() {
-            return "ec";
-        }
-
-        @Override
-        public String getDefaultHostname() {
-            return "ecc.eucalyptus.com";
-        }
-
-        @Override
-        public int getDefaultPort() {
-            return 8773;
-        }
-
-        @Override
-        public Scheme getScheme() {
-            return Scheme.https;
-        }
-
-        @Override
-        public String[] getSchemes() {
-            return new String[]{this.getScheme().name(), "walrus"};
-        }
-
-        @Override
-        public boolean isHostnameConfigurable() {
-            return true;
-        }
-
-        @Override
-        public String disk() {
-            return S3_SSL.disk();
-        }
-
-        @Override
-        public String icon() {
-            return S3_SSL.icon();
         }
     };
 

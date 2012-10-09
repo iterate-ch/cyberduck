@@ -206,18 +206,6 @@ public abstract class Preferences {
         defaults.put("growl.enable", String.valueOf(true));
         defaults.put("growl.limit", String.valueOf(10));
 
-        defaults.put(String.format("protocol.%s.enable", Protocol.FTP), String.valueOf(true));
-        defaults.put(String.format("protocol.%s.enable", Protocol.FTP_TLS), String.valueOf(true));
-        defaults.put(String.format("protocol.%s.enable", Protocol.SFTP), String.valueOf(true));
-        defaults.put(String.format("protocol.%s.enable", Protocol.WEBDAV), String.valueOf(true));
-        defaults.put(String.format("protocol.%s.enable", Protocol.WEBDAV_SSL), String.valueOf(true));
-        defaults.put(String.format("protocol.%s.enable", Protocol.S3_SSL), String.valueOf(true));
-        defaults.put(String.format("protocol.%s.enable", Protocol.GOOGLESTORAGE_SSL), String.valueOf(true));
-        defaults.put(String.format("protocol.%s.enable", Protocol.EUCALYPTUS), String.valueOf(false));
-        defaults.put(String.format("protocol.%s.enable", Protocol.CLOUDFILES), String.valueOf(true));
-        defaults.put(String.format("protocol.%s.enable", Protocol.SWIFT), String.valueOf(true));
-        defaults.put(String.format("protocol.%s.enable", Protocol.GDOCS_SSL), String.valueOf(true));
-
         defaults.put("path.symboliclink.resolve", String.valueOf(false));
         /**
          * Normalize path names
