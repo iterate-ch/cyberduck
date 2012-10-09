@@ -45,13 +45,18 @@ public class UploadPromptModel extends TransferPromptModel {
     private PathFilter<Path> filter = new PromptFilter() {
         @Override
         public boolean accept(Path file) {
-            log.debug("accept:" + file);
             if(file.exists()) {
                 if(file.attributes().getSize() == -1) {
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Read file size for %s", file.getName()));
+                    }
                     file.readSize();
                 }
                 if(file.getSession().isReadTimestampSupported()) {
                     if(file.attributes().getModificationDate() == -1) {
+                        if(log.isDebugEnabled()) {
+                            log.debug(String.format("Read timestamp for %s", file.getName()));
+                        }
                         file.readTimestamp();
                     }
                 }

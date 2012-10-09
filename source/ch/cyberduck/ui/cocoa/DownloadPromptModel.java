@@ -49,10 +49,12 @@ public class DownloadPromptModel extends TransferPromptModel {
          */
         @Override
         public boolean accept(Path child) {
-            log.debug("accept:" + child);
             if(child.getLocal().exists()) {
                 if(child.attributes().isFile()) {
                     if(child.getLocal().attributes().getSize() == 0) {
+                        if(log.isDebugEnabled()) {
+                            log.debug(String.format("Skip prompt for zero sized file %s", child.getName()));
+                        }
                         // Do not prompt for zero sized files
                         return false;
                     }
