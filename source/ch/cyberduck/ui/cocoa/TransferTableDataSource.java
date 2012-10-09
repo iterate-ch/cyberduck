@@ -18,15 +18,7 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractCollectionListener;
-import ch.cyberduck.core.Collection;
-import ch.cyberduck.core.DownloadTransfer;
-import ch.cyberduck.core.NullTransferFilter;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.Session;
-import ch.cyberduck.core.Transfer;
-import ch.cyberduck.core.TransferCollection;
-import ch.cyberduck.core.TransferFilter;
+import ch.cyberduck.core.*;
 import ch.cyberduck.ui.PathPasteboard;
 import ch.cyberduck.ui.cocoa.application.NSDraggingInfo;
 import ch.cyberduck.ui.cocoa.application.NSPasteboard;
@@ -97,10 +89,12 @@ public class TransferTableDataSource extends ListDataSource {
             // Setting up a custom filter
             this.filter = new TransferFilter() {
                 @Override
-                public boolean accept(Transfer transfer) {
-                    // Match for pathnames and hostname
-                    if(transfer.getName().toLowerCase().contains(searchString.toLowerCase())) {
-                        return true;
+                public boolean accept(final Transfer transfer) {
+                    // Match for path names and hostname
+                    for(Path root : transfer.getRoots()) {
+                        if(root.getName().toLowerCase().contains(searchString.toLowerCase())) {
+                            return true;
+                        }
                     }
                     for(Session s : transfer.getSessions()) {
                         if(s.getHost().getHostname().toLowerCase().contains(searchString.toLowerCase())) {
@@ -118,16 +112,13 @@ public class TransferTableDataSource extends ListDataSource {
      * @return The filtered collection currently to be displayed within the constraints
      */
     protected Collection<Transfer> getSource() {
-        if(null == filter) {
-            return TransferCollection.defaultCollection();
-        }
         if(filter instanceof NullTransferFilter) {
             return TransferCollection.defaultCollection();
         }
         Collection<Transfer> filtered = new Collection<Transfer>(TransferCollection.defaultCollection());
         for(Iterator<Transfer> i = filtered.iterator(); i.hasNext(); ) {
             if(!filter.accept(i.next())) {
-                //temporarly remove the t from the collection
+                // Temporarily remove the transfer from the collection copy
                 i.remove();
             }
         }
