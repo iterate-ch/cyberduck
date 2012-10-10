@@ -27,7 +27,15 @@ public class NullPath extends Path {
 
     @Override
     public Path getParent() {
-        return new NullPath(String.valueOf(Path.DELIMITER), Path.DIRECTORY_TYPE);
+        return new NullPath(this.getParent(this.getAbsolute()), Path.DIRECTORY_TYPE);
+    }
+
+    @Override
+    public AbstractPath getSymlinkTarget() {
+        if(this.attributes().isSymbolicLink()) {
+            return new NullPath(symlink, this.attributes().isDirectory() ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
+        }
+        return null;
     }
 
     @Override
