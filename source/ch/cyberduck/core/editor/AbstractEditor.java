@@ -155,8 +155,6 @@ public abstract class AbstractEditor {
                     edited.getLocal().writeUnixPermission(permissions, false);
                     // Important, should always be run on the main thread; otherwise applescript crashes
                     AbstractEditor.this.edit();
-                    // Reset transfer status
-                    edited.status().setComplete(false);
                 }
             }
         };
