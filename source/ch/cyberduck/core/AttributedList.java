@@ -99,8 +99,8 @@ public class AttributedList<E extends AbstractPath> extends CopyOnWriteArrayList
         /**
          * Initialize with default values
          *
-         * @see ch.cyberduck.core.NullComparator
-         * @see ch.cyberduck.core.NullPathFilter
+         * @see NullComparator
+         * @see NullPathFilter
          */
         public Attributes() {
             this(new NullComparator<E>(), new NullPathFilter());
