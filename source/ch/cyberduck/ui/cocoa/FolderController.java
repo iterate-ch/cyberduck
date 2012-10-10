@@ -73,7 +73,7 @@ public class FolderController extends FileController {
                 if(filename.charAt(0) == '.') {
                     c.setShowHiddenFiles(true);
                 }
-                c.reloadData(Collections.singletonList(folder));
+                c.reloadData(Collections.singletonList(folder), Collections.singletonList(folder));
             }
         });
     }
