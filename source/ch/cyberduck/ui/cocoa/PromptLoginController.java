@@ -140,7 +140,7 @@ public final class PromptLoginController extends AbstractLoginController {
 
             public void setUsernameLabel(NSTextField usernameLabel) {
                 this.usernameLabel = usernameLabel;
-                this.usernameLabel.setStringValue(credentials.getUsernamePlaceholder() + ":");
+                this.usernameLabel.setStringValue(String.format("%s:", credentials.getUsernamePlaceholder()));
             }
 
             @Outlet
@@ -148,7 +148,7 @@ public final class PromptLoginController extends AbstractLoginController {
 
             public void setPasswordLabel(NSTextField passwordLabel) {
                 this.passwordLabel = passwordLabel;
-                this.passwordLabel.setStringValue(credentials.getPasswordPlaceholder() + ":");
+                this.passwordLabel.setStringValue(String.format("%s:", credentials.getPasswordPlaceholder()));
             }
 
             @Outlet
@@ -342,6 +342,8 @@ public final class PromptLoginController extends AbstractLoginController {
 
             @Override
             protected boolean validateInput() {
+                credentials.setUsername(usernameField.stringValue());
+                credentials.setPassword(passwordField.stringValue());
                 return credentials.validate(protocol);
             }
 
