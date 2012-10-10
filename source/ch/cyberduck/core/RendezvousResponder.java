@@ -57,11 +57,13 @@ public final class RendezvousResponder extends AbstractRendezvous implements Bro
 
     @Override
     public void init() {
-        log.debug("init");
+        if(log.isDebugEnabled()) {
+            log.debug("Initialize responder by browsing DNSSD");
+        }
         try {
             for(String protocol : this.getServiceTypes()) {
                 if(log.isInfoEnabled()) {
-                    log.info(String.format("Adding Rendezvous service listener for %s", protocol));
+                    log.info(String.format("Adding service listener for %s", protocol));
                 }
                 this.browsers.put(protocol, DNSSD.browse(protocol, this));
             }
@@ -76,7 +78,7 @@ public final class RendezvousResponder extends AbstractRendezvous implements Bro
     public void quit() {
         for(String protocol : this.getServiceTypes()) {
             if(log.isInfoEnabled()) {
-                log.info(String.format("Removing Rendezvous service listener for %s", protocol));
+                log.info(String.format("Removing service listener for %s", protocol));
             }
             DNSSDService service = this.browsers.get(protocol);
             if(null == service) {
@@ -89,7 +91,9 @@ public final class RendezvousResponder extends AbstractRendezvous implements Bro
     @Override
     public void serviceFound(DNSSDService browser, int flags, int ifIndex, String servicename,
                              String regType, String domain) {
-        log.debug("serviceFound:" + servicename);
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Browser found service at %s not yet resolved", servicename));
+        }
         try {
             DNSSD.resolve(flags, ifIndex, servicename, regType, domain, this);
         }
@@ -101,7 +105,9 @@ public final class RendezvousResponder extends AbstractRendezvous implements Bro
     @Override
     public void serviceLost(DNSSDService browser, int flags, int ifIndex, String serviceName,
                             String regType, String domain) {
-        log.debug("serviceLost:" + serviceName);
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Service lost for %s", serviceName));
+        }
         final NSAutoreleasePool pool = NSAutoreleasePool.push();
         try {
             String identifier = DNSSD.constructFullName(serviceName, regType, domain);
@@ -124,7 +130,9 @@ public final class RendezvousResponder extends AbstractRendezvous implements Bro
     @Override
     public void serviceResolved(DNSSDService resolver, int flags, int ifIndex,
                                 final String fullname, final String hostname, int port, TXTRecord txtRecord) {
-        log.debug("serviceResolved:" + fullname);
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Resolved service with name %s to %s", fullname, hostname));
+        }
         final NSAutoreleasePool pool = NSAutoreleasePool.push();
         try {
             String user = null;
