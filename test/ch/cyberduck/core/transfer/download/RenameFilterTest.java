@@ -11,7 +11,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertNotSame;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class RenameFilterTest {
 
@@ -24,12 +24,12 @@ public class RenameFilterTest {
                 return new NullLocal(null, "t") {
                     @Override
                     public boolean exists() {
-                        return this.getName().equals("t");
+                        return this.getName().equals("/t");
                     }
                 };
             }
         };
         f.prepare(t);
-        assertNotSame("t", t.getName());
+        assertNotSame("/t", t.getName());
     }
 }
