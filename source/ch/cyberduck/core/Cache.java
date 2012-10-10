@@ -125,7 +125,9 @@ public class Cache {
      * @param reference Path reference
      */
     public void invalidate(final PathReference reference) {
-        this.get(reference).attributes().setInvalid(true);
+        if(this.containsKey(reference)) {
+            this.get(reference).attributes().setInvalid(true);
+        }
     }
 
     /**
