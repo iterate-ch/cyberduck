@@ -3,9 +3,9 @@ package ch.cyberduck.core.transfer;
 import ch.cyberduck.core.Path;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
-public class NullSymlinkResolver implements SymlinkResolver {
+public class NullSymlinkResolver extends AbstractSymlinkResolver {
 
     @Override
     public boolean resolve(final Path file) {

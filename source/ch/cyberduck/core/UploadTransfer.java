@@ -32,7 +32,6 @@ import ch.cyberduck.core.transfer.upload.ResumeFilter;
 import ch.cyberduck.core.transfer.upload.SkipFilter;
 import ch.cyberduck.core.transfer.upload.UploadSymlinkResolver;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.text.MessageFormat;
@@ -289,10 +288,11 @@ public class UploadTransfer extends Transfer {
                 }
             }
         }
-        if(file.getLocal().attributes().isSymbolicLink() && new UploadSymlinkResolver(roots).resolve(file)) {
+        final UploadSymlinkResolver symlinkResolver = new UploadSymlinkResolver(roots);
+        if(file.getLocal().attributes().isSymbolicLink() && symlinkResolver.resolve(file)) {
             // Make relative symbolic link
-            final String target = StringUtils.substringAfter(file.getLocal().getSymlinkTarget().getAbsolute(),
-                    file.getLocal().getParent().getAbsolute() + Path.DELIMITER);
+            final String target = symlinkResolver.relativize(file.getLocal().getAbsolute(),
+                    file.getLocal().getSymlinkTarget().getAbsolute());
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Create symbolic link from %s to %s", file, target));
             }

@@ -3,7 +3,7 @@ package ch.cyberduck.core.transfer;
 import ch.cyberduck.core.Path;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public interface SymlinkResolver {
 
@@ -18,4 +18,6 @@ public interface SymlinkResolver {
      * @return False if symlink target is already included as a child in the root files
      */
     boolean include(Path file);
+
+    String relativize(String base, String name);
 }

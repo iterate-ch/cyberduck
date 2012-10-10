@@ -4,14 +4,14 @@ import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.transfer.SymlinkResolver;
+import ch.cyberduck.core.transfer.AbstractSymlinkResolver;
 
 import java.util.List;
 
 /**
  * @version $Id$
  */
-public class UploadSymlinkResolver implements SymlinkResolver {
+public class UploadSymlinkResolver extends AbstractSymlinkResolver {
 
     private List<Path> files;
 

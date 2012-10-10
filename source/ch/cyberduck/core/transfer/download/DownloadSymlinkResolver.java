@@ -3,14 +3,14 @@ package ch.cyberduck.core.transfer.download;
 import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.transfer.SymlinkResolver;
+import ch.cyberduck.core.transfer.AbstractSymlinkResolver;
 
 import java.util.List;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
-public class DownloadSymlinkResolver implements SymlinkResolver {
+public class DownloadSymlinkResolver extends AbstractSymlinkResolver {
 
     private List<Path> files;
 

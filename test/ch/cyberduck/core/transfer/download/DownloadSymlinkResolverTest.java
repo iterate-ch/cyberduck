@@ -9,8 +9,7 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * @version $Id$
@@ -34,5 +33,13 @@ public class DownloadSymlinkResolverTest extends AbstractTestCase {
         assertTrue(resolver.resolve(p));
         p.setSymlinkTarget("/b/c");
         assertFalse(resolver.resolve(p));
+    }
+
+    @Test
+    public void testRelativize() throws Exception {
+        DownloadSymlinkResolver r = new DownloadSymlinkResolver(Collections.<Path>emptyList());
+        assertEquals("d", r.relativize("/a/b/c", "/a/b/d"));
+        assertEquals("../boot-screens/syslinux.cfg", r.relativize("/ubuntu/dists/precise/main/installer-i386/current/images/netboot/ubuntu-installer/i386/pxelinux.cfg/syslinux.cfg",
+                "/ubuntu/dists/precise/main/installer-i386/current/images/netboot/ubuntu-installer/i386/boot-screens/syslinux.cfg"));
     }
 }

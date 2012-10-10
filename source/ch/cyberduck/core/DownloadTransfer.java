@@ -221,12 +221,13 @@ public class DownloadTransfer extends Transfer {
     protected void transfer(final Path file, final TransferOptions options) {
         log.debug("transfer:" + file);
         final Local local = file.getLocal();
-        if(file.attributes().isSymbolicLink() && new DownloadSymlinkResolver(roots).resolve(file)) {
+        final DownloadSymlinkResolver symlinkResolver = new DownloadSymlinkResolver(roots);
+        if(file.attributes().isSymbolicLink() && symlinkResolver.resolve(file)) {
             // Make relative symbolic link
-            final String target = StringUtils.substringAfter(file.getSymlinkTarget().getAbsolute(),
-                    file.getParent().getAbsolute() + Path.DELIMITER);
+            final String target = symlinkResolver.relativize(file.getAbsolute(),
+                    file.getSymlinkTarget().getAbsolute());
             if(log.isDebugEnabled()) {
-                log.debug("Symlink " + file.getLocal() + ":" + target);
+                log.debug(String.format("Create symbolic link from %s to %s", file.getLocal(), target));
             }
             file.getLocal().symlink(target);
             file.status().setComplete(true);
