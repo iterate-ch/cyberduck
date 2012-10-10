@@ -167,10 +167,10 @@ public class Status {
     }
 
     public void setComplete(boolean complete) {
-        this.complete = complete;
         if(log.isInfoEnabled()) {
             log.info(String.format("Status set to complete (%s) with %d bytes", complete, this.getCurrent()));
         }
+        this.complete = complete;
     }
 
     public boolean isComplete() {
@@ -199,9 +199,12 @@ public class Status {
     }
 
     /**
-     * @param current The already transfered bytes
+     * @param current The already transferred bytes
      */
     public void setCurrent(long current) {
+        if(log.isInfoEnabled()) {
+            log.info(String.format("Transferred bytes set to %d bytes", this.getCurrent()));
+        }
         this.current = current;
     }
 
@@ -244,7 +247,7 @@ public class Status {
     }
 
     /**
-     * Mark this path with an append flag when transfered
+     * Mark this path with an append flag when transferred
      *
      * @param resume If false, the current status is cleared
      * @see #setCurrent(long)
