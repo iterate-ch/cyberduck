@@ -32,14 +32,12 @@ public class MoveTransferFilter extends TransferPathFilter {
     @Override
     public void prepare(final Path source) {
         if(source.attributes().isFile()) {
-            final long length = source.attributes().getSize();
-            // Download
-            source.status().setLength(length);
+            source.status().setLength(source.attributes().getSize());
         }
         else if(source.attributes().isDirectory()) {
             final Path destination = files.get(source);
             if(!destination.exists()) {
-                source.getSession().cache().put(destination.getReference(), AttributedList.<Path>emptyList());
+                destination.getSession().cache().put(destination.getReference(), AttributedList.<Path>emptyList());
             }
         }
     }

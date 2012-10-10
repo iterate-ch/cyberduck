@@ -1,6 +1,5 @@
-package ch.cyberduck.core.transfer.copy;
+package ch.cyberduck.core.transfer.move;
 
-import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.NullPath;
 import ch.cyberduck.core.NullSession;
@@ -14,9 +13,9 @@ import java.util.HashMap;
 import static org.junit.Assert.*;
 
 /**
- * @version $Id$
+ * @version $Id:$
  */
-public class CopyTransferFilterTest extends AbstractTestCase {
+public class MoveTransferFilterTest {
 
     @Test
     public void testAcceptDirectoryNew() throws Exception {
@@ -28,7 +27,7 @@ public class CopyTransferFilterTest extends AbstractTestCase {
                 return false;
             }
         });
-        CopyTransferFilter f = new CopyTransferFilter(files);
+        MoveTransferFilter f = new MoveTransferFilter(files);
         assertTrue(f.accept(source));
     }
 
@@ -42,7 +41,7 @@ public class CopyTransferFilterTest extends AbstractTestCase {
                 return true;
             }
         });
-        CopyTransferFilter f = new CopyTransferFilter(files);
+        MoveTransferFilter f = new MoveTransferFilter(files);
         assertFalse(f.accept(source));
     }
 
@@ -52,9 +51,9 @@ public class CopyTransferFilterTest extends AbstractTestCase {
         final NullPath source = new NullPath("a", Path.FILE_TYPE);
         source.attributes().setSize(1L);
         files.put(source, new NullPath("a", Path.FILE_TYPE));
-        CopyTransferFilter f = new CopyTransferFilter(files);
+        MoveTransferFilter f = new MoveTransferFilter(files);
         f.prepare(source);
-        assertEquals(2L, source.status().getLength());
+        assertEquals(1L, source.status().getLength());
     }
 
     @Test
@@ -63,7 +62,6 @@ public class CopyTransferFilterTest extends AbstractTestCase {
         final NullPath source = new NullPath("a", Path.DIRECTORY_TYPE);
         source.attributes().setSize(1L);
         final NullPath target = new NullPath("a", Path.DIRECTORY_TYPE) {
-
             @Override
             public boolean exists() {
                 return false;
@@ -77,7 +75,7 @@ public class CopyTransferFilterTest extends AbstractTestCase {
             }
         };
         files.put(source, target);
-        CopyTransferFilter f = new CopyTransferFilter(files);
+        MoveTransferFilter f = new MoveTransferFilter(files);
         f.prepare(source);
         assertEquals(0L, source.status().getLength());
         assertTrue(target.getSession().cache().isCached(target.getReference()));
