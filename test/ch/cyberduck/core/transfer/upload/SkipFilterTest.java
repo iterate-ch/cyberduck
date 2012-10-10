@@ -11,7 +11,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class SkipFilterTest extends AbstractTestCase {
 
@@ -30,26 +30,5 @@ public class SkipFilterTest extends AbstractTestCase {
                 return true;
             }
         }));
-    }
-
-    @Test
-    public void testPrepare() throws Exception {
-        SkipFilter f = new SkipFilter(new NullSymlinkResolver());
-        final NullPath a = new NullPath("a", Path.FILE_TYPE) {
-            @Override
-            public boolean exists() {
-                return false;
-            }
-        };
-        f.prepare(a);
-        assertFalse(a.status().isComplete());
-        final NullPath b = new NullPath("b", Path.FILE_TYPE) {
-            @Override
-            public boolean exists() {
-                return true;
-            }
-        };
-        f.prepare(b);
-        assertTrue(b.status().isComplete());
     }
 }

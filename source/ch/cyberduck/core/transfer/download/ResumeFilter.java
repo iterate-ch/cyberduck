@@ -21,7 +21,6 @@ public class ResumeFilter extends AbstractDownloadFilter {
         }
         if(file.getLocal().attributes().getSize() >= file.attributes().getSize()) {
             // No need to resume completed transfers
-            file.status().setComplete(true);
             return false;
         }
         return super.accept(file);
