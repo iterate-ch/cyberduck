@@ -59,4 +59,9 @@ public class NullPath extends Path {
     public void rename(final AbstractPath renamed) {
         throw new UnsupportedOperationException();
     }
+
+    @Override
+    public Local getLocal() {
+        return new NullLocal(this.getName());
+    }
 }
