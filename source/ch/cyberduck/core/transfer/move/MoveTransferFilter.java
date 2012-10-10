@@ -7,7 +7,7 @@ import ch.cyberduck.core.transfer.TransferPathFilter;
 import java.util.Map;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class MoveTransferFilter extends TransferPathFilter {
 
@@ -32,17 +32,14 @@ public class MoveTransferFilter extends TransferPathFilter {
     @Override
     public void prepare(final Path source) {
         if(source.attributes().isFile()) {
-            source.status().setResume(false);
-        }
-        if(source.attributes().isFile()) {
             final long length = source.attributes().getSize();
             // Download
             source.status().setLength(length);
         }
-        final Path dest = files.get(source);
-        if(dest.attributes().isDirectory()) {
-            if(!dest.exists()) {
-                source.getSession().cache().put(dest.getReference(), AttributedList.<Path>emptyList());
+        final Path destination = files.get(source);
+        if(destination.attributes().isDirectory()) {
+            if(!destination.exists()) {
+                source.getSession().cache().put(destination.getReference(), AttributedList.<Path>emptyList());
             }
         }
     }

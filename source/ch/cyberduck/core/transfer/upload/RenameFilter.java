@@ -35,9 +35,6 @@ public class RenameFilter extends AbstractUploadFilter {
                 log.info(String.format("Changed local name from %s to %s", filename, file.getName()));
             }
         }
-        if(file.attributes().isFile()) {
-            file.status().setResume(false);
-        }
         super.prepare(file);
     }
 }

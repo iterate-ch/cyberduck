@@ -20,9 +20,6 @@ public class RenameFilter extends AbstractDownloadFilter {
 
     @Override
     public void prepare(final Path file) {
-        if(file.attributes().isFile()) {
-            file.status().setResume(false);
-        }
         if(file.getLocal().exists() && file.getLocal().attributes().getSize() > 0) {
             final String parent = file.getLocal().getParent().getAbsolute();
             final String filename = file.getName();

@@ -23,6 +23,11 @@ public abstract class AbstractDownloadFilter extends TransferPathFilter {
 
     @Override
     public boolean accept(final Path file) {
+        if(file.attributes().isDirectory()) {
+            if(file.getLocal().exists()) {
+                return false;
+            }
+        }
         if(file.attributes().isSymbolicLink()) {
             if(!symlinkResolver.resolve(file)) {
                 return symlinkResolver.include(file);

@@ -37,9 +37,6 @@ public class MoveLocalFilter extends AbstractDownloadFilter {
         if(!renamed.equals(file.getLocal())) {
             file.getLocal().rename(renamed);
         }
-        if(file.attributes().isFile()) {
-            file.status().setResume(false);
-        }
         super.prepare(file);
     }
 }

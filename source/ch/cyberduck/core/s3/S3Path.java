@@ -1584,9 +1584,4 @@ public class S3Path extends CloudPath {
         return urls;
 
     }
-
-    @Override
-    public boolean isUploadResumable() {
-        return true;
-    }
 }

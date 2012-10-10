@@ -7,7 +7,7 @@ import ch.cyberduck.core.transfer.TransferPathFilter;
 import java.util.Map;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class CopyTransferFilter extends TransferPathFilter {
 
@@ -31,9 +31,6 @@ public class CopyTransferFilter extends TransferPathFilter {
 
     @Override
     public void prepare(final Path source) {
-        if(source.attributes().isFile()) {
-            source.status().setResume(false);
-        }
         if(source.attributes().isFile()) {
             if(source.attributes().getSize() == -1) {
                 // Read file size
