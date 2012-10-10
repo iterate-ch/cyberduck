@@ -123,6 +123,8 @@ public class MainController extends BundleController implements NSApplication.De
         super.awakeFromNib();
     }
 
+    private PathKindDetector detector = new DefaultPathKindDetector();
+
     /**
      * Extract the URL from the Apple event and handle it here.
      */
@@ -143,27 +145,24 @@ public class MainController extends BundleController implements NSApplication.De
         }
         else {
             final Host h = Host.parse(url);
-            if(StringUtils.isNotEmpty(h.getDefaultPath())) {
-                if(!h.getDefaultPath().endsWith(String.valueOf(Path.DELIMITER))) {
-                    final Session s = SessionFactory.createSession(h);
-                    final Path p = PathFactory.createPath(s, h.getDefaultPath(), Path.FILE_TYPE);
-                    if(StringUtils.isNotBlank(p.getExtension())) {
-                        TransferController.instance().startTransfer(new DownloadTransfer(p));
-                        return;
+            if(Path.FILE_TYPE == detector.detect(h.getDefaultPath())) {
+                final Session s = SessionFactory.createSession(h);
+                final Path p = PathFactory.createPath(s, h.getDefaultPath(), Path.FILE_TYPE);
+                TransferController.instance().startTransfer(new DownloadTransfer(p));
+            }
+            else {
+                for(BrowserController controller : MainController.getBrowsers()) {
+                    if(controller.isMounted()) {
+                        if(controller.getSession().getHost().toURL().equals(h.toURL())) {
+                            // Handle browser window already connected to the same host. #4215
+                            controller.window().makeKeyAndOrderFront(null);
+                            return;
+                        }
                     }
                 }
+                BrowserController doc = newDocument();
+                doc.mount(h);
             }
-            for(BrowserController controller : MainController.getBrowsers()) {
-                if(controller.isMounted()) {
-                    if(controller.getSession().getHost().toURL().equals(h.toURL())) {
-                        // Handle browser window already connected to the same host. #4215
-                        controller.window().makeKeyAndOrderFront(null);
-                        return;
-                    }
-                }
-            }
-            BrowserController doc = newDocument();
-            doc.mount(h);
         }
     }
 

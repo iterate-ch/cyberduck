@@ -18,10 +18,11 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.DefaultPathKindDetector;
 import ch.cyberduck.core.DownloadTransfer;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFactory;
+import ch.cyberduck.core.PathKindDetector;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.SessionFactory;
 import ch.cyberduck.core.Transfer;
@@ -39,6 +40,8 @@ public class DownloadController extends AlertController {
 
     protected NSTextField urlField
             = NSTextField.textfieldWithFrame(new NSRect(0, 22));
+
+    private PathKindDetector detector = new DefaultPathKindDetector();
 
     @Override
     public void beginSheet() {
@@ -68,10 +71,10 @@ public class DownloadController extends AlertController {
     @Override
     public void callback(final int returncode) {
         if(returncode == DEFAULT_OPTION) {
-            Host host = Host.parse(urlField.stringValue());
+            final Host host = Host.parse(urlField.stringValue());
             final Transfer transfer = new DownloadTransfer(
                     PathFactory.createPath(SessionFactory.createSession(host),
-                            host.getDefaultPath(), Path.FILE_TYPE)
+                            host.getDefaultPath(), detector.detect(host.getDefaultPath()))
             );
             TransferController.instance().startTransfer(transfer);
         }
