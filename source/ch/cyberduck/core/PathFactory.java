@@ -43,7 +43,7 @@ public abstract class PathFactory<S extends Session> {
             if(!(key instanceof Protocol)) {
                 throw new FactoryException(String.format("No factory for key %s", key));
             }
-            Protocol p = (Protocol) key;
+            final Protocol p = (Protocol) key;
             if(!factories.containsKey(p)) {
                 if(log.isDebugEnabled()) {
                     log.debug(String.format("Register protocol %s", p.getIdentifier()));
