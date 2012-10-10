@@ -345,8 +345,8 @@ public abstract class Protocol {
          */
         @Override
         public boolean validate(Credentials credentials) {
-            return StringUtils.isNotBlank(credentials.getUsername())
-                    && null != credentials.getPassword();
+            // Allow empty passwords
+            return StringUtils.isNotBlank(credentials.getUsername()) && null != credentials.getPassword();
         }
     };
 
