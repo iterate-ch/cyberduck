@@ -332,12 +332,6 @@ public class FTPSession extends SSLSession {
         client.setDefaultPort(Protocol.FTP.getDefaultPort());
         client.setParserFactory(new FTPParserFactory());
         client.setRemoteVerificationEnabled(Preferences.instance().getBoolean("ftp.datachannel.verify"));
-        if(this.getConnectMode().equals(FTPConnectMode.PASV)) {
-            client.enterLocalPassiveMode();
-        }
-        if(this.getConnectMode().equals(FTPConnectMode.PORT)) {
-            client.enterLocalActiveMode();
-        }
         if(this.getHost().getProtocol().isSecure()) {
             List<String> protocols = new ArrayList<String>();
             for(String protocol : Preferences.instance().getProperty("connection.ssl.protocols").split(",")) {

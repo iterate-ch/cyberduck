@@ -128,8 +128,15 @@ public class FTPPath extends Path {
      * @return True if action was successful
      * @throws IOException I/O error
      */
-    private boolean data(DataConnectionAction action) throws IOException {
+    private boolean data(final DataConnectionAction action) throws IOException {
         try {
+            // Make sure to always configure data mode because connect event sets defaults.
+            if(this.getSession().getConnectMode().equals(FTPConnectMode.PASV)) {
+                this.getSession().getClient().enterLocalPassiveMode();
+            }
+            if(this.getSession().getConnectMode().equals(FTPConnectMode.PORT)) {
+                this.getSession().getClient().enterLocalActiveMode();
+            }
             return action.run();
         }
         catch(SocketTimeoutException failure) {
@@ -157,9 +164,9 @@ public class FTPPath extends Path {
      * @return True if action was successful
      * @throws IOException I/O error
      */
-    private boolean fallback(DataConnectionAction action) throws IOException {
+    private boolean fallback(final DataConnectionAction action) throws IOException {
         // Fallback to other connect mode
-        if(getSession().getClient().getDataConnectionMode() == FTPClient.PASSIVE_LOCAL_DATA_CONNECTION_MODE) {
+        if(this.getSession().getClient().getDataConnectionMode() == FTPClient.PASSIVE_LOCAL_DATA_CONNECTION_MODE) {
             log.warn("Fallback to active data connection");
             this.getSession().getClient().enterLocalActiveMode();
         }
@@ -167,7 +174,15 @@ public class FTPPath extends Path {
             log.warn("Fallback to passive data connection");
             this.getSession().getClient().enterLocalPassiveMode();
         }
-        return action.run();
+        final boolean result = action.run();
+        // No I/O failure. Switch mode in bookmark.
+        if(this.getSession().getClient().getDataConnectionMode() == FTPClient.PASSIVE_LOCAL_DATA_CONNECTION_MODE) {
+            this.getSession().getHost().setFTPConnectMode(FTPConnectMode.PORT);
+        }
+        else if(this.getSession().getClient().getDataConnectionMode() == FTPClient.PASSIVE_LOCAL_DATA_CONNECTION_MODE) {
+            this.getSession().getHost().setFTPConnectMode(FTPConnectMode.PASV);
+        }
+        return result;
     }
 
     @Override
