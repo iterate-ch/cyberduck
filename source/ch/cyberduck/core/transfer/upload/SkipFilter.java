@@ -1,13 +1,14 @@
 package ch.cyberduck.core.transfer.upload;
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.transfer.SymlinkResolver;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class SkipFilter extends AbstractUploadFilter {
 
-    public SkipFilter(final UploadSymlinkResolver symlinkResolver) {
+    public SkipFilter(final SymlinkResolver symlinkResolver) {
         super(symlinkResolver);
     }
 
@@ -17,10 +18,17 @@ public class SkipFilter extends AbstractUploadFilter {
     @Override
     public boolean accept(final Path file) {
         if(file.exists()) {
-            // Set completion status for skipped files
-            file.status().setComplete(true);
             return false;
         }
         return super.accept(file);
+    }
+
+    @Override
+    public void prepare(final Path file) {
+        if(file.exists()) {
+            // Set completion status for skipped files
+            file.status().setComplete(true);
+        }
+        super.prepare(file);
     }
 }

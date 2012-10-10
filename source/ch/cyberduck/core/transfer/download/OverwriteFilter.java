@@ -1,13 +1,14 @@
 package ch.cyberduck.core.transfer.download;
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.transfer.SymlinkResolver;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class OverwriteFilter extends AbstractDownloadFilter {
 
-    public OverwriteFilter(final DownloadSymlinkResolver symlinkResolver) {
+    public OverwriteFilter(final SymlinkResolver symlinkResolver) {
         super(symlinkResolver);
     }
 
@@ -19,13 +20,5 @@ public class OverwriteFilter extends AbstractDownloadFilter {
             }
         }
         return super.accept(file);
-    }
-
-    @Override
-    public void prepare(final Path file) {
-        if(file.attributes().isFile()) {
-            file.status().setResume(false);
-        }
-        super.prepare(file);
     }
 }

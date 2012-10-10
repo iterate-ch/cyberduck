@@ -4,7 +4,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFilter;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public abstract class TransferPathFilter implements PathFilter<Path> {
     /**

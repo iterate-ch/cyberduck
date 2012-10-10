@@ -4,6 +4,7 @@ import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.transfer.SymlinkResolver;
 import ch.cyberduck.ui.DateFormatterFactory;
 
 import org.apache.commons.io.FilenameUtils;
@@ -12,11 +13,11 @@ import org.apache.commons.lang.StringUtils;
 import java.text.MessageFormat;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class MoveLocalFilter extends AbstractDownloadFilter {
 
-    public MoveLocalFilter(final DownloadSymlinkResolver symlinkResolver) {
+    public MoveLocalFilter(final SymlinkResolver symlinkResolver) {
         super(symlinkResolver);
     }
 

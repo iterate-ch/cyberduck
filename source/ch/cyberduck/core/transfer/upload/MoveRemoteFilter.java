@@ -3,6 +3,7 @@ package ch.cyberduck.core.transfer.upload;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.transfer.SymlinkResolver;
 import ch.cyberduck.ui.DateFormatterFactory;
 
 import org.apache.commons.io.FilenameUtils;
@@ -11,20 +12,20 @@ import org.apache.commons.lang.StringUtils;
 import java.text.MessageFormat;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class MoveRemoteFilter extends AbstractUploadFilter {
 
-    public MoveRemoteFilter(final UploadSymlinkResolver symlinkResolver) {
+    public MoveRemoteFilter(final SymlinkResolver symlinkResolver) {
         super(symlinkResolver);
     }
 
     @Override
     public boolean accept(final Path p) {
-        if(p.getSession().isRenameSupported(p)) {
-            return super.accept(p);
+        if(!p.getSession().isRenameSupported(p)) {
+            return false;
         }
-        return false;
+        return super.accept(p);
     }
 
     /**
@@ -43,9 +44,6 @@ public class MoveRemoteFilter extends AbstractUploadFilter {
         }
         if(!renamed.equals(file)) {
             file.rename(renamed);
-        }
-        if(file.attributes().isFile()) {
-            file.status().setResume(false);
         }
         super.prepare(file);
     }

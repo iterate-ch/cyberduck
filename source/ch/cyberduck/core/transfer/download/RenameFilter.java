@@ -2,18 +2,19 @@ package ch.cyberduck.core.transfer.download;
 
 import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.transfer.SymlinkResolver;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class RenameFilter extends AbstractDownloadFilter {
     private static final Logger log = Logger.getLogger(RenameFilter.class);
 
-    public RenameFilter(final DownloadSymlinkResolver symlinkResolver) {
+    public RenameFilter(final SymlinkResolver symlinkResolver) {
         super(symlinkResolver);
     }
 

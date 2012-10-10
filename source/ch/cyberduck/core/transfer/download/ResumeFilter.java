@@ -1,13 +1,14 @@
 package ch.cyberduck.core.transfer.download;
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.transfer.SymlinkResolver;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class ResumeFilter extends AbstractDownloadFilter {
 
-    public ResumeFilter(final DownloadSymlinkResolver symlinkResolver) {
+    public ResumeFilter(final SymlinkResolver symlinkResolver) {
         super(symlinkResolver);
     }
 
@@ -29,10 +30,10 @@ public class ResumeFilter extends AbstractDownloadFilter {
     @Override
     public void prepare(final Path file) {
         if(file.attributes().isFile()) {
-            final boolean resume = file.getLocal().exists()
-                    && file.getLocal().attributes().getSize() > 0;
-            file.status().setResume(resume);
-            file.status().setCurrent(file.getLocal().attributes().getSize());
+            if(file.getLocal().exists()) {
+                file.status().setResume(file.getLocal().attributes().getSize() > 0);
+                file.status().setCurrent(file.getLocal().attributes().getSize());
+            }
         }
         super.prepare(file);
     }
