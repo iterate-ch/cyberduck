@@ -775,14 +775,14 @@ public class GDPath extends Path {
             catch(ServiceException e) {
                 log.warn("Listing directory failed:" + e.getMessage());
                 children.attributes().setReadable(false);
-                if(session.cache().isEmpty()) {
+                if(session.cache().containsKey(this.getReference())) {
                     this.error(e.getMessage(), e);
                 }
             }
             catch(IOException e) {
                 log.warn("Listing directory failed:" + e.getMessage());
                 children.attributes().setReadable(false);
-                if(session.cache().isEmpty()) {
+                if(session.cache().containsKey(this.getReference())) {
                     this.error(e.getMessage(), e);
                 }
             }
