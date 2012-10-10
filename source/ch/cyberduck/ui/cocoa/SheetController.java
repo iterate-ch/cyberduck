@@ -137,7 +137,7 @@ public abstract class SheetController extends WindowController implements SheetC
      */
     public void beginSheet() {
         // Synchronize on parent controller. Only display one sheet at once.
-        synchronized(parent) {
+        synchronized(parent.window()) {
             if(isMainThread()) {
                 // No need to call invoke on main thread
                 this.beginSheetImpl();
@@ -150,16 +150,14 @@ public abstract class SheetController extends WindowController implements SheetC
                     beginSheetImpl();
                 }
             }, true);
-            synchronized(parent.window()) {
-                while(parent.hasSheet()) {
-                    try {
-                        log.debug("Sleeping:waitForSheetDismiss...");
-                        parent.window().wait();
-                        log.debug("Awakened:waitForSheetDismiss");
-                    }
-                    catch(InterruptedException e) {
-                        log.error(e.getMessage());
-                    }
+            while(parent.hasSheet()) {
+                try {
+                    log.debug("Sleeping:waitForSheetDismiss...");
+                    parent.window().wait();
+                    log.debug("Awakened:waitForSheetDismiss");
+                }
+                catch(InterruptedException e) {
+                    log.error(e.getMessage());
                 }
             }
         }
