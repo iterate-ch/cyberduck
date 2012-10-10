@@ -263,8 +263,7 @@ public abstract class Local extends AbstractPath {
 
     @Override
     public void symlink(String target) {
-        log.warn(String.format("Touching file instead of creating symbolic link for %s", this.getAbsolute()));
-        this.touch();
+        throw new UnsupportedOperationException();
     }
 
     @Override
