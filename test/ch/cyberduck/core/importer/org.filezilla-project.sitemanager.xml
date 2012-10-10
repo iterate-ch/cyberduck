@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<FileZilla3>
+    <Servers>
+        <Server>
+            <Host>cyberduck.ch</Host>
+            <Port>21</Port>
+            <Protocol>0</Protocol>
+            <Type>0</Type>
+            <Logontype>0</Logontype>
+            <TimezoneOffset>0</TimezoneOffset>
+            <PasvMode>MODE_DEFAULT</PasvMode>
+            <MaximumMultipleConnections>0</MaximumMultipleConnections>
+            <EncodingType>Auto</EncodingType>
+            <BypassProxy>0</BypassProxy>
+            <Name>Test 1</Name>
+            <Comments></Comments>
+            <LocalDir></LocalDir>
+            <RemoteDir></RemoteDir>
+            <SyncBrowsing>0</SyncBrowsing>Copy of New site
+        </Server>
+        <Server>
+            <Host>cyberduck.ch</Host>
+            <Port>22</Port>
+            <Protocol>1</Protocol>
+            <Type>0</Type>
+            <Logontype>0</Logontype>
+            <TimezoneOffset>0</TimezoneOffset>
+            <PasvMode>MODE_DEFAULT</PasvMode>
+            <MaximumMultipleConnections>0</MaximumMultipleConnections>
+            <EncodingType>Auto</EncodingType>
+            <BypassProxy>0</BypassProxy>
+            <Name>Test 2</Name>
+            <Comments></Comments>
+            <LocalDir></LocalDir>
+            <RemoteDir></RemoteDir>
+            <SyncBrowsing>0</SyncBrowsing>Copy of New site
+        </Server>
+    </Servers>
+</FileZilla3>
