@@ -266,7 +266,7 @@ public abstract class Protocol {
             if(credentials.isPublicKeyAuthentication()) {
                 return StringUtils.isNotBlank(credentials.getUsername());
             }
-            return FTP.validate(credentials);
+            return super.validate(credentials);
         }
 
         @Override
@@ -551,11 +551,6 @@ public abstract class Protocol {
         public String icon() {
             return FTP.icon();
         }
-
-        @Override
-        public boolean validate(Credentials credentials) {
-            return FTP.validate(credentials);
-        }
     };
 
     public static final Protocol WEBDAV_SSL = new Protocol() {
@@ -597,11 +592,6 @@ public abstract class Protocol {
         @Override
         public String icon() {
             return FTP_TLS.icon();
-        }
-
-        @Override
-        public boolean validate(Credentials credentials) {
-            return FTP.validate(credentials);
         }
     };
 
