@@ -359,7 +359,7 @@ public abstract class Transfer implements Serializable {
      * @param reloadRequested Requested overwrite
      * @return Duplicate file strategy from preferences or user selection
      */
-    public abstract TransferAction action(final boolean resumeRequested, final boolean reloadRequested);
+    protected abstract TransferAction action(final boolean resumeRequested, final boolean reloadRequested);
 
     /**
      * Lookup the path by reference in the session cache
@@ -512,6 +512,9 @@ public abstract class Transfer implements Serializable {
 
         // Determine the filter to match files against
         final TransferAction action = this.action(options.resumeRequested, options.reloadRequested);
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Selected transfer action %s", action));
+        }
         if(action.equals(TransferAction.ACTION_CANCEL)) {
             if(log.isInfoEnabled()) {
                 log.info(String.format("Transfer canceled by user:%s", this));

@@ -132,7 +132,10 @@ public class MoveTransfer extends Transfer {
     }
 
     @Override
-    protected void transfer(Path file, TransferOptions options) {
+    protected void transfer(final Path file, final TransferOptions options) {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Transfer file %s with options %s", file, options));
+        }
         final Path destination = files.get(file);
         file.rename(destination);
     }

@@ -24,8 +24,8 @@ import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.serializer.Serializer;
 import ch.cyberduck.core.transfer.TransferPathFilter;
 import ch.cyberduck.core.transfer.upload.CompareFilter;
-import ch.cyberduck.core.transfer.upload.MoveRemoteFilter;
 import ch.cyberduck.core.transfer.upload.OverwriteFilter;
+import ch.cyberduck.core.transfer.upload.RenameExistingFilter;
 import ch.cyberduck.core.transfer.upload.RenameFilter;
 import ch.cyberduck.core.transfer.upload.ResumeFilter;
 import ch.cyberduck.core.transfer.upload.SkipFilter;
@@ -153,7 +153,7 @@ public class UploadTransfer extends Transfer {
             return new RenameFilter(resolver);
         }
         if(action.equals(TransferAction.ACTION_RENAME_EXISTING)) {
-            return new MoveRemoteFilter(resolver);
+            return new RenameExistingFilter(resolver);
         }
         if(action.equals(TransferAction.ACTION_SKIP)) {
             return new SkipFilter(resolver);
@@ -185,9 +185,9 @@ public class UploadTransfer extends Transfer {
     }
 
     @Override
-    public TransferAction action(final boolean resumeRequested, final boolean reloadRequested) {
+    protected TransferAction action(final boolean resumeRequested, final boolean reloadRequested) {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Resume=%s,Reload=%s", resumeRequested, reloadRequested));
+            log.debug(String.format("Find transfer action for Resume=%s,Reload=%s", resumeRequested, reloadRequested));
         }
         if(resumeRequested) {
             // Force resume
@@ -208,7 +208,7 @@ public class UploadTransfer extends Transfer {
     @Override
     protected void transfer(final Path file, final TransferOptions options) {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Upload file %s", file.getName()));
+            log.debug(String.format("Transfer file %s with options %s", file, options));
         }
         if(session.isUnixPermissionsSupported()) {
             if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {

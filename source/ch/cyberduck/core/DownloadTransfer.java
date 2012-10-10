@@ -25,8 +25,8 @@ import ch.cyberduck.core.transfer.TransferPathFilter;
 import ch.cyberduck.core.transfer.download.CompareFilter;
 import ch.cyberduck.core.transfer.download.DownloadRootPathsNormalizer;
 import ch.cyberduck.core.transfer.download.DownloadSymlinkResolver;
-import ch.cyberduck.core.transfer.download.MoveLocalFilter;
 import ch.cyberduck.core.transfer.download.OverwriteFilter;
+import ch.cyberduck.core.transfer.download.RenameExistingFilter;
 import ch.cyberduck.core.transfer.download.RenameFilter;
 import ch.cyberduck.core.transfer.download.ResumeFilter;
 import ch.cyberduck.core.transfer.download.SkipFilter;
@@ -113,7 +113,7 @@ public class DownloadTransfer extends Transfer {
             return new RenameFilter(resolver);
         }
         if(action.equals(TransferAction.ACTION_RENAME_EXISTING)) {
-            return new MoveLocalFilter(resolver);
+            return new RenameExistingFilter(resolver);
         }
         if(action.equals(TransferAction.ACTION_SKIP)) {
             return new SkipFilter(resolver);
@@ -152,7 +152,9 @@ public class DownloadTransfer extends Transfer {
 
     @Override
     public TransferAction action(final boolean resumeRequested, final boolean reloadRequested) {
-        log.debug(String.format("Resume=%s,Reload=%s", resumeRequested, reloadRequested));
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Find transfer action for Resume=%s,Reload=%s", resumeRequested, reloadRequested));
+        }
         if(resumeRequested) {
             // Force resume
             return TransferAction.ACTION_RESUME;
@@ -170,7 +172,9 @@ public class DownloadTransfer extends Transfer {
 
     @Override
     protected void transfer(final Path file, final TransferOptions options) {
-        log.debug("transfer:" + file);
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Transfer file %s with options %s", file, options));
+        }
         final Local local = file.getLocal();
         final DownloadSymlinkResolver symlinkResolver = new DownloadSymlinkResolver(roots);
         if(file.attributes().isSymbolicLink() && symlinkResolver.resolve(file)) {

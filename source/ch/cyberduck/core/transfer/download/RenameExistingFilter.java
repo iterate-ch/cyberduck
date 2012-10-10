@@ -15,9 +15,9 @@ import java.text.MessageFormat;
 /**
  * @version $Id$
  */
-public class MoveLocalFilter extends AbstractDownloadFilter {
+public class RenameExistingFilter extends AbstractDownloadFilter {
 
-    public MoveLocalFilter(final SymlinkResolver symlinkResolver) {
+    public RenameExistingFilter(final SymlinkResolver symlinkResolver) {
         super(symlinkResolver);
     }
 

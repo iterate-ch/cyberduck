@@ -16,13 +16,13 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
-public class MoveRemoteFilterTest extends AbstractTestCase {
+public class RenameExistingFilterTest extends AbstractTestCase {
 
     @Test
     public void testAccept() throws Exception {
-        MoveRemoteFilter f = new MoveRemoteFilter(new NullSymlinkResolver());
+        RenameExistingFilter f = new RenameExistingFilter(new NullSymlinkResolver());
         assertTrue(f.accept(new NullPath("t", Path.FILE_TYPE) {
             @Override
             public Session getSession() {
@@ -51,7 +51,7 @@ public class MoveRemoteFilterTest extends AbstractTestCase {
 
     @Test
     public void testPrepare() throws Exception {
-        MoveRemoteFilter f = new MoveRemoteFilter(new NullSymlinkResolver());
+        RenameExistingFilter f = new RenameExistingFilter(new NullSymlinkResolver());
         final NullPath p = new NullPath("t", Path.FILE_TYPE) {
             @Override
             public Session getSession() {

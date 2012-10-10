@@ -7,13 +7,13 @@ import ch.cyberduck.core.transfer.NullSymlinkResolver;
 import org.junit.Test;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
-public class MoveLocalFilterTest {
+public class RenameExistingFilterTest {
 
     @Test
     public void testPrepare() throws Exception {
-        MoveLocalFilter f = new MoveLocalFilter(new NullSymlinkResolver());
+        RenameExistingFilter f = new RenameExistingFilter(new NullSymlinkResolver());
         f.prepare(new NullPath("t", Path.FILE_TYPE));
     }
 }

@@ -157,8 +157,10 @@ public class CopyTransfer extends Transfer {
     }
 
     @Override
-    protected void transfer(Path source, TransferOptions options) {
-        log.debug("transfer:" + source);
+    protected void transfer(final Path source, final TransferOptions options) {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Transfer file %s with options %s", source, options));
+        }
         final Path destination = files.get(source);
         if(source.attributes().isFile()) {
             source.copy(destination, bandwidth, new AbstractStreamListener() {

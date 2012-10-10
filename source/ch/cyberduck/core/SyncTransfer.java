@@ -345,7 +345,9 @@ public class SyncTransfer extends Transfer {
 
     @Override
     protected void transfer(final Path file, TransferOptions options) {
-        log.debug("transfer:" + file);
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Transfer file %s with options %s", file, options));
+        }
         final Comparison compare = this.compare(file);
         if(compare.equals(Comparison.REMOTE_NEWER)) {
             _delegateDownload.transfer(file, options);

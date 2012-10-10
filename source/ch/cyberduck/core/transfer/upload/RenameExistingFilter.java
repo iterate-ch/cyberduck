@@ -14,9 +14,9 @@ import java.text.MessageFormat;
 /**
  * @version $Id$
  */
-public class MoveRemoteFilter extends AbstractUploadFilter {
+public class RenameExistingFilter extends AbstractUploadFilter {
 
-    public MoveRemoteFilter(final SymlinkResolver symlinkResolver) {
+    public RenameExistingFilter(final SymlinkResolver symlinkResolver) {
         super(symlinkResolver);
     }
 
