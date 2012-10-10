@@ -24,12 +24,21 @@ public abstract class AbstractUploadFilter extends TransferPathFilter {
 
     @Override
     public boolean accept(final Path file) {
-        if(!file.getLocal().exists()) {
-            return false;
+        if(file.attributes().isDirectory()) {
+            // Do not attempt to create a directory that already exists
+            if(file.exists()) {
+                return false;
+            }
         }
-        if(file.getLocal().attributes().isSymbolicLink()) {
-            if(!symlinkResolver.resolve(file)) {
-                return symlinkResolver.include(file);
+        if(file.attributes().isFile()) {
+            if(!file.getLocal().exists()) {
+                // Local file is no more here
+                return false;
+            }
+            if(file.getLocal().attributes().isSymbolicLink()) {
+                if(!symlinkResolver.resolve(file)) {
+                    return symlinkResolver.include(file);
+                }
             }
         }
         return true;
@@ -38,21 +47,19 @@ public abstract class AbstractUploadFilter extends TransferPathFilter {
     @Override
     public void prepare(final Path file) {
         if(file.attributes().isFile()) {
-            if(file.attributes().isFile()) {
-                if(file.getLocal().attributes().isSymbolicLink()) {
-                    if(symlinkResolver.resolve(file)) {
-                        // No file size increase for symbolic link to be created on the server
-                    }
-                    else {
-                        // Will resolve the symbolic link when the file is requested.
-                        final AbstractPath target = file.getLocal().getSymlinkTarget();
-                        file.status().setLength(target.attributes().getSize());
-                    }
+            if(file.getLocal().attributes().isSymbolicLink()) {
+                if(symlinkResolver.resolve(file)) {
+                    // No file size increase for symbolic link to be created on the server
                 }
                 else {
-                    // Read file size from filesystem
-                    file.status().setLength(file.getLocal().attributes().getSize());
+                    // Will resolve the symbolic link when the file is requested.
+                    final AbstractPath target = file.getLocal().getSymlinkTarget();
+                    file.status().setLength(target.attributes().getSize());
                 }
+            }
+            else {
+                // Read file size from filesystem
+                file.status().setLength(file.getLocal().attributes().getSize());
             }
         }
         if(file.attributes().isDirectory()) {

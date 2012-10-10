@@ -56,24 +56,22 @@ public abstract class AbstractDownloadFilter extends TransferPathFilter {
             }
         }
         if(file.attributes().isFile()) {
-            if(file.attributes().isFile()) {
-                if(file.attributes().isSymbolicLink()) {
-                    if(symlinkResolver.resolve(file)) {
-                        // No file size increase for symbolic link to be created locally
-                    }
-                    else {
-                        // A server will resolve the symbolic link when the file is requested.
-                        final Path target = (Path) file.getSymlinkTarget();
-                        if(target.attributes().getSize() == -1) {
-                            target.readSize();
-                        }
-                        file.status().setLength(target.attributes().getSize());
-                    }
+            if(file.attributes().isSymbolicLink()) {
+                if(symlinkResolver.resolve(file)) {
+                    // No file size increase for symbolic link to be created locally
                 }
                 else {
-                    // Read file size
-                    file.status().setLength(file.attributes().getSize());
+                    // A server will resolve the symbolic link when the file is requested.
+                    final Path target = (Path) file.getSymlinkTarget();
+                    if(target.attributes().getSize() == -1) {
+                        target.readSize();
+                    }
+                    file.status().setLength(target.attributes().getSize());
                 }
+            }
+            else {
+                // Read file size
+                file.status().setLength(file.attributes().getSize());
             }
         }
         if(!file.getLocal().getParent().exists()) {
