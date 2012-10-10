@@ -27,7 +27,7 @@ public class NullPath extends Path {
 
     @Override
     public Path getParent() {
-        return new NullPath(this.getParent(this.getAbsolute()), Path.DIRECTORY_TYPE);
+        return new NullPath(Path.getParent(this.getAbsolute(), Path.DELIMITER), Path.DIRECTORY_TYPE);
     }
 
     @Override
