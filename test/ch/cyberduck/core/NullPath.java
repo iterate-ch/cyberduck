@@ -21,6 +21,16 @@ public class NullPath extends Path {
     }
 
     @Override
+    public boolean exists() {
+        return true;
+    }
+
+    @Override
+    public Path getParent() {
+        return new NullPath(String.valueOf(Path.DELIMITER), Path.DIRECTORY_TYPE);
+    }
+
+    @Override
     public Session getSession() {
         return new NullSession(new Host("test"));
     }
