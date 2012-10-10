@@ -35,7 +35,7 @@ public abstract class AbstractDownloadFilter extends TransferPathFilter {
         }
         final Local volume = file.getLocal().getVolume();
         if(!volume.exists()) {
-            log.warn(String.format("Volume %s not mounted", volume.getAbsolute()));
+            log.error(String.format("Volume %s not mounted", volume.getAbsolute()));
             return false;
         }
         return true;
