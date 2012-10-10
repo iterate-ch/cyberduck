@@ -3,11 +3,11 @@ package ch.cyberduck.core;
 import java.io.IOException;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class NullSession extends Session {
 
-    protected NullSession(Host h) {
+    public NullSession(Host h) {
         super(h);
     }
 

@@ -62,6 +62,6 @@ public class NullPath extends Path {
 
     @Override
     public Local getLocal() {
-        return new NullLocal(this.getName());
+        return new NullLocal(null, this.getName());
     }
 }

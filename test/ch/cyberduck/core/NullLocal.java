@@ -1,25 +1,17 @@
 package ch.cyberduck.core;
 
-import java.io.File;
-
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class NullLocal extends Local {
-    public NullLocal(final Local parent, final String name) {
-        super(parent, name);
-    }
 
     public NullLocal(final String parent, final String name) {
         super(parent, name);
     }
 
-    public NullLocal(final String path) {
-        super(path);
-    }
-
-    public NullLocal(final File path) {
-        super(path);
+    @Override
+    public boolean exists() {
+        return true;
     }
 
     @Override
