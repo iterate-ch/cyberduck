@@ -70,11 +70,15 @@ public final class Native {
      * @param name Library name
      * @return Path in application bundle
      */
-    protected static String getPath(String name) {
-        final String lib = String.format("%s/lib%s.dylib", System.getProperty("java.library.path"), name);
+    protected static String getPath(final String name) {
+        final String lib = String.format("%s/%s", System.getProperty("java.library.path"), getName(name));
         if(log.isInfoEnabled()) {
             log.info(String.format("Locating library %s at %s", name, lib));
         }
         return new File(lib).getAbsolutePath();
+    }
+
+    protected static String getName(final String name) {
+        return String.format("lib%s.dylib", name);
     }
 }
