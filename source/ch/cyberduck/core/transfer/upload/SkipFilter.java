@@ -22,13 +22,4 @@ public class SkipFilter extends AbstractUploadFilter {
         }
         return super.accept(file);
     }
-
-    @Override
-    public void prepare(final Path file) {
-        if(file.exists()) {
-            // Set completion status for skipped files
-            file.status().setComplete(true);
-        }
-        super.prepare(file);
-    }
 }

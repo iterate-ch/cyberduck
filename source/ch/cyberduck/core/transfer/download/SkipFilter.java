@@ -19,13 +19,4 @@ public class SkipFilter extends AbstractDownloadFilter {
         }
         return super.accept(file);
     }
-
-    @Override
-    public void prepare(final Path file) {
-        if(file.getLocal().exists()) {
-            // Set completion status for skipped files
-            file.status().setComplete(true);
-        }
-        super.prepare(file);
-    }
 }

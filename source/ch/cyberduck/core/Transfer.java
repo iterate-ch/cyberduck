@@ -458,6 +458,9 @@ public abstract class Transfer implements Serializable {
             // Notification
             this.fireDidTransferPath(p);
         }
+        else {
+            p.status().setComplete(true);
+        }
 
         if(!this.check()) {
             return;
