@@ -934,9 +934,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                     QuickLookFactory.instance().close();
                 }
                 else {
-                    this.updateQuickLookSelection(
-                            BrowserController.this.getSelectedPaths()
-                    );
+                    this.updateQuickLookSelection(BrowserController.this.getSelectedPaths());
                 }
             }
         }
@@ -2246,12 +2244,11 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 case SWITCH_OUTLINE_VIEW: {
                     this.getSession().cache().invalidate(this.workdir().getReference());
                     for(int i = 0; i < browserOutlineView.numberOfRows().intValue(); i++) {
-                        final Path item = this.lookup(new OutlinePathReference(browserOutlineView.itemAtRow(new NSInteger(i))));
-                        if(null == item) {
-                            // Not a folder
-                            continue;
+                        final NSObject item = browserOutlineView.itemAtRow(new NSInteger(i));
+                        if(browserOutlineView.isItemExpanded(item)) {
+                            final OutlinePathReference reference = new OutlinePathReference(item);
+                            this.getSession().cache().invalidate(reference);
                         }
-                        this.getSession().cache().invalidate(item.getReference());
                     }
                     break;
                 }
