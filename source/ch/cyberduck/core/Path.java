@@ -645,7 +645,7 @@ public abstract class Path extends AbstractPath implements Serializable {
     /**
      * An absolute reference here the symbolic link is pointing to
      */
-    private String symlink;
+    protected String symlink;
 
     public void setSymlinkTarget(String name) {
         this.symlink = name;
