@@ -156,7 +156,6 @@
              update="yes"
              manifest="${build}/MANIFEST.MF">
             <fileset dir="${build.classes}">
-                <include name="**/*.dylib"/>
                 <include name="ch/cyberduck/core/**/*.class"/>
                 <include name="org/w3c/**/*.class"/>
                 <include name="org/kohsuke/putty/**/*.class"/>
@@ -180,7 +179,7 @@
                  use="true"
                  windowtitle="${app.name} API"
                  doctitle="${app.name}"
-                 bottom="Copyright (c) 2005-2010 David Kocher. Enjoy ${app.name}!">
+                 bottom="Copyright (c) 2005-2012 David Kocher. Enjoy ${app.name}!">
             <classpath refid="build.classpath"/>
         </javadoc>
     </target>
