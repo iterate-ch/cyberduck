@@ -395,7 +395,7 @@ public abstract class Path extends AbstractPath implements Serializable {
             if(this.isRoot()) {
                 return this;
             }
-            String name = this.getParent(this.getAbsolute());
+            final String name = getParent(this.getAbsolute(), this.getPathDelimiter());
             if(String.valueOf(DELIMITER).equals(name)) {
                 parent = PathFactory.createPath(this.getSession(), String.valueOf(DELIMITER),
                         Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);

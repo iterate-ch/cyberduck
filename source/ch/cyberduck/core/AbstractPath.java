@@ -131,19 +131,19 @@ public abstract class AbstractPath {
         return this.getAbsolute().equals(String.valueOf(this.getPathDelimiter()));
     }
 
-    protected String getParent(String absolute) {
+    public static String getParent(final String absolute, final char delimiter) {
         int index = absolute.length() - 1;
-        if(absolute.charAt(index) == this.getPathDelimiter()) {
+        if(absolute.charAt(index) == delimiter) {
             if(index > 0) {
                 index--;
             }
         }
-        int cut = absolute.lastIndexOf(this.getPathDelimiter(), index);
+        int cut = absolute.lastIndexOf(delimiter, index);
         if(cut > 0) {
             return absolute.substring(0, cut);
         }
         //if (index == 0) parent is root
-        return String.valueOf(this.getPathDelimiter());
+        return String.valueOf(delimiter);
     }
 
     public abstract String getAbsolute();
