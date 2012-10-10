@@ -44,7 +44,7 @@ public class Status {
     /**
      * The number of transfered bytes. Must be less or equals size.
      */
-    private long current = 0;
+    private long current = 0L;
 
     /**
      * Transfer size. May be less than the file size in attributes or 0 if creating symbolic links.
@@ -266,5 +266,7 @@ public class Status {
     public void reset() {
         complete = false;
         canceled = false;
+        resume = false;
+        current = 0L;
     }
 }
