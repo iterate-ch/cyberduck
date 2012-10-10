@@ -18,6 +18,7 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.filter.DownloadRegexFilter;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.serializer.Serializer;
@@ -26,7 +27,6 @@ import ch.cyberduck.core.transfer.download.CompareFilter;
 import ch.cyberduck.core.transfer.download.DownloadSymlinkResolver;
 import ch.cyberduck.core.transfer.download.MoveLocalFilter;
 import ch.cyberduck.core.transfer.download.OverwriteFilter;
-import ch.cyberduck.core.transfer.download.RegexFilter;
 import ch.cyberduck.core.transfer.download.RenameFilter;
 import ch.cyberduck.core.transfer.download.ResumeFilter;
 import ch.cyberduck.core.transfer.download.SkipFilter;
@@ -45,8 +45,8 @@ import java.util.List;
 public class DownloadTransfer extends Transfer {
     private static final Logger log = Logger.getLogger(DownloadTransfer.class);
 
-    private RegexFilter filter
-            = new RegexFilter();
+    private DownloadRegexFilter filter
+            = new DownloadRegexFilter();
 
     public DownloadTransfer(Path root) {
         super(root);

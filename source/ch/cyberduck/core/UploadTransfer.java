@@ -19,6 +19,7 @@ package ch.cyberduck.core;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.filter.UploadRegexFilter;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.serializer.Serializer;
@@ -26,7 +27,6 @@ import ch.cyberduck.core.transfer.TransferPathFilter;
 import ch.cyberduck.core.transfer.upload.CompareFilter;
 import ch.cyberduck.core.transfer.upload.MoveRemoteFilter;
 import ch.cyberduck.core.transfer.upload.OverwriteFilter;
-import ch.cyberduck.core.transfer.upload.RegexFilter;
 import ch.cyberduck.core.transfer.upload.RenameFilter;
 import ch.cyberduck.core.transfer.upload.ResumeFilter;
 import ch.cyberduck.core.transfer.upload.SkipFilter;
@@ -46,7 +46,7 @@ import java.util.UUID;
 public class UploadTransfer extends Transfer {
     private static final Logger log = Logger.getLogger(UploadTransfer.class);
 
-    private RegexFilter filter = new RegexFilter();
+    private UploadRegexFilter filter = new UploadRegexFilter();
 
     public UploadTransfer(Path root) {
         super(root);

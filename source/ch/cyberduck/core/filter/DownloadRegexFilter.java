@@ -1,4 +1,4 @@
-package ch.cyberduck.core.transfer.download;
+package ch.cyberduck.core.filter;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFilter;
@@ -9,10 +9,10 @@ import org.apache.log4j.Logger;
 import java.util.regex.Pattern;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
-public class RegexFilter implements PathFilter<Path> {
-    private static final Logger log = Logger.getLogger(RegexFilter.class);
+public class DownloadRegexFilter implements PathFilter<Path> {
+    private static final Logger log = Logger.getLogger(DownloadRegexFilter.class);
 
     private final Pattern pattern
             = Pattern.compile(Preferences.instance().getProperty("queue.download.skip.regex"));
