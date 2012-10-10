@@ -86,15 +86,13 @@
     </target>
 
     <target name="build" depends="archive" description="Compile, jar and copy to application bundle">
-        <copy todir="${app.java}">
+        <copy todir="${build.deploy}">
             <fileset dir="${build}">
                 <include name="*.jar"/>
             </fileset>
-        </copy>
-        <copy todir="${app.java}">
             <fileset dir="${lib}">
-                <include name="*.jar"/>
                 <include name="*.dylib"/>
+                <include name="*.jar"/>
             </fileset>
         </copy>
         <exec dir="${home}" executable="/usr/bin/xcrun" spawn="false" failonerror="true">
@@ -103,6 +101,7 @@
         <copy todir="${app.java}">
             <fileset dir="${build.deploy}">
                 <include name="*.dylib"/>
+                <include name="*.jar"/>
             </fileset>
         </copy>
         <copy todir="${app.contents}">
