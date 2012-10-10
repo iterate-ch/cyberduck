@@ -19,8 +19,8 @@ public class CopyTransferFilter extends TransferPathFilter {
 
     @Override
     public boolean accept(final Path source) {
-        final Path destination = files.get(source);
-        if(destination.attributes().isDirectory()) {
+        if(source.attributes().isDirectory()) {
+            final Path destination = files.get(source);
             // Do not attempt to create a directory that already exists
             if(destination.exists()) {
                 return false;
@@ -40,8 +40,8 @@ public class CopyTransferFilter extends TransferPathFilter {
             // Download + Upload
             source.status().setLength(length * 2);
         }
-        final Path destination = files.get(source);
-        if(destination.attributes().isDirectory()) {
+        else if(source.attributes().isDirectory()) {
+            final Path destination = files.get(source);
             if(!destination.exists()) {
                 files.get(source).getSession().cache().put(destination.getReference(), AttributedList.<Path>emptyList());
             }
