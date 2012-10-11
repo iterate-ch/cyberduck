@@ -146,10 +146,7 @@
              update="yes"
              manifest="${build}/MANIFEST.MF">
             <fileset dir="${build.classes}/">
-                <include name="ch/cyberduck/ui/*.class"/>
-                <include name="ch/cyberduck/ui/threading/*.class"/>
-                <include name="ch/cyberduck/ui/action/*.class"/>
-                <include name="ch/cyberduck/ui/growl/*.class"/>
+                <include name="ch/cyberduck/ui/**/*.class"/>
             </fileset>
         </jar>
         <jar jarfile="${build}/core.jar"
