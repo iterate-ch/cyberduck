@@ -18,7 +18,6 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.NullComparator;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFactory;
@@ -120,10 +119,10 @@ public class GotoController extends AlertController {
         final BrowserController c = (BrowserController) parent;
         final Path dir;
         if(!filename.startsWith(String.valueOf(Path.DELIMITER))) {
-            dir = PathFactory.createPath(this.getSession(), workdir.getAbsolute(), filename, AbstractPath.DIRECTORY_TYPE);
+            dir = PathFactory.createPath(this.getSession(), workdir.getAbsolute(), filename, Path.DIRECTORY_TYPE);
         }
         else {
-            dir = PathFactory.createPath(this.getSession(), filename, AbstractPath.DIRECTORY_TYPE);
+            dir = PathFactory.createPath(this.getSession(), filename, Path.DIRECTORY_TYPE);
         }
         if(workdir.getParent().equals(dir)) {
             c.setWorkdir(dir, workdir);
