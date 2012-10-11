@@ -35,7 +35,7 @@ import java.util.Set;
  * @version $Id$
  */
 public final class ProtocolFactory {
-    private static Logger log = Logger.getLogger(ProtocolFactory.class);
+    private static final Logger log = Logger.getLogger(ProtocolFactory.class);
 
     /**
      * Ordered list of supported protocols.

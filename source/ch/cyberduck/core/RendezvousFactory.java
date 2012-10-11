@@ -30,7 +30,7 @@ import java.util.Map;
  * @version $Id$
  */
 public abstract class RendezvousFactory extends Factory<Rendezvous> {
-    private static Logger log = Logger.getLogger(RendezvousFactory.class);
+    private static final Logger log = Logger.getLogger(RendezvousFactory.class);
 
     /**
      * Registered factories

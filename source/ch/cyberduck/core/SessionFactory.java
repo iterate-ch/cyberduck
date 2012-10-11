@@ -32,7 +32,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public abstract class SessionFactory {
-    private static Logger log = Logger.getLogger(SessionFactory.class);
+    private static final Logger log = Logger.getLogger(SessionFactory.class);
 
     private static final Map<Protocol, SessionFactory> factories
             = new HashMap<Protocol, SessionFactory>() {
