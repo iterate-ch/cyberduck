@@ -20,13 +20,13 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFilter;
-import ch.cyberduck.core.Status;
 import ch.cyberduck.core.SyncTransfer;
 import ch.cyberduck.core.Transfer;
 import ch.cyberduck.core.synchronization.Comparison;
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.resources.IconCache;
+import ch.cyberduck.ui.formatter.SizeFormatterFactory;
 
 /**
  * @version $Id$
@@ -78,8 +78,9 @@ public class SyncPromptModel extends TransferPromptModel {
         if(null == cached) {
             if(identifier.equals(SIZE_COLUMN)) {
                 Comparison compare = ((SyncTransfer) transfer).compare(item);
-                return tableViewCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(Status.getSizeAsString(
-                        compare.equals(Comparison.REMOTE_NEWER) ? item.attributes().getSize() : item.getLocal().attributes().getSize()),
+                return tableViewCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(
+                        SizeFormatterFactory.instance().format(
+                                compare.equals(Comparison.REMOTE_NEWER) ? item.attributes().getSize() : item.getLocal().attributes().getSize()),
                         TableCellAttributes.browserFontRightAlignment()));
             }
             if(identifier.equals(SYNC_COLUMN)) {

@@ -19,6 +19,7 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.ui.formatter.SizeFormatterFactory;
 
 import java.text.MessageFormat;
 
@@ -55,7 +56,7 @@ public class Speedometer {
      *
      * @return The bytes being processed per second
      */
-    public float getSpeed() {
+    public long getSpeed() {
         bytesTransferred = transfer.getTransferred();
         if(bytesTransferred > initialBytesTransferred) {
             if(0 == initialBytesTransferred) {
@@ -69,9 +70,9 @@ public class Speedometer {
                 // The throughput is usually measured in bits per second
                 if(Preferences.instance().getBoolean("queue.transferspeed.bits")) {
                     double bits = bytes * 8;
-                    return (float) (bits / (elapsedSeconds));
+                    return (long) (bits / elapsedSeconds);
                 }
-                return (float) (bytes / (elapsedSeconds));
+                return (long) (bytes / elapsedSeconds);
             }
         }
         return -1;
@@ -83,11 +84,12 @@ public class Speedometer {
      */
     public String getProgress() {
         StringBuilder b = new StringBuilder();
-        final double size = transfer.getSize();
-        final double transferred = transfer.getTransferred();
+        final long size = transfer.getSize();
+        final long transferred = transfer.getTransferred();
         b.append(MessageFormat.format(Locale.localizedString("{0} of {1}"),
-                Status.getSizeAsString(transferred, !transfer.isComplete()), Status.getSizeAsString(size)));
-        final float speed = this.getSpeed();
+                SizeFormatterFactory.instance().format(transferred, !transfer.isComplete()),
+                SizeFormatterFactory.instance().format(size)));
+        final long speed = this.getSpeed();
         if(transfer.isRunning()) {
             if(size > -1 || speed > 0) {
                 b.append(" (");
@@ -104,7 +106,7 @@ public class Speedometer {
                     if(size > -1) {
                         b.append(", ");
                     }
-                    b.append(Status.getSpeedAsString(speed));
+                    b.append(SizeFormatterFactory.instance(true).format(speed));
                     b.append("/sec");
                     double t = this.getBytesTransfered();
                     if(size > 0 && t < size) {

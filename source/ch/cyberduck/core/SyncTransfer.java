@@ -91,8 +91,8 @@ public class SyncTransfer extends Transfer {
     }
 
     @Override
-    public double getSize() {
-        final double size = _delegateDownload.getSize() + _delegateUpload.getSize();
+    public long getSize() {
+        final long size = _delegateDownload.getSize() + _delegateUpload.getSize();
         if(0 == size) {
             return super.getSize();
         }
@@ -110,8 +110,8 @@ public class SyncTransfer extends Transfer {
     }
 
     @Override
-    public double getTransferred() {
-        final double transferred = _delegateDownload.getTransferred() + _delegateUpload.getTransferred();
+    public long getTransferred() {
+        final long transferred = _delegateDownload.getTransferred() + _delegateUpload.getTransferred();
         if(0 == transferred) {
             return super.getTransferred();
         }

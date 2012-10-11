@@ -37,6 +37,7 @@ import ch.cyberduck.ui.cocoa.threading.AlertRepeatableBackgroundAction;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 import ch.cyberduck.ui.cocoa.util.HyperlinkAttributedStringFactory;
 import ch.cyberduck.ui.cocoa.view.ControllerCell;
+import ch.cyberduck.ui.formatter.SizeFormatterFactory;
 import ch.cyberduck.ui.threading.ControllerMainAction;
 
 import org.apache.commons.lang.StringUtils;
@@ -282,7 +283,7 @@ public final class TransferController extends WindowController implements NSTool
         final StringTokenizer options = new StringTokenizer(Preferences.instance().getProperty("queue.bandwidth.options"), ",");
         while(options.hasMoreTokens()) {
             final String bytes = options.nextToken();
-            this.bandwidthPopup.addItemWithTitle(Status.getSizeAsString(Integer.parseInt(bytes)) + "/s");
+            this.bandwidthPopup.addItemWithTitle(SizeFormatterFactory.instance().format(Integer.parseInt(bytes)) + "/s");
             this.bandwidthPopup.lastItem().setRepresentedObject(bytes);
         }
         this.bandwidthPopup.menu().setDelegate((this.bandwidthPopupDelegate = new BandwidthMenuDelegate()).id());

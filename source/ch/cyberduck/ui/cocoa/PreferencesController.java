@@ -39,6 +39,7 @@ import ch.cyberduck.ui.cocoa.resources.IconCache;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 import ch.cyberduck.ui.cocoa.urlhandler.URLSchemeHandlerConfiguration;
 import ch.cyberduck.ui.cocoa.view.BookmarkCell;
+import ch.cyberduck.ui.formatter.SizeFormatterFactory;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -1751,7 +1752,7 @@ public final class PreferencesController extends ToolbarWindowController {
         final StringTokenizer options = new StringTokenizer(Preferences.instance().getProperty("queue.bandwidth.options"), ",");
         while(options.hasMoreTokens()) {
             final String bytes = options.nextToken();
-            this.defaultDownloadThrottleCombobox.addItemWithTitle(Status.getSizeAsString(Integer.parseInt(bytes)) + "/s");
+            this.defaultDownloadThrottleCombobox.addItemWithTitle(SizeFormatterFactory.instance().format(Integer.parseInt(bytes)) + "/s");
             this.defaultDownloadThrottleCombobox.lastItem().setRepresentedObject(bytes);
         }
         if(-1 == bandwidth) {
@@ -1785,7 +1786,7 @@ public final class PreferencesController extends ToolbarWindowController {
         final StringTokenizer options = new StringTokenizer(Preferences.instance().getProperty("queue.bandwidth.options"), ",");
         while(options.hasMoreTokens()) {
             final String bytes = options.nextToken();
-            this.defaultUploadThrottleCombobox.addItemWithTitle(Status.getSizeAsString(Integer.parseInt(bytes)) + "/s");
+            this.defaultUploadThrottleCombobox.addItemWithTitle(SizeFormatterFactory.instance().format(Integer.parseInt(bytes)) + "/s");
             this.defaultUploadThrottleCombobox.lastItem().setRepresentedObject(bytes);
         }
         if(-1 == bandwidth) {

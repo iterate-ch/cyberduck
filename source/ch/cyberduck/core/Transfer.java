@@ -51,12 +51,12 @@ public abstract class Transfer implements Serializable {
     /**
      * The sum of the file length of all files in the <code>queue</code>
      */
-    protected double size = 0;
+    protected long size = 0;
 
     /**
      * The number bytes already transferred of the files in the <code>queue</code>
      */
-    protected double transferred = 0;
+    protected long transferred = 0;
 
     /**
      * The transfer has been canceled and should
@@ -165,7 +165,7 @@ public abstract class Transfer implements Serializable {
         }
         Object sizeObj = dict.stringForKey("Size");
         if(sizeObj != null) {
-            size = Double.parseDouble(sizeObj.toString());
+            size = Long.parseLong(sizeObj.toString());
         }
         Object timestampObj = dict.stringForKey("Timestamp");
         if(timestampObj != null) {
@@ -173,7 +173,7 @@ public abstract class Transfer implements Serializable {
         }
         Object currentObj = dict.stringForKey("Current");
         if(currentObj != null) {
-            transferred = Double.parseDouble(currentObj.toString());
+            transferred = Long.parseLong(currentObj.toString());
         }
         this.init();
         Object bandwidthObj = dict.stringForKey("Bandwidth");
@@ -789,14 +789,14 @@ public abstract class Transfer implements Serializable {
     /**
      * @return The sum of all file lengths in this transfer.
      */
-    public double getSize() {
+    public long getSize() {
         return size;
     }
 
     /**
      * @return The number of bytes transfered of all items in this <code>transfer</code>
      */
-    public double getTransferred() {
+    public long getTransferred() {
         return transferred;
     }
 }

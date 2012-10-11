@@ -20,7 +20,6 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.NullComparator;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Status;
 import ch.cyberduck.ui.DateFormatterFactory;
 import ch.cyberduck.ui.ExtensionComparator;
 import ch.cyberduck.ui.FileTypeComparator;
@@ -30,6 +29,7 @@ import ch.cyberduck.ui.OwnerComparator;
 import ch.cyberduck.ui.PermissionsComparator;
 import ch.cyberduck.ui.SizeComparator;
 import ch.cyberduck.ui.TimestampComparator;
+import ch.cyberduck.ui.formatter.SizeFormatterFactory;
 
 import org.apache.log4j.Logger;
 
@@ -47,7 +47,7 @@ public abstract class AbstractPathTableDelegate extends AbstractTableDelegate<Pa
     @Override
     public String tooltip(Path p) {
         return p.getAbsolute() + "\n"
-                + Status.getSizeAsString(p.attributes().getSize()) + "\n"
+                + SizeFormatterFactory.instance().format(p.attributes().getSize()) + "\n"
                 + DateFormatterFactory.instance().getLongFormat(p.attributes().getModificationDate());
     }
 

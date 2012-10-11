@@ -50,6 +50,7 @@ import ch.cyberduck.ui.cocoa.threading.BrowserBackgroundAction;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 import ch.cyberduck.ui.cocoa.threading.WorkerBackgroundAction;
 import ch.cyberduck.ui.cocoa.util.HyperlinkAttributedStringFactory;
+import ch.cyberduck.ui.formatter.SizeFormatterFactory;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
@@ -1838,7 +1839,7 @@ public class InfoController extends ToolbarWindowController {
 
     private void updateSize(long size) {
         sizeField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
-                Status.getSizeAsString(size, true),
+                SizeFormatterFactory.instance().format(size, true),
                 TRUNCATE_MIDDLE_ATTRIBUTES));
     }
 

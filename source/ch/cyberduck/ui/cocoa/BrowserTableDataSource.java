@@ -40,6 +40,7 @@ import ch.cyberduck.ui.cocoa.model.OutlinePathReference;
 import ch.cyberduck.ui.cocoa.odb.WatchEditor;
 import ch.cyberduck.ui.cocoa.resources.IconCache;
 import ch.cyberduck.ui.cocoa.threading.BrowserBackgroundAction;
+import ch.cyberduck.ui.formatter.SizeFormatterFactory;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -194,7 +195,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
             }
             if(identifier.equals(SIZE_COLUMN)) {
                 return tableViewCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(
-                        Status.getSizeAsString(item.attributes().getSize()),
+                        SizeFormatterFactory.instance().format(item.attributes().getSize()),
                         TableCellAttributes.browserFontRightAlignment()));
             }
             if(identifier.equals(MODIFIED_COLUMN)) {

@@ -20,11 +20,11 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFilter;
-import ch.cyberduck.core.Status;
 import ch.cyberduck.core.Transfer;
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.resources.IconCache;
+import ch.cyberduck.ui.formatter.SizeFormatterFactory;
 
 import org.apache.log4j.Logger;
 
@@ -87,7 +87,8 @@ public class UploadPromptModel extends TransferPromptModel {
                 return null;
             }
             if(identifier.equals(TransferPromptModel.SIZE_COLUMN)) {
-                return tableViewCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(Status.getSizeAsString(item.attributes().getSize()),
+                return tableViewCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(
+                        SizeFormatterFactory.instance().format(item.attributes().getSize()),
                         TableCellAttributes.browserFontRightAlignment()));
             }
             return super.objectValueForItem(item, identifier);

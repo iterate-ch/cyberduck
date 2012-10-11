@@ -24,7 +24,6 @@ import org.apache.log4j.Logger;
 
 import java.math.BigDecimal;
 import java.text.MessageFormat;
-import java.text.NumberFormat;
 
 /**
  * The Status class is the model of a download's status.
@@ -34,7 +33,11 @@ import java.text.NumberFormat;
  * @version $Id$
  */
 public class Status {
-    private static Logger log = Logger.getLogger(Status.class);
+    private static final Logger log = Logger.getLogger(Status.class);
+
+    public static final long KILO = 1024; //2^10
+    public static final long MEGA = 1048576; // 2^20
+    public static final long GIGA = 1073741824; // 2^30
 
     /**
      * Transfer is resumable
@@ -60,83 +63,6 @@ public class Status {
      * Indicates that the last action has been completed.
      */
     private boolean complete = false;
-
-    public static long KILO = -1;
-    public static long MEGA = -1;
-    public static long GIGA = -1;
-
-    static {
-        if(Preferences.instance().getBoolean("browser.filesize.decimal")) {
-            KILO = 1000; //10^3
-            MEGA = 1000000; // 10^6
-            GIGA = 1000000000; // 10^9
-        }
-        else {
-            // Default is binary sizes
-            KILO = 1024; //2^10
-            MEGA = 1048576; // 2^20
-            GIGA = 1073741824; // 2^30
-        }
-    }
-
-    /**
-     * Rounding mode to round towards "nearest neighbor" unless both
-     * neighbors are equidistant, in which case round up.
-     *
-     * @param size Number of bytes
-     * @return The size of the file using BigDecimal.ROUND_HALF_UP rounding
-     */
-    public static String getSizeAsString(double size) {
-        return getSizeAsString(size, false, true);
-    }
-
-    /**
-     * @param size  Bytes
-     * @param plain Include plain format of bytes
-     * @return Formatted size
-     */
-    public static String getSizeAsString(double size, boolean plain) {
-        return getSizeAsString(size, plain, true);
-    }
-
-    /**
-     * @param size  Bytes
-     * @param bytes Report file size as bytes or bits.
-     * @param plain Include plain format of bytes
-     * @return Formatted size
-     */
-    public static String getSizeAsString(double size, boolean plain, boolean bytes) {
-        if(-1 == size) {
-            return Locale.localizedString("--");
-        }
-        if(size < KILO) {
-            return (int) size + (bytes ? " B" : " bit");
-        }
-        StringBuilder formatted = new StringBuilder();
-        if(size < MEGA) {
-            formatted.append(new BigDecimal(size).divide(new BigDecimal(KILO),
-                    1,
-                    BigDecimal.ROUND_HALF_UP).toString()).append(bytes ? " KB" : " kbit");
-        }
-        else if(size < GIGA) {
-            formatted.append(new BigDecimal(size).divide(new BigDecimal(MEGA),
-                    1,
-                    BigDecimal.ROUND_HALF_UP).toString()).append(bytes ? " MB" : " Mbit");
-        }
-        else {
-            formatted.append(new BigDecimal(size).divide(new BigDecimal(GIGA),
-                    1,
-                    BigDecimal.ROUND_HALF_UP).toString()).append(bytes ? " GB" : " Gbit");
-        }
-        if(plain) {
-            formatted.append(" (").append(NumberFormat.getInstance().format(size)).append(" bytes)");
-        }
-        return formatted.toString();
-    }
-
-    public static String getSpeedAsString(double size) {
-        return getSizeAsString(size, false, true);
-    }
 
     /**
      * @param remaining Seconds

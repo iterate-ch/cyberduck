@@ -25,16 +25,6 @@ import static org.junit.Assert.assertEquals;
 public class StatusTest extends AbstractTestCase {
 
     @Test
-    public void testGetSizeAsString() throws Exception {
-        assertEquals("1.0 KB", Status.getSizeAsString(1024));
-        assertEquals("1.5 KB", Status.getSizeAsString(1500));
-        assertEquals("2.0 KB", Status.getSizeAsString(2000));
-        assertEquals("1.0 MB", Status.getSizeAsString(1048576));
-        assertEquals("1.0 GB", Status.getSizeAsString(1073741824));
-        assertEquals("375.3 MB", Status.getSizeAsString(393495974));
-    }
-
-    @Test
     public void testSetResume() throws Exception {
         Status status = new Status();
         status.setCurrent(1024);

@@ -30,6 +30,7 @@ import ch.cyberduck.ui.cocoa.model.OutlinePathReference;
 import ch.cyberduck.ui.cocoa.resources.IconCache;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 import ch.cyberduck.ui.cocoa.view.OutlineCell;
+import ch.cyberduck.ui.formatter.SizeFormatterFactory;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -247,7 +248,7 @@ public abstract class TransferPromptController extends SheetController implement
                     }
                     else {
                         localSizeField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
-                                Status.getSizeAsString(p.getLocal().attributes().getSize()),
+                                SizeFormatterFactory.instance().format(p.getLocal().attributes().getSize()),
                                 TRUNCATE_MIDDLE_ATTRIBUTES));
                     }
                     if(p.getLocal().attributes().getModificationDate() == -1) {
@@ -266,7 +267,7 @@ public abstract class TransferPromptController extends SheetController implement
                     }
                     else {
                         remoteSizeField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
-                                Status.getSizeAsString(p.attributes().getSize()),
+                                SizeFormatterFactory.instance().format(p.attributes().getSize()),
                                 TRUNCATE_MIDDLE_ATTRIBUTES));
                     }
                     if(p.attributes().getModificationDate() == -1) {
