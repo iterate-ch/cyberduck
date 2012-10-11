@@ -36,6 +36,16 @@ public class DownloadSymlinkResolverTest extends AbstractTestCase {
     }
 
     @Test
+    public void testResolveRoot() throws Exception {
+        final ArrayList<Path> files = new ArrayList<Path>();
+        files.add(new NullPath("/a", Path.DIRECTORY_TYPE));
+        DownloadSymlinkResolver resolver = new DownloadSymlinkResolver(files);
+        NullPath p = new NullPath("/b", Path.FILE_TYPE | Path.SYMBOLIC_LINK_TYPE);
+        p.setSymlinkTarget("/a");
+        assertTrue(resolver.resolve(p));
+    }
+
+    @Test
     public void testRelativize() throws Exception {
         DownloadSymlinkResolver r = new DownloadSymlinkResolver(Collections.<Path>emptyList());
         assertEquals("d", r.relativize("/a/b/c", "/a/b/d"));

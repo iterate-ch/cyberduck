@@ -32,7 +32,7 @@ public class UploadSymlinkResolver extends AbstractSymlinkResolver {
                 final AbstractPath target = local.getSymlinkTarget();
                 // Only create symbolic link if target is included in the upload
                 for(Path root : files) {
-                    if(target.isChild(root.getLocal())) {
+                    if(this.findTarget(target, root)) {
                         return true;
                     }
                 }
@@ -48,11 +48,15 @@ public class UploadSymlinkResolver extends AbstractSymlinkResolver {
             final AbstractPath target = local.getSymlinkTarget();
             // Do not transfer files referenced from symlinks pointing to files also included
             for(Path root : files) {
-                if(target.isChild(root.getLocal())) {
+                if(this.findTarget(target, root)) {
                     return false;
                 }
             }
         }
         return true;
+    }
+
+    private boolean findTarget(final AbstractPath target, final Path root) {
+        return target.equals(root.getLocal()) || target.isChild(root.getLocal());
     }
 }
