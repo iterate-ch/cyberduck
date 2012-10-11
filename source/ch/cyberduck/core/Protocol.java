@@ -34,8 +34,7 @@ import java.util.Set;
  * @version $Id$
  */
 public abstract class Protocol {
-
-    private static Logger log = Logger.getLogger(Protocol.class);
+    private static final Logger log = Logger.getLogger(Protocol.class);
 
     /**
      * Must be unique across all available protocols.

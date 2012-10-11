@@ -34,7 +34,7 @@ import java.util.Arrays;
  * @version $Id$
  */
 public class Permission implements Serializable {
-    private static Logger log = Logger.getLogger(Permission.class);
+    private static final Logger log = Logger.getLogger(Permission.class);
 
     private static final int EMPTY_MASK = 0;
 

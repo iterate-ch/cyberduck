@@ -37,7 +37,7 @@ import java.util.UUID;
  * @version $Id$
  */
 public class Profile extends Protocol implements Serializable {
-    private static Logger log = Logger.getLogger(Profile.class);
+    private static final Logger log = Logger.getLogger(Profile.class);
 
     private Deserializer dict;
 

@@ -49,7 +49,7 @@ import java.util.Set;
  * @version $Id$
  */
 public abstract class Session implements TranscriptListener {
-    private static Logger log = Logger.getLogger(Session.class);
+    private static final Logger log = Logger.getLogger(Session.class);
 
     /**
      * Encapsulating all the information of the remote host

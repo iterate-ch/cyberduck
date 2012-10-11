@@ -32,7 +32,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public abstract class PathFactory<S extends Session> {
-    private static Logger log = Logger.getLogger(PathFactory.class);
+    private static final Logger log = Logger.getLogger(PathFactory.class);
 
     /**
      * Registered factories

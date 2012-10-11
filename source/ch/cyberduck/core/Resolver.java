@@ -27,7 +27,7 @@ import java.net.UnknownHostException;
  * @version $Id$
  */
 public class Resolver implements Runnable {
-    private static Logger log = Logger.getLogger(Resolver.class);
+    private static final Logger log = Logger.getLogger(Resolver.class);
 
     private final Object signal = new Object();
 

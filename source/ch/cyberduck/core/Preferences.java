@@ -42,7 +42,7 @@ import java.util.logging.LogManager;
  * @version $Id$
  */
 public abstract class Preferences {
-    private static Logger log = Logger.getLogger(Preferences.class);
+    private static final Logger log = Logger.getLogger(Preferences.class);
 
     private static Preferences current = null;
 
