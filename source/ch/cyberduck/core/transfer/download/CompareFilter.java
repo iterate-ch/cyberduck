@@ -1,6 +1,7 @@
 package ch.cyberduck.core.transfer.download;
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.synchronization.CombinedComparisionService;
 import ch.cyberduck.core.synchronization.Comparison;
 import ch.cyberduck.core.synchronization.ComparisonService;
 
@@ -12,7 +13,7 @@ import org.apache.log4j.Logger;
 public class CompareFilter extends AbstractDownloadFilter {
     private static final Logger log = Logger.getLogger(CompareFilter.class);
 
-    private ComparisonService compareService = new ComparisonService();
+    private ComparisonService compareService = new CombinedComparisionService();
 
     public CompareFilter(final DownloadSymlinkResolver symlinkResolver) {
         super(symlinkResolver);

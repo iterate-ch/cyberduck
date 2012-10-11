@@ -20,11 +20,11 @@ import static org.junit.Assert.assertEquals;
 /**
  * @version $Id:$
  */
-public class ComparisonServiceTest extends AbstractTestCase {
-
+public class TimestampComparisonServiceTest extends AbstractTestCase {
     @Test
-    public void testChecksum() throws Exception {
-        ComparisonService s = new ComparisonService();
+    public void testCompare() throws Exception {
+        ComparisonService s = new TimestampComparisonService();
+        final long timestmap = Calendar.getInstance().getTimeInMillis();
         assertEquals(Comparison.EQUAL, s.compare(new NullPath("t", Path.FILE_TYPE) {
             @Override
             public Local getLocal() {
@@ -33,8 +33,8 @@ public class ComparisonServiceTest extends AbstractTestCase {
                     public Attributes attributes() {
                         return new NullAttributes() {
                             @Override
-                            public String getChecksum() {
-                                return "a";
+                            public long getModificationDate() {
+                                return timestmap;
                             }
                         };
                     }
@@ -45,8 +45,8 @@ public class ComparisonServiceTest extends AbstractTestCase {
             public PathAttributes attributes() {
                 return new NullPathAttributes() {
                     @Override
-                    public String getChecksum() {
-                        return "a";
+                    public long getModificationDate() {
+                        return timestmap;
                     }
                 };
             }
@@ -59,16 +59,6 @@ public class ComparisonServiceTest extends AbstractTestCase {
                     public Attributes attributes() {
                         return new NullAttributes() {
                             @Override
-                            public String getChecksum() {
-                                return "a";
-                            }
-
-                            @Override
-                            public long getSize() {
-                                return 1L;
-                            }
-
-                            @Override
                             public long getModificationDate() {
                                 return Calendar.getInstance().getTimeInMillis();
                             }
@@ -80,16 +70,6 @@ public class ComparisonServiceTest extends AbstractTestCase {
             @Override
             public PathAttributes attributes() {
                 return new NullPathAttributes() {
-                    @Override
-                    public String getChecksum() {
-                        return "b";
-                    }
-
-                    @Override
-                    public long getSize() {
-                        return 2L;
-                    }
-
                     @Override
                     public long getModificationDate() {
                         final Calendar c = Calendar.getInstance(TimeZone.getDefault());

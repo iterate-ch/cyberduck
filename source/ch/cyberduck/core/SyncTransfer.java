@@ -21,8 +21,8 @@ package ch.cyberduck.core;
 import ch.cyberduck.core.ftp.FTPPath;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.serializer.Serializer;
+import ch.cyberduck.core.synchronization.CombinedComparisionService;
 import ch.cyberduck.core.synchronization.Comparison;
-import ch.cyberduck.core.synchronization.ComparisonService;
 import ch.cyberduck.core.transfer.TransferPathFilter;
 
 import org.apache.commons.collections.map.AbstractLinkedMap;
@@ -395,7 +395,7 @@ public class SyncTransfer extends Transfer {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Compare path %s with local", p.getName()));
         }
-        final Comparison result = new ComparisonService().compare(p);
+        final Comparison result = new CombinedComparisionService().compare(p);
         comparisons.put(p.getReference(), result);
         return result;
     }
