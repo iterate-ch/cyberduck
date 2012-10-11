@@ -271,7 +271,6 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 _host.setHostname(input);
             }
-            ReadOpenSshConfiguration();
             ReadPasswordFromKeychain();
             ItemChanged();
             Update();
@@ -333,7 +332,6 @@ namespace Ch.Cyberduck.Ui.Controller
                 _host.setWebURL(null);
             }
             _host.setProtocol(selected);
-            ReadOpenSshConfiguration();
             ItemChanged();
             Update();
             Reachable();
@@ -342,30 +340,6 @@ namespace Ch.Cyberduck.Ui.Controller
         private void ItemChanged()
         {
             BookmarkCollection.defaultCollection().collectionItemChanged(_host);
-        }
-
-        /// <summary>
-        /// Update this host credentials from the OpenSSH configuration file in ~/.ssh/config
-        /// </summary>
-        private void ReadOpenSshConfiguration()
-        {
-            if (_host.getProtocol().equals(Protocol.SFTP))
-            {
-                OpenSshConfig.Host entry = OpenSshConfig.create().lookup(_host.getHostname());
-                if (null != entry.getIdentityFile())
-                {
-                    _host.getCredentials().setIdentity(
-                        LocalFactory.createLocal(entry.getIdentityFile().getAbsolutePath()));
-                }
-                if (Utils.IsNotBlank(entry.getUser()))
-                {
-                    _host.getCredentials().setUsername(entry.getUser());
-                }
-            }
-            else
-            {
-                _host.getCredentials().setIdentity(null);
-            }
         }
 
         private void Reachable()
