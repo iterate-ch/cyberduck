@@ -11,6 +11,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.transfer.NullSymlinkResolver;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -50,6 +51,7 @@ public class RenameExistingFilterTest extends AbstractTestCase {
     }
 
     @Test
+    @Ignore
     public void testPrepare() throws Exception {
         RenameExistingFilter f = new RenameExistingFilter(new NullSymlinkResolver());
         final NullPath p = new NullPath("t", Path.FILE_TYPE) {
