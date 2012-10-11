@@ -48,7 +48,6 @@ import org.rococoa.Foundation;
 import org.rococoa.ID;
 import org.rococoa.Selector;
 import org.rococoa.cocoa.foundation.NSInteger;
-import org.spearce.jgit.transport.OpenSshConfig;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -104,28 +103,9 @@ public class BookmarkController extends WindowController {
             host.setWebURL(null);
         }
         host.setProtocol(selected);
-        this.readOpenSshConfiguration();
         this.itemChanged();
         this.init();
         this.reachable();
-    }
-
-    /**
-     * Update this host credentials from the OpenSSH configuration file in ~/.ssh/config
-     */
-    private void readOpenSshConfiguration() {
-        if(host.getProtocol().equals(Protocol.SFTP)) {
-            final OpenSshConfig.Host entry = OpenSshConfig.create().lookup(host.getHostname());
-            if(null != entry.getIdentityFile()) {
-                host.getCredentials().setIdentity(LocalFactory.createLocal(entry.getIdentityFile().getAbsolutePath()));
-            }
-            if(StringUtils.isNotBlank(entry.getUser())) {
-                host.getCredentials().setUsername(entry.getUser());
-            }
-        }
-        else {
-            host.getCredentials().setIdentity(null);
-        }
     }
 
     @Outlet
@@ -686,7 +666,6 @@ public class BookmarkController extends WindowController {
         else {
             host.setHostname(input);
         }
-        this.readOpenSshConfiguration();
         this.itemChanged();
         this.init();
         this.reachable();
