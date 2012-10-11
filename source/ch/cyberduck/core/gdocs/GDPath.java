@@ -38,6 +38,8 @@ import java.text.MessageFormat;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -364,7 +366,8 @@ public class GDPath extends Path {
                 }
                 entry.delete();
             }
-            for(Acl.User user : acl.keySet()) {
+            for(Map.Entry<Acl.User, Set<Acl.Role>> entry : acl.entrySet()) {
+                final Acl.User user = entry.getKey();
                 if(!user.isValid()) {
                     continue;
                 }
@@ -397,15 +400,15 @@ public class GDPath extends Path {
                     log.warn(String.format("Unsupported scope:%s", user));
                     continue;
                 }
-                for(Acl.Role role : acl.get(user)) {
+                for(Acl.Role role : entry.getValue()) {
                     if(!role.isValid()) {
                         continue;
                     }
-                    AclEntry entry = new AclEntry();
-                    entry.setScope(scope);
-                    entry.setRole(new AclRole(role.getName()));
+                    AclEntry e = new AclEntry();
+                    e.setScope(scope);
+                    e.setRole(new AclRole(role.getName()));
                     // Insert updated ACL entry for scope
-                    this.getSession().getClient().insert(new URL(this.getAclFeed()), entry);
+                    this.getSession().getClient().insert(new URL(this.getAclFeed()), e);
                 }
             }
         }
