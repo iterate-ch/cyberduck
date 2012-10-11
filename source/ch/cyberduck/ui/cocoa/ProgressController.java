@@ -219,11 +219,13 @@ public class ProgressController extends BundleController {
         if(messageText != null) {
             b.append(messageText);
         }
-        messageField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(b.toString(), TRUNCATE_MIDDLE_ATTRIBUTES));
+        messageField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
+                b.toString(), TRUNCATE_MIDDLE_ATTRIBUTES));
     }
 
     private void setProgressText() {
-        progressField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(meter.getProgress(), TRUNCATE_MIDDLE_ATTRIBUTES));
+        progressField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
+                meter.getProgress(), TRUNCATE_MIDDLE_ATTRIBUTES));
     }
 
     private void setStatusText() {
