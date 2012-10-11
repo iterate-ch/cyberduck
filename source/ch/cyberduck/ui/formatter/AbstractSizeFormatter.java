@@ -22,7 +22,7 @@ public class AbstractSizeFormatter implements SizeFormatter {
 
     @Override
     public String format(final long size) {
-        return format(size, false, true);
+        return format(size, false);
     }
 
     @Override

@@ -3,15 +3,15 @@ package ch.cyberduck.ui.formatter;
 import ch.cyberduck.core.Preferences;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class SizeFormatterFactory {
 
     public static SizeFormatter instance() {
-        return instance(Preferences.instance().getBoolean("browser.filesize.decimal"));
+        return SizeFormatterFactory.instance(Preferences.instance().getBoolean("browser.filesize.decimal"));
     }
 
-    public static SizeFormatter instance(boolean decimal) {
+    public static SizeFormatter instance(final boolean decimal) {
         if(decimal) {
             return new DecimalSizeFormatter();
         }
