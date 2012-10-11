@@ -105,9 +105,9 @@ public abstract class Local extends AbstractPath {
          */
         @Override
         public int getType() {
-            final int t = this.isFile() ? AbstractPath.FILE_TYPE : AbstractPath.DIRECTORY_TYPE;
+            final int t = this.isFile() ? FILE_TYPE : DIRECTORY_TYPE;
             if(this.isSymbolicLink()) {
-                return t | AbstractPath.SYMBOLIC_LINK_TYPE;
+                return t | SYMBOLIC_LINK_TYPE;
             }
             return t;
         }
