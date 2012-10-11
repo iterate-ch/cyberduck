@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 import java.text.NumberFormat;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class AbstractSizeFormatter implements SizeFormatter {
 
@@ -32,7 +32,7 @@ public class AbstractSizeFormatter implements SizeFormatter {
 
 
     @Override
-    public String format(final long size, final boolean bytes, final boolean plain) {
+    public String format(final long size, final boolean plain, final boolean bytes) {
         if(-1 == size) {
             return Locale.localizedString("--");
         }
