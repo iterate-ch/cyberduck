@@ -1,10 +1,14 @@
 package ch.cyberduck.core;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class FactoryException extends RuntimeException {
     private static final long serialVersionUID = -3392543613133815960L;
+
+    public FactoryException(final String message, final Throwable cause) {
+        super(message, cause);
+    }
 
     public FactoryException(final String message) {
         super(message);

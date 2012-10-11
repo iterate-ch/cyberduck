@@ -18,6 +18,7 @@ package ch.cyberduck.core.ssl;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.FactoryException;
 import ch.cyberduck.core.Preferences;
 
 import org.apache.log4j.Logger;
@@ -80,10 +81,10 @@ public class CustomTrustSSLProtocolSocketFactory extends SSLSocketFactory {
             factory = context.getSocketFactory();
         }
         catch(NoSuchAlgorithmException e) {
-            throw new RuntimeException(e.getMessage(), e);
+            throw new FactoryException(e.getMessage(), e);
         }
         catch(KeyManagementException e) {
-            throw new RuntimeException(e.getMessage(), e);
+            throw new FactoryException(e.getMessage(), e);
         }
     }
 
