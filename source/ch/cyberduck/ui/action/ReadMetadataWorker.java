@@ -80,14 +80,14 @@ public abstract class ReadMetadataWorker extends Worker<Map<String, String>> {
                 updated.put(entry.getKey(), entry.getValue());
             }
         }
-        for(String key : count.keySet()) {
-            if(files.size() == count.get(key)) {
+        for(Map.Entry<String, Integer> entry : count.entrySet()) {
+            if(files.size() == entry.getValue()) {
                 // Every file has this metadata set.
                 continue;
             }
             // Not all files selected have this metadata. Remove for editing.
-            log.info(String.format("Remove %s from metadata not available for all selected files.", key));
-            updated.remove(key);
+            log.info(String.format("Remove %s from metadata not available for all selected files.", entry.getKey()));
+            updated.remove(entry.getKey());
         }
         return updated;
     }
