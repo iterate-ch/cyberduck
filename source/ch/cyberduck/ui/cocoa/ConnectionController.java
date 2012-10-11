@@ -633,7 +633,7 @@ public class ConnectionController extends SheetController {
             final Credentials credentials = host.getCredentials();
             credentials.setUsername(usernameField.stringValue());
             credentials.setPassword(passField.stringValue());
-            credentials.setUseKeychain(keychainCheckbox.state() == NSCell.NSOnState);
+            credentials.setSaved(keychainCheckbox.state() == NSCell.NSOnState);
             if(protocol.equals(Protocol.SFTP)) {
                 if(pkCheckbox.state() == NSCell.NSOnState) {
                     credentials.setIdentity(LocalFactory.createLocal(pkLabel.stringValue()));

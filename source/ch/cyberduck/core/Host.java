@@ -534,10 +534,13 @@ public class Host implements Serializable {
     /**
      * @param protocol The protocol to use or null to use the default protocol for this port number
      */
-    public void setProtocol(Protocol protocol) {
-        log.debug("setProtocol:" + protocol);
+    public void setProtocol(final Protocol protocol) {
         this.protocol = protocol != null ? protocol :
                 ProtocolFactory.forName(Preferences.instance().getProperty("connection.protocol.default"));
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Set protocol bookmark %s to %s", this.getHostname(), this.protocol));
+        }
+        this.credentials.configure(this.protocol, this.getHostname());
     }
 
     /**
@@ -649,9 +652,9 @@ public class Host implements Serializable {
      * @param hostname Server
      */
     public void setHostname(String hostname) {
-        log.debug("setHostname:" + hostname);
         this.hostname = hostname.trim();
         this.punycode = null;
+        this.credentials.configure(this.getProtocol(), this.getHostname());
     }
 
     /**
@@ -677,7 +680,6 @@ public class Host implements Serializable {
      * @param encoding Control connection encoding
      */
     public void setEncoding(String encoding) {
-        log.debug("setEncoding:" + encoding);
         this.encoding = encoding;
     }
 
@@ -690,7 +692,6 @@ public class Host implements Serializable {
     }
 
     public void setFTPConnectMode(FTPConnectMode connectMode) {
-        log.debug("setFTPConnectMode:" + connectMode);
         this.connectMode = connectMode;
     }
 
@@ -709,7 +710,6 @@ public class Host implements Serializable {
      * @param n null to use the default value or -1 if no limit
      */
     public void setMaxConnections(Integer n) {
-        log.debug("setMaxConnections:" + n);
         this.maxConnections = n;
     }
 
@@ -727,7 +727,9 @@ public class Host implements Serializable {
      * @param folder Absolute path
      */
     public void setDownloadFolder(String folder) {
-        log.debug("setDownloadFolder:" + folder);
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Set download folder for bookmark %s to %s", this.getHostname(), folder));
+        }
         this.downloadFolder = LocalFactory.createLocal(folder).getAbbreviatedPath();
     }
 
@@ -757,7 +759,6 @@ public class Host implements Serializable {
      * @param timezone Timezone of server
      */
     public void setTimezone(TimeZone timezone) {
-        log.debug("setTimezone:" + timezone);
         this.timezone = timezone;
     }
 
@@ -810,12 +811,12 @@ public class Host implements Serializable {
         return "http://" + this.getHostname();
     }
 
-    public void setWebURL(String webURL) {
-        if(this.getDefaultWebURL().equals(webURL)) {
+    public void setWebURL(final String url) {
+        if(this.getDefaultWebURL().equals(url)) {
             this.webURL = null;
             return;
         }
-        this.webURL = webURL;
+        this.webURL = url;
     }
 
     /**

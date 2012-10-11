@@ -19,6 +19,7 @@ package ch.cyberduck.core;
  */
 
 import org.apache.commons.lang.StringUtils;
+import org.spearce.jgit.transport.OpenSshConfig;
 
 /**
  * Stores the login credentials
@@ -45,7 +46,42 @@ public abstract class Credentials {
     /**
      * If the credentials should be stored in the Keychain upon successful login
      */
-    private boolean shouldBeAddedToKeychain;
+    private boolean keychained;
+
+    /**
+     * Configure default credentials from system settings.
+     *
+     * @param protocol Protocol
+     */
+    public void configure(final Protocol protocol, final String hostname) {
+        if(protocol.equals(Protocol.SFTP)) {
+            // Update this host credentials from the OpenSSH configuration file in ~/.ssh/config
+            if(!this.isPublicKeyAuthentication()) {
+                final OpenSshConfig.Host entry = OpenSshConfig.create().lookup(hostname);
+                if(StringUtils.isNotBlank(entry.getUser())) {
+                    this.setUsername(entry.getUser());
+                }
+                if(null != entry.getIdentityFile()) {
+                    this.setIdentity(LocalFactory.createLocal(entry.getIdentityFile().getAbsolutePath()));
+                }
+                else {
+                    // No custom public key authentication configuration
+                    if(Preferences.instance().getBoolean("ssh.authentication.publickey.default.enable")) {
+                        final Local rsa = LocalFactory.createLocal(Preferences.instance().getProperty("ssh.authentication.publickey.default.rsa"));
+                        if(rsa.exists()) {
+                            this.setIdentity(rsa);
+                        }
+                        else {
+                            final Local dsa = LocalFactory.createLocal(Preferences.instance().getProperty("ssh.authentication.publickey.default.dsa"));
+                            if(dsa.exists()) {
+                                this.setIdentity(dsa);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     /**
      * Default credentials from Preferences
@@ -64,12 +100,12 @@ public abstract class Credentials {
     }
 
     /**
-     * @param user                    Login with this username
-     * @param password                Passphrase
-     * @param shouldBeAddedToKeychain if the credential should be added to the keychain uppon successful login
+     * @param user     Login with this username
+     * @param password Passphrase
+     * @param save     if the credential should be added to the keychain uppon successful login
      */
-    public Credentials(String user, String password, boolean shouldBeAddedToKeychain) {
-        this.setUseKeychain(shouldBeAddedToKeychain);
+    public Credentials(String user, String password, boolean save) {
+        this.setSaved(save);
         this.init(user, password);
     }
 
@@ -112,18 +148,18 @@ public abstract class Credentials {
     /**
      * Use this to define if passwords should be added to the keychain
      *
-     * @param shouldBeAddedToKeychain If true, the password of the login is added to the keychain uppon
-     *                                successfull login
+     * @param saved If true, the password of the login is added to the keychain uppon
+     *              successfull login
      */
-    public void setUseKeychain(boolean shouldBeAddedToKeychain) {
-        this.shouldBeAddedToKeychain = shouldBeAddedToKeychain;
+    public void setSaved(boolean saved) {
+        this.keychained = saved;
     }
 
     /**
      * @return true if the password will be added to the system keychain when logged in successfully
      */
-    public boolean isUseKeychain() {
-        return this.shouldBeAddedToKeychain;
+    public boolean isSaved() {
+        return this.keychained;
     }
 
     /**
@@ -171,7 +207,7 @@ public abstract class Credentials {
      * @param protocol The protocol to verify against.
      * @return True if the login credential are valid for the given protocol.
      */
-    public boolean validate(Protocol protocol) {
+    public boolean validate(final Protocol protocol) {
         return protocol.validate(this);
     }
 

@@ -73,7 +73,7 @@ public abstract class AbstractLoginController implements LoginController {
                     else {
                         credentials.setPassword(saved);
                         // No need to reinsert found password to the keychain.
-                        credentials.setUseKeychain(false);
+                        credentials.setSaved(false);
                     }
                 }
                 else {

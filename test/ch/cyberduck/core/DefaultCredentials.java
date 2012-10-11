@@ -1,7 +1,7 @@
 package ch.cyberduck.core;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class DefaultCredentials extends Credentials {
 
@@ -13,8 +13,8 @@ public class DefaultCredentials extends Credentials {
         super(user, password);
     }
 
-    public DefaultCredentials(final String user, final String password, final boolean shouldBeAddedToKeychain) {
-        super(user, password, shouldBeAddedToKeychain);
+    public DefaultCredentials(final String user, final String password, final boolean save) {
+        super(user, password, save);
     }
 
     @Override

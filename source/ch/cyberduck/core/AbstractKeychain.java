@@ -83,7 +83,7 @@ public abstract class AbstractKeychain {
             return;
         }
         final Credentials credentials = host.getCredentials();
-        if(!credentials.isUseKeychain()) {
+        if(!credentials.isSaved()) {
             if(log.isInfoEnabled()) {
                 log.info(String.format("Skip writing credentials for host %s", host.getHostname()));
             }

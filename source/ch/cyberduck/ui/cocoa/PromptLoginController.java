@@ -351,7 +351,7 @@ public final class PromptLoginController extends AbstractLoginController {
             public void callback(final int returncode) {
                 if(returncode == SheetCallback.DEFAULT_OPTION) {
                     this.window().endEditingFor(null);
-                    credentials.setUseKeychain(keychainCheckbox.state() == NSCell.NSOnState);
+                    credentials.setSaved(keychainCheckbox.state() == NSCell.NSOnState);
                     credentials.setUsername(usernameField.stringValue());
                     credentials.setPassword(passwordField.stringValue());
                 }
