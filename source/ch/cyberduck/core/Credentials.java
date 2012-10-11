@@ -100,21 +100,13 @@ public abstract class Credentials {
     }
 
     /**
-     * @param user     Login with this username
-     * @param password Passphrase
+     * @param user     The username to use or null if anonymous
+     * @param password The password to use or null if anonymous
      * @param save     if the credential should be added to the keychain uppon successful login
      */
     public Credentials(String user, String password, boolean save) {
-        this.setSaved(save);
-        this.init(user, password);
-    }
-
-    /**
-     * @param username The username to use or null if anonymous
-     * @param password The password to use or null if anonymous
-     */
-    private void init(String username, String password) {
-        this.user = username;
+        this.keychained = save;
+        this.user = user;
         this.password = password;
     }
 
