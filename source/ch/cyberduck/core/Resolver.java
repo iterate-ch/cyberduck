@@ -22,6 +22,7 @@ import org.apache.log4j.Logger;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * @version $Id$
@@ -29,7 +30,7 @@ import java.net.UnknownHostException;
 public class Resolver implements Runnable {
     private static final Logger log = Logger.getLogger(Resolver.class);
 
-    private final Object signal = new Object();
+    private CountDownLatch signal;
 
     /**
      * The hostname to lookup
@@ -82,21 +83,20 @@ public class Resolver implements Runnable {
         }
         this.resolved = null;
         this.exception = null;
+        this.signal = new CountDownLatch(1);
 
         Thread t = new Thread(this, this.toString());
         t.start();
 
-        synchronized(this.signal) {
-            if(!this.isResolved() && !this.hasFailed()) {
-                // The lookup has not finished yet
-                try {
-                    log.debug("Waiting for resolving of " + this.hostname);
-                    // Wait for #run to finish
-                    this.signal.wait();
-                }
-                catch(InterruptedException e) {
-                    log.error(e.getMessage());
-                }
+        if(!this.isResolved() && !this.hasFailed()) {
+            // The lookup has not finished yet
+            try {
+                log.debug("Waiting for resolving of " + this.hostname);
+                // Wait for #run to finish
+                this.signal.await();
+            }
+            catch(InterruptedException e) {
+                log.error(String.format("Error awaiting lock for resolver: %s", e.getMessage()));
             }
         }
         if(!this.isResolved()) {
@@ -117,9 +117,7 @@ public class Resolver implements Runnable {
      * @see ResolveCanceledException
      */
     public void cancel() {
-        synchronized(this.signal) {
-            this.signal.notifyAll();
-        }
+        this.signal.countDown();
     }
 
     /**
@@ -138,10 +136,7 @@ public class Resolver implements Runnable {
             this.exception = e;
         }
         finally {
-            synchronized(this.signal) {
-                // Notify #resolve to proceed
-                this.signal.notifyAll();
-            }
+            this.signal.countDown();
         }
     }
 
