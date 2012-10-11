@@ -109,7 +109,7 @@ public final class ProtocolFactory {
             }
         }
         if(list.isEmpty()) {
-            throw new RuntimeException("No protocols configured");
+            throw new FactoryException("No protocols configured");
         }
         return list;
     }
