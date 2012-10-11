@@ -22,7 +22,7 @@ package ch.cyberduck.core.ftp.parser;
 import org.apache.commons.net.ftp.FTPFile;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class UnitreeFTPEntryParser extends CommonUnixFTPEntryParser {
 
@@ -58,6 +58,7 @@ public class UnitreeFTPEntryParser extends CommonUnixFTPEntryParser {
         super(REGEX);
     }
 
+    @Override
     public FTPFile parseFTPEntry(String entry) {
         if (matches(entry))
         {

@@ -24,7 +24,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.net.ftp.FTPFile;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class LaxUnixFTPEntryParser extends CommonUnixFTPEntryParser {
 
@@ -68,6 +68,7 @@ public class LaxUnixFTPEntryParser extends CommonUnixFTPEntryParser {
         super(REGEX_WHITESPACE_AWARE);
     }
 
+    @Override
     public FTPFile parseFTPEntry(String entry) {
         if(matches(entry)) {
             String typeStr = group(1);

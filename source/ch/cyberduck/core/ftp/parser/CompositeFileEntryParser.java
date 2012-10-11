@@ -29,6 +29,7 @@ public class CompositeFileEntryParser extends FTPFileEntryParserImpl implements 
         this.ftpFileEntryParsers = ftpFileEntryParsers;
     }
 
+    @Override
     public FTPFile parseFTPEntry(String listEntry) {
         if(cachedFtpFileEntryParser != null) {
             final FTPFile parsed = cachedFtpFileEntryParser.parseFTPEntry(listEntry);
@@ -53,6 +54,7 @@ public class CompositeFileEntryParser extends FTPFileEntryParserImpl implements 
         return cachedFtpFileEntryParser;
     }
 
+    @Override
     public void configure(FTPClientConfig config) {
         for(FTPFileEntryParser parser : ftpFileEntryParsers) {
             if(parser instanceof Configurable) {

@@ -32,6 +32,7 @@ import java.util.Map;
  */
 public class EPLFFTPEntryParser extends FTPFileEntryParserImpl {
 
+    @Override
     public FTPFile parseFTPEntry(String entry) {
         FTPFile file = new FTPFile();
         file.setRawListing(entry);

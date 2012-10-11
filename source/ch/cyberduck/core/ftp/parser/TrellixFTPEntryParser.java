@@ -22,7 +22,7 @@ import org.apache.commons.net.ftp.FTPFile;
 /**
  * Parser expecting no hard link count in the directory listing
  *
- * @version $Id:$
+ * @version $Id$
  */
 public class TrellixFTPEntryParser extends CommonUnixFTPEntryParser {
 
@@ -49,6 +49,7 @@ public class TrellixFTPEntryParser extends CommonUnixFTPEntryParser {
         super(REGEX);
     }
 
+    @Override
     public FTPFile parseFTPEntry(String entry) {
         if (matches(entry))
         {
