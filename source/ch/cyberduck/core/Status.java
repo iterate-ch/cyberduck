@@ -37,7 +37,7 @@ public class Status {
     /**
      * Transfer is resumable
      */
-    private boolean resume;
+    private boolean resume = false;
 
     /**
      * The number of transfered bytes. Must be less or equals size.
@@ -47,12 +47,12 @@ public class Status {
     /**
      * Transfer size. May be less than the file size in attributes or 0 if creating symbolic links.
      */
-    private long length;
+    private long length = 0L;
 
     /**
      * Indiciating wheter the transfer has been cancled by the user.
      */
-    private boolean canceled;
+    private boolean canceled = false;
 
     /**
      * Indicates that the last action has been completed.
@@ -94,7 +94,7 @@ public class Status {
     /**
      * @param current The already transferred bytes
      */
-    public void setCurrent(long current) {
+    public void setCurrent(final long current) {
         if(log.isInfoEnabled()) {
             log.info(String.format("Transferred bytes set to %d bytes", this.getCurrent()));
         }
@@ -109,7 +109,7 @@ public class Status {
         return length;
     }
 
-    public void setLength(long length) {
+    public void setLength(final long length) {
         this.length = length;
     }
 
@@ -128,7 +128,7 @@ public class Status {
      *
      * @param selected True if selected
      */
-    public void setSelected(Boolean selected) {
+    public void setSelected(final boolean selected) {
         this.selected = selected;
     }
 
@@ -145,7 +145,7 @@ public class Status {
      * @param resume If false, the current status is cleared
      * @see #setCurrent(long)
      */
-    public void setResume(boolean resume) {
+    public void setResume(final boolean resume) {
         if(!resume) {
             current = 0;
         }
