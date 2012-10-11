@@ -18,6 +18,8 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.date.PeriodFormatter;
+import ch.cyberduck.core.date.RemainingPeriodFormatter;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.ui.formatter.SizeFormatterFactory;
 
@@ -29,25 +31,23 @@ import java.text.MessageFormat;
 public class Speedometer {
 
     /**
-     * The time to start counting bytes transfered
+     * The time to start counting bytes transferred
      */
-    private long timestamp;
+    private long timestamp
+            = System.currentTimeMillis();
 
     /**
-     * Initial data already transfered
+     * Initial data already transferred
      */
-    private double initialBytesTransferred;
+    private long last = 0L;
 
-    /**
-     * Actual bytes transferred
-     */
-    private double bytesTransferred;
+    private PeriodFormatter formatter
+            = new RemainingPeriodFormatter();
 
     private Transfer transfer;
 
     public Speedometer(Transfer transfer) {
         this.transfer = transfer;
-        this.reset();
     }
 
     /**
@@ -56,64 +56,47 @@ public class Speedometer {
      *
      * @return The bytes being processed per second
      */
-    public long getSpeed() {
-        bytesTransferred = transfer.getTransferred();
-        if(bytesTransferred > initialBytesTransferred) {
-            if(0 == initialBytesTransferred) {
-                initialBytesTransferred = bytesTransferred;
-                return -1;
-            }
-            // number of seconds data was actually transferred
-            double elapsedSeconds = (System.currentTimeMillis() - timestamp) / 1000d;
-            if(elapsedSeconds > 1) {
-                double bytes = bytesTransferred - initialBytesTransferred;
-                // The throughput is usually measured in bits per second
-                if(Preferences.instance().getBoolean("queue.transferspeed.bits")) {
-                    double bits = bytes * 8;
-                    return (long) (bits / elapsedSeconds);
-                }
-                return (long) (bytes / elapsedSeconds);
-            }
+    protected double getSpeed() {
+        // Number of seconds data was actually transferred
+        final long seconds = (System.currentTimeMillis() - timestamp) / 1000;
+        if(seconds > 0) {
+            final long differential = transfer.getTransferred() - last;
+            // Remember for next iteration
+            last = transfer.getTransferred();
+            // The throughput is usually measured in bits per second
+            return (double) differential / seconds;
         }
-        return -1;
+        return 0L;
     }
 
     /**
-     * @return Progress information string with bytes transfered
+     * @return Progress information string with bytes transferred
      *         including a percentage and estimated time remaining
      */
     public String getProgress() {
-        StringBuilder b = new StringBuilder();
-        final long size = transfer.getSize();
-        final long transferred = transfer.getTransferred();
+        final StringBuilder b = new StringBuilder();
         b.append(MessageFormat.format(Locale.localizedString("{0} of {1}"),
-                SizeFormatterFactory.instance().format(transferred, !transfer.isComplete()),
-                SizeFormatterFactory.instance().format(size)));
-        final long speed = this.getSpeed();
+                SizeFormatterFactory.instance().format(transfer.getTransferred(), !transfer.isComplete()),
+                SizeFormatterFactory.instance().format(transfer.getSize())));
         if(transfer.isRunning()) {
-            if(size > -1 || speed > 0) {
+            final double speed = this.getSpeed();
+            if(transfer.getSize() > 0 || speed > 0) {
                 b.append(" (");
-                if(size > -1) {
-                    if(0 == size) {
-                        b.append(0);
-                    }
-                    else {
-                        b.append((int) (transferred / size * 100));
-                    }
+                if(transfer.getSize() > 0) {
+                    b.append(transfer.getSize() == 0 ? 0 : (int) ((double) transfer.getTransferred() / transfer.getSize() * 100));
                     b.append("%");
                 }
                 if(speed > 0) {
-                    if(size > -1) {
+                    if(transfer.getSize() > 0) {
                         b.append(", ");
                     }
-                    b.append(SizeFormatterFactory.instance(true).format(speed));
+                    b.append(SizeFormatterFactory.instance(true).format((long) speed));
                     b.append("/sec");
-                    double t = this.getBytesTransfered();
-                    if(size > 0 && t < size) {
+                    if(transfer.getTransferred() < transfer.getSize()) {
                         b.append(", ");
-                        // remaining time in seconds
-                        double remaining = ((size - t) / speed);
-                        b.append(Status.getRemainingAsString(remaining));
+                        // Remaining time in seconds
+                        long remaining = (long) ((transfer.getSize() - transfer.getTransferred()) / speed);
+                        b.append(formatter.format(remaining));
                     }
                 }
                 b.append(")");
@@ -122,16 +105,8 @@ public class Speedometer {
         return b.toString();
     }
 
-    public double getBytesTransfered() {
-        return bytesTransferred;
-    }
-
-    /**
-     * Reset this meter
-     */
     public void reset() {
-        this.timestamp = System.currentTimeMillis();
-        this.initialBytesTransferred = transfer.getTransferred();
-        this.bytesTransferred = 0;
+        timestamp = System.currentTimeMillis();
+        last = transfer.getTransferred();
     }
 }
