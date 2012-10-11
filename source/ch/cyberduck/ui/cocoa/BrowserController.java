@@ -953,8 +953,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 }
                 if(downloads.size() > 0) {
                     background(new BrowserBackgroundAction(BrowserController.this) {
-                        final Collection<Local> previews = new Collection<Local>();
-
                         @Override
                         public void run() {
                             Transfer transfer = new DownloadTransfer(downloads);
@@ -963,28 +961,16 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                             transfer.start(new TransferPrompt() {
                                 @Override
                                 public TransferAction prompt() {
-                                    return TransferAction.ACTION_RESUME;
+                                    return TransferAction.ACTION_COMPARISON;
                                 }
                             }, options);
-                            for(Path download : downloads) {
-                                if(download.getLocal().exists()) {
-                                    if(download.status().isComplete()) {
-                                        previews.add(download.getLocal());
-                                    }
-                                    else {
-                                        download.getLocal().delete(false);
-                                    }
-                                }
-                            }
                         }
 
                         @Override
                         public void cleanup() {
-                            if(previews.isEmpty()) {
-                                return;
-                            }
-                            if(this.isCanceled()) {
-                                return;
+                            final Collection<Local> previews = new Collection<Local>();
+                            for(Path download : downloads) {
+                                previews.add(download.getLocal());
                             }
                             // Change files in Quick Look
                             QuickLookFactory.instance().select(previews);
@@ -2868,7 +2854,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         final Host h = new Host(this.session.getHost().<NSDictionary>getAsDictionary());
         // Copy credentials of the browser
         h.getCredentials().setPassword(this.session.getHost().getCredentials().getPassword());
-        h.getCredentials().setUseKeychain(false);
+        h.getCredentials().setSaved(false);
         return SessionFactory.createSession(h);
     }
 
@@ -3402,12 +3388,12 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     }
 
     /**
-     * @param path Reference for path
+     * @param reference Reference for path
      * @return Null if not mounted or lookup fails
      */
-    public Path lookup(PathReference path) {
+    public Path lookup(final PathReference reference) {
         if(this.isMounted()) {
-            return this.getSession().cache().lookup(path);
+            return this.getSession().cache().lookup(reference);
         }
         return null;
     }
