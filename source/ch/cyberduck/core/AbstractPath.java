@@ -22,7 +22,6 @@ import ch.cyberduck.core.i18n.Locale;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
-import org.jets3t.service.utils.Mimetypes;
 
 import java.util.Comparator;
 
@@ -177,11 +176,7 @@ public abstract class AbstractPath {
     }
 
     public String getMimeType() {
-        return getMimeType(this.getName().toLowerCase());
-    }
-
-    public static String getMimeType(String extension) {
-        return Mimetypes.getInstance().getMimetype(extension);
+        return new MappingMimeTypeService().getMime(this.getName().toLowerCase());
     }
 
     /**
@@ -211,7 +206,7 @@ public abstract class AbstractPath {
      * @param directory Parent directory
      * @return True if this is a child in the path hierarchy of the argument passed
      */
-    public boolean isChild(AbstractPath directory) {
+    public boolean isChild(final AbstractPath directory) {
         if(directory.attributes().isFile()) {
             // If a file we don't have any children at all
             return false;
@@ -263,7 +258,7 @@ public abstract class AbstractPath {
      * @param recursive Create intermediate directories as required.  If this option is
      *                  not specified, the full path prefix of each operand must already exist
      */
-    public void touch(boolean recursive) {
+    public void touch(final boolean recursive) {
         if(!this.exists()) {
             if(recursive) {
                 if(!this.getParent().exists()) {
@@ -285,7 +280,7 @@ public abstract class AbstractPath {
      * @param recursive Create intermediate directories as required.  If this option is
      *                  not specified, the full path prefix of each operand must already exist
      */
-    public void mkdir(boolean recursive) {
+    public void mkdir(final boolean recursive) {
         if(recursive) {
             final AbstractPath parent = this.getParent();
             if(!parent.exists()) {
@@ -338,11 +333,11 @@ public abstract class AbstractPath {
 
         private String help = StringUtils.EMPTY;
 
-        public DescriptiveUrl(String url) {
+        public DescriptiveUrl(final String url) {
             this(url, Locale.localizedString("Open in Web Browser"));
         }
 
-        public DescriptiveUrl(String url, String help) {
+        public DescriptiveUrl(final String url, final String help) {
             this.url = url;
             this.help = help;
         }
