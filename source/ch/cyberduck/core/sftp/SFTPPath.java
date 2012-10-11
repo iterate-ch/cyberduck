@@ -122,7 +122,7 @@ public class SFTPPath extends Path {
                     }
                     SFTPv3FileAttributes attributes = f.attributes;
                     SFTPPath p = new SFTPPath(this.getSession(), this.getAbsolute(),
-                            f.filename, attributes.isDirectory() ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
+                            f.filename, attributes.isDirectory() ? DIRECTORY_TYPE : FILE_TYPE);
                     p.setParent(this);
                     p.readAttributes(attributes);
                     children.add(p);
@@ -245,15 +245,15 @@ public class SFTPPath extends Path {
                 this.setSymlinkTarget(target);
                 SFTPv3FileAttributes targetAttributes = this.getSession().sftp().stat(target);
                 if(targetAttributes.isDirectory()) {
-                    this.attributes().setType(Path.SYMBOLIC_LINK_TYPE | Path.DIRECTORY_TYPE);
+                    this.attributes().setType(SYMBOLIC_LINK_TYPE | DIRECTORY_TYPE);
                 }
                 else if(targetAttributes.isRegularFile()) {
-                    this.attributes().setType(Path.SYMBOLIC_LINK_TYPE | Path.FILE_TYPE);
+                    this.attributes().setType(SYMBOLIC_LINK_TYPE | FILE_TYPE);
                 }
             }
             catch(IOException e) {
                 log.warn(String.format("Cannot read symbolic link target of %s:%s", this.getAbsolute(), e.getMessage()));
-                this.attributes().setType(Path.FILE_TYPE);
+                this.attributes().setType(FILE_TYPE);
             }
         }
     }

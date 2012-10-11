@@ -940,7 +940,7 @@ public class S3Path extends CloudPath {
                     // List all buckets
                     for(StorageBucket bucket : this.getSession().getBuckets(true)) {
                         Path p = PathFactory.createPath(this.getSession(), this.getAbsolute(), bucket.getName(),
-                                Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
+                                VOLUME_TYPE | DIRECTORY_TYPE);
                         if(null != bucket.getOwner()) {
                             p.attributes().setOwner(bucket.getOwner().getDisplayName());
                         }
@@ -1025,18 +1025,18 @@ public class S3Path extends CloudPath {
             final StorageObject[] objects = chunk.getObjects();
             for(StorageObject object : objects) {
                 final S3Path p = (S3Path) PathFactory.createPath(this.getSession(), bucket,
-                        object.getKey(), Path.FILE_TYPE);
+                        object.getKey(), FILE_TYPE);
                 p.setParent(this);
                 p.attributes().setSize(object.getContentLength());
                 p.attributes().setModificationDate(object.getLastModifiedDate().getTime());
                 // Directory placholders
                 if(object.isDirectoryPlaceholder()) {
-                    p.attributes().setType(Path.DIRECTORY_TYPE);
+                    p.attributes().setType(DIRECTORY_TYPE);
                     p.attributes().setPlaceholder(true);
                 }
                 else if(0 == object.getContentLength()) {
                     if("application/x-directory".equals(p.getDetails().getContentType())) {
-                        p.attributes().setType(Path.DIRECTORY_TYPE);
+                        p.attributes().setType(DIRECTORY_TYPE);
                         p.attributes().setPlaceholder(true);
                     }
                 }
@@ -1046,7 +1046,7 @@ public class S3Path extends CloudPath {
                     p.attributes().setChecksum(s);
                     if(s.equals("d66759af42f282e1ba19144df2d405d0")) {
                         // Fix #5374 s3sync.rb interoperability
-                        p.attributes().setType(Path.DIRECTORY_TYPE);
+                        p.attributes().setType(DIRECTORY_TYPE);
                         p.attributes().setPlaceholder(true);
                     }
                 }
@@ -1064,7 +1064,7 @@ public class S3Path extends CloudPath {
                     continue;
                 }
                 final Path p = PathFactory.createPath(this.getSession(),
-                        bucket, common, Path.DIRECTORY_TYPE);
+                        bucket, common, DIRECTORY_TYPE);
                 p.setParent(this);
                 if(children.contains(p.getReference())) {
                     continue;
@@ -1099,7 +1099,7 @@ public class S3Path extends CloudPath {
                 continue;
             }
             final S3Path path = (S3Path) PathFactory.createPath(this.getSession(),
-                    bucket, object.getKey(), Path.FILE_TYPE);
+                    bucket, object.getKey(), FILE_TYPE);
             path.setParent(this);
             final S3Version version = (S3Version) object;
             // Versioning is enabled if non null.

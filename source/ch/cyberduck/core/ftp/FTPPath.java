@@ -273,16 +273,16 @@ public class FTPPath extends Path {
                 for(Path child : children) {
                     if(child.attributes().isSymbolicLink()) {
                         if(this.getSession().getClient().changeWorkingDirectory(child.getAbsolute())) {
-                            child.attributes().setType(Path.SYMBOLIC_LINK_TYPE | Path.DIRECTORY_TYPE);
+                            child.attributes().setType(SYMBOLIC_LINK_TYPE | DIRECTORY_TYPE);
                         }
                         else {
                             // Try if CWD to symbolic link target succeeds
                             if(this.getSession().getClient().changeWorkingDirectory(child.getSymlinkTarget().getAbsolute())) {
                                 // Workdir change succeeded
-                                child.attributes().setType(Path.SYMBOLIC_LINK_TYPE | Path.DIRECTORY_TYPE);
+                                child.attributes().setType(SYMBOLIC_LINK_TYPE | DIRECTORY_TYPE);
                             }
                             else {
-                                child.attributes().setType(Path.SYMBOLIC_LINK_TYPE | Path.FILE_TYPE);
+                                child.attributes().setType(SYMBOLIC_LINK_TYPE | FILE_TYPE);
                             }
                         }
                     }
@@ -389,7 +389,7 @@ public class FTPPath extends Path {
             }
             for(String name : file.keySet()) {
                 final Path parsed = PathFactory.createPath(this.getSession(), this.getAbsolute(),
-                        StringUtils.removeStart(name, this.getAbsolute() + Path.DELIMITER), Path.FILE_TYPE);
+                        StringUtils.removeStart(name, this.getAbsolute() + Path.DELIMITER), FILE_TYPE);
                 parsed.setParent(this);
                 // size       -- Size in octets
                 // modify     -- Last modification time
@@ -406,10 +406,10 @@ public class FTPPath extends Path {
                         continue;
                     }
                     if("dir".equals(facts.get("type").toLowerCase())) {
-                        parsed.attributes().setType(Path.DIRECTORY_TYPE);
+                        parsed.attributes().setType(DIRECTORY_TYPE);
                     }
                     else if("file".equals(facts.get("type").toLowerCase())) {
-                        parsed.attributes().setType(Path.FILE_TYPE);
+                        parsed.attributes().setType(FILE_TYPE);
                     }
                     else {
                         log.warn("Ignored type: " + line);
@@ -506,12 +506,12 @@ public class FTPPath extends Path {
             }
             final Path parsed = PathFactory.createPath(this.getSession(), this.getAbsolute(),
                     StringUtils.removeStart(name, this.getAbsolute() + Path.DELIMITER),
-                    f.getType() == FTPFile.DIRECTORY_TYPE ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
+                    f.getType() == FTPFile.DIRECTORY_TYPE ? DIRECTORY_TYPE : FILE_TYPE);
             parsed.setParent(this);
             switch(f.getType()) {
                 case FTPFile.SYMBOLIC_LINK_TYPE:
                     parsed.setSymlinkTarget(f.getLink());
-                    parsed.attributes().setType(Path.SYMBOLIC_LINK_TYPE | Path.FILE_TYPE);
+                    parsed.attributes().setType(SYMBOLIC_LINK_TYPE | FILE_TYPE);
                     break;
             }
             if(parsed.attributes().isFile()) {

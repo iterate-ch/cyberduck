@@ -34,28 +34,28 @@ public abstract class CloudPath extends HttpPath {
     public <T> CloudPath(T dict) {
         super(dict);
         if(this.isContainer()) {
-            this.attributes().setType(Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
+            this.attributes().setType(VOLUME_TYPE | DIRECTORY_TYPE);
         }
     }
 
     protected CloudPath(String parent, String name, int type) {
         super(parent, name, type);
         if(this.isContainer()) {
-            this.attributes().setType(Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
+            this.attributes().setType(VOLUME_TYPE | DIRECTORY_TYPE);
         }
     }
 
     protected CloudPath(String path, int type) {
         super(path, type);
         if(this.isContainer()) {
-            this.attributes().setType(Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
+            this.attributes().setType(VOLUME_TYPE | DIRECTORY_TYPE);
         }
     }
 
     protected CloudPath(String parent, final Local local) {
         super(parent, local);
         if(this.isContainer()) {
-            this.attributes().setType(Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
+            this.attributes().setType(VOLUME_TYPE | DIRECTORY_TYPE);
         }
     }
 

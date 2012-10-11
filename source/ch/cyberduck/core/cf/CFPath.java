@@ -240,7 +240,7 @@ public class CFPath extends CloudPath {
                         list = this.getSession().getClient().listContainersInfo(limit, marker);
                         for(FilesContainerInfo container : list) {
                             Path p = PathFactory.createPath(this.getSession(), this.getAbsolute(), container.getName(),
-                                    Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
+                                    VOLUME_TYPE | DIRECTORY_TYPE);
                             p.attributes().setSize(container.getTotalSize());
                             p.attributes().setOwner(this.getSession().getClient().getUserName());
 
@@ -260,7 +260,7 @@ public class CFPath extends CloudPath {
                                 this.isContainer() ? StringUtils.EMPTY : this.getKey() + Path.DELIMITER, null, limit, marker, Path.DELIMITER);
                         for(FilesObject object : list) {
                             final Path file = PathFactory.createPath(this.getSession(), this.getContainerName(), object.getName(),
-                                    "application/directory".equals(object.getMimeType()) ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
+                                    "application/directory".equals(object.getMimeType()) ? DIRECTORY_TYPE : FILE_TYPE);
                             file.setParent(this);
                             if(file.attributes().isFile()) {
                                 file.attributes().setSize(object.getSize());

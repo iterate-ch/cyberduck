@@ -348,7 +348,7 @@ public class S3Session extends CloudSession {
                 String bucketname = this.getContainerForHostname(host.getHostname(true));
                 if(StringUtils.isEmpty(bucketname)) {
                     if(StringUtils.isNotBlank(host.getDefaultPath())) {
-                        Path d = PathFactory.createPath(this, host.getDefaultPath(), AbstractPath.DIRECTORY_TYPE);
+                        Path d = PathFactory.createPath(this, host.getDefaultPath(), Path.DIRECTORY_TYPE);
                         while(!d.getParent().isRoot()) {
                             d = d.getParent();
                         }

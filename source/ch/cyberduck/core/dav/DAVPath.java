@@ -212,7 +212,7 @@ public class DAVPath extends HttpPath {
                     // Try to parse as RFC 2396
                     final URI uri = resource.getHref();
                     DAVPath p = (DAVPath) PathFactory.createPath(this.getSession(), uri.getPath(),
-                            resource.isDirectory() ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
+                            resource.isDirectory() ? DIRECTORY_TYPE : FILE_TYPE);
                     p.setParent(this);
 
                     p.readAttributes(resource);

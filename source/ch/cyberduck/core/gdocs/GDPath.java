@@ -19,15 +19,7 @@ package ch.cyberduck.core.gdocs;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractPath;
-import ch.cyberduck.core.Acl;
-import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathFactory;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.StreamListener;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.serializer.Deserializer;
@@ -804,7 +796,7 @@ public class GDPath extends Path {
                 log.debug("Resource:" + entry.getResourceId());
                 final String type = entry.getType();
                 GDPath path = new GDPath(this.getSession(), this.getAbsolute(), entry.getTitle().getPlainText(),
-                        FolderEntry.LABEL.equals(type) ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
+                        FolderEntry.LABEL.equals(type) ? DIRECTORY_TYPE : FILE_TYPE);
                 path.setParent(this);
                 path.setDocumentType(type);
                 if(!(entry.getContent() instanceof OutOfLineContent)) {
@@ -858,7 +850,7 @@ public class GDPath extends Path {
                             int i = 0;
                             for(RevisionEntry revisionEntry : revisions) {
                                 GDPath revision = new GDPath(this.getSession(), revisionEntry.getTitle().getPlainText(),
-                                        FolderEntry.LABEL.equals(type) ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
+                                        FolderEntry.LABEL.equals(type) ? DIRECTORY_TYPE : FILE_TYPE);
                                 revision.setParent(this);
                                 revision.setDocumentType(type);
                                 if(!(revisionEntry.getContent() instanceof OutOfLineContent)) {
@@ -905,7 +897,7 @@ public class GDPath extends Path {
         if(attributes().isFile()) {
             final String exportFormat = getExportFormat(this.getDocumentType());
             if(StringUtils.isNotEmpty(exportFormat)) {
-                return getMimeType(exportFormat);
+                return new MappingMimeTypeService().getMime(exportFormat);
             }
         }
         return super.getMimeType();
