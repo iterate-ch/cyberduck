@@ -18,12 +18,7 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.i18n.Locale;
-
 import org.apache.log4j.Logger;
-
-import java.math.BigDecimal;
-import java.text.MessageFormat;
 
 /**
  * The Status class is the model of a download's status.
@@ -63,34 +58,6 @@ public class Status {
      * Indicates that the last action has been completed.
      */
     private boolean complete = false;
-
-    /**
-     * @param remaining Seconds
-     * @return Humean readable string for seconds in hours, minutes or seconds remaining
-     */
-    public static String getRemainingAsString(double remaining) {
-        StringBuilder b = new StringBuilder();
-        if(remaining < 0) {
-            // File sizes larger than advertised
-            return Locale.localizedString("Unknown");
-        }
-        if(remaining > 7200) { // More than two hours
-            b.append(MessageFormat.format(Locale.localizedString("{0} hours remaining", "Status"),
-                    new BigDecimal(remaining).divide(new BigDecimal(3600), 1, BigDecimal.ROUND_DOWN).toString())
-            );
-        }
-        else if(remaining > 120) { // More than two minutes
-            b.append(MessageFormat.format(Locale.localizedString("{0} minutes remaining", "Status"),
-                    String.valueOf((int) (remaining / 60)))
-            );
-        }
-        else {
-            b.append(MessageFormat.format(Locale.localizedString("{0} seconds remaining", "Status"),
-                    String.valueOf((int) remaining))
-            );
-        }
-        return b.toString();
-    }
 
     public void setComplete(boolean complete) {
         if(log.isInfoEnabled()) {
