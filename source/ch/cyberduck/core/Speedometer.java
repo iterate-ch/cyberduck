@@ -23,6 +23,8 @@ import ch.cyberduck.core.date.RemainingPeriodFormatter;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.ui.formatter.SizeFormatterFactory;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.MessageFormat;
 
 /**
@@ -41,6 +43,8 @@ public class Speedometer {
      */
     private long last = 0L;
 
+    private boolean overall = false;
+
     private PeriodFormatter formatter
             = new RemainingPeriodFormatter();
 
@@ -54,17 +58,20 @@ public class Speedometer {
      * Returns the data transfer rate. The rate should depend on the transfer
      * rate timestamp.
      *
-     * @return The bytes being processed per second
+     * @return The bytes being processed per millisecond
      */
     protected double getSpeed() {
         // Number of seconds data was actually transferred
-        final long seconds = (System.currentTimeMillis() - timestamp) / 1000;
-        if(seconds > 0) {
+        final long elapsed = System.currentTimeMillis() - timestamp;
+        if(elapsed > 0) {
             final long differential = transfer.getTransferred() - last;
             // Remember for next iteration
             last = transfer.getTransferred();
+            if(!overall) {
+                timestamp = System.currentTimeMillis();
+            }
             // The throughput is usually measured in bits per second
-            return (double) differential / seconds;
+            return (double) differential / elapsed;
         }
         return 0L;
     }
@@ -74,10 +81,11 @@ public class Speedometer {
      *         including a percentage and estimated time remaining
      */
     public String getProgress() {
-        final StringBuilder b = new StringBuilder();
-        b.append(MessageFormat.format(Locale.localizedString("{0} of {1}"),
-                SizeFormatterFactory.instance().format(transfer.getTransferred(), !transfer.isComplete()),
-                SizeFormatterFactory.instance().format(transfer.getSize())));
+        final StringBuilder b = new StringBuilder(
+                MessageFormat.format(Locale.localizedString("{0} of {1}"),
+                        SizeFormatterFactory.instance().format(transfer.getTransferred(), !transfer.isComplete()),
+                        SizeFormatterFactory.instance().format(transfer.getSize()))
+        );
         if(transfer.isRunning()) {
             final double speed = this.getSpeed();
             if(transfer.getSize() > 0 || speed > 0) {
@@ -90,13 +98,15 @@ public class Speedometer {
                     if(transfer.getSize() > 0) {
                         b.append(", ");
                     }
-                    b.append(SizeFormatterFactory.instance(true).format((long) speed));
+                    b.append(SizeFormatterFactory.instance(true).format(
+                            new BigDecimal(speed * 1000).setScale(0, RoundingMode.UP).longValue()));
                     b.append("/sec");
                     if(transfer.getTransferred() < transfer.getSize()) {
                         b.append(", ");
-                        // Remaining time in seconds
-                        long remaining = (long) ((transfer.getSize() - transfer.getTransferred()) / speed);
-                        b.append(formatter.format(remaining));
+                        // Remaining time in milliseconds
+                        long remaining = new BigDecimal((transfer.getSize() - transfer.getTransferred()) / speed).setScale(0, RoundingMode.UP).longValue();
+                        // Display in seconds
+                        b.append(formatter.format(new BigDecimal(remaining).divide(new BigDecimal(1000L), RoundingMode.UP).longValue()));
                     }
                 }
                 b.append(")");
