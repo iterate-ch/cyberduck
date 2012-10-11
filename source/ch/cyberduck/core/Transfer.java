@@ -165,7 +165,7 @@ public abstract class Transfer implements Serializable {
         }
         Object sizeObj = dict.stringForKey("Size");
         if(sizeObj != null) {
-            size = Long.parseLong(sizeObj.toString());
+            size = (long) Double.parseDouble(sizeObj.toString());
         }
         Object timestampObj = dict.stringForKey("Timestamp");
         if(timestampObj != null) {
@@ -173,7 +173,7 @@ public abstract class Transfer implements Serializable {
         }
         Object currentObj = dict.stringForKey("Current");
         if(currentObj != null) {
-            transferred = Long.parseLong(currentObj.toString());
+            transferred = (long) Double.parseDouble(currentObj.toString());
         }
         this.init();
         Object bandwidthObj = dict.stringForKey("Bandwidth");
@@ -794,7 +794,7 @@ public abstract class Transfer implements Serializable {
     }
 
     /**
-     * @return The number of bytes transfered of all items in this <code>transfer</code>
+     * @return The number of bytes transferred of all files.
      */
     public long getTransferred() {
         return transferred;
