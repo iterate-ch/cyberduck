@@ -554,10 +554,7 @@ public class FTPPath extends Path {
                 this.getSession().message(MessageFormat.format(Locale.localizedString("Making directory {0}", "Status"),
                         this.getName()));
 
-                if(this.getSession().getClient().makeDirectory(this.getAbsolute())) {
-                    //
-                }
-                else {
+                if(!this.getSession().getClient().makeDirectory(this.getAbsolute())) {
                     throw new FTPException(this.getSession().getClient().getReplyString());
                 }
             }
@@ -574,9 +571,7 @@ public class FTPPath extends Path {
             this.getSession().message(MessageFormat.format(Locale.localizedString("Renaming {0} to {1}", "Status"),
                     this.getName(), renamed));
 
-            if(this.getSession().getClient().rename(this.getAbsolute(), renamed.getAbsolute())) {
-            }
-            else {
+            if(!this.getSession().getClient().rename(this.getAbsolute(), renamed.getAbsolute())) {
                 throw new FTPException(this.getSession().getClient().getReplyString());
             }
         }
