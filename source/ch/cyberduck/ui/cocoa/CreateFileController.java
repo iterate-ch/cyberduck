@@ -20,10 +20,10 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFactory;
+import ch.cyberduck.core.editor.Editor;
+import ch.cyberduck.core.editor.EditorFactory;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.ui.cocoa.application.NSAlert;
-import ch.cyberduck.ui.cocoa.odb.Editor;
-import ch.cyberduck.ui.cocoa.odb.EditorFactory;
 import ch.cyberduck.ui.cocoa.resources.IconCache;
 import ch.cyberduck.ui.cocoa.threading.BrowserBackgroundAction;
 
@@ -40,7 +40,7 @@ public class CreateFileController extends FileController {
                 Locale.localizedString("Create new file", "File"),
                 Locale.localizedString("Enter the name for the new file:", "File"),
                 Locale.localizedString("Create", "File"),
-                EditorFactory.defaultEditor() != null ? Locale.localizedString("Edit", "File") : null,
+                EditorFactory.instance().getEditor() != null ? Locale.localizedString("Edit", "File") : null,
                 Locale.localizedString("Cancel", "File")
         ));
         alert.setIcon(IconCache.documentIcon(null, 64));
@@ -67,7 +67,7 @@ public class CreateFileController extends FileController {
                 file.touch();
                 if(file.exists()) {
                     if(edit) {
-                        Editor editor = EditorFactory.createEditor(c, file);
+                        Editor editor = EditorFactory.instance().create(c, file);
                         editor.open();
                     }
                 }

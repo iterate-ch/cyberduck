@@ -329,11 +329,10 @@ public abstract class Preferences {
         /**
          * Default editor
          */
-        defaults.put("editor.bundleIdentifier", "com.macromates.textmate");
+        defaults.put("editor.bundleIdentifier", "com.apple.TextEdit");
         defaults.put("editor.alwaysUseDefault", String.valueOf(false));
 
         defaults.put("editor.odb.enable", String.valueOf(true));
-        defaults.put("editor.kqueue.enable", String.valueOf(true));
         defaults.put("editor.tmp.directory", System.getProperty("java.io.tmpdir"));
 
         defaults.put("filetype.text.regex",

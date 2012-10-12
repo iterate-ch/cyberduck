@@ -46,7 +46,7 @@ jstring convertToJString(JNIEnv *env, NSString *nsString)
 	return (*env)->NewStringUTF(env, unichars);
 }
 
-JNIEXPORT jboolean JNICALL Java_ch_cyberduck_ui_cocoa_odb_ODBEditor_edit(
+JNIEXPORT jboolean JNICALL Java_ch_cyberduck_core_editor_ODBEditor_edit(
 										JNIEnv *env, 
 										jobject this, 
 										jstring local,

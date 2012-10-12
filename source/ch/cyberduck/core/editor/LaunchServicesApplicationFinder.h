@@ -12,7 +12,7 @@ extern "C" {
  * Method:    find
  * Signature: (Ljava/lang/String;)Ljava/lang/String;
  */
-JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_editor_LaunchServicesApplicationFinder_find
+JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_editor_LaunchServicesApplicationFinder_findForType
   (JNIEnv *, jobject, jstring);
 
 /*
@@ -20,7 +20,7 @@ JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_editor_LaunchServicesApplicatio
  * Method:    findAll
  * Signature: (Ljava/lang/String;)[Ljava/lang/String;
  */
-JNIEXPORT jobjectArray JNICALL Java_ch_cyberduck_core_editor_LaunchServicesApplicationFinder_findAll
+JNIEXPORT jobjectArray JNICALL Java_ch_cyberduck_core_editor_LaunchServicesApplicationFinder_findAllForType
   (JNIEnv *, jobject, jstring);
 
 #ifdef __cplusplus

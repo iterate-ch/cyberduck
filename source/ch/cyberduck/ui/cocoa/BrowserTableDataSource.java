@@ -19,6 +19,8 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.editor.Editor;
+import ch.cyberduck.core.editor.EditorFactory;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.ui.DateFormatterFactory;
 import ch.cyberduck.ui.PathPasteboard;
@@ -36,7 +38,6 @@ import ch.cyberduck.ui.cocoa.foundation.NSMutableArray;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.foundation.NSString;
 import ch.cyberduck.ui.cocoa.foundation.NSURL;
-import ch.cyberduck.ui.cocoa.odb.WatchEditor;
 import ch.cyberduck.ui.cocoa.resources.IconCache;
 import ch.cyberduck.ui.cocoa.threading.BrowserBackgroundAction;
 import ch.cyberduck.ui.formatter.SizeFormatterFactory;
@@ -542,12 +543,12 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
             }
             // kTemporaryFolderType
             final boolean dock = destination.equals(LocalFactory.createLocal("~/Library/Caches/TemporaryItems"));
-            DownloadTransfer transfer = new DownloadTransfer(pasteboard.copy(controller.getTransferSession())) {
+            final DownloadTransfer transfer = new DownloadTransfer(pasteboard.copy(controller.getTransferSession())) {
                 @Override
                 protected void fireDidTransferPath(Path path) {
                     if(dock) {
-                        WatchEditor editor = new WatchEditor(controller, path);
-                        editor.watch();
+                        Editor editor = EditorFactory.instance().create(controller, path);
+                        editor.edit();
                     }
                     super.fireDidTransferPath(path);
                 }

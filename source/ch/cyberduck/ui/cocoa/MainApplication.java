@@ -29,6 +29,7 @@ import ch.cyberduck.core.SystemConfigurationReachability;
 import ch.cyberduck.core.aquaticprime.Donation;
 import ch.cyberduck.core.aquaticprime.Receipt;
 import ch.cyberduck.core.editor.LaunchServicesApplicationFinder;
+import ch.cyberduck.core.editor.MultipleEditorFactory;
 import ch.cyberduck.core.local.WorkspaceIconService;
 import ch.cyberduck.core.sparkle.Updater;
 import ch.cyberduck.core.threading.AutoreleaseActionOperationBatcher;
@@ -103,6 +104,7 @@ public final class MainApplication {
                 UserDefaultsDateFormatter.register();
                 LaunchServicesApplicationFinder.register();
                 WorkspaceIconService.register();
+                MultipleEditorFactory.register();
 
                 DeprecatedQuickLook.register();
                 QuartzQuickLook.register();

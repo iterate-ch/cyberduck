@@ -32,8 +32,8 @@ import java.text.MessageFormat;
 /**
  * @version $Id$
  */
-public abstract class AbstractEditor {
-    private static Logger log = Logger.getLogger(AbstractEditor.class);
+public abstract class AbstractEditor implements Editor {
+    private static final Logger log = Logger.getLogger(AbstractEditor.class);
 
     /**
      * The file has been closed in the editor while the upload was in progress
@@ -48,14 +48,20 @@ public abstract class AbstractEditor {
     /**
      * The edited path
      */
-    protected Path edited;
+    private Path edited;
+
+    /**
+     * The editor application
+     */
+    private Application application;
 
     /**
      * Store checksum of downloaded file to detect modifications
      */
     private String checksum;
 
-    public AbstractEditor(final Path path) {
+    public AbstractEditor(final Application application, final Path path) {
+        this.application = application;
         // Create a copy of the path as to not interfere with the browser. #5524
         this.edited = PathFactory.createPath(path.getSession(), path.<String>getAsDictionary());
         final Local folder = LocalFactory.createLocal(
@@ -66,6 +72,25 @@ public abstract class AbstractEditor {
                 String.format("%s-%s", version, edited.getName());
         final Local local = LocalFactory.createLocal(folder, localName);
         edited.setLocal(local);
+    }
+
+    /**
+     * @param background Download transfer
+     */
+    protected abstract void open(BackgroundAction<Void> background);
+
+
+    /**
+     * @param background Upload transfer
+     */
+    protected abstract void save(BackgroundAction<Void> background);
+
+    public Path getEdited() {
+        return edited;
+    }
+
+    public Application getApplication() {
+        return application;
     }
 
     protected void setClosed(boolean closed) {
@@ -87,9 +112,6 @@ public abstract class AbstractEditor {
         this.dirty = dirty;
     }
 
-    /**
-     *
-     */
     protected void delete() {
         final Local file = edited.getLocal();
         if(log.isDebugEnabled()) {
@@ -106,13 +128,9 @@ public abstract class AbstractEditor {
     }
 
     /**
-     * Open file in editor
-     */
-    protected abstract void edit();
-
-    /**
      * Open the file in the parent directory
      */
+    @Override
     public void open() {
         final BackgroundAction<Void> background = new AbstractBackgroundAction<Void>() {
             @Override
@@ -166,13 +184,9 @@ public abstract class AbstractEditor {
     }
 
     /**
-     * @param background Download transfer
-     */
-    protected abstract void open(BackgroundAction<Void> background);
-
-    /**
      * Upload changes to server if checksum of local file has changed since last edit.
      */
+    @Override
     public void save() {
         final BackgroundAction<Void> background = new AbstractBackgroundAction<Void>() {
             @Override
@@ -224,9 +238,4 @@ public abstract class AbstractEditor {
         }
         this.save(background);
     }
-
-    /**
-     * @param background Upload transfer
-     */
-    protected abstract void save(BackgroundAction<Void> background);
 }

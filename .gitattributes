@@ -2573,6 +2573,9 @@ source/ch/cyberduck/core/cloud/CloudPath.java -text
 source/ch/cyberduck/core/cloud/CloudSession.java -text
 source/ch/cyberduck/core/collections/IndexedLinkedList.cs -text
 source/ch/cyberduck/core/collections/LRUCache.cs -text
+source/ch/cyberduck/core/editor/Editor.cs -text
+source/ch/cyberduck/core/editor/EditorFactory.cs -text
+source/ch/cyberduck/core/editor/WatchEditor.cs -text
 source/ch/cyberduck/core/importer/CDTransmitImporter.h -text
 source/ch/cyberduck/core/importer/CDTransmitImporter.m -text
 source/ch/cyberduck/core/s3/S3Path.java -text
@@ -2621,8 +2624,6 @@ source/ch/cyberduck/ui/controller/DonationController.cs -text
 source/ch/cyberduck/ui/controller/DownloadPromptController.cs -text
 source/ch/cyberduck/ui/controller/DownloadPromptModel.cs -text
 source/ch/cyberduck/ui/controller/DuplicateFileController.cs -text
-source/ch/cyberduck/ui/controller/Editor.cs -text
-source/ch/cyberduck/ui/controller/EditorFactory.cs -text
 source/ch/cyberduck/ui/controller/ErrorController.cs -text
 source/ch/cyberduck/ui/controller/Events.cs -text
 source/ch/cyberduck/ui/controller/FileController.cs -text
@@ -2677,7 +2678,6 @@ source/ch/cyberduck/ui/controller/UpdateController.cs -text
 source/ch/cyberduck/ui/controller/UploadPromptController.cs -text
 source/ch/cyberduck/ui/controller/UploadPromptModel.cs -text
 source/ch/cyberduck/ui/controller/UserPreferences.cs -text
-source/ch/cyberduck/ui/controller/WatchEditor.cs -text
 source/ch/cyberduck/ui/controller/WindowController.cs -text
 source/ch/cyberduck/ui/controller/growl/GrowlImpl.cs -text
 source/ch/cyberduck/ui/controller/threading/AlertRepeatableBackgroundAction.cs -text

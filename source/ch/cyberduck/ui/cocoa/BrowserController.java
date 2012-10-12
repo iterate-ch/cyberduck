@@ -20,6 +20,9 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.*;
 import ch.cyberduck.core.aquaticprime.LicenseFactory;
+import ch.cyberduck.core.editor.Application;
+import ch.cyberduck.core.editor.Editor;
+import ch.cyberduck.core.editor.EditorFactory;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.sftp.SFTPSession;
@@ -36,8 +39,6 @@ import ch.cyberduck.ui.cocoa.delegate.EditMenuDelegate;
 import ch.cyberduck.ui.cocoa.delegate.OpenURLMenuDelegate;
 import ch.cyberduck.ui.cocoa.delegate.URLMenuDelegate;
 import ch.cyberduck.ui.cocoa.foundation.*;
-import ch.cyberduck.ui.cocoa.odb.Editor;
-import ch.cyberduck.ui.cocoa.odb.EditorFactory;
 import ch.cyberduck.ui.cocoa.quicklook.QLPreviewPanel;
 import ch.cyberduck.ui.cocoa.quicklook.QLPreviewPanelController;
 import ch.cyberduck.ui.cocoa.quicklook.QuickLookFactory;
@@ -92,8 +93,12 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
     public static void validateToolbarItems() {
         for(BrowserController controller : MainController.getBrowsers()) {
-            controller.window().toolbar().validateVisibleItems();
+            controller.validateToolbar();
         }
+    }
+
+    protected void validateToolbar() {
+        this.window().toolbar().validateVisibleItems();
     }
 
     public static void updateBookmarkTableRowHeight() {
@@ -357,6 +362,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             log.debug("setSelectedPaths:" + selected);
         }
         this.selected = selected;
+        this.validateToolbar();
     }
 
     /**
@@ -2531,10 +2537,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             return false;
         }
         if(selected.attributes().isFile()) {
-            if(Preferences.instance().getBoolean("editor.kqueue.enable")) {
-                return true;
-            }
-            return !selected.getBinaryFiletypePattern().matcher(selected.getName()).matches();
+            return true;
         }
         return false;
     }
@@ -2593,7 +2596,8 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     @Action
     public void editMenuClicked(final NSMenuItem sender) {
         for(Path selected : this.getSelectedPaths()) {
-            Editor editor = EditorFactory.createEditor(this, sender.representedObject(), selected);
+            final Editor editor = EditorFactory.instance().create(this,
+                    new Application(sender.representedObject(), null), selected);
             editor.open();
         }
     }
@@ -2601,7 +2605,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     @Action
     public void editButtonClicked(final ID sender) {
         for(Path selected : this.getSelectedPaths()) {
-            Editor editor = EditorFactory.createEditor(this, selected);
+            final Editor editor = EditorFactory.instance().create(this, selected);
             editor.open();
         }
     }
@@ -4124,7 +4128,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                         return false;
                     }
                     // Choose editor for selected file
-                    if(null == EditorFactory.defaultEditor(s.getLocal())) {
+                    if(null == EditorFactory.instance().getEditor(s.getLocal())) {
                         return false;
                     }
                 }
@@ -4307,12 +4311,12 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     public boolean validateToolbarItem(final NSToolbarItem item) {
         final String identifier = item.itemIdentifier();
         if(identifier.equals(TOOLBAR_EDIT)) {
-            String editor = null;
+            Application editor = null;
             final Path selected = this.getSelectedPath();
             if(null != selected) {
                 if(this.isEditable(selected)) {
                     // Choose editor for selected file
-                    editor = EditorFactory.defaultEditor(selected.getLocal());
+                    editor = EditorFactory.instance().getEditor(selected.getLocal());
                 }
             }
             if(null == editor) {
@@ -4320,7 +4324,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 item.setImage(IconCache.iconNamed("pencil.tiff", 32));
             }
             else {
-                item.setImage(IconCache.instance().iconForApplication(editor, 32));
+                item.setImage(IconCache.instance().iconForApplication(editor.getIdentifier(), 32));
             }
         }
         else if(identifier.equals(TOOLBAR_DISCONNECT)) {
@@ -4579,7 +4583,8 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             return item;
         }
         else if(itemIdentifier.equals(TOOLBAR_TERMINAL)) {
-            String app = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(Preferences.instance().getProperty("terminal.bundle.identifier"));
+            String app = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(
+                    Preferences.instance().getProperty("terminal.bundle.identifier"));
             if(StringUtils.isEmpty(app)) {
                 log.error("Application with bundle identifier " + Preferences.instance().getProperty("terminal.bundle.identifier") + " is not installed");
             }

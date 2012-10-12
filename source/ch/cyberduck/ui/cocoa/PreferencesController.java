@@ -20,7 +20,9 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.editor.Application;
 import ch.cyberduck.core.editor.ApplicationFinderFactory;
+import ch.cyberduck.core.editor.EditorFactory;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.sparkle.Updater;
 import ch.cyberduck.ui.cocoa.application.*;
@@ -33,8 +35,6 @@ import ch.cyberduck.ui.cocoa.foundation.NSMutableAttributedString;
 import ch.cyberduck.ui.cocoa.foundation.NSNotification;
 import ch.cyberduck.ui.cocoa.foundation.NSNotificationCenter;
 import ch.cyberduck.ui.cocoa.foundation.NSRange;
-import ch.cyberduck.ui.cocoa.odb.EditorFactory;
-import ch.cyberduck.ui.cocoa.odb.WatchEditor;
 import ch.cyberduck.ui.cocoa.resources.IconCache;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 import ch.cyberduck.ui.cocoa.urlhandler.URLSchemeHandlerConfiguration;
@@ -52,9 +52,7 @@ import org.rococoa.cocoa.foundation.NSUInteger;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -306,31 +304,26 @@ public final class PreferencesController extends ToolbarWindowController {
 
     private void updateEditorCombobox() {
         editorCombobox.removeAllItems();
-        Map<String, String> editors = EditorFactory.getSupportedEditors();
-        Iterator<String> editorNames = editors.keySet().iterator();
-        Iterator<String> editorIdentifiers = editors.values().iterator();
-        while(editorNames.hasNext()) {
-            this.addEditor(editorNames.next(), editorIdentifiers.next());
+        for(Application editor : EditorFactory.instance().getEditors()) {
+            editorCombobox.addItemWithTitle(editor.getName());
+            editorCombobox.lastItem().setRepresentedObject(editor.getIdentifier());
+            final boolean enabled = ApplicationFinderFactory.instance().isInstalled(editor);
+            editorCombobox.lastItem().setEnabled(enabled);
+            if(enabled) {
+                editorCombobox.lastItem().setImage(
+                        IconCache.instance().iconForApplication(editor.getIdentifier(), 16));
+            }
+            if(editor.equals(EditorFactory.instance().getEditor())) {
+                editorCombobox.selectItem(editorCombobox.lastItem());
+            }
         }
         editorCombobox.setTarget(this.id());
         final Selector action = Foundation.selector("editorComboboxClicked:");
         editorCombobox.setAction(action);
-        if(Preferences.instance().getBoolean("editor.kqueue.enable")) {
-            editorCombobox.menu().addItem(NSMenuItem.separatorItem());
-            editorCombobox.menu().addItemWithTitle_action_keyEquivalent(CHOOSE, action, StringUtils.EMPTY);
-            editorCombobox.lastItem().setTarget(this.id());
-        }
-        editorCombobox.selectItemWithTitle(
-                ApplicationFinderFactory.instance().getName(EditorFactory.defaultEditor()));
-    }
-
-    private void addEditor(String editor, String identifier) {
-        editorCombobox.addItemWithTitle(editor);
-        final boolean enabled = EditorFactory.getInstalledEditors().containsValue(identifier);
-        editorCombobox.itemWithTitle(editor).setEnabled(enabled);
-        if(enabled) {
-            editorCombobox.itemWithTitle(editor).setImage(IconCache.instance().iconForApplication(identifier, 16));
-        }
+        editorCombobox.menu().addItem(NSMenuItem.separatorItem());
+        editorCombobox.menu().addItemWithTitle_action_keyEquivalent(CHOOSE, action, StringUtils.EMPTY);
+        editorCombobox.lastItem().setTarget(this.id());
+        editorCombobox.selectItemWithTitle(EditorFactory.instance().getEditor().getName());
     }
 
     private NSOpenPanel editorPathPanel;
@@ -347,8 +340,7 @@ public final class PreferencesController extends ToolbarWindowController {
                     Foundation.selector("editorPathPanelDidEnd:returnCode:contextInfo:"), null);
         }
         else {
-            final String selected = EditorFactory.getSupportedEditors().get(sender.titleOfSelectedItem());
-            Preferences.instance().setProperty("editor.bundleIdentifier", selected);
+            Preferences.instance().setProperty("editor.bundleIdentifier", sender.selectedItem().representedObject());
             BrowserController.validateToolbarItems();
         }
     }
@@ -373,17 +365,12 @@ public final class PreferencesController extends ToolbarWindowController {
             String filename;
             if((filename = selected.lastObject().toString()) != null) {
                 String path = LocalFactory.createLocal(filename).getAbsolute();
-                NSBundle app = NSBundle.bundleWithPath(path);
-                if(null == app) {
+                NSBundle bundle = NSBundle.bundleWithPath(path);
+                if(null == bundle) {
                     log.error("Loading bundle failed:" + path);
                 }
                 else {
-                    final String bundleIdentifier = app.bundleIdentifier();
-                    if(!EditorFactory.getInstalledEditors().values().contains(bundleIdentifier)) {
-                        WatchEditor.addInstalledEditor(
-                                ApplicationFinderFactory.instance().getName(bundleIdentifier), app.bundleIdentifier());
-                    }
-                    Preferences.instance().setProperty("editor.bundleIdentifier", bundleIdentifier);
+                    Preferences.instance().setProperty("editor.bundleIdentifier", bundle.bundleIdentifier());
                     BrowserController.validateToolbarItems();
                 }
             }
@@ -1691,16 +1678,15 @@ public final class PreferencesController extends ToolbarWindowController {
         log.debug("Default Protocol Handler for " + protocol + ":" + defaultHandler);
         final String[] bundleIdentifiers = URLSchemeHandlerConfiguration.instance().getAllHandlersForURLScheme(protocol.getScheme().toString());
         for(String bundleIdentifier : bundleIdentifiers) {
-            String app = ApplicationFinderFactory.instance().getName(bundleIdentifier);
-            if(StringUtils.isEmpty(app)) {
-                continue;
-            }
-            defaultProtocolHandlerCombobox.addItemWithTitle(app);
-            final NSMenuItem item = defaultProtocolHandlerCombobox.lastItem();
-            item.setImage(IconCache.instance().iconForApplication(bundleIdentifier, 16));
-            item.setRepresentedObject(bundleIdentifier);
-            if(bundleIdentifier.equals(defaultHandler)) {
-                defaultProtocolHandlerCombobox.selectItem(item);
+            final Application handler = ApplicationFinderFactory.instance().find(bundleIdentifier);
+            if(handler != null) {
+                defaultProtocolHandlerCombobox.addItemWithTitle(handler.getName());
+                final NSMenuItem item = defaultProtocolHandlerCombobox.lastItem();
+                item.setImage(IconCache.instance().iconForApplication(handler.getIdentifier(), 16));
+                item.setRepresentedObject(handler.getIdentifier());
+                if(handler.getIdentifier().equals(defaultHandler)) {
+                    defaultProtocolHandlerCombobox.selectItem(item);
+                }
             }
         }
     }

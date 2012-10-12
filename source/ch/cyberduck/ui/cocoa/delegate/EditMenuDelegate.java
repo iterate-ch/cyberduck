@@ -19,11 +19,12 @@ package ch.cyberduck.ui.cocoa.delegate;
  */
 
 import ch.cyberduck.core.Local;
+import ch.cyberduck.core.editor.Application;
+import ch.cyberduck.core.editor.EditorFactory;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.ui.cocoa.application.NSEvent;
 import ch.cyberduck.ui.cocoa.application.NSMenu;
 import ch.cyberduck.ui.cocoa.application.NSMenuItem;
-import ch.cyberduck.ui.cocoa.odb.EditorFactory;
 import ch.cyberduck.ui.cocoa.resources.IconCache;
 
 import org.apache.commons.lang.ObjectUtils;
@@ -31,7 +32,7 @@ import org.rococoa.Foundation;
 import org.rococoa.Selector;
 import org.rococoa.cocoa.foundation.NSInteger;
 
-import java.util.Map;
+import java.util.List;
 
 /**
  * @version $Id$
@@ -50,11 +51,18 @@ public abstract class EditMenuDelegate extends AbstractMenuDelegate {
             // and menu:updateItem:atIndex:shouldCancel: is not called.
             return new NSInteger(-1);
         }
-        final int n = EditorFactory.getInstalledEditors(this.getSelectedFile()).size();
-        if(0 == n) {
+        final Local file = this.getSelectedFile();
+        final int count;
+        if(null == file) {
+            count = EditorFactory.instance().getEditors().size();
+        }
+        else {
+            count = EditorFactory.instance().getEditors(file).size();
+        }
+        if(0 == count) {
             return new NSInteger(1);
         }
-        return new NSInteger(n);
+        return new NSInteger(count);
     }
 
     protected abstract Local getSelectedFile();
@@ -82,21 +90,26 @@ public abstract class EditMenuDelegate extends AbstractMenuDelegate {
     @Override
     public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, NSInteger index, boolean cancel) {
         final Local selected = this.getSelectedFile();
-        final Map<String, String> editors = EditorFactory.getInstalledEditors(selected);
+        final List<Application> editors;
+        if(null == selected) {
+            editors = EditorFactory.instance().getEditors();
+        }
+        else {
+            editors = EditorFactory.instance().getEditors(selected);
+        }
         if(editors.size() == 0) {
             item.setTitle(Locale.localizedString("No external editor available"));
             return false;
         }
-        String defaultEditor = EditorFactory.defaultEditor(selected);
-        String identifier = editors.values().toArray(new String[editors.size()])[index.intValue()];
+        final String identifier = editors.get(index.intValue()).getIdentifier();
         item.setRepresentedObject(identifier);
-        String editor = editors.keySet().toArray(new String[editors.size()])[index.intValue()];
+        final String editor = editors.get(index.intValue()).getName();
         item.setTitle(editor);
-        if(identifier.equalsIgnoreCase(defaultEditor)) {
+        if(null != selected && identifier.equalsIgnoreCase(EditorFactory.instance().getEditor(selected).getIdentifier())) {
             setShortcut(item, this.getKeyEquivalent(), this.getModifierMask());
         }
         else {
-            clearShortcut(item);
+            this.clearShortcut(item);
         }
         item.setImage(IconCache.instance().iconForApplication(identifier, 16));
         item.setAction(Foundation.selector("editMenuClicked:"));
