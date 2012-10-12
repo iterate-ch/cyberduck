@@ -15,11 +15,6 @@ public class NullLocal extends Local {
     }
 
     @Override
-    public void setIcon(final int progress) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public void trash() {
         throw new UnsupportedOperationException();
     }
