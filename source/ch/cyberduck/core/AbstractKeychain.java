@@ -22,12 +22,10 @@ package ch.cyberduck.core;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import java.security.cert.X509Certificate;
-
 /**
  * @version $Id$
  */
-public abstract class AbstractKeychain {
+public abstract class AbstractKeychain implements PasswordStore, CertificateStore {
     private static Logger log = Logger.getLogger(AbstractKeychain.class);
 
     /**
@@ -114,62 +112,5 @@ public abstract class AbstractKeychain {
             this.addPassword(host.getProtocol().getScheme().name(), host.getPort(),
                     host.getHostname(), credentials.getUsername(), credentials.getPassword());
         }
-    }
-
-    /**
-     * @param protocol    Protocol scheme
-     * @param port        Port
-     * @param serviceName Hostname
-     * @param user        Credentials
-     * @return Password if found or null otherwise
-     */
-    public abstract String getPassword(String protocol, int port, String serviceName, String user);
-
-    /**
-     * @param serviceName Hostname
-     * @param user        Credentials
-     * @return Password if found or null otherwise
-     */
-    public abstract String getPassword(String serviceName, String user);
-
-    /**
-     * @param serviceName Hostname
-     * @param user        Credentials
-     * @param password    Password to save for service
-     */
-    public abstract void addPassword(String serviceName, String user, String password);
-
-    /**
-     * @param protocol    Scheme
-     * @param port        Port
-     * @param serviceName Hostname
-     * @param user        Credentials
-     * @param password    Password to save for service
-     */
-    public abstract void addPassword(String protocol, int port, String serviceName, String user, String password);
-
-    /**
-     * @param hostname Hostname
-     * @param certs    Certificate chain
-     * @return True if trusted in Keychain
-     */
-    public abstract boolean isTrusted(String hostname, X509Certificate[] certs);
-
-    /**
-     * @param certificates X.509 certificates
-     * @return False if display is not possible
-     */
-    public abstract boolean displayCertificates(X509Certificate[] certificates);
-
-    /**
-     * Prompt user for client certificate
-     *
-     * @param issuers  Distinguished names
-     * @param hostname Client hostname
-     * @param prompt   Display in certificate choose prompt
-     * @return Null if no certificate selected
-     */
-    public X509Certificate chooseCertificate(String[] issuers, String hostname, String prompt) {
-        return null;
     }
 }
