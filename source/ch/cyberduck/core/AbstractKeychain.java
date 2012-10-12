@@ -58,7 +58,7 @@ public abstract class AbstractKeychain implements PasswordStore, CertificateStor
             }
         }
         else {
-            p = this.getPassword(host.getProtocol().getScheme().name(), host.getPort(),
+            p = this.getPassword(host.getProtocol().getScheme(), host.getPort(),
                     host.getHostname(), credentials.getUsername());
         }
         if(null == p) {
@@ -109,7 +109,7 @@ public abstract class AbstractKeychain implements PasswordStore, CertificateStor
                     credentials.getPassword());
         }
         else {
-            this.addPassword(host.getProtocol().getScheme().name(), host.getPort(),
+            this.addPassword(host.getProtocol().getScheme(), host.getPort(),
                     host.getHostname(), credentials.getUsername(), credentials.getPassword());
         }
     }

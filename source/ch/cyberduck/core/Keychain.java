@@ -106,19 +106,19 @@ public final class Keychain extends AbstractKeychain {
     }
 
     @Override
-    public String getPassword(String protocol, int port, String serviceName, String user) {
+    public String getPassword(Scheme scheme, int port, String hostname, String user) {
         if(!loadNative()) {
             return null;
         }
-        return this.getInternetPasswordFromKeychain(protocol, port, serviceName, user);
+        return this.getInternetPasswordFromKeychain(scheme.name(), port, hostname, user);
     }
 
     @Override
-    public String getPassword(String serviceName, String user) {
+    public String getPassword(String hostname, String user) {
         if(!loadNative()) {
             return null;
         }
-        return this.getPasswordFromKeychain(serviceName, user);
+        return this.getPasswordFromKeychain(hostname, user);
     }
 
     @Override
@@ -130,11 +130,11 @@ public final class Keychain extends AbstractKeychain {
     }
 
     @Override
-    public void addPassword(String protocol, int port, String serviceName, String user, String password) {
+    public void addPassword(Scheme scheme, int port, String hostname, String user, String password) {
         if(!loadNative()) {
             return;
         }
-        this.addInternetPasswordToKeychain(protocol, port, serviceName, user, password);
+        this.addInternetPasswordToKeychain(scheme.name(), port, hostname, user, password);
     }
 
     /**

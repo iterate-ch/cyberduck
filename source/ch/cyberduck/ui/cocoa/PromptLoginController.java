@@ -175,7 +175,7 @@ public final class PromptLoginController extends AbstractLoginController {
             public void userFieldTextDidChange(NSNotification notification) {
                 credentials.setUsername(usernameField.stringValue());
                 if(StringUtils.isNotBlank(credentials.getUsername())) {
-                    String password = KeychainFactory.instance().getPassword(protocol.getScheme().name(), protocol.getDefaultPort(),
+                    String password = KeychainFactory.instance().getPassword(protocol.getScheme(), protocol.getDefaultPort(),
                             protocol.getDefaultHostname(), credentials.getUsername());
                     if(StringUtils.isNotBlank(password)) {
                         passwordField.setStringValue(password);

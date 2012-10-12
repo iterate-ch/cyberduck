@@ -1,25 +1,24 @@
 package ch.cyberduck.core;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public interface PasswordStore {
 
     /**
-     * @param protocol    Protocol scheme
-     * @param port        Port
-     * @param serviceName Hostname
-     * @param user        Credentials
-     * @return Password if found or null otherwise
+     * @param scheme   Protocol scheme
+     * @param port     Port
+     * @param hostname
+     * @param user     Credentials  @return Password if found or null otherwise
      */
-    String getPassword(String protocol, int port, String serviceName, String user);
+    String getPassword(Scheme scheme, int port, String hostname, String user);
 
     /**
-     * @param serviceName Hostname
-     * @param user        Credentials
+     * @param hostname Hostname
+     * @param user     Credentials
      * @return Password if found or null otherwise
      */
-    String getPassword(String serviceName, String user);
+    String getPassword(String hostname, String user);
 
     /**
      * @param serviceName Hostname
@@ -29,11 +28,11 @@ public interface PasswordStore {
     void addPassword(String serviceName, String user, String password);
 
     /**
-     * @param protocol    Scheme
-     * @param port        Port
-     * @param serviceName Hostname
-     * @param user        Credentials
-     * @param password    Password to save for service
+     * @param scheme   Protocol scheme
+     * @param port     Port
+     * @param hostname Servie name
+     * @param user     Credentials
+     * @param password Password to save for service
      */
-    void addPassword(String protocol, int port, String serviceName, String user, String password);
+    void addPassword(Scheme scheme, int port, String hostname, String user, String password);
 }
