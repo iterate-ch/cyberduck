@@ -37,6 +37,16 @@ import org.apache.log4j.BasicConfigurator;
 import org.junit.After;
 import org.junit.Before;
 
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CompletionService;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorCompletionService;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.LinkedBlockingQueue;
+
 /**
  * @version $Id$
  */
@@ -80,5 +90,29 @@ public class AbstractTestCase {
     @After
     public void post() {
         pool.drain();
+    }
+
+
+    protected void repeat(final Callable<Local> c, int repeat) throws InterruptedException, ExecutionException {
+        final ExecutorService service = Executors.newCachedThreadPool();
+        final BlockingQueue<Future<Local>> queue = new LinkedBlockingQueue<Future<Local>>();
+        final CompletionService<Local> completion = new ExecutorCompletionService<Local>(service, queue);
+        for(int i = 0; i < repeat; i++) {
+            completion.submit(new Callable<Local>() {
+                @Override
+                public Local call() throws Exception {
+                    final NSAutoreleasePool p = NSAutoreleasePool.push();
+                    try {
+                        return c.call();
+                    }
+                    finally {
+                        p.drain();
+                    }
+                }
+            });
+        }
+        for(int i = 0; i < repeat; i++) {
+            queue.take().get();
+        }
     }
 }
