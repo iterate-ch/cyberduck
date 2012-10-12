@@ -22,6 +22,7 @@ package ch.cyberduck.core.fs.fuse;
 import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.NSObjectPathReference;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.core.Permission;
@@ -33,7 +34,6 @@ import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.threading.DefaultMainAction;
 import ch.cyberduck.ui.cocoa.ProxyController;
 import ch.cyberduck.ui.cocoa.foundation.*;
-import ch.cyberduck.ui.cocoa.model.OutlinePathReference;
 
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
@@ -275,7 +275,7 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
                         return attributes;
                     }
                     final Path directory = selected.getParent();
-                    final AbstractPath file = directory.children().get(new OutlinePathReference(NSString.stringWithString(path)));
+                    final AbstractPath file = directory.children().get(new NSObjectPathReference(NSString.stringWithString(path)));
                     if(null == file) {
                         log.error("Lookup failed for:" + path);
                         return null;
@@ -321,7 +321,7 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
                         return false;
                     }
                     final Path directory = selected.getParent();
-                    final AbstractPath file = directory.children().get(new OutlinePathReference(NSString.stringWithString(path)));
+                    final AbstractPath file = directory.children().get(new NSObjectPathReference(NSString.stringWithString(path)));
                     if(null == file) {
                         log.error("Lookup failed for:" + path);
                         return false;

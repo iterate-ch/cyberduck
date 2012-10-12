@@ -36,7 +36,6 @@ import ch.cyberduck.ui.cocoa.delegate.EditMenuDelegate;
 import ch.cyberduck.ui.cocoa.delegate.OpenURLMenuDelegate;
 import ch.cyberduck.ui.cocoa.delegate.URLMenuDelegate;
 import ch.cyberduck.ui.cocoa.foundation.*;
-import ch.cyberduck.ui.cocoa.model.OutlinePathReference;
 import ch.cyberduck.ui.cocoa.odb.Editor;
 import ch.cyberduck.ui.cocoa.odb.EditorFactory;
 import ch.cyberduck.ui.cocoa.quicklook.QLPreviewPanel;
@@ -855,7 +854,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         public String outlineView_toolTipForCell_rect_tableColumn_item_mouseLocation(NSOutlineView t, NSCell cell,
                                                                                      ID rect, NSTableColumn c,
                                                                                      NSObject item, NSPoint mouseLocation) {
-            return this.tooltip(lookup(new OutlinePathReference(item)));
+            return this.tooltip(lookup(new NSObjectPathReference(item)));
         }
 
         @Override
@@ -867,7 +866,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         @Override
         protected Path pathAtRow(int row) {
             if(row < browserOutlineView.numberOfRows().intValue()) {
-                return lookup(new OutlinePathReference(browserOutlineView.itemAtRow(new NSInteger(row))));
+                return lookup(new NSObjectPathReference(browserOutlineView.itemAtRow(new NSInteger(row))));
             }
             log.warn("No item at row:" + row);
             return null;
@@ -1182,7 +1181,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 if(null == item) {
                     return;
                 }
-                final Path path = lookup(new OutlinePathReference(item));
+                final Path path = lookup(new NSObjectPathReference(item));
                 if(null == path) {
                     return;
                 }
@@ -2232,7 +2231,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                     for(int i = 0; i < browserOutlineView.numberOfRows().intValue(); i++) {
                         final NSObject item = browserOutlineView.itemAtRow(new NSInteger(i));
                         if(browserOutlineView.isItemExpanded(item)) {
-                            final OutlinePathReference reference = new OutlinePathReference(item);
+                            final NSObjectPathReference reference = new NSObjectPathReference(item);
                             this.getSession().cache().invalidate(reference);
                         }
                     }

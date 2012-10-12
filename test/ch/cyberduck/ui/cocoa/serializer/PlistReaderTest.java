@@ -1,14 +1,14 @@
 package ch.cyberduck.ui.cocoa.serializer;
 
+import ch.cyberduck.core.FinderLocal;
 import ch.cyberduck.core.Serializable;
-import ch.cyberduck.ui.cocoa.model.FinderLocal;
 
 import org.junit.Test;
 
 import static junit.framework.Assert.assertNotNull;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class PlistReaderTest {
 

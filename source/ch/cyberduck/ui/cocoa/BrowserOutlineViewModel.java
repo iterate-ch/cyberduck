@@ -19,6 +19,7 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.NSObjectPathReference;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathReference;
 import ch.cyberduck.core.Preferences;
@@ -33,7 +34,6 @@ import ch.cyberduck.ui.cocoa.application.NSTableView;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.foundation.NSURL;
-import ch.cyberduck.ui.cocoa.model.OutlinePathReference;
 
 import org.apache.log4j.Logger;
 import org.rococoa.cocoa.foundation.NSInteger;
@@ -51,10 +51,10 @@ public class BrowserOutlineViewModel extends BrowserTableDataSource implements N
 
     @Override
     public int indexOf(NSTableView view, PathReference reference) {
-        return ((NSOutlineView) view).rowForItem(((OutlinePathReference) reference).unique()).intValue();
+        return ((NSOutlineView) view).rowForItem(((NSObjectPathReference) reference).unique()).intValue();
     }
 
-    protected AttributedList<Path> children(final OutlinePathReference path) {
+    protected AttributedList<Path> children(final NSObjectPathReference path) {
         final Path lookup = controller.lookup(path);
         if(null == lookup) {
             return AttributedList.emptyList();
@@ -73,7 +73,7 @@ public class BrowserOutlineViewModel extends BrowserTableDataSource implements N
         if(null == item) {
             return false;
         }
-        final Path path = controller.lookup(new OutlinePathReference(item));
+        final Path path = controller.lookup(new NSObjectPathReference(item));
         if(null == path) {
             return false;
         }
@@ -109,7 +109,7 @@ public class BrowserOutlineViewModel extends BrowserTableDataSource implements N
                     }
                 }
             }
-            return new NSInteger(this.children(new OutlinePathReference(item)).size());
+            return new NSInteger(this.children(new NSObjectPathReference(item)).size());
         }
         return new NSInteger(0);
     }
@@ -130,7 +130,7 @@ public class BrowserOutlineViewModel extends BrowserTableDataSource implements N
             path = controller.workdir();
         }
         else {
-            path = controller.lookup(new OutlinePathReference(item));
+            path = controller.lookup(new NSObjectPathReference(item));
         }
         if(null == path) {
             return null;
@@ -146,7 +146,7 @@ public class BrowserOutlineViewModel extends BrowserTableDataSource implements N
     @Override
     public void outlineView_setObjectValue_forTableColumn_byItem(final NSOutlineView outlineView, NSObject value,
                                                                  final NSTableColumn tableColumn, NSObject item) {
-        super.setObjectValueForItem(controller.lookup(new OutlinePathReference(item)), value, tableColumn.identifier());
+        super.setObjectValueForItem(controller.lookup(new NSObjectPathReference(item)), value, tableColumn.identifier());
     }
 
     @Override
@@ -154,7 +154,7 @@ public class BrowserOutlineViewModel extends BrowserTableDataSource implements N
         if(null == item) {
             return null;
         }
-        return super.objectValueForItem(controller.lookup(new OutlinePathReference(item)), tableColumn.identifier());
+        return super.objectValueForItem(controller.lookup(new NSObjectPathReference(item)), tableColumn.identifier());
     }
 
     @Override
@@ -162,7 +162,7 @@ public class BrowserOutlineViewModel extends BrowserTableDataSource implements N
         if(controller.isMounted()) {
             Path destination = null;
             if(null != item) {
-                destination = controller.lookup(new OutlinePathReference(item));
+                destination = controller.lookup(new NSObjectPathReference(item));
             }
             if(null == destination) {
                 // Dragging over empty rows
@@ -204,7 +204,7 @@ public class BrowserOutlineViewModel extends BrowserTableDataSource implements N
                 destination = controller.workdir();
             }
             else {
-                destination = controller.lookup(new OutlinePathReference(item));
+                destination = controller.lookup(new NSObjectPathReference(item));
             }
         }
         return super.acceptDrop(outlineView, destination, info);

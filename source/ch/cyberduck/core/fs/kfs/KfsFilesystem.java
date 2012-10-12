@@ -22,6 +22,7 @@ package ch.cyberduck.core.fs.kfs;
 import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.NSObjectPathReference;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.core.Permission;
@@ -31,7 +32,6 @@ import ch.cyberduck.core.fs.FilesystemBackgroundAction;
 import ch.cyberduck.core.fs.FilesystemFactory;
 import ch.cyberduck.ui.cocoa.ProxyController;
 import ch.cyberduck.ui.cocoa.foundation.NSString;
-import ch.cyberduck.ui.cocoa.model.OutlinePathReference;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
@@ -129,7 +129,7 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
                             log.warn("Return empty stat for directory not cached:" + path);
                             return false;
                         }
-                        final AbstractPath file = directory.children().get(new OutlinePathReference(NSString.stringWithString(path)));
+                        final AbstractPath file = directory.children().get(new NSObjectPathReference(NSString.stringWithString(path)));
                         if(null == file) {
                             log.warn("Lookup failed for:" + path);
                             return false;

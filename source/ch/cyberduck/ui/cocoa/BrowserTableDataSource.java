@@ -36,7 +36,6 @@ import ch.cyberduck.ui.cocoa.foundation.NSMutableArray;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.foundation.NSString;
 import ch.cyberduck.ui.cocoa.foundation.NSURL;
-import ch.cyberduck.ui.cocoa.model.OutlinePathReference;
 import ch.cyberduck.ui.cocoa.odb.WatchEditor;
 import ch.cyberduck.ui.cocoa.resources.IconCache;
 import ch.cyberduck.ui.cocoa.threading.BrowserBackgroundAction;
@@ -457,7 +456,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
                 final NSMutableArray fileTypes = NSMutableArray.array();
                 final PathPasteboard pasteboard = PathPasteboard.getPasteboard(controller.getSession());
                 for(int i = 0; i < items.count().intValue(); i++) {
-                    final Path path = controller.lookup(new OutlinePathReference(items.objectAtIndex(new NSUInteger(i))));
+                    final Path path = controller.lookup(new NSObjectPathReference(items.objectAtIndex(new NSUInteger(i))));
                     if(null == path) {
                         continue;
                     }

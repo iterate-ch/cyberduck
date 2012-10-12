@@ -18,15 +18,7 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Collection;
-import ch.cyberduck.core.NullComparator;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathFilter;
-import ch.cyberduck.core.PathReference;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.Transfer;
-import ch.cyberduck.core.TransferAction;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.ui.FilenameComparator;
@@ -37,7 +29,6 @@ import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
 import ch.cyberduck.ui.cocoa.foundation.NSNumber;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.foundation.NSString;
-import ch.cyberduck.ui.cocoa.model.OutlinePathReference;
 
 import org.rococoa.Rococoa;
 import org.rococoa.cocoa.foundation.NSInteger;
@@ -102,7 +93,7 @@ public abstract class TransferPromptModel extends OutlineDataSource {
                                                                  final NSTableColumn tableColumn, NSObject item) {
         String identifier = tableColumn.identifier();
         if(identifier.equals(INCLUDE_COLUMN)) {
-            final Path path = this.lookup(new OutlinePathReference(item));
+            final Path path = this.lookup(new NSObjectPathReference(item));
             final int state = Rococoa.cast(value, NSNumber.class).intValue();
             transfer.setSelected(path, state == NSCell.NSOnState);
             if(path.attributes().isDirectory()) {
@@ -206,7 +197,7 @@ public abstract class TransferPromptModel extends OutlineDataSource {
         if(null == item) {
             return false;
         }
-        return this.lookup(new OutlinePathReference(item)).attributes().isDirectory();
+        return this.lookup(new NSObjectPathReference(item)).attributes().isDirectory();
     }
 
     @Override
@@ -214,7 +205,7 @@ public abstract class TransferPromptModel extends OutlineDataSource {
         if(null == item) {
             return new NSInteger(roots.size());
         }
-        return new NSInteger(this.children(this.lookup(new OutlinePathReference(item))).size());
+        return new NSInteger(this.children(this.lookup(new NSObjectPathReference(item))).size());
     }
 
     @Override
@@ -222,7 +213,7 @@ public abstract class TransferPromptModel extends OutlineDataSource {
         if(null == item) {
             return (NSObject) roots.get(index.intValue()).getReference().unique();
         }
-        final AttributedList<Path> children = this.children(this.lookup(new OutlinePathReference(item)));
+        final AttributedList<Path> children = this.children(this.lookup(new NSObjectPathReference(item)));
         if(children.isEmpty()) {
             return null;
         }
@@ -234,7 +225,7 @@ public abstract class TransferPromptModel extends OutlineDataSource {
         if(null == item) {
             return null;
         }
-        return this.objectValueForItem(this.lookup(new OutlinePathReference(item)), tableColumn.identifier());
+        return this.objectValueForItem(this.lookup(new NSObjectPathReference(item)), tableColumn.identifier());
     }
 
     /**

@@ -26,7 +26,6 @@ import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
 import ch.cyberduck.ui.cocoa.foundation.NSIndexSet;
 import ch.cyberduck.ui.cocoa.foundation.NSNotification;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
-import ch.cyberduck.ui.cocoa.model.OutlinePathReference;
 import ch.cyberduck.ui.cocoa.resources.IconCache;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 import ch.cyberduck.ui.cocoa.view.OutlineCell;
@@ -238,7 +237,7 @@ public abstract class TransferPromptController extends SheetController implement
                     localModificationField.setStringValue(StringUtils.EMPTY);
                 }
                 else {
-                    final Path p = browserModel.lookup(new OutlinePathReference(
+                    final Path p = browserModel.lookup(new NSObjectPathReference(
                             browserView.itemAtRow(browserView.selectedRow())));
                     localURLField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
                             p.getLocal().getAbsolute(),
@@ -289,7 +288,7 @@ public abstract class TransferPromptController extends SheetController implement
             public String tableView_typeSelectStringForTableColumn_row(NSTableView tableView,
                                                                        NSTableColumn tableColumn,
                                                                        NSInteger row) {
-                final Path p = browserModel.lookup(new OutlinePathReference(browserView.itemAtRow(row)));
+                final Path p = browserModel.lookup(new NSObjectPathReference(browserView.itemAtRow(row)));
                 return p.getName();
             }
 
@@ -299,7 +298,7 @@ public abstract class TransferPromptController extends SheetController implement
                     return;
                 }
                 final String identifier = tableColumn.identifier();
-                final Path path = browserModel.lookup(new OutlinePathReference(item));
+                final Path path = browserModel.lookup(new NSObjectPathReference(item));
                 if(identifier.equals(TransferPromptModel.INCLUDE_COLUMN)) {
                     cell.setEnabled(!transfer.isSkipped(path));
                 }
