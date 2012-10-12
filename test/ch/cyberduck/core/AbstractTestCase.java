@@ -20,6 +20,7 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.aquaticprime.Donation;
+import ch.cyberduck.core.local.FinderLocal;
 import ch.cyberduck.core.threading.AutoreleaseActionOperationBatcher;
 import ch.cyberduck.ui.cocoa.UserDefaultsDateFormatter;
 import ch.cyberduck.ui.cocoa.UserDefaultsPreferences;

@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) 2005 David Kocher. All rights reserved.
+ *  Copyright (c) 2012 David Kocher. All rights reserved.
  *  http://cyberduck.ch/
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -28,8 +28,8 @@ NSString *convertToNSString(JNIEnv *env, jstring javaString)
     NSString *converted = nil;
     const jchar *unichars = NULL;
     if (javaString == NULL) {
-        return nil;	
-    }                   
+        return nil;
+    }
     unichars = (*env)->GetStringChars(env, javaString, NULL);
     if ((*env)->ExceptionOccurred(env)) {
         return @"";
@@ -49,7 +49,7 @@ jstring convertToJString(JNIEnv *env, NSString *nsString)
 	return (*env)->NewStringUTF(env, unichars);
 }
 
-JNIEXPORT void JNICALL Java_ch_cyberduck_core_FinderLocal_setQuarantine(JNIEnv *env, jobject this, jstring path, jstring originUrl, jstring dataUrl)
+JNIEXPORT void JNICALL Java_ch_cyberduck_core_local_LaunchServicesQuarantineService_setQuarantine(JNIEnv *env, jobject this, jstring path, jstring originUrl, jstring dataUrl)
 {
 	NSURL* url = [NSURL fileURLWithPath:convertToNSString(env, path)];
 	FSRef ref;
@@ -67,7 +67,7 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_core_FinderLocal_setQuarantine(JNIEnv *
 	}
 }
 
-JNIEXPORT void JNICALL Java_ch_cyberduck_core_FinderLocal_setWhereFrom(JNIEnv *env, jobject this, jstring path, jstring dataUrl)
+JNIEXPORT void JNICALL Java_ch_cyberduck_core_local_LaunchServicesQuarantineService_setWhereFrom(JNIEnv *env, jobject this, jstring path, jstring dataUrl)
 {
 	// From mozilla/camino/src/download/nsDownloadListener.mm
 	typedef OSStatus (*MDItemSetAttribute_type)(MDItemRef, CFStringRef, CFTypeRef);
@@ -90,56 +90,4 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_core_FinderLocal_setWhereFrom(JNIEnv *e
 	}
 	mdItemSetAttributeFunc(mdItem, kMDItemWhereFroms, (CFMutableArrayRef)[NSMutableArray arrayWithObject:convertToNSString(env, dataUrl)]);
 	CFRelease(mdItem);
-}
-
-JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_FinderLocal_kind(JNIEnv *env, jobject this, jstring extension)
-{
-	NSString *kind = nil;
-	OSStatus status = LSCopyKindStringForTypeInfo(kLSUnknownType, kLSUnknownCreator,
-		(CFStringRef)convertToNSString(env, extension), (CFStringRef *)&kind);
-    if(noErr == status) {
-        jstring result = (*env)->NewStringUTF(env, [kind UTF8String]);
-        if(kind) {
-            [kind release];
-        }
-        return result;
-    }
-	else {
-        jstring result = (*env)->NewStringUTF(env, [NSLocalizedString(@"Unknown", @"") UTF8String]);
-        return result;
-	}
-}
-
-JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_FinderLocal_resolveAlias(JNIEnv *env, jobject this, jstring absolute)
-{
-    NSString *path = convertToNSString(env, absolute);
-    NSString *resolvedPath = nil;
-
-    CFURLRef url = CFURLCreateWithFileSystemPath
-                       (kCFAllocatorDefault, (CFStringRef)path, kCFURLPOSIXPathStyle, NO);
-    if (url != NULL)
-    {
-        FSRef fsRef;
-        if (CFURLGetFSRef(url, &fsRef))
-        {
-            Boolean targetIsFolder, wasAliased;
-            OSErr err = FSResolveAliasFile (&fsRef, true, &targetIsFolder, &wasAliased);
-            if ((err == noErr) && wasAliased)
-            {
-                CFURLRef resolvedUrl = CFURLCreateFromFSRef(kCFAllocatorDefault, &fsRef);
-                if (resolvedUrl != NULL)
-                {
-                    resolvedPath = (NSString*) CFURLCopyFileSystemPath(resolvedUrl, kCFURLPOSIXPathStyle);
-                    CFRelease(resolvedUrl);
-                }
-            }
-        }
-        CFRelease(url);
-    }
-
-    if (resolvedPath == nil)
-    {
-        resolvedPath = [NSString stringWithString:path];
-    }
-	return convertToJString(env, resolvedPath);
 }

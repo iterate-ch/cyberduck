@@ -524,19 +524,7 @@ public abstract class Local extends AbstractPath {
      */
     public abstract boolean open();
 
-
     public abstract void bounce();
-
-    /**
-     * @param originUrl Page that linked to the downloaded file
-     * @param dataUrl   Href where the file was downloaded from
-     */
-    public abstract void setQuarantine(String originUrl, String dataUrl);
-
-    /**
-     * @param dataUrl Href where the file was downloaded from
-     */
-    public abstract void setWhereFrom(String dataUrl);
 
     public InputStream getInputStream() throws FileNotFoundException {
         return new RepeatableFileInputStream(new File(path));

@@ -1,7 +1,7 @@
 package ch.cyberduck.ui.cocoa.serializer;
 
-import ch.cyberduck.core.FinderLocal;
 import ch.cyberduck.core.Serializable;
+import ch.cyberduck.core.local.FinderLocal;
 
 import org.junit.Test;
 

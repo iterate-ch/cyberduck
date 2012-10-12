@@ -18,7 +18,6 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.FinderLocal;
 import ch.cyberduck.core.Keychain;
 import ch.cyberduck.core.NSObjectPathReference;
 import ch.cyberduck.core.Preferences;
@@ -30,6 +29,8 @@ import ch.cyberduck.core.aquaticprime.Donation;
 import ch.cyberduck.core.aquaticprime.Receipt;
 import ch.cyberduck.core.editor.LaunchServicesApplicationFinder;
 import ch.cyberduck.core.editor.MultipleEditorFactory;
+import ch.cyberduck.core.local.FinderLocal;
+import ch.cyberduck.core.local.LaunchServicesQuarantineService;
 import ch.cyberduck.core.local.WorkspaceIconService;
 import ch.cyberduck.core.sparkle.Updater;
 import ch.cyberduck.core.threading.AutoreleaseActionOperationBatcher;
@@ -103,6 +104,7 @@ public final class MainApplication {
                 SystemConfigurationReachability.register();
                 UserDefaultsDateFormatter.register();
                 LaunchServicesApplicationFinder.register();
+                LaunchServicesQuarantineService.register();
                 WorkspaceIconService.register();
                 MultipleEditorFactory.register();
 

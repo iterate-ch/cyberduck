@@ -38,14 +38,4 @@ public class NullLocal extends Local {
     public void bounce() {
         throw new UnsupportedOperationException();
     }
-
-    @Override
-    public void setQuarantine(final String originUrl, final String dataUrl) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void setWhereFrom(final String dataUrl) {
-        throw new UnsupportedOperationException();
-    }
 }

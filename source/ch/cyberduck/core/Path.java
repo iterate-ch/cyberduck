@@ -26,6 +26,7 @@ import ch.cyberduck.core.io.ThrottledInputStream;
 import ch.cyberduck.core.io.ThrottledOutputStream;
 import ch.cyberduck.core.local.IconService;
 import ch.cyberduck.core.local.IconServiceFactory;
+import ch.cyberduck.core.local.QuarantineServiceFactory;
 import ch.cyberduck.core.serializer.Deserializer;
 import ch.cyberduck.core.serializer.DeserializerFactory;
 import ch.cyberduck.core.serializer.Serializer;
@@ -916,11 +917,12 @@ public abstract class Path extends AbstractPath implements Serializable {
         }
         if(quarantine) {
             // Set quarantine attributes
-            local.setQuarantine(this.getHost().toURL(), this.toURL());
+            QuarantineServiceFactory.instance().setQuarantine(local,
+                    this.getHost().toURL(), this.toURL());
         }
         if(Preferences.instance().getBoolean("queue.download.wherefrom")) {
             // Set quarantine attributes
-            local.setWhereFrom(this.toURL());
+            QuarantineServiceFactory.instance().setWhereFrom(local, this.toURL());
         }
         final StreamListener listener = new StreamListener() {
             int step = 0;

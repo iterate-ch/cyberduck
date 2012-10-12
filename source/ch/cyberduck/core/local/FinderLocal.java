@@ -1,4 +1,4 @@
-package ch.cyberduck.core;
+package ch.cyberduck.core.local;
 
 /*
  *  Copyright (c) 2009 David Kocher. All rights reserved.
@@ -18,6 +18,13 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.AbstractPath;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Local;
+import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.Native;
+import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.threading.DefaultMainAction;
 import ch.cyberduck.ui.cocoa.ProxyController;
 import ch.cyberduck.ui.cocoa.application.NSWorkspace;
@@ -487,79 +494,6 @@ public class FinderLocal extends Local {
     public int hashCode() {
         return Long.valueOf(this.attributes().getInode()).hashCode();
     }
-
-    /**
-     * @param originUrl The URL of the resource originally hosting the quarantined item, from the user's point of
-     *                  view. For web downloads, this property is the URL of the web page on which the user initiated
-     *                  the download. For attachments, this property is the URL of the resource to which the quarantined
-     *                  item was attached (e.g. the email message, calendar event, etc.). The origin URL may be a file URL
-     *                  for local resources, or a custom URL to which the quarantining application will respond when asked
-     *                  to open it. The quarantining application should respond by displaying the resource to the user.
-     *                  Note: The origin URL should not be set to the data URL, or the quarantining application may start
-     *                  downloading the file again if the user choses to view the origin URL while resolving a quarantine
-     *                  warning.
-     * @param dataUrl   The URL from which the data for the quarantined item data was
-     *                  actaully streamed or downloaded, if available
-     */
-    @Override
-    public void setQuarantine(final String originUrl, final String dataUrl) {
-        if(!loadNative()) {
-            return;
-        }
-        if(StringUtils.isEmpty(originUrl)) {
-            log.warn("No origin url given for quarantine");
-            return;
-        }
-        if(StringUtils.isEmpty(dataUrl)) {
-            log.warn("No data url given for quarantine");
-            return;
-        }
-        new ProxyController().invoke(new DefaultMainAction() {
-            @Override
-            public void run() {
-                setQuarantine(getAbsolute(), originUrl, dataUrl);
-            }
-        });
-    }
-
-    /**
-     * UKXattrMetadataStore
-     *
-     * @param path      Absolute path reference
-     * @param originUrl Page that linked to the downloaded file
-     * @param dataUrl   Href where the file was downloaded from
-     */
-    private native void setQuarantine(String path, String originUrl, String dataUrl);
-
-    /**
-     * Set the kMDItemWhereFroms on the file.
-     *
-     * @param dataUrl Href where the file was downloaded from
-     */
-    @Override
-    public void setWhereFrom(final String dataUrl) {
-        if(!loadNative()) {
-            return;
-        }
-        if(StringUtils.isEmpty(dataUrl)) {
-            log.warn("No data url given for quarantine");
-            return;
-        }
-        new ProxyController().invoke(new DefaultMainAction() {
-            @Override
-            public void run() {
-                setWhereFrom(getAbsolute(), dataUrl);
-            }
-        });
-    }
-
-    /**
-     * Set the kMDItemWhereFroms on the file.
-     *
-     * @param path    Absolute path reference
-     * @param dataUrl Href where the file was downloaded from
-     */
-    private native void setWhereFrom(String path, String dataUrl);
 
     private static String stringByAbbreviatingWithTildeInPath(String string) {
         return NSString.stringByAbbreviatingWithTildeInPath(string);

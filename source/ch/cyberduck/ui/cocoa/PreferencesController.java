@@ -24,6 +24,7 @@ import ch.cyberduck.core.editor.Application;
 import ch.cyberduck.core.editor.ApplicationFinderFactory;
 import ch.cyberduck.core.editor.EditorFactory;
 import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.core.local.FinderLocal;
 import ch.cyberduck.core.sparkle.Updater;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.foundation.NSAppleScript;
