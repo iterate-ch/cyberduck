@@ -3,7 +3,7 @@ package ch.cyberduck.core.local;
 import ch.cyberduck.core.Local;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public interface IconService {
 
@@ -16,7 +16,7 @@ public interface IconService {
 
     /**
      * @param file     File
-     * @param progress Progress between -1 to 9
+     * @param progress An integer from -1 and 9. If -1 is passed, the icon should be removed.
      * @return True if icon is set
      */
     boolean setProgress(Local file, int progress);

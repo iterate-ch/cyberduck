@@ -20,7 +20,6 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.RepeatableFileInputStream;
-import ch.cyberduck.core.local.IconServiceFactory;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -253,8 +252,8 @@ public abstract class Local extends AbstractPath {
     @Override
     public void touch() {
         try {
-            if(new File(path).createNewFile()) {
-                this.setIcon(0);
+            if(!new File(path).createNewFile()) {
+                log.error(String.format("Create file %s failed", path));
             }
         }
         catch(IOException e) {
@@ -283,15 +282,6 @@ public abstract class Local extends AbstractPath {
     public void mkdir() {
         if(!new File(path).mkdir()) {
             log.error(String.format("Create directory %s failed", path));
-        }
-    }
-
-    /**
-     * @param progress An integer from -1 and 9. If -1 is passed, the icon should be removed.
-     */
-    public void setIcon(int progress) {
-        if(!IconServiceFactory.instance().setProgress(this, progress)) {
-            log.warn(String.format("Error setting icon for file %s", path));
         }
     }
 

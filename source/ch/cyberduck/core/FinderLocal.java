@@ -22,12 +22,10 @@ import ch.cyberduck.core.threading.DefaultMainAction;
 import ch.cyberduck.ui.cocoa.ProxyController;
 import ch.cyberduck.ui.cocoa.application.NSWorkspace;
 import ch.cyberduck.ui.cocoa.foundation.*;
-import ch.cyberduck.ui.cocoa.resources.IconCache;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.rococoa.Rococoa;
-import org.rococoa.cocoa.foundation.NSUInteger;
 
 import java.io.File;
 
@@ -562,36 +560,6 @@ public class FinderLocal extends Local {
      * @param dataUrl Href where the file was downloaded from
      */
     private native void setWhereFrom(String path, String dataUrl);
-
-    /**
-     * Update the custom icon for the file in the Finder
-     *
-     * @param progress An integer from -1 and 9. If -1 is passed,
-     *                 the resource fork with the custom icon is removed from the file.
-     */
-    @Override
-    public void setIcon(final int progress) {
-        if(progress > 9 || progress < -1) {
-            return;
-        }
-        if(Preferences.instance().getBoolean("queue.download.updateIcon")) {
-            final String path = this.getAbsolute();
-            new ProxyController().invoke(new DefaultMainAction() {
-                @Override
-                public void run() {
-                    if(-1 == progress) {
-                        NSWorkspace.sharedWorkspace().setIcon_forFile_options(
-                                null, path, new NSUInteger(0));
-                    }
-                    else {
-                        // Specify 0 if you want to generate icons in all available icon representation formats
-                        NSWorkspace.sharedWorkspace().setIcon_forFile_options(
-                                IconCache.iconNamed(String.format("download%d.icns", progress)), path, new NSUInteger(0));
-                    }
-                }
-            });
-        }
-    }
 
     private static String stringByAbbreviatingWithTildeInPath(String string) {
         return NSString.stringByAbbreviatingWithTildeInPath(string);

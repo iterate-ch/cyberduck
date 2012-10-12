@@ -24,6 +24,8 @@ import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.IOResumeException;
 import ch.cyberduck.core.io.ThrottledInputStream;
 import ch.cyberduck.core.io.ThrottledOutputStream;
+import ch.cyberduck.core.local.IconService;
+import ch.cyberduck.core.local.IconServiceFactory;
 import ch.cyberduck.core.serializer.Deserializer;
 import ch.cyberduck.core.serializer.DeserializerFactory;
 import ch.cyberduck.core.serializer.Serializer;
@@ -59,7 +61,7 @@ import com.ibm.icu.text.Normalizer;
  * @version $Id$
  */
 public abstract class Path extends AbstractPath implements Serializable {
-    private static Logger log = Logger.getLogger(Path.class);
+    private static final Logger log = Logger.getLogger(Path.class);
 
     /**
      * The absolute remote path
@@ -67,14 +69,24 @@ public abstract class Path extends AbstractPath implements Serializable {
     private String path;
 
     /**
+     * Reference to the parent created lazily if needed
+     */
+    private Path parent;
+
+    /**
      * The local path to be used if file is copied
      */
     private Local local;
 
     /**
-     *
+     * Transfer status
      */
     private Status status;
+
+    /**
+     * Attributes denoting this path
+     */
+    private PathAttributes attributes;
 
     /**
      * A compiled representation of a regular expression.
@@ -206,7 +218,7 @@ public abstract class Path extends AbstractPath implements Serializable {
     protected Path(final String parent, final Local local) {
         this.setPath(parent, local);
         this.attributes().setType(
-                local.attributes().isDirectory() ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
+                local.attributes().isDirectory() ? DIRECTORY_TYPE : FILE_TYPE);
     }
 
     /**
@@ -376,13 +388,8 @@ public abstract class Path extends AbstractPath implements Serializable {
      */
     public Path getContainer() {
         return PathFactory.createPath(this.getSession(), this.getContainerName(),
-                Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
+                VOLUME_TYPE | DIRECTORY_TYPE);
     }
-
-    /**
-     * Reference to the parent created lazily if needed
-     */
-    private Path parent;
 
     /**
      * Create a parent path with default attributes if it is not referenced yet.
@@ -398,11 +405,11 @@ public abstract class Path extends AbstractPath implements Serializable {
             final String name = getParent(this.getAbsolute(), this.getPathDelimiter());
             if(String.valueOf(DELIMITER).equals(name)) {
                 parent = PathFactory.createPath(this.getSession(), String.valueOf(DELIMITER),
-                        Path.VOLUME_TYPE | Path.DIRECTORY_TYPE);
+                        VOLUME_TYPE | DIRECTORY_TYPE);
             }
             else {
                 parent = PathFactory.createPath(this.getSession(), name,
-                        Path.DIRECTORY_TYPE);
+                        DIRECTORY_TYPE);
             }
         }
         return parent;
@@ -433,11 +440,6 @@ public abstract class Path extends AbstractPath implements Serializable {
     public void setReference(PathReference<Path> reference) {
         this.reference = reference;
     }
-
-    /**
-     * Attributes denoting this path
-     */
-    private PathAttributes attributes;
 
     @Override
     public PathAttributes attributes() {
@@ -559,7 +561,6 @@ public abstract class Path extends AbstractPath implements Serializable {
         //
     }
 
-
     @Override
     public void writeUnixPermission(Permission perm, boolean recursive) {
         throw new UnsupportedOperationException();
@@ -661,11 +662,11 @@ public abstract class Path extends AbstractPath implements Serializable {
             // Symbolic link target may be an absolute or relative path
             if(symlink.startsWith(String.valueOf(DELIMITER))) {
                 return PathFactory.createPath(this.getSession(), symlink,
-                        this.attributes().isDirectory() ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
+                        this.attributes().isDirectory() ? DIRECTORY_TYPE : FILE_TYPE);
             }
             else {
                 return PathFactory.createPath(this.getSession(), this.getParent().getAbsolute(), symlink,
-                        this.attributes().isDirectory() ? Path.DIRECTORY_TYPE : Path.FILE_TYPE);
+                        this.attributes().isDirectory() ? DIRECTORY_TYPE : FILE_TYPE);
             }
         }
         return null;
@@ -740,7 +741,7 @@ public abstract class Path extends AbstractPath implements Serializable {
                 }, options);
             }
             finally {
-                this.getLocal().delete(false);
+                this.getLocal().delete();
                 this.setLocal(null);
             }
         }
@@ -909,8 +910,10 @@ public abstract class Path extends AbstractPath implements Serializable {
 
         final Local local = this.getLocal();
         // Set the first progress icon
-        local.setIcon(0);
-
+        final IconService icon = IconServiceFactory.instance();
+        if(Preferences.instance().getBoolean("queue.download.updateIcon")) {
+            icon.setProgress(local, 0);
+        }
         if(quarantine) {
             // Set quarantine attributes
             local.setQuarantine(this.getHost().toURL(), this.toURL());
@@ -919,7 +922,6 @@ public abstract class Path extends AbstractPath implements Serializable {
             // Set quarantine attributes
             local.setWhereFrom(this.toURL());
         }
-
         final StreamListener listener = new StreamListener() {
             int step = 0;
 
@@ -930,19 +932,21 @@ public abstract class Path extends AbstractPath implements Serializable {
 
             @Override
             public void bytesReceived(long bytes) {
-                if(-1 == bytes) {
-                    // Remove custom icon if complete. The Finder will display the default
-                    // icon for this filetype
-                    local.setIcon(-1);
-                }
-                else {
-                    l.bytesReceived(bytes);
-                    if(updateIcon) {
-                        int fraction = (int) (status().getCurrent() / attributes().getSize() * 10);
-                        // An integer between 0 and 9
-                        if(fraction > step) {
-                            // Another 10 percent of the file has been transferred
-                            local.setIcon(++step);
+                if(Preferences.instance().getBoolean("queue.download.updateIcon")) {
+                    if(-1 == bytes) {
+                        // Remove custom icon if complete. The Finder will display the default
+                        // icon for this filetype
+                        icon.setProgress(local, -1);
+                    }
+                    else {
+                        l.bytesReceived(bytes);
+                        if(updateIcon) {
+                            int fraction = (int) (status().getCurrent() / attributes().getSize() * 10);
+                            // An integer between 0 and 9
+                            if(fraction > step) {
+                                // Another 10 percent of the file has been transferred
+                                icon.setProgress(local, ++step);
+                            }
                         }
                     }
                 }
@@ -1037,14 +1041,25 @@ public abstract class Path extends AbstractPath implements Serializable {
     }
 
     /**
-     * @return true if the path exists (or is cached!)
+     * Check for file existance. The default implementation does a directory listing of the parent folder.
+     *
+     * @return True if the path exists or is cached.
      */
     @Override
     public boolean exists() {
         if(this.isRoot()) {
             return true;
         }
-        return this.getParent().children().contains(this.getReference());
+        final Path parent = this.getParent();
+        if(this.getSession().isUnixPermissionsSupported()) {
+            if(parent.attributes().getPermission().equals(Permission.EMPTY)) {
+                parent.readUnixPermission();
+                if(!parent.attributes().getPermission().isReadable()) {
+                    return false;
+                }
+            }
+        }
+        return parent.children().contains(this.getReference());
     }
 
     /**
