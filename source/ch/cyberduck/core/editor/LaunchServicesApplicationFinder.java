@@ -24,7 +24,7 @@ import java.util.Map;
 /**
  * @version $Id$
  */
-public class LaunchServicesApplicationFinder implements ApplicationFinder {
+public final class LaunchServicesApplicationFinder implements ApplicationFinder {
     private static final Logger log = Logger.getLogger(ApplicationFinder.class);
 
     public static void register() {
