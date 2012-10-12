@@ -289,11 +289,6 @@ namespace Ch.Cyberduck.Ui.Controller
             ;
         }
 
-        public override void delete()
-        {
-            delete(false);
-        }
-
         /// <summary>
         /// Delete to trash is not supported yet.
         /// </summary>

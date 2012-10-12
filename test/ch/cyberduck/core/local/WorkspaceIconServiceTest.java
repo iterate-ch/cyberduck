@@ -14,7 +14,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class WorkspaceIconServiceTest extends AbstractTestCase {
 
@@ -37,6 +37,6 @@ public class WorkspaceIconServiceTest extends AbstractTestCase {
         assertFalse(s.setIcon(file, NSImage.imageWithContentsOfFile("img/download0.icns")));
         file.touch();
         assertTrue(s.setIcon(file, NSImage.imageWithContentsOfFile("img/download0.icns")));
-        file.delete(false);
+        file.delete();
     }
 }

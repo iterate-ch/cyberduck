@@ -296,21 +296,26 @@ public abstract class Local extends AbstractPath {
     }
 
     /**
-     * By default just move the file to the user trash
+     * Delete the file
      */
     @Override
     public void delete() {
-        this.delete(true);
+        if(!new File(path).delete()) {
+            log.error(String.format("Delete %s failed", path));
+        }
     }
 
-    public void delete(boolean trash) {
-        if(trash) {
-            this.trash();
+    /**
+     * Delete file
+     *
+     * @param deferred On application quit
+     */
+    public void delete(boolean deferred) {
+        if(deferred) {
+            new File(path).deleteOnExit();
         }
         else {
-            if(!new File(path).delete()) {
-                log.error(String.format("Delete %s failed", path));
-            }
+            this.delete();
         }
     }
 

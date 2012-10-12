@@ -206,6 +206,7 @@ public class Profile extends Protocol implements Serializable {
         final byte[] favicon = Base64.decodeBase64(icon);
         final Local file = LocalFactory.createLocal(Preferences.instance().getProperty("tmp.dir"),
                 UUID.randomUUID().toString() + ".ico");
+        file.delete(true);
         try {
             final OutputStream out = file.getOutputStream(false);
             try {
