@@ -6,6 +6,7 @@ import ch.cyberduck.core.Native;
 import ch.cyberduck.ui.cocoa.application.NSWorkspace;
 import ch.cyberduck.ui.cocoa.foundation.NSBundle;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
+import ch.cyberduck.ui.cocoa.foundation.NSEnumerator;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
 import org.apache.commons.collections.map.AbstractLinkedMap;
@@ -13,6 +14,7 @@ import org.apache.commons.collections.map.LRUMap;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.rococoa.Rococoa;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class LaunchServicesApplicationFinder implements ApplicationFinder {
     private static Logger log = Logger.getLogger(ApplicationFinder.class);
@@ -201,5 +203,25 @@ public class LaunchServicesApplicationFinder implements ApplicationFinder {
             applicationNameCache.put(bundleIdentifier, name);
         }
         return applicationNameCache.get(bundleIdentifier);
+    }
+
+    /**
+     * @return True if the editor application is running
+     */
+    @Override
+    public boolean isOpen(final String bundleIdentifier) {
+        final NSEnumerator apps = NSWorkspace.sharedWorkspace().launchedApplications().objectEnumerator();
+        NSObject next;
+        while(((next = apps.nextObject()) != null)) {
+            NSDictionary app = Rococoa.cast(next, NSDictionary.class);
+            final NSObject identifier = app.objectForKey("NSApplicationBundleIdentifier");
+            if(identifier.toString().equals(bundleIdentifier)) {
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Found open application %s", bundleIdentifier));
+                }
+                return true;
+            }
+        }
+        return false;
     }
 }

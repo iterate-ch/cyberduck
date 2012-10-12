@@ -11,7 +11,7 @@ import java.util.List;
 import static org.junit.Assert.*;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class LaunchServicesApplicationFinderTest extends AbstractTestCase {
 
@@ -41,5 +41,12 @@ public class LaunchServicesApplicationFinderTest extends AbstractTestCase {
     public void testGetName() throws Exception {
         ApplicationFinder f = ApplicationFinderFactory.instance();
         assertEquals("TextEdit", f.getName("com.apple.TextEdit"));
+    }
+
+    @Test
+    public void testIsOpen() throws Exception {
+        ApplicationFinder f = ApplicationFinderFactory.instance();
+        assertTrue(f.isOpen("com.apple.finder"));
+        assertFalse(f.isOpen("com.apple.Finder"));
     }
 }

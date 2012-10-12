@@ -5,7 +5,7 @@ import ch.cyberduck.core.Local;
 import java.util.List;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public interface ApplicationFinder {
 
@@ -26,8 +26,14 @@ public interface ApplicationFinder {
     /**
      * Determine the human readable application name for a given bundle identifier.
      *
-     * @param identifier Bundle identifier
+     * @param application Bundle identifier
      * @return Application human readable name
      */
-    String getName(String identifier);
+    String getName(String application);
+
+    /**
+     * @param application Bundle identifier
+     * @return True if the application is launched
+     */
+    boolean isOpen(String application);
 }
