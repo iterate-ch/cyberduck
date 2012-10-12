@@ -18,7 +18,9 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.FinderLocal;
 import ch.cyberduck.core.Keychain;
+import ch.cyberduck.core.NSObjectPathReference;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.RendezvousResponder;
@@ -26,13 +28,13 @@ import ch.cyberduck.core.SystemConfigurationProxy;
 import ch.cyberduck.core.SystemConfigurationReachability;
 import ch.cyberduck.core.aquaticprime.Donation;
 import ch.cyberduck.core.aquaticprime.Receipt;
+import ch.cyberduck.core.editor.LaunchServicesApplicationFinder;
+import ch.cyberduck.core.local.WorkspaceIconService;
 import ch.cyberduck.core.sparkle.Updater;
 import ch.cyberduck.core.threading.AutoreleaseActionOperationBatcher;
 import ch.cyberduck.ui.cocoa.application.NSApplication;
 import ch.cyberduck.ui.cocoa.foundation.NSAutoreleasePool;
 import ch.cyberduck.ui.cocoa.i18n.BundleLocale;
-import ch.cyberduck.ui.cocoa.model.FinderLocal;
-import ch.cyberduck.ui.cocoa.model.OutlinePathReference;
 import ch.cyberduck.ui.cocoa.quicklook.DeprecatedQuickLook;
 import ch.cyberduck.ui.cocoa.quicklook.QuartzQuickLook;
 import ch.cyberduck.ui.cocoa.serializer.HostPlistReader;
@@ -91,7 +93,7 @@ public final class MainApplication {
                 HostPlistReader.register();
                 TransferPlistReader.register();
                 ProtocolPlistReader.register();
-                OutlinePathReference.register();
+                NSObjectPathReference.register();
 
                 PlistWriter.register();
 
@@ -99,6 +101,8 @@ public final class MainApplication {
                 SystemConfigurationProxy.register();
                 SystemConfigurationReachability.register();
                 UserDefaultsDateFormatter.register();
+                LaunchServicesApplicationFinder.register();
+                WorkspaceIconService.register();
 
                 DeprecatedQuickLook.register();
                 QuartzQuickLook.register();
