@@ -1,10 +1,5 @@
-package ch.cyberduck.ui.cocoa.model;
+package ch.cyberduck.core;
 
-import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.NSObjectPathReference;
-import ch.cyberduck.core.NullPath;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathReferenceFactory;
 import ch.cyberduck.ui.cocoa.foundation.NSString;
 
 import org.junit.Test;
