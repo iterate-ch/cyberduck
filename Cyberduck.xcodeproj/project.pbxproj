@@ -204,8 +204,6 @@
 		4792112912F6F4FD00E35E16 /* Sparkle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4792112812F6F4FD00E35E16 /* Sparkle.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		4792113912F6F8FA00E35E16 /* Sparkle.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4792112812F6F4FD00E35E16 /* Sparkle.framework */; };
 		4797D2751628276C00340E1C /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47BEDBD20B9296C800141EB4 /* ApplicationServices.framework */; };
-		4797D27D162827DA00340E1C /* Local.h in Headers */ = {isa = PBXBuildFile; fileRef = 4797D27B162827DA00340E1C /* Local.h */; };
-		4797D27E162827DA00340E1C /* Local.m in Sources */ = {isa = PBXBuildFile; fileRef = 4797D27C162827DA00340E1C /* Local.m */; };
 		4797D2891628296900340E1C /* LaunchServicesApplicationFinder.h in Headers */ = {isa = PBXBuildFile; fileRef = 4797D2831628296900340E1C /* LaunchServicesApplicationFinder.h */; };
 		4797D28B1628296900340E1C /* LaunchServicesApplicationFinder.m in Sources */ = {isa = PBXBuildFile; fileRef = 4797D2851628296900340E1C /* LaunchServicesApplicationFinder.m */; };
 		4797D28E162829F800340E1C /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 474522C51076B68E00823467 /* ApplicationServices.framework */; };
@@ -236,6 +234,12 @@
 		47F0B7D3087AD1B100439978 /* Status.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47F0B7D2087AD1AE00439978 /* Status.strings */; };
 		47F102A81628C0F600923FDE /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47F102A71628C0F600923FDE /* Foundation.framework */; };
 		47F102A91628C0FD00923FDE /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47F102A71628C0F600923FDE /* Foundation.framework */; };
+		47F102B31628D57500923FDE /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47F102A71628C0F600923FDE /* Foundation.framework */; };
+		47F102B41628D57500923FDE /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 474522C51076B68E00823467 /* ApplicationServices.framework */; };
+		47F102CA1628D5CE00923FDE /* LaunchServicesQuarantineService.h in Headers */ = {isa = PBXBuildFile; fileRef = 47F102BD1628D5CE00923FDE /* LaunchServicesQuarantineService.h */; };
+		47F102CE1628D5CE00923FDE /* LaunchServicesQuarantineService.m in Sources */ = {isa = PBXBuildFile; fileRef = 47F102BF1628D5CE00923FDE /* LaunchServicesQuarantineService.m */; };
+		47F102CF1628D5CE00923FDE /* Local.h in Headers */ = {isa = PBXBuildFile; fileRef = 47F102C01628D5CE00923FDE /* Local.h */; };
+		47F102D11628D5CE00923FDE /* Local.m in Sources */ = {isa = PBXBuildFile; fileRef = 47F102C11628D5CE00923FDE /* Local.m */; };
 		47FC190C099FB8AF0082431D /* Crash.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47FC190A099FB8AF0082431D /* Crash.strings */; };
 /* End PBXBuildFile section */
 
@@ -316,6 +320,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = 47BEDAF60B92960400141EB4;
 			remoteInfo = libURLSchemeHandlerConfiguration;
+		};
+		47F102D91628D61A00923FDE /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 47F102AD1628D57500923FDE;
+			remoteInfo = libLaunchServicesQuarantineService;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -1077,8 +1088,6 @@
 		47911A170B84C4E8001A29AE /* Acknowledgments.rtf */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; path = Acknowledgments.rtf; sourceTree = "<group>"; };
 		4792112812F6F4FD00E35E16 /* Sparkle.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Sparkle.framework; path = lib/Sparkle.framework; sourceTree = "<group>"; };
 		4797D27A1628276C00340E1C /* libLaunchServicesApplicationFinder.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libLaunchServicesApplicationFinder.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
-		4797D27B162827DA00340E1C /* Local.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Local.h; sourceTree = "<group>"; };
-		4797D27C162827DA00340E1C /* Local.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Local.m; sourceTree = "<group>"; };
 		4797D2831628296900340E1C /* LaunchServicesApplicationFinder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LaunchServicesApplicationFinder.h; sourceTree = "<group>"; };
 		4797D2851628296900340E1C /* LaunchServicesApplicationFinder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LaunchServicesApplicationFinder.m; sourceTree = "<group>"; };
 		479814C907280B2B00FA3CDB /* no */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = no; path = no.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -1510,6 +1519,11 @@
 		47F0CB46087B237F00439978 /* en */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		47F0CB8C087B23A900439978 /* en */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = en; path = en.lproj/Status.strings; sourceTree = "<group>"; };
 		47F102A71628C0F600923FDE /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		47F102B91628D57500923FDE /* libLaunchServicesQuarantineService.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libLaunchServicesQuarantineService.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		47F102BD1628D5CE00923FDE /* LaunchServicesQuarantineService.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LaunchServicesQuarantineService.h; sourceTree = "<group>"; };
+		47F102BF1628D5CE00923FDE /* LaunchServicesQuarantineService.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LaunchServicesQuarantineService.m; sourceTree = "<group>"; };
+		47F102C01628D5CE00923FDE /* Local.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Local.h; sourceTree = "<group>"; };
+		47F102C11628D5CE00923FDE /* Local.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Local.m; sourceTree = "<group>"; };
 		47FC190B099FB8AF0082431D /* en */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = en; path = en.lproj/Crash.strings; sourceTree = "<group>"; };
 		47FC191F099FC1290082431D /* fr */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = fr; path = fr.lproj/Crash.strings; sourceTree = "<group>"; };
 		47FC1943099FDB310082431D /* it */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = it; path = it.lproj/Crash.strings; sourceTree = "<group>"; };
@@ -1631,6 +1645,15 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		47F102B21628D57500923FDE /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				47F102B31628D57500923FDE /* Foundation.framework in Frameworks */,
+				47F102B41628D57500923FDE /* ApplicationServices.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -1649,6 +1672,7 @@
 				478CFE820F9932B3000560EF /* libPrime.dylib */,
 				477A104D0FD08DBA00BAD4AD /* librococoa.dylib */,
 				4797D27A1628276C00340E1C /* libLaunchServicesApplicationFinder.dylib */,
+				47F102B91628D57500923FDE /* libLaunchServicesQuarantineService.dylib */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1764,9 +1788,8 @@
 		474152DA06C4F08A00AC0BD2 /* core */ = {
 			isa = PBXGroup;
 			children = (
+				47F102BA1628D5CE00923FDE /* local */,
 				4797D27F1628296900340E1C /* editor */,
-				4797D27B162827DA00340E1C /* Local.h */,
-				4797D27C162827DA00340E1C /* Local.m */,
 				47BE1F8712369DE600E758FE /* importer */,
 				4718C1ED107A9F12006FDEFA /* SystemConfigurationReachability.h */,
 				4718C1EE107A9F12006FDEFA /* SystemConfigurationReachability.m */,
@@ -2097,6 +2120,17 @@
 			name = importer;
 			sourceTree = "<group>";
 		};
+		47F102BA1628D5CE00923FDE /* local */ = {
+			isa = PBXGroup;
+			children = (
+				47F102BD1628D5CE00923FDE /* LaunchServicesQuarantineService.h */,
+				47F102BF1628D5CE00923FDE /* LaunchServicesQuarantineService.m */,
+				47F102C01628D5CE00923FDE /* Local.h */,
+				47F102C11628D5CE00923FDE /* Local.m */,
+			);
+			path = local;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -2141,7 +2175,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4797D27D162827DA00340E1C /* Local.h in Headers */,
+				47F102CF1628D5CE00923FDE /* Local.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2215,6 +2249,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		47F102AE1628D57500923FDE /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				47F102CA1628D5CE00923FDE /* LaunchServicesQuarantineService.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
@@ -2233,6 +2275,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				47F102DA1628D61A00923FDE /* PBXTargetDependency */,
 				4797D28D1628299700340E1C /* PBXTargetDependency */,
 				471E214C0A1734D7009E164E /* PBXTargetDependency */,
 				471E214E0A1734D7009E164E /* PBXTargetDependency */,
@@ -2460,6 +2503,25 @@
 			productReference = 47BEDB030B92960400141EB4 /* libURLSchemeHandlerConfiguration.dylib */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
+		47F102AD1628D57500923FDE /* libLaunchServicesQuarantineService */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 47F102B61628D57500923FDE /* Build configuration list for PBXNativeTarget "libLaunchServicesQuarantineService" */;
+			buildPhases = (
+				47F102AE1628D57500923FDE /* Headers */,
+				47F102B01628D57500923FDE /* Sources */,
+				47F102B21628D57500923FDE /* Frameworks */,
+				47F102B51628D57500923FDE /* Rez */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = libLaunchServicesQuarantineService;
+			productInstallPath = /usr/local/lib;
+			productName = keychainLib;
+			productReference = 47F102B91628D57500923FDE /* libLaunchServicesQuarantineService.dylib */;
+			productType = "com.apple.product-type.library.dynamic";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -2531,6 +2593,7 @@
 				478CFE760F9932B3000560EF /* libPrime */,
 				477A10400FD08DBA00BAD4AD /* libRococoa */,
 				4797D26E1628276C00340E1C /* libLaunchServicesApplicationFinder */,
+				47F102AD1628D57500923FDE /* libLaunchServicesQuarantineService */,
 			);
 		};
 /* End PBXProject section */
@@ -2759,6 +2822,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		47F102B51628D57500923FDE /* Rez */ = {
+			isa = PBXRezBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXRezBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
@@ -2819,7 +2889,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4797D27E162827DA00340E1C /* Local.m in Sources */,
+				47F102D11628D5CE00923FDE /* Local.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2891,6 +2961,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		47F102B01628D57500923FDE /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				47F102CE1628D5CE00923FDE /* LaunchServicesQuarantineService.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -2948,6 +3026,11 @@
 			isa = PBXTargetDependency;
 			target = 47BEDAF60B92960400141EB4 /* libURLSchemeHandlerConfiguration */;
 			targetProxy = 47BEDCEE0B92A23B00141EB4 /* PBXContainerItemProxy */;
+		};
+		47F102DA1628D61A00923FDE /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 47F102AD1628D57500923FDE /* libLaunchServicesQuarantineService */;
+			targetProxy = 47F102D91628D61A00923FDE /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -4498,6 +4581,27 @@
 			};
 			name = Release;
 		};
+		47F102B71628D57500923FDE /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				MACH_O_TYPE = mh_dylib;
+				PRODUCT_NAME = libLaunchServicesQuarantineService;
+			};
+			name = Release;
+		};
+		47F102B81628D57500923FDE /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				LD_DYLIB_INSTALL_NAME = "";
+				MACH_O_TYPE = mh_dylib;
+				PRODUCT_NAME = libLaunchServicesQuarantineService;
+			};
+			name = Debug;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -4614,6 +4718,15 @@
 			buildConfigurations = (
 				47D286EF0855740D008142CF /* Release */,
 				47A8AD5E100A6A9E00DC800C /* Debug */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		47F102B61628D57500923FDE /* Build configuration list for PBXNativeTarget "libLaunchServicesQuarantineService" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				47F102B71628D57500923FDE /* Release */,
+				47F102B81628D57500923FDE /* Debug */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
