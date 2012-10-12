@@ -69,9 +69,6 @@ public class AbstractTestCase {
 
         PlistWriter.register();
 
-        Keychain.register();
-        SystemConfigurationProxy.register();
-        SystemConfigurationReachability.register();
         UserDefaultsDateFormatter.register();
 
         ProtocolFactory.register();
