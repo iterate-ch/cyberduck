@@ -9,9 +9,9 @@ import org.apache.commons.lang.StringUtils;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
-public class WorkspaceIconService implements IconService {
+public final class WorkspaceIconService implements IconService {
 
     public static void register() {
         IconServiceFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
