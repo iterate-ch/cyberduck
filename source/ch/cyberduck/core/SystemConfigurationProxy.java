@@ -62,6 +62,7 @@ public final class SystemConfigurationProxy extends AbstractProxy implements Pro
      */
     public native boolean usePassiveFTPNative();
 
+    @Override
     public boolean usePassiveFTP() {
         if(!loadNative()) {
             return false;
@@ -122,6 +123,7 @@ public final class SystemConfigurationProxy extends AbstractProxy implements Pro
 
     public native boolean isSimpleHostnameExcludedNative();
 
+    @Override
     public boolean isSOCKSProxyEnabled(Host host) {
         if(!loadNative()) {
             return false;
@@ -132,6 +134,7 @@ public final class SystemConfigurationProxy extends AbstractProxy implements Pro
         return this.isSOCKSProxyEnabledNative();
     }
 
+    @Override
     public String getSOCKSProxyHost(Host host) {
         if(!loadNative()) {
             return null;
@@ -139,6 +142,7 @@ public final class SystemConfigurationProxy extends AbstractProxy implements Pro
         return this.getSOCKSProxyHostNative();
     }
 
+    @Override
     public int getSOCKSProxyPort(Host host) {
         if(!loadNative()) {
             return -1;
@@ -146,6 +150,7 @@ public final class SystemConfigurationProxy extends AbstractProxy implements Pro
         return this.getSOCKSProxyPortNative();
     }
 
+    @Override
     public boolean isHTTPProxyEnabled(Host host) {
         if(!loadNative()) {
             return false;
@@ -156,6 +161,7 @@ public final class SystemConfigurationProxy extends AbstractProxy implements Pro
         return this.isHTTPProxyEnabledNative();
     }
 
+    @Override
     public String getHTTPProxyHost(Host host) {
         if(!loadNative()) {
             return null;
@@ -163,6 +169,7 @@ public final class SystemConfigurationProxy extends AbstractProxy implements Pro
         return this.getHTTPProxyHostNative();
     }
 
+    @Override
     public int getHTTPProxyPort(Host host) {
         if(!loadNative()) {
             return -1;
@@ -170,6 +177,7 @@ public final class SystemConfigurationProxy extends AbstractProxy implements Pro
         return getHTTPProxyPortNative();
     }
 
+    @Override
     public boolean isHTTPSProxyEnabled(Host host) {
         if(!loadNative()) {
             return false;
@@ -180,6 +188,7 @@ public final class SystemConfigurationProxy extends AbstractProxy implements Pro
         return this.isHTTPSProxyEnabledNative();
     }
 
+    @Override
     public String getHTTPSProxyHost(Host host) {
         if(!loadNative()) {
             return null;
@@ -187,6 +196,7 @@ public final class SystemConfigurationProxy extends AbstractProxy implements Pro
         return this.getHTTPSProxyHostNative();
     }
 
+    @Override
     public int getHTTPSProxyPort(Host host) {
         if(!loadNative()) {
             return -1;
