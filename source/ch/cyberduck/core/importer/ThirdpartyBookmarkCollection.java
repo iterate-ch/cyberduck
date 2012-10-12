@@ -24,8 +24,8 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.KeychainFactory;
 import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.editor.ApplicationFinderFactory;
 import ch.cyberduck.core.i18n.Locale;
-import ch.cyberduck.ui.cocoa.odb.EditorFactory;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -39,6 +39,11 @@ public abstract class ThirdpartyBookmarkCollection extends AbstractHostCollectio
     private static Logger log = Logger.getLogger(ThirdpartyBookmarkCollection.class);
 
     private static final long serialVersionUID = -4582425984484543617L;
+
+    @Override
+    public String getName() {
+        return ApplicationFinderFactory.instance().getName(this.getBundleIdentifier());
+    }
 
     @Override
     public void load() {
@@ -87,11 +92,6 @@ public abstract class ThirdpartyBookmarkCollection extends AbstractHostCollectio
     public abstract Local getFile();
 
     protected abstract void parse(Local file);
-
-    @Override
-    public String getName() {
-        return EditorFactory.getApplicationName(this.getBundleIdentifier());
-    }
 
     public boolean isInstalled() {
         return StringUtils.isNotBlank(this.getName());
