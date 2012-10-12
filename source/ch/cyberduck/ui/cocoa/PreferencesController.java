@@ -20,6 +20,7 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.editor.ApplicationFinderFactory;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.sparkle.Updater;
 import ch.cyberduck.ui.cocoa.application.*;
@@ -32,7 +33,6 @@ import ch.cyberduck.ui.cocoa.foundation.NSMutableAttributedString;
 import ch.cyberduck.ui.cocoa.foundation.NSNotification;
 import ch.cyberduck.ui.cocoa.foundation.NSNotificationCenter;
 import ch.cyberduck.ui.cocoa.foundation.NSRange;
-import ch.cyberduck.ui.cocoa.model.FinderLocal;
 import ch.cyberduck.ui.cocoa.odb.EditorFactory;
 import ch.cyberduck.ui.cocoa.odb.WatchEditor;
 import ch.cyberduck.ui.cocoa.resources.IconCache;
@@ -321,7 +321,7 @@ public final class PreferencesController extends ToolbarWindowController {
             editorCombobox.lastItem().setTarget(this.id());
         }
         editorCombobox.selectItemWithTitle(
-                EditorFactory.getApplicationName(EditorFactory.defaultEditor()));
+                ApplicationFinderFactory.instance().getName(EditorFactory.defaultEditor()));
     }
 
     private void addEditor(String editor, String identifier) {
@@ -380,7 +380,8 @@ public final class PreferencesController extends ToolbarWindowController {
                 else {
                     final String bundleIdentifier = app.bundleIdentifier();
                     if(!EditorFactory.getInstalledEditors().values().contains(bundleIdentifier)) {
-                        WatchEditor.addInstalledEditor(EditorFactory.getApplicationName(bundleIdentifier), app.bundleIdentifier());
+                        WatchEditor.addInstalledEditor(
+                                ApplicationFinderFactory.instance().getName(bundleIdentifier), app.bundleIdentifier());
                     }
                     Preferences.instance().setProperty("editor.bundleIdentifier", bundleIdentifier);
                     BrowserController.validateToolbarItems();
@@ -1690,7 +1691,7 @@ public final class PreferencesController extends ToolbarWindowController {
         log.debug("Default Protocol Handler for " + protocol + ":" + defaultHandler);
         final String[] bundleIdentifiers = URLSchemeHandlerConfiguration.instance().getAllHandlersForURLScheme(protocol.getScheme().toString());
         for(String bundleIdentifier : bundleIdentifiers) {
-            String app = EditorFactory.getApplicationName(bundleIdentifier);
+            String app = ApplicationFinderFactory.instance().getName(bundleIdentifier);
             if(StringUtils.isEmpty(app)) {
                 continue;
             }
