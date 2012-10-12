@@ -281,15 +281,6 @@ namespace Ch.Cyberduck.Ui.Controller
         }
 
         /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="progress">An integer from -1 and 9. If -1 is passed, the icon should be removed.</param>
-        public override void setIcon(int progress)
-        {
-            ;
-        }
-
-        /// <summary>
         /// Delete to trash is not supported yet.
         /// </summary>
         /// <see cref="http://social.msdn.microsoft.com/forums/en-US/netfxbcl/thread/f2411a7f-34b6-4f30-a25f-9d456fe1c47b/"/>
@@ -307,34 +298,6 @@ namespace Ch.Cyberduck.Ui.Controller
                 return Utils.StartProcess("explorer.exe", "/select, " + getAbsolute());
             }
             return false;
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="originUrl">The URL of the resource originally hosting the quarantined item, from the user's point of
-        ///                view. For web downloads, this property is the URL of the web page on which the user initiated
-        ///                the download. For attachments, this property is the URL of the resource to which the quarantined
-        ///                item was attached (e.g. the email message, calendar event, etc.). The origin URL may be a file URL
-        ///                for local resources, or a custom URL to which the quarantining application will respond when asked
-        ///                to open it. The quarantining application should respond by displaying the resource to the user.
-        ///                Note: The origin URL should not be set to the data URL, or the quarantining application may start
-        ///                downloading the file again if the user choses to view the origin URL while resolving a quarantine
-        ///                warning.</param>
-        /// <param name="dataUrl">The URL from which the data for the quarantined item data was
-        ///                  actaully streamed or downloaded, if available</param>
-        public override void setQuarantine(string originUrl, string dataUrl)
-        {
-            ;
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="dataUrl">Href where the file was downloaded from</param>
-        public override void setWhereFrom(string dataUrl)
-        {
-            ;
         }
 
         public override void setPath(string parent, string name)
