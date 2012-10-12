@@ -1106,7 +1106,7 @@ public final class TransferController extends WindowController implements NSTool
             final Transfer transfer = transfers.get(index.intValue());
             if(!transfer.isRunning()) {
                 for(Path i : transfer.getRoots()) {
-                    i.getLocal().delete();
+                    i.getLocal().trash();
                 }
             }
         }
