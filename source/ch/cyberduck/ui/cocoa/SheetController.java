@@ -31,6 +31,7 @@ import org.rococoa.ID;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * @version $Id$
@@ -42,6 +43,13 @@ public abstract class SheetController extends WindowController implements SheetC
      * The controller of the parent window
      */
     protected final WindowController parent;
+
+    /**
+     * Dismiss button clicked
+     */
+    private int returncode;
+
+    private CountDownLatch signal;
 
     /**
      * The sheet window must be provided later with #setWindow (usually called when loading the NIB file)
@@ -104,7 +112,9 @@ public abstract class SheetController extends WindowController implements SheetC
      */
     @Action
     public void closeSheet(final NSButton sender) {
-        log.debug("closeSheet:" + sender);
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Close sheet with button %s", sender.title()));
+        }
         if(this.getCallbackOption(sender) == DEFAULT_OPTION || this.getCallbackOption(sender) == ALTERNATE_OPTION) {
             if(!this.validateInput()) {
                 AppKitFunctionsLibrary.beep();
@@ -113,8 +123,6 @@ public abstract class SheetController extends WindowController implements SheetC
         }
         NSApplication.sharedApplication().endSheet(this.window(), this.getCallbackOption(sender));
     }
-
-    private int returncode;
 
     /**
      * @return The tag of the button this sheet was dismissed with
@@ -136,28 +144,29 @@ public abstract class SheetController extends WindowController implements SheetC
      *
      */
     public void beginSheet() {
-        // Synchronize on parent controller. Only display one sheet at once.
         synchronized(parent.window()) {
-            if(isMainThread()) {
+            this.signal = new CountDownLatch(1);
+            if(this.isMainThread()) {
                 // No need to call invoke on main thread
                 this.beginSheetImpl();
-                return;
             }
-            invoke(new ControllerMainAction(this) {
-                @Override
-                public void run() {
-                    //Invoke again on main thread
-                    beginSheetImpl();
+            else {
+                invoke(new ControllerMainAction(this) {
+                    @Override
+                    public void run() {
+                        //Invoke again on main thread
+                        beginSheetImpl();
+                    }
+                }, true);
+                if(log.isDebugEnabled()) {
+                    log.debug("Await sheet dismiss");
                 }
-            }, true);
-            while(parent.hasSheet()) {
+                // Synchronize on parent controller. Only display one sheet at once.
                 try {
-                    log.debug("Sleeping:waitForSheetDismiss...");
-                    parent.window().wait();
-                    log.debug("Awakened:waitForSheetDismiss");
+                    this.signal.await();
                 }
                 catch(InterruptedException e) {
-                    log.error(e.getMessage());
+                    log.error(String.format("Error waiting for sheet dismiss: %s", e.getMessage()));
                 }
             }
         }
@@ -194,9 +203,7 @@ public abstract class SheetController extends WindowController implements SheetC
         sheet.orderOut(null);
         this.returncode = returncode;
         this.callback(returncode);
-        synchronized(parent.window()) {
-            parent.window().notify();
-        }
+        this.signal.countDown();
         if(!this.isSingleton()) {
             this.invalidate();
         }
