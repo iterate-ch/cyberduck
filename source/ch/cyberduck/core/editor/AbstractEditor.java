@@ -91,10 +91,11 @@ public abstract class AbstractEditor {
      *
      */
     protected void delete() {
+        final Local file = edited.getLocal();
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Delete edited file %s", edited.getLocal().getAbsolute()));
+            log.debug(String.format("Delete edited file %s", file.getAbsolute()));
         }
-        edited.getLocal().delete(Preferences.instance().getBoolean("editor.file.trash"));
+        file.trash();
     }
 
     /**
@@ -117,7 +118,7 @@ public abstract class AbstractEditor {
             @Override
             public void run() {
                 // Delete any existing file which might be used by a watch editor already
-                edited.getLocal().delete(Preferences.instance().getBoolean("editor.file.trash"));
+                edited.getLocal().trash();
                 final TransferOptions options = new TransferOptions();
                 options.closeSession = false;
                 options.quarantine = false;

@@ -336,8 +336,6 @@ public abstract class Preferences {
         defaults.put("editor.kqueue.enable", String.valueOf(true));
         defaults.put("editor.tmp.directory", System.getProperty("java.io.tmpdir"));
 
-        defaults.put("editor.file.trash", String.valueOf(true));
-
         defaults.put("filetype.text.regex",
                 ".*\\.txt|.*\\.cgi|.*\\.htm|.*\\.html|.*\\.shtml|.*\\.xml|.*\\.xsl|.*\\.php|.*\\.php3|" +
                         ".*\\.js|.*\\.css|.*\\.asp|.*\\.java|.*\\.c|.*\\.cp|.*\\.cpp|.*\\.m|.*\\.h|.*\\.pl|.*\\.py|" +
