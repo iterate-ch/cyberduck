@@ -20,6 +20,7 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.RepeatableFileInputStream;
+import ch.cyberduck.core.local.IconServiceFactory;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -35,9 +36,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.security.NoSuchAlgorithmException;
-import java.util.Collections;
 import java.util.Comparator;
-import java.util.List;
 
 import com.ibm.icu.text.Normalizer;
 
@@ -46,6 +45,11 @@ import com.ibm.icu.text.Normalizer;
  */
 public abstract class Local extends AbstractPath {
     private static Logger log = Logger.getLogger(Local.class);
+
+    /**
+     * Absolute path in local file system
+     */
+    private String path;
 
     /**
      *
@@ -187,18 +191,15 @@ public abstract class Local extends AbstractPath {
                     return ServiceUtils.toHex(ServiceUtils.computeMD5Hash(Local.this.getInputStream()));
                 }
                 catch(NoSuchAlgorithmException e) {
-                    log.error("MD5 failed:" + e.getMessage());
+                    log.error(String.format("MD5 failed for %s:%s", path, e.getMessage()));
                 }
                 catch(IOException e) {
-                    log.error("MD5 failed:" + e.getMessage());
+                    log.error(String.format("MD5 failed for %s:%s", path, e.getMessage()));
                 }
             }
             return null;
         }
     }
-
-    private String path;
-
 
     /**
      * @param parent Parent directory
@@ -231,7 +232,7 @@ public abstract class Local extends AbstractPath {
             this.setPath(path.getCanonicalPath());
         }
         catch(IOException e) {
-            log.warn("Error getting canonical path:" + e.getMessage());
+            log.error(String.format("Error getting canonical path:%s", e.getMessage()));
             this.setPath(path.getAbsolutePath());
         }
     }
@@ -257,7 +258,7 @@ public abstract class Local extends AbstractPath {
             }
         }
         catch(IOException e) {
-            log.error(e.getMessage());
+            log.error(String.format("Error creating new file %s", e.getMessage()));
         }
     }
 
@@ -269,10 +270,8 @@ public abstract class Local extends AbstractPath {
     @Override
     public void mkdir(boolean recursive) {
         if(recursive) {
-            if(new File(path).mkdirs()) {
-                if(log.isInfoEnabled()) {
-                    log.info("Created directory " + this.getAbsolute());
-                }
+            if(!new File(path).mkdirs()) {
+                log.error(String.format("Create directories %s failed", path));
             }
         }
         else {
@@ -282,17 +281,19 @@ public abstract class Local extends AbstractPath {
 
     @Override
     public void mkdir() {
-        if(new File(path).mkdir()) {
-            if(log.isInfoEnabled()) {
-                log.info("Created directory " + this.getAbsolute());
-            }
+        if(!new File(path).mkdir()) {
+            log.error(String.format("Create directory %s failed", path));
         }
     }
 
     /**
      * @param progress An integer from -1 and 9. If -1 is passed, the icon should be removed.
      */
-    public abstract void setIcon(int progress);
+    public void setIcon(int progress) {
+        if(!IconServiceFactory.instance().setProgress(this, progress)) {
+            log.warn(String.format("Error setting icon for file %s", path));
+        }
+    }
 
     /**
      * By default just move the file to the user trash
@@ -308,7 +309,7 @@ public abstract class Local extends AbstractPath {
         }
         else {
             if(!new File(path).delete()) {
-                log.warn(String.format("Delete %s failed", this.getAbsolute()));
+                log.error(String.format("Delete %s failed", path));
             }
         }
     }
@@ -328,9 +329,9 @@ public abstract class Local extends AbstractPath {
     @Override
     public AttributedList<Local> list() {
         final AttributedList<Local> children = new AttributedList<Local>();
-        File[] files = new File(path).listFiles();
+        final File[] files = new File(path).listFiles();
         if(null == files) {
-            log.error("Error listing children:" + path);
+            log.error(String.format("Error listing children at %s", path));
             return children;
         }
         for(File file : files) {
@@ -435,8 +436,8 @@ public abstract class Local extends AbstractPath {
             if(!Normalizer.isNormalized(normalized, Normalizer.NFC, Normalizer.UNICODE_3_2)) {
                 // Canonical decomposition followed by canonical composition (default)
                 normalized = Normalizer.normalize(name, Normalizer.NFC, Normalizer.UNICODE_3_2);
-                if(log.isInfoEnabled()) {
-                    log.info("Normalized local path '" + name + "' to '" + normalized + "'");
+                if(log.isDebugEnabled()) {
+                    log.debug("Normalized local path '" + name + "' to '" + normalized + "'");
                 }
             }
         }
@@ -449,7 +450,7 @@ public abstract class Local extends AbstractPath {
             return;
         }
         if(!new File(path).setLastModified(modified)) {
-            log.warn(String.format("Write modification date failed for %s", this.getAbsolute()));
+            log.error(String.format("Write modification date failed for %s", path));
         }
     }
 
@@ -459,7 +460,7 @@ public abstract class Local extends AbstractPath {
     @Override
     public void rename(final AbstractPath renamed) {
         if(!new File(path).renameTo(new File(renamed.getAbsolute()))) {
-            log.warn(String.format("Rename failed for %s", renamed.getAbsolute()));
+            log.error(String.format("Rename failed for %s", renamed.getAbsolute()));
         }
     }
 
@@ -467,21 +468,22 @@ public abstract class Local extends AbstractPath {
     public void copy(final AbstractPath copy) {
         if(copy.equals(this)) {
             log.warn(String.format("%s and %s are identical. Not copied.", this.getName(), copy.getName()));
-            return;
         }
-        FileInputStream in = null;
-        FileOutputStream out = null;
-        try {
-            in = new FileInputStream(new File(path));
-            out = new FileOutputStream(copy.getAbsolute());
-            IOUtils.copy(in, out);
-        }
-        catch(IOException e) {
-            log.error(e.getMessage());
-        }
-        finally {
-            IOUtils.closeQuietly(in);
-            IOUtils.closeQuietly(out);
+        else {
+            FileInputStream in = null;
+            FileOutputStream out = null;
+            try {
+                in = new FileInputStream(new File(path));
+                out = new FileOutputStream(copy.getAbsolute());
+                IOUtils.copy(in, out);
+            }
+            catch(IOException e) {
+                log.error(e.getMessage());
+            }
+            finally {
+                IOUtils.closeQuietly(in);
+                IOUtils.closeQuietly(out);
+            }
         }
     }
 
@@ -529,14 +531,6 @@ public abstract class Local extends AbstractPath {
 
 
     public abstract void bounce();
-
-    public String getDefaultApplication() {
-        return null;
-    }
-
-    public List<String> getDefaultApplications() {
-        return Collections.emptyList();
-    }
 
     /**
      * @param originUrl Page that linked to the downloaded file
