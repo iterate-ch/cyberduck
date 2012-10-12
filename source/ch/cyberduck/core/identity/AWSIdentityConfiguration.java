@@ -88,7 +88,7 @@ public class AWSIdentityConfiguration implements IdentityConfiguration {
             log.warn(String.format("No access key found for user %s", username));
             return null;
         }
-        return new Credentials(id, KeychainFactory.instance().getPassword(host.getProtocol().getScheme().name(), host.getPort(),
+        return new Credentials(id, KeychainFactory.instance().getPassword(host.getProtocol().getScheme(), host.getPort(),
                 host.getHostname(), id)) {
             @Override
             public String getUsernamePlaceholder() {
@@ -139,7 +139,7 @@ public class AWSIdentityConfiguration implements IdentityConfiguration {
             Preferences.instance().setProperty(String.format("%s%s", prefix, username), id);
             // Save secret
             KeychainFactory.instance().addPassword(
-                    host.getProtocol().getScheme().name(), host.getPort(), host.getHostname(),
+                    host.getProtocol().getScheme(), host.getPort(), host.getHostname(),
                     id, key.getAccessKey().getSecretAccessKey());
         }
         catch(AmazonClientException e) {
