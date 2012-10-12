@@ -73,11 +73,14 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_core_SystemConfigurationReachability_di
 }
 
 + (BOOL)isReachable:(NSString*)urlString {
-	SCNetworkConnectionFlags flags;
 	NSURL * url = [NSURL URLWithString:urlString];
-	
-	if (!SCNetworkCheckReachabilityByName([[url host] cStringUsingEncoding:NSASCIIStringEncoding], &flags))
-		return NO;
+	SCNetworkReachabilityRef target = SCNetworkReachabilityCreateWithName(NULL, [[url host] cStringUsingEncoding:NSASCIIStringEncoding]);
+	SCNetworkConnectionFlags flags;
+	if(!SCNetworkReachabilityGetFlags(target, &flags)) {
+        CFRelease(target);
+        return NO;
+    }
+	CFRelease(target);
 	return (flags & kSCNetworkFlagsReachable) && !(flags & kSCNetworkFlagsConnectionRequired);
 }
 
