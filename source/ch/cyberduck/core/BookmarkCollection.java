@@ -226,7 +226,7 @@ public class BookmarkCollection extends AbstractHostCollection {
                 }
                 favorites.load(HostReaderFactory.instance().readCollection(file));
                 log.info("Moving deprecated bookmarks file to Trash");
-                file.delete(true);
+                file.trash();
             }
             else {
                 favorites.load();

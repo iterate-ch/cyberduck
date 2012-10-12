@@ -71,7 +71,7 @@ public abstract class AbstractFolderHostCollection extends AbstractHostCollectio
 
     @Override
     public void collectionItemRemoved(Host bookmark) {
-        this.getFile(bookmark).delete(false);
+        this.getFile(bookmark).delete();
         super.collectionItemRemoved(bookmark);
     }
 
