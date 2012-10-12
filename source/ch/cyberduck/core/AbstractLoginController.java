@@ -40,19 +40,20 @@ public abstract class AbstractLoginController implements LoginController {
             throws LoginCanceledException;
 
     @Override
-    public void check(final Host host, String title, String message)
+    public void check(final Host host, final String title, final String message)
             throws LoginCanceledException {
         this.check(host, title, message, Preferences.instance().getBoolean("connection.login.useKeychain"),
                 host.getProtocol().equals(Protocol.SFTP), host.getProtocol().isAnonymousConfigurable());
     }
 
     @Override
-    public void check(final Host host, String title, String message, boolean enableKeychain, boolean enablePublicKey, boolean enableAnonymous)
+    public void check(final Host host, final String title, final String message,
+                      final boolean enableKeychain, final boolean enablePublicKey, final boolean enableAnonymous)
             throws LoginCanceledException {
 
         final Credentials credentials = host.getCredentials();
 
-        StringBuilder reason = new StringBuilder();
+        final StringBuilder reason = new StringBuilder();
         if(StringUtils.isNotBlank(message)) {
             reason.append(message).append(". ");
         }
@@ -60,7 +61,7 @@ public abstract class AbstractLoginController implements LoginController {
             // Lookup password if missing. Always lookup password for public key authentication. See #5754.
             if(StringUtils.isNotBlank(credentials.getUsername())) {
                 if(Preferences.instance().getBoolean("connection.login.useKeychain")) {
-                    String saved = KeychainFactory.instance().find(host);
+                    final String saved = KeychainFactory.instance().find(host);
                     if(StringUtils.isBlank(saved)) {
                         if(!credentials.isPublicKeyAuthentication()) {
                             reason.append(Locale.localizedString(
@@ -97,18 +98,19 @@ public abstract class AbstractLoginController implements LoginController {
     }
 
     @Override
-    public void fail(Protocol protocol, Credentials credentials, String reason) throws LoginCanceledException {
+    public void fail(final Protocol protocol, final Credentials credentials, final String reason)
+            throws LoginCanceledException {
         this.prompt(protocol, credentials,
                 Locale.localizedString("Login failed", "Credentials"), reason);
     }
 
     @Override
-    public void success(Host host) {
+    public void success(final Host host) {
         KeychainFactory.instance().save(host);
     }
 
     @Override
-    public void fail(Protocol protocol, Credentials credentials)
+    public void fail(final Protocol protocol, final Credentials credentials)
             throws LoginCanceledException {
         this.prompt(protocol, credentials,
                 Locale.localizedString("Login failed", "Credentials"),
@@ -123,7 +125,8 @@ public abstract class AbstractLoginController implements LoginController {
     }
 
     @Override
-    public abstract void prompt(Protocol protocol, Credentials credentials,
-                                String title, String reason,
-                                boolean enableKeychain, boolean enablePublicKey, boolean enableAnonymous) throws LoginCanceledException;
+    public abstract void prompt(final Protocol protocol, final Credentials credentials,
+                                final String title, final String reason,
+                                final boolean enableKeychain, final boolean enablePublicKey, final boolean enableAnonymous)
+            throws LoginCanceledException;
 }
