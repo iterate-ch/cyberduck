@@ -25,8 +25,6 @@ import ch.cyberduck.ui.cocoa.UserDefaultsDateFormatter;
 import ch.cyberduck.ui.cocoa.UserDefaultsPreferences;
 import ch.cyberduck.ui.cocoa.foundation.NSAutoreleasePool;
 import ch.cyberduck.ui.cocoa.i18n.BundleLocale;
-import ch.cyberduck.ui.cocoa.model.FinderLocal;
-import ch.cyberduck.ui.cocoa.model.OutlinePathReference;
 import ch.cyberduck.ui.cocoa.serializer.HostPlistReader;
 import ch.cyberduck.ui.cocoa.serializer.PlistDeserializer;
 import ch.cyberduck.ui.cocoa.serializer.PlistSerializer;
@@ -51,7 +49,7 @@ public class AbstractTestCase {
     NSAutoreleasePool pool;
 
     @Before
-    public void factory() {
+    public void register() {
         pool = NSAutoreleasePool.push();
 
         AutoreleaseActionOperationBatcher.register();
@@ -67,7 +65,7 @@ public class AbstractTestCase {
         HostPlistReader.register();
         TransferPlistReader.register();
         ProtocolPlistReader.register();
-        OutlinePathReference.register();
+        NSObjectPathReference.register();
 
         PlistWriter.register();
 
