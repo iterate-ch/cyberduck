@@ -133,9 +133,9 @@ public class GSSession extends S3Session implements DistributionConfiguration {
         final ProviderCredentials provider = this.getProviderCredentials(credentials);
         if(provider instanceof OAuth2Credentials) {
             final OAuth2Credentials oauth = (OAuth2Credentials) provider;
-            final String acccesstoken = KeychainFactory.instance().getPassword(this.getHost().getProtocol().getScheme().name(),
+            final String acccesstoken = KeychainFactory.instance().getPassword(this.getHost().getProtocol().getScheme(),
                     this.getHost().getPort(), URI.create(OAuthConstants.GSOAuth2_10.Endpoints.Token).getHost(), "Google OAuth2 Access Token");
-            final String refreshtoken = KeychainFactory.instance().getPassword(this.getHost().getProtocol().getScheme().name(),
+            final String refreshtoken = KeychainFactory.instance().getPassword(this.getHost().getProtocol().getScheme(),
                     this.getHost().getPort(), URI.create(OAuthConstants.GSOAuth2_10.Endpoints.Token).getHost(), "Google OAuth2 Refresh Token");
             if(StringUtils.isEmpty(acccesstoken) || StringUtils.isEmpty(refreshtoken)) {
                 final String url = ((OAuth2Credentials) provider).generateBrowserUrlToAuthorizeNativeApplication(
@@ -172,9 +172,9 @@ public class GSSession extends S3Session implements DistributionConfiguration {
                 final OAuth2Tokens tokens = oauth.getOAuth2Tokens();
 
                 // Save for future use
-                KeychainFactory.instance().addPassword(this.getHost().getProtocol().getScheme().name(),
+                KeychainFactory.instance().addPassword(this.getHost().getProtocol().getScheme(),
                         this.getHost().getPort(), URI.create(OAuthConstants.GSOAuth2_10.Endpoints.Token).getHost(), "Google OAuth2 Access Token", tokens.getAccessToken());
-                KeychainFactory.instance().addPassword(this.getHost().getProtocol().getScheme().name(),
+                KeychainFactory.instance().addPassword(this.getHost().getProtocol().getScheme(),
                         this.getHost().getPort(), URI.create(OAuthConstants.GSOAuth2_10.Endpoints.Token).getHost(), "Google OAuth2 Refresh Token", tokens.getRefreshToken());
 
                 // Save expiry
