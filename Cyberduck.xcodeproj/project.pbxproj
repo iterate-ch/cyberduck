@@ -234,6 +234,8 @@
 		47E987600D689A280077733F /* S3.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47E9875E0D689A280077733F /* S3.strings */; };
 		47EBC1311328D01C00E9E6B3 /* mirror.switch.ch – FTP.duck in CopyFiles */ = {isa = PBXBuildFile; fileRef = 47EBC12F1328D00200E9E6B3 /* mirror.switch.ch – FTP.duck */; };
 		47F0B7D3087AD1B100439978 /* Status.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47F0B7D2087AD1AE00439978 /* Status.strings */; };
+		47F102A81628C0F600923FDE /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47F102A71628C0F600923FDE /* Foundation.framework */; };
+		47F102A91628C0FD00923FDE /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47F102A71628C0F600923FDE /* Foundation.framework */; };
 		47FC190C099FB8AF0082431D /* Crash.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47FC190A099FB8AF0082431D /* Crash.strings */; };
 /* End PBXBuildFile section */
 
@@ -1507,6 +1509,7 @@
 		47F0B7EC087AD34B00439978 /* ca */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = ca; path = ca.lproj/Status.strings; sourceTree = "<group>"; };
 		47F0CB46087B237F00439978 /* en */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		47F0CB8C087B23A900439978 /* en */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = en; path = en.lproj/Status.strings; sourceTree = "<group>"; };
+		47F102A71628C0F600923FDE /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		47FC190B099FB8AF0082431D /* en */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = en; path = en.lproj/Crash.strings; sourceTree = "<group>"; };
 		47FC191F099FC1290082431D /* fr */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = fr; path = fr.lproj/Crash.strings; sourceTree = "<group>"; };
 		47FC1943099FDB310082431D /* it */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = it; path = it.lproj/Crash.strings; sourceTree = "<group>"; };
@@ -1560,6 +1563,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				47F102A91628C0FD00923FDE /* Foundation.framework in Frameworks */,
 				4797D28E162829F800340E1C /* ApplicationServices.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1605,6 +1609,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				47F102A81628C0F600923FDE /* Foundation.framework in Frameworks */,
 				4797D2751628276C00340E1C /* ApplicationServices.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1651,6 +1656,7 @@
 		29B97314FDCFA39411CA2CEA /* cyberduck-cocoa */ = {
 			isa = PBXGroup;
 			children = (
+				47F102A71628C0F600923FDE /* Foundation.framework */,
 				4741639206C4F58D00AC0BD2 /* Resources */,
 				474152D706C4F08A00AC0BD2 /* source */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
