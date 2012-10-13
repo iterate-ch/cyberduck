@@ -78,11 +78,6 @@ public abstract class EditorFactory extends Factory<Editor> {
         return editors;
     }
 
-    @Override
-    protected Editor create() {
-        throw new FactoryException("Not supported");
-    }
-
     /**
      * @param c    Controller
      * @param path File to edit

@@ -1,5 +1,6 @@
 package ch.cyberduck.core.editor;
 
+import ch.cyberduck.core.FactoryException;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.ui.Controller;
 
@@ -7,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class WatchEditorFactory extends EditorFactory {
     private final List<Application> editors = new ArrayList<Application>();
@@ -30,5 +31,10 @@ public class WatchEditorFactory extends EditorFactory {
     @Override
     public Editor create(final Controller c, final Application application, final Path path) {
         return new WatchEditor(c, application, path);
+    }
+
+    @Override
+    protected Editor create() {
+        throw new FactoryException("Not supported");
     }
 }

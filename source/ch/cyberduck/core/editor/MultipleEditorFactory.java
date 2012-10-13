@@ -1,6 +1,7 @@
 package ch.cyberduck.core.editor;
 
 import ch.cyberduck.core.Factory;
+import ch.cyberduck.core.FactoryException;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.ui.Controller;
 
@@ -10,7 +11,7 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class MultipleEditorFactory extends EditorFactory {
 
@@ -42,5 +43,10 @@ public class MultipleEditorFactory extends EditorFactory {
             return odbEditorFactory.create(c, application, path);
         }
         return watchEditorFactory.create(c, application, path);
+    }
+
+    @Override
+    protected Editor create() {
+        throw new FactoryException("Not supported");
     }
 }
