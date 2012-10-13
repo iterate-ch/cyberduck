@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2011 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -15,16 +15,15 @@
 // Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
 // 
-
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
-using Ch.Cyberduck.Ui.Controller;
+using Ch.Cyberduck.Core;
 using org.apache.log4j;
 using Path = ch.cyberduck.core.Path;
 
-namespace Ch.Cyberduck.Core.Editor
+namespace Ch.Cyberduck.Ui.Controller
 {
     public class WatchEditor : Editor
     {
@@ -44,7 +43,7 @@ namespace Ch.Cyberduck.Core.Editor
             set { _editor = value; }
         }
 
-        public override void edit()
+        protected override void edit()
         {
             Process process = new Process();
             if (Utils.IsBlank(_editor))

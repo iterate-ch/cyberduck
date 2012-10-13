@@ -184,6 +184,9 @@
     <Compile Include="core\aquaticprime\LicenseVerifier.cs" />
     <Compile Include="core\aquaticprime\LicenseImpl.cs" />
     <Compile Include="core\CrashReporter.cs" />
+    <Compile Include="core\editor\Editor.cs" />
+    <Compile Include="core\editor\EditorFactory.cs" />
+    <Compile Include="core\editor\WatchEditor.cs" />
     <Compile Include="core\URLSchemeHandlerConfiguration.cs" />
     <Compile Include="core\collections\IndexedLinkedList.cs" />
     <Compile Include="core\collections\LRUCache.cs" />
@@ -374,8 +377,6 @@
     <Compile Include="ui\controller\DownloadPromptController.cs" />
     <Compile Include="ui\controller\DownloadPromptModel.cs" />
     <Compile Include="ui\controller\DuplicateFileController.cs" />
-    <Compile Include="ui\controller\Editor.cs" />
-    <Compile Include="ui\controller\EditorFactory.cs" />
     <Compile Include="ui\controller\ErrorController.cs" />
     <Compile Include="ui\controller\Events.cs" />
     <Compile Include="ui\controller\FileController.cs" />
@@ -446,7 +447,6 @@
     <Compile Include="ui\controller\TreePathReference.cs" />
     <Compile Include="ui\controller\UploadPromptController.cs" />
     <Compile Include="ui\controller\UploadPromptModel.cs" />
-    <Compile Include="ui\controller\WatchEditor.cs" />
     <Compile Include="ui\controller\WindowController.cs" />
     <Compile Include="ui\winforms\AboutBox.cs">
       <SubType>Form</SubType>
@@ -641,7 +641,6 @@
       <EmbedInteropTypes>False</EmbedInteropTypes>
     </COMReference>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.-->

@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2011 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -15,12 +15,10 @@
 // Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
 // 
-
 using System.Collections.Generic;
-using Ch.Cyberduck.Ui.Controller;
 using ch.cyberduck.core;
 
-namespace Ch.Cyberduck.Core.Editor
+namespace Ch.Cyberduck.Ui.Controller
 {
     public class EditorFactory
     {

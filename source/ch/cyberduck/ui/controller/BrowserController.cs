@@ -29,6 +29,7 @@ using Ch.Cyberduck.Ui.Controller.Threading;
 using Ch.Cyberduck.Ui.Winforms.Taskdialog;
 using StructureMap;
 using ch.cyberduck.core;
+using ch.cyberduck.core.editor;
 using ch.cyberduck.core.io;
 using ch.cyberduck.core.serializer;
 using ch.cyberduck.core.sftp;
@@ -2025,7 +2026,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             foreach (Path selected in SelectedPaths)
             {
-                Editor editor = EditorFactory.createEditor(this, selected, exe);
+                Editor editor = EditorFactory.instance().create(this, selected, exe);
                 editor.open();
             }
         }
@@ -2037,7 +2038,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 if (IsEditable(selected))
                 {
-                    string editCommand = EditorFactory.DefaultEditCommand(selected.getLocal());
+                    string editCommand = EditorFactory.instance().DefaultEditCommand(selected.getLocal());
                     if (Utils.IsNotBlank(editCommand))
                     {
                         View.EditIcon =

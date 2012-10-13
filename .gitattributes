@@ -2550,6 +2550,8 @@ source/ch/cyberduck/ResourcesBundle.resx -text
 source/ch/cyberduck/core/Commands.cs -text
 source/ch/cyberduck/core/CrashReporter.cs -text
 source/ch/cyberduck/core/DragDropLib.cs -text
+source/ch/cyberduck/core/Editor.cs -text
+source/ch/cyberduck/core/EditorFactory.cs -text
 source/ch/cyberduck/core/GlobalKeyboardHook.cs -text
 source/ch/cyberduck/core/HostnameVerifier.cs -text
 source/ch/cyberduck/core/ListAdapter.cs -text
@@ -2565,6 +2567,7 @@ source/ch/cyberduck/core/SystemConfigurationReachability.m -text
 source/ch/cyberduck/core/URLSchemeHandlerConfiguration.cs -text
 source/ch/cyberduck/core/Utils.cs -text
 source/ch/cyberduck/core/VirtualFileDataObject.cs -text
+source/ch/cyberduck/core/WatchEditor.cs -text
 source/ch/cyberduck/core/aquaticprime/LicenseImpl.cs -text
 source/ch/cyberduck/core/aquaticprime/LicenseVerifier.cs -text
 source/ch/cyberduck/core/cf/CFPath.java -text
