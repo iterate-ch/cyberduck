@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2011 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -15,14 +15,15 @@
 // Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
 // 
+
 using System;
 using System.Windows.Forms;
-using ch.cyberduck.core;
 using Ch.Cyberduck.Core;
-using ch.cyberduck.core.i18n;
 using Ch.Cyberduck.Ui.Winforms.Taskdialog;
-using org.apache.log4j;
 using StructureMap;
+using ch.cyberduck.core;
+using ch.cyberduck.core.i18n;
+using org.apache.log4j;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -107,7 +108,7 @@ namespace Ch.Cyberduck.Ui.Controller
             _credentials.setUsername(_view.Username);
             if (Utils.IsNotBlank(_credentials.getUsername()))
             {
-                String password = KeychainFactory.instance().getPassword(_protocol.getScheme().name(),
+                String password = KeychainFactory.instance().getPassword(_protocol.getScheme(),
                                                                          _protocol.getDefaultPort(),
                                                                          _protocol.getDefaultHostname(),
                                                                          _credentials.getUsername());
@@ -123,37 +124,37 @@ namespace Ch.Cyberduck.Ui.Controller
                                   String preference)
         {
             AsyncController.AsyncDelegate d = delegate
-                                                  {
-                                                      _browser.CommandBox(title,
-                                                                          title,
-                                                                          message,
-                                                                          String.Format("{0}|{1}",
-                                                                                        continueButton,
-                                                                                        disconnectButton),
-                                                                          false,
-                                                                          Locale.localizedString("Don't show again",
-                                                                                                 "Credentials"),
-                                                                          SysIcons.Question,
-                                                                          Preferences.instance().getProperty(
-                                                                              "website.help") + "/" +
-                                                                          Protocol.FTP.getIdentifier(),
-                                                                          delegate(int option,
-                                                                                   Boolean verificationChecked)
-                                                                              {
-                                                                                  if (verificationChecked)
-                                                                                  {
-                                                                                      // Never show again.
-                                                                                      Preferences.instance().setProperty
-                                                                                          (preference, true);
-                                                                                  }
-                                                                                  switch (option)
-                                                                                  {
-                                                                                      case 1:
-                                                                                          throw new LoginCanceledException
-                                                                                              ();
-                                                                                  }
-                                                                              });
-                                                  };
+                {
+                    _browser.CommandBox(title,
+                                        title,
+                                        message,
+                                        String.Format("{0}|{1}",
+                                                      continueButton,
+                                                      disconnectButton),
+                                        false,
+                                        Locale.localizedString("Don't show again",
+                                                               "Credentials"),
+                                        SysIcons.Question,
+                                        Preferences.instance().getProperty(
+                                            "website.help") + "/" +
+                                        Protocol.FTP.getIdentifier(),
+                                        delegate(int option,
+                                                 Boolean verificationChecked)
+                                            {
+                                                if (verificationChecked)
+                                                {
+                                                    // Never show again.
+                                                    Preferences.instance().setProperty
+                                                        (preference, true);
+                                                }
+                                                switch (option)
+                                                {
+                                                    case 1:
+                                                        throw new LoginCanceledException
+                                                            ();
+                                                }
+                                            });
+                };
             _browser.Invoke(d);
             //Proceed nevertheless.
         }
@@ -186,15 +187,15 @@ namespace Ch.Cyberduck.Ui.Controller
             Update();
 
             AsyncController.AsyncDelegate d = delegate
-                                                  {
-                                                      if (DialogResult.Cancel == _view.ShowDialog(_browser.View))
-                                                      {
-                                                          throw new LoginCanceledException();
-                                                      }
-                                                      credentials.setUseKeychain(_view.SavePasswordState);
-                                                      credentials.setUsername(Utils.SafeString(_view.Username));
-                                                      credentials.setPassword(Utils.SafeString(_view.Password));
-                                                  };
+                {
+                    if (DialogResult.Cancel == _view.ShowDialog(_browser.View))
+                    {
+                        throw new LoginCanceledException();
+                    }
+                    credentials.setSaved(_view.SavePasswordState);
+                    credentials.setUsername(Utils.SafeString(_view.Username));
+                    credentials.setPassword(Utils.SafeString(_view.Password));
+                };
             _browser.Invoke(d);
         }
 

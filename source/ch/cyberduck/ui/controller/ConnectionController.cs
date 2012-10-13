@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -15,19 +15,20 @@
 // Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
 // 
+
 using System.Collections.Generic;
 using System.Media;
 using System.Threading;
-using ch.cyberduck.core;
 using Ch.Cyberduck.Core;
+using Ch.Cyberduck.Ui.Winforms.Controls;
+using StructureMap;
+using ch.cyberduck.core;
+using ch.cyberduck.core.ftp;
 using ch.cyberduck.core.i18n;
 using ch.cyberduck.core.threading;
-using Ch.Cyberduck.Ui.Winforms.Controls;
-using ch.cyberduck.core.ftp;
 using java.lang;
 using org.apache.log4j;
 using org.spearce.jgit.transport;
-using StructureMap;
 using Object = System.Object;
 using String = System.String;
 
@@ -94,7 +95,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 Credentials credentials = host.getCredentials();
                 credentials.setUsername(View.Username);
                 credentials.setPassword(View.Password);
-                credentials.setUseKeychain(View.SavePasswordChecked);
+                credentials.setSaved(View.SavePasswordChecked);
                 if (protocol.equals(Protocol.SFTP))
                 {
                     if (View.PkCheckboxState)
@@ -122,10 +123,10 @@ namespace Ch.Cyberduck.Ui.Controller
                 c = new ConnectionController();
                 Controllers.Add(parent, c);
                 parent.View.ViewClosedEvent += delegate
-                                                   {
-                                                       Controllers.Remove(parent);
-                                                       //todo c muss wohl auch noch abgeräumt werden
-                                                   };
+                    {
+                        Controllers.Remove(parent);
+                        //todo c muss wohl auch noch abgeräumt werden
+                    };
             }
             return c;
         }
@@ -299,7 +300,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     return;
                 }
                 Protocol protocol = View.SelectedProtocol;
-                View.Password = KeychainFactory.instance().getPassword(protocol.getScheme().name(),
+                View.Password = KeychainFactory.instance().getPassword(protocol.getScheme(),
                                                                        Integer.parseInt(View.Port),
                                                                        View.Hostname,
                                                                        View.Username);
@@ -456,7 +457,8 @@ namespace Ch.Cyberduck.Ui.Controller
                 protocols.Add(new KeyValueIconTriple<Protocol, string>(p, p.getDescription(), p.getProvider()));
             }
             View.PopulateProtocols(protocols);
-            View.SelectedProtocol = ProtocolFactory.forName(Preferences.instance().getProperty("connection.protocol.default"));
+            View.SelectedProtocol =
+                ProtocolFactory.forName(Preferences.instance().getProperty("connection.protocol.default"));
         }
 
         private void InitConnectModes()

@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2011 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -15,13 +15,14 @@
 // Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
 // 
+
 using System;
 using System.Security.Cryptography.X509Certificates;
 using System.Windows.Forms;
-using ch.cyberduck.core;
 using Ch.Cyberduck.Core;
-using ch.cyberduck.core.i18n;
 using Ch.Cyberduck.Ui.Winforms.Taskdialog;
+using ch.cyberduck.core;
+using ch.cyberduck.core.i18n;
 using org.apache.log4j;
 using X509Certificate = java.security.cert.X509Certificate;
 
@@ -31,9 +32,9 @@ namespace Ch.Cyberduck.Ui.Controller
     {
         private static readonly Logger Log = Logger.getLogger(typeof (Keychain).FullName);
 
-        public override string getPassword(String protocol, int port, String hostName, String user)
+        public override string getPassword(Scheme scheme, int port, String hostName, String user)
         {
-            Host host = new Host(ProtocolFactory.forScheme(protocol), hostName, port);
+            Host host = new Host(ProtocolFactory.forScheme(scheme.name()), hostName, port);
             host.getCredentials().setUsername(user);
             return getPassword(host);
         }
@@ -62,9 +63,9 @@ namespace Ch.Cyberduck.Ui.Controller
             Preferences.instance().setProperty(host.toURL(), DataProtector.Encrypt(password));
         }
 
-        public override void addPassword(String protocol, int port, String hostName, String user, String password)
+        public override void addPassword(Scheme scheme, int port, String hostName, String user, String password)
         {
-            Host host = new Host(ProtocolFactory.forScheme(protocol), hostName, port);
+            Host host = new Host(ProtocolFactory.forScheme(scheme.name()), hostName, port);
             host.getCredentials().setUsername(user);
             Preferences.instance().setProperty(host.toURL(), DataProtector.Encrypt(password));
         }
@@ -233,6 +234,11 @@ namespace Ch.Cyberduck.Ui.Controller
             X509Certificate2 cert = ConvertCertificate(certificates[0]);
             X509Certificate2UI.DisplayCertificate(cert);
             return true;
+        }
+
+        public override X509Certificate chooseCertificate(string[] obj0, string obj1, string obj2)
+        {
+            throw new NotImplementedException();
         }
 
         public static X509Certificate2 ConvertCertificate(X509Certificate certificate)
