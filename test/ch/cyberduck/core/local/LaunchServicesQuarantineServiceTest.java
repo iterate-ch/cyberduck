@@ -1,23 +1,21 @@
 package ch.cyberduck.core.local;
 
 import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.Local;
 import ch.cyberduck.core.NullLocal;
 
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.UUID;
 import java.util.concurrent.Callable;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class LaunchServicesQuarantineServiceTest extends AbstractTestCase {
-    @Before
-    @Override
-    public void register() {
-        super.register();
+
+    @BeforeClass
+    public static void register() {
         LaunchServicesQuarantineService.register();
     }
 

@@ -1,12 +1,11 @@
 package ch.cyberduck.core.local;
 
 import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.Local;
 import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.ui.cocoa.application.NSImage;
 
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.UUID;
@@ -20,10 +19,8 @@ import static org.junit.Assert.assertTrue;
  */
 public class WorkspaceIconServiceTest extends AbstractTestCase {
 
-    @Before
-    @Override
-    public void register() {
-        super.register();
+    @BeforeClass
+    public static void register() {
         WorkspaceIconService.register();
     }
 
