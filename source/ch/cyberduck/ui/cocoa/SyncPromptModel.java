@@ -26,7 +26,7 @@ import ch.cyberduck.core.synchronization.Comparison;
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.resources.IconCache;
-import ch.cyberduck.ui.formatter.SizeFormatterFactory;
+import ch.cyberduck.core.formatter.SizeFormatterFactory;
 
 /**
  * @version $Id$

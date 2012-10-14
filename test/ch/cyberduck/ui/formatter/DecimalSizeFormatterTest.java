@@ -11,7 +11,7 @@ public class DecimalSizeFormatterTest {
 
     @Test
     public void testFormat() throws Exception {
-        DecimalSizeFormatter f = new DecimalSizeFormatter();
+        ch.cyberduck.core.formatter.DecimalSizeFormatter f = new ch.cyberduck.core.formatter.DecimalSizeFormatter();
         assertEquals("1.0 KB", f.format(1024));
         assertEquals("1.5 KB", f.format(1500));
         assertEquals("2.0 KB", f.format(2000));

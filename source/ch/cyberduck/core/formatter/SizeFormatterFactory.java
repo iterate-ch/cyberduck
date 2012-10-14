@@ -1,4 +1,4 @@
-package ch.cyberduck.ui.formatter;
+package ch.cyberduck.core.formatter;
 
 import ch.cyberduck.core.Preferences;
 
@@ -13,9 +13,9 @@ public class SizeFormatterFactory {
 
     public static SizeFormatter instance(final boolean decimal) {
         if(decimal) {
-            return new DecimalSizeFormatter();
+            return new ch.cyberduck.core.formatter.DecimalSizeFormatter();
         }
         // Default is binary sizes
-        return new BinarySizeFormatter();
+        return new ch.cyberduck.core.formatter.BinarySizeFormatter();
     }
 }

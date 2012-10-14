@@ -1,7 +1,7 @@
-package ch.cyberduck.ui.formatter;
+package ch.cyberduck.core.formatter;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class BinarySizeFormatter extends AbstractSizeFormatter {
 

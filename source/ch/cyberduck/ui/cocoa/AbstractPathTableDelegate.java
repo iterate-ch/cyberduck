@@ -29,7 +29,7 @@ import ch.cyberduck.ui.OwnerComparator;
 import ch.cyberduck.ui.PermissionsComparator;
 import ch.cyberduck.ui.SizeComparator;
 import ch.cyberduck.ui.TimestampComparator;
-import ch.cyberduck.ui.formatter.SizeFormatterFactory;
+import ch.cyberduck.core.formatter.SizeFormatterFactory;
 
 import org.apache.log4j.Logger;
 

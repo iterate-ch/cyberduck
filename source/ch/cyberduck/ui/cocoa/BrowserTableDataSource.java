@@ -40,7 +40,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSString;
 import ch.cyberduck.ui.cocoa.foundation.NSURL;
 import ch.cyberduck.ui.cocoa.resources.IconCache;
 import ch.cyberduck.ui.cocoa.threading.BrowserBackgroundAction;
-import ch.cyberduck.ui.formatter.SizeFormatterFactory;
+import ch.cyberduck.core.formatter.SizeFormatterFactory;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;

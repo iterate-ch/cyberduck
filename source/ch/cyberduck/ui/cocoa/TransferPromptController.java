@@ -29,7 +29,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.resources.IconCache;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 import ch.cyberduck.ui.cocoa.view.OutlineCell;
-import ch.cyberduck.ui.formatter.SizeFormatterFactory;
+import ch.cyberduck.core.formatter.SizeFormatterFactory;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;

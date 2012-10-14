@@ -50,7 +50,7 @@ import ch.cyberduck.ui.cocoa.threading.BrowserBackgroundAction;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 import ch.cyberduck.ui.cocoa.threading.WorkerBackgroundAction;
 import ch.cyberduck.ui.cocoa.util.HyperlinkAttributedStringFactory;
-import ch.cyberduck.ui.formatter.SizeFormatterFactory;
+import ch.cyberduck.core.formatter.SizeFormatterFactory;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
