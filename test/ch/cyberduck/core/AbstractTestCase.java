@@ -19,16 +19,16 @@ package ch.cyberduck.core;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.aquaticprime.Donation;
 import ch.cyberduck.core.local.FinderLocal;
 import ch.cyberduck.core.threading.AutoreleaseActionOperationBatcher;
 import ch.cyberduck.ui.cocoa.UserDefaultsPreferences;
 import ch.cyberduck.ui.cocoa.foundation.NSAutoreleasePool;
 import ch.cyberduck.ui.cocoa.i18n.BundleLocale;
+import ch.cyberduck.ui.cocoa.serializer.HostPlistReader;
 import ch.cyberduck.ui.cocoa.serializer.PlistDeserializer;
 import ch.cyberduck.ui.cocoa.serializer.PlistSerializer;
-import ch.cyberduck.ui.cocoa.serializer.PlistWriter;
 import ch.cyberduck.ui.cocoa.serializer.ProtocolPlistReader;
+import ch.cyberduck.ui.cocoa.serializer.TransferPlistReader;
 import ch.cyberduck.ui.growl.GrowlNative;
 
 import org.apache.log4j.BasicConfigurator;
@@ -63,23 +63,22 @@ public class AbstractTestCase {
     }
 
     @BeforeClass
-    public static void register() {
+    public static void setup() {
         AutoreleaseActionOperationBatcher.register();
         FinderLocal.register();
         UserDefaultsPreferences.register();
         BundleLocale.register();
         GrowlNative.register();
-        Donation.register();
-
         PlistDeserializer.register();
         PlistSerializer.register();
-
+        HostPlistReader.register();
+        TransferPlistReader.register();
         ProtocolPlistReader.register();
-
-        PlistWriter.register();
-
         ProtocolFactory.register();
+    }
 
+    @Before
+    public void preferences() {
         Preferences.instance().setProperty("application.support.path", ".");
     }
 
