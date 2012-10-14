@@ -1,5 +1,6 @@
 package ch.cyberduck.core;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -8,6 +9,11 @@ import static org.junit.Assert.assertEquals;
  * @version $Id$
  */
 public class PathReferenceTest {
+
+    @BeforeClass
+    public static void register() {
+        NSObjectPathReference.register();
+    }
 
     @Test
     public void testUnique() throws Exception {

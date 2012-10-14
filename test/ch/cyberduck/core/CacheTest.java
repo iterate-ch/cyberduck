@@ -1,6 +1,7 @@
 package ch.cyberduck.core;
 
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -11,6 +12,11 @@ import static org.junit.Assert.*;
 public class CacheTest extends AbstractTestCase {
 
     private Cache cache;
+
+    @BeforeClass
+    public static void register() {
+        NSObjectPathReference.register();
+    }
 
     @Before
     public void setup() {

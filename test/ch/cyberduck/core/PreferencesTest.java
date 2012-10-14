@@ -1,5 +1,8 @@
 package ch.cyberduck.core;
 
+import ch.cyberduck.ui.cocoa.UserDefaultsPreferences;
+
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.List;
@@ -8,9 +11,14 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class PreferencesTest extends AbstractTestCase {
+
+    @BeforeClass
+    public static void register() {
+        UserDefaultsPreferences.register();
+    }
 
     @Test
     public void testGetListEscapedWhitespace() throws Exception {

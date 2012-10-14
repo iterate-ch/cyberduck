@@ -1,6 +1,8 @@
 package ch.cyberduck.core;
 
-import org.junit.Before;
+import ch.cyberduck.ui.cocoa.UserDefaultsDateFormatter;
+
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.net.InetAddress;
@@ -10,12 +12,13 @@ import java.util.concurrent.CountDownLatch;
 import static org.junit.Assert.*;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class RendezvousResponderTest extends AbstractTestCase {
 
-    @Before
-    public void init() {
+    @BeforeClass
+    public static void register() {
+        UserDefaultsDateFormatter.register();
         RendezvousResponder.register();
     }
 
