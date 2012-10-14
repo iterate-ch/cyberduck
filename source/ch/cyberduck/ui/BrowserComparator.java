@@ -73,6 +73,7 @@ public abstract class BrowserComparator implements Comparator<Path>, Serializabl
         return result;
     }
 
+    @Override
     public int compare(Path p1, Path p2) {
         int result = compareFirst(p1, p2);
         if(0 == result && null != second) {
