@@ -1,6 +1,5 @@
 package ch.cyberduck.core;
 
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -11,20 +10,14 @@ import static org.junit.Assert.*;
  */
 public class CacheTest extends AbstractTestCase {
 
-    private Cache cache;
-
     @BeforeClass
     public static void register() {
         NSObjectPathReference.register();
     }
 
-    @Before
-    public void setup() {
-        cache = new Cache();
-    }
-
     @Test
     public void testLookup() throws Exception {
+        Cache cache = new Cache();
         assertNull(cache.lookup(new PathReference() {
             @Override
             public Object unique() {
@@ -46,6 +39,7 @@ public class CacheTest extends AbstractTestCase {
 
     @Test
     public void testIsEmpty() throws Exception {
+        Cache cache = new Cache();
         assertTrue(cache.isEmpty());
         cache.put(new PathReference() {
             @Override
@@ -58,6 +52,7 @@ public class CacheTest extends AbstractTestCase {
 
     @Test
     public void testContainsKey() throws Exception {
+        Cache cache = new Cache();
         final Object u = new Object();
         assertFalse(cache.containsKey(new PathReference() {
             @Override
@@ -83,6 +78,7 @@ public class CacheTest extends AbstractTestCase {
 
     @Test
     public void testInvalidate() throws Exception {
+        Cache cache = new Cache();
         final AttributedList<Path> list = new AttributedList<Path>();
         final PathReference reference = new PathReference() {
             final Object o = new Object();
