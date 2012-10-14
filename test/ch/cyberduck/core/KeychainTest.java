@@ -1,19 +1,17 @@
 package ch.cyberduck.core;
 
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import static org.junit.Assert.assertNull;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class KeychainTest extends AbstractTestCase {
 
-    @Before
-    @Override
-    public void register() {
-        super.register();
+    @BeforeClass
+    public static void register() {
         Keychain.register();
     }
 
