@@ -3,7 +3,7 @@ package ch.cyberduck.core.editor;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.NullLocal;
 
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.List;
@@ -15,10 +15,8 @@ import static org.junit.Assert.*;
  */
 public class LaunchServicesApplicationFinderTest extends AbstractTestCase {
 
-    @Override
-    @Before
-    public void register() {
-        super.register();
+    @BeforeClass
+    public static void register() {
         LaunchServicesApplicationFinder.register();
     }
 

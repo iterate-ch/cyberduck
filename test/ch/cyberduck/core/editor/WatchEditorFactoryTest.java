@@ -3,7 +3,7 @@ package ch.cyberduck.core.editor;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.NullLocal;
 
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.List;
@@ -11,14 +11,12 @@ import java.util.List;
 import static org.junit.Assert.*;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class WatchEditorFactoryTest extends AbstractTestCase {
 
-    @Before
-    @Override
-    public void register() {
-        super.register();
+    @BeforeClass
+    public static void register() {
         LaunchServicesApplicationFinder.register();
         WatchEditorFactory.register();
     }
