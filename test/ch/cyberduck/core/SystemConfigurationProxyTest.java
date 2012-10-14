@@ -1,20 +1,18 @@
 package ch.cyberduck.core;
 
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class SystemConfigurationProxyTest extends AbstractTestCase {
 
-    @Before
-    @Override
-    public void register() {
-        super.register();
+    @BeforeClass
+    public static void register() {
         SystemConfigurationProxy.register();
     }
 
