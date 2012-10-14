@@ -2682,7 +2682,6 @@ source/ch/cyberduck/ui/controller/UploadPromptController.cs -text
 source/ch/cyberduck/ui/controller/UploadPromptModel.cs -text
 source/ch/cyberduck/ui/controller/UserPreferences.cs -text
 source/ch/cyberduck/ui/controller/WindowController.cs -text
-source/ch/cyberduck/ui/controller/growl/GrowlImpl.cs -text
 source/ch/cyberduck/ui/controller/threading/AlertRepeatableBackgroundAction.cs -text
 source/ch/cyberduck/ui/controller/threading/BrowserBackgroundAction.cs -text
 source/ch/cyberduck/ui/controller/threading/InfoBackgroundAction.cs -text
@@ -2690,6 +2689,7 @@ source/ch/cyberduck/ui/controller/threading/SimpleDefaultMainAction.cs -text
 source/ch/cyberduck/ui/controller/threading/SimpleWindowMainAction.cs -text
 source/ch/cyberduck/ui/controller/threading/WindowMainAction.cs -text
 source/ch/cyberduck/ui/growl/GrowlFactory.java -text
+source/ch/cyberduck/ui/growl/GrowlImpl.cs -text
 source/ch/cyberduck/ui/winforms/AboutBox.Designer.cs -text
 source/ch/cyberduck/ui/winforms/AboutBox.cs -text
 source/ch/cyberduck/ui/winforms/AboutBox.resx -text

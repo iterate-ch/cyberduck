@@ -18,12 +18,11 @@
 using System.Drawing;
 using ch.cyberduck;
 using ch.cyberduck.core;
-using ch.cyberduck.ui.growl;
 using Growl.Connector;
 
-namespace Ch.Cyberduck.Ui.Controller.Growl
+namespace Ch.Cyberduck.Ui.Growl.Growl
 {
-    internal class GrowlImpl : ch.cyberduck.ui.growl.Growl
+    internal class GrowlImpl : Growl
     {
         private readonly Application _app = new Application(Preferences.instance().getProperty("application.name"))
                                                 {
