@@ -20,8 +20,8 @@ package ch.cyberduck.ui.cocoa.quicklook;
  */
 
 import ch.cyberduck.core.Collection;
-import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Native;
+import ch.cyberduck.core.local.Local;
 
 import java.util.ArrayList;
 import java.util.List;

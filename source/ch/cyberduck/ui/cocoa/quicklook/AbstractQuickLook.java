@@ -1,7 +1,7 @@
 package ch.cyberduck.ui.cocoa.quicklook;
 
 import ch.cyberduck.core.Collection;
-import ch.cyberduck.core.Local;
+import ch.cyberduck.core.local.Local;
 
 /*
  * Copyright (c) 2002-2009 David Kocher. All rights reserved.
@@ -36,7 +36,7 @@ public abstract class AbstractQuickLook implements QuickLookInterface {
 
     @Override
     public void willBeginQuickLook() {
-        ;
+        //
     }
 
     @Override
