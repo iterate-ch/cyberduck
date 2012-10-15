@@ -885,10 +885,6 @@ public class Host implements Serializable {
         return this.getUuid().hashCode();
     }
 
-    public boolean isReachable() {
-        return ReachabilityFactory.get().isReachable(this);
-    }
-
     public void diagnose() {
         ReachabilityFactory.get().diagnose(this);
     }

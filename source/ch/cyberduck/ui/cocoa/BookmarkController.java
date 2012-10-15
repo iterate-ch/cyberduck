@@ -25,6 +25,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.ReachabilityFactory;
 import ch.cyberduck.core.ftp.FTPConnectMode;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.local.Local;
@@ -677,7 +678,7 @@ public class BookmarkController extends WindowController {
 
                 @Override
                 public void run() {
-                    reachable = host.isReachable();
+                    reachable = ReachabilityFactory.get().isReachable(host);
                 }
 
                 @Override

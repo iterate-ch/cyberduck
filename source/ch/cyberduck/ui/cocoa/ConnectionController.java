@@ -26,6 +26,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.ReachabilityFactory;
 import ch.cyberduck.core.ftp.FTPConnectMode;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.local.LocalFactory;
@@ -315,7 +316,7 @@ public class ConnectionController extends SheetController {
 
                 @Override
                 public void run() {
-                    reachable = new Host(hostname).isReachable();
+                    reachable = ReachabilityFactory.get().isReachable(new Host(hostname));
                 }
 
                 @Override
