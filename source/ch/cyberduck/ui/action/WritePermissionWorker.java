@@ -55,14 +55,15 @@ public abstract class WritePermissionWorker extends Worker<Permission> {
     @Override
     public Permission run() {
         for(Path next : files) {
-            if(!next.getSession().isConnected()) {
-                break;
-            }
+            this.write(next);
         }
         return permission;
     }
 
     private void write(final Path file) {
+        if(!file.getSession().isConnected()) {
+            return;
+        }
         if(recursive && file.attributes().isFile()) {
             // Do not write executable bit for files if not already set when recursively updating directory.
             // See #1787
