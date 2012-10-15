@@ -27,7 +27,7 @@ import org.apache.log4j.Logger;
  * @version $Id$
  */
 public abstract class AbstractLoginController implements LoginController {
-    private static Logger log = Logger.getLogger(AbstractLoginController.class);
+    private static final Logger log = Logger.getLogger(AbstractLoginController.class);
 
     @Override
     public void warn(String title, String message, String preference) throws LoginCanceledException {
@@ -90,7 +90,6 @@ public abstract class AbstractLoginController implements LoginController {
             else {
                 reason.append(Locale.localizedString(
                         "No login credentials could be found in the Keychain", "Credentials")).append(".");
-                ;
                 this.prompt(host.getProtocol(), credentials, title, reason.toString(),
                         enableKeychain, enablePublicKey, enableAnonymous);
             }
@@ -100,18 +99,27 @@ public abstract class AbstractLoginController implements LoginController {
     @Override
     public void fail(final Protocol protocol, final Credentials credentials, final String reason)
             throws LoginCanceledException {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Login failure as %s", credentials.getUsername()));
+        }
         this.prompt(protocol, credentials,
                 Locale.localizedString("Login failed", "Credentials"), reason);
     }
 
     @Override
     public void success(final Host host) {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Login success to host %s as %s", host.getHostname(), host.getCredentials().getUsername()));
+        }
         KeychainFactory.instance().save(host);
     }
 
     @Override
     public void fail(final Protocol protocol, final Credentials credentials)
             throws LoginCanceledException {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Login failure as %s", credentials.getUsername()));
+        }
         this.prompt(protocol, credentials,
                 Locale.localizedString("Login failed", "Credentials"),
                 Locale.localizedString("Login with username and password", "Credentials"));
