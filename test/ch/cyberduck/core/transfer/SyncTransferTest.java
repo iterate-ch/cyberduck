@@ -20,20 +20,27 @@ package ch.cyberduck.core.transfer;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.NSObjectPathReference;
 import ch.cyberduck.core.NullPath;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.sftp.SFTPSession;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class SyncTransferTest extends AbstractTestCase {
+
+    @BeforeClass
+    public static void register() {
+        NSObjectPathReference.register();
+    }
 
     @Test
     public void testSerialize() throws Exception {
@@ -49,13 +56,10 @@ public class SyncTransferTest extends AbstractTestCase {
     }
 
     @Test
-    public void testGetSize() throws Exception {
-
-    }
-
-    @Test
     public void testFilter() throws Exception {
-
+        final NullPath p = new NullPath("t", Path.FILE_TYPE);
+        Transfer t = new SyncTransfer(p);
+        t.filter(null, TransferAction.ACTION_OVERWRITE);
     }
 
     @Test
