@@ -31,7 +31,7 @@ import java.util.List;
  *
  * @version $Id$
  */
-public class LaunchServicesSchemeHandler extends AbstractSchemeHandler {
+public final class LaunchServicesSchemeHandler extends AbstractSchemeHandler {
 
     public static void register() {
         SchemeHandlerFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
