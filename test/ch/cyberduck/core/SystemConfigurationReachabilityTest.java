@@ -18,13 +18,13 @@ public class SystemConfigurationReachabilityTest extends AbstractTestCase {
 
     @Test
     public void testIsReachable() throws Exception {
-        assertTrue(ReachabilityFactory.instance().isReachable(
+        assertTrue(ReachabilityFactory.get().isReachable(
                 new Host("cyberduck.ch", 80)
         ));
-        assertTrue(ReachabilityFactory.instance().isReachable(
+        assertTrue(ReachabilityFactory.get().isReachable(
                 new Host("cyberduck.ch", 22)
         ));
-        assertFalse(ReachabilityFactory.instance().isReachable(
+        assertFalse(ReachabilityFactory.get().isReachable(
                 new Host("a.cyberduck.ch", 22)
         ));
     }
