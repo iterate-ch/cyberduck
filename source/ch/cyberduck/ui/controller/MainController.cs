@@ -26,7 +26,8 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows.Forms;
 using Ch.Cyberduck.Core;
-using Ch.Cyberduck.Ui.Controller.Growl;
+using Ch.Cyberduck.Core.Editor;
+using Ch.Cyberduck.Ui.Growl;
 using Ch.Cyberduck.Ui.Winforms;
 using Ch.Cyberduck.Ui.Winforms.Serializer;
 using Ch.Cyberduck.Ui.Winforms.Taskdialog;
@@ -194,6 +195,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 Rendezvous.Register();
             }
             ProtocolFactory.register();
+            EditorFactory.register();
         }
 
         private static void ConfigureLogging()

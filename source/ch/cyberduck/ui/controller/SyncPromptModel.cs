@@ -17,6 +17,7 @@
 // 
 
 using ch.cyberduck.core;
+using ch.cyberduck.core.synchronization;
 using org.apache.log4j;
 
 namespace Ch.Cyberduck.Ui.Controller
@@ -50,8 +51,8 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public override object GetSize(Path path)
         {
-            SyncTransfer.Comparison compare = ((SyncTransfer) Transfer).compare(path);
-            return compare.equals(SyncTransfer.COMPARISON_REMOTE_NEWER)
+            Comparison compare = ((SyncTransfer) Transfer).compare(path);
+            return compare.equals(Comparison.REMOTE_NEWER)
                        ? path.attributes().getSize()
                        : path.getLocal().attributes().getSize();
         }
@@ -96,12 +97,12 @@ namespace Ch.Cyberduck.Ui.Controller
                     return null;
                 }
             }
-            SyncTransfer.Comparison compare = ((SyncTransfer) Transfer).compare(path);
-            if (compare.equals(SyncTransfer.COMPARISON_REMOTE_NEWER))
+            Comparison compare = ((SyncTransfer) Transfer).compare(path);
+            if (compare.equals(Comparison.REMOTE_NEWER))
             {
                 return IconCache.Instance.IconForName("transfer-download", 16);
             }
-            if (compare.equals(SyncTransfer.COMPARISON_LOCAL_NEWER))
+            if (compare.equals(Comparison.LOCAL_NEWER))
             {
                 return IconCache.Instance.IconForName("transfer-upload", 16);
             }

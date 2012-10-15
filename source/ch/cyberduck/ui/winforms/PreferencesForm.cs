@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2011 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -24,30 +24,31 @@ using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Winforms.Controls;
 using ch.cyberduck.core;
 using ch.cyberduck.core.i18n;
+using Application = ch.cyberduck.core.editor.Application;
 
 namespace Ch.Cyberduck.Ui.Winforms
 {
     public partial class PreferencesForm : BaseForm, IPreferencesView
     {
-        private static readonly int MaxHeight = 800;
-        private static readonly int MaxWidth = 1000;
-        private static readonly int MinHeight = 250;
-        private static readonly int MinWidth = 450;
-        private Editor.AvailableEditor lastSelectedEditor;
+        private const int MaxHeight = 800;
+        private const int MaxWidth = 1000;
+        private const int MinHeight = 250;
+        private const int MinWidth = 450;
+        private Application _lastSelectedEditor;
 
         public PreferencesForm()
         {
             InitializeComponent();
 
             Load += delegate
-                        {
-                            int newWidth = 10; // border etc.
-                            foreach (ToolStripItem item in toolStrip.Items)
-                            {
-                                newWidth += item.Size.Width + item.Margin.Left + item.Margin.Right;
-                            }
-                            Width = newWidth;
-                        };
+                {
+                    int newWidth = 10; // border etc.
+                    foreach (ToolStripItem item in toolStrip.Items)
+                    {
+                        newWidth += item.Size.Width + item.Margin.Left + item.Margin.Right;
+                    }
+                    Width = newWidth;
+                };
 
             MaximumSize = new Size(MaxWidth, MaxHeight);
             MinimumSize = new Size(MinWidth, MinHeight);
@@ -120,6 +121,16 @@ namespace Ch.Cyberduck.Ui.Winforms
             get { return new[] {"Preferences"}; }
         }
 
+        public Application DefaultEditor
+        {
+            get { return (Application) editorComboBox.SelectedValue; }
+            set
+            {
+                editorComboBox.SelectedValue = value;
+                _lastSelectedEditor = value;
+            }
+        }
+
         public bool SaveWorkspace
         {
             get { return saveWorkspaceCheckbox.Checked; }
@@ -159,16 +170,6 @@ namespace Ch.Cyberduck.Ui.Winforms
         {
             get { return confirmDisconnectCheckbox.Checked; }
             set { confirmDisconnectCheckbox.Checked = value; }
-        }
-
-        public Editor.AvailableEditor DefaultEditor
-        {
-            get { return (Editor.AvailableEditor) editorComboBox.SelectedValue; }
-            set
-            {
-                editorComboBox.SelectedValue = value;
-                lastSelectedEditor = value;
-            }
         }
 
         public bool AlwaysUseDefaultEditor
@@ -786,7 +787,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             connectBookmarkCombobox.IconMember = "IconKey";
         }
 
-        public void PopulateEditors(List<KeyValueIconTriple<Editor.AvailableEditor, string>> editors)
+        public void PopulateEditors(List<KeyValueIconTriple<Application, string>> editors)
         {
             editorComboBox.DataSource = editors;
             editorComboBox.ValueMember = "Key";
@@ -794,12 +795,12 @@ namespace Ch.Cyberduck.Ui.Winforms
             editorComboBox.IconMember = "IconKey";
 
             ImageList imageList = new ImageList();
-            foreach (KeyValueIconTriple<Editor.AvailableEditor, string> triple in editors)
+            foreach (KeyValueIconTriple<Application, string> triple in editors)
             {
-                if (triple.Key.Location != null)
+                if (triple.Key.getIdentifier() != null)
                 {
                     imageList.Images.Add(triple.Value,
-                                         IconCache.Instance.GetFileIconFromExecutable(triple.Key.Location,
+                                         IconCache.Instance.GetFileIconFromExecutable(triple.Key.getIdentifier(),
                                                                                       IconCache.IconSize.Small));
                 }
             }
@@ -1456,8 +1457,8 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         private void editorComboBox_SelectionChangeCommitted(object sender, EventArgs e)
         {
-            Editor.AvailableEditor selected = DefaultEditor;
-            if (selected.Location == null)
+            Application selected = DefaultEditor;
+            if (selected == null)
             {
                 //choose dialog
                 editorOpenFileDialog.FileName = null;
@@ -1469,20 +1470,20 @@ namespace Ch.Cyberduck.Ui.Winforms
                 }
                 else
                 {
-                    if (lastSelectedEditor != null)
+                    if (_lastSelectedEditor != null)
                     {
-                        DefaultEditor = lastSelectedEditor;
+                        DefaultEditor = _lastSelectedEditor;
                     }
                     else
                     {
                         //dummy editor which leads to an empty selection
-                        DefaultEditor = new Editor.CustomEditor(null, null);
+                        DefaultEditor = new Application(null, null);
                     }
                 }
             }
             else
             {
-                lastSelectedEditor = DefaultEditor;
+                _lastSelectedEditor = DefaultEditor;
                 DefaultEditorChangedEvent();
             }
         }

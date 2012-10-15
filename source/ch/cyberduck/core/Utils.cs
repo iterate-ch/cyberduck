@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2011 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -25,6 +25,7 @@ using System.IO;
 using System.Linq;
 using Microsoft.Win32;
 using ch.cyberduck.core;
+using ch.cyberduck.core.editor;
 using java.nio.charset;
 using java.util;
 using org.apache.log4j;
@@ -38,30 +39,30 @@ namespace Ch.Cyberduck.Core
         public delegate T ApplyPerItemReverseDelegate<T>(object item);
 
         private static readonly List<String> ExtendedCharsets = new List<string>
-                                                                    {
-                                                                        "Big5",
-                                                                        "Big5-HKSCS",
-                                                                        "EUC-JP",
-                                                                        "EUC-KR",
-                                                                        "GB18030",
-                                                                        "GB2312",
-                                                                        "GBK",
-                                                                        "ISO-2022-CN",
-                                                                        "ISO-2022-JP",
-                                                                        "ISO-2022-JP-2",
-                                                                        "ISO-2022-KR",
-                                                                        "ISO-8859-3",
-                                                                        "ISO-8859-6",
-                                                                        "ISO-8859-8",
-                                                                        "JIS_X0201",
-                                                                        "JIS_X0212-1990",
-                                                                        "Shift_JIS",
-                                                                        "TIS-620",
-                                                                        "windows-1255",
-                                                                        "windows-1256",
-                                                                        "windows-1258",
-                                                                        "windows-31j"
-                                                                    };
+            {
+                "Big5",
+                "Big5-HKSCS",
+                "EUC-JP",
+                "EUC-KR",
+                "GB18030",
+                "GB2312",
+                "GBK",
+                "ISO-2022-CN",
+                "ISO-2022-JP",
+                "ISO-2022-JP-2",
+                "ISO-2022-KR",
+                "ISO-8859-3",
+                "ISO-8859-6",
+                "ISO-8859-8",
+                "JIS_X0201",
+                "JIS_X0212-1990",
+                "Shift_JIS",
+                "TIS-620",
+                "windows-1255",
+                "windows-1256",
+                "windows-1258",
+                "windows-31j"
+            };
 
         public static readonly bool IsVistaOrLater = OperatingSystemVersion.Current >= OSVersionInfo.Vista;
         public static readonly bool IsWin7OrLater = OperatingSystemVersion.Current >= OSVersionInfo.Win7;
@@ -177,7 +178,7 @@ namespace Ch.Cyberduck.Core
         /// <typeparam name="V"></typeparam>
         /// <param name="dictionary"></param>
         /// <returns></returns>
-        public static Map ConvertToJavaMap<K,V>(IDictionary<K,V> dictionary)
+        public static Map ConvertToJavaMap<K, V>(IDictionary<K, V> dictionary)
         {
             Map javaMap = new HashMap();
             foreach (KeyValuePair<K, V> pair in dictionary)
@@ -232,73 +233,6 @@ namespace Ch.Cyberduck.Core
         }
 
         /// <summary>
-        /// method for retrieving the users default web browser
-        /// </summary>
-        /// <returns></returns>
-        public static string GetSystemDefaultBrowser()
-        {
-            try
-            {
-                //for Vista and later we first check the UserChoice
-                using (
-                    var uc =
-                        Registry.CurrentUser.OpenSubKey(
-                            @"HKEY_CURRENT_USER\Software\Microsoft\Windows\Shell\Associations\UrlAssociations\http\UserChoice")
-                    )
-                {
-                    if (null != uc)
-                    {
-                        string progid = (string) uc.GetValue("Progid");
-                        if (null != progid)
-                        {
-                            string exe = GetExeFromOpenCommand(Registry.ClassesRoot);
-                            if (null != exe)
-                            {
-                                return exe;
-                            }
-                        }
-                    }
-                }
-
-                //set the registry key we want to open
-                using (var regKey = Registry.ClassesRoot.OpenSubKey("HTTP\\shell\\open\\command", false))
-                {
-                    return ExtractExeFromCommand((string) regKey.GetValue(null));
-                }
-            }
-            catch (Exception)
-            {
-                return null;
-            }
-        }
-
-        public static string ExtractExeFromCommand(string command)
-        {
-            if (!String.IsNullOrEmpty(command))
-            {
-                String cmd = null;
-                if (command.StartsWith("\""))
-                {
-                    int i = command.IndexOf("\"", 1);
-                    if (i > 2)
-                        cmd = command.Substring(1, i - 1);
-                }
-                else
-                {
-                    int i = command.IndexOf(" ");
-                    if (i > 0)
-                        cmd = command.Substring(0, i);
-                }
-
-                if (null != cmd && LocalFactory.createLocal(cmd).exists())
-                {
-                    return cmd;
-                }
-            }
-            return null;
-        }
-
-        /// <summary>
         /// 
         /// </summary>
         /// <returns>The available character sets available on this platform</returns>
@@ -319,7 +253,53 @@ namespace Ch.Cyberduck.Core
             return charsets.ToArray();
         }
 
-        private static IList<String> OpenWithListForExtension(String ext, RegistryKey rootKey)
+        public static IList<KeyValuePair<string, string>> OpenWithListForExtension(String ext)
+        {
+            IList<String> progs = new List<string>();
+            List<KeyValuePair<string, string>> map = new List<KeyValuePair<string, string>>();
+
+            if (IsBlank(ext)) return map;
+
+            if (!ext.StartsWith(".")) ext = "." + ext;
+            using (RegistryKey clsExt = Registry.ClassesRoot.OpenSubKey(ext))
+            {
+                IList<string> rootList = OpenWithListForExtension(ext, clsExt);
+                foreach (string s in rootList)
+                {
+                    progs.Add(s);
+                }
+            }
+            using (
+                RegistryKey clsExt =
+                    Registry.CurrentUser.OpenSubKey(
+                        "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FileExts\\" + ext))
+            {
+                IList<string> explorerList = OpenWithListForExtension(ext, clsExt);
+                foreach (string s in explorerList)
+                {
+                    progs.Add(s);
+                }
+            }
+
+            foreach (string exe in progs.Distinct())
+            {
+                Application application = ApplicationFinderFactory.instance().find(exe);
+                if (null != application)
+                {
+                    map.Add(new KeyValuePair<string, string>(application.getName(), exe));
+                }
+                else
+                {
+                    map.Add(new KeyValuePair<string, string>(LocalFactory.createLocal(exe).getName(), exe));
+                }
+            }
+            map.Sort(
+                delegate(KeyValuePair<string, string> pair1, KeyValuePair<string, string> pair2) { return pair1.Key.CompareTo(pair2.Key); });
+
+            return map;
+        }
+
+        public static IList<String> OpenWithListForExtension(String ext, RegistryKey rootKey)
         {
             IList<String> result = new List<string>();
 
@@ -363,91 +343,6 @@ namespace Ch.Cyberduck.Core
                 }
             }
             return result;
-        }
-
-        public static IList<KeyValuePair<string, string>> OpenWithListForExtension(String ext)
-        {
-            IList<String> progs = new List<string>();
-            List<KeyValuePair<string, string>> map = new List<KeyValuePair<string, string>>();
-
-            if (IsBlank(ext)) return map;
-
-            if (!ext.StartsWith(".")) ext = "." + ext;
-            using (RegistryKey clsExt = Registry.ClassesRoot.OpenSubKey(ext))
-            {
-                IList<string> rootList = OpenWithListForExtension(ext, clsExt);
-                foreach (string s in rootList)
-                {
-                    progs.Add(s);
-                }
-            }
-            using (
-                RegistryKey clsExt =
-                    Registry.CurrentUser.OpenSubKey(
-                        "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FileExts\\" + ext))
-            {
-                IList<string> explorerList = OpenWithListForExtension(ext, clsExt);
-                foreach (string s in explorerList)
-                {
-                    progs.Add(s);
-                }
-            }
-
-            foreach (string exe in progs.Distinct())
-            {
-                String appName = GetApplicationNameForExe(exe);
-                if (null != appName)
-                {
-                    map.Add(new KeyValuePair<string, string>(appName, exe));
-                }
-                else
-                {
-                    map.Add(new KeyValuePair<string, string>(LocalFactory.createLocal(exe).getName(), exe));
-                }
-            }
-            map.Sort(
-                delegate(KeyValuePair<string, string> pair1, KeyValuePair<string, string> pair2) { return pair1.Key.CompareTo(pair2.Key); });
-
-            return map;
-        }
-
-        public static String GetApplicationNameForExe(string exe)
-        {
-            //Vista/Win7
-            using (
-                RegistryKey muiCache =
-                    Registry.ClassesRoot.OpenSubKey(
-                        "Local Settings\\Software\\Microsoft\\Windows\\Shell\\MuiCache"))
-            {
-                if (null != muiCache)
-                {
-                    foreach (string valueName in muiCache.GetValueNames())
-                    {
-                        if (valueName.Equals(exe, StringComparison.CurrentCultureIgnoreCase))
-                        {
-                            return (string) muiCache.GetValue(valueName);
-                        }
-                    }
-                }
-            }
-            //WindowsXP
-            using (
-                RegistryKey muiCache =
-                    Registry.CurrentUser.OpenSubKey(
-                        "Software\\Microsoft\\Windows\\ShellNoRoam\\MUICache"))
-            {
-                if (null != muiCache)
-                {
-                    foreach (string valueName in muiCache.GetValueNames())
-                    {
-                        if (valueName.Equals(exe, StringComparison.CurrentCultureIgnoreCase))
-                        {
-                            return (string) muiCache.GetValue(valueName);
-                        }
-                    }
-                }
-            }
-            return null;
         }
 
         private static IList<String> GetApplicationCmdsFromOpenWithList(RegistryKey openWithKey)
@@ -514,13 +409,12 @@ namespace Ch.Cyberduck.Core
             return appCmds;
         }
 
-
         /// <summary>
         /// Extract open command
         /// </summary>
         /// <param name="root">expected substructure is shell/open/command</param>
         /// <returns>null if not found</returns>
-        private static string GetExeFromOpenCommand(RegistryKey root)
+        public static string GetExeFromOpenCommand(RegistryKey root)
         {
             if (null != root)
             {
@@ -528,7 +422,7 @@ namespace Ch.Cyberduck.Core
                 {
                     if (null != editSk)
                     {
-                        String cmd = (String)editSk.GetValue(String.Empty);
+                        String cmd = (String) editSk.GetValue(String.Empty);
                         //todo replcae with extract exe from command
                         if (!String.IsNullOrEmpty(cmd))
                         {
@@ -552,6 +446,73 @@ namespace Ch.Cyberduck.Core
                             }
                         }
                     }
+                }
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// method for retrieving the users default web browser
+        /// </summary>
+        /// <returns></returns>
+        public static string GetSystemDefaultBrowser()
+        {
+            try
+            {
+                //for Vista and later we first check the UserChoice
+                using (
+                    var uc =
+                        Registry.CurrentUser.OpenSubKey(
+                            @"HKEY_CURRENT_USER\Software\Microsoft\Windows\Shell\Associations\UrlAssociations\http\UserChoice")
+                    )
+                {
+                    if (null != uc)
+                    {
+                        string progid = (string) uc.GetValue("Progid");
+                        if (null != progid)
+                        {
+                            string exe = GetExeFromOpenCommand(Registry.ClassesRoot);
+                            if (null != exe)
+                            {
+                                return exe;
+                            }
+                        }
+                    }
+                }
+
+                //set the registry key we want to open
+                using (var regKey = Registry.ClassesRoot.OpenSubKey("HTTP\\shell\\open\\command", false))
+                {
+                    return ExtractExeFromCommand((string) regKey.GetValue(null));
+                }
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        public static string ExtractExeFromCommand(string command)
+        {
+            if (!String.IsNullOrEmpty(command))
+            {
+                String cmd = null;
+                if (command.StartsWith("\""))
+                {
+                    int i = command.IndexOf("\"", 1);
+                    if (i > 2)
+                        cmd = command.Substring(1, i - 1);
+                }
+                else
+                {
+                    int i = command.IndexOf(" ");
+                    if (i > 0)
+                        cmd = command.Substring(0, i);
+                }
+
+                if (null != cmd && LocalFactory.createLocal(cmd).exists())
+                {
+                    return cmd;
                 }
             }
             return null;

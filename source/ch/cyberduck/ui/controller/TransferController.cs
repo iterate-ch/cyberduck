@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2011 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -15,16 +15,20 @@
 // Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
 // 
+
 using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-using ch.cyberduck.core;
 using Ch.Cyberduck.Core;
-using ch.cyberduck.core.i18n;
-using ch.cyberduck.core.io;
 using Ch.Cyberduck.Ui.Controller.Threading;
-using org.apache.log4j;
 using StructureMap;
+using ch.cyberduck.core;
+using ch.cyberduck.core.formatter;
+using ch.cyberduck.core.io;
+using java.util;
+using org.apache.log4j;
+using Locale = ch.cyberduck.core.i18n.Locale;
+using Queue = ch.cyberduck.core.Queue;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -68,47 +72,47 @@ namespace Ch.Cyberduck.Ui.Controller
         public void collectionLoaded()
         {
             Invoke(delegate
-                       {
-                           IList<IProgressView> model = new List<IProgressView>();
-                           foreach (Transfer transfer in TransferCollection.defaultCollection())
-                           {
-                               ProgressController progressController = new ProgressController(transfer);
-                               model.Add(progressController.View);
-                               _transferMap.Add(new KeyValuePair<Transfer, ProgressController>(transfer,
-                                                                                               progressController));
-                           }
-                           View.SetModel(model);
-                       }
+                {
+                    IList<IProgressView> model = new List<IProgressView>();
+                    foreach (Transfer transfer in TransferCollection.defaultCollection())
+                    {
+                        ProgressController progressController = new ProgressController(transfer);
+                        model.Add(progressController.View);
+                        _transferMap.Add(new KeyValuePair<Transfer, ProgressController>(transfer,
+                                                                                        progressController));
+                    }
+                    View.SetModel(model);
+                }
                 );
         }
 
         public void collectionItemAdded(object obj)
         {
             Invoke(delegate
-                       {
-                           Transfer transfer = obj as Transfer;
-                           ProgressController progressController = new ProgressController(transfer);
-                           _transferMap.Add(new KeyValuePair<Transfer, ProgressController>(transfer, progressController));
-                           IProgressView progressView = progressController.View;
-                           View.AddTransfer(progressView);
-                           View.SelectTransfer(progressView);
-                       });
+                {
+                    Transfer transfer = obj as Transfer;
+                    ProgressController progressController = new ProgressController(transfer);
+                    _transferMap.Add(new KeyValuePair<Transfer, ProgressController>(transfer, progressController));
+                    IProgressView progressView = progressController.View;
+                    View.AddTransfer(progressView);
+                    View.SelectTransfer(progressView);
+                });
         }
 
         public void collectionItemRemoved(object obj)
         {
             Invoke(delegate
-                       {
-                           Transfer transfer = obj as Transfer;
-                           if (null != transfer)
-                           {
-                               ProgressController progressController;
-                               if (_transferMap.TryGetValue(transfer, out progressController))
-                               {
-                                   View.RemoveTransfer(progressController.View);
-                               }
-                           }
-                       });
+                {
+                    Transfer transfer = obj as Transfer;
+                    if (null != transfer)
+                    {
+                        ProgressController progressController;
+                        if (_transferMap.TryGetValue(transfer, out progressController))
+                        {
+                            View.RemoveTransfer(progressController.View);
+                        }
+                    }
+                });
         }
 
         public void collectionItemChanged(object obj)
@@ -167,13 +171,13 @@ namespace Ch.Cyberduck.Ui.Controller
             PopulateBandwithList();
 
             View.PositionSizeRestoredEvent += delegate
-                                                  {
-                                                      View.TranscriptVisible = Preferences.instance().getBoolean("queue.logDrawer.isOpen");
-                                                      View.TranscriptHeight = Preferences.instance().getInteger("queue.logDrawer.size.height");
+                {
+                    View.TranscriptVisible = Preferences.instance().getBoolean("queue.logDrawer.isOpen");
+                    View.TranscriptHeight = Preferences.instance().getInteger("queue.logDrawer.size.height");
 
-                                                      View.ToggleTranscriptEvent += View_ToggleTranscriptEvent;
-                                                      View.TranscriptHeightChangedEvent += View_TranscriptHeightChangedEvent;
-                                                  };
+                    View.ToggleTranscriptEvent += View_ToggleTranscriptEvent;
+                    View.TranscriptHeightChangedEvent += View_TranscriptHeightChangedEvent;
+                };
             View.QueueSize = Preferences.instance().getInteger("queue.maxtransfers");
             View.BandwidthEnabled = false;
 
@@ -211,40 +215,40 @@ namespace Ch.Cyberduck.Ui.Controller
         private bool View_ValidateShowEvent()
         {
             return ValidateToolbarItem(delegate(Transfer transfer)
-                                           {
-                                               for (int i = 0; i < transfer.getRoots().size(); i++)
-                                               {
-                                                   Path p = (Path) transfer.getRoots().get(i);
-                                                   if (p.getLocal().exists())
-                                                   {
-                                                       return true;
-                                                   }
-                                               }
-                                               return false;
-                                           });
+                {
+                    for (int i = 0; i < transfer.getRoots().size(); i++)
+                    {
+                        Path p = (Path) transfer.getRoots().get(i);
+                        if (p.getLocal().exists())
+                        {
+                            return true;
+                        }
+                    }
+                    return false;
+                });
         }
 
         private bool View_ValidateOpenEvent()
         {
             return ValidateToolbarItem(delegate(Transfer transfer)
-                                           {
-                                               if (!transfer.isComplete())
-                                               {
-                                                   return false;
-                                               }
-                                               if (!transfer.isRunning())
-                                               {
-                                                   for (int i = 0; i < transfer.getRoots().size(); i++)
-                                                   {
-                                                       Path p = (Path) transfer.getRoots().get(i);
-                                                       if (p.getLocal().exists())
-                                                       {
-                                                           return true;
-                                                       }
-                                                   }
-                                               }
-                                               return false;
-                                           });
+                {
+                    if (!transfer.isComplete())
+                    {
+                        return false;
+                    }
+                    if (!transfer.isRunning())
+                    {
+                        for (int i = 0; i < transfer.getRoots().size(); i++)
+                        {
+                            Path p = (Path) transfer.getRoots().get(i);
+                            if (p.getLocal().exists())
+                            {
+                                return true;
+                            }
+                        }
+                    }
+                    return false;
+                });
         }
 
         private bool View_ValidateCleanEvent()
@@ -307,13 +311,13 @@ namespace Ch.Cyberduck.Ui.Controller
         private bool View_ValidateResumeEvent()
         {
             return ValidateToolbarItem(delegate(Transfer transfer)
-                                           {
-                                               if (transfer.isRunning())
-                                               {
-                                                   return false;
-                                               }
-                                               return transfer.isResumable() && !transfer.isComplete();
-                                           });
+                {
+                    if (transfer.isRunning())
+                    {
+                        return false;
+                    }
+                    return transfer.isResumable() && !transfer.isComplete();
+                });
         }
 
         private void PopulateBandwithList()
@@ -328,7 +332,8 @@ namespace Ch.Cyberduck.Ui.Controller
                                                                                             RemoveEmptyEntries))
             {
                 list.Add(new KeyValuePair<float, string>(Convert.ToInt32(option.Trim()),
-                                                         (Status.getSizeAsString(Convert.ToInt32(option.Trim())) + "/s")));
+                                                         (SizeFormatterFactory.instance().format(
+                                                             Convert.ToInt32(option.Trim())) + "/s")));
             }
             View.PopulateBandwidthList(list);
         }
@@ -609,23 +614,6 @@ namespace Ch.Cyberduck.Ui.Controller
                 _transfer.start(new LazyTransferPrompt(_controller, _transfer), options);
             }
 
-            private class LazyTransferPrompt : TransferPrompt
-            {
-                private readonly TransferController _controller;
-                private readonly Transfer _transfer;
-
-                public LazyTransferPrompt(TransferController controller, Transfer transfer) 
-                {
-                    _transfer = transfer;
-                    _controller = controller;
-                }
-
-                public TransferAction prompt()
-                {
-                    return TransferPromptController.Create(_controller, _transfer).prompt();
-                }
-            }
-
             public override void finish()
             {
                 base.finish();
@@ -651,12 +639,13 @@ namespace Ch.Cyberduck.Ui.Controller
                 TransferCollection.defaultCollection().save();
             }
 
-            protected override java.util.List getSessions()
+            protected override List getSessions()
             {
                 return _transfer.getSessions();
             }
 
-            public override String getActivity() {
+            public override String getActivity()
+            {
                 return _transfer.getName();
             }
 
@@ -685,6 +674,23 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 // No synchronization with other tasks
                 return _lock;
+            }
+
+            private class LazyTransferPrompt : TransferPrompt
+            {
+                private readonly TransferController _controller;
+                private readonly Transfer _transfer;
+
+                public LazyTransferPrompt(TransferController controller, Transfer transfer)
+                {
+                    _transfer = transfer;
+                    _controller = controller;
+                }
+
+                public TransferAction prompt()
+                {
+                    return TransferPromptController.Create(_controller, _transfer).prompt();
+                }
             }
 
             private class TaskbarTransferAdapter : TransferAdapter

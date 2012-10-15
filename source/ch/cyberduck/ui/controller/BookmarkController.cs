@@ -1,5 +1,5 @@
 // 
-// Copyright (c) 2010 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -15,23 +15,22 @@
 // Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
 // 
+
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading;
-using ch.cyberduck.core;
 using Ch.Cyberduck.Core;
+using Ch.Cyberduck.Ui.Winforms.Controls;
+using StructureMap;
+using ch.cyberduck.core;
+using ch.cyberduck.core.ftp;
 using ch.cyberduck.core.i18n;
 using ch.cyberduck.core.threading;
-using Ch.Cyberduck.Ui.Winforms.Controls;
-using ch.cyberduck.core.ftp;
 using java.lang;
-using org.apache.commons.lang;
 using org.apache.log4j;
-using org.spearce.jgit.transport;
-using StructureMap;
 using Exception = System.Exception;
 using Object = java.lang.Object;
 using String = System.String;
@@ -323,7 +322,8 @@ namespace Ch.Cyberduck.Ui.Controller
                 // Hostname of newly selected protocol is not configurable. Change to default.
                 _host.setHostname(selected.getDefaultHostname());
             }
-            if(Utils.IsNotBlank(selected.getDefaultHostname())) {
+            if (Utils.IsNotBlank(selected.getDefaultHostname()))
+            {
                 // Prefill with default hostname
                 _host.setHostname(selected.getDefaultHostname());
             }
@@ -426,11 +426,13 @@ namespace Ch.Cyberduck.Ui.Controller
             else
             {
                 View.UsernameEnabled = true;
-                if(Preferences.instance().getProperty("connection.login.name").Equals(
-                       Preferences.instance().getProperty("connection.login.anon.name"))) {
+                if (Preferences.instance().getProperty("connection.login.name").Equals(
+                    Preferences.instance().getProperty("connection.login.anon.name")))
+                {
                     View.Username = String.Empty;
                 }
-                else {
+                else
+                {
                     View.Username = Preferences.instance().getProperty("connection.login.name");
                 }
                 View.PasswordEnabled = true;
@@ -457,7 +459,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     return;
                 }
                 Protocol protocol = View.SelectedProtocol;
-                View.Password = KeychainFactory.instance().getPassword(protocol.getScheme().name(),
+                View.Password = KeychainFactory.instance().getPassword(protocol.getScheme(),
                                                                        Integer.parseInt(View.Port),
                                                                        View.Hostname,
                                                                        View.Username);

@@ -21,6 +21,7 @@ using System.Collections.ObjectModel;
 using System.Windows.Forms;
 using Ch.Cyberduck.Ui.Controller.Threading;
 using ch.cyberduck.core;
+using ch.cyberduck.core.editor;
 using ch.cyberduck.core.i18n;
 
 namespace Ch.Cyberduck.Ui.Controller
@@ -73,7 +74,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     if (_edit)
                     {
-                        Editor editor = EditorFactory.createEditor(BrowserController, _file);
+                        Editor editor = EditorFactory.instance().create(BrowserController, _file);
                         editor.open();
                     }
                 }

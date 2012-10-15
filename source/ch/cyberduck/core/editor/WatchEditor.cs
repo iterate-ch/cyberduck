@@ -21,6 +21,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using Ch.Cyberduck.Ui.Controller;
+using ch.cyberduck.core.editor;
 using org.apache.log4j;
 using Path = ch.cyberduck.core.Path;
 
@@ -29,41 +30,36 @@ namespace Ch.Cyberduck.Core.Editor
     public class WatchEditor : Editor
     {
         private static readonly Logger Log = Logger.getLogger(typeof (WatchEditor).FullName);
-        private string _editor;
         private FileSystemWatcher _watcher;
 
-        public WatchEditor(BrowserController controller, Path path, String editor)
-            : base(controller, null, path)
+        public WatchEditor(BrowserController controller, Application application, Path path)
+            : base(controller, application, path)
         {
-            _editor = editor;
-        }
-
-        public string Editor
-        {
-            get { return _editor; }
-            set { _editor = value; }
         }
 
         public override void edit()
         {
+            Path path = getEdited();
+            Application application = getApplication();
+
             Process process = new Process();
-            if (Utils.IsBlank(_editor))
+            if (application == null || Utils.IsBlank(application.getIdentifier()))
             {
-                string editCommand = EditorFactory.DefaultEditCommand(edited.getLocal());
-                if (Utils.IsNotBlank(editCommand))
+                application = ch.cyberduck.core.editor.EditorFactory.instance().getDefaultEditor();
+                if (application != null && Utils.IsNotBlank(application.getIdentifier()))
                 {
-                    process.StartInfo.FileName = editCommand;
-                    process.StartInfo.Arguments = "\"" + edited.getLocal().getAbsolute() + "\"";
+                    process.StartInfo.FileName = application.getIdentifier();
+                    process.StartInfo.Arguments = "\"" + getEdited().getLocal().getAbsolute() + "\"";
                 }
                 else
                 {
-                    process.StartInfo.FileName = edited.getLocal().getAbsolute();
+                    process.StartInfo.FileName = getEdited().getLocal().getAbsolute();
                 }
             }
             else
             {
-                process.StartInfo.FileName = _editor;
-                process.StartInfo.Arguments = "\"" + edited.getLocal().getAbsolute() + "\"";
+                process.StartInfo.FileName = application.getIdentifier();
+                process.StartInfo.Arguments = "\"" + getEdited().getLocal().getAbsolute() + "\"";
             }
             try
             {
@@ -79,9 +75,14 @@ namespace Ch.Cyberduck.Core.Editor
                 Log.error(e);
                 return;
             }
+            Watch();
+        }
+
+        private void Watch()
+        {
             _watcher = new FileSystemWatcher();
-            _watcher.Path = edited.getLocal().getParent().getAbsolute();
-            _watcher.Filter = edited.getLocal().getName();
+            _watcher.Path = getEdited().getLocal().getParent().getAbsolute();
+            _watcher.Filter = getEdited().getLocal().getName();
             _watcher.NotifyFilter = NotifyFilters.LastAccess | NotifyFilters.LastWrite
                                     | NotifyFilters.FileName | NotifyFilters.DirectoryName;
             RegisterHandlers();

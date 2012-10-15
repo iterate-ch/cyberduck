@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
+// Copyright (c) 2010 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -15,21 +15,19 @@
 // Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
 // 
-
 using System.Drawing;
-using Ch.Cyberduck.Ui.Controller;
-using Growl.Connector;
+using ch.cyberduck;
 using ch.cyberduck.core;
-using ch.cyberduck.ui.growl;
+using Growl.Connector;
 
-namespace Ch.Cyberduck.Ui.Growl
+namespace Ch.Cyberduck.Ui.Growl.Growl
 {
-    internal class GrowlImpl : ch.cyberduck.ui.growl.Growl
+    internal class GrowlImpl : Growl
     {
         private readonly Application _app = new Application(Preferences.instance().getProperty("application.name"))
-            {
-                Icon = IconCache.Instance.IconForName("cyberduck", 48)
-            };
+                                                {
+                                                    Icon = IconCache.Instance.IconForName("cyberduck", 48)
+                                                };
 
         private readonly GrowlConnector _connector = new GrowlConnector();
 
@@ -47,18 +45,18 @@ namespace Ch.Cyberduck.Ui.Growl
         public override void setup()
         {
             _connector.Register(_app, new[]
-                {
-                    new NotificationType("Download complete"),
-                    new NotificationType("Upload complete"),
-                    new NotificationType("Synchronization complete"),
-                    new NotificationType("Connection opened"),
-                    new NotificationType("Connection failed"),
-                    new NotificationType("Download failed"),
-                    new NotificationType("Upload failed"),
-                    new NotificationType("Transfer queued"),
-                    new NotificationType("Bonjour", "Bonjour", IconCache.Instance.IconForName("rendezvous"),
-                                         true)
-                });
+                                          {
+                                              new NotificationType("Download complete"),
+                                              new NotificationType("Upload complete"),
+                                              new NotificationType("Synchronization complete"),
+                                              new NotificationType("Connection opened"),
+                                              new NotificationType("Connection failed"),
+                                              new NotificationType("Download failed"),
+                                              new NotificationType("Upload failed"),
+                                              new NotificationType("Transfer queued"),
+                                              new NotificationType("Bonjour", "Bonjour", IconCache.Instance.IconForName("rendezvous"),
+                                                                   true)
+                                          });
         }
 
         public override void notifyWithImage(string title, string description, string image)

@@ -40,6 +40,7 @@ using java.lang;
 using java.security.cert;
 using java.util;
 using org.apache.log4j;
+using Application = ch.cyberduck.core.editor.Application;
 using Collection = ch.cyberduck.core.Collection;
 using DataObject = System.Windows.Forms.DataObject;
 using Exception = System.Exception;
@@ -2026,7 +2027,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             foreach (Path selected in SelectedPaths)
             {
-                Editor editor = EditorFactory.instance().create(this, selected, exe);
+                Editor editor = EditorFactory.instance().create(this, selected);
                 editor.open();
             }
         }
@@ -2038,7 +2039,8 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 if (IsEditable(selected))
                 {
-                    string editCommand = EditorFactory.instance().DefaultEditCommand(selected.getLocal());
+                    Application app = EditorFactory.instance().getEditor(selected.getLocal());
+                    string editCommand = app != null ? app.getIdentifier() : null;
                     if (Utils.IsNotBlank(editCommand))
                     {
                         View.EditIcon =

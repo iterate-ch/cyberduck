@@ -24,6 +24,8 @@ using Ch.Cyberduck.Ui.Winforms;
 using Ch.Cyberduck.Ui.Winforms.Controls;
 using StructureMap;
 using ch.cyberduck.core;
+using ch.cyberduck.core.editor;
+using ch.cyberduck.core.formatter;
 using ch.cyberduck.core.io;
 using java.util;
 using java.util.regex;
@@ -226,8 +228,8 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_DefaultEditorChangedEvent()
         {
-            Editor.AvailableEditor selected = View.DefaultEditor;
-            Preferences.instance().setProperty("editor.bundleIdentifier", selected.Location);
+            Application selected = View.DefaultEditor;
+            Preferences.instance().setProperty("editor.bundleIdentifier", selected.getIdentifier());
         }
 
         private void View_ChangeSystemProxyEvent()
@@ -1123,7 +1125,8 @@ namespace Ch.Cyberduck.Ui.Controller
                                                                                             RemoveEmptyEntries))
             {
                 list.Add(new KeyValuePair<float, string>(Convert.ToInt32(option.Trim()),
-                                                         (Status.getSizeAsString(Convert.ToInt32(option.Trim())) + "/s")));
+                                                         (SizeFormatterFactory.instance().format(
+                                                             Convert.ToInt32(option.Trim())) + "/s")));
             }
             View.PopulateDefaultUploadThrottleList(list);
         }
@@ -1140,7 +1143,8 @@ namespace Ch.Cyberduck.Ui.Controller
                                                                                             RemoveEmptyEntries))
             {
                 list.Add(new KeyValuePair<float, string>(Convert.ToInt32(option.Trim()),
-                                                         (Status.getSizeAsString(Convert.ToInt32(option.Trim())) + "/s")));
+                                                         (SizeFormatterFactory.instance().format(
+                                                             Convert.ToInt32(option.Trim())) + "/s")));
             }
             View.PopulateDefaultDownloadThrottleList(list);
         }
@@ -1307,24 +1311,25 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void PopulateAndSelectEditor()
         {
-            List<KeyValueIconTriple<Editor.AvailableEditor, string>> editors =
-                new List<KeyValueIconTriple<Editor.AvailableEditor, string>>();
+            List<KeyValueIconTriple<Application, string>> editors =
+                new List<KeyValueIconTriple<Application, string>>();
 
-            Editor.AvailableEditor defaultEditor = Editor.DefaultEditor();
+            Application defaultEditor = EditorFactory.instance().getDefaultEditor();
             String defaultEditorLocation = null;
-            if (defaultEditor != null)
+            if (defaultEditor != null && Utils.IsNotBlank(defaultEditor.getIdentifier()))
             {
-                defaultEditorLocation = defaultEditor.Location;
+                defaultEditorLocation = defaultEditor.getIdentifier();
             }
             bool defaultEditorAdded = false;
 
-            foreach (Editor.AvailableEditor editor in Editor.GetAvailableEditors())
+            foreach (Application editor in Utils.ConvertFromJavaList<Application>(EditorFactory.instance().getEditors())
+                )
             {
-                if (editor.Installed)
+                if (ApplicationFinderFactory.instance().isInstalled(editor))
                 {
-                    editors.Add(new KeyValueIconTriple<Editor.AvailableEditor, string>(editor, editor.Name,
-                                                                                       editor.Name));
-                    if (defaultEditorLocation != null && editor.Location.Equals(defaultEditorLocation))
+                    editors.Add(new KeyValueIconTriple<Application, string>(editor, editor.getName(),
+                                                                            editor.getName()));
+                    if (defaultEditorLocation != null && editor.getIdentifier().Equals(defaultEditorLocation))
                     {
                         defaultEditorAdded = true;
                     }
@@ -1332,17 +1337,17 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             if (!defaultEditorAdded)
             {
-                if (defaultEditor != null && defaultEditor.Installed)
+                if (defaultEditor != null && ApplicationFinderFactory.instance().isInstalled(defaultEditor))
                 {
                     editors.Insert(0,
-                                   new KeyValueIconTriple<Editor.AvailableEditor, string>(defaultEditor,
-                                                                                          defaultEditor.Name,
-                                                                                          defaultEditor.Name));
+                                   new KeyValueIconTriple<Application, string>(defaultEditor,
+                                                                               defaultEditor.getName(),
+                                                                               defaultEditor.getName()));
                 }
             }
-            editors.Add(new KeyValueIconTriple<Editor.AvailableEditor, string>(new Editor.CustomEditor("/", null),
-                                                                               Locale.localizedString("Choose") + "…",
-                                                                               String.Empty));
+            editors.Add(new KeyValueIconTriple<Application, string>(new Application("/", null),
+                                                                    Locale.localizedString("Choose") + "…",
+                                                                    String.Empty));
             View.PopulateEditors(editors);
             if (defaultEditor != null)
             {
@@ -1351,7 +1356,7 @@ namespace Ch.Cyberduck.Ui.Controller
             else
             {
                 //dummy editor which leads to an empty selection
-                View.DefaultEditor = new Editor.CustomEditor(null, null);
+                View.DefaultEditor = new Application(null, null);
             }
         }
     }

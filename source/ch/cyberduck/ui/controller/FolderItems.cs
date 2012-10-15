@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -13,13 +13,13 @@
 // GNU General Public License for more details.
 // 
 // Bug fixes, suggestions and comments should be sent to:
-// yves@langisch.ch
+// yves@cyberduck.ch
 // 
 
 using System;
 using System.Drawing;
 using System.IO;
-using ch.cyberduck.core;
+using ch.cyberduck.core.formatter;
 using java.text;
 using java.util;
 using Path = ch.cyberduck.core.Path;
@@ -125,7 +125,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public override string Size
         {
-            get { return Status.getSizeAsString(Path.attributes().getSize()); }
+            get { return SizeFormatterFactory.instance().format(Path.attributes().getSize()); }
             set { }
         }
 
@@ -154,7 +154,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public override string Size
         {
-            get { return Status.getSizeAsString(Path.attributes().getSize()); }
+            get { return SizeFormatterFactory.instance().format(Path.attributes().getSize()); }
             set { }
         }
 

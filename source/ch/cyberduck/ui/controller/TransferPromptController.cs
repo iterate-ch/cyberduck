@@ -22,6 +22,7 @@ using System.Windows.Forms;
 using Ch.Cyberduck.Core;
 using StructureMap;
 using ch.cyberduck.core;
+using ch.cyberduck.core.formatter;
 using ch.cyberduck.core.i18n;
 using ch.cyberduck.ui;
 using ch.cyberduck.ui.controller;
@@ -150,7 +151,8 @@ namespace Ch.Cyberduck.Ui.Controller
                     }
                     else
                     {
-                        View.LocalFileSize = Status.getSizeAsString(selected.getLocal().attributes().getSize());
+                        View.LocalFileSize =
+                            SizeFormatterFactory.instance().format(selected.getLocal().attributes().getSize());
                     }
                     if (selected.getLocal().attributes().getModificationDate() == -1)
                     {
@@ -170,7 +172,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     }
                     else
                     {
-                        View.RemoteFileSize = Status.getSizeAsString(selected.attributes().getSize());
+                        View.RemoteFileSize = SizeFormatterFactory.instance().format(selected.attributes().getSize());
                     }
                     if (selected.attributes().getModificationDate() == -1)
                     {

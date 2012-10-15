@@ -22,6 +22,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using Ch.Cyberduck.Ui.Winforms;
 using ch.cyberduck.core;
+using ch.cyberduck.core.formatter;
 using ch.cyberduck.core.i18n;
 using ch.cyberduck.core.threading;
 using ch.cyberduck.ui;
@@ -116,7 +117,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public string GetSizeAsString(object size)
         {
-            return Status.getSizeAsString((long) size);
+            return SizeFormatterFactory.instance().format((long) size);
         }
 
         public object GetIcon(Path path)

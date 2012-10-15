@@ -28,6 +28,7 @@ using StructureMap;
 using ch.cyberduck.core;
 using ch.cyberduck.core.cdn;
 using ch.cyberduck.core.cloud;
+using ch.cyberduck.core.formatter;
 using ch.cyberduck.core.s3;
 using ch.cyberduck.ui;
 using ch.cyberduck.ui.action;
@@ -1426,7 +1427,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void UpdateSize(long size)
         {
-            View.FileSize = Status.getSizeAsString(size, true);
+            View.FileSize = SizeFormatterFactory.instance().format(size, true);
         }
 
         private class ChecksumBackgroundAction : InfoBackgroundAction

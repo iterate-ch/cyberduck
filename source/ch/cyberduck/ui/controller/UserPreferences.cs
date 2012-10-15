@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2011 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -24,6 +24,7 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using Ch.Cyberduck.Core;
+using Ch.Cyberduck.Core.Editor;
 using Ch.Cyberduck.Properties;
 using ch.cyberduck.core;
 using java.util;
@@ -293,6 +294,8 @@ namespace Ch.Cyberduck.Ui.Controller
             defaults.put("browser.enterkey.rename", false.ToString());
             defaults.put("terminal.command.ssh", Path.Combine(HomeFolder, "putty.exe"));
             defaults.put("terminal.command.ssh.args", "-ssh {0} {1}@{2} -t -P {3} -m \"{4}\"");
+
+            defaults.put("editor.bundleIdentifier", new EditorFactory.Notepad().getIdentifier());
 
             //default browser toolbar set
             defaults.put("browser.toolbar", true.ToString());

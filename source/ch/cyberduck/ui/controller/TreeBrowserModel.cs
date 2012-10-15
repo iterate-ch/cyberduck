@@ -21,6 +21,7 @@ using System.Collections.Generic;
 using Ch.Cyberduck.Ui.Controller.Threading;
 using Ch.Cyberduck.Ui.Winforms;
 using ch.cyberduck.core;
+using ch.cyberduck.core.formatter;
 using ch.cyberduck.core.i18n;
 
 namespace Ch.Cyberduck.Ui.Controller
@@ -135,7 +136,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public string GetSizeAsString(object size)
         {
-            return Status.getSizeAsString((long) size);
+            return SizeFormatterFactory.instance().format((long) size);
         }
 
         public object GetOwner(Path path)
