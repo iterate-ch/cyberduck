@@ -3,16 +3,13 @@ package ch.cyberduck.core.local;
 import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.FactoryException;
 
-import org.apache.log4j.Logger;
-
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public abstract class ApplicationLauncherFactory extends Factory<ApplicationLauncher> {
-    private static final Logger log = Logger.getLogger(ApplicationLauncherFactory.class);
 
     /**
      * Registered factories
