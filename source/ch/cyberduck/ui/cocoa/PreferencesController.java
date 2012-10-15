@@ -330,7 +330,7 @@ public final class PreferencesController extends ToolbarWindowController {
         for(Application editor : EditorFactory.instance().getEditors()) {
             editorCombobox.addItemWithTitle(editor.getName());
             editorCombobox.lastItem().setRepresentedObject(editor.getIdentifier());
-            final boolean enabled = ApplicationFinderFactory.instance().isInstalled(editor);
+            final boolean enabled = ApplicationFinderFactory.get().isInstalled(editor);
             editorCombobox.lastItem().setEnabled(enabled);
             if(enabled) {
                 editorCombobox.lastItem().setImage(

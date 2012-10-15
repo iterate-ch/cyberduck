@@ -21,15 +21,10 @@ public abstract class ApplicationFinderFactory extends Factory<ApplicationFinder
         factories.put(platform, f);
     }
 
-    private static ApplicationFinder finder;
-
-    public static ApplicationFinder instance() {
-        if(null == finder) {
-            if(!factories.containsKey(NATIVE_PLATFORM)) {
-                throw new FactoryException(String.format("No implementation for %s", NATIVE_PLATFORM));
-            }
-            finder = factories.get(NATIVE_PLATFORM).create();
+    public static ApplicationFinder get() {
+        if(!factories.containsKey(NATIVE_PLATFORM)) {
+            throw new FactoryException(String.format("No implementation for %s", NATIVE_PLATFORM));
         }
-        return finder;
+        return factories.get(NATIVE_PLATFORM).create();
     }
 }
