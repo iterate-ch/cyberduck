@@ -24,7 +24,7 @@ public class WatchEditorFactoryTest extends AbstractTestCase {
     @Test
     public void testGetEditor() throws Exception {
         assertEquals("TextEdit", EditorFactory.instance().getDefaultEditor().getName());
-        assertEquals("TextMate", EditorFactory.instance().getEditor(
+        assertEquals("TextEdit", EditorFactory.instance().getEditor(
                 new NullLocal(null, "f.txt")
         ).getName());
         assertEquals("Preview", EditorFactory.instance().getEditor(
