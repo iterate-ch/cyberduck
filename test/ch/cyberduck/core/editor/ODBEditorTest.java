@@ -2,19 +2,17 @@ package ch.cyberduck.core.editor;
 
 import ch.cyberduck.core.AbstractTestCase;
 
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class ODBEditorTest extends AbstractTestCase {
 
-    @Before
-    @Override
-    public void register() {
-        super.register();
+    @BeforeClass
+    public static void register() {
         LaunchServicesApplicationFinder.register();
         ODBEditorFactory.register();
     }

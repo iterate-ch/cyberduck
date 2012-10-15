@@ -5,9 +5,9 @@ import ch.cyberduck.core.NullPath;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.threading.MainAction;
-import ch.cyberduck.ui.Controller;
+import ch.cyberduck.ui.controller.Controller;
 
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -16,14 +16,12 @@ import java.util.concurrent.Future;
 import static org.junit.Assert.assertEquals;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class WatchEditorTest extends AbstractTestCase {
 
-    @Before
-    @Override
-    public void register() {
-        super.register();
+    @BeforeClass
+    public static void register() {
         LaunchServicesApplicationFinder.register();
         WatchEditorFactory.register();
     }
