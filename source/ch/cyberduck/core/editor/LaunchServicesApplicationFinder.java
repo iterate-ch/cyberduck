@@ -56,6 +56,8 @@ public final class LaunchServicesApplicationFinder implements ApplicationFinder 
         }
     }
 
+    private static final Object workspace = new Object();
+
     private LaunchServicesApplicationFinder() {
         Native.load("LaunchServicesApplicationFinder");
     }
@@ -182,46 +184,50 @@ public final class LaunchServicesApplicationFinder implements ApplicationFinder 
             if(log.isDebugEnabled()) {
                 log.debug(String.format("Find application for %s", bundleIdentifier));
             }
-            final String path = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(bundleIdentifier);
-            String name = null;
-            if(StringUtils.isNotBlank(path)) {
-                NSBundle app = NSBundle.bundleWithPath(path);
-                if(null == app) {
-                    log.error("Loading bundle failed:" + path);
-                }
-                else {
-                    NSDictionary dict = app.infoDictionary();
-                    if(null == dict) {
-                        log.error("Loading application dictionary failed:" + path);
-                        applicationNameCache.put(bundleIdentifier, null);
-                        return null;
+            synchronized(workspace) {
+                final String path = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(bundleIdentifier);
+                String name = null;
+                if(StringUtils.isNotBlank(path)) {
+                    NSBundle app = NSBundle.bundleWithPath(path);
+                    if(null == app) {
+                        log.error("Loading bundle failed:" + path);
                     }
                     else {
-                        final NSObject bundlename = dict.objectForKey("CFBundleName");
-                        if(null == bundlename) {
-                            log.warn(String.format("No CFBundleName for %s", bundleIdentifier));
+                        NSDictionary dict = app.infoDictionary();
+                        if(null == dict) {
+                            log.error("Loading application dictionary failed:" + path);
+                            applicationNameCache.put(bundleIdentifier, null);
+                            return null;
                         }
                         else {
-                            name = bundlename.toString();
+                            final NSObject bundlename = dict.objectForKey("CFBundleName");
+                            if(null == bundlename) {
+                                log.warn(String.format("No CFBundleName for %s", bundleIdentifier));
+                            }
+                            else {
+                                name = bundlename.toString();
+                            }
                         }
                     }
+                    if(null == name) {
+                        name = FilenameUtils.removeExtension(LocalFactory.createLocal(path).getDisplayName());
+                    }
                 }
-                if(null == name) {
-                    name = FilenameUtils.removeExtension(LocalFactory.createLocal(path).getDisplayName());
+                else {
+                    log.warn(String.format("Cannot determine installation path for %s", bundleIdentifier));
                 }
+                applicationNameCache.put(bundleIdentifier, new Application(bundleIdentifier, name));
             }
-            else {
-                log.warn(String.format("Cannot determine installation path for %s", bundleIdentifier));
-            }
-            applicationNameCache.put(bundleIdentifier, new Application(bundleIdentifier, name));
         }
         return applicationNameCache.get(bundleIdentifier);
     }
 
     @Override
     public boolean isInstalled(final Application application) {
-        return NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(
-                application.getIdentifier()) != null;
+        synchronized(workspace) {
+            return NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(
+                    application.getIdentifier()) != null;
+        }
     }
 
     /**
@@ -229,18 +235,20 @@ public final class LaunchServicesApplicationFinder implements ApplicationFinder 
      */
     @Override
     public boolean isOpen(final Application application) {
-        final NSEnumerator apps = NSWorkspace.sharedWorkspace().launchedApplications().objectEnumerator();
-        NSObject next;
-        while(((next = apps.nextObject()) != null)) {
-            NSDictionary app = Rococoa.cast(next, NSDictionary.class);
-            final NSObject identifier = app.objectForKey("NSApplicationBundleIdentifier");
-            if(identifier.toString().equals(application.getIdentifier())) {
-                if(log.isDebugEnabled()) {
-                    log.debug(String.format("Found open application %s", application.getIdentifier()));
+        synchronized(workspace) {
+            final NSEnumerator apps = NSWorkspace.sharedWorkspace().launchedApplications().objectEnumerator();
+            NSObject next;
+            while(((next = apps.nextObject()) != null)) {
+                NSDictionary app = Rococoa.cast(next, NSDictionary.class);
+                final NSObject identifier = app.objectForKey("NSApplicationBundleIdentifier");
+                if(identifier.toString().equals(application.getIdentifier())) {
+                    if(log.isDebugEnabled()) {
+                        log.debug(String.format("Found open application %s", application.getIdentifier()));
+                    }
+                    return true;
                 }
-                return true;
             }
+            return false;
         }
-        return false;
     }
 }
