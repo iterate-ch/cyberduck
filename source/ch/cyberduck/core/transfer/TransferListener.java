@@ -1,5 +1,6 @@
-package ch.cyberduck.core;
+package ch.cyberduck.core.transfer;
 
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.io.BandwidthThrottle;
 
 /*

@@ -1,4 +1,4 @@
-package ch.cyberduck.core;
+package ch.cyberduck.core.transfer;
 
 /*
  *  Copyright (c) 2005 David Kocher. All rights reserved.
@@ -18,6 +18,7 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.Path;
 import ch.cyberduck.core.io.BandwidthThrottle;
 
 /**

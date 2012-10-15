@@ -27,7 +27,6 @@ import ch.cyberduck.core.PathReference;
 import ch.cyberduck.core.Queue;
 import ch.cyberduck.core.Serializable;
 import ch.cyberduck.core.Session;
-import ch.cyberduck.core.TransferListener;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.serializer.Deserializer;
