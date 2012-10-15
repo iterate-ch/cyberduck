@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<plist>
+  <dict>
+    <key>Protocol</key>
+    <string>dropbox</string>
+    <key>Nickname</key>
+    <string>api.getdropbox.com – Dropbox</string>
+    <key>UUID</key>
+    <string>1c158c34-db8a-4c32-a732-abd9447bb27c</string>
+    <key>Hostname</key>
+    <string>api.getdropbox.com</string>
+    <key>Port</key>
+    <string>443</string>
+    <key>Username</key>
+    <string>yla</string>
+  </dict>
+</plist>
