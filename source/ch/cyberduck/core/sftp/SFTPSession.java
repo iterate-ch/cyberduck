@@ -173,7 +173,7 @@ public class SFTPSession extends Session {
         });
 
         final int timeout = this.timeout();
-        this.getClient().connect(HostKeyControllerFactory.instance(this), timeout, timeout);
+        this.getClient().connect(HostKeyControllerFactory.get(this), timeout, timeout);
         if(!this.isConnected()) {
             throw new ConnectionCanceledException();
         }

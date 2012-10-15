@@ -37,14 +37,14 @@ public abstract class HostKeyControllerFactory extends Factory<HostKeyController
     /**
      * Registered factories
      */
-    protected static final Map<Platform, HostKeyControllerFactory> factories
+    private static final Map<Platform, HostKeyControllerFactory> factories
             = new HashMap<Platform, HostKeyControllerFactory>();
 
     /**
      * @param s Connection
      * @return Login controller instance for the current platform.
      */
-    public static HostKeyController instance(Session s) {
+    public static HostKeyController get(Session s) {
         if(!factories.containsKey(NATIVE_PLATFORM)) {
             throw new FactoryException(String.format("No implementation for %s", NATIVE_PLATFORM));
         }
@@ -55,7 +55,7 @@ public abstract class HostKeyControllerFactory extends Factory<HostKeyController
      * @param c Browser controller
      * @return Login controller instance for the current platform.
      */
-    public static HostKeyController instance(Controller c) {
+    public static HostKeyController get(Controller c) {
         if(!factories.containsKey(NATIVE_PLATFORM)) {
             throw new FactoryException(String.format("No implementation for %s", NATIVE_PLATFORM));
         }
