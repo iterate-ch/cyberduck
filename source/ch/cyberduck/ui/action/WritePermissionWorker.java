@@ -58,28 +58,40 @@ public abstract class WritePermissionWorker extends Worker<Permission> {
             if(!next.getSession().isConnected()) {
                 break;
             }
-            if(recursive || !next.attributes().getPermission().equals(permission)) {
-                if(next.attributes().isFile() && recursive) {
-                    // Do not write executable bit for files if not already set when recursively updating directory.
-                    // See #1787
-                    Permission modified = new Permission(permission);
-                    if(!next.attributes().getPermission().getOwnerPermissions()[Permission.EXECUTE]) {
-                        modified.getOwnerPermissions()[Permission.EXECUTE] = false;
-                    }
-                    if(!next.attributes().getPermission().getGroupPermissions()[Permission.EXECUTE]) {
-                        modified.getGroupPermissions()[Permission.EXECUTE] = false;
-                    }
-                    if(!next.attributes().getPermission().getOtherPermissions()[Permission.EXECUTE]) {
-                        modified.getOtherPermissions()[Permission.EXECUTE] = false;
-                    }
-                    next.writeUnixPermission(modified, recursive);
-                }
-                else {
-                    next.writeUnixPermission(permission, recursive);
+        }
+        return permission;
+    }
+
+    private void write(final Path file) {
+        if(recursive && file.attributes().isFile()) {
+            // Do not write executable bit for files if not already set when recursively updating directory.
+            // See #1787
+            Permission modified = new Permission(permission);
+            if(!file.attributes().getPermission().getOwnerPermissions()[Permission.EXECUTE]) {
+                modified.getOwnerPermissions()[Permission.EXECUTE] = false;
+            }
+            if(!file.attributes().getPermission().getGroupPermissions()[Permission.EXECUTE]) {
+                modified.getGroupPermissions()[Permission.EXECUTE] = false;
+            }
+            if(!file.attributes().getPermission().getOtherPermissions()[Permission.EXECUTE]) {
+                modified.getOtherPermissions()[Permission.EXECUTE] = false;
+            }
+            if(!file.attributes().getPermission().equals(modified)) {
+                file.writeUnixPermission(modified);
+            }
+        }
+        else {
+            if(!file.attributes().getPermission().equals(permission)) {
+                file.writeUnixPermission(permission);
+            }
+        }
+        if(recursive) {
+            if(file.attributes().isDirectory()) {
+                for(Path child : file.children()) {
+                    this.write(child);
                 }
             }
         }
-        return permission;
     }
 
     @Override
