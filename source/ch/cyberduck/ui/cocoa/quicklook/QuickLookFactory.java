@@ -38,18 +38,13 @@ public abstract class QuickLookFactory extends Factory<QuickLookInterface> {
         factories.put(platform, f);
     }
 
-    private static QuickLookInterface instance;
-
     public static QuickLookInterface instance() {
-        if(null == instance) {
-            if(factories.containsKey(VERSION_PLATFORM)) {
-                instance = factories.get(VERSION_PLATFORM).create();
-            }
-            else {
-                instance = new Disabled();
-            }
+        if(factories.containsKey(VERSION_PLATFORM)) {
+            return factories.get(VERSION_PLATFORM).create();
         }
-        return instance;
+        else {
+            return new Disabled();
+        }
     }
 
     private static final class Disabled extends AbstractQuickLook {
