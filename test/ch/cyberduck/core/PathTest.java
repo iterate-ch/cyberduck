@@ -18,11 +18,17 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
 public class PathTest extends AbstractTestCase {
+
+    @BeforeClass
+    public static void register() {
+        NSObjectPathReference.register();
+    }
 
     @Test
     public void testDictionary() {

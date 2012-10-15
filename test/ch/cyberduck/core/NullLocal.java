@@ -1,5 +1,7 @@
 package ch.cyberduck.core;
 
+import ch.cyberduck.core.local.Local;
+
 /**
  * @version $Id$
  */
@@ -7,11 +9,6 @@ public class NullLocal extends Local {
 
     public NullLocal(final String parent, final String name) {
         super(parent, name);
-    }
-
-    @Override
-    public boolean exists() {
-        return true;
     }
 
     @Override
@@ -25,7 +22,7 @@ public class NullLocal extends Local {
     }
 
     @Override
-    public void writeUnixPermission(final Permission perm, final boolean recursive) {
+    public void writeUnixPermission(final Permission permission) {
         throw new UnsupportedOperationException();
     }
 

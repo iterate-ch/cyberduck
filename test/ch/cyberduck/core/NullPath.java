@@ -1,6 +1,8 @@
 package ch.cyberduck.core;
 
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.local.Local;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -44,22 +46,22 @@ public class NullPath extends Path {
     }
 
     @Override
-    public InputStream read(final boolean check) throws IOException {
+    public InputStream read(final TransferStatus status) throws IOException {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    protected void download(final BandwidthThrottle throttle, final StreamListener listener, final boolean check, final boolean quarantine) {
+    public void download(final BandwidthThrottle throttle, final StreamListener listener, final TransferStatus status) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public OutputStream write(final boolean check) throws IOException {
+    public OutputStream write(final TransferStatus status) throws IOException {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    protected void upload(final BandwidthThrottle throttle, final StreamListener listener, final boolean check) {
+    public void upload(final BandwidthThrottle throttle, final StreamListener listener, final TransferStatus status) {
         throw new UnsupportedOperationException();
     }
 
