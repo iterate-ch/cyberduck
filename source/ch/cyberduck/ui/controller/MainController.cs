@@ -277,15 +277,17 @@ namespace Ch.Cyberduck.Ui.Controller
                         {
                             return;
                         }
-                        profile.register();
-                        Host host = new Host(profile, profile.getDefaultHostname(), profile.getDefaultPort());
-                        NewBrowser().AddBookmark(host);
-                        // Register in application support
-                        Local profiles =
-                            LocalFactory.createLocal(Preferences.instance().getProperty("application.support.path"),
-                                                     "Profiles");
-                        profiles.mkdir(true);
-                        f.copy(LocalFactory.createLocal(profiles, f.getName()));
+                        if(profile.isEnabled()) {
+                            profile.register();
+                            Host host = new Host(profile, profile.getDefaultHostname(), profile.getDefaultPort());
+                            NewBrowser().AddBookmark(host);
+                            // Register in application support
+                            Local profiles =
+                                LocalFactory.createLocal(Preferences.instance().getProperty("application.support.path"),
+                                                         "Profiles");
+                            profiles.mkdir(true);
+                            f.copy(LocalFactory.createLocal(profiles, f.getName()));
+                        }
                     }
                     else if ("duck".Equals(f.getExtension()))
                     {

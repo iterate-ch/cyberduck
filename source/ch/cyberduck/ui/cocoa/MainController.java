@@ -568,13 +568,15 @@ public class MainController extends BundleController implements NSApplication.De
                 if(null == profile) {
                     return false;
                 }
-                profile.register();
-                final Host host = new Host(profile, profile.getDefaultHostname(), profile.getDefaultPort());
-                MainController.newDocument().addBookmark(host);
-                // Register in application support
-                final Local profiles = LocalFactory.createLocal(Preferences.instance().getProperty("application.support.path"), "Profiles");
-                profiles.mkdir(true);
-                f.copy(LocalFactory.createLocal(profiles, f.getName()));
+                if(profile.isEnabled()) {
+                    profile.register();
+                    final Host host = new Host(profile, profile.getDefaultHostname(), profile.getDefaultPort());
+                    MainController.newDocument().addBookmark(host);
+                    // Register in application support
+                    final Local profiles = LocalFactory.createLocal(Preferences.instance().getProperty("application.support.path"), "Profiles");
+                    profiles.mkdir(true);
+                    f.copy(LocalFactory.createLocal(profiles, f.getName()));
+                }
             }
             else {
                 // Upload file
