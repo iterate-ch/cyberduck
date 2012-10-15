@@ -1,4 +1,4 @@
-package ch.cyberduck.core;
+package ch.cyberduck.core.local;
 
 /*
  *  Copyright (c) 2005 David Kocher. All rights reserved.
@@ -18,6 +18,13 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.AbstractPath;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Attributes;
+import ch.cyberduck.core.PathFilter;
+import ch.cyberduck.core.PathReference;
+import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.RepeatableFileInputStream;
 
@@ -104,7 +111,7 @@ public abstract class Local extends AbstractPath {
          * This is only returning the correct result if the file already exists.
          *
          * @return File type
-         * @see ch.cyberduck.core.Local#exists()
+         * @see Local#exists()
          */
         @Override
         public int getType() {
@@ -136,7 +143,7 @@ public abstract class Local extends AbstractPath {
         /**
          * This is only returning the correct result if the file already exists.
          *
-         * @see ch.cyberduck.core.Local#exists()
+         * @see Local#exists()
          */
         @Override
         public boolean isDirectory() {
@@ -146,7 +153,7 @@ public abstract class Local extends AbstractPath {
         /**
          * This is only returning the correct result if the file already exists.
          *
-         * @see ch.cyberduck.core.Local#exists()
+         * @see Local#exists()
          */
         @Override
         public boolean isFile() {
@@ -425,7 +432,7 @@ public abstract class Local extends AbstractPath {
     }
 
     @Override
-    protected void setPath(final String name) {
+    public void setPath(final String name) {
         String normalized = name;
         if(Preferences.instance().getBoolean("local.normalize.unicode")) {
             if(!Normalizer.isNormalized(normalized, Normalizer.NFC, Normalizer.UNICODE_3_2)) {
@@ -450,17 +457,13 @@ public abstract class Local extends AbstractPath {
     }
 
     @Override
-    public abstract void writeUnixPermission(Permission perm, boolean recursive);
-
-    @Override
     public void rename(final AbstractPath renamed) {
         if(!new File(path).renameTo(new File(renamed.getAbsolute()))) {
             log.error(String.format("Rename failed for %s", renamed.getAbsolute()));
         }
     }
 
-    @Override
-    public void copy(final AbstractPath copy) {
+    public void copy(final Local copy) {
         if(copy.equals(this)) {
             log.warn(String.format("%s and %s are identical. Not copied.", this.getName(), copy.getName()));
         }

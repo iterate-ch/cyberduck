@@ -20,13 +20,9 @@ package ch.cyberduck.core.local;
 
 import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Native;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.threading.DefaultMainAction;
-import ch.cyberduck.ui.cocoa.ProxyController;
 import ch.cyberduck.ui.cocoa.application.NSWorkspace;
 import ch.cyberduck.ui.cocoa.foundation.*;
 
@@ -90,7 +86,7 @@ public class FinderLocal extends Local {
     }
 
     @Override
-    protected void setPath(final String name) {
+    public void setPath(final String name) {
         if(loadNative()) {
             super.setPath(this.resolveAlias(stringByExpandingTildeInPath(name)));
         }
@@ -109,7 +105,7 @@ public class FinderLocal extends Local {
      */
     @Override
     public String getDisplayName() {
-        return NSFileManager.defaultManager().displayNameAtPath(super.getName());
+        return NSFileManager.defaultManager().displayNameAtPath(this.getName());
     }
 
     /**
@@ -390,26 +386,20 @@ public class FinderLocal extends Local {
 
     public static native String kind(String extension);
 
+    private static final Object workspace = new Object();
+
     @Override
-    public void writeUnixPermission(final Permission perm, final boolean recursive) {
-        new ProxyController().invoke(new DefaultMainAction() {
-            @Override
-            public void run() {
-                boolean success = NSFileManager.defaultManager().setAttributes_ofItemAtPath_error(
-                        NSDictionary.dictionaryWithObjectsForKeys(
-                                NSArray.arrayWithObject(NSNumber.numberWithInt(Integer.valueOf(perm.getOctalString(), 8))),
-                                NSArray.arrayWithObject(NSFileManager.NSFilePosixPermissions)),
-                        getAbsolute(), null);
-                if(!success) {
-                    log.error("File attribute changed failed:" + getAbsolute());
-                }
-                if(attributes().isDirectory() && recursive) {
-                    for(AbstractPath child : children()) {
-                        child.writeUnixPermission(perm, recursive);
-                    }
-                }
+    public void writeUnixPermission(final Permission permission) {
+        synchronized(workspace) {
+            boolean success = NSFileManager.defaultManager().setAttributes_ofItemAtPath_error(
+                    NSDictionary.dictionaryWithObjectsForKeys(
+                            NSArray.arrayWithObject(NSNumber.numberWithInt(Integer.valueOf(permission.getOctalString(), 8))),
+                            NSArray.arrayWithObject(NSFileManager.NSFilePosixPermissions)),
+                    getAbsolute(), null);
+            if(!success) {
+                log.error("File attribute changed failed:" + getAbsolute());
             }
-        });
+        }
     }
 
     /**
@@ -421,19 +411,16 @@ public class FinderLocal extends Local {
      */
     @Override
     public void writeTimestamp(final long created, final long modified, final long accessed) {
-        new ProxyController().invoke(new DefaultMainAction() {
-            @Override
-            public void run() {
-                boolean success = NSFileManager.defaultManager().setAttributes_ofItemAtPath_error(
-                        NSDictionary.dictionaryWithObjectsForKeys(
-                                NSArray.arrayWithObject(NSDate.dateWithTimeIntervalSince1970(modified / 1000d)),
-                                NSArray.arrayWithObject(NSFileManager.NSFileModificationDate)),
-                        getAbsolute(), null);
-                if(!success) {
-                    log.error("File attribute changed failed:" + getAbsolute());
-                }
+        synchronized(workspace) {
+            boolean success = NSFileManager.defaultManager().setAttributes_ofItemAtPath_error(
+                    NSDictionary.dictionaryWithObjectsForKeys(
+                            NSArray.arrayWithObject(NSDate.dateWithTimeIntervalSince1970(modified / 1000d)),
+                            NSArray.arrayWithObject(NSFileManager.NSFileModificationDate)),
+                    getAbsolute(), null);
+            if(!success) {
+                log.error("File attribute changed failed:" + getAbsolute());
             }
-        });
+        }
     }
 
     /**
@@ -442,29 +429,28 @@ public class FinderLocal extends Local {
     @Override
     public void trash() {
         if(this.exists()) {
-            final Local file = this;
-            new ProxyController().invoke(new DefaultMainAction() {
-                @Override
-                public void run() {
-                    if(log.isDebugEnabled()) {
-                        log.debug(String.format("Move %s to Trash", file));
-                    }
-                    if(!NSWorkspace.sharedWorkspace().performFileOperation(
-                            NSWorkspace.RecycleOperation,
-                            file.getParent().getAbsolute(), StringUtils.EMPTY,
-                            NSArray.arrayWithObject(file.getName()))) {
-                        log.warn(String.format("Failed to move %s to Trash", file.getAbsolute()));
-                    }
+            synchronized(workspace) {
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Move %s to Trash", this.getAbsolute()));
                 }
-            });
+                if(!NSWorkspace.sharedWorkspace().performFileOperation(
+                        NSWorkspace.RecycleOperation,
+                        this.getParent().getAbsolute(), StringUtils.EMPTY,
+                        NSArray.arrayWithObject(this.getName()))) {
+                    log.warn(String.format("Failed to move %s to Trash", this.getAbsolute()));
+                }
+
+            }
         }
     }
 
     @Override
     public boolean reveal() {
-        // If a second path argument is specified, a new file viewer is opened. If you specify an
-        // empty string (@"") for this parameter, the file is selected in the main viewer.
-        return NSWorkspace.sharedWorkspace().selectFile(this.getAbsolute(), this.getParent().getAbsolute());
+        synchronized(workspace) {
+            // If a second path argument is specified, a new file viewer is opened. If you specify an
+            // empty string (@"") for this parameter, the file is selected in the main viewer.
+            return NSWorkspace.sharedWorkspace().selectFile(this.getAbsolute(), this.getParent().getAbsolute());
+        }
     }
 
     /**
@@ -495,14 +481,6 @@ public class FinderLocal extends Local {
         return Long.valueOf(this.attributes().getInode()).hashCode();
     }
 
-    private static String stringByAbbreviatingWithTildeInPath(String string) {
-        return NSString.stringByAbbreviatingWithTildeInPath(string);
-    }
-
-    private static String stringByExpandingTildeInPath(String string) {
-        return NSString.stringByExpandingTildeInPath(string);
-    }
-
     @Override
     public boolean open() {
         return NSWorkspace.sharedWorkspace().openFile(this.getAbsolute());
@@ -519,8 +497,11 @@ public class FinderLocal extends Local {
         );
     }
 
-    @Override
-    public String toString() {
-        return stringByAbbreviatingWithTildeInPath(this.getAbsolute());
+    private static String stringByAbbreviatingWithTildeInPath(String string) {
+        return NSString.stringByAbbreviatingWithTildeInPath(string);
+    }
+
+    private static String stringByExpandingTildeInPath(String string) {
+        return NSString.stringByExpandingTildeInPath(string);
     }
 }

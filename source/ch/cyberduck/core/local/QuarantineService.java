@@ -1,9 +1,7 @@
 package ch.cyberduck.core.local;
 
-import ch.cyberduck.core.Local;
-
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public interface QuarantineService {
     /**
