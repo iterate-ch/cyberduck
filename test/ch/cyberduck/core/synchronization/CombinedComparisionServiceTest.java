@@ -38,6 +38,11 @@ public class CombinedComparisionServiceTest extends AbstractTestCase {
                             }
                         };
                     }
+
+                    @Override
+                    public boolean exists() {
+                        return true;
+                    }
                 };
             }
 
@@ -73,6 +78,11 @@ public class CombinedComparisionServiceTest extends AbstractTestCase {
                                 return Calendar.getInstance().getTimeInMillis();
                             }
                         };
+                    }
+
+                    @Override
+                    public boolean exists() {
+                        return true;
                     }
                 };
             }
