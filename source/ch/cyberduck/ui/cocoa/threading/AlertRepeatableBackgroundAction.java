@@ -59,9 +59,6 @@ import java.util.List;
  */
 public abstract class AlertRepeatableBackgroundAction extends RepeatableBackgroundAction {
 
-    /**
-     *
-     */
     private WindowController controller;
 
     public AlertRepeatableBackgroundAction(WindowController controller) {
@@ -143,8 +140,6 @@ public abstract class AlertRepeatableBackgroundAction extends RepeatableBackgrou
     }
 
     private static final class TableColumnFactory extends HashMap<String, NSTableColumn> {
-        private static final long serialVersionUID = 3845599333470816101L;
-
         private NSTableColumn create(String identifier) {
             if(!this.containsKey(identifier)) {
                 this.put(identifier, NSTableColumn.tableColumnWithIdentifier(identifier));
