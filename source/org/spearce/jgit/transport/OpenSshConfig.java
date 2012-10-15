@@ -37,7 +37,7 @@
 
 package org.spearce.jgit.transport;
 
-import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.local.LocalFactory;
 
 import org.apache.log4j.Logger;
 import org.spearce.jgit.errors.InvalidPatternException;
