@@ -23,8 +23,6 @@ package ch.cyberduck.ui.growl;
  */
 public abstract class Growl {
 
-    private static final Object lock = new Object();
-
     /**
      * @return The singleton instance of me.
      */
