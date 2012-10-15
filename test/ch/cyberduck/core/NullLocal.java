@@ -25,14 +25,4 @@ public class NullLocal extends Local {
     public void writeUnixPermission(final Permission permission) {
         throw new UnsupportedOperationException();
     }
-
-    @Override
-    public boolean open() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void bounce() {
-        throw new UnsupportedOperationException();
-    }
 }

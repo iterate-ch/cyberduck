@@ -27,10 +27,8 @@ import ch.cyberduck.ui.cocoa.application.NSWorkspace;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSDate;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
-import ch.cyberduck.ui.cocoa.foundation.NSDistributedNotificationCenter;
 import ch.cyberduck.ui.cocoa.foundation.NSEnumerator;
 import ch.cyberduck.ui.cocoa.foundation.NSFileManager;
-import ch.cyberduck.ui.cocoa.foundation.NSNotification;
 import ch.cyberduck.ui.cocoa.foundation.NSNumber;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.foundation.NSString;
@@ -488,17 +486,6 @@ public class FinderLocal extends Local {
     @Override
     public int hashCode() {
         return Long.valueOf(this.attributes().getInode()).hashCode();
-    }
-
-    /**
-     * Post a download finished notification to the distributed notification center. Will cause the
-     * download folder to bounce just once.
-     */
-    @Override
-    public void bounce() {
-        NSDistributedNotificationCenter.defaultCenter().postNotification(
-                NSNotification.notificationWithName("com.apple.DownloadFileFinished", this.getAbsolute())
-        );
     }
 
     private static String stringByAbbreviatingWithTildeInPath(String string) {

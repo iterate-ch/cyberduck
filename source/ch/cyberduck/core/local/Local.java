@@ -522,8 +522,6 @@ public abstract class Local extends AbstractPath {
         }
     }
 
-    public abstract void bounce();
-
     public InputStream getInputStream() throws FileNotFoundException {
         return new RepeatableFileInputStream(new File(path));
     }
