@@ -32,7 +32,7 @@ public abstract class LocaleFactory extends Factory<Locale> {
     /**
      * Registered factories
      */
-    protected static final Map<Platform, LocaleFactory> factories
+    private static final Map<Platform, LocaleFactory> factories
             = new HashMap<Platform, LocaleFactory>();
 
     public static void addFactory(Platform platform, LocaleFactory f) {
