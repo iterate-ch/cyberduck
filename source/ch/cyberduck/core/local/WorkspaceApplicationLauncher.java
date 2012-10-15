@@ -45,10 +45,14 @@ public final class WorkspaceApplicationLauncher implements ApplicationLauncher {
         //
     }
 
+    private static final Object workspace = new Object();
+
     @Override
     public void open(final Local file) {
-        if(!NSWorkspace.sharedWorkspace().openFile(file.getAbsolute())) {
-            log.warn(String.format("Error opening file %s", file.getAbsolute()));
+        synchronized(workspace) {
+            if(!NSWorkspace.sharedWorkspace().openFile(file.getAbsolute())) {
+                log.warn(String.format("Error opening file %s", file.getAbsolute()));
+            }
         }
     }
 
@@ -58,8 +62,10 @@ public final class WorkspaceApplicationLauncher implements ApplicationLauncher {
      */
     @Override
     public void bounce(final Local file) {
-        NSDistributedNotificationCenter.defaultCenter().postNotification(
-                NSNotification.notificationWithName("com.apple.DownloadFileFinished", file.getAbsolute())
-        );
+        synchronized(workspace) {
+            NSDistributedNotificationCenter.defaultCenter().postNotification(
+                    NSNotification.notificationWithName("com.apple.DownloadFileFinished", file.getAbsolute())
+            );
+        }
     }
 }
