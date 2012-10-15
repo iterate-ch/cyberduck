@@ -42,7 +42,7 @@ public abstract class LicenseFactory extends Factory<License> {
     /**
      * Registered factories
      */
-    protected static final Map<Platform, LicenseFactory> factories
+    private static final Map<Platform, LicenseFactory> factories
             = new HashMap<Platform, LicenseFactory>();
 
     public static void addFactory(Factory.Platform platform, LicenseFactory f) {
