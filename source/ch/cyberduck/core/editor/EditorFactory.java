@@ -69,7 +69,7 @@ public abstract class EditorFactory extends Factory<Editor> {
         final List<Application> editors = new ArrayList<Application>(this.getConfigured());
         // Add the application set as the default editor in the Preferences to be always
         // included in the list of available editors.
-        final Application defaultEditor = this.getEditor();
+        final Application defaultEditor = this.getDefaultEditor();
         if(null != defaultEditor) {
             if(!editors.contains(defaultEditor)) {
                 editors.add(defaultEditor);
@@ -101,7 +101,7 @@ public abstract class EditorFactory extends Factory<Editor> {
      * @return The bundle identifier of the default editor configured in
      *         Preferences or com.apple.TextEdit if not installed.
      */
-    public Application getEditor() {
+    public Application getDefaultEditor() {
         return ApplicationFinderFactory.instance().find(
                 Preferences.instance().getProperty("editor.bundleIdentifier"));
     }
@@ -113,14 +113,14 @@ public abstract class EditorFactory extends Factory<Editor> {
      */
     public Application getEditor(final Local file) {
         if(Preferences.instance().getBoolean("editor.alwaysUseDefault")) {
-            return this.getEditor();
+            return this.getDefaultEditor();
         }
         final ApplicationFinder finder = ApplicationFinderFactory.instance();
         // The default application set by launch services to open files of the given type
         final Application editor = finder.find(file);
         if(null == editor) {
             // Use default editor if not applicable application found which handles this file type
-            return this.getEditor();
+            return this.getDefaultEditor();
         }
         // Use application determined by launch services using file system notifications
         return editor;
@@ -139,7 +139,7 @@ public abstract class EditorFactory extends Factory<Editor> {
                 ApplicationFinderFactory.instance().findAll(file));
         // Add the application set as the default editor in the Preferences to be always
         // included in the list of available editors.
-        final Application defaultEditor = this.getEditor();
+        final Application defaultEditor = this.getDefaultEditor();
         if(null != defaultEditor) {
             if(!editors.contains(defaultEditor)) {
                 editors.add(defaultEditor);

@@ -40,7 +40,7 @@ public class CreateFileController extends FileController {
                 Locale.localizedString("Create new file", "File"),
                 Locale.localizedString("Enter the name for the new file:", "File"),
                 Locale.localizedString("Create", "File"),
-                EditorFactory.instance().getEditor() != null ? Locale.localizedString("Edit", "File") : null,
+                EditorFactory.instance().getDefaultEditor() != null ? Locale.localizedString("Edit", "File") : null,
                 Locale.localizedString("Cancel", "File")
         ));
         alert.setIcon(IconCache.documentIcon(null, 64));

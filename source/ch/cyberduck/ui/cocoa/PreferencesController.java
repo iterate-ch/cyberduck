@@ -314,7 +314,7 @@ public final class PreferencesController extends ToolbarWindowController {
                 editorCombobox.lastItem().setImage(
                         IconCache.instance().iconForApplication(editor.getIdentifier(), 16));
             }
-            if(editor.equals(EditorFactory.instance().getEditor())) {
+            if(editor.equals(EditorFactory.instance().getDefaultEditor())) {
                 editorCombobox.selectItem(editorCombobox.lastItem());
             }
         }
@@ -324,7 +324,7 @@ public final class PreferencesController extends ToolbarWindowController {
         editorCombobox.menu().addItem(NSMenuItem.separatorItem());
         editorCombobox.menu().addItemWithTitle_action_keyEquivalent(CHOOSE, action, StringUtils.EMPTY);
         editorCombobox.lastItem().setTarget(this.id());
-        editorCombobox.selectItemWithTitle(EditorFactory.instance().getEditor().getName());
+        editorCombobox.selectItemWithTitle(EditorFactory.instance().getDefaultEditor().getName());
     }
 
     private NSOpenPanel editorPathPanel;
