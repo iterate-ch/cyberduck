@@ -34,6 +34,7 @@ import ch.cyberduck.core.local.LaunchServicesQuarantineService;
 import ch.cyberduck.core.local.WorkspaceIconService;
 import ch.cyberduck.core.sparkle.Updater;
 import ch.cyberduck.core.threading.AutoreleaseActionOperationBatcher;
+import ch.cyberduck.core.urlhandler.LaunchServicesSchemeHandler;
 import ch.cyberduck.ui.cocoa.application.NSApplication;
 import ch.cyberduck.ui.cocoa.foundation.NSAutoreleasePool;
 import ch.cyberduck.ui.cocoa.i18n.BundleLocale;
@@ -105,6 +106,7 @@ public final class MainApplication {
                 UserDefaultsDateFormatter.register();
                 LaunchServicesApplicationFinder.register();
                 LaunchServicesQuarantineService.register();
+                LaunchServicesSchemeHandler.register();
                 WorkspaceIconService.register();
                 MultipleEditorFactory.register();
 
