@@ -5,7 +5,11 @@ import ch.cyberduck.core.Preferences;
 /**
  * @version $Id$
  */
-public class SizeFormatterFactory {
+public final class SizeFormatterFactory {
+
+    private SizeFormatterFactory() {
+        //
+    }
 
     public static SizeFormatter instance() {
         return SizeFormatterFactory.instance(Preferences.instance().getBoolean("browser.filesize.decimal"));
