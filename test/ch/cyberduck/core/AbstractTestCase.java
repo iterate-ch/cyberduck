@@ -20,15 +20,15 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.local.FinderLocal;
+import ch.cyberduck.core.serializer.impl.HostPlistReader;
+import ch.cyberduck.core.serializer.impl.PlistDeserializer;
+import ch.cyberduck.core.serializer.impl.PlistSerializer;
+import ch.cyberduck.core.serializer.impl.ProtocolPlistReader;
+import ch.cyberduck.core.serializer.impl.TransferPlistReader;
 import ch.cyberduck.core.threading.AutoreleaseActionOperationBatcher;
 import ch.cyberduck.ui.cocoa.UserDefaultsPreferences;
 import ch.cyberduck.ui.cocoa.foundation.NSAutoreleasePool;
 import ch.cyberduck.ui.cocoa.i18n.BundleLocale;
-import ch.cyberduck.ui.cocoa.serializer.HostPlistReader;
-import ch.cyberduck.ui.cocoa.serializer.PlistDeserializer;
-import ch.cyberduck.ui.cocoa.serializer.PlistSerializer;
-import ch.cyberduck.ui.cocoa.serializer.ProtocolPlistReader;
-import ch.cyberduck.ui.cocoa.serializer.TransferPlistReader;
 import ch.cyberduck.ui.growl.GrowlNative;
 
 import org.apache.log4j.BasicConfigurator;
