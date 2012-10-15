@@ -604,6 +604,9 @@ public abstract class Transfer implements Serializable {
             }
             session.message(MessageFormat.format(Locale.localizedString("Prepare {0}", "Status"), p.getName()));
             final TransferStatus s = filter.prepare(p);
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Determined transfer status %s for %s", s, p.getAbsolute()));
+            }
             status.put(p, s);
             // Add transfer length to total bytes
             size += s.getLength();
