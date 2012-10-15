@@ -40,18 +40,13 @@ public abstract class GrowlFactory extends Factory<Growl> {
         factories.put(platform, f);
     }
 
-    private static Growl instance;
-
-    public static Growl createGrowl() {
-        if(null == instance) {
-            if(factories.containsKey(VERSION_PLATFORM)) {
-                instance = factories.get(VERSION_PLATFORM).create();
-            }
-            else {
-                instance = new Disabled();
-            }
+    public static Growl get() {
+        if(factories.containsKey(VERSION_PLATFORM)) {
+            return factories.get(VERSION_PLATFORM).create();
         }
-        return instance;
+        else {
+            return new Disabled();
+        }
     }
 
     private static final class Disabled extends Growl {

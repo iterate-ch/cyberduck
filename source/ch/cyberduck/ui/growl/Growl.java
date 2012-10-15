@@ -23,20 +23,13 @@ package ch.cyberduck.ui.growl;
  */
 public abstract class Growl {
 
-    private static Growl current = null;
-
     private static final Object lock = new Object();
 
     /**
      * @return The singleton instance of me.
      */
     public static Growl instance() {
-        synchronized(lock) {
-            if(null == current) {
-                current = GrowlFactory.createGrowl();
-            }
-        }
-        return current;
+        return GrowlFactory.get();
     }
 
     /**
