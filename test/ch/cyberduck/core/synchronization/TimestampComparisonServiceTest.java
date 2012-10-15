@@ -2,13 +2,13 @@ package ch.cyberduck.core.synchronization;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Attributes;
-import ch.cyberduck.core.Local;
 import ch.cyberduck.core.NullAttributes;
 import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.NullPath;
 import ch.cyberduck.core.NullPathAttributes;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathAttributes;
+import ch.cyberduck.core.local.Local;
 
 import org.junit.Test;
 
@@ -18,7 +18,7 @@ import java.util.TimeZone;
 import static org.junit.Assert.assertEquals;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class TimestampComparisonServiceTest extends AbstractTestCase {
     @Test
