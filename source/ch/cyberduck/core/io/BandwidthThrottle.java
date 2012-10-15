@@ -225,4 +225,27 @@ public class BandwidthThrottle {
             }
         }
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if(this == o) {
+            return true;
+        }
+        if(o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        BandwidthThrottle that = (BandwidthThrottle) o;
+
+        if(Float.compare(that.rate, rate) != 0) {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return (rate != +0.0f ? Float.floatToIntBits(rate) : 0);
+    }
 }
