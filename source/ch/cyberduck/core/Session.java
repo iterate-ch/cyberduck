@@ -430,8 +430,6 @@ public abstract class Session implements TranscriptListener {
 
     /**
      * @return True if UNIX permissions can be read and written.
-     * @see ch.cyberduck.core.Path#writeUnixPermission(Permission, boolean)
-     * @see ch.cyberduck.core.Path#readUnixPermission()
      */
     public boolean isUnixPermissionsSupported() {
         return true;

@@ -38,14 +38,12 @@ import java.util.UUID;
 
 import com.ibm.icu.text.IDNA;
 import com.ibm.icu.text.StringPrepParseException;
-import ch.cyberduck.core.local.Local;
-import ch.cyberduck.core.local.LocalFactory;
 
 /**
  * @version $Id$
  */
 public class Host implements Serializable {
-    private static Logger log = Logger.getLogger(Host.class);
+    private static final Logger log = Logger.getLogger(Host.class);
     /**
      * The protocol identifier. Must be one of <code>sftp</code>, <code>ftp</code> or <code>ftps</code>
      *
@@ -382,7 +380,7 @@ public class Host implements Serializable {
         if(null != this.getTimestamp()) {
             dict.setStringForKey(String.valueOf(this.getTimestamp().getTime()), "Access Timestamp");
         }
-        return dict.<T>getSerialized();
+        return dict.getSerialized();
     }
 
     /**
