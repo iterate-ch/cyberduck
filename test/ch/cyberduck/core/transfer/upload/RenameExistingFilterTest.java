@@ -1,14 +1,7 @@
 package ch.cyberduck.core.transfer.upload;
 
-import ch.cyberduck.core.AbstractPath;
-import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.NullPath;
-import ch.cyberduck.core.NullProtocol;
-import ch.cyberduck.core.NullSession;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.Session;
+import ch.cyberduck.core.*;
+import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.transfer.NullSymlinkResolver;
 
 import org.junit.Ignore;
@@ -34,6 +27,16 @@ public class RenameExistingFilterTest extends AbstractTestCase {
                     }
                 };
             }
+
+            @Override
+            public Local getLocal() {
+                return new NullLocal(null, "a") {
+                    @Override
+                    public boolean exists() {
+                        return true;
+                    }
+                };
+            }
         })
         );
         assertFalse(f.accept(new NullPath("t", Path.FILE_TYPE) {
@@ -43,6 +46,16 @@ public class RenameExistingFilterTest extends AbstractTestCase {
                     @Override
                     public boolean isRenameSupported(final Path file) {
                         return false;
+                    }
+                };
+            }
+
+            @Override
+            public Local getLocal() {
+                return new NullLocal(null, "a") {
+                    @Override
+                    public boolean exists() {
+                        return true;
                     }
                 };
             }

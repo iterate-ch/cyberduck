@@ -2,29 +2,39 @@ package ch.cyberduck.core.transfer.download;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Attributes;
-import ch.cyberduck.core.Local;
 import ch.cyberduck.core.NullAttributes;
 import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.NullPath;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.transfer.NullSymlinkResolver;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.junit.Test;
 
 import static org.junit.Assert.*;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class ResumeFilterTest extends AbstractTestCase {
 
     @Test
     public void testAcceptExistsTrue() throws Exception {
         ResumeFilter f = new ResumeFilter(new NullSymlinkResolver());
-        Path p = new NullPath("a", Path.DIRECTORY_TYPE);
+        Path p = new NullPath("a", Path.DIRECTORY_TYPE) {
+            @Override
+            public Local getLocal() {
+                return new NullLocal(null, "a") {
+                    @Override
+                    public boolean exists() {
+                        return true;
+                    }
+                };
+            }
+        };
         p.attributes().setSize(2L);
         assertFalse(f.accept(p));
-        assertFalse(p.status().isResume());
     }
 
     @Test
@@ -43,9 +53,6 @@ public class ResumeFilterTest extends AbstractTestCase {
         };
         p.attributes().setSize(2L);
         assertTrue(f.accept(p));
-        assertFalse(p.status().isResume());
-        assertTrue(f.accept(p));
-        assertFalse(p.status().isResume());
     }
 
     @Test
@@ -69,20 +76,25 @@ public class ResumeFilterTest extends AbstractTestCase {
                             }
                         };
                     }
+
+                    @Override
+                    public boolean exists() {
+                        return true;
+                    }
                 };
             }
         };
         p.attributes().setSize(2L);
-        f.prepare(p);
-        assertTrue(p.status().isResume());
-        assertEquals(1L, p.status().getCurrent(), 0L);
+        final TransferStatus status = f.prepare(p);
+        assertTrue(status.isResume());
+        assertEquals(1L, status.getCurrent(), 0L);
     }
 
     @Test
     public void testPrepareDirectory() throws Exception {
         ResumeFilter f = new ResumeFilter(new NullSymlinkResolver());
         Path p = new NullPath("a", Path.DIRECTORY_TYPE);
-        f.prepare(p);
-        assertFalse(p.status().isResume());
+        final TransferStatus status = f.prepare(p);
+        assertFalse(status.isResume());
     }
 }

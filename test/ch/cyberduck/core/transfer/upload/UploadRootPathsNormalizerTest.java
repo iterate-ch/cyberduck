@@ -1,10 +1,13 @@
 package ch.cyberduck.core.transfer.upload;
 
-import ch.cyberduck.core.Local;
+import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.NSObjectPathReference;
 import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.NullPath;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.local.Local;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -13,9 +16,14 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
-public class UploadRootPathsNormalizerTest {
+public class UploadRootPathsNormalizerTest extends AbstractTestCase {
+
+    @BeforeClass
+    public static void register() {
+        NSObjectPathReference.register();
+    }
 
     @Test
     public void testNormalize() throws Exception {

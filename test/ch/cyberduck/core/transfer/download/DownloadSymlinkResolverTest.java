@@ -1,9 +1,11 @@
 package ch.cyberduck.core.transfer.download;
 
 import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.NSObjectPathReference;
 import ch.cyberduck.core.NullPath;
 import ch.cyberduck.core.Path;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -15,6 +17,11 @@ import static org.junit.Assert.*;
  * @version $Id$
  */
 public class DownloadSymlinkResolverTest extends AbstractTestCase {
+
+    @BeforeClass
+    public static void register() {
+        NSObjectPathReference.register();
+    }
 
     @Test
     public void testNoSymbolicLink() throws Exception {

@@ -5,6 +5,7 @@ import ch.cyberduck.core.NullPath;
 import ch.cyberduck.core.NullSession;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.junit.Test;
 
@@ -13,7 +14,7 @@ import java.util.HashMap;
 import static org.junit.Assert.*;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class MoveTransferFilterTest {
 
@@ -52,8 +53,8 @@ public class MoveTransferFilterTest {
         source.attributes().setSize(1L);
         files.put(source, new NullPath("a", Path.FILE_TYPE));
         MoveTransferFilter f = new MoveTransferFilter(files);
-        f.prepare(source);
-        assertEquals(1L, source.status().getLength());
+        final TransferStatus status = f.prepare(source);
+        assertEquals(1L, status.getLength());
     }
 
     @Test
@@ -76,8 +77,8 @@ public class MoveTransferFilterTest {
         };
         files.put(source, target);
         MoveTransferFilter f = new MoveTransferFilter(files);
-        f.prepare(source);
-        assertEquals(0L, source.status().getLength());
+        final TransferStatus status = f.prepare(source);
+        assertEquals(0L, status.getLength());
         assertTrue(target.getSession().cache().isCached(target.getReference()));
     }
 }

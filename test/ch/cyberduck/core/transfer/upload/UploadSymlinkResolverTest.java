@@ -1,6 +1,7 @@
 package ch.cyberduck.core.transfer.upload;
 
 import ch.cyberduck.core.*;
+import ch.cyberduck.core.local.Local;
 
 import org.junit.Test;
 
@@ -11,7 +12,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class UploadSymlinkResolverTest extends AbstractTestCase {
 

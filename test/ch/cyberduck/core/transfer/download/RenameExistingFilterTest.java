@@ -1,13 +1,16 @@
 package ch.cyberduck.core.transfer.download;
 
 import ch.cyberduck.core.AbstractPath;
-import ch.cyberduck.core.Local;
+import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.NullPath;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.transfer.NullSymlinkResolver;
 import ch.cyberduck.ui.DateFormatterFactory;
+import ch.cyberduck.ui.cocoa.UserDefaultsDateFormatter;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -16,7 +19,12 @@ import static org.junit.Assert.fail;
 /**
  * @version $Id$
  */
-public class RenameExistingFilterTest {
+public class RenameExistingFilterTest extends AbstractTestCase {
+
+    @BeforeClass
+    public static void register() {
+        UserDefaultsDateFormatter.register();
+    }
 
     @Test
     public void testPrepare() throws Exception {

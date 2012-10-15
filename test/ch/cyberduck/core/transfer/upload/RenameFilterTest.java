@@ -10,7 +10,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertNotSame;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class RenameFilterTest extends AbstractTestCase {
 

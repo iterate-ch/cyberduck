@@ -1,4 +1,4 @@
-package ch.cyberduck.core;
+package ch.cyberduck.core.transfer;
 
 /*
  *  Copyright (c) 2006 David Kocher. All rights reserved.
@@ -18,19 +18,29 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.AbstractTestCase;
+
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
-public class StatusTest extends AbstractTestCase {
+public class TransferStatusTest extends AbstractTestCase {
 
     @Test
     public void testSetResume() throws Exception {
-        Status status = new Status();
+        TransferStatus status = new TransferStatus();
         status.setCurrent(1024);
         status.setResume(true);
         assertEquals(1024, status.getCurrent());
         status.setResume(false);
         assertEquals(0, status.getCurrent());
+    }
+
+    @Test
+    public void testSetComplete() throws Exception {
+        TransferStatus status = new TransferStatus();
+        status.setComplete();
+        assertTrue(status.isComplete());
     }
 }
