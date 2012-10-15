@@ -39,15 +39,10 @@ public abstract class TransferReaderFactory extends Factory<Reader<Transfer>> {
         factories.put(platform, f);
     }
 
-    private static Reader<Transfer> instance;
-
-    public static Reader<Transfer> instance() {
-        if(null == instance) {
-            if(!factories.containsKey(NATIVE_PLATFORM)) {
-                throw new FactoryException(String.format("No implementation for %s", NATIVE_PLATFORM));
-            }
-            instance = factories.get(NATIVE_PLATFORM).create();
+    public static Reader<Transfer> get() {
+        if(!factories.containsKey(NATIVE_PLATFORM)) {
+            throw new FactoryException(String.format("No implementation for %s", NATIVE_PLATFORM));
         }
-        return instance;
+        return factories.get(NATIVE_PLATFORM).create();
     }
 }

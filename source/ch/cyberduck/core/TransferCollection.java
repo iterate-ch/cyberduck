@@ -84,7 +84,7 @@ public final class TransferCollection extends Collection<Transfer> {
         log.debug("save");
         if(Preferences.instance().getBoolean("queue.save")) {
             f.getParent().mkdir(true);
-            TransferWriterFactory.instance().write(this, f);
+            TransferWriterFactory.get().write(this, f);
         }
     }
 
@@ -106,7 +106,7 @@ public final class TransferCollection extends Collection<Transfer> {
             if(log.isInfoEnabled()) {
                 log.info(String.format("Found queue file in %s", f.toString()));
             }
-            this.addAll(TransferReaderFactory.instance().readCollection(f));
+            this.addAll(TransferReaderFactory.get().readCollection(f));
         }
     }
 

@@ -39,15 +39,10 @@ public abstract class TransferWriterFactory extends Factory<Writer<Transfer>> {
         factories.put(platform, f);
     }
 
-    private static Writer<Transfer> instance;
-
-    public static Writer<Transfer> instance() {
-        if(null == instance) {
-            if(!factories.containsKey(NATIVE_PLATFORM)) {
-                throw new FactoryException(String.format("No implementation for %s", NATIVE_PLATFORM));
-            }
-            instance = factories.get(NATIVE_PLATFORM).create();
+    public static Writer<Transfer> get() {
+        if(!factories.containsKey(NATIVE_PLATFORM)) {
+            throw new FactoryException(String.format("No implementation for %s", NATIVE_PLATFORM));
         }
-        return instance;
+        return factories.get(NATIVE_PLATFORM).create();
     }
 }
