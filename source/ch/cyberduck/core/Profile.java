@@ -52,10 +52,6 @@ public final class Profile extends Protocol implements Serializable {
         this.init(dict);
     }
 
-    private Profile() {
-        super();
-    }
-
     @Override
     public <T> void init(T serialized) {
         dict = DeserializerFactory.createDeserializer(serialized);
@@ -281,33 +277,5 @@ public final class Profile extends Protocol implements Serializable {
     @Override
     public boolean validate(Credentials credentials) {
         return parent.validate(credentials);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if(this == o) {
-            return true;
-        }
-        if(!(o instanceof Profile)) {
-            return false;
-        }
-        if(!super.equals(o)) {
-            return false;
-        }
-
-        Profile profile = (Profile) o;
-
-        if(parent != null ? !parent.equals(profile.parent) : profile.parent != null) {
-            return false;
-        }
-
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = super.hashCode();
-        result = 31 * result + (parent != null ? parent.hashCode() : 0);
-        return result;
     }
 }
