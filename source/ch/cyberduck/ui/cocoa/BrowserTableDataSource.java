@@ -18,11 +18,29 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.Collection;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.NSObjectPathReference;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathFactory;
+import ch.cyberduck.core.PathReference;
+import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.editor.Editor;
 import ch.cyberduck.core.editor.EditorFactory;
+import ch.cyberduck.core.formatter.SizeFormatterFactory;
 import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.core.local.Local;
+import ch.cyberduck.core.local.LocalFactory;
+import ch.cyberduck.core.transfer.DownloadTransfer;
+import ch.cyberduck.core.transfer.Transfer;
+import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.TransferPrompt;
+import ch.cyberduck.core.transfer.UploadTransfer;
 import ch.cyberduck.ui.DateFormatterFactory;
 import ch.cyberduck.ui.PathPasteboard;
 import ch.cyberduck.ui.cocoa.application.NSApplication;
@@ -41,7 +59,6 @@ import ch.cyberduck.ui.cocoa.foundation.NSString;
 import ch.cyberduck.ui.cocoa.foundation.NSURL;
 import ch.cyberduck.ui.cocoa.resources.IconCache;
 import ch.cyberduck.ui.cocoa.threading.BrowserBackgroundAction;
-import ch.cyberduck.core.formatter.SizeFormatterFactory;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -56,8 +73,6 @@ import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import ch.cyberduck.core.local.Local;
-import ch.cyberduck.core.local.LocalFactory;
 
 /**
  * @version $Id$

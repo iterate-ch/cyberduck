@@ -18,9 +18,18 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Collection;
+import ch.cyberduck.core.NSObjectPathReference;
+import ch.cyberduck.core.NullComparator;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathFilter;
+import ch.cyberduck.core.PathReference;
+import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
+import ch.cyberduck.core.transfer.Transfer;
+import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.ui.FilenameComparator;
 import ch.cyberduck.ui.cocoa.application.NSCell;
 import ch.cyberduck.ui.cocoa.application.NSOutlineView;
@@ -70,9 +79,9 @@ public abstract class TransferPromptModel extends OutlineDataSource {
         roots.add(p);
     }
 
-    protected abstract static class PromptFilter implements PathFilter<Path> {
+    protected static class PromptFilter implements PathFilter<Path> {
         @Override
-        public boolean accept(Path file) {
+        public boolean accept(final Path file) {
             return true;
         }
     }
@@ -89,9 +98,9 @@ public abstract class TransferPromptModel extends OutlineDataSource {
     protected static final String TYPEAHEAD_COLUMN = "TYPEAHEAD";
 
     @Override
-    public void outlineView_setObjectValue_forTableColumn_byItem(final NSOutlineView outlineView, NSObject value,
-                                                                 final NSTableColumn tableColumn, NSObject item) {
-        String identifier = tableColumn.identifier();
+    public void outlineView_setObjectValue_forTableColumn_byItem(final NSOutlineView outlineView, final NSObject value,
+                                                                 final NSTableColumn tableColumn, final NSObject item) {
+        final String identifier = tableColumn.identifier();
         if(identifier.equals(INCLUDE_COLUMN)) {
             final Path path = this.lookup(new NSObjectPathReference(item));
             final int state = Rococoa.cast(value, NSNumber.class).intValue();
@@ -175,9 +184,8 @@ public abstract class TransferPromptModel extends OutlineDataSource {
         if(null == cached) {
             if(identifier.equals(INCLUDE_COLUMN)) {
                 // Not included if the particular path should be skipped or skip
-                // existing is selected as the default transfer action for duplicate
-                // files
-                final boolean included = transfer.isIncluded(item) && !controller.getAction().equals(TransferAction.ACTION_SKIP);
+                // existing is selected as the default transfer action for duplicate files
+                final boolean included = !transfer.isSelected(item) && !controller.getAction().equals(TransferAction.ACTION_SKIP);
                 return NSNumber.numberWithInt(included ? NSCell.NSOnState : NSCell.NSOffState);
             }
             if(identifier.equals(FILENAME_COLUMN)) {

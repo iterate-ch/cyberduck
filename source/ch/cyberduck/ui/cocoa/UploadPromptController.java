@@ -18,8 +18,8 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Transfer;
-import ch.cyberduck.core.TransferAction;
+import ch.cyberduck.core.transfer.Transfer;
+import ch.cyberduck.core.transfer.TransferAction;
 
 /**
  * @version $Id$

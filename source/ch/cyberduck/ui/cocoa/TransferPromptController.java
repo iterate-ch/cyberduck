@@ -18,9 +18,19 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.NSObjectPathReference;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.ProgressListener;
+import ch.cyberduck.core.Session;
+import ch.cyberduck.core.formatter.SizeFormatterFactory;
 import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.core.transfer.DownloadTransfer;
+import ch.cyberduck.core.transfer.SyncTransfer;
+import ch.cyberduck.core.transfer.Transfer;
+import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.TransferPrompt;
+import ch.cyberduck.core.transfer.UploadTransfer;
 import ch.cyberduck.ui.DateFormatterFactory;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
@@ -30,7 +40,6 @@ import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.resources.IconCache;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 import ch.cyberduck.ui.cocoa.view.OutlineCell;
-import ch.cyberduck.core.formatter.SizeFormatterFactory;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -196,7 +205,9 @@ public abstract class TransferPromptController extends SheetController implement
      */
     @Outlet
     protected NSOutlineView browserView;
+
     protected TransferPromptModel browserModel;
+
     protected AbstractPathTableDelegate browserViewDelegate;
 
     public void setBrowserView(final NSOutlineView view) {
@@ -286,19 +297,19 @@ public abstract class TransferPromptController extends SheetController implement
                 return true;
             }
 
-            public String tableView_typeSelectStringForTableColumn_row(NSTableView tableView,
-                                                                       NSTableColumn tableColumn,
+            public String tableView_typeSelectStringForTableColumn_row(NSTableView view,
+                                                                       NSTableColumn column,
                                                                        NSInteger row) {
                 final Path p = browserModel.lookup(new NSObjectPathReference(browserView.itemAtRow(row)));
                 return p.getName();
             }
 
             public void outlineView_willDisplayCell_forTableColumn_item(NSOutlineView view, NSCell cell,
-                                                                        NSTableColumn tableColumn, NSObject item) {
+                                                                        NSTableColumn column, NSObject item) {
                 if(null == item) {
                     return;
                 }
-                final String identifier = tableColumn.identifier();
+                final String identifier = column.identifier();
                 final Path path = browserModel.lookup(new NSObjectPathReference(item));
                 if(identifier.equals(TransferPromptModel.INCLUDE_COLUMN)) {
                     cell.setEnabled(!transfer.isSkipped(path));
@@ -307,7 +318,7 @@ public abstract class TransferPromptController extends SheetController implement
                     (Rococoa.cast(cell, OutlineCell.class)).setIcon(IconCache.instance().iconForPath(path, 16));
                 }
                 if(cell.isKindOfClass(Foundation.getClass(NSTextFieldCell.class.getSimpleName()))) {
-                    if(!transfer.isIncluded(path)) {
+                    if(!transfer.isSelected(path)) {
                         Rococoa.cast(cell, NSTextFieldCell.class).setTextColor(NSColor.disabledControlTextColor());
                     }
                     else {

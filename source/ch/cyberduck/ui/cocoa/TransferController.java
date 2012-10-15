@@ -19,10 +19,25 @@ package ch.cyberduck.ui.cocoa;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AbstractCollectionListener;
+import ch.cyberduck.core.Collection;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Queue;
+import ch.cyberduck.core.Session;
+import ch.cyberduck.core.TransferAdapter;
+import ch.cyberduck.core.TransferCollection;
+import ch.cyberduck.core.TransferListener;
+import ch.cyberduck.core.formatter.SizeFormatterFactory;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
+import ch.cyberduck.core.transfer.DownloadTransfer;
+import ch.cyberduck.core.transfer.SyncTransfer;
+import ch.cyberduck.core.transfer.Transfer;
+import ch.cyberduck.core.transfer.TransferAction;
+import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.ui.PathPasteboard;
 import ch.cyberduck.ui.cocoa.application.*;
@@ -37,9 +52,7 @@ import ch.cyberduck.ui.cocoa.resources.IconCache;
 import ch.cyberduck.ui.cocoa.threading.AlertRepeatableBackgroundAction;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 import ch.cyberduck.ui.cocoa.view.ControllerCell;
-import ch.cyberduck.core.formatter.SizeFormatterFactory;
 import ch.cyberduck.ui.threading.ControllerMainAction;
-import ch.cyberduck.core.local.Local;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -305,7 +318,7 @@ public final class TransferController extends WindowController implements NSTool
                 NSIndexSet iterator = transferTable.selectedRowIndexes();
                 for(NSUInteger index = iterator.firstIndex(); !index.equals(NSIndexSet.NSNotFound); index = iterator.indexGreaterThanIndex(index)) {
                     Transfer transfer = TransferCollection.defaultCollection().get(index.intValue());
-                    if(BandwidthThrottle.UNLIMITED == transfer.getBandwidth()) {
+                    if(BandwidthThrottle.UNLIMITED == transfer.getBandwidth().getRate()) {
                         if(BandwidthThrottle.UNLIMITED == bytes) {
                             item.setState(selected > 1 ? NSCell.NSMixedState : NSCell.NSOnState);
                             break;
@@ -315,7 +328,7 @@ public final class TransferController extends WindowController implements NSTool
                         }
                     }
                     else {
-                        int bandwidth = (int) transfer.getBandwidth();
+                        int bandwidth = (int) transfer.getBandwidth().getRate();
                         if(bytes == bandwidth) {
                             item.setState(selected > 1 ? NSCell.NSMixedState : NSCell.NSOnState);
                             break;
@@ -638,7 +651,7 @@ public final class TransferController extends WindowController implements NSTool
                 // Break through and set the standard icon below
                 break;
             }
-            if(transfer.getBandwidth() != BandwidthThrottle.UNLIMITED) {
+            if(transfer.getBandwidth().getRate() != BandwidthThrottle.UNLIMITED) {
                 // Mark as throttled
                 this.bandwidthPopup.itemAtIndex(new NSInteger(0)).setImage(IconCache.iconNamed("turtle.tiff"));
                 return;

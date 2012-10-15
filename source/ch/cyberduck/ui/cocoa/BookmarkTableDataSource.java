@@ -18,9 +18,23 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AbstractHostCollection;
+import ch.cyberduck.core.Collection;
+import ch.cyberduck.core.CollectionListener;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostFilter;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathFactory;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.ProtocolFactory;
+import ch.cyberduck.core.Session;
+import ch.cyberduck.core.SessionFactory;
+import ch.cyberduck.core.local.Local;
+import ch.cyberduck.core.local.LocalFactory;
 import ch.cyberduck.core.serializer.HostReaderFactory;
 import ch.cyberduck.core.serializer.HostWriterFactory;
+import ch.cyberduck.core.transfer.Transfer;
+import ch.cyberduck.core.transfer.UploadTransfer;
 import ch.cyberduck.ui.cocoa.application.NSApplication;
 import ch.cyberduck.ui.cocoa.application.NSDraggingInfo;
 import ch.cyberduck.ui.cocoa.application.NSDraggingSource;
@@ -53,8 +67,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import ch.cyberduck.core.local.Local;
-import ch.cyberduck.core.local.LocalFactory;
 
 /**
  * @version $Id$
@@ -70,7 +82,8 @@ public class BookmarkTableDataSource extends ListDataSource {
 
     protected BrowserController controller;
 
-    public BookmarkTableDataSource(BrowserController controller, AbstractHostCollection source) {
+    public BookmarkTableDataSource(final BrowserController controller,
+                                   final AbstractHostCollection source) {
         this.controller = controller;
         this.setSource(source);
     }

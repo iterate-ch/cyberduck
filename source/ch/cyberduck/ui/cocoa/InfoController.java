@@ -19,14 +19,25 @@ package ch.cyberduck.ui.cocoa;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AbstractPath;
+import ch.cyberduck.core.Acl;
+import ch.cyberduck.core.ConnectionAdapter;
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathFactory;
+import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cloud.CloudPath;
 import ch.cyberduck.core.cloud.CloudSession;
 import ch.cyberduck.core.date.RFC1123DateFormatter;
+import ch.cyberduck.core.formatter.SizeFormatterFactory;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.s3.S3Path;
 import ch.cyberduck.core.s3.S3Session;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.ui.DateFormatterFactory;
 import ch.cyberduck.ui.action.CalculateSizeWorker;
 import ch.cyberduck.ui.action.ChecksumWorker;
@@ -49,10 +60,6 @@ import ch.cyberduck.ui.cocoa.resources.IconCache;
 import ch.cyberduck.ui.cocoa.threading.BrowserBackgroundAction;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
 import ch.cyberduck.ui.cocoa.threading.WorkerBackgroundAction;
-import ch.cyberduck.ui.cocoa.HyperlinkAttributedStringFactory;
-import ch.cyberduck.core.formatter.SizeFormatterFactory;
-import ch.cyberduck.core.local.Local;
-import ch.cyberduck.core.local.LocalFactory;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
@@ -343,7 +350,7 @@ public class InfoController extends ToolbarWindowController {
                     for(Path next : files) {
                         next.attributes().setStorageClass(sender.selectedItem().representedObject());
                         // Copy item in place to write new attributes
-                        next.copy(next);
+                        next.copy(next, new TransferStatus());
                     }
                 }
 
@@ -381,7 +388,7 @@ public class InfoController extends ToolbarWindowController {
                         next.attributes().setEncryption(encryptionButton.state() == NSCell.NSOnState ?
                                 ((CloudSession) controller.getSession()).getSupportedEncryptionAlgorithms().iterator().next() : null);
                         // Copy item in place to write new attributes
-                        next.copy(next);
+                        next.copy(next, new TransferStatus());
                     }
                 }
 

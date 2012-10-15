@@ -18,7 +18,16 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AbstractCollectionListener;
+import ch.cyberduck.core.Collection;
+import ch.cyberduck.core.NullTransferFilter;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Session;
+import ch.cyberduck.core.TransferCollection;
+import ch.cyberduck.core.TransferFilter;
+import ch.cyberduck.core.transfer.DownloadTransfer;
+import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.ui.PathPasteboard;
 import ch.cyberduck.ui.cocoa.application.NSDraggingInfo;
 import ch.cyberduck.ui.cocoa.application.NSPasteboard;

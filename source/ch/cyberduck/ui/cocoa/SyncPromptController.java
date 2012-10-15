@@ -19,9 +19,9 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.SyncTransfer;
-import ch.cyberduck.core.Transfer;
-import ch.cyberduck.core.TransferAction;
+import ch.cyberduck.core.transfer.SyncTransfer;
+import ch.cyberduck.core.transfer.Transfer;
+import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.ui.cocoa.application.NSOutlineView;
 import ch.cyberduck.ui.cocoa.application.NSPopUpButton;
 import ch.cyberduck.ui.cocoa.application.NSTableColumn;
@@ -92,7 +92,7 @@ public class SyncPromptController extends TransferPromptController {
         this.actionPopup.removeAllItems();
 
         final TransferAction defaultAction
-                = ((SyncTransfer) transfer).getAction();
+                = ((SyncTransfer) transfer).getTransferAction();
 
         final TransferAction[] actions = new TransferAction[]{
                 SyncTransfer.ACTION_DOWNLOAD,
@@ -114,7 +114,7 @@ public class SyncPromptController extends TransferPromptController {
     @Override
     @Action
     public void actionPopupClicked(NSPopUpButton sender) {
-        final TransferAction current = ((SyncTransfer) transfer).getAction();
+        final TransferAction current = ((SyncTransfer) transfer).getTransferAction();
         final TransferAction selected = TransferAction.forName(sender.selectedItem().representedObject());
         if(current.equals(selected)) {
             return;

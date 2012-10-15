@@ -20,11 +20,11 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFilter;
-import ch.cyberduck.core.Transfer;
+import ch.cyberduck.core.formatter.SizeFormatterFactory;
+import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.resources.IconCache;
-import ch.cyberduck.core.formatter.SizeFormatterFactory;
 
 import org.apache.log4j.Logger;
 

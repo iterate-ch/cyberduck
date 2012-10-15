@@ -20,13 +20,13 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFilter;
-import ch.cyberduck.core.SyncTransfer;
-import ch.cyberduck.core.Transfer;
+import ch.cyberduck.core.formatter.SizeFormatterFactory;
 import ch.cyberduck.core.synchronization.Comparison;
+import ch.cyberduck.core.transfer.SyncTransfer;
+import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.resources.IconCache;
-import ch.cyberduck.core.formatter.SizeFormatterFactory;
 
 /**
  * @version $Id$
@@ -45,21 +45,12 @@ public class SyncPromptModel extends TransferPromptModel {
     }
 
     /**
-     * Filtering what files are displayed. Used to
-     * decide which files to include in the prompt dialog
+     * Filtering what files are displayed. Used to decide which files to include in the prompt.
      */
-    private PathFilter<Path> filter;
+    private PathFilter<Path> filter = new PromptFilter();
 
     @Override
     protected PathFilter<Path> filter() {
-        if(null == filter) {
-            filter = new PromptFilter() {
-                @Override
-                public boolean accept(Path child) {
-                    return super.accept(child);
-                }
-            };
-        }
         return filter;
     }
 

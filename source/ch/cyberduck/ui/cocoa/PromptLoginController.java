@@ -18,17 +18,34 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AbstractLoginController;
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.KeychainFactory;
+import ch.cyberduck.core.LoginCanceledException;
+import ch.cyberduck.core.LoginController;
+import ch.cyberduck.core.LoginControllerFactory;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.core.local.LocalFactory;
 import ch.cyberduck.ui.Controller;
-import ch.cyberduck.ui.cocoa.application.*;
+import ch.cyberduck.ui.cocoa.application.NSAlert;
+import ch.cyberduck.ui.cocoa.application.NSButton;
+import ch.cyberduck.ui.cocoa.application.NSCell;
+import ch.cyberduck.ui.cocoa.application.NSColor;
+import ch.cyberduck.ui.cocoa.application.NSControl;
+import ch.cyberduck.ui.cocoa.application.NSImageView;
+import ch.cyberduck.ui.cocoa.application.NSOpenPanel;
+import ch.cyberduck.ui.cocoa.application.NSPanel;
+import ch.cyberduck.ui.cocoa.application.NSSecureTextField;
+import ch.cyberduck.ui.cocoa.application.NSTextField;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSEnumerator;
 import ch.cyberduck.ui.cocoa.foundation.NSNotification;
 import ch.cyberduck.ui.cocoa.foundation.NSNotificationCenter;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.resources.IconCache;
-import ch.cyberduck.ui.cocoa.HyperlinkAttributedStringFactory;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -37,8 +54,6 @@ import org.rococoa.ID;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import ch.cyberduck.core.local.Local;
-import ch.cyberduck.core.local.LocalFactory;
 
 /**
  * @version $Id$

@@ -19,14 +19,14 @@ package ch.cyberduck.ui.cocoa;
  */
 
 import ch.cyberduck.core.DefaultPathKindDetector;
-import ch.cyberduck.core.DownloadTransfer;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.core.PathKindDetector;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.SessionFactory;
-import ch.cyberduck.core.Transfer;
 import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.core.transfer.DownloadTransfer;
+import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.ui.cocoa.application.NSAlert;
 import ch.cyberduck.ui.cocoa.application.NSTextField;
 
