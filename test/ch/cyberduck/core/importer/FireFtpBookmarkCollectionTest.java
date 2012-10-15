@@ -11,9 +11,9 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
 /**
- * @version $Id$
+ * @version $Id:$
  */
-public class FetchBookmarkCollectionTest extends AbstractTestCase {
+public class FireFtpBookmarkCollectionTest extends AbstractTestCase {
 
     @BeforeClass
     public static void register() {
@@ -22,10 +22,10 @@ public class FetchBookmarkCollectionTest extends AbstractTestCase {
     }
 
     @Test
-    public void testGetFile() throws Exception {
-        FetchBookmarkCollection c = new FetchBookmarkCollection();
+    public void testParse() {
+        FireFtpBookmarkCollection c = new FireFtpBookmarkCollection();
         assertEquals(0, c.size());
-        c.parse(LocalFactory.createLocal("test/ch/cyberduck/core/importer/com.fetchsoftworks.Fetch.Shortcuts.plist"));
-        assertEquals(2, c.size());
+        c.parse(LocalFactory.createLocal("test/ch/cyberduck/core/importer/org.mozdev.fireftp"));
+        assertEquals(1, c.size());
     }
 }
