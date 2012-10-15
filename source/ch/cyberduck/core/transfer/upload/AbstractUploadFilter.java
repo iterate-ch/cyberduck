@@ -74,6 +74,9 @@ public abstract class AbstractUploadFilter extends TransferPathFilter {
 
     @Override
     public void complete(final Path file, final TransferStatus status) {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Complete %s with status %s", file.getAbsolute(), status));
+        }
         if(!status.isCanceled()) {
             if(file.getSession().isAclSupported()) {
                 // Currently handled in S3 only.

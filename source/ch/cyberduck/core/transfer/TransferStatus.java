@@ -155,4 +155,18 @@ public class TransferStatus {
     public boolean isResume() {
         return resume;
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder();
+        sb.append("TransferStatus");
+        sb.append("{resume=").append(resume);
+        sb.append(", current=").append(current);
+        sb.append(", length=").append(length);
+        sb.append(", canceled=").append(canceled);
+        sb.append(", complete=").append(complete);
+        sb.append(", selected=").append(selected);
+        sb.append('}');
+        return sb.toString();
+    }
 }

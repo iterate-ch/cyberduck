@@ -93,6 +93,9 @@ public abstract class AbstractDownloadFilter extends TransferPathFilter {
      */
     @Override
     public void complete(final Path file, final TransferStatus status) {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Complete %s with status %s", file.getAbsolute(), status));
+        }
         if(!status.isCanceled()) {
             if(Preferences.instance().getBoolean("queue.download.changePermissions")) {
                 Permission permission = Permission.EMPTY;

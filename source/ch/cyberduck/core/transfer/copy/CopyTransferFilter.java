@@ -5,14 +5,17 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.transfer.TransferPathFilter;
 import ch.cyberduck.core.transfer.TransferStatus;
 
+import org.apache.log4j.Logger;
+
 import java.util.Map;
 
 /**
  * @version $Id$
  */
 public class CopyTransferFilter extends TransferPathFilter {
+    private static final Logger log = Logger.getLogger(CopyTransferFilter.class);
 
-    private Map<Path, Path> files;
+    private final Map<Path, Path> files;
 
     public CopyTransferFilter(final Map<Path, Path> files) {
         this.files = files;
@@ -52,7 +55,9 @@ public class CopyTransferFilter extends TransferPathFilter {
     }
 
     @Override
-    public void complete(Path p, final TransferStatus status) {
-        //
+    public void complete(Path file, final TransferStatus status) {
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Complete %s with status %s", file.getAbsolute(), status));
+        }
     }
 }
