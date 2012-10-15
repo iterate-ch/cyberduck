@@ -17,7 +17,7 @@
  *  dkocher@cyberduck.ch
  */
 
-#import "URLSchemeHandlerConfiguration.h"
+#import "LaunchServicesSchemeHandler.h"
 #import <Foundation/Foundation.h>
 #import "ApplicationServices/ApplicationServices.h"
 
@@ -47,7 +47,7 @@ jstring convertToJString(JNIEnv *env, NSString *nsString)
     return (*env)->NewStringUTF(env, unichars);
 }
 
-JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_urlhandler_URLSchemeHandlerConfiguration_setDefaultHandlerForURLScheme
+JNIEXPORT void JNICALL Java_ch_cyberduck_core_urlhandler_LaunchServicesSchemeHandler_setDefaultHandler
   (JNIEnv *env, jobject this, jstring scheme, jstring bundleIdentifier)
 {
 	LSSetDefaultHandlerForURLScheme(
@@ -56,7 +56,7 @@ JNIEXPORT void JNICALL Java_ch_cyberduck_ui_cocoa_urlhandler_URLSchemeHandlerCon
 	);
 }
 
-JNIEXPORT jstring JNICALL Java_ch_cyberduck_ui_cocoa_urlhandler_URLSchemeHandlerConfiguration_getDefaultHandlerForURLScheme
+JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_urlhandler_LaunchServicesSchemeHandler_getDefaultHandler
   (JNIEnv *env, jobject this, jstring scheme)
 {
     NSString *bundleIdentifier = nil;
@@ -71,7 +71,7 @@ JNIEXPORT jstring JNICALL Java_ch_cyberduck_ui_cocoa_urlhandler_URLSchemeHandler
     return result;
 }
 
-JNIEXPORT jobjectArray JNICALL Java_ch_cyberduck_ui_cocoa_urlhandler_URLSchemeHandlerConfiguration_getAllHandlersForURLScheme
+JNIEXPORT jobjectArray JNICALL Java_ch_cyberduck_core_urlhandler_LaunchServicesSchemeHandler_getAllHandlers
   (JNIEnv *env, jobject this, jstring scheme)
 {
     NSArray *handlers = [(NSArray *)LSCopyAllHandlersForURLScheme(
