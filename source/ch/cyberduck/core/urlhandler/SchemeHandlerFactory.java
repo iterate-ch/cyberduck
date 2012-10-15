@@ -21,7 +21,7 @@ public abstract class SchemeHandlerFactory extends Factory<SchemeHandler> {
     /**
      * Registered factories
      */
-    protected static final Map<Platform, SchemeHandlerFactory> factories
+    private static final Map<Platform, SchemeHandlerFactory> factories
             = new HashMap<Platform, SchemeHandlerFactory>();
 
     public static void addFactory(Factory.Platform platform, SchemeHandlerFactory f) {
