@@ -511,7 +511,7 @@ public class MainController extends BundleController implements NSApplication.De
         final Local f = LocalFactory.createLocal(filename);
         if(f.exists()) {
             if("duck".equals(f.getExtension())) {
-                final Host bookmark = HostReaderFactory.instance().read(f);
+                final Host bookmark = HostReaderFactory.get().read(f);
                 if(null == bookmark) {
                     return false;
                 }

@@ -98,7 +98,7 @@ public abstract class AbstractFolderHostCollection extends AbstractHostCollectio
                         }
                     }
             );
-            final Reader<Host> reader = HostReaderFactory.instance();
+            final Reader<Host> reader = HostReaderFactory.get();
             for(Local next : bookmarks) {
                 Host bookmark = reader.read(next);
                 if(null == bookmark) {

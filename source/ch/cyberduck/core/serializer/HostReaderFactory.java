@@ -39,15 +39,10 @@ public abstract class HostReaderFactory extends Factory<Reader<Host>> {
         factories.put(platform, f);
     }
 
-    private static Reader<Host> instance;
-
-    public static Reader<Host> instance() {
-        if(null == instance) {
-            if(!factories.containsKey(NATIVE_PLATFORM)) {
-                throw new FactoryException(String.format("No implementation for %s", NATIVE_PLATFORM));
-            }
-            instance = factories.get(NATIVE_PLATFORM).create();
+    public static Reader<Host> get() {
+        if(!factories.containsKey(NATIVE_PLATFORM)) {
+            throw new FactoryException(String.format("No implementation for %s", NATIVE_PLATFORM));
         }
-        return instance;
+        return factories.get(NATIVE_PLATFORM).create();
     }
 }
