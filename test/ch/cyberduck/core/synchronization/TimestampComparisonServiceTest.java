@@ -21,6 +21,7 @@ import static org.junit.Assert.assertEquals;
  * @version $Id$
  */
 public class TimestampComparisonServiceTest extends AbstractTestCase {
+
     @Test
     public void testCompare() throws Exception {
         ComparisonService s = new TimestampComparisonService();
