@@ -564,7 +564,7 @@ public class MainController extends BundleController implements NSApplication.De
                 return true;
             }
             else if("cyberduckprofile".equals(f.getExtension())) {
-                final Protocol profile = ProtocolReaderFactory.instance().read(f);
+                final Protocol profile = ProtocolReaderFactory.get().read(f);
                 if(null == profile) {
                     return false;
                 }

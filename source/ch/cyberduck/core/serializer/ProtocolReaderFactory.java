@@ -34,21 +34,16 @@ public abstract class ProtocolReaderFactory extends Factory<Reader<Profile>> {
     /**
      * Registered factories
      */
-    protected static final Map<Platform, ProtocolReaderFactory> factories = new HashMap<Platform, ProtocolReaderFactory>();
+    private static final Map<Platform, ProtocolReaderFactory> factories = new HashMap<Platform, ProtocolReaderFactory>();
 
     public static void addFactory(Platform platform, ProtocolReaderFactory f) {
         factories.put(platform, f);
     }
 
-    private static Reader<Profile> instance;
-
-    public static Reader<Profile> instance() {
-        if(null == instance) {
-            if(!factories.containsKey(NATIVE_PLATFORM)) {
-                throw new FactoryException(String.format("No implementation for %s", NATIVE_PLATFORM));
-            }
-            instance = factories.get(NATIVE_PLATFORM).create();
+    public static Reader<Profile> get() {
+        if(!factories.containsKey(NATIVE_PLATFORM)) {
+            throw new FactoryException(String.format("No implementation for %s", NATIVE_PLATFORM));
         }
-        return instance;
+        return factories.get(NATIVE_PLATFORM).create();
     }
 }

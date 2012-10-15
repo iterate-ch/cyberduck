@@ -71,7 +71,7 @@ public final class ProtocolFactory {
                     return "cyberduckprofile".equals(FilenameUtils.getExtension(file.getName()));
                 }
             })) {
-                final Profile protocol = ProtocolReaderFactory.instance().read(profile);
+                final Profile protocol = ProtocolReaderFactory.get().read(profile);
                 if(null == protocol) {
                     continue;
                 }
