@@ -19,8 +19,8 @@ package ch.cyberduck.core.aquaticprime;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Local;
 import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.core.local.Local;
 
 import org.apache.commons.lang.StringUtils;
 

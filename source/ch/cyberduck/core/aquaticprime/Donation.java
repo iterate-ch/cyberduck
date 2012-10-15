@@ -18,8 +18,8 @@ package ch.cyberduck.core.aquaticprime;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Native;
+import ch.cyberduck.core.local.Local;
 
 import org.apache.log4j.Logger;
 
