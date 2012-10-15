@@ -19,9 +19,9 @@ package ch.cyberduck.core.importer;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.local.Local;
+import ch.cyberduck.core.local.LocalFactory;
 
 /**
  * @version $Id$

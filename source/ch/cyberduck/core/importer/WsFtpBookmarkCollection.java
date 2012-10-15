@@ -20,11 +20,11 @@ package ch.cyberduck.core.importer;
  */
 
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.PathFilter;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.local.Local;
+import ch.cyberduck.core.local.LocalFactory;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;

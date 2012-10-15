@@ -20,8 +20,8 @@ package ch.cyberduck.core.importer;
  */
 
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.local.Local;
 
 import org.apache.log4j.Logger;
 import org.xml.sax.Attributes;
