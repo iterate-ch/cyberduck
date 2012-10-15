@@ -33,7 +33,7 @@ public abstract class LocalFactory extends Factory<Local> {
     /**
      * Registered factories
      */
-    protected static final Map<Factory.Platform, LocalFactory> factories = new HashMap<Factory.Platform, LocalFactory>();
+    private static final Map<Factory.Platform, LocalFactory> factories = new HashMap<Factory.Platform, LocalFactory>();
 
     public static void addFactory(Factory.Platform platform, LocalFactory f) {
         factories.put(platform, f);
