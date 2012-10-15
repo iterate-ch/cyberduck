@@ -17,6 +17,7 @@
 // 
 using System.Xml;
 using ch.cyberduck.core;
+using ch.cyberduck.core.local;
 using ch.cyberduck.core.serializer;
 using java.util;
 using Collection = java.util.Collection;

@@ -30,6 +30,7 @@ using ch.cyberduck.core.cdn;
 using ch.cyberduck.core.cloud;
 using ch.cyberduck.core.formatter;
 using ch.cyberduck.core.s3;
+using ch.cyberduck.core.transfer;
 using ch.cyberduck.ui;
 using ch.cyberduck.ui.action;
 using ch.cyberduck.ui.controller.threading;
@@ -2295,7 +2296,7 @@ namespace Ch.Cyberduck.Ui.Controller
                         next.attributes().setEncryption(null);
                     }
                     // Copy item in place to write new attributes
-                    next.copy(next);
+                    next.copy(next, new TransferStatus());
                 }
             }
 
@@ -2335,7 +2336,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     next.attributes().setStorageClass(_storageClass);
                     // Copy item in place to write new attributes
-                    next.copy(next);
+                    next.copy(next, new TransferStatus());
                 }
             }
 

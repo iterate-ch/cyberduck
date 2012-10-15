@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -15,10 +15,12 @@
 // Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
 // 
+
 using System;
 using System.Xml;
 using ch.cyberduck.core;
 using ch.cyberduck.core.serializer;
+using ch.cyberduck.core.transfer;
 using org.apache.log4j;
 
 namespace Ch.Cyberduck.Ui.Winforms.Serializer

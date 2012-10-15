@@ -16,6 +16,7 @@
 // yves@cyberduck.ch
 // 
 using ch.cyberduck.core;
+using ch.cyberduck.core.transfer;
 
 namespace Ch.Cyberduck.Ui.Controller
 {

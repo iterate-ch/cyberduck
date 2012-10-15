@@ -23,6 +23,7 @@ using Ch.Cyberduck.Ui.Winforms.Taskdialog;
 using StructureMap;
 using ch.cyberduck.core;
 using ch.cyberduck.core.i18n;
+using ch.cyberduck.core.local;
 using org.apache.log4j;
 
 namespace Ch.Cyberduck.Ui.Controller

@@ -25,6 +25,8 @@ using StructureMap;
 using ch.cyberduck.core;
 using ch.cyberduck.core.formatter;
 using ch.cyberduck.core.io;
+using ch.cyberduck.core.local;
+using ch.cyberduck.core.transfer;
 using java.util;
 using org.apache.log4j;
 using Locale = ch.cyberduck.core.i18n.Locale;
@@ -378,9 +380,9 @@ namespace Ch.Cyberduck.Ui.Controller
                     View.BandwidthEnabled = false;
                     // Break through and set the standard icon below
                 }
-                if (transfer.getBandwidth() != BandwidthThrottle.UNLIMITED)
+                if (transfer.getBandwidth().getRate() != BandwidthThrottle.UNLIMITED)
                 {
-                    View.Bandwidth = transfer.getBandwidth();
+                    View.Bandwidth = transfer.getBandwidth().getRate();
                 }
                 else
                 {

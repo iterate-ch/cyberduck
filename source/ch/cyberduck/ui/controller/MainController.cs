@@ -36,6 +36,7 @@ using ch.cyberduck.core;
 using ch.cyberduck.core.aquaticprime;
 using ch.cyberduck.core.i18n;
 using ch.cyberduck.core.importer;
+using ch.cyberduck.core.local;
 using ch.cyberduck.core.serializer;
 using ch.cyberduck.ui;
 using org.apache.log4j;

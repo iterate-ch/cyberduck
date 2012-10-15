@@ -20,6 +20,7 @@ using System.Collections.Generic;
 using BrightIdeasSoftware;
 using Ch.Cyberduck.Ui.Winforms.Controls;
 using ch.cyberduck.core;
+using ch.cyberduck.core.transfer;
 
 namespace Ch.Cyberduck.Ui.Controller
 {

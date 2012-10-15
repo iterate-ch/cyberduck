@@ -21,10 +21,8 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 using Ch.Cyberduck.Core;
-using Ch.Cyberduck.Core.Collections;
-using Microsoft.Win32;
 using ch.cyberduck.core;
-using java.util;
+using ch.cyberduck.core.local;
 using org.apache.commons.io;
 using org.apache.log4j;
 using File = java.io.File;
@@ -80,7 +78,7 @@ namespace Ch.Cyberduck.Ui.Controller
             return Directory.Exists(getAbsolute());
         }
 
-        public override void writeUnixPermission(Permission p, bool b)
+        public override void writeUnixPermission(Permission p)
         {
             ;
         }
@@ -162,7 +160,7 @@ namespace Ch.Cyberduck.Ui.Controller
             base.setPath(p, n);
         }
 
-        protected override void setPath(string filename)
+        public override void setPath(string filename)
         {
             string parent = Path.Combine(FilenameUtils.getPrefix(filename),
                                          MakeValidPath(FilenameUtils.getPath(filename)));

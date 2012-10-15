@@ -25,6 +25,7 @@ using ch.cyberduck.core;
 using ch.cyberduck.core.formatter;
 using ch.cyberduck.core.i18n;
 using ch.cyberduck.core.threading;
+using ch.cyberduck.core.transfer;
 using ch.cyberduck.ui;
 using org.apache.log4j;
 
@@ -127,7 +128,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public CheckState GetCheckState(Object path)
         {
-            bool included = Transfer.isIncluded((Path) path) &&
+            bool included = Transfer.isSelected((Path) path) &&
                             !_controller.Action.equals(TransferAction.ACTION_SKIP);
             if (included)
             {
@@ -171,7 +172,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public bool IsActive(Path path)
         {
-            return Transfer.isIncluded(path);
+            return Transfer.isSelected(path);
         }
 
         private class ChildGetterTransferPromptBackgrounAction : AbstractBackgroundAction

@@ -28,6 +28,7 @@ using StructureMap;
 using ch.cyberduck.core;
 using ch.cyberduck.core.ftp;
 using ch.cyberduck.core.i18n;
+using ch.cyberduck.core.local;
 using ch.cyberduck.core.threading;
 using java.lang;
 using org.apache.log4j;

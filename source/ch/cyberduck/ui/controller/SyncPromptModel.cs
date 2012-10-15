@@ -18,6 +18,7 @@
 
 using ch.cyberduck.core;
 using ch.cyberduck.core.synchronization;
+using ch.cyberduck.core.transfer;
 using org.apache.log4j;
 
 namespace Ch.Cyberduck.Ui.Controller

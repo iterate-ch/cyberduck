@@ -27,6 +27,7 @@ using ch.cyberduck.core;
 using ch.cyberduck.core.editor;
 using ch.cyberduck.core.formatter;
 using ch.cyberduck.core.io;
+using ch.cyberduck.core.transfer;
 using java.util;
 using java.util.regex;
 using org.apache.log4j;

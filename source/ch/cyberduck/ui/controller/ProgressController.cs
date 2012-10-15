@@ -15,22 +15,25 @@
 // Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
 // 
+
 using System;
 using System.Collections.Generic;
-using ch.cyberduck.core;
 using Ch.Cyberduck.Core;
-using ch.cyberduck.core.io;
-using ch.cyberduck.ui;
 using Ch.Cyberduck.Ui.Controller.Threading;
 using Ch.Cyberduck.Ui.Winforms.Controls;
+using StructureMap;
+using ch.cyberduck.core;
+using ch.cyberduck.core.io;
+using ch.cyberduck.core.transfer;
+using ch.cyberduck.ui;
 using java.lang;
 using java.util;
 using java.util.concurrent;
 using org.apache.log4j;
-using StructureMap;
 using Locale = ch.cyberduck.core.i18n.Locale;
 using String = System.String;
 using StringBuilder = System.Text.StringBuilder;
+using TransferStatus = Ch.Cyberduck.Ui.Winforms.Controls.TransferStatus;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -85,7 +88,8 @@ namespace Ch.Cyberduck.Ui.Controller
 
             ICollection<Session> sessions =
                 Utils.ConvertFromJavaList<Session>(_transfer.getSessions());
-            foreach (Session s in sessions) {
+            foreach (Session s in sessions)
+            {
                 s.addProgressListener(new TransferProgressListener(this));
             }
             _transfer.addListener(new TransferAdapter(this));
@@ -108,7 +112,8 @@ namespace Ch.Cyberduck.Ui.Controller
             if (_transfer.isRunning())
             {
                 View.TransferStatus = TransferStatus.InProgress;
-            } else
+            }
+            else
             {
                 View.TransferStatus = _transfer.isComplete() ? TransferStatus.Complete : TransferStatus.Incomplete;
             }
@@ -155,7 +160,9 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void SetStatusText()
         {
-            View.StatusText = _transfer.isRunning() ? String.Empty : Locale.localizedString(_transfer.getStatus(), "Status");
+            View.StatusText = _transfer.isRunning()
+                                  ? String.Empty
+                                  : Locale.localizedString(_transfer.getStatus(), "Status");
         }
 
         private void SetProgressText()
@@ -185,31 +192,31 @@ namespace Ch.Cyberduck.Ui.Controller
             public override void transferWillStart()
             {
                 AsyncDelegate d = delegate
-                                      {
-                                          _view.TransferStatus = TransferStatus.InProgress;
-                                          _view.ProgressIndeterminate = true;
-                                          _controller.SetProgressText();
-                                          _controller.SetStatusText();
-                                      };
+                    {
+                        _view.TransferStatus = TransferStatus.InProgress;
+                        _view.ProgressIndeterminate = true;
+                        _controller.SetProgressText();
+                        _controller.SetStatusText();
+                    };
                 _controller.invoke(new SimpleDefaultMainAction(_controller, d));
             }
 
             public override void transferDidEnd()
             {
                 AsyncDelegate d = delegate
-                                      {
-                                          _view.TransferStatus = TransferStatus.Complete;
-                                          _controller._messageText = null;
-                                          _controller.SetMessageText();
-                                          _controller.SetProgressText();
-                                          _controller.SetStatusText();
-                                          _view.TransferStatus = _controller._transfer.isComplete()
-                                                                     ? TransferStatus.Complete
-                                                                     : TransferStatus.Incomplete;
-                                          //todo
-                                          //filesPopup.itemAtIndex(new NSInteger(0)).setEnabled(transfer.getRoot().getLocal().exists());
-                                          _controller.UpdateOverallProgress();
-                                      };
+                    {
+                        _view.TransferStatus = TransferStatus.Complete;
+                        _controller._messageText = null;
+                        _controller.SetMessageText();
+                        _controller.SetProgressText();
+                        _controller.SetStatusText();
+                        _view.TransferStatus = _controller._transfer.isComplete()
+                                                   ? TransferStatus.Complete
+                                                   : TransferStatus.Incomplete;
+                        //todo
+                        //filesPopup.itemAtIndex(new NSInteger(0)).setEnabled(transfer.getRoot().getLocal().exists());
+                        _controller.UpdateOverallProgress();
+                    };
                 _controller.invoke(new SimpleDefaultMainAction(_controller, d));
             }
 
@@ -247,30 +254,30 @@ namespace Ch.Cyberduck.Ui.Controller
                 public void run()
                 {
                     AsyncDelegate d = delegate
-                                          {
-                                              _controller.SetProgressText();
-                                              double transferred = _controller._transfer.getTransferred();
-                                              double size = _controller._transfer.getSize();
-                                              if (transferred > 0 && size > 0)
-                                              {
-                                                  _controller.View.ProgressIndeterminate = false;
-                                                  // normalize double to int if size is too big
-                                                  if (size > int.MaxValue)
-                                                  {
-                                                      _controller.View.ProgressMaximum = int.MaxValue;
-                                                      _controller.View.ProgressValue =
-                                                          Convert.ToInt32(int.MaxValue*transferred/size);
-                                                  }
-                                                  else
-                                                  {
-                                                      _controller.View.ProgressMaximum = Convert.ToInt32(size);
-                                                      _controller.View.ProgressValue = Convert.ToInt32(transferred);
-                                                  }
-                                              }
+                        {
+                            _controller.SetProgressText();
+                            double transferred = _controller._transfer.getTransferred();
+                            double size = _controller._transfer.getSize();
+                            if (transferred > 0 && size > 0)
+                            {
+                                _controller.View.ProgressIndeterminate = false;
+                                // normalize double to int if size is too big
+                                if (size > int.MaxValue)
+                                {
+                                    _controller.View.ProgressMaximum = int.MaxValue;
+                                    _controller.View.ProgressValue =
+                                        Convert.ToInt32(int.MaxValue*transferred/size);
+                                }
+                                else
+                                {
+                                    _controller.View.ProgressMaximum = Convert.ToInt32(size);
+                                    _controller.View.ProgressValue = Convert.ToInt32(transferred);
+                                }
+                            }
 
-                                              //Update overall progress
-                                              _controller.UpdateOverallProgress();
-                                          };
+                            //Update overall progress
+                            _controller.UpdateOverallProgress();
+                        };
                     _controller.Invoke(new SimpleDefaultMainAction(_controller, d));
                 }
             }
@@ -290,10 +297,8 @@ namespace Ch.Cyberduck.Ui.Controller
             public void message(string msg)
             {
                 _controller._messageText = msg;
-                SimpleDefaultMainAction action = new SimpleDefaultMainAction(_controller, delegate
-                                                                                              {
-                                                                                                  _controller.SetMessageText();
-                                                                                              });
+                SimpleDefaultMainAction action = new SimpleDefaultMainAction(_controller,
+                                                                             delegate { _controller.SetMessageText(); });
                 _controller.invoke(action);
             }
         }

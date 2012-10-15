@@ -25,6 +25,7 @@ using Ch.Cyberduck.Core.Collections;
 using Microsoft.Win32;
 using ch.cyberduck.core;
 using ch.cyberduck.core.editor;
+using ch.cyberduck.core.local;
 using java.util;
 using org.apache.log4j;
 

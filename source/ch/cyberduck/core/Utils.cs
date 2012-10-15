@@ -26,6 +26,7 @@ using System.Linq;
 using Microsoft.Win32;
 using ch.cyberduck.core;
 using ch.cyberduck.core.editor;
+using ch.cyberduck.core.local;
 using java.nio.charset;
 using java.util;
 using org.apache.log4j;

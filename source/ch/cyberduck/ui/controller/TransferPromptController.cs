@@ -24,6 +24,7 @@ using StructureMap;
 using ch.cyberduck.core;
 using ch.cyberduck.core.formatter;
 using ch.cyberduck.core.i18n;
+using ch.cyberduck.core.transfer;
 using ch.cyberduck.ui;
 using ch.cyberduck.ui.controller;
 using org.apache.log4j;
