@@ -20,7 +20,7 @@ package ch.cyberduck.core.serializer;
 
 import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.FactoryException;
-import ch.cyberduck.core.Transfer;
+import ch.cyberduck.core.transfer.Transfer;
 
 import java.util.HashMap;
 import java.util.Map;
