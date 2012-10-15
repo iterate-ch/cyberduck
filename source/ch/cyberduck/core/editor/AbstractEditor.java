@@ -18,19 +18,27 @@ package ch.cyberduck.core.editor;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathFactory;
+import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.core.local.Local;
+import ch.cyberduck.core.local.LocalFactory;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.core.threading.BackgroundAction;
+import ch.cyberduck.core.transfer.DownloadTransfer;
+import ch.cyberduck.core.transfer.Transfer;
+import ch.cyberduck.core.transfer.TransferAction;
+import ch.cyberduck.core.transfer.TransferOptions;
+import ch.cyberduck.core.transfer.TransferPrompt;
+import ch.cyberduck.core.transfer.UploadTransfer;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.text.MessageFormat;
-import ch.cyberduck.core.local.Local;
-import ch.cyberduck.core.local.LocalFactory;
-import ch.cyberduck.core.transfer.*;
 
 /**
  * @version $Id$
@@ -136,6 +144,18 @@ public abstract class AbstractEditor implements Editor {
     @Override
     public void open() {
         final BackgroundAction<Void> background = new AbstractBackgroundAction<Void>() {
+            private final Transfer download = new DownloadTransfer(edited) {
+                @Override
+                public TransferAction action(final boolean resumeRequested, final boolean reloadRequested) {
+                    return getAction();
+                }
+
+                @Override
+                protected boolean shouldOpenWhenComplete() {
+                    return false;
+                }
+            };
+
             @Override
             public void run() {
                 // Delete any existing file which might be used by a watch editor already
@@ -143,24 +163,13 @@ public abstract class AbstractEditor implements Editor {
                 final TransferOptions options = new TransferOptions();
                 options.closeSession = false;
                 options.quarantine = false;
-                final Transfer download = new DownloadTransfer(edited) {
-                    @Override
-                    public TransferAction action(final boolean resumeRequested, final boolean reloadRequested) {
-                        return getAction();
-                    }
-
-                    @Override
-                    protected boolean shouldOpenWhenComplete() {
-                        return false;
-                    }
-                };
                 download.start(new TransferPrompt() {
                     @Override
                     public TransferAction prompt() {
                         return TransferAction.ACTION_OVERWRITE;
                     }
                 }, options);
-                if(edited.status().isComplete()) {
+                if(download.isComplete()) {
                     edited.getSession().message(MessageFormat.format(
                             Locale.localizedString("Compute MD5 hash of {0}", "Status"), edited.getName()));
                     checksum = edited.getLocal().attributes().getChecksum();
@@ -169,12 +178,12 @@ public abstract class AbstractEditor implements Editor {
 
             @Override
             public void cleanup() {
-                if(edited.status().isComplete()) {
+                if(download.isComplete()) {
                     final Permission permissions = edited.getLocal().attributes().getPermission();
                     // Update local permissions to make sure the file is readable and writable for editing.
                     permissions.getOwnerPermissions()[Permission.READ] = true;
                     permissions.getOwnerPermissions()[Permission.WRITE] = true;
-                    edited.getLocal().writeUnixPermission(permissions, false);
+                    edited.getLocal().writeUnixPermission(permissions);
                     // Important, should always be run on the main thread; otherwise applescript crashes
                     AbstractEditor.this.edit();
                 }
@@ -218,22 +227,18 @@ public abstract class AbstractEditor implements Editor {
                         return TransferAction.ACTION_OVERWRITE;
                     }
                 }, options);
+                if(upload.isComplete()) {
+                    if(isClosed()) {
+                        delete();
+                    }
+                    setDirty(false);
+                }
             }
 
             @Override
             public String getActivity() {
                 return MessageFormat.format(Locale.localizedString("Uploading {0}", "Status"),
                         edited.getName());
-            }
-
-            @Override
-            public void cleanup() {
-                if(edited.status().isComplete()) {
-                    if(AbstractEditor.this.isClosed()) {
-                        AbstractEditor.this.delete();
-                    }
-                    AbstractEditor.this.setDirty(false);
-                }
             }
         };
         if(log.isDebugEnabled()) {
