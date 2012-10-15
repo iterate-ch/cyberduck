@@ -1,4 +1,4 @@
-package ch.cyberduck.ui;
+package ch.cyberduck.core.date;
 
 /*
  * Copyright (c) 2002-2010 David Kocher. All rights reserved.
@@ -22,7 +22,7 @@ package ch.cyberduck.ui;
 /**
  * @version $Id$
  */
-public interface DateFormatter {
+public interface UserDateFormatter {
     String getShortFormat(long milliseconds, boolean natural);
 
     String getMediumFormat(long milliseconds, boolean natural);

@@ -23,12 +23,12 @@ import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TransferAdapter;
 import ch.cyberduck.core.TransferListener;
+import ch.cyberduck.core.date.UserDateFormatterFactory;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.threading.DefaultMainAction;
 import ch.cyberduck.core.transfer.Speedometer;
 import ch.cyberduck.core.transfer.Transfer;
-import ch.cyberduck.ui.DateFormatterFactory;
 import ch.cyberduck.ui.cocoa.application.NSCell;
 import ch.cyberduck.ui.cocoa.application.NSColor;
 import ch.cyberduck.ui.cocoa.application.NSFont;
@@ -222,7 +222,7 @@ public class ProgressController extends BundleController {
             // Do not display any progress text when transfer is stopped
             final Date timestamp = transfer.getTimestamp();
             if(null != timestamp) {
-                messageText = DateFormatterFactory.instance().getLongFormat(timestamp.getTime());
+                messageText = UserDateFormatterFactory.get().getLongFormat(timestamp.getTime());
             }
         }
         if(messageText != null) {

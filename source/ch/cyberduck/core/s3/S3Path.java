@@ -34,13 +34,13 @@ import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.StreamListener;
 import ch.cyberduck.core.cloud.CloudPath;
 import ch.cyberduck.core.date.RFC1123DateFormatter;
+import ch.cyberduck.core.date.UserDateFormatterFactory;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
 import ch.cyberduck.core.http.ResponseOutputStream;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.ui.DateFormatterFactory;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -1514,7 +1514,7 @@ public class S3Path extends CloudPath {
         return new DescriptiveUrl(this.createSignedUrl(seconds),
                 MessageFormat.format(Locale.localizedString("{0} URL"), Locale.localizedString("Signed", "S3"))
                         + " (" + MessageFormat.format(Locale.localizedString("Expires on {0}", "S3") + ")",
-                        DateFormatterFactory.instance().getShortFormat(expiry.getTimeInMillis()))
+                        UserDateFormatterFactory.get().getShortFormat(expiry.getTimeInMillis()))
         );
     }
 

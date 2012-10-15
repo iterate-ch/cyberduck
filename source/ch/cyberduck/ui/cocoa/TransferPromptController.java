@@ -23,6 +23,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.ProgressListener;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.date.UserDateFormatterFactory;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.transfer.DownloadTransfer;
@@ -31,7 +32,6 @@ import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.core.transfer.UploadTransfer;
-import ch.cyberduck.ui.DateFormatterFactory;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
 import ch.cyberduck.ui.cocoa.foundation.NSIndexSet;
@@ -267,7 +267,7 @@ public abstract class TransferPromptController extends SheetController implement
                     }
                     else {
                         localModificationField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
-                                DateFormatterFactory.instance().getLongFormat(p.getLocal().attributes().getModificationDate()),
+                                UserDateFormatterFactory.get().getLongFormat(p.getLocal().attributes().getModificationDate()),
                                 TRUNCATE_MIDDLE_ATTRIBUTES));
                     }
                     remoteURLField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
@@ -286,7 +286,7 @@ public abstract class TransferPromptController extends SheetController implement
                     }
                     else {
                         remoteModificationField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
-                                DateFormatterFactory.instance().getLongFormat(p.attributes().getModificationDate()),
+                                UserDateFormatterFactory.get().getLongFormat(p.attributes().getModificationDate()),
                                 TRUNCATE_MIDDLE_ATTRIBUTES));
                     }
                 }

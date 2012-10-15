@@ -18,9 +18,9 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.date.UserDateFormatterFactory;
 import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.local.LocalFactory;
-import ch.cyberduck.ui.DateFormatterFactory;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -57,7 +57,7 @@ public class HistoryCollection extends AbstractFolderHostCollection {
         Date timestamp = host.getTimestamp();
         if(null != timestamp) {
             // Set comment to timestamp when server was last accessed
-            return DateFormatterFactory.instance().getLongFormat(timestamp.getTime());
+            return UserDateFormatterFactory.get().getLongFormat(timestamp.getTime());
         }
         // There might be files from previous versions that have no timestamp yet.
         return null;

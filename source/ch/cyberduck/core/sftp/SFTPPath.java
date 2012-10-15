@@ -26,12 +26,12 @@ import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.StreamListener;
+import ch.cyberduck.core.date.UserDateFormatterFactory;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.IOResumeException;
 import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.ui.DateFormatterFactory;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
@@ -382,7 +382,7 @@ public class SFTPPath extends Path {
 
     private void writeModificationDateImpl(long modified) throws IOException {
         this.getSession().message(MessageFormat.format(Locale.localizedString("Changing timestamp of {0} to {1}", "Status"),
-                this.getName(), DateFormatterFactory.instance().getShortFormat(modified)));
+                this.getName(), UserDateFormatterFactory.get().getShortFormat(modified)));
         try {
             SFTPv3FileAttributes attrs = new SFTPv3FileAttributes();
             int t = (int) (modified / 1000);

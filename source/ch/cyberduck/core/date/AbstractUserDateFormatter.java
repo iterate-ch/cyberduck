@@ -1,4 +1,4 @@
-package ch.cyberduck.ui;
+package ch.cyberduck.core.date;
 
 /*
  * Copyright (c) 2002-2010 David Kocher. All rights reserved.
@@ -20,9 +20,9 @@ package ch.cyberduck.ui;
  */
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
-public abstract class AbstractDateFormatter implements DateFormatter {
+public abstract class AbstractUserDateFormatter implements UserDateFormatter {
 
     public String getShortFormat(long milliseconds) {
         return this.getShortFormat(milliseconds, true);

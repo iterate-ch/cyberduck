@@ -1,4 +1,4 @@
-package ch.cyberduck.ui;
+package ch.cyberduck.core.date;
 
 /*
  * Copyright (c) 2002-2010 David Kocher. All rights reserved.
@@ -28,27 +28,22 @@ import java.util.Map;
 /**
  * @version $Id$
  */
-public abstract class DateFormatterFactory extends Factory<AbstractDateFormatter> {
+public abstract class UserDateFormatterFactory extends Factory<AbstractUserDateFormatter> {
 
     /**
      * Registered factories
      */
-    protected static final Map<Factory.Platform, DateFormatterFactory> factories
-            = new HashMap<Factory.Platform, DateFormatterFactory>();
+    private static final Map<Factory.Platform, UserDateFormatterFactory> factories
+            = new HashMap<Factory.Platform, UserDateFormatterFactory>();
 
-    public static void addFactory(Factory.Platform platform, DateFormatterFactory f) {
+    public static void addFactory(Factory.Platform platform, UserDateFormatterFactory f) {
         factories.put(platform, f);
     }
 
-    private static AbstractDateFormatter formatter;
-
-    public static AbstractDateFormatter instance() {
-        if(null == formatter) {
-            if(!factories.containsKey(NATIVE_PLATFORM)) {
-                throw new FactoryException(String.format("No implementation for %s", NATIVE_PLATFORM));
-            }
-            formatter = factories.get(NATIVE_PLATFORM).create();
+    public static AbstractUserDateFormatter get() {
+        if(!factories.containsKey(NATIVE_PLATFORM)) {
+            throw new FactoryException(String.format("No implementation for %s", NATIVE_PLATFORM));
         }
-        return formatter;
+        return factories.get(NATIVE_PLATFORM).create();
     }
 }

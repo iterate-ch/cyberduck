@@ -20,8 +20,8 @@ package ch.cyberduck.ui.cocoa.delegate;
 
 import ch.cyberduck.core.HistoryCollection;
 import ch.cyberduck.core.Host;
+import ch.cyberduck.core.date.UserDateFormatterFactory;
 import ch.cyberduck.core.i18n.Locale;
-import ch.cyberduck.ui.DateFormatterFactory;
 import ch.cyberduck.ui.cocoa.BrowserController;
 import ch.cyberduck.ui.cocoa.MainController;
 import ch.cyberduck.ui.cocoa.TableCellAttributes;
@@ -107,7 +107,7 @@ public abstract class HistoryMenuDelegate extends CollectionMenuDelegate {
                 Date timestamp = h.getTimestamp();
                 if(null != timestamp) {
                     item.setAttributedTitle(NSAttributedString.attributedStringWithAttributes(
-                            DateFormatterFactory.instance().getLongFormat(timestamp.getTime()), TIMESTAMP_FONT_ATTRIBUTES));
+                            UserDateFormatterFactory.get().getLongFormat(timestamp.getTime()), TIMESTAMP_FONT_ATTRIBUTES));
                 }
                 else {
                     item.setAttributedTitle(NSAttributedString.attributedStringWithAttributes(

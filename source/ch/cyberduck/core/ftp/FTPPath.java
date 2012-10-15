@@ -27,11 +27,11 @@ import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.StreamListener;
 import ch.cyberduck.core.date.MDTMMillisecondsDateFormatter;
 import ch.cyberduck.core.date.MDTMSecondsDateFormatter;
+import ch.cyberduck.core.date.UserDateFormatterFactory;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.ui.DateFormatterFactory;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -801,7 +801,7 @@ public class FTPPath extends Path {
 
     private void writeModificationDateImpl(long created, long modified) throws IOException {
         this.getSession().message(MessageFormat.format(Locale.localizedString("Changing timestamp of {0} to {1}", "Status"),
-                this.getName(), DateFormatterFactory.instance().getShortFormat(modified)));
+                this.getName(), UserDateFormatterFactory.get().getShortFormat(modified)));
 
         final MDTMSecondsDateFormatter formatter = new MDTMSecondsDateFormatter();
         if(this.getSession().getClient().isFeatureSupported(FTPCommand.MFMT)) {

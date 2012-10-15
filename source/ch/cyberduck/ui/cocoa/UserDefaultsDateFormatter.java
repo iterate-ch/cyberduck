@@ -18,10 +18,10 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.date.AbstractUserDateFormatter;
+import ch.cyberduck.core.date.UserDateFormatter;
+import ch.cyberduck.core.date.UserDateFormatterFactory;
 import ch.cyberduck.core.i18n.Locale;
-import ch.cyberduck.ui.AbstractDateFormatter;
-import ch.cyberduck.ui.DateFormatter;
-import ch.cyberduck.ui.DateFormatterFactory;
 import ch.cyberduck.ui.cocoa.foundation.NSDate;
 import ch.cyberduck.ui.cocoa.foundation.NSDateFormatter;
 import ch.cyberduck.ui.cocoa.foundation.NSLocale;
@@ -31,15 +31,15 @@ import org.rococoa.Foundation;
 /**
  * @version $Id$
  */
-public class UserDefaultsDateFormatter extends AbstractDateFormatter implements DateFormatter {
+public class UserDefaultsDateFormatter extends AbstractUserDateFormatter implements UserDateFormatter {
 
     public static void register() {
-        DateFormatterFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
+        UserDateFormatterFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
     }
 
-    private static class Factory extends DateFormatterFactory {
+    private static class Factory extends UserDateFormatterFactory {
         @Override
-        protected AbstractDateFormatter create() {
+        protected AbstractUserDateFormatter create() {
             return new UserDefaultsDateFormatter();
         }
     }

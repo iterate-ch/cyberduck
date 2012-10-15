@@ -22,8 +22,8 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.date.UserDateFormatterFactory;
 import ch.cyberduck.core.i18n.Locale;
-import ch.cyberduck.ui.DateFormatterFactory;
 import ch.cyberduck.ui.cocoa.application.NSAlert;
 import ch.cyberduck.ui.cocoa.resources.IconCache;
 
@@ -49,7 +49,7 @@ public class DuplicateFileController extends FileController {
         final Path selected = this.getSelected();
         String proposal = MessageFormat.format(Preferences.instance().getProperty("browser.duplicate.format"),
                 FilenameUtils.getBaseName(selected.getName()),
-                DateFormatterFactory.instance().getShortFormat(System.currentTimeMillis(), false).replace(Path.DELIMITER, ':'),
+                UserDateFormatterFactory.get().getShortFormat(System.currentTimeMillis(), false).replace(Path.DELIMITER, ':'),
                 StringUtils.isNotEmpty(selected.getExtension()) ? "." + selected.getExtension() : StringUtils.EMPTY);
         this.filenameField.setStringValue(proposal);
     }

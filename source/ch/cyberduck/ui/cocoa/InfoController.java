@@ -33,12 +33,12 @@ import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cloud.CloudPath;
 import ch.cyberduck.core.cloud.CloudSession;
 import ch.cyberduck.core.date.RFC1123DateFormatter;
+import ch.cyberduck.core.date.UserDateFormatterFactory;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.s3.S3Path;
 import ch.cyberduck.core.s3.S3Session;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.ui.DateFormatterFactory;
 import ch.cyberduck.ui.action.CalculateSizeWorker;
 import ch.cyberduck.ui.action.ChecksumWorker;
 import ch.cyberduck.ui.action.ReadAclWorker;
@@ -1663,7 +1663,7 @@ public class InfoController extends ToolbarWindowController {
                     this.updateField(modifiedField, Locale.localizedString("Unknown"));
                 }
                 else {
-                    this.updateField(modifiedField, DateFormatterFactory.instance().getLongFormat(
+                    this.updateField(modifiedField, UserDateFormatterFactory.get().getLongFormat(
                             file.attributes().getModificationDate()),
                             TRUNCATE_MIDDLE_ATTRIBUTES);
                 }
@@ -1671,7 +1671,7 @@ public class InfoController extends ToolbarWindowController {
                     this.updateField(createdField, Locale.localizedString("Unknown"));
                 }
                 else {
-                    this.updateField(createdField, DateFormatterFactory.instance().getLongFormat(
+                    this.updateField(createdField, UserDateFormatterFactory.get().getLongFormat(
                             file.attributes().getCreationDate()),
                             TRUNCATE_MIDDLE_ATTRIBUTES);
                 }

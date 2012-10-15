@@ -30,6 +30,7 @@ import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.Session;
+import ch.cyberduck.core.date.UserDateFormatterFactory;
 import ch.cyberduck.core.editor.Editor;
 import ch.cyberduck.core.editor.EditorFactory;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
@@ -41,7 +42,6 @@ import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.core.transfer.UploadTransfer;
-import ch.cyberduck.ui.DateFormatterFactory;
 import ch.cyberduck.ui.PathPasteboard;
 import ch.cyberduck.ui.cocoa.application.NSApplication;
 import ch.cyberduck.ui.cocoa.application.NSDraggingInfo;
@@ -218,7 +218,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
             }
             if(identifier.equals(MODIFIED_COLUMN)) {
                 return tableViewCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(
-                        DateFormatterFactory.instance().getShortFormat(item.attributes().getModificationDate()),
+                        UserDateFormatterFactory.get().getShortFormat(item.attributes().getModificationDate()),
                         TableCellAttributes.browserFontLeftAlignment()));
             }
             if(identifier.equals(OWNER_COLUMN)) {

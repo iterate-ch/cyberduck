@@ -2576,6 +2576,7 @@ source/ch/cyberduck/core/cloud/CloudPath.java -text
 source/ch/cyberduck/core/cloud/CloudSession.java -text
 source/ch/cyberduck/core/collections/IndexedLinkedList.cs -text
 source/ch/cyberduck/core/collections/LRUCache.cs -text
+source/ch/cyberduck/core/date/AbstractUserDateFormatter.java -text
 source/ch/cyberduck/core/editor/Editor.cs -text
 source/ch/cyberduck/core/editor/EditorFactory.cs -text
 source/ch/cyberduck/core/editor/RegistryApplicationFinder.cs -text
@@ -2592,7 +2593,6 @@ source/ch/cyberduck/properties/Settings.Designer.cs -text
 source/ch/cyberduck/properties/Settings.cs -text
 source/ch/cyberduck/properties/Settings.settings -text
 source/ch/cyberduck/properties/app.manifest -text
-source/ch/cyberduck/ui/AbstractDateFormatter.java -text
 source/ch/cyberduck/ui/ExtensionComparator.java -text
 source/ch/cyberduck/ui/FileTypeComparator.java -text
 source/ch/cyberduck/ui/FilenameComparator.java -text

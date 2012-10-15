@@ -5,9 +5,9 @@ import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.NullPath;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.date.UserDateFormatterFactory;
 import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.transfer.NullSymlinkResolver;
-import ch.cyberduck.ui.DateFormatterFactory;
 import ch.cyberduck.ui.cocoa.UserDefaultsDateFormatter;
 
 import org.junit.BeforeClass;
@@ -60,7 +60,7 @@ public class RenameExistingFilterTest extends AbstractTestCase {
 
                 @Override
                 public void rename(final AbstractPath renamed) {
-                    assertEquals(String.format("t (%s)", DateFormatterFactory.instance().getLongFormat(System.currentTimeMillis(), false)), renamed.getName());
+                    assertEquals(String.format("t (%s)", UserDateFormatterFactory.get().getLongFormat(System.currentTimeMillis(), false)), renamed.getName());
                 }
             };
 

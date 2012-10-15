@@ -1,7 +1,7 @@
-package ch.cyberduck.ui.cocoa;
+package ch.cyberduck.core.date;
 
 import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.ui.DateFormatter;
+import ch.cyberduck.ui.cocoa.UserDefaultsDateFormatter;
 
 import org.junit.Test;
 
@@ -10,13 +10,13 @@ import java.util.concurrent.Callable;
 import static org.junit.Assert.assertNotNull;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class UserDefaultsDateFormatterTest extends AbstractTestCase {
 
     @Test
     public void testGetShortFormat() throws Exception {
-        final DateFormatter f = new UserDefaultsDateFormatter();
+        final UserDateFormatter f = new UserDefaultsDateFormatter();
         this.repeat(new Callable<Void>() {
             @Override
             public Void call() throws Exception {
@@ -29,7 +29,7 @@ public class UserDefaultsDateFormatterTest extends AbstractTestCase {
 
     @Test
     public void testGetMediumFormat() throws Exception {
-        final DateFormatter f = new UserDefaultsDateFormatter();
+        final UserDateFormatter f = new UserDefaultsDateFormatter();
         this.repeat(new Callable<Void>() {
             @Override
             public Void call() throws Exception {
@@ -42,7 +42,7 @@ public class UserDefaultsDateFormatterTest extends AbstractTestCase {
 
     @Test
     public void testGetLongFormat() throws Exception {
-        final DateFormatter f = new UserDefaultsDateFormatter();
+        final UserDateFormatter f = new UserDefaultsDateFormatter();
         this.repeat(new Callable<Void>() {
             @Override
             public Void call() throws Exception {
