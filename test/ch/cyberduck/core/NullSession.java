@@ -12,6 +12,11 @@ public class NullSession extends Session {
     }
 
     @Override
+    public boolean isConnected() {
+        return true;
+    }
+
+    @Override
     protected <C> C getClient() throws ConnectionCanceledException {
         throw new UnsupportedOperationException();
     }
