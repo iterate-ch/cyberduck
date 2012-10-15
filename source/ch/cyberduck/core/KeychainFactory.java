@@ -36,15 +36,10 @@ public abstract class KeychainFactory extends Factory<AbstractKeychain> {
         factories.put(platform, f);
     }
 
-    private static AbstractKeychain keychain;
-
     public static AbstractKeychain instance() {
-        if(null == keychain) {
-            if(!factories.containsKey(NATIVE_PLATFORM)) {
-                throw new FactoryException(String.format("No implementation for %s", NATIVE_PLATFORM));
-            }
-            keychain = factories.get(NATIVE_PLATFORM).create();
+        if(!factories.containsKey(NATIVE_PLATFORM)) {
+            throw new FactoryException(String.format("No implementation for %s", NATIVE_PLATFORM));
         }
-        return keychain;
+        return factories.get(NATIVE_PLATFORM).create();
     }
 }
