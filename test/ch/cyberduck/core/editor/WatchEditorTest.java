@@ -5,7 +5,7 @@ import ch.cyberduck.core.NullPath;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.threading.MainAction;
-import ch.cyberduck.ui.controller.Controller;
+import ch.cyberduck.ui.Controller;
 
 import org.junit.BeforeClass;
 import org.junit.Ignore;
