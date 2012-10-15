@@ -138,7 +138,7 @@ public abstract class HttpSession extends SSLSession {
                             }
                     )));
             if(Preferences.instance().getBoolean("connection.proxy.enable")) {
-                final Proxy proxy = ProxyFactory.instance();
+                final Proxy proxy = ProxyFactory.get();
                 if(ch.cyberduck.core.Scheme.https.equals(this.getHost().getProtocol().getScheme())) {
                     if(proxy.isHTTPSProxyEnabled(host)) {
                         ConnRouteParams.setDefaultProxy(params, new HttpHost(proxy.getHTTPSProxyHost(host), proxy.getHTTPSProxyPort(host)));

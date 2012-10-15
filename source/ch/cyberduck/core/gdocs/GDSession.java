@@ -19,7 +19,19 @@ package ch.cyberduck.core.gdocs;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.Acl;
+import ch.cyberduck.core.ConnectionCanceledException;
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LoginController;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.Proxy;
+import ch.cyberduck.core.ProxyFactory;
+import ch.cyberduck.core.ResolveCanceledException;
+import ch.cyberduck.core.Session;
+import ch.cyberduck.core.SessionFactory;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
 import ch.cyberduck.core.ssl.SSLSession;
@@ -165,7 +177,7 @@ public class GDSession extends SSLSession {
     private HttpURLConnection getConnection(URL url) throws IOException {
         URLConnection c = null;
         if(Preferences.instance().getBoolean("connection.proxy.enable")) {
-            final Proxy proxy = ProxyFactory.instance();
+            final Proxy proxy = ProxyFactory.get();
             if(proxy.isHTTPSProxyEnabled(new Host(Protocol.GDOCS_SSL, url.getHost(), url.getPort()))) {
                 c = url.openConnection(new java.net.Proxy(java.net.Proxy.Type.HTTP,
                         new InetSocketAddress(proxy.getHTTPSProxyHost(host), proxy.getHTTPSProxyPort(host))));

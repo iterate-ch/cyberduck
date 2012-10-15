@@ -18,7 +18,20 @@ package ch.cyberduck.core.ftp;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.BookmarkCollection;
+import ch.cyberduck.core.ConnectionCanceledException;
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LoginCanceledException;
+import ch.cyberduck.core.LoginController;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathFactory;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.ProxyFactory;
+import ch.cyberduck.core.Session;
+import ch.cyberduck.core.SessionFactory;
 import ch.cyberduck.core.ftp.parser.CompositeFileEntryParser;
 import ch.cyberduck.core.ftp.parser.LaxUnixFTPEntryParser;
 import ch.cyberduck.core.ftp.parser.RumpusFTPEntryParser;
@@ -389,7 +402,7 @@ public class FTPSession extends SSLSession {
 
     protected FTPConnectMode getConnectMode() {
         if(null == this.host.getFTPConnectMode()) {
-            if(ProxyFactory.instance().usePassiveFTP()) {
+            if(ProxyFactory.get().usePassiveFTP()) {
                 return FTPConnectMode.PASV;
             }
             return FTPConnectMode.PORT;

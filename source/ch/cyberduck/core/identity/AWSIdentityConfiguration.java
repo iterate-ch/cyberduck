@@ -14,7 +14,20 @@ import org.apache.log4j.Logger;
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.ClientConfiguration;
 import com.amazonaws.services.identitymanagement.AmazonIdentityManagementClient;
-import com.amazonaws.services.identitymanagement.model.*;
+import com.amazonaws.services.identitymanagement.model.AccessKeyMetadata;
+import com.amazonaws.services.identitymanagement.model.CreateAccessKeyRequest;
+import com.amazonaws.services.identitymanagement.model.CreateAccessKeyResult;
+import com.amazonaws.services.identitymanagement.model.CreateUserRequest;
+import com.amazonaws.services.identitymanagement.model.DeleteAccessKeyRequest;
+import com.amazonaws.services.identitymanagement.model.DeleteUserPolicyRequest;
+import com.amazonaws.services.identitymanagement.model.DeleteUserRequest;
+import com.amazonaws.services.identitymanagement.model.ListAccessKeysRequest;
+import com.amazonaws.services.identitymanagement.model.ListAccessKeysResult;
+import com.amazonaws.services.identitymanagement.model.ListUserPoliciesRequest;
+import com.amazonaws.services.identitymanagement.model.ListUserPoliciesResult;
+import com.amazonaws.services.identitymanagement.model.NoSuchEntityException;
+import com.amazonaws.services.identitymanagement.model.PutUserPolicyRequest;
+import com.amazonaws.services.identitymanagement.model.User;
 
 /**
  * @version $Id$
@@ -113,8 +126,8 @@ public class AWSIdentityConfiguration implements IdentityConfiguration {
             configuration.setUserAgent(ua.get());
             configuration.setMaxErrorRetry(0);
             configuration.setMaxConnections(1);
-            configuration.setProxyHost(ProxyFactory.instance().getHTTPSProxyHost(host));
-            configuration.setProxyPort(ProxyFactory.instance().getHTTPSProxyPort(host));
+            configuration.setProxyHost(ProxyFactory.get().getHTTPSProxyHost(host));
+            configuration.setProxyPort(ProxyFactory.get().getHTTPSProxyPort(host));
             AmazonIdentityManagementClient iam = new AmazonIdentityManagementClient(
                     new com.amazonaws.auth.AWSCredentials() {
                         @Override

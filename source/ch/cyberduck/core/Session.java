@@ -598,7 +598,7 @@ public abstract class Session implements TranscriptListener {
         opening = true;
 
         // Configuring proxy if any
-        ProxyFactory.instance().configure(host);
+        ProxyFactory.get().configure(host);
 
         final Resolver resolver = this.getResolver();
         this.message(MessageFormat.format(Locale.localizedString("Resolving {0}", "Status"),

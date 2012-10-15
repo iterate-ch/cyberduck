@@ -18,7 +18,7 @@ public class SystemConfigurationProxyTest extends AbstractTestCase {
 
     @Test
     public void testConfigure() throws Exception {
-        final Proxy proxy = ProxyFactory.instance();
+        final Proxy proxy = ProxyFactory.get();
         assertFalse(proxy.isSOCKSProxyEnabled(new Host("t")));
         assertFalse(proxy.isHTTPProxyEnabled(new Host("t")));
         assertFalse(proxy.isHTTPSProxyEnabled(new Host("t")));

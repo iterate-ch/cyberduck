@@ -30,21 +30,16 @@ public abstract class ProxyFactory extends Factory<Proxy> {
     /**
      * Registered factories
      */
-    protected static final Map<Platform, ProxyFactory> factories = new HashMap<Platform, ProxyFactory>();
+    private static final Map<Platform, ProxyFactory> factories = new HashMap<Platform, ProxyFactory>();
 
     public static void addFactory(Platform platform, ProxyFactory f) {
         factories.put(platform, f);
     }
 
-    private static Proxy proxy;
-
-    public static Proxy instance() {
-        if(null == proxy) {
-            if(!factories.containsKey(NATIVE_PLATFORM)) {
-                throw new FactoryException(String.format("No implementation for %s", NATIVE_PLATFORM));
-            }
-            proxy = factories.get(NATIVE_PLATFORM).create();
+    public static Proxy get() {
+        if(!factories.containsKey(NATIVE_PLATFORM)) {
+            throw new FactoryException(String.format("No implementation for %s", NATIVE_PLATFORM));
         }
-        return proxy;
+        return factories.get(NATIVE_PLATFORM).create();
     }
 }
