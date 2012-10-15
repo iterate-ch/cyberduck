@@ -18,10 +18,10 @@ package ch.cyberduck.ui.cocoa.delegate;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Local;
 import ch.cyberduck.core.editor.Application;
 import ch.cyberduck.core.editor.EditorFactory;
 import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.core.local.Local;
 import ch.cyberduck.ui.cocoa.application.NSEvent;
 import ch.cyberduck.ui.cocoa.application.NSMenu;
 import ch.cyberduck.ui.cocoa.application.NSMenuItem;

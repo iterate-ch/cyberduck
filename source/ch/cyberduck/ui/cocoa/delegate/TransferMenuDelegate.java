@@ -18,9 +18,9 @@ package ch.cyberduck.ui.cocoa.delegate;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.local.Local;
+import ch.cyberduck.core.local.LocalFactory;
 import ch.cyberduck.ui.cocoa.application.NSMenu;
 import ch.cyberduck.ui.cocoa.application.NSMenuItem;
 import ch.cyberduck.ui.cocoa.resources.IconCache;
