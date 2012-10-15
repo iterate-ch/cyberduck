@@ -19,12 +19,12 @@ package ch.cyberduck.core.editor;
  */
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.io.FileWatcher;
+import ch.cyberduck.core.io.FileWatcherListener;
 import ch.cyberduck.core.local.ApplicationLauncherFactory;
 import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.ui.Controller;
-import ch.cyberduck.ui.cocoa.io.FileWatcher;
-import ch.cyberduck.ui.cocoa.io.FileWatcherListener;
 
 import org.apache.log4j.Logger;
 
