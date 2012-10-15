@@ -18,20 +18,20 @@ package ch.cyberduck.core.serializer;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Serializable;
+import ch.cyberduck.core.local.Local;
 
 import java.util.Collection;
 
 /**
- * @version $Id$
  * @param <S>
+ * @version $Id$
  */
 public interface Writer<S extends Serializable> {
 
     /**
      * @param collection Collection to serialize
-     * @param file Serialized file target
+     * @param file       Serialized file target
      */
     void write(Collection<S> collection, Local file);
 
