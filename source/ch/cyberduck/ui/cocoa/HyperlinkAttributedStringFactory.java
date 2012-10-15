@@ -1,4 +1,4 @@
-package ch.cyberduck.ui.cocoa.util;
+package ch.cyberduck.ui.cocoa;
 
 /*
  *  Copyright (c) 2008 David Kocher. All rights reserved.
@@ -18,7 +18,6 @@ package ch.cyberduck.ui.cocoa.util;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.ui.cocoa.BundleController;
 import ch.cyberduck.ui.cocoa.application.NSColor;
 import ch.cyberduck.ui.cocoa.application.NSFont;
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
