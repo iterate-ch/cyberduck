@@ -25,14 +25,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public abstract class ActionOperationBatcherFactory extends Factory<ActionOperationBatcher> {
 
     /**
      * Registered factories
      */
-    protected static final Map<Platform, ActionOperationBatcherFactory> factories
+    private static final Map<Platform, ActionOperationBatcherFactory> factories
             = new HashMap<Platform, ActionOperationBatcherFactory>();
 
     public static void addFactory(Platform platform, ActionOperationBatcherFactory f) {
@@ -43,7 +43,7 @@ public abstract class ActionOperationBatcherFactory extends Factory<ActionOperat
         if(!factories.containsKey(NATIVE_PLATFORM)) {
             return new ActionOperationBatcher() {
                 public void operate() {
-                    ;
+                    //
                 }
             };
         }
