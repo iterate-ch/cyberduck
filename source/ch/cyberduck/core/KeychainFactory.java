@@ -30,7 +30,7 @@ public abstract class KeychainFactory extends Factory<AbstractKeychain> {
     /**
      * Registered factories
      */
-    protected static final Map<Platform, KeychainFactory> factories = new HashMap<Platform, KeychainFactory>();
+    private static final Map<Platform, KeychainFactory> factories = new HashMap<Platform, KeychainFactory>();
 
     public static void addFactory(Platform platform, KeychainFactory f) {
         factories.put(platform, f);
