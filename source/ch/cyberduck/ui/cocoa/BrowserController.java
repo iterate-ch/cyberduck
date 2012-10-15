@@ -4622,10 +4622,9 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             return item;
         }
         else if(itemIdentifier.equals(TOOLBAR_ARCHIVE)) {
-            final String t = NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier("com.apple.archiveutility");
             item.setLabel(Locale.localizedString("Archive", "Archive"));
             item.setPaletteLabel(Locale.localizedString("Archive", "Archive"));
-            item.setImage(IconCache.instance().iconForPath(LocalFactory.createLocal(t), 32));
+            item.setImage(IconCache.instance().iconForApplication("com.apple.archiveutility", 32));
             item.setTarget(this.id());
             item.setAction(Foundation.selector("archiveButtonClicked:"));
             return item;
