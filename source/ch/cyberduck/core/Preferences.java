@@ -333,7 +333,7 @@ public abstract class Preferences {
         defaults.put("editor.bundleIdentifier", "com.apple.TextEdit");
         defaults.put("editor.alwaysUseDefault", String.valueOf(false));
 
-        defaults.put("editor.odb.enable", String.valueOf(true));
+        defaults.put("editor.odb.enable", String.valueOf(false));
         defaults.put("editor.tmp.directory", System.getProperty("java.io.tmpdir"));
 
         defaults.put("filetype.text.regex",
