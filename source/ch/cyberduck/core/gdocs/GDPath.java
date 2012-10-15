@@ -19,11 +19,21 @@ package ch.cyberduck.core.gdocs;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AbstractPath;
+import ch.cyberduck.core.Acl;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.MappingMimeTypeService;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathFactory;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.StreamListener;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.serializer.Deserializer;
 import ch.cyberduck.core.serializer.Serializer;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -72,8 +82,6 @@ import com.google.gdata.util.AuthenticationException;
 import com.google.gdata.util.ContentType;
 import com.google.gdata.util.NotImplementedException;
 import com.google.gdata.util.ServiceException;
-import ch.cyberduck.core.local.Local;
-import ch.cyberduck.core.local.LocalFactory;
 
 public class GDPath extends Path {
     private static Logger log = Logger.getLogger(GDPath.class);
@@ -105,7 +113,7 @@ public class GDPath extends Path {
     }
 
     @Override
-    protected void init(Deserializer dict) {
+    protected <T> void init(Deserializer<T> dict) {
         String resourceIdObj = dict.stringForKey("ResourceId");
         if(resourceIdObj != null) {
             this.setResourceId(resourceIdObj);
@@ -122,7 +130,7 @@ public class GDPath extends Path {
     }
 
     @Override
-    protected <S> S getAsDictionary(Serializer dict) {
+    protected <S> S getAsDictionary(final Serializer dict) {
         if(resourceId != null) {
             dict.setStringForKey(resourceId, "ResourceId");
         }
@@ -437,10 +445,7 @@ public class GDPath extends Path {
     }
 
     @Override
-    public InputStream read(boolean check) throws IOException {
-        if(check) {
-            this.getSession().check();
-        }
+    public InputStream read(final TransferStatus status) throws IOException {
         MediaContent mc = new MediaContent();
         StringBuilder uri = new StringBuilder(this.getExportUri());
         final String type = this.getDocumentType();
@@ -489,18 +494,15 @@ public class GDPath extends Path {
     }
 
     @Override
-    protected void download(BandwidthThrottle throttle, StreamListener listener,
-                            final boolean check, final boolean quarantine) {
+    public void download(BandwidthThrottle throttle, StreamListener listener,
+                         final TransferStatus status) {
         if(attributes().isFile()) {
             OutputStream out = null;
             InputStream in = null;
             try {
-                if(check) {
-                    this.getSession().check();
-                }
-                in = this.read(check);
-                out = this.getLocal().getOutputStream(this.status().isResume());
-                this.download(in, out, throttle, listener, quarantine);
+                in = this.read(status);
+                out = this.getLocal().getOutputStream(status.isResume());
+                this.download(in, out, throttle, listener, status);
             }
             catch(IOException e) {
                 this.error("Download failed", e);
@@ -528,18 +530,18 @@ public class GDPath extends Path {
      *
      * @param throttle The bandwidth limit
      * @param listener The stream listener to notify about bytes received and sent
-     * @param check    Check for open connection and open if needed before transfer
+     * @param status   Transfer status
      */
     @Override
-    protected void upload(BandwidthThrottle throttle, StreamListener listener, boolean check) {
+    public void upload(final BandwidthThrottle throttle, final StreamListener listener, final TransferStatus status) {
         try {
             if(attributes().isFile()) {
                 InputStream in = null;
                 OutputStream out = null;
                 try {
                     in = getLocal().getInputStream();
-                    out = this.write(check);
-                    this.upload(out, in, throttle, listener);
+                    out = this.write(status);
+                    this.upload(out, in, throttle, listener, status);
                 }
                 finally {
                     IOUtils.closeQuietly(in);
@@ -553,10 +555,7 @@ public class GDPath extends Path {
     }
 
     @Override
-    public OutputStream write(boolean check) throws IOException {
-        if(check) {
-            this.getSession().check();
-        }
+    public OutputStream write(final TransferStatus status) throws IOException {
         try {
             final String mime = this.getLocal().getMimeType();
 
@@ -599,7 +598,7 @@ public class GDPath extends Path {
             }
             // Initialize a resumable media upload request.
             session.setHeader(GDataProtocol.Header.X_UPLOAD_CONTENT_TYPE, mime);
-            session.setHeader(GDataProtocol.Header.X_UPLOAD_CONTENT_LENGTH, Long.toString(status().getLength()));
+            session.setHeader(GDataProtocol.Header.X_UPLOAD_CONTENT_LENGTH, Long.toString(status.getLength()));
             final URL location;
             try {
                 this.getSession().getClient().writeRequestData(session, document);
@@ -612,31 +611,32 @@ public class GDPath extends Path {
             final Service.GDataRequest request;
             request = this.getSession().getClient().createRequest(Service.GDataRequest.RequestType.UPDATE,
                     location, new ContentType(mime));
-            request.setHeader("Content-Length", String.valueOf(status().getLength()));
+            request.setHeader("Content-Length", String.valueOf(status.getLength()));
             if(this.exists()) {
-                if(this.status().isResume()) {
+                if(status.isResume()) {
                     // Querying the status of an incomplete upload
-                    Service.GDataRequest status = this.getSession().getClient().createRequest(Service.GDataRequest.RequestType.UPDATE,
+                    Service.GDataRequest update = this.getSession().getClient().createRequest(
+                            Service.GDataRequest.RequestType.UPDATE,
                             location, new ContentType(mime));
                     // If your request is terminated prior to receiving an entry response from the server or
                     // if you receive an HTTP 503 response from the server, you can query the
                     // current status of the upload by issuing an empty PUT request on the unique upload URI
-                    status.setHeader("Content-Length", String.valueOf(0));
-                    status.setHeader("Content-Range", "bytes" + " " + "*/" + status().getLength());
+                    update.setHeader("Content-Length", String.valueOf(0));
+                    update.setHeader("Content-Range", "bytes" + " " + "*/" + status.getLength());
                     try {
-                        status.execute();
-                        final String header = status.getResponseHeader("Range");
+                        update.execute();
+                        final String header = update.getResponseHeader("Range");
                         log.info(String.format("Content-Range reported by server:%s", header));
                         final long range = getNextByteIndexFromRangeHeader(header);
-                        request.setHeader("Content-Range", (this.status().isResume() ? range : 0)
-                                + "-" + (status().getLength() - 1)
-                                + "/" + status().getLength()
+                        request.setHeader("Content-Range", (status.isResume() ? range : 0)
+                                + "-" + (status.getLength() - 1)
+                                + "/" + status.getLength()
                         );
                     }
                     catch(ServiceException e) {
                         log.warn("Resume upload failed:" + e.getMessage());
                         // Ignore several possible server errors. Reload instead.
-                        this.status().setResume(false);
+                        status.setResume(false);
                     }
                 }
             }

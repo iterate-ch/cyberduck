@@ -19,13 +19,27 @@ package ch.cyberduck.core.s3;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AbstractPath;
+import ch.cyberduck.core.Acl;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.ConnectionCanceledException;
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.LoginController;
+import ch.cyberduck.core.LoginControllerFactory;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathFactory;
+import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.StreamListener;
 import ch.cyberduck.core.cloud.CloudPath;
 import ch.cyberduck.core.date.RFC1123DateFormatter;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
 import ch.cyberduck.core.http.ResponseOutputStream;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.local.Local;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.ui.DateFormatterFactory;
 
 import org.apache.commons.io.IOUtils;
@@ -60,17 +74,23 @@ import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.MessageFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TimeZone;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadFactory;
-import ch.cyberduck.core.local.Local;
-import ch.cyberduck.core.local.LocalFactory;
-import ch.cyberduck.core.local.Local;
-import ch.cyberduck.core.local.LocalFactory;
 
 /**
  * @version $Id$
@@ -449,10 +469,7 @@ public class S3Path extends CloudPath {
     }
 
     @Override
-    public InputStream read(boolean check) throws IOException {
-        if(check) {
-            this.getSession().check();
-        }
+    public InputStream read(final TransferStatus status) throws IOException {
         try {
             if(this.attributes().isDuplicate()) {
                 return this.getSession().getClient().getVersionedObject(attributes().getVersionId(),
@@ -461,14 +478,14 @@ public class S3Path extends CloudPath {
                         null, // ifUnmodifiedSince
                         null, // ifMatch
                         null, // ifNoneMatch
-                        this.status().isResume() ? this.status().getCurrent() : null, null).getDataInputStream();
+                        status.isResume() ? status.getCurrent() : null, null).getDataInputStream();
             }
             return this.getSession().getClient().getObject(this.getContainerName(), this.getKey(),
                     null, // ifModifiedSince
                     null, // ifUnmodifiedSince
                     null, // ifMatch
                     null, // ifNoneMatch
-                    this.status().isResume() ? this.status().getCurrent() : null, null).getDataInputStream();
+                    status.isResume() ? status.getCurrent() : null, null).getDataInputStream();
         }
         catch(ServiceException e) {
             IOException failure = new IOException(e.getMessage());
@@ -478,15 +495,15 @@ public class S3Path extends CloudPath {
     }
 
     @Override
-    protected void download(BandwidthThrottle throttle, final StreamListener listener,
-                            final boolean check, final boolean quarantine) {
+    public void download(BandwidthThrottle throttle, final StreamListener listener,
+                         final TransferStatus status) {
         if(attributes().isFile()) {
             OutputStream out = null;
             InputStream in = null;
             try {
-                in = this.read(check);
-                out = this.getLocal().getOutputStream(this.status().isResume());
-                this.download(in, out, throttle, listener, quarantine);
+                in = this.read(status);
+                out = this.getLocal().getOutputStream(status.isResume());
+                this.download(in, out, throttle, listener, status);
             }
             catch(IOException e) {
                 this.error("Download failed", e);
@@ -516,24 +533,20 @@ public class S3Path extends CloudPath {
     public static final int MAXIMUM_UPLOAD_PARTS = 10000;
 
     @Override
-    protected void upload(final BandwidthThrottle throttle, final StreamListener listener, boolean check) {
+    public void upload(final BandwidthThrottle throttle, final StreamListener listener, final TransferStatus status) {
         try {
             if(attributes().isFile()) {
-                if(check) {
-                    this.getSession().check();
-                }
-
                 final StorageObject object = this.createObjectDetails();
 
                 this.getSession().message(MessageFormat.format(Locale.localizedString("Uploading {0}", "Status"),
                         this.getName()));
 
                 if(this.getSession().isMultipartUploadSupported()
-                        && status().getLength() > DEFAULT_MULTIPART_UPLOAD_THRESHOLD) {
-                    this.uploadMultipart(throttle, listener, object);
+                        && status.getLength() > DEFAULT_MULTIPART_UPLOAD_THRESHOLD) {
+                    this.uploadMultipart(throttle, listener, status, object);
                 }
                 else {
-                    this.uploadSingle(throttle, listener, object);
+                    this.uploadSingle(throttle, listener, status, object);
                 }
             }
         }
@@ -647,15 +660,17 @@ public class S3Path extends CloudPath {
     /**
      * @param throttle Bandwidth throttle
      * @param listener Callback for bytes sent
+     * @param status   Transfer status
      * @param object   File location
      * @throws IOException      I/O error
      * @throws ServiceException Service error
      */
-    private void uploadSingle(final BandwidthThrottle throttle, final StreamListener listener, StorageObject object)
+    private void uploadSingle(final BandwidthThrottle throttle, final StreamListener listener,
+                              final TransferStatus status, final StorageObject object)
             throws IOException, ServiceException {
 
         // No Content-Range support
-        status().setResume(false);
+        status.setResume(false);
 
         InputStream in = null;
         ResponseOutputStream<StorageObject> out = null;
@@ -677,9 +692,9 @@ public class S3Path extends CloudPath {
             else {
                 in = new DigestInputStream(this.getLocal().getInputStream(), digest);
             }
-            out = this.write(false, object, status().getLength() - status().getCurrent(),
+            out = this.write(object, status.getLength() - status.getCurrent(),
                     Collections.<String, String>emptyMap());
-            this.upload(out, in, throttle, listener);
+            this.upload(out, in, throttle, listener, status);
         }
         finally {
             IOUtils.closeQuietly(in);
@@ -698,11 +713,13 @@ public class S3Path extends CloudPath {
     /**
      * @param throttle Bandwidth throttle
      * @param listener Callback for bytes sent
+     * @param status   Transfer status
      * @param object   File location
      * @throws IOException      I/O error
      * @throws ServiceException Service error
      */
-    private void uploadMultipart(final BandwidthThrottle throttle, final StreamListener listener, StorageObject object)
+    private void uploadMultipart(final BandwidthThrottle throttle, final StreamListener listener,
+                                 final TransferStatus status, final StorageObject object)
             throws IOException, ServiceException {
 
         final ThreadFactory threadFactory = new ThreadFactory() {
@@ -717,7 +734,7 @@ public class S3Path extends CloudPath {
         };
 
         MultipartUpload multipart = null;
-        if(status().isResume()) {
+        if(status.isResume()) {
             // This operation lists in-progress multipart uploads. An in-progress multipart upload is a
             // multipart upload that has been initiated, using the Initiate Multipart Upload request, but has
             // not yet been completed or aborted.
@@ -738,7 +755,7 @@ public class S3Path extends CloudPath {
         }
         if(null == multipart) {
             log.info("No pending multipart upload found");
-            status().setResume(false);
+            status.setResume(false);
 
             // Initiate multipart upload with metadata
             Map<String, Object> metadata = object.getModifiableMetadata();
@@ -756,7 +773,7 @@ public class S3Path extends CloudPath {
         }
 
         List<MultipartPart> completed;
-        if(status().isResume()) {
+        if(status.isResume()) {
             log.info(String.format("List completed parts of %s", multipart.getUploadId()));
             // This operation lists the parts that have been uploaded for a specific multipart upload.
             completed = this.getSession().getClient().multipartListParts(multipart);
@@ -775,15 +792,15 @@ public class S3Path extends CloudPath {
         try {
             List<Future<MultipartPart>> parts = new ArrayList<Future<MultipartPart>>();
 
-            final long defaultPartSize = Math.max((status().getLength() / MAXIMUM_UPLOAD_PARTS),
+            final long defaultPartSize = Math.max((status.getLength() / MAXIMUM_UPLOAD_PARTS),
                     DEFAULT_MINIMUM_UPLOAD_PART_SIZE);
 
-            long remaining = status().getLength();
+            long remaining = status.getLength();
             long marker = 0;
 
             for(int partNumber = 1; remaining > 0; partNumber++) {
                 boolean skip = false;
-                if(status().isResume()) {
+                if(status.isResume()) {
                     log.info(String.format("Determine if part %d can be skipped", partNumber));
                     for(MultipartPart c : completed) {
                         if(c.getPartNumber().equals(partNumber)) {
@@ -800,7 +817,7 @@ public class S3Path extends CloudPath {
 
                 if(!skip) {
                     // Submit to queue
-                    parts.add(this.submitPart(throttle, listener, multipart, pool, partNumber, marker, length));
+                    parts.add(this.submitPart(throttle, listener, status, multipart, pool, partNumber, marker, length));
                 }
 
                 remaining -= length;
@@ -812,12 +829,10 @@ public class S3Path extends CloudPath {
                 }
                 catch(InterruptedException e) {
                     log.error("Part upload failed:" + e.getMessage());
-                    status().setComplete(false);
                     throw new ConnectionCanceledException(e.getMessage(), e);
                 }
                 catch(ExecutionException e) {
                     log.warn("Part upload failed:" + e.getMessage());
-                    status().setComplete(false);
                     if(e.getCause() instanceof ServiceException) {
                         throw (ServiceException) e.getCause();
                     }
@@ -827,12 +842,12 @@ public class S3Path extends CloudPath {
                     throw new ConnectionCanceledException(e.getMessage(), e);
                 }
             }
-            if(status().isComplete()) {
+            if(status.isComplete()) {
                 this.getSession().getClient().multipartCompleteUpload(multipart, completed);
             }
         }
         finally {
-            if(!status().isComplete()) {
+            if(!status.isComplete()) {
                 // Cancel all previous parts
                 log.info(String.format("Cancel multipart upload %s", multipart.getUploadId()));
                 this.getSession().getClient().multipartAbortUpload(multipart);
@@ -843,7 +858,7 @@ public class S3Path extends CloudPath {
     }
 
     private Future<MultipartPart> submitPart(final BandwidthThrottle throttle, final StreamListener listener,
-                                             final MultipartUpload multipart,
+                                             final TransferStatus status, final MultipartUpload multipart,
                                              final ExecutorService pool,
                                              final int partNumber,
                                              final long offset, final long length) throws ConnectionCanceledException {
@@ -878,8 +893,8 @@ public class S3Path extends CloudPath {
                     else {
                         in = new DigestInputStream(getLocal().getInputStream(), digest);
                     }
-                    out = write(false, new StorageObject(getKey()), length, requestParameters);
-                    upload(out, in, throttle, listener, offset, length);
+                    out = write(new StorageObject(getKey()), length, requestParameters);
+                    upload(out, in, throttle, listener, offset, length, status);
                 }
                 finally {
                     IOUtils.closeQuietly(in);
@@ -899,16 +914,13 @@ public class S3Path extends CloudPath {
     }
 
     @Override
-    public OutputStream write(boolean check) throws IOException {
-        return this.write(check, this.createObjectDetails(), this.status().getLength() - this.status().getCurrent(),
+    public OutputStream write(final TransferStatus status) throws IOException {
+        return this.write(this.createObjectDetails(), status.getLength() - status.getCurrent(),
                 Collections.<String, String>emptyMap());
     }
 
-    private ResponseOutputStream<StorageObject> write(boolean check, final StorageObject part, final long contentLength,
+    private ResponseOutputStream<StorageObject> write(final StorageObject part, final long contentLength,
                                                       final Map<String, String> requestParams) throws IOException {
-        if(check) {
-            this.getSession().check();
-        }
         DelayedHttpEntityCallable<StorageObject> command = new DelayedHttpEntityCallable<StorageObject>() {
             @Override
             public StorageObject call(AbstractHttpEntity entity) throws IOException {
@@ -1395,7 +1407,7 @@ public class S3Path extends CloudPath {
     }
 
     @Override
-    public void copy(AbstractPath copy, BandwidthThrottle throttle, StreamListener listener) {
+    public void copy(AbstractPath copy, BandwidthThrottle throttle, StreamListener listener, final TransferStatus status) {
         if(((Path) copy).getSession().equals(this.getSession())) {
             // Copy on same server
             try {
@@ -1417,7 +1429,7 @@ public class S3Path extends CloudPath {
                     // Copying object applying the metadata of the original
                     this.getSession().getClient().copyObject(this.getContainerName(), this.getKey(),
                             ((S3Path) copy).getContainerName(), destination, false);
-                    this.status().setComplete(true);
+                    status.setComplete();
                 }
             }
             catch(ServiceException e) {
@@ -1429,7 +1441,7 @@ public class S3Path extends CloudPath {
         }
         else {
             // Copy to different host
-            super.copy(copy, throttle, listener);
+            super.copy(copy, throttle, listener, status);
         }
     }
 

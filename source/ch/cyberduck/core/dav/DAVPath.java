@@ -21,11 +21,9 @@ package ch.cyberduck.core.dav;
 
 import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.Status;
 import ch.cyberduck.core.StreamListener;
 import ch.cyberduck.core.http.DelayedHttpEntityCallable;
 import ch.cyberduck.core.http.HttpPath;
@@ -33,6 +31,8 @@ import ch.cyberduck.core.http.ResponseOutputStream;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.io.IOResumeException;
+import ch.cyberduck.core.local.Local;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpHeaders;
@@ -298,7 +298,7 @@ public class DAVPath extends HttpPath {
     }
 
     @Override
-    public void copy(AbstractPath copy, BandwidthThrottle throttle, StreamListener listener) {
+    public void copy(AbstractPath copy, BandwidthThrottle throttle, StreamListener listener, final TransferStatus status) {
         if(((Path) copy).getSession().equals(this.getSession())) {
             // Copy on same server
             try {
@@ -308,7 +308,7 @@ public class DAVPath extends HttpPath {
 
                 if(attributes().isFile()) {
                     this.getSession().getClient().copy(this.toURL(), copy.toURL());
-                    this.status().setComplete(true);
+                    status.setComplete();
                 }
             }
             catch(IOException e) {
@@ -317,32 +317,29 @@ public class DAVPath extends HttpPath {
         }
         else {
             // Copy to different host
-            super.copy(copy, throttle, listener);
+            super.copy(copy, throttle, listener, status);
         }
     }
 
     @Override
-    public InputStream read(boolean check) throws IOException {
-        if(check) {
-            this.getSession().check();
-        }
+    public InputStream read(final TransferStatus status) throws IOException {
         Map<String, String> headers = new HashMap<String, String>();
-        if(this.status().isResume()) {
-            headers.put(HttpHeaders.RANGE, "bytes=" + this.status().getCurrent() + "-");
+        if(status.isResume()) {
+            headers.put(HttpHeaders.RANGE, "bytes=" + status.getCurrent() + "-");
         }
         return this.getSession().getClient().get(this.toURL(), headers);
     }
 
     @Override
-    protected void download(final BandwidthThrottle throttle, final StreamListener listener,
-                            final boolean check, final boolean quarantine) {
+    public void download(final BandwidthThrottle throttle, final StreamListener listener,
+                         final TransferStatus status) {
         if(attributes().isFile()) {
             OutputStream out = null;
             InputStream in = null;
             try {
-                in = this.read(check);
-                out = this.getLocal().getOutputStream(this.status().isResume());
-                this.download(in, out, throttle, listener, quarantine);
+                in = this.read(status);
+                out = this.getLocal().getOutputStream(status.isResume());
+                this.download(in, out, throttle, listener, status);
             }
             catch(IOException e) {
                 this.error("Download failed", e);
@@ -355,23 +352,22 @@ public class DAVPath extends HttpPath {
     }
 
     @Override
-    protected void upload(final BandwidthThrottle throttle, final StreamListener listener, boolean check) {
+    public void upload(final BandwidthThrottle throttle, final StreamListener listener, final TransferStatus status) {
         if(attributes().isFile()) {
             try {
                 InputStream in = null;
                 ResponseOutputStream<Void> out = null;
                 try {
                     in = this.getLocal().getInputStream();
-                    if(this.status().isResume()) {
-                        long skipped = in.skip(this.status().getCurrent());
+                    if(status.isResume()) {
+                        long skipped = in.skip(status.getCurrent());
                         log.info(String.format("Skipping %d bytes", skipped));
-                        if(skipped < this.status().getCurrent()) {
-                            throw new IOResumeException(String.format("Skipped %d bytes instead of %d", skipped, this.status().getCurrent()));
+                        if(skipped < status.getCurrent()) {
+                            throw new IOResumeException(String.format("Skipped %d bytes instead of %d", skipped, status.getCurrent()));
                         }
                     }
-                    out = this.write(check);
-
-                    this.upload(out, in, throttle, listener);
+                    out = this.write(status);
+                    this.upload(out, in, throttle, listener, status);
                 }
                 finally {
                     IOUtils.closeQuietly(in);
@@ -388,9 +384,8 @@ public class DAVPath extends HttpPath {
     }
 
     @Override
-    public ResponseOutputStream<Void> write(boolean check) throws IOException {
+    public ResponseOutputStream<Void> write(final TransferStatus status) throws IOException {
         Map<String, String> headers = new HashMap<String, String>();
-        Status status = this.status();
         if(status.isResume()) {
             headers.put(HttpHeaders.CONTENT_RANGE, "bytes "
                     + status.getCurrent()
@@ -402,13 +397,13 @@ public class DAVPath extends HttpPath {
             headers.put(HTTP.EXPECT_DIRECTIVE, HTTP.EXPECT_CONTINUE);
         }
         try {
-            return this.write(check, headers);
+            return this.write(headers, status);
         }
         catch(HttpResponseException e) {
             if(e.getStatusCode() == HttpStatus.SC_EXPECTATION_FAILED) {
                 // Retry with the Expect header removed
                 headers.remove(HTTP.EXPECT_DIRECTIVE);
-                return this.write(check, headers);
+                return this.write(headers, status);
             }
             else {
                 throw e;
@@ -416,10 +411,7 @@ public class DAVPath extends HttpPath {
         }
     }
 
-    private ResponseOutputStream<Void> write(boolean check, final Map<String, String> headers) throws IOException {
-        if(check) {
-            this.getSession().check();
-        }
+    private ResponseOutputStream<Void> write(final Map<String, String> headers, final TransferStatus status) throws IOException {
         // Submit store call to background thread
         final DelayedHttpEntityCallable<Void> command = new DelayedHttpEntityCallable<Void>() {
             /**
@@ -435,7 +427,7 @@ public class DAVPath extends HttpPath {
 
             @Override
             public long getContentLength() {
-                return status().getLength() - status().getCurrent();
+                return status.getLength() - status.getCurrent();
             }
         };
         return this.write(command);

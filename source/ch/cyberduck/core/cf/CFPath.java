@@ -21,11 +21,9 @@ package ch.cyberduck.core.cf;
 import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.ConnectionCanceledException;
-import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.Status;
 import ch.cyberduck.core.StreamListener;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cloud.CloudPath;
@@ -33,6 +31,8 @@ import ch.cyberduck.core.http.DelayedHttpEntityCallable;
 import ch.cyberduck.core.http.ResponseOutputStream;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.local.Local;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -316,14 +316,11 @@ public class CFPath extends CloudPath {
     }
 
     @Override
-    public InputStream read(boolean check) throws IOException {
-        if(check) {
-            this.getSession().check();
-        }
+    public InputStream read(final TransferStatus status) throws IOException {
         try {
-            if(this.status().isResume()) {
+            if(status.isResume()) {
                 return this.getSession().getClient().getObjectAsRangedStream(this.getContainerName(), this.getKey(),
-                        this.status().getCurrent(), this.status().getLength());
+                        status.getCurrent(), status.getLength());
             }
             return this.getSession().getClient().getObjectAsStream(this.getContainerName(), this.getKey());
         }
@@ -335,15 +332,15 @@ public class CFPath extends CloudPath {
     }
 
     @Override
-    protected void download(final BandwidthThrottle throttle, final StreamListener listener,
-                            final boolean check, final boolean quarantine) {
+    public void download(final BandwidthThrottle throttle, final StreamListener listener,
+                         final TransferStatus status) {
         if(attributes().isFile()) {
             OutputStream out = null;
             InputStream in = null;
             try {
-                in = this.read(check);
-                out = this.getLocal().getOutputStream(this.status().isResume());
-                this.download(in, out, throttle, listener, quarantine);
+                in = this.read(status);
+                out = this.getLocal().getOutputStream(status.isResume());
+                this.download(in, out, throttle, listener, status);
             }
             catch(IOException e) {
                 this.error("Download failed", e);
@@ -356,7 +353,7 @@ public class CFPath extends CloudPath {
     }
 
     @Override
-    protected void upload(final BandwidthThrottle throttle, final StreamListener listener, boolean check) {
+    public void upload(final BandwidthThrottle throttle, final StreamListener listener, final TransferStatus status) {
         if(attributes().isFile()) {
             try {
                 String md5sum = null;
@@ -384,8 +381,8 @@ public class CFPath extends CloudPath {
                     else {
                         in = new DigestInputStream(this.getLocal().getInputStream(), digest);
                     }
-                    out = this.write(check, md5sum);
-                    this.upload(out, in, throttle, listener);
+                    out = this.write(status, md5sum);
+                    this.upload(out, in, throttle, listener, status);
                 }
                 finally {
                     IOUtils.closeQuietly(in);
@@ -419,16 +416,12 @@ public class CFPath extends CloudPath {
     }
 
     @Override
-    public OutputStream write(boolean check) throws IOException {
-        return this.write(check, null);
+    public OutputStream write(final TransferStatus status) throws IOException {
+        return this.write(status, null);
     }
 
-    private ResponseOutputStream<String> write(boolean check, final String md5sum) throws IOException {
-        if(check) {
-            this.getSession().check();
-        }
+    private ResponseOutputStream<String> write(final TransferStatus status, final String md5sum) throws IOException {
         // No Content-Range support
-        final Status status = this.status();
         status.setResume(false);
         final HashMap<String, String> metadata = new HashMap<String, String>();
         // Default metadata for new files
@@ -477,7 +470,7 @@ public class CFPath extends CloudPath {
 
             @Override
             public long getContentLength() {
-                return status().getLength() - status().getCurrent();
+                return status.getLength() - status.getCurrent();
             }
         };
         return this.write(command);
@@ -573,7 +566,7 @@ public class CFPath extends CloudPath {
     }
 
     @Override
-    public void writeMetadata(Map<String, String> meta) {
+    public void writeMetadata(final Map<String, String> meta) {
         if(this.attributes().isFile()) {
             try {
                 this.getSession().check();
@@ -595,9 +588,9 @@ public class CFPath extends CloudPath {
     }
 
     @Override
-    public void rename(AbstractPath renamed) {
+    public void rename(final AbstractPath renamed) {
         try {
-            this._copy(renamed);
+            this._copy(renamed, new TransferStatus());
             this.delete();
         }
         catch(HttpException e) {
@@ -609,11 +602,11 @@ public class CFPath extends CloudPath {
     }
 
     @Override
-    public void copy(AbstractPath copy, BandwidthThrottle throttle, StreamListener listener) {
+    public void copy(final AbstractPath copy, final BandwidthThrottle throttle, final StreamListener listener, final TransferStatus status) {
         if(((Path) copy).getSession().equals(this.getSession())) {
             // Copy on same server
             try {
-                this._copy(copy);
+                this._copy(copy, status);
             }
             catch(HttpException e) {
                 this.error("Cannot copy {0}", e);
@@ -624,11 +617,11 @@ public class CFPath extends CloudPath {
         }
         else {
             // Copy to different host
-            super.copy(copy, throttle, listener);
+            super.copy(copy, throttle, listener, status);
         }
     }
 
-    private void _copy(AbstractPath copy) throws IOException, HttpException {
+    private void _copy(final AbstractPath copy, final TransferStatus status) throws IOException, HttpException {
         this.getSession().check();
         this.getSession().message(MessageFormat.format(Locale.localizedString("Copying {0} to {1}", "Status"),
                 this.getName(), copy));
@@ -647,10 +640,10 @@ public class CFPath extends CloudPath {
                     break;
                 }
                 i.copy(PathFactory.createPath(this.getSession(), copy.getAbsolute(),
-                        i.getName(), i.attributes().getType()));
+                        i.getName(), i.attributes().getType()), status);
             }
         }
-        this.status().setComplete(true);
+        status.setComplete();
     }
 
     /**

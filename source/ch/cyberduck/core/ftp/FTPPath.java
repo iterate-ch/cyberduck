@@ -20,7 +20,6 @@ package ch.cyberduck.core.ftp;
 
 import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AttributedList;
-import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.core.Permission;
@@ -30,6 +29,8 @@ import ch.cyberduck.core.date.MDTMMillisecondsDateFormatter;
 import ch.cyberduck.core.date.MDTMSecondsDateFormatter;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.local.Local;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.ui.DateFormatterFactory;
 
 import org.apache.commons.io.IOUtils;
@@ -705,7 +706,7 @@ public class FTPPath extends Path {
     }
 
     @Override
-    public void writeOwner(String owner, boolean recursive) {
+    public void writeOwner(String owner) {
         String command = "chown";
         try {
             this.getSession().check();
@@ -721,14 +722,6 @@ public class FTPPath extends Path {
                 if(!this.getSession().getClient().sendSiteCommand(command + " " + owner + " " + this.getAbsolute())) {
                     throw new FTPException(this.getSession().getClient().getReplyString());
                 }
-                if(recursive) {
-                    for(AbstractPath child : this.children()) {
-                        if(!this.getSession().isConnected()) {
-                            break;
-                        }
-                        ((Path) child).writeOwner(owner, recursive);
-                    }
-                }
             }
         }
         catch(IOException e) {
@@ -737,7 +730,7 @@ public class FTPPath extends Path {
     }
 
     @Override
-    public void writeGroup(String group, boolean recursive) {
+    public void writeGroup(String group) {
         String command = "chgrp";
         try {
             this.getSession().check();
@@ -753,14 +746,6 @@ public class FTPPath extends Path {
                 if(!this.getSession().getClient().sendSiteCommand(command + " " + group + " " + this.getAbsolute())) {
                     throw new FTPException(this.getSession().getClient().getReplyString());
                 }
-                if(recursive) {
-                    for(AbstractPath child : this.children()) {
-                        if(!this.getSession().isConnected()) {
-                            break;
-                        }
-                        ((Path) child).writeGroup(group, recursive);
-                    }
-                }
             }
         }
         catch(IOException e) {
@@ -769,10 +754,10 @@ public class FTPPath extends Path {
     }
 
     @Override
-    public void writeUnixPermission(Permission perm, boolean recursive) {
+    public void writeUnixPermission(Permission permission) {
         try {
             this.getSession().check();
-            this.writeUnixPermissionImpl(perm, recursive);
+            this.writeUnixPermissionImpl(permission);
         }
         catch(IOException e) {
             this.error("Cannot change permissions", e);
@@ -781,32 +766,24 @@ public class FTPPath extends Path {
 
     private boolean chmodSupported = true;
 
-    private void writeUnixPermissionImpl(Permission perm, boolean recursive) throws IOException {
+    private void writeUnixPermissionImpl(Permission permission) throws IOException {
         if(chmodSupported) {
             this.getSession().message(MessageFormat.format(Locale.localizedString("Changing permission of {0} to {1}", "Status"),
-                    this.getName(), perm.getOctalString()));
+                    this.getName(), permission.getOctalString()));
             if(attributes().isFile() && !attributes().isSymbolicLink()) {
-                if(this.getSession().getClient().sendSiteCommand("CHMOD " + perm.getOctalString() + " " + this.getAbsolute())) {
-                    this.attributes().setPermission(perm);
+                if(this.getSession().getClient().sendSiteCommand("CHMOD " + permission.getOctalString() + " " + this.getAbsolute())) {
+                    this.attributes().setPermission(permission);
                 }
                 else {
                     chmodSupported = false;
                 }
             }
             else if(attributes().isDirectory()) {
-                if(this.getSession().getClient().sendSiteCommand("CHMOD " + perm.getOctalString() + " " + this.getAbsolute())) {
-                    this.attributes().setPermission(perm);
+                if(this.getSession().getClient().sendSiteCommand("CHMOD " + permission.getOctalString() + " " + this.getAbsolute())) {
+                    this.attributes().setPermission(permission);
                 }
                 else {
                     chmodSupported = false;
-                }
-                if(recursive) {
-                    for(AbstractPath child : this.children()) {
-                        if(!this.getSession().isConnected()) {
-                            break;
-                        }
-                        ((FTPPath) child).writeUnixPermissionImpl(perm, recursive);
-                    }
                 }
             }
         }
@@ -858,8 +835,8 @@ public class FTPPath extends Path {
     }
 
     @Override
-    protected void download(final BandwidthThrottle throttle, final StreamListener listener,
-                            final boolean check, final boolean quarantine) {
+    public void download(final BandwidthThrottle throttle, final StreamListener listener,
+                         final TransferStatus status) {
         if(this.attributes().isFile()) {
             try {
                 this.data(new DataConnectionAction() {
@@ -868,9 +845,9 @@ public class FTPPath extends Path {
                         InputStream in = null;
                         OutputStream out = null;
                         try {
-                            in = read(check);
-                            out = getLocal().getOutputStream(status().isResume());
-                            download(in, out, throttle, listener, quarantine);
+                            in = read(status);
+                            out = getLocal().getOutputStream(status.isResume());
+                            download(in, out, throttle, listener, status);
                         }
                         finally {
                             IOUtils.closeQuietly(in);
@@ -887,21 +864,18 @@ public class FTPPath extends Path {
     }
 
     @Override
-    public InputStream read(final boolean check) throws IOException {
-        if(check) {
-            this.getSession().check();
-        }
+    public InputStream read(final TransferStatus status) throws IOException {
         if(!getSession().getClient().setFileType(FTP.BINARY_FILE_TYPE)) {
             throw new FTPException(getSession().getClient().getReplyString());
         }
-        if(status().isResume()) {
+        if(status.isResume()) {
             // Where a server process supports RESTart in STREAM mode
             if(!getSession().getClient().isFeatureSupported("REST STREAM")) {
-                status().setResume(false);
+                status.setResume(false);
             }
             else {
                 getSession().getClient().setRestartOffset(
-                        status().isResume() ? status().getCurrent() : 0);
+                        status.isResume() ? status.getCurrent() : 0);
             }
         }
         final InputStream delegate = getSession().getClient().retrieveFileStream(getAbsolute());
@@ -987,7 +961,8 @@ public class FTPPath extends Path {
     }
 
     @Override
-    protected void upload(final BandwidthThrottle throttle, final StreamListener listener, final boolean check) {
+    public void upload(final BandwidthThrottle throttle, final StreamListener listener,
+                       final TransferStatus status) {
         if(this.attributes().isFile()) {
             try {
                 this.data(new DataConnectionAction() {
@@ -997,8 +972,8 @@ public class FTPPath extends Path {
                         OutputStream out = null;
                         try {
                             in = getLocal().getInputStream();
-                            out = write(check);
-                            upload(out, in, throttle, listener);
+                            out = write(status);
+                            upload(out, in, throttle, listener, status);
                         }
                         finally {
                             IOUtils.closeQuietly(in);
@@ -1007,9 +982,8 @@ public class FTPPath extends Path {
                         return true;
                     }
                 });
-                if(status().isComplete()) {
+                if(status.isComplete()) {
                     if(!getSession().getClient().completePendingCommand()) {
-                        status().setComplete(false);
                         throw new FTPException(getSession().getClient().getReplyString());
                     }
                 }
@@ -1021,14 +995,11 @@ public class FTPPath extends Path {
     }
 
     @Override
-    public OutputStream write(boolean check) throws IOException {
-        if(check) {
-            this.getSession().check();
-        }
+    public OutputStream write(final TransferStatus status) throws IOException {
         if(!getSession().getClient().setFileType(FTPClient.BINARY_FILE_TYPE)) {
             throw new FTPException(getSession().getClient().getReplyString());
         }
-        if(status().isResume()) {
+        if(status.isResume()) {
             return getSession().getClient().appendFileStream(this.getAbsolute());
         }
         return getSession().getClient().storeFileStream(this.getAbsolute());
