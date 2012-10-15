@@ -19,10 +19,10 @@ package ch.cyberduck.core.editor;
  */
 
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.local.ApplicationLauncherFactory;
 import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.ui.Controller;
-import ch.cyberduck.ui.cocoa.application.NSWorkspace;
 import ch.cyberduck.ui.cocoa.io.FileWatcher;
 import ch.cyberduck.ui.cocoa.io.FileWatcherListener;
 
@@ -59,8 +59,7 @@ public class WatchEditor extends BrowserBackgroundEditor implements FileWatcherL
      */
     @Override
     public void edit() {
-        if(NSWorkspace.sharedWorkspace().openFile(this.getEdited().getLocal().getAbsolute(),
-                NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(this.getApplication().getIdentifier()))) {
+        if(ApplicationLauncherFactory.get().open(this.getEdited().getLocal(), this.getApplication())) {
             this.watch();
         }
     }
