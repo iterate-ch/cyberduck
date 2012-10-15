@@ -171,7 +171,7 @@ public abstract class AbstractRendezvous implements Rendezvous {
     }
 
     protected void add(String fullname, String hostname, int port, String user, String password, String path) {
-        final Protocol protocol = this.getProtocol(fullname, port);
+        final Protocol protocol = this.getProtocol(fullname);
         if(null == protocol) {
             log.warn(String.format("Unknown service type for %s", fullname));
             return;
@@ -189,11 +189,10 @@ public abstract class AbstractRendezvous implements Rendezvous {
 
     /**
      * @param fullname Service name
-     * @param port     Port number
      * @return Null if no protocol can be found for the given Rendezvous service type.
      * @see "http://developer.apple.com/qa/qa2001/qa1312.html"
      */
-    public Protocol getProtocol(final String fullname, final int port) {
+    protected Protocol getProtocol(final String fullname) {
         if(fullname.contains(SERVICE_TYPE_SFTP)) {
             return Protocol.SFTP;
         }
