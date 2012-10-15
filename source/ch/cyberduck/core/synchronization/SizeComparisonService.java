@@ -5,7 +5,7 @@ import ch.cyberduck.core.Path;
 import org.apache.log4j.Logger;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class SizeComparisonService implements ComparisonService {
     private static Logger log = Logger.getLogger(ComparisonService.class);
@@ -13,7 +13,7 @@ public class SizeComparisonService implements ComparisonService {
     @Override
     public Comparison compare(final Path p) {
         if(log.isDebugEnabled()) {
-            log.debug("compareSize:" + p);
+            log.debug(String.format("Compare size for %s", p.getAbsolute()));
         }
         if(p.attributes().isFile()) {
             if(p.attributes().getSize() == -1) {

@@ -9,7 +9,7 @@ import org.apache.log4j.Logger;
 import java.util.Calendar;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class TimestampComparisonService implements ComparisonService {
     private static Logger log = Logger.getLogger(CombinedComparisionService.class);
@@ -19,7 +19,7 @@ public class TimestampComparisonService implements ComparisonService {
     @Override
     public Comparison compare(final Path p) {
         if(log.isDebugEnabled()) {
-            log.debug("compareTimestamp:" + p);
+            log.debug(String.format("Compare timestamp for %s", p.getAbsolute()));
         }
         if(-1 == p.attributes().getModificationDate()) {
             if(p.getSession().isReadTimestampSupported()) {

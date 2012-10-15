@@ -5,7 +5,7 @@ import ch.cyberduck.core.Path;
 import org.apache.log4j.Logger;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class ChecksumComparisonService implements ComparisonService {
     private static Logger log = Logger.getLogger(ComparisonService.class);
@@ -13,7 +13,7 @@ public class ChecksumComparisonService implements ComparisonService {
     @Override
     public Comparison compare(final Path p) {
         if(log.isDebugEnabled()) {
-            log.debug("compareHash:" + p);
+            log.debug(String.format("Compare checksum for %s", p.getAbsolute()));
         }
         if(p.attributes().isFile()) {
             if(null == p.attributes().getChecksum()) {
