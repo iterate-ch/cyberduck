@@ -127,6 +127,6 @@ public abstract class AbstractFolderHostCollection extends AbstractHostCollectio
 
     @Override
     public void save() {
-        ;// Save individual bookmarks upon add but not collection itself.
+        // Save individual bookmarks upon add but not collection itself.
     }
 }
