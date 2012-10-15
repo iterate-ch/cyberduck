@@ -26,11 +26,17 @@ import ch.cyberduck.core.io.ThrottledInputStream;
 import ch.cyberduck.core.io.ThrottledOutputStream;
 import ch.cyberduck.core.local.IconService;
 import ch.cyberduck.core.local.IconServiceFactory;
-import ch.cyberduck.core.local.QuarantineServiceFactory;
+import ch.cyberduck.core.local.Local;
+import ch.cyberduck.core.local.LocalFactory;
 import ch.cyberduck.core.serializer.Deserializer;
 import ch.cyberduck.core.serializer.DeserializerFactory;
 import ch.cyberduck.core.serializer.Serializer;
 import ch.cyberduck.core.serializer.SerializerFactory;
+import ch.cyberduck.core.transfer.TransferAction;
+import ch.cyberduck.core.transfer.TransferOptions;
+import ch.cyberduck.core.transfer.TransferPrompt;
+import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.transfer.UploadTransfer;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
@@ -57,9 +63,6 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 import com.ibm.icu.text.Normalizer;
-import ch.cyberduck.core.local.Local;
-import ch.cyberduck.core.local.LocalFactory;
-import ch.cyberduck.core.transfer.*;
 
 /**
  * @version $Id$
@@ -81,11 +84,6 @@ public abstract class Path extends AbstractPath implements Serializable {
      * The local path to be used if file is copied
      */
     private Local local;
-
-    /**
-     * Transfer status
-     */
-    private TransferStatus status;
 
     /**
      * Attributes denoting this path
@@ -141,11 +139,11 @@ public abstract class Path extends AbstractPath implements Serializable {
 
     @Override
     public <T> void init(T serialized) {
-        final Deserializer dict = DeserializerFactory.createDeserializer(serialized);
+        final Deserializer<T> dict = DeserializerFactory.createDeserializer(serialized);
         this.init(dict);
     }
 
-    protected void init(Deserializer dict) {
+    protected <T> void init(Deserializer<T> dict) {
         String pathObj = dict.stringForKey("Remote");
         if(pathObj != null) {
             this.setPath(pathObj);
@@ -158,12 +156,9 @@ public abstract class Path extends AbstractPath implements Serializable {
         if(symlinkObj != null) {
             this.setSymlinkTarget(symlinkObj);
         }
-        final Object attributesObj = dict.objectForKey("Attributes");
+        final T attributesObj = dict.objectForKey("Attributes");
         if(attributesObj != null) {
             this.attributes = new PathAttributes(attributesObj);
-        }
-        if(dict.stringForKey("Complete") != null) {
-            this.status().setComplete();
         }
     }
 
@@ -182,9 +177,6 @@ public abstract class Path extends AbstractPath implements Serializable {
             dict.setStringForKey(symlink, "Symlink");
         }
         dict.setObjectForKey(attributes, "Attributes");
-        if(this.status().isComplete()) {
-            dict.setStringForKey(String.valueOf(true), "Complete");
-        }
         return dict.getSerialized();
     }
 
@@ -195,7 +187,7 @@ public abstract class Path extends AbstractPath implements Serializable {
      * @param name   the file relative to param path
      * @param type   File type
      */
-    protected Path(final String parent, final String name, final int type) {
+    public Path(final String parent, final String name, final int type) {
         this.setPath(parent, name);
         this.attributes().setType(type);
     }
@@ -206,7 +198,7 @@ public abstract class Path extends AbstractPath implements Serializable {
      * @param path The absolute path of the remote file
      * @param type File type
      */
-    protected Path(final String path, final int type) {
+    public Path(final String path, final int type) {
         this.setPath(path);
         this.attributes().setType(type);
     }
@@ -219,7 +211,7 @@ public abstract class Path extends AbstractPath implements Serializable {
      * @param parent The absolute path to the parent directory on the remote host
      * @param local  The associated local file
      */
-    protected Path(final String parent, final Local local) {
+    public Path(final String parent, final Local local) {
         this.setPath(parent, local);
         this.attributes().setType(
                 local.attributes().isDirectory() ? DIRECTORY_TYPE : FILE_TYPE);
@@ -229,7 +221,7 @@ public abstract class Path extends AbstractPath implements Serializable {
      * @param parent The parent directory
      * @param file   The local file corresponding with this remote path
      */
-    protected void setPath(final String parent, final Local file) {
+    public void setPath(final String parent, final Local file) {
         this.setPath(parent, file.getName());
         this.setLocal(file);
     }
@@ -238,7 +230,7 @@ public abstract class Path extends AbstractPath implements Serializable {
      * @param parent The parent directory
      * @param name   The filename
      */
-    protected void setPath(final Path parent, final String name) {
+    public void setPath(final Path parent, final String name) {
         super.setPath(parent.getAbsolute(), name);
         this.setParent(parent);
     }
@@ -249,7 +241,7 @@ public abstract class Path extends AbstractPath implements Serializable {
      * @param name Must be an absolute pathname
      */
     @Override
-    protected void setPath(final String name) {
+    public void setPath(final String name) {
         this.path = Path.normalize(name);
         this.parent = null;
         this.reference = null;
@@ -454,18 +446,6 @@ public abstract class Path extends AbstractPath implements Serializable {
     }
 
     /**
-     * Transfer status
-     *
-     * @return Current cached file transfer status
-     */
-    public TransferStatus status() {
-        if(null == status) {
-            status = new TransferStatus();
-        }
-        return status;
-    }
-
-    /**
      * @return Null if the connection has been closed
      */
     public Host getHost() {
@@ -516,11 +496,11 @@ public abstract class Path extends AbstractPath implements Serializable {
 
     protected abstract AttributedList<Path> list(AttributedList<Path> children);
 
-    public void writeOwner(String owner, boolean recursive) {
+    public void writeOwner(String owner) {
         throw new UnsupportedOperationException();
     }
 
-    public void writeGroup(String group, boolean recursive) {
+    public void writeGroup(String group) {
         throw new UnsupportedOperationException();
     }
 
@@ -566,7 +546,7 @@ public abstract class Path extends AbstractPath implements Serializable {
     }
 
     @Override
-    public void writeUnixPermission(Permission perm, boolean recursive) {
+    public void writeUnixPermission(Permission permission) {
         throw new UnsupportedOperationException();
     }
 
@@ -759,96 +739,47 @@ public abstract class Path extends AbstractPath implements Serializable {
     }
 
     /**
-     * @param check First check the connection is open
+     * @param status Transfer status
      * @return Stream to read from to download file
      * @throws IOException Read not completed due to a I/O problem
      */
-    public abstract InputStream read(final boolean check) throws IOException;
-
-    /**
-     * Download with no bandwidth limit
-     */
-    protected void download() {
-        this.download(new AbstractStreamListener());
-    }
-
-    /**
-     * @param check Check for open connection and open if needed before transfer
-     */
-    protected void download(final boolean check) {
-        this.download(new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new AbstractStreamListener(), check,
-                Preferences.instance().getBoolean("queue.download.quarantine"));
-    }
-
-    /**
-     * @param listener The stream listener to notify about bytes received and sent
-     */
-    protected void download(StreamListener listener) {
-        this.download(new BandwidthThrottle(BandwidthThrottle.UNLIMITED), listener);
-    }
+    public abstract InputStream read(final TransferStatus status) throws IOException;
 
     /**
      * @param throttle The bandwidth limit
      * @param listener The stream listener to notify about bytes received and sent
+     * @param status   Transfer status
      */
-    protected void download(BandwidthThrottle throttle, StreamListener listener) {
-        this.download(throttle, listener, false, Preferences.instance().getBoolean("queue.download.quarantine"));
-    }
+    public abstract void download(BandwidthThrottle throttle, StreamListener listener,
+                                  TransferStatus status);
 
     /**
-     * @param throttle   The bandwidth limit
-     * @param listener   The stream listener to notify about bytes received and sent
-     * @param check      Check for open connection and open if needed before transfer
-     * @param quarantine Set quarantine flag on downloaded file
-     */
-    protected abstract void download(BandwidthThrottle throttle, StreamListener listener,
-                                     boolean check, boolean quarantine);
-
-    /**
-     * @param check Check for open connection
+     * @param status Transfer status
      * @return Stream to write to for upload
      * @throws IOException Open file for writing fails
      */
-    public abstract OutputStream write(final boolean check) throws IOException;
-
-    /**
-     * Write to server
-     */
-    protected void upload() {
-        this.upload(new AbstractStreamListener());
-    }
-
-    /**
-     * @param listener The stream listener to notify about bytes received and sent
-     */
-    protected void upload(StreamListener listener) {
-        this.upload(new BandwidthThrottle(BandwidthThrottle.UNLIMITED), listener);
-    }
+    public abstract OutputStream write(TransferStatus status) throws IOException;
 
     /**
      * @param throttle The bandwidth limit
      * @param listener The stream listener to notify about bytes received and sent
+     * @param status   Transfer status
      */
-    protected void upload(BandwidthThrottle throttle, StreamListener listener) {
-        this.upload(throttle, listener, false);
-    }
-
-    /**
-     * @param throttle The bandwidth limit
-     * @param listener The stream listener to notify about bytes received and sent
-     * @param check    Check for open connection and open if needed before transfer
-     */
-    protected abstract void upload(BandwidthThrottle throttle, StreamListener listener, boolean check);
+    public abstract void upload(BandwidthThrottle throttle, StreamListener listener,
+                                TransferStatus status);
 
     /**
      * @param out      Remote stream
      * @param in       Local stream
      * @param throttle The bandwidth limit
      * @param l        Listener for bytes sent
+     * @param status   Transfer status
      * @throws IOException Write not completed due to a I/O problem
      */
-    protected void upload(OutputStream out, InputStream in, BandwidthThrottle throttle, final StreamListener l) throws IOException {
-        this.upload(out, in, throttle, l, status().getCurrent(), -1);
+    protected void upload(final OutputStream out, final InputStream in,
+                          final BandwidthThrottle throttle,
+                          final StreamListener l, final TransferStatus status) throws IOException {
+        this.upload(out, in, throttle, l, status.getCurrent(), -1, status);
     }
 
     /**
@@ -863,13 +794,15 @@ public abstract class Path extends AbstractPath implements Serializable {
      * @param l        The stream listener to notify about bytes received and sent
      * @param offset   Start reading at offset in file
      * @param limit    Transfer only up to this length
+     * @param status   Transfer status
      * @throws IOResumeException           If the input stream fails to skip the appropriate
      *                                     number of bytes
      * @throws IOException                 Write not completed due to a I/O problem
      * @throws ConnectionCanceledException When transfer is interrupted by user setting the
      *                                     status flag to cancel.
      */
-    protected void upload(OutputStream out, InputStream in, BandwidthThrottle throttle, final StreamListener l, long offset, final long limit) throws IOException {
+    protected void upload(final OutputStream out, final InputStream in, final BandwidthThrottle throttle,
+                          final StreamListener l, long offset, final long limit, final TransferStatus status) throws IOException {
         if(log.isDebugEnabled()) {
             log.debug("upload(" + out.toString() + ", " + in.toString());
         }
@@ -881,27 +814,28 @@ public abstract class Path extends AbstractPath implements Serializable {
             if(log.isInfoEnabled()) {
                 log.info(String.format("Skipping %d bytes", skipped));
             }
-            if(skipped < status().getCurrent()) {
-                throw new IOResumeException(String.format("Skipped %d bytes instead of %d", skipped, status().getCurrent()));
+            if(skipped < status.getCurrent()) {
+                throw new IOResumeException(String.format("Skipped %d bytes instead of %d",
+                        skipped, status.getCurrent()));
             }
         }
-        this.transfer(in, new ThrottledOutputStream(out, throttle), l, limit);
+        this.transfer(in, new ThrottledOutputStream(out, throttle), l, limit, status);
     }
 
     /**
      * Will copy from in to out. Does not attempt to skip any bytes from the streams.
      *
-     * @param in         The stream to read from
-     * @param out        The stream to write to
-     * @param throttle   The bandwidth limit
-     * @param l          The stream listener to notify about bytes received and sent
-     * @param quarantine Set quarantine flag
+     * @param in       The stream to read from
+     * @param out      The stream to write to
+     * @param throttle The bandwidth limit
+     * @param l        The stream listener to notify about bytes received and sent
+     * @param status   Transfer status
      * @throws IOException                 Write not completed due to a I/O problem
      * @throws ConnectionCanceledException When transfer is interrupted by user setting the
      *                                     status flag to cancel.
      */
     protected void download(final InputStream in, final OutputStream out, final BandwidthThrottle throttle,
-                            final StreamListener l, final boolean quarantine) throws IOException {
+                            final StreamListener l, final TransferStatus status) throws IOException {
         if(log.isDebugEnabled()) {
             log.debug("download(" + in.toString() + ", " + out.toString());
         }
@@ -910,22 +844,13 @@ public abstract class Path extends AbstractPath implements Serializable {
 
         // Only update the file custom icon if the size is > 5MB. Otherwise creating too much
         // overhead when transferring a large amount of files
-        final boolean updateIcon = this.attributes().getSize() > Status.MEGA * 5;
+        final boolean updateIcon = this.attributes().getSize() > TransferStatus.MEGA * 5;
 
         final Local local = this.getLocal();
         // Set the first progress icon
         final IconService icon = IconServiceFactory.instance();
         if(Preferences.instance().getBoolean("queue.download.updateIcon")) {
             icon.setProgress(local, 0);
-        }
-        if(quarantine) {
-            // Set quarantine attributes
-            QuarantineServiceFactory.instance().setQuarantine(local,
-                    this.getHost().toURL(), this.toURL());
-        }
-        if(Preferences.instance().getBoolean("queue.download.wherefrom")) {
-            // Set quarantine attributes
-            QuarantineServiceFactory.instance().setWhereFrom(local, this.toURL());
         }
         final StreamListener listener = new StreamListener() {
             int step = 0;
@@ -946,7 +871,7 @@ public abstract class Path extends AbstractPath implements Serializable {
                     else {
                         l.bytesReceived(bytes);
                         if(updateIcon) {
-                            int fraction = (int) (status().getCurrent() / attributes().getSize() * 10);
+                            int fraction = (int) (status.getCurrent() / attributes().getSize() * 10);
                             // An integer between 0 and 9
                             if(fraction > step) {
                                 // Another 10 percent of the file has been transferred
@@ -957,7 +882,7 @@ public abstract class Path extends AbstractPath implements Serializable {
                 }
             }
         };
-        this.transfer(new ThrottledInputStream(in, throttle), out, listener, -1);
+        this.transfer(new ThrottledInputStream(in, throttle), out, listener, -1, status);
     }
 
     /**
@@ -967,36 +892,37 @@ public abstract class Path extends AbstractPath implements Serializable {
      * @param out      The stream to write to
      * @param listener The stream listener to notify about bytes received and sent
      * @param limit    Transfer only up to this length
+     * @param status   Transfer status
      * @throws IOException                 Write not completed due to a I/O problem
      * @throws ConnectionCanceledException When transfer is interrupted by user setting the
      *                                     status flag to cancel.
      */
     private void transfer(final InputStream in, final OutputStream out,
-                          final StreamListener listener, final long limit) throws IOException {
+                          final StreamListener listener, final long limit, final TransferStatus status) throws IOException {
         final BufferedInputStream bi = new BufferedInputStream(in);
         final BufferedOutputStream bo = new BufferedOutputStream(out);
         try {
             byte[] chunk = new byte[CHUNKSIZE];
             long bytesTransferred = 0;
-            while(!status().isCanceled()) {
+            while(!status.isCanceled()) {
                 int read = bi.read(chunk, 0, CHUNKSIZE);
                 listener.bytesReceived(read);
                 if(-1 == read) {
                     log.debug("End of file reached");
                     // End of file
-                    status().setComplete(true);
+                    status.setComplete();
                     break;
                 }
                 bo.write(chunk, 0, read);
                 listener.bytesSent(read);
-                status().addCurrent(read);
+                status.addCurrent(read);
                 bytesTransferred += read;
                 if(limit == bytesTransferred) {
                     log.debug("Limit reached reading from stream:" + limit);
                     // Part reached
                     if(0 == bi.available()) {
                         // End of file
-                        status().setComplete(true);
+                        status.setComplete();
                     }
                     break;
                 }
@@ -1005,17 +931,14 @@ public abstract class Path extends AbstractPath implements Serializable {
         finally {
             bo.flush();
         }
-        if(status().isCanceled()) {
+        if(status.isCanceled()) {
             throw new ConnectionCanceledException("Interrupted transfer");
         }
     }
 
-    /**
-     * @param copy Destination
-     */
-    @Override
-    public void copy(AbstractPath copy) {
-        this.copy(copy, new BandwidthThrottle(BandwidthThrottle.UNLIMITED), new AbstractStreamListener());
+    public void copy(AbstractPath copy, final TransferStatus status) {
+        this.copy(copy, new BandwidthThrottle(BandwidthThrottle.UNLIMITED),
+                new AbstractStreamListener(), status);
     }
 
     /**
@@ -1025,15 +948,17 @@ public abstract class Path extends AbstractPath implements Serializable {
      * @param copy     Destination
      * @param throttle The bandwidth limit
      * @param listener Callback
+     * @param status   Transfer status
      */
-    public void copy(final AbstractPath copy, final BandwidthThrottle throttle, final StreamListener listener) {
+    public void copy(final AbstractPath copy, final BandwidthThrottle throttle,
+                     final StreamListener listener, final TransferStatus status) {
         InputStream in = null;
         OutputStream out = null;
         try {
             this.getSession().message(MessageFormat.format(Locale.localizedString("Copying {0}", "Status"),
                     this.getName()));
             if(this.attributes().isFile()) {
-                this.transfer(in = this.read(false), out = ((Path) copy).write(false), listener, -1);
+                this.transfer(in = this.read(status), out = ((Path) copy).write(status), listener, -1, status);
             }
         }
         catch(IOException e) {

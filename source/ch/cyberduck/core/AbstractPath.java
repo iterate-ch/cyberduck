@@ -200,7 +200,7 @@ public abstract class AbstractPath {
         }
     }
 
-    protected abstract void setPath(String name);
+    public abstract void setPath(String name);
 
     /**
      * @param directory Parent directory
@@ -291,11 +291,9 @@ public abstract class AbstractPath {
     }
 
     /**
-     * @param perm      The permissions to apply
-     * @param recursive Include subdirectories and files
-     * @see Session#isUnixPermissionsSupported()
+     * @param permission@see Session#isUnixPermissionsSupported()
      */
-    public abstract void writeUnixPermission(Permission perm, boolean recursive);
+    public abstract void writeUnixPermission(Permission permission);
 
     /**
      * @param created  Creation timestamp of file
@@ -320,13 +318,6 @@ public abstract class AbstractPath {
      * @param renamed Must be an absolute path
      */
     public abstract void rename(AbstractPath renamed);
-
-    /**
-     * Duplicate file
-     *
-     * @param copy Destination
-     */
-    public abstract void copy(AbstractPath copy);
 
     public static class DescriptiveUrl {
         private String url = StringUtils.EMPTY;
