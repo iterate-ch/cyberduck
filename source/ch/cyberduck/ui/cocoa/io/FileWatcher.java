@@ -18,13 +18,11 @@ package ch.cyberduck.ui.cocoa.io;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.local.Local;
+import ch.cyberduck.core.local.LocalFactory;
 import ch.cyberduck.ui.cocoa.foundation.NSAutoreleasePool;
 
 import org.apache.log4j.Logger;
-
-import com.barbarysoftware.watchservice.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,6 +30,12 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
+
+import com.barbarysoftware.watchservice.ClosedWatchServiceException;
+import com.barbarysoftware.watchservice.WatchEvent;
+import com.barbarysoftware.watchservice.WatchKey;
+import com.barbarysoftware.watchservice.WatchService;
+import com.barbarysoftware.watchservice.WatchableFile;
 
 import static com.barbarysoftware.watchservice.StandardWatchEventKind.*;
 

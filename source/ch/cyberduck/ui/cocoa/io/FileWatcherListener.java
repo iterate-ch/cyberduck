@@ -18,7 +18,7 @@ package ch.cyberduck.ui.cocoa.io;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Local;
+import ch.cyberduck.core.local.Local;
 
 /**
  * @version $Id$
