@@ -99,7 +99,7 @@ public final class ProtocolFactory {
      * @param filter Filter disabled protocols
      * @return List of protocols
      */
-    public static List<Protocol> getKnownProtocols(boolean filter) {
+    public static List<Protocol> getKnownProtocols(final boolean filter) {
         List<Protocol> list = new ArrayList<Protocol>(protocols);
         if(filter) {
             // Remove protocols not enabled
@@ -120,7 +120,7 @@ public final class ProtocolFactory {
      * @param port Default port
      * @return The standard protocol for this port number
      */
-    public static Protocol getDefaultProtocol(int port) {
+    public static Protocol getDefaultProtocol(final int port) {
         for(Protocol protocol : getKnownProtocols(false)) {
             if(protocol.getDefaultPort() == port) {
                 return protocol;
@@ -146,7 +146,7 @@ public final class ProtocolFactory {
                 return protocol;
             }
         }
-        log.fatal("Unknown protocol:" + identifier);
+        log.fatal(String.format("Unknown protocol with identifier %s", identifier));
         return forName(
                 Preferences.instance().getProperty("connection.protocol.default"));
     }
@@ -172,7 +172,7 @@ public final class ProtocolFactory {
      * @param str Determine if URL can be handleed by a registered protocol
      * @return True if known URL
      */
-    public static boolean isURL(String str) {
+    public static boolean isURL(final String str) {
         if(StringUtils.isNotBlank(str)) {
             for(Protocol protocol : getKnownProtocols(false)) {
                 String[] schemes = protocol.getSchemes();
