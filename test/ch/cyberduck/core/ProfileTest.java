@@ -8,7 +8,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class ProfileTest extends AbstractTestCase {
 
@@ -29,7 +29,7 @@ public class ProfileTest extends AbstractTestCase {
         final Profile profile = ProtocolReaderFactory.get().read(
                 LocalFactory.createLocal("profiles/HP Cloud Object Storage.cyberduckprofile")
         );
-        assertEquals(Protocol.CLOUDFILES, profile.getProtocol());
+        assertEquals(Protocol.SWIFT, profile.getProtocol());
         assertNotSame(Protocol.CLOUDFILES.getDefaultHostname(), profile.getDefaultHostname());
         assertEquals(Scheme.https, profile.getScheme());
         assertNotNull(profile.getProvider());
