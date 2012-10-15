@@ -33,21 +33,16 @@ public abstract class HostWriterFactory extends Factory<Writer<Host>> {
     /**
      * Registered factories
      */
-    protected static final Map<Platform, HostWriterFactory> factories = new HashMap<Platform, HostWriterFactory>();
+    private static final Map<Platform, HostWriterFactory> factories = new HashMap<Platform, HostWriterFactory>();
 
     public static void addFactory(Factory.Platform platform, HostWriterFactory f) {
         factories.put(platform, f);
     }
 
-    private static Writer<Host> instance;
-
-    public static Writer<Host> instance() {
-        if(null == instance) {
-            if(!factories.containsKey(NATIVE_PLATFORM)) {
-                throw new FactoryException(String.format("No implementation for %s", NATIVE_PLATFORM));
-            }
-            instance = factories.get(NATIVE_PLATFORM).create();
+    public static Writer<Host> get() {
+        if(!factories.containsKey(NATIVE_PLATFORM)) {
+            throw new FactoryException(String.format("No implementation for %s", NATIVE_PLATFORM));
         }
-        return instance;
+        return factories.get(NATIVE_PLATFORM).create();
     }
 }

@@ -72,7 +72,7 @@ public class FolderBookmarkCollection extends AbstractFolderHostCollection {
     }
 
     protected void save(Host bookmark) {
-        HostWriterFactory.instance().write(bookmark, this.getFile(bookmark));
+        HostWriterFactory.get().write(bookmark, this.getFile(bookmark));
     }
 
     @Override

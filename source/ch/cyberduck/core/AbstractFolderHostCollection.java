@@ -67,7 +67,7 @@ public abstract class AbstractFolderHostCollection extends AbstractHostCollectio
 
     @Override
     public void collectionItemAdded(Host bookmark) {
-        HostWriterFactory.instance().write(bookmark, this.getFile(bookmark));
+        HostWriterFactory.get().write(bookmark, this.getFile(bookmark));
         super.collectionItemAdded(bookmark);
     }
 
@@ -79,7 +79,7 @@ public abstract class AbstractFolderHostCollection extends AbstractHostCollectio
 
     @Override
     public void collectionItemChanged(Host bookmark) {
-        HostWriterFactory.instance().write(bookmark, this.getFile(bookmark));
+        HostWriterFactory.get().write(bookmark, this.getFile(bookmark));
         super.collectionItemChanged(bookmark);
     }
 
