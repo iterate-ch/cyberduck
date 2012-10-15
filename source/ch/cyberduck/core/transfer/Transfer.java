@@ -24,7 +24,6 @@ import ch.cyberduck.core.Collection;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.core.PathReference;
-import ch.cyberduck.core.Queue;
 import ch.cyberduck.core.Serializable;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.i18n.Locale;

@@ -1,4 +1,4 @@
-package ch.cyberduck.core;
+package ch.cyberduck.core.transfer;
 
 /*
  * Copyright (c) 2002-2010 David Kocher. All rights reserved.
@@ -19,7 +19,7 @@ package ch.cyberduck.core;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.transfer.Transfer;
+import ch.cyberduck.core.Preferences;
 
 import org.apache.log4j.Logger;
 
