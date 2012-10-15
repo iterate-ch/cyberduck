@@ -31,6 +31,7 @@ import ch.cyberduck.core.editor.LaunchServicesApplicationFinder;
 import ch.cyberduck.core.editor.MultipleEditorFactory;
 import ch.cyberduck.core.local.FinderLocal;
 import ch.cyberduck.core.local.LaunchServicesQuarantineService;
+import ch.cyberduck.core.local.WorkspaceApplicationLauncher;
 import ch.cyberduck.core.local.WorkspaceIconService;
 import ch.cyberduck.core.serializer.impl.HostPlistReader;
 import ch.cyberduck.core.serializer.impl.PlistDeserializer;
@@ -108,6 +109,7 @@ public final class MainApplication {
                 LaunchServicesQuarantineService.register();
                 LaunchServicesSchemeHandler.register();
                 WorkspaceIconService.register();
+                WorkspaceApplicationLauncher.register();
                 MultipleEditorFactory.register();
 
                 DeprecatedQuickLook.register();
