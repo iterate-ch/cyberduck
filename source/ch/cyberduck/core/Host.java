@@ -886,10 +886,10 @@ public class Host implements Serializable {
     }
 
     public boolean isReachable() {
-        return ReachabilityFactory.instance().isReachable(this);
+        return ReachabilityFactory.get().isReachable(this);
     }
 
     public void diagnose() {
-        ReachabilityFactory.instance().diagnose(this);
+        ReachabilityFactory.get().diagnose(this);
     }
 }

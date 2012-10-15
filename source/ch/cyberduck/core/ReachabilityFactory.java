@@ -30,21 +30,16 @@ public abstract class ReachabilityFactory extends Factory<Reachability> {
     /**
      * Registered factories
      */
-    protected static final Map<Platform, ReachabilityFactory> factories = new HashMap<Platform, ReachabilityFactory>();
+    private static final Map<Platform, ReachabilityFactory> factories = new HashMap<Platform, ReachabilityFactory>();
 
     public static void addFactory(Platform platform, ReachabilityFactory f) {
         factories.put(platform, f);
     }
 
-    private static Reachability diagnostics;
-
-    public static Reachability instance() {
-        if(null == diagnostics) {
-            if(!factories.containsKey(NATIVE_PLATFORM)) {
-                throw new FactoryException(String.format("No implementation for %s", NATIVE_PLATFORM));
-            }
-            diagnostics = factories.get(NATIVE_PLATFORM).create();
+    public static Reachability get() {
+        if(!factories.containsKey(NATIVE_PLATFORM)) {
+            throw new FactoryException(String.format("No implementation for %s", NATIVE_PLATFORM));
         }
-        return diagnostics;
+        return factories.get(NATIVE_PLATFORM).create();
     }
 }
