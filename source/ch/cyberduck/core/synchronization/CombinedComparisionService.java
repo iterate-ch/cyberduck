@@ -21,13 +21,10 @@ package ch.cyberduck.core.synchronization;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 
-import org.apache.log4j.Logger;
-
 /**
  * @version $Id$
  */
 public class CombinedComparisionService implements ComparisonService {
-    private static Logger log = Logger.getLogger(CombinedComparisionService.class);
 
     private ComparisonService checksum
             = new ChecksumComparisonService();
