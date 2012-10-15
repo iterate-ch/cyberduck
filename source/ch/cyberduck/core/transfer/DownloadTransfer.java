@@ -25,6 +25,7 @@ import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.filter.DownloadRegexFilter;
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.local.ApplicationLauncherFactory;
 import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.local.LocalFactory;
 import ch.cyberduck.core.local.QuarantineService;
@@ -215,7 +216,7 @@ public class DownloadTransfer extends Transfer {
     protected void fireTransferDidEnd() {
         if(this.isReset() && this.isComplete() && !this.isCanceled() && !(this.getTransferred() == 0)) {
             if(this.shouldOpenWhenComplete()) {
-                this.getRoot().getLocal().open();
+                ApplicationLauncherFactory.get().open(this.getRoot().getLocal());
             }
             this.getRoot().getLocal().bounce();
         }

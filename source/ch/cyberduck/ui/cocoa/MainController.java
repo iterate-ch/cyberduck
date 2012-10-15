@@ -32,6 +32,7 @@ import ch.cyberduck.core.importer.FlowBookmarkCollection;
 import ch.cyberduck.core.importer.InterarchyBookmarkCollection;
 import ch.cyberduck.core.importer.ThirdpartyBookmarkCollection;
 import ch.cyberduck.core.importer.TransmitBookmarkCollection;
+import ch.cyberduck.core.local.ApplicationLauncherFactory;
 import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.local.LocalFactory;
 import ch.cyberduck.core.serializer.HostReaderFactory;
@@ -428,12 +429,14 @@ public class MainController extends BundleController implements NSApplication.De
 
     @Action
     public void licenseMenuClicked(final ID sender) {
-        LocalFactory.createLocal(NSBundle.mainBundle().pathForResource_ofType("License", "txt")).open();
+        ApplicationLauncherFactory.get().open(
+                LocalFactory.createLocal(NSBundle.mainBundle().pathForResource_ofType("License", "txt")));
     }
 
     @Action
     public void acknowledgmentsMenuClicked(final ID sender) {
-        LocalFactory.createLocal(NSBundle.mainBundle().pathForResource_ofType("Acknowledgments", "rtf")).open();
+        ApplicationLauncherFactory.get().open(
+                LocalFactory.createLocal(NSBundle.mainBundle().pathForResource_ofType("Acknowledgments", "rtf")));
     }
 
     @Action

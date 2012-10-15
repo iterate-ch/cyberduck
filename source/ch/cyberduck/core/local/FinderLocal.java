@@ -490,11 +490,6 @@ public class FinderLocal extends Local {
         return Long.valueOf(this.attributes().getInode()).hashCode();
     }
 
-    @Override
-    public boolean open() {
-        return NSWorkspace.sharedWorkspace().openFile(this.getAbsolute());
-    }
-
     /**
      * Post a download finished notification to the distributed notification center. Will cause the
      * download folder to bounce just once.

@@ -31,6 +31,7 @@ import ch.cyberduck.core.TransferListener;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.local.ApplicationLauncherFactory;
 import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.core.transfer.DownloadTransfer;
@@ -1058,10 +1059,7 @@ public final class TransferController extends WindowController implements NSTool
         if(transferTable.numberOfSelectedRows().intValue() == 1) {
             final Transfer transfer = transferTableModel.getSource().get(transferTable.selectedRow().intValue());
             for(Path i : transfer.getRoots()) {
-                Local l = i.getLocal();
-                if(!l.open()) {
-                    log.warn(String.format("Error opening file %s", l.getAbsolute()));
-                }
+                ApplicationLauncherFactory.get().open(i.getLocal());
             }
         }
     }

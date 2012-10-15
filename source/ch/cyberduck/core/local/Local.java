@@ -522,11 +522,6 @@ public abstract class Local extends AbstractPath {
         }
     }
 
-    /**
-     * @return True if application was found to open the file with
-     */
-    public abstract boolean open();
-
     public abstract void bounce();
 
     public InputStream getInputStream() throws FileNotFoundException {

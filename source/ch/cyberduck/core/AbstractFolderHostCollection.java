@@ -20,6 +20,7 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.core.local.ApplicationLauncherFactory;
 import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.local.LocalFactory;
 import ch.cyberduck.core.serializer.HostReaderFactory;
@@ -54,7 +55,7 @@ public abstract class AbstractFolderHostCollection extends AbstractHostCollectio
     }
 
     public void open() {
-        folder.open();
+        ApplicationLauncherFactory.get().open(folder);
     }
 
     /**
