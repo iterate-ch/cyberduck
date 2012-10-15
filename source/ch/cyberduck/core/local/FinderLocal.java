@@ -45,7 +45,7 @@ import java.io.File;
  * @version $Id$
  */
 public class FinderLocal extends Local {
-    private static Logger log = Logger.getLogger(FinderLocal.class);
+    private static final Logger log = Logger.getLogger(FinderLocal.class);
 
     public FinderLocal(Local parent, String name) {
         super(parent, name);

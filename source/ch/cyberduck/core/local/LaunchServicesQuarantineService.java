@@ -9,7 +9,7 @@ import org.apache.log4j.Logger;
  * @version $Id$
  */
 public final class LaunchServicesQuarantineService implements QuarantineService {
-    private static Logger log = Logger.getLogger(LaunchServicesQuarantineService.class);
+    private static final Logger log = Logger.getLogger(LaunchServicesQuarantineService.class);
 
     public static void register() {
         QuarantineServiceFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());

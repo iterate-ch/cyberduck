@@ -50,7 +50,7 @@ import com.ibm.icu.text.Normalizer;
  * @version $Id$
  */
 public abstract class Local extends AbstractPath {
-    private static Logger log = Logger.getLogger(Local.class);
+    private static final Logger log = Logger.getLogger(Local.class);
 
     /**
      * Absolute path in local file system
