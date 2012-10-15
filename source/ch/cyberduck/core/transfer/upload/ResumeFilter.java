@@ -4,13 +4,10 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.transfer.SymlinkResolver;
 import ch.cyberduck.core.transfer.TransferStatus;
 
-import org.apache.log4j.Logger;
-
 /**
  * @version $Id$
  */
 public class ResumeFilter extends AbstractUploadFilter {
-    private static final Logger log = Logger.getLogger(ResumeFilter.class);
 
     public ResumeFilter(final SymlinkResolver symlinkResolver) {
         super(symlinkResolver);
