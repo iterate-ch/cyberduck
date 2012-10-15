@@ -22,5 +22,9 @@ package ch.cyberduck.core.transfer;
  * @version $Id$
  */
 public interface TransferPrompt {
+
+    /**
+     * @return Transfer action selected in prompt.
+     */
     TransferAction prompt();
 }

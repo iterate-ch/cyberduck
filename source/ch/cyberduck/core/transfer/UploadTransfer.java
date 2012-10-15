@@ -145,7 +145,7 @@ public class UploadTransfer extends Transfer {
     }
 
     @Override
-    public TransferPathFilter filter(final TransferAction action) {
+    public TransferPathFilter filter(final TransferPrompt prompt, final TransferAction action) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Filter transfer with action %s", action.toString()));
         }
@@ -182,13 +182,13 @@ public class UploadTransfer extends Transfer {
                     }
                     // Prompt user to choose a filter
                     TransferAction result = prompt.prompt();
-                    return this.filter(result); //break out of loop
+                    return this.filter(prompt, result); //break out of loop
                 }
             }
             // No files exist yet therefore it is most straightforward to use the overwrite action
-            return this.filter(TransferAction.ACTION_OVERWRITE);
+            return this.filter(prompt, TransferAction.ACTION_OVERWRITE);
         }
-        return super.filter(action);
+        return super.filter(prompt, action);
     }
 
     @Override

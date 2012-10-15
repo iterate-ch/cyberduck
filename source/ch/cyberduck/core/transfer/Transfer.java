@@ -18,7 +18,16 @@ package ch.cyberduck.core.transfer;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.Collection;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathFactory;
+import ch.cyberduck.core.PathReference;
+import ch.cyberduck.core.Queue;
+import ch.cyberduck.core.Serializable;
+import ch.cyberduck.core.Session;
+import ch.cyberduck.core.TransferListener;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.serializer.Deserializer;
@@ -51,11 +60,6 @@ public abstract class Transfer implements Serializable {
     private List<Path> roots;
 
     private Map<Path, TransferStatus> status;
-
-    /**
-     * Callback
-     */
-    protected TransferPrompt prompt;
 
     /**
      * The sum of the file length of all files in the <code>queue</code>
@@ -367,10 +371,11 @@ public abstract class Transfer implements Serializable {
     }
 
     /**
+     * @param prompt Callback
      * @param action Transfer action for duplicate files
      * @return Null if the filter could not be determined and the transfer should be canceled instead
      */
-    public TransferPathFilter filter(final TransferAction action) {
+    public TransferPathFilter filter(TransferPrompt prompt, final TransferAction action) {
         if(action.equals(TransferAction.ACTION_CANCEL)) {
             return null;
         }
@@ -408,16 +413,11 @@ public abstract class Transfer implements Serializable {
      */
     public abstract AttributedList<Path> children(final Path parent);
 
-    /**
-     * @param item   File
-     * @param status Tranfer status
-     * @return True if the path is not skipped when transferring
-     */
-    public boolean isIncluded(final Path item, final TransferStatus status) {
-        if(this.isSkipped(item)) {
-            return false;
+    public boolean isSelected(Path item) {
+        if(status.containsKey(item)) {
+            return status.get(item).isSelected();
         }
-        return status.isSelected();
+        return true;
     }
 
     /**
@@ -435,14 +435,9 @@ public abstract class Transfer implements Serializable {
      * @param selected Selected files in transfer prompt
      */
     public void setSelected(Path item, final boolean selected) {
-        status.get(item).setSelected(selected);
-        if(item.attributes().isDirectory()) {
-            if(session.cache().isCached(item.getReference())) {
-                for(Path child : this.children(item)) {
-                    this.setSelected(child, selected);
-                }
-            }
-        }
+        TransferStatus s = new TransferStatus();
+        s.setSelected(selected);
+        status.put(item, s);
     }
 
     /**
@@ -458,7 +453,7 @@ public abstract class Transfer implements Serializable {
      */
     protected void transfer(final Path p, final TransferPathFilter filter,
                             final TransferOptions options, final TransferStatus status) {
-        if(!this.isIncluded(p, status)) {
+        if(!status.isSelected()) {
             if(log.isInfoEnabled()) {
                 log.info(String.format("Skip %s not selected in prompt", p.getAbsolute()));
             }
@@ -521,9 +516,10 @@ public abstract class Transfer implements Serializable {
     protected abstract void transfer(final Path file, TransferOptions options, final TransferStatus status);
 
     /**
+     * @param prompt  Callback
      * @param options Transfer options
      */
-    private void start(final TransferOptions options) {
+    private void transfer(final TransferPrompt prompt, final TransferOptions options) {
         for(Session s : this.getSessions()) {
             if(!this.open(s)) {
                 return;
@@ -556,7 +552,7 @@ public abstract class Transfer implements Serializable {
         }
 
         // Get the transfer filter from the concrete transfer class
-        final TransferPathFilter filter = this.filter(action);
+        final TransferPathFilter filter = this.filter(prompt, action);
         if(null == filter) {
             // The user has canceled choosing a transfer filter
             this.cancel();
@@ -598,10 +594,7 @@ public abstract class Transfer implements Serializable {
         if(!this.check()) {
             return;
         }
-        if(!this.isIncluded(p, status)) {
-            if(log.isInfoEnabled()) {
-                log.info(String.format("Not included %s in transfer", p.getAbsolute()));
-            }
+        if(!this.isSelected(p)) {
             return;
         }
         // Only prepare the path it will be actually transferred
@@ -681,7 +674,6 @@ public abstract class Transfer implements Serializable {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Start transfer with prompt %s", prompt));
         }
-        this.prompt = prompt;
         try {
             this.fireTransferWillStart();
             this.queue();
@@ -689,10 +681,9 @@ public abstract class Transfer implements Serializable {
                 // The transfer has been canceled while being queued
                 return;
             }
-            this.start(options);
+            this.transfer(prompt, options);
         }
         finally {
-            this.prompt = null;
             this.fireTransferDidEnd();
         }
     }

@@ -173,16 +173,16 @@ public class SyncTransfer extends Transfer {
          * Download delegate filter
          */
         private TransferPathFilter _delegateFilterDownload
-                = _delegateDownload.filter(TransferAction.ACTION_OVERWRITE);
+                = _delegateDownload.filter(null, TransferAction.ACTION_OVERWRITE);
 
         /**
          * Upload delegate filter
          */
         private TransferPathFilter _delegateFilterUpload
-                = _delegateUpload.filter(TransferAction.ACTION_OVERWRITE);
+                = _delegateUpload.filter(null, TransferAction.ACTION_OVERWRITE);
 
         @Override
-        public TransferStatus prepare(Path p) {
+        public TransferStatus prepare(final Path p) {
             final Comparison compare = SyncTransfer.this.compare(p);
             if(compare.equals(Comparison.REMOTE_NEWER)) {
                 return _delegateFilterDownload.prepare(p);
@@ -194,13 +194,22 @@ public class SyncTransfer extends Transfer {
         }
 
         @Override
-        public boolean accept(Path p) {
+        public boolean accept(final Path p) {
             final Comparison compare = SyncTransfer.this.compare(p);
+            if(compare.equals(Comparison.EQUAL)) {
+                return false;
+            }
             if(compare.equals(Comparison.REMOTE_NEWER)) {
+                if(getTransferAction().equals(ACTION_UPLOAD)) {
+                    return false;
+                }
                 // Ask the download delegate for inclusion
                 return _delegateFilterDownload.accept(p);
             }
             else if(compare.equals(Comparison.LOCAL_NEWER)) {
+                if(getTransferAction().equals(ACTION_DOWNLOAD)) {
+                    return false;
+                }
                 // Ask the upload delegate for inclusion
                 return _delegateFilterUpload.accept(p);
             }
@@ -208,7 +217,7 @@ public class SyncTransfer extends Transfer {
         }
 
         @Override
-        public void complete(Path p, final TransferStatus status) {
+        public void complete(final Path p, final TransferStatus status) {
             final Comparison compare = SyncTransfer.this.compare(p);
             if(compare.equals(Comparison.REMOTE_NEWER)) {
                 _delegateFilterDownload.complete(p, status);
@@ -222,7 +231,7 @@ public class SyncTransfer extends Transfer {
     };
 
     @Override
-    public TransferPathFilter filter(final TransferAction action) {
+    public TransferPathFilter filter(final TransferPrompt prompt, final TransferAction action) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Filter transfer with action %s", action.toString()));
         }
@@ -231,10 +240,10 @@ public class SyncTransfer extends Transfer {
             return filter;
         }
         if(action.equals(TransferAction.ACTION_CALLBACK)) {
-            TransferAction result = prompt.prompt();
-            return this.filter(result); //break out of loop
+            final TransferAction result = prompt.prompt();
+            return this.filter(prompt, result); // Break out. Either cancel or overwrite
         }
-        return super.filter(action);
+        return super.filter(prompt, action);
     }
 
     @Override

@@ -135,14 +135,14 @@ public class CopyTransfer extends Transfer {
     }
 
     @Override
-    public TransferPathFilter filter(final TransferAction action) {
+    public TransferPathFilter filter(TransferPrompt prompt, final TransferAction action) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Filter transfer with action %s", action.toString()));
         }
         if(action.equals(TransferAction.ACTION_OVERWRITE)) {
             return new CopyTransferFilter(files);
         }
-        return super.filter(action);
+        return super.filter(prompt, action);
     }
 
     @Override
