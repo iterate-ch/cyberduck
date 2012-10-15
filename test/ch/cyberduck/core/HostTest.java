@@ -223,49 +223,47 @@ public class HostTest extends AbstractTestCase {
 
     @Test
     public void testWebURL() {
-        {
-            Host host = new Host("test");
-            host.setWebURL("http://localhost/~dkocher");
-            assertEquals("http://localhost/~dkocher", host.getWebURL());
-        }
+
+        Host host = new Host("test");
+        host.setWebURL("http://localhost/~dkocher");
+        assertEquals("http://localhost/~dkocher", host.getWebURL());
+
     }
 
     @Test
     public void testAbsoluteDocumentRoot() {
-        {
-            Host host = new Host("localhost");
-            host.setDefaultPath("/usr/home/dkocher/public_html");
-            Path path = PathFactory.createPath(SessionFactory.createSession(host),
-                    "/usr/home/dkocher/public_html/file", Path.DIRECTORY_TYPE);
-            assertEquals("http://localhost/file", path.toHttpURL());
-            host.setWebURL("http://127.0.0.1/~dkocher");
-            assertEquals("http://127.0.0.1/~dkocher/file", path.toHttpURL());
-        }
+
+        Host host = new Host("localhost");
+        host.setDefaultPath("/usr/home/dkocher/public_html");
+        Path path = PathFactory.createPath(SessionFactory.createSession(host),
+                "/usr/home/dkocher/public_html/file", Path.DIRECTORY_TYPE);
+        assertEquals("http://localhost/file", path.toHttpURL());
+        host.setWebURL("http://127.0.0.1/~dkocher");
+        assertEquals("http://127.0.0.1/~dkocher/file", path.toHttpURL());
+
     }
 
     @Test
     public void testRelativeDocumentRoot() {
-        {
-            Host host = new Host("localhost");
-            host.setDefaultPath("public_html");
-            Path path = PathFactory.createPath(SessionFactory.createSession(host),
-                    "/usr/home/dkocher/public_html/file", Path.DIRECTORY_TYPE);
-            assertEquals("http://localhost/file", path.toHttpURL());
-            host.setWebURL("http://127.0.0.1/~dkocher");
-            assertEquals("http://127.0.0.1/~dkocher/file", path.toHttpURL());
-        }
+
+        Host host = new Host("localhost");
+        host.setDefaultPath("public_html");
+        Path path = PathFactory.createPath(SessionFactory.createSession(host),
+                "/usr/home/dkocher/public_html/file", Path.DIRECTORY_TYPE);
+        assertEquals("http://localhost/file", path.toHttpURL());
+        host.setWebURL("http://127.0.0.1/~dkocher");
+        assertEquals("http://127.0.0.1/~dkocher/file", path.toHttpURL());
+
     }
 
     @Test
     public void testDefaultPathRoot() {
-        {
-            Host host = new Host("localhost");
-            host.setDefaultPath("/");
-            Path path = PathFactory.createPath(SessionFactory.createSession(host),
-                    "/file", Path.DIRECTORY_TYPE);
-            assertEquals("http://localhost/file", path.toHttpURL());
-            host.setWebURL("http://127.0.0.1/~dkocher");
-            assertEquals("http://127.0.0.1/~dkocher/file", path.toHttpURL());
-        }
+        Host host = new Host("localhost");
+        host.setDefaultPath("/");
+        Path path = PathFactory.createPath(SessionFactory.createSession(host),
+                "/file", Path.DIRECTORY_TYPE);
+        assertEquals("http://localhost/file", path.toHttpURL());
+        host.setWebURL("http://127.0.0.1/~dkocher");
+        assertEquals("http://127.0.0.1/~dkocher/file", path.toHttpURL());
     }
 }
