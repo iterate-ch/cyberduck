@@ -848,7 +848,7 @@ public abstract class Path extends AbstractPath implements Serializable {
 
         final Local local = this.getLocal();
         // Set the first progress icon
-        final IconService icon = IconServiceFactory.instance();
+        final IconService icon = IconServiceFactory.get();
         if(Preferences.instance().getBoolean("queue.download.updateIcon")) {
             icon.setProgress(local, 0);
         }

@@ -16,24 +16,19 @@ public abstract class IconServiceFactory extends Factory<IconService> {
     /**
      * Registered factories
      */
-    protected static final Map<Platform, IconServiceFactory> factories
+    private static final Map<Platform, IconServiceFactory> factories
             = new HashMap<Platform, IconServiceFactory>();
 
     public static void addFactory(Factory.Platform platform, IconServiceFactory f) {
         factories.put(platform, f);
     }
 
-    private static IconService service;
-
-    public static IconService instance() {
-        if(null == service) {
-            if(!factories.containsKey(NATIVE_PLATFORM)) {
-                log.warn(String.format("No implementation for %s", NATIVE_PLATFORM));
-                return new DisabledIconService();
-            }
-            service = factories.get(NATIVE_PLATFORM).create();
+    public static IconService get() {
+        if(!factories.containsKey(NATIVE_PLATFORM)) {
+            log.warn(String.format("No implementation for %s", NATIVE_PLATFORM));
+            return new DisabledIconService();
         }
-        return service;
+        return factories.get(NATIVE_PLATFORM).create();
     }
 
     private static final class DisabledIconService implements IconService {
