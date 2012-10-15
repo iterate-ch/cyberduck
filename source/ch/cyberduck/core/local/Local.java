@@ -260,7 +260,7 @@ public abstract class Local extends AbstractPath {
     public void touch() {
         try {
             if(!new File(path).createNewFile()) {
-                log.error(String.format("Create file %s failed", path));
+                log.warn(String.format("Create file %s failed", path));
             }
         }
         catch(IOException e) {
@@ -277,7 +277,7 @@ public abstract class Local extends AbstractPath {
     public void mkdir(boolean recursive) {
         if(recursive) {
             if(!new File(path).mkdirs()) {
-                log.error(String.format("Create directories %s failed", path));
+                log.warn(String.format("Create directories %s failed", path));
             }
         }
         else {
@@ -288,7 +288,7 @@ public abstract class Local extends AbstractPath {
     @Override
     public void mkdir() {
         if(!new File(path).mkdir()) {
-            log.error(String.format("Create directory %s failed", path));
+            log.warn(String.format("Create directory %s failed", path));
         }
     }
 
@@ -298,7 +298,7 @@ public abstract class Local extends AbstractPath {
     @Override
     public void delete() {
         if(!new File(path).delete()) {
-            log.error(String.format("Delete %s failed", path));
+            log.warn(String.format("Delete %s failed", path));
         }
     }
 
