@@ -24,15 +24,10 @@ import ch.cyberduck.core.Preferences;
 /**
  * @version $Id$
  */
-public class GrowlNative extends Growl {
+public final class GrowlNative extends Growl {
 
-    private static boolean JNI_LOADED = false;
-
-    private static boolean loadNative() {
-        if(!JNI_LOADED) {
-            JNI_LOADED = Native.load("Growl");
-        }
-        return JNI_LOADED;
+    private GrowlNative() {
+        Native.load("Growl");
     }
 
     public static void register() {
@@ -46,10 +41,7 @@ public class GrowlNative extends Growl {
     private static class Factory extends GrowlFactory {
         @Override
         protected Growl create() {
-            if(loadNative()) {
-                return new GrowlNative();
-            }
-            return null;
+            return new GrowlNative();
         }
     }
 

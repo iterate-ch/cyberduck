@@ -36,25 +36,13 @@ public final class SystemConfigurationReachability implements Reachability {
     }
 
     private SystemConfigurationReachability() {
-        //
-    }
-
-    private static boolean JNI_LOADED = false;
-
-    private static boolean loadNative() {
-        if(!JNI_LOADED) {
-            JNI_LOADED = Native.load("Diagnostics");
-        }
-        return JNI_LOADED;
+        Native.load("Diagnostics");
     }
 
     @Override
     public boolean isReachable(Host host) {
         if(!Preferences.instance().getBoolean("connection.hostname.check")) {
             return true;
-        }
-        if(!loadNative()) {
-            return false;
         }
         return this.isReachable(this.toURL(host));
     }
@@ -76,9 +64,6 @@ public final class SystemConfigurationReachability implements Reachability {
      */
     @Override
     public void diagnose(Host host) {
-        if(!loadNative()) {
-            return;
-        }
         this.diagnose(host.toURL());
     }
 

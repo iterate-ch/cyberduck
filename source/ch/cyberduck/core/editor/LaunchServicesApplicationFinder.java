@@ -1,8 +1,8 @@
 package ch.cyberduck.core.editor;
 
+import ch.cyberduck.core.Native;
 import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.local.LocalFactory;
-import ch.cyberduck.core.Native;
 import ch.cyberduck.ui.cocoa.application.NSWorkspace;
 import ch.cyberduck.ui.cocoa.foundation.NSBundle;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
@@ -39,16 +39,7 @@ public final class LaunchServicesApplicationFinder implements ApplicationFinder 
     }
 
     private LaunchServicesApplicationFinder() {
-        //
-    }
-
-    private static boolean JNI_LOADED = false;
-
-    private static boolean loadNative() {
-        if(!JNI_LOADED) {
-            JNI_LOADED = Native.load("LaunchServicesApplicationFinder");
-        }
-        return JNI_LOADED;
+        Native.load("LaunchServicesApplicationFinder");
     }
 
     /**
@@ -107,9 +98,6 @@ public final class LaunchServicesApplicationFinder implements ApplicationFinder 
 
     @Override
     public List<Application> findAll(final Local file) {
-        if(!loadNative()) {
-            return Collections.emptyList();
-        }
         final String extension = file.getExtension();
         if(StringUtils.isEmpty(extension)) {
             return Collections.emptyList();
@@ -141,9 +129,6 @@ public final class LaunchServicesApplicationFinder implements ApplicationFinder 
      */
     @Override
     public Application find(final Local file) {
-        if(!loadNative()) {
-            return null;
-        }
         final String extension = file.getExtension();
         if(!defaultApplicationCache.containsKey(extension)) {
             if(StringUtils.isEmpty(extension)) {

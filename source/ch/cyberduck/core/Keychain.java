@@ -44,16 +44,7 @@ public final class Keychain extends AbstractKeychain {
     }
 
     private Keychain() {
-        //
-    }
-
-    private static boolean JNI_LOADED = false;
-
-    private static boolean loadNative() {
-        if(!JNI_LOADED) {
-            JNI_LOADED = Native.load("Keychain");
-        }
-        return JNI_LOADED;
+        Native.load("Keychain");
     }
 
     /**
@@ -107,33 +98,21 @@ public final class Keychain extends AbstractKeychain {
 
     @Override
     public String getPassword(Scheme scheme, int port, String hostname, String user) {
-        if(!loadNative()) {
-            return null;
-        }
         return this.getInternetPasswordFromKeychain(scheme.name(), port, hostname, user);
     }
 
     @Override
     public String getPassword(String hostname, String user) {
-        if(!loadNative()) {
-            return null;
-        }
         return this.getPasswordFromKeychain(hostname, user);
     }
 
     @Override
     public void addPassword(String serviceName, String user, String password) {
-        if(!loadNative()) {
-            return;
-        }
         this.addPasswordToKeychain(serviceName, user, password);
     }
 
     @Override
     public void addPassword(Scheme scheme, int port, String hostname, String user, String password) {
-        if(!loadNative()) {
-            return;
-        }
         this.addInternetPasswordToKeychain(scheme.name(), port, hostname, user, password);
     }
 
@@ -143,9 +122,6 @@ public final class Keychain extends AbstractKeychain {
      */
     @Override
     public synchronized boolean isTrusted(String hostname, X509Certificate[] certificates) {
-        if(!loadNative()) {
-            return false;
-        }
         return this.isTrustedNative(hostname, this.getEncoded(certificates));
     }
 
@@ -162,9 +138,6 @@ public final class Keychain extends AbstractKeychain {
      */
     @Override
     public synchronized boolean displayCertificates(X509Certificate[] certificates) {
-        if(!loadNative()) {
-            return false;
-        }
         return this.displayCertificatesNative(this.getEncoded(certificates));
     }
 
@@ -176,9 +149,6 @@ public final class Keychain extends AbstractKeychain {
 
     @Override
     public synchronized X509Certificate chooseCertificate(String[] issuers, String hostname, String prompt) {
-        if(!loadNative()) {
-            return null;
-        }
         byte[] cert = this.chooseCertificateNative(issuers, hostname, prompt);
         if(null == cert) {
             log.info("No certificate selected");

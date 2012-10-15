@@ -23,16 +23,7 @@ public final class LaunchServicesQuarantineService implements QuarantineService 
     }
 
     private LaunchServicesQuarantineService() {
-        //
-    }
-
-    private static boolean JNI_LOADED = false;
-
-    private static boolean loadNative() {
-        if(!JNI_LOADED) {
-            JNI_LOADED = Native.load("LaunchServicesQuarantineService");
-        }
-        return JNI_LOADED;
+        Native.load("LaunchServicesQuarantineService");
     }
 
     private static final Object lock = new Object();
@@ -52,9 +43,6 @@ public final class LaunchServicesQuarantineService implements QuarantineService 
      */
     @Override
     public void setQuarantine(final Local file, final String originUrl, final String dataUrl) {
-        if(!loadNative()) {
-            return;
-        }
         if(StringUtils.isEmpty(originUrl)) {
             log.warn("No origin url given for quarantine");
             return;
@@ -84,9 +72,6 @@ public final class LaunchServicesQuarantineService implements QuarantineService 
      */
     @Override
     public void setWhereFrom(final Local file, final String dataUrl) {
-        if(!loadNative()) {
-            return;
-        }
         if(StringUtils.isEmpty(dataUrl)) {
             log.warn("No data url given for quarantine");
             return;

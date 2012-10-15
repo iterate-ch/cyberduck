@@ -46,7 +46,7 @@ public final class Native {
             final String path = Native.getPath(library);
             try {
                 // Load using absolute path. Otherwise we may load
-                // a libray in java.library.path that was not intended
+                // a library in java.library.path that was not intended
                 // because of a naming conflict.
                 System.load(path);
                 log.info(String.format("Loaded %s in %dms", path, System.currentTimeMillis() - l));
