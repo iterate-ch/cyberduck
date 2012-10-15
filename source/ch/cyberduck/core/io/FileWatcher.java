@@ -1,4 +1,4 @@
-package ch.cyberduck.ui.cocoa.io;
+package ch.cyberduck.core.io;
 
 /*
  *  Copyright (c) 2009 David Kocher. All rights reserved.
@@ -20,7 +20,8 @@ package ch.cyberduck.ui.cocoa.io;
 
 import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.local.LocalFactory;
-import ch.cyberduck.ui.cocoa.foundation.NSAutoreleasePool;
+import ch.cyberduck.core.threading.ActionOperationBatcher;
+import ch.cyberduck.core.threading.ActionOperationBatcherFactory;
 
 import org.apache.log4j.Logger;
 
@@ -68,7 +69,7 @@ public class FileWatcher {
         final AtomicReference<Thread> consumer = new AtomicReference<Thread>(new Thread(new Runnable() {
             public void run() {
                 while(true) {
-                    final NSAutoreleasePool pool = NSAutoreleasePool.push();
+                    final ActionOperationBatcher autorelease = ActionOperationBatcherFactory.get();
                     try {
                         // wait for key to be signaled
                         WatchKey key;
@@ -123,7 +124,7 @@ public class FileWatcher {
                         }
                     }
                     finally {
-                        pool.release();
+                        autorelease.operate();
                     }
                 }
             }
@@ -141,7 +142,9 @@ public class FileWatcher {
     public void removeListener(final FileWatcherListener listener) {
         listeners.remove(listener);
         if(listeners.isEmpty()) {
-            log.debug("unwatch:" + file);
+            if(log.isDebugEnabled()) {
+                log.debug(String.format("Unwatch file %s", file.getAbsolute()));
+            }
             try {
                 monitor.close();
             }
