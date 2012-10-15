@@ -4539,7 +4539,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             item.setLabel(Locale.localizedString(TOOLBAR_WEBVIEW));
             item.setPaletteLabel(Locale.localizedString("Open in Web Browser"));
             item.setToolTip(Locale.localizedString("Open in Web Browser"));
-            final Application browser = SchemeHandlerFactory.instance().getDefaultHandler(Scheme.http);
+            final Application browser = SchemeHandlerFactory.get().getDefaultHandler(Scheme.http);
             if(null == browser) {
                 item.setEnabled(false);
                 item.setImage(IconCache.iconNamed("notfound.tiff", 32));

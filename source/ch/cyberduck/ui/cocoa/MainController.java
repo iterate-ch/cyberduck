@@ -958,7 +958,7 @@ public class MainController extends BundleController implements NSApplication.De
         }
         if(Preferences.instance().getBoolean("defaulthandler.reminder")
                 && Preferences.instance().getInteger("uses") > 0) {
-            if(!SchemeHandlerFactory.instance().isDefaultHandler(
+            if(!SchemeHandlerFactory.get().isDefaultHandler(
                     Arrays.asList(Protocol.FTP.getScheme(), Protocol.FTP_TLS.getScheme(), Protocol.SFTP.getScheme()),
                     new Application(NSBundle.mainBundle().infoDictionary().objectForKey("CFBundleIdentifier").toString(), null))) {
                 final NSAlert alert = NSAlert.alert(
@@ -976,7 +976,7 @@ public class MainController extends BundleController implements NSApplication.De
                     Preferences.instance().setProperty("defaulthandler.reminder", false);
                 }
                 if(choice == SheetCallback.DEFAULT_OPTION) {
-                    SchemeHandlerFactory.instance().setDefaultHandler(
+                    SchemeHandlerFactory.get().setDefaultHandler(
                             Arrays.asList(Protocol.FTP.getScheme(), Protocol.FTP_TLS.getScheme(), Protocol.SFTP.getScheme()),
                             new Application(NSBundle.mainBundle().infoDictionary().objectForKey("CFBundleIdentifier").toString(), null)
                     );

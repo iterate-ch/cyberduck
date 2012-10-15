@@ -1692,7 +1692,7 @@ public final class PreferencesController extends ToolbarWindowController {
     }
 
     private void configureDefaultProtocolHandlerCombobox(NSPopUpButton defaultProtocolHandlerCombobox, Protocol protocol) {
-        final Application defaultHandler = SchemeHandlerFactory.instance().getDefaultHandler(protocol.getScheme());
+        final Application defaultHandler = SchemeHandlerFactory.get().getDefaultHandler(protocol.getScheme());
         if(null == defaultHandler) {
             defaultProtocolHandlerCombobox.addItemWithTitle(Locale.localizedString("Unknown"));
             defaultProtocolHandlerCombobox.setEnabled(false);
@@ -1701,7 +1701,7 @@ public final class PreferencesController extends ToolbarWindowController {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Default Protocol Handler for %s:%s", protocol, defaultHandler));
         }
-        for(Application handler : SchemeHandlerFactory.instance().getAllHandlers(protocol.getScheme())) {
+        for(Application handler : SchemeHandlerFactory.get().getAllHandlers(protocol.getScheme())) {
             defaultProtocolHandlerCombobox.addItemWithTitle(handler.getName());
             final NSMenuItem item = defaultProtocolHandlerCombobox.lastItem();
             item.setImage(IconCache.instance().iconForApplication(handler.getIdentifier(), 16));
@@ -1726,7 +1726,7 @@ public final class PreferencesController extends ToolbarWindowController {
     @Action
     public void defaultFTPHandlerComboboxClicked(NSPopUpButton sender) {
         String bundle = sender.selectedItem().representedObject();
-        SchemeHandlerFactory.instance().setDefaultHandler(
+        SchemeHandlerFactory.get().setDefaultHandler(
                 Arrays.asList(Protocol.FTP.getScheme(), Protocol.FTP_TLS.getScheme()),
                 new Application(bundle, null)
         );
@@ -1746,7 +1746,7 @@ public final class PreferencesController extends ToolbarWindowController {
     @Action
     public void defaultSFTPHandlerComboboxClicked(NSPopUpButton sender) {
         String bundle = sender.selectedItem().representedObject();
-        SchemeHandlerFactory.instance().setDefaultHandler(
+        SchemeHandlerFactory.get().setDefaultHandler(
                 Arrays.asList(Protocol.SFTP.getScheme()), new Application(bundle, null)
         );
     }

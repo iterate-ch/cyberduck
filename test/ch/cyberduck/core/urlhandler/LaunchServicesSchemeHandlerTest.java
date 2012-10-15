@@ -13,7 +13,7 @@ import java.util.Arrays;
 import static org.junit.Assert.*;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class LaunchServicesSchemeHandlerTest extends AbstractTestCase {
 
@@ -25,7 +25,7 @@ public class LaunchServicesSchemeHandlerTest extends AbstractTestCase {
 
     @Test
     public void testSetDefaultHandlerForURLScheme() throws Exception {
-        final SchemeHandler l = SchemeHandlerFactory.instance();
+        final SchemeHandler l = SchemeHandlerFactory.get();
         l.setDefaultHandler(
                 Arrays.asList(Scheme.ftp), new Application("none.app", null)
         );

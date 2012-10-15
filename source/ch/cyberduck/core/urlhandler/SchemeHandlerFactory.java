@@ -13,7 +13,7 @@ import java.util.Map;
 
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public abstract class SchemeHandlerFactory extends Factory<SchemeHandler> {
     private static final Logger log = Logger.getLogger(SchemeHandlerFactory.class);
@@ -28,17 +28,12 @@ public abstract class SchemeHandlerFactory extends Factory<SchemeHandler> {
         factories.put(platform, f);
     }
 
-    private static SchemeHandler service;
-
-    public static SchemeHandler instance() {
-        if(null == service) {
-            if(!factories.containsKey(NATIVE_PLATFORM)) {
-                log.warn(String.format("No implementation for %s", NATIVE_PLATFORM));
-                return new DisabledSchemeHandler();
-            }
-            service = factories.get(NATIVE_PLATFORM).create();
+    public static SchemeHandler get() {
+        if(!factories.containsKey(NATIVE_PLATFORM)) {
+            log.warn(String.format("No implementation for %s", NATIVE_PLATFORM));
+            return new DisabledSchemeHandler();
         }
-        return service;
+        return factories.get(NATIVE_PLATFORM).create();
     }
 
     private static final class DisabledSchemeHandler implements SchemeHandler {
