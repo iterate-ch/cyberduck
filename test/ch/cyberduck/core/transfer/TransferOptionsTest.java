@@ -6,9 +6,10 @@ import ch.cyberduck.ui.cocoa.UserDefaultsPreferences;
 
 import org.junit.Assert;
 import org.junit.BeforeClass;
+import org.junit.Test;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class TransferOptionsTest extends AbstractTestCase {
 
@@ -17,6 +18,7 @@ public class TransferOptionsTest extends AbstractTestCase {
         UserDefaultsPreferences.register();
     }
 
+    @Test
     public void testQuarantine() {
         Assert.assertEquals(Preferences.instance().getBoolean("queue.download.quarantine"), new TransferOptions().quarantine);
     }
