@@ -79,8 +79,8 @@ public class UploadTransfer extends Transfer {
     }
 
     @Override
-    protected void normalize() {
-        this.setRoots(new UploadRootPathsNormalizer().normalize(this.getRoots()));
+    public void setRoots(final List<Path> roots) {
+        super.setRoots(new UploadRootPathsNormalizer().normalize(roots));
     }
 
     /**

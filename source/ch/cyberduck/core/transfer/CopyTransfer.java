@@ -98,8 +98,7 @@ public class CopyTransfer extends Transfer {
      * are removed from the returned map.
      */
     @Override
-    protected void normalize() {
-        log.debug("normalize");
+    public void setRoots(List<Path> roots) {
         final Map<Path, Path> normalized = new HashMap<Path, Path>();
         Iterator<Path> sourcesIter = files.keySet().iterator();
         Iterator<Path> destinationsIter = files.values().iterator();
@@ -126,7 +125,7 @@ public class CopyTransfer extends Transfer {
             }
         }
         this.files = normalized;
-        this.setRoots(new ArrayList<Path>(files.keySet()));
+        super.setRoots(new ArrayList<Path>(files.keySet()));
     }
 
     @Override

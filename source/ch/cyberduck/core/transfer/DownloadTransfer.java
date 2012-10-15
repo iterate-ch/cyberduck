@@ -70,8 +70,8 @@ public class DownloadTransfer extends Transfer {
     }
 
     @Override
-    protected void normalize() {
-        this.setRoots(new DownloadRootPathsNormalizer().normalize(this.getRoots()));
+    public void setRoots(final List<Path> roots) {
+        super.setRoots(new DownloadRootPathsNormalizer().normalize(roots));
     }
 
     @Override

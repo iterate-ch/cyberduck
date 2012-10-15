@@ -155,7 +155,7 @@ public abstract class Transfer implements Serializable {
      * @param items List of files to add to transfer
      */
     public Transfer(final List<Path> items, final BandwidthThrottle bandwidth) {
-        this.roots = items;
+        this.setRoots(items);
         this.status = new HashMap<Path, TransferStatus>();
         for(Path root : roots) {
             this.status.put(root, new TransferStatus());
@@ -351,14 +351,9 @@ public abstract class Transfer implements Serializable {
         return this.roots;
     }
 
-    public void setRoots(List<Path> roots) {
+    protected void setRoots(final List<Path> roots) {
         this.roots = roots;
     }
-
-    /**
-     * Normalize path names and remove duplicates.
-     */
-    protected abstract void normalize();
 
     public List<Session> getSessions() {
         return Collections.singletonList(this.session);
@@ -464,14 +459,12 @@ public abstract class Transfer implements Serializable {
         if(filter.accept(p)) {
             // Notification
             this.fireWillTransferPath(p);
-            _current = p;
             // Transfer
             transfer(p, options, status);
             if(p.attributes().isFile()) {
                 // Post process of file
                 filter.complete(p, status);
             }
-            _current = null;
             // Notification
             this.fireDidTransferPath(p);
         }
@@ -493,6 +486,7 @@ public abstract class Transfer implements Serializable {
                 if(!this.status.get(child).isComplete()) {
                     failure = true;
                 }
+                this.status.remove(child);
             }
             // Post process of directory
             filter.complete(p, status);
@@ -542,8 +536,6 @@ public abstract class Transfer implements Serializable {
         }
 
         this.clear(options);
-
-        this.normalize();
 
         if(!this.check()) {
             return;
@@ -717,8 +709,8 @@ public abstract class Transfer implements Serializable {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Cancel transfer %s", this.getName()));
         }
-        if(_current != null) {
-            status.get(_current).setCanceled();
+        for(TransferStatus s : status.values()) {
+            s.setCanceled();
         }
         if(this.isCanceled()) {
             // Called prevously; now force

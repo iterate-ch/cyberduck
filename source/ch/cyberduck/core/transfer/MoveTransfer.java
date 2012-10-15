@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -79,7 +80,7 @@ public class MoveTransfer extends Transfer {
      * are removed from the returned map.
      */
     @Override
-    protected void normalize() {
+    protected void setRoots(List<Path> roots) {
         final Map<Path, Path> normalized = new HashMap<Path, Path>();
         Iterator<Path> sourcesIter = files.keySet().iterator();
         Iterator<Path> destinationsIter = files.values().iterator();
@@ -105,7 +106,7 @@ public class MoveTransfer extends Transfer {
             }
         }
         this.files = normalized;
-        this.setRoots(new ArrayList<Path>(files.keySet()));
+        super.setRoots(new ArrayList<Path>(files.keySet()));
     }
 
     @Override
