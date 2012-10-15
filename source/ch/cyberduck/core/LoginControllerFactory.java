@@ -36,7 +36,7 @@ public abstract class LoginControllerFactory extends Factory<LoginController> {
     /**
      * Registered factories
      */
-    protected static final Map<Platform, LoginControllerFactory> factories
+    private static final Map<Platform, LoginControllerFactory> factories
             = new HashMap<Platform, LoginControllerFactory>();
 
     /**
