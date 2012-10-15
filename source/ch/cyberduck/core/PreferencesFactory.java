@@ -29,7 +29,7 @@ public abstract class PreferencesFactory extends Factory<Preferences> {
     /**
      * Registered factories
      */
-    protected static final Map<Platform, PreferencesFactory> factories = new HashMap<Platform, PreferencesFactory>();
+    private static final Map<Platform, PreferencesFactory> factories = new HashMap<Platform, PreferencesFactory>();
 
     public static void addFactory(Platform platform, PreferencesFactory f) {
         factories.put(platform, f);
