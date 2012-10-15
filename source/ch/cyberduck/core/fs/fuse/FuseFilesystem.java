@@ -20,8 +20,6 @@ package ch.cyberduck.core.fs.fuse;
  */
 
 import ch.cyberduck.core.AbstractPath;
-import ch.cyberduck.core.local.Local;
-import ch.cyberduck.core.local.LocalFactory;
 import ch.cyberduck.core.NSObjectPathReference;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFactory;
@@ -31,9 +29,22 @@ import ch.cyberduck.core.fs.Filesystem;
 import ch.cyberduck.core.fs.FilesystemBackgroundAction;
 import ch.cyberduck.core.fs.FilesystemFactory;
 import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.core.local.Local;
+import ch.cyberduck.core.local.LocalFactory;
 import ch.cyberduck.core.threading.DefaultMainAction;
 import ch.cyberduck.ui.cocoa.ProxyController;
-import ch.cyberduck.ui.cocoa.foundation.*;
+import ch.cyberduck.ui.cocoa.foundation.NSArray;
+import ch.cyberduck.ui.cocoa.foundation.NSBundle;
+import ch.cyberduck.ui.cocoa.foundation.NSDate;
+import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
+import ch.cyberduck.ui.cocoa.foundation.NSFileManager;
+import ch.cyberduck.ui.cocoa.foundation.NSMutableArray;
+import ch.cyberduck.ui.cocoa.foundation.NSMutableDictionary;
+import ch.cyberduck.ui.cocoa.foundation.NSNotification;
+import ch.cyberduck.ui.cocoa.foundation.NSNotificationCenter;
+import ch.cyberduck.ui.cocoa.foundation.NSNumber;
+import ch.cyberduck.ui.cocoa.foundation.NSObject;
+import ch.cyberduck.ui.cocoa.foundation.NSString;
 
 import org.apache.log4j.Logger;
 import org.rococoa.Foundation;
@@ -86,9 +97,11 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
         return true;
     }
 
+    @Override
     public void mount(Session s) {
         if(!this.isAvailable()) {
             this.invoke(new DefaultMainAction() {
+                @Override
                 public void run() {
 
                 }
@@ -149,6 +162,7 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
 
     private CountDownLatch unmount;
 
+    @Override
     public void unmount() {
         log.debug("unmount");
         filesystem.unmount();
@@ -178,10 +192,12 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
      *
      */
     private class FSCallback extends ProxyController implements GMUserFileSystemLifecycle {
+        @Override
         public void willMount() {
             log.debug("willMount");
         }
 
+        @Override
         public void willUnmount() {
             log.debug("willUnmount");
         }
@@ -334,7 +350,7 @@ public final class FuseFilesystem extends ProxyController implements Filesystem 
                         if(null != posixNumber) {
                             String posixString = Integer.toOctalString(Rococoa.cast(posixNumber, NSNumber.class).intValue());
                             final Permission permission = new Permission(Integer.parseInt(posixString.substring(posixString.length() - 3)));
-                            file.writeUnixPermission(permission, false);
+                            file.writeUnixPermission(permission);
                         }
                     }
                     if(session.isWriteTimestampSupported()) {

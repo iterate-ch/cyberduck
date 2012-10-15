@@ -20,8 +20,6 @@ package ch.cyberduck.core.fs.kfs;
  */
 
 import ch.cyberduck.core.AbstractPath;
-import ch.cyberduck.core.local.Local;
-import ch.cyberduck.core.local.LocalFactory;
 import ch.cyberduck.core.NSObjectPathReference;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFactory;
@@ -30,6 +28,9 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.fs.Filesystem;
 import ch.cyberduck.core.fs.FilesystemBackgroundAction;
 import ch.cyberduck.core.fs.FilesystemFactory;
+import ch.cyberduck.core.local.Local;
+import ch.cyberduck.core.local.LocalFactory;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.ui.cocoa.ProxyController;
 import ch.cyberduck.ui.cocoa.foundation.NSString;
 
@@ -75,11 +76,13 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
 
     private KfsLibrary.kfsfilesystem delegate;
 
+    @Override
     public void mount(Session s) {
         session = s;
         filesystem = KfsLibrary.INSTANCE;
         delegate = new KfsLibrary.kfsfilesystem();
         delegate.statfs = new KfsLibrary.kfsstatfs_f() {
+            @Override
             public boolean apply(final String path, final KfsLibrary.kfsstatfs stat, Pointer context) {
                 final Future<Boolean> future = background(new FilesystemBackgroundAction<Boolean>(session) {
                     @Override
@@ -107,6 +110,7 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
             }
         };
         delegate.stat = new KfsLibrary.kfsstat_f() {
+            @Override
             public boolean apply(final String path, final KfsLibrary.kfsstat stat, Pointer context) {
                 final Future<Boolean> future = background(new FilesystemBackgroundAction<Boolean>(session) {
                     @Override
@@ -201,6 +205,7 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
             }
         };
         delegate.readdir = new KfsLibrary.kfsreaddir_f() {
+            @Override
             public boolean apply(final String path, final Pointer contents, Pointer context) {
                 final Future<Boolean> future = background(new FilesystemBackgroundAction<Boolean>(session) {
                     @Override
@@ -229,15 +234,16 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
             }
         };
         delegate.read = new KfsLibrary.kfsread_f() {
+            @Override
             public KfsLibrary.size_t apply(final String path, final Pointer buf, final KfsLibrary.size_t offset, final KfsLibrary.size_t length, Pointer context) {
                 final Future<KfsLibrary.size_t> future = background(new FilesystemBackgroundAction<KfsLibrary.size_t>(session) {
                     @Override
                     public KfsLibrary.size_t call() {
                         log.debug("kfsread_f:" + path);
                         final Path file = PathFactory.createPath(session, path, Path.FILE_TYPE);
-                        file.status().setResume(false);
+                        final TransferStatus status = new TransferStatus();
                         try {
-                            final InputStream in = file.read(true);
+                            final InputStream in = file.read(status);
                             try {
                                 long total = 0;
                                 byte[] chunk = new byte[length.intValue()];
@@ -274,6 +280,7 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
             }
         };
         delegate.write = new KfsLibrary.kfswrite_f() {
+            @Override
             public KfsLibrary.size_t apply(final String path, final Pointer buf, final KfsLibrary.size_t offset, final KfsLibrary.size_t length, Pointer context) {
                 final Future<KfsLibrary.size_t> future = background(new FilesystemBackgroundAction<KfsLibrary.size_t>(session) {
                     @Override
@@ -311,6 +318,7 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
             }
         };
         delegate.symlink = new KfsLibrary.kfssymlink_f() {
+            @Override
             public boolean apply(final String path, String value, Pointer context) {
                 log.debug("kfssymlink_f:" + path);
                 // Not supported
@@ -318,6 +326,7 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
             }
         };
         delegate.readlink = new KfsLibrary.kfsreadlink_f() {
+            @Override
             public boolean apply(final String path, PointerByReference value, Pointer context) {
                 log.debug("kfsreadlink_f:" + path);
                 // Not supported
@@ -325,6 +334,7 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
             }
         };
         delegate.create = new KfsLibrary.kfscreate_f() {
+            @Override
             public boolean apply(final String path, Pointer context) {
                 final Future<Boolean> future = background(new FilesystemBackgroundAction<Boolean>(session) {
                     @Override
@@ -351,6 +361,7 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
             }
         };
         delegate.remove = new KfsLibrary.kfsremove_f() {
+            @Override
             public boolean apply(final String path, Pointer context) {
                 final Future<Boolean> future = background(new FilesystemBackgroundAction<Boolean>(session) {
                     @Override
@@ -377,6 +388,7 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
             }
         };
         delegate.rename = new KfsLibrary.kfsrename_f() {
+            @Override
             public boolean apply(final String path, final String destination, Pointer context) {
                 final Future<Boolean> future = background(new FilesystemBackgroundAction<Boolean>(session) {
                     @Override
@@ -406,6 +418,7 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
             }
         };
         delegate.remove = new KfsLibrary.kfsremove_f() {
+            @Override
             public boolean apply(final String path, Pointer context) {
                 final Future<Boolean> future = background(new FilesystemBackgroundAction<Boolean>(session) {
                     @Override
@@ -432,6 +445,7 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
             }
         };
         delegate.truncate = new KfsLibrary.kfstruncate_f() {
+            @Override
             public boolean apply(final String path, long size, Pointer context) {
                 log.debug("kfstruncate_f:" + path);
                 // Not supported
@@ -439,6 +453,7 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
             }
         };
         delegate.chmod = new KfsLibrary.kfschmod_f() {
+            @Override
             public boolean apply(final String path, int mode, Pointer context) {
                 log.debug("kfschmod_f:" + path);
                 // Not supported
@@ -446,6 +461,7 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
             }
         };
         delegate.utimes = new KfsLibrary.kfsutimes_f() {
+            @Override
             public boolean apply(final String path, KfsLibrary.kfstime atime, KfsLibrary.kfstime mtime, Pointer context) {
                 log.debug("kfsutimes_f:" + path);
                 // Not supported
@@ -453,6 +469,7 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
             }
         };
         delegate.mkdir = new KfsLibrary.kfsmkdir_f() {
+            @Override
             public boolean apply(final String path, Pointer context) {
                 final Future<Boolean> future = background(new FilesystemBackgroundAction<Boolean>(session) {
                     @Override
@@ -476,6 +493,7 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
             }
         };
         delegate.rmdir = new KfsLibrary.kfsrmdir_f() {
+            @Override
             public boolean apply(final String path, Pointer context) {
                 final Future<Boolean> future = background(new FilesystemBackgroundAction<Boolean>(session) {
                     @Override
@@ -538,6 +556,7 @@ public final class KfsFilesystem extends ProxyController implements Filesystem {
         });
     }
 
+    @Override
     public void unmount() {
         log.debug("unmount");
         filesystem.kfs_unmount(identifier);
