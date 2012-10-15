@@ -7,9 +7,9 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
-public class RemainingPeriodFormatterTest extends AbstractTestCase {
+public class RemainingPeriodFormatterTest {
 
     @Test
     public void testFormat() throws Exception {
