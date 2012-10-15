@@ -1,4 +1,4 @@
-package ch.cyberduck.core;
+package ch.cyberduck.core.transfer;
 
 /*
  * Copyright (c) 2002-2010 David Kocher. All rights reserved.
@@ -19,10 +19,20 @@ package ch.cyberduck.core;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.AbstractPath;
+import ch.cyberduck.core.AbstractStreamListener;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathFactory;
+import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.filter.UploadRegexFilter;
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.local.Local;
+import ch.cyberduck.core.local.LocalFactory;
 import ch.cyberduck.core.serializer.Serializer;
-import ch.cyberduck.core.transfer.TransferPathFilter;
 import ch.cyberduck.core.transfer.upload.CompareFilter;
 import ch.cyberduck.core.transfer.upload.OverwriteFilter;
 import ch.cyberduck.core.transfer.upload.RenameExistingFilter;
@@ -35,6 +45,7 @@ import ch.cyberduck.core.transfer.upload.UploadSymlinkResolver;
 import org.apache.log4j.Logger;
 
 import java.text.MessageFormat;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -47,15 +58,17 @@ public class UploadTransfer extends Transfer {
     private UploadRegexFilter filter = new UploadRegexFilter();
 
     public UploadTransfer(Path root) {
-        super(root);
+        this(Collections.singletonList(root));
     }
 
     public UploadTransfer(List<Path> roots) {
-        super(roots);
+        super(roots, new BandwidthThrottle(
+                Preferences.instance().getFloat("queue.upload.bandwidth.bytes")));
     }
 
     public <T> UploadTransfer(T dict, Session s) {
-        super(dict, s);
+        super(dict, s, new BandwidthThrottle(
+                Preferences.instance().getFloat("queue.upload.bandwidth.bytes")));
     }
 
     @Override
@@ -63,13 +76,6 @@ public class UploadTransfer extends Transfer {
         final Serializer dict = super.getSerializer();
         dict.setStringForKey(String.valueOf(KIND_UPLOAD), "Kind");
         return dict.<T>getSerialized();
-    }
-
-    @Override
-    protected void init() {
-        log.debug("init");
-        this.bandwidth = new BandwidthThrottle(
-                Preferences.instance().getFloat("queue.upload.bandwidth.bytes"));
     }
 
     @Override
@@ -99,7 +105,8 @@ public class UploadTransfer extends Transfer {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Children for %s", parent));
         }
-        if(parent.getLocal().attributes().isSymbolicLink() && new UploadSymlinkResolver(roots).resolve(parent)) {
+        if(parent.getLocal().attributes().isSymbolicLink()
+                && new UploadSymlinkResolver(this.getRoots()).resolve(parent)) {
             if(log.isDebugEnabled()) {
                 log.debug("Do not list children for symbolic link:" + parent);
             }
@@ -142,7 +149,7 @@ public class UploadTransfer extends Transfer {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Filter transfer with action %s", action.toString()));
         }
-        final UploadSymlinkResolver resolver = new UploadSymlinkResolver(roots);
+        final UploadSymlinkResolver resolver = new UploadSymlinkResolver(this.getRoots());
         if(action.equals(TransferAction.ACTION_OVERWRITE)) {
             return new OverwriteFilter(resolver);
         }
@@ -206,7 +213,7 @@ public class UploadTransfer extends Transfer {
 
 
     @Override
-    protected void transfer(final Path file, final TransferOptions options) {
+    protected void transfer(final Path file, final TransferOptions options, final TransferStatus status) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Transfer file %s with options %s", file, options));
         }
@@ -238,7 +245,7 @@ public class UploadTransfer extends Transfer {
                 }
             }
         }
-        final UploadSymlinkResolver symlinkResolver = new UploadSymlinkResolver(roots);
+        final UploadSymlinkResolver symlinkResolver = new UploadSymlinkResolver(this.getRoots());
         if(file.getLocal().attributes().isSymbolicLink() && symlinkResolver.resolve(file)) {
             // Make relative symbolic link
             final String target = symlinkResolver.relativize(file.getLocal().getAbsolute(),
@@ -247,7 +254,7 @@ public class UploadTransfer extends Transfer {
                 log.debug(String.format("Create symbolic link from %s to %s", file, target));
             }
             file.symlink(target);
-            file.status().setComplete(true);
+            status.setComplete();
         }
         else if(file.attributes().isFile()) {
             String original = file.getName();
@@ -258,13 +265,13 @@ public class UploadTransfer extends Transfer {
                         file.getName(), UUID.randomUUID().toString()));
             }
             // Transfer
-            file.upload(bandwidth, new AbstractStreamListener() {
+            file.upload(this.getBandwidth(), new AbstractStreamListener() {
                 @Override
                 public void bytesSent(long bytes) {
                     transferred += bytes;
                 }
-            });
-            if(file.status().isComplete()) {
+            }, status);
+            if(status.isComplete()) {
                 if(temporary) {
                     file.rename(PathFactory.createPath(file.getSession(), file.getParent().getAbsolute(),
                             original, file.attributes().getType()));

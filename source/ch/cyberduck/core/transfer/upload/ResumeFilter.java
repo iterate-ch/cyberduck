@@ -2,6 +2,7 @@ package ch.cyberduck.core.transfer.upload;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.transfer.SymlinkResolver;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.log4j.Logger;
 
@@ -19,7 +20,8 @@ public class ResumeFilter extends AbstractUploadFilter {
      * Append to existing file.
      */
     @Override
-    public void prepare(final Path file) {
+    public TransferStatus prepare(final Path file) {
+        final TransferStatus status = super.prepare(file);
         if(file.attributes().isFile()) {
             if(file.exists()) {
                 // Do not trust cached value which is from last directory listing
@@ -27,16 +29,16 @@ public class ResumeFilter extends AbstractUploadFilter {
                 file.readSize();
                 if(file.getLocal().attributes().getSize() == file.attributes().getSize()) {
                     // No need to resume completed transfers
-                    file.status().setComplete(true);
+                    status.setComplete();
                 }
                 else {
                     if(file.attributes().getSize() > 0) {
-                        file.status().setResume(true);
-                        file.status().setCurrent(file.attributes().getSize());
+                        status.setResume(true);
+                        status.setCurrent(file.attributes().getSize());
                     }
                 }
             }
         }
-        super.prepare(file);
+        return status;
     }
 }

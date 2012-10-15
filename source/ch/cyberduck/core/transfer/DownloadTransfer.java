@@ -1,4 +1,4 @@
-package ch.cyberduck.core;
+package ch.cyberduck.core.transfer;
 
 /*
  *  Copyright (c) 2005 David Kocher. All rights reserved.
@@ -18,10 +18,18 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.AbstractStreamListener;
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.filter.DownloadRegexFilter;
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.local.Local;
+import ch.cyberduck.core.local.LocalFactory;
+import ch.cyberduck.core.local.QuarantineService;
+import ch.cyberduck.core.local.QuarantineServiceFactory;
 import ch.cyberduck.core.serializer.Serializer;
-import ch.cyberduck.core.transfer.TransferPathFilter;
 import ch.cyberduck.core.transfer.download.CompareFilter;
 import ch.cyberduck.core.transfer.download.DownloadRootPathsNormalizer;
 import ch.cyberduck.core.transfer.download.DownloadSymlinkResolver;
@@ -33,6 +41,7 @@ import ch.cyberduck.core.transfer.download.SkipFilter;
 
 import org.apache.log4j.Logger;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -45,15 +54,17 @@ public class DownloadTransfer extends Transfer {
             = new DownloadRegexFilter();
 
     public DownloadTransfer(Path root) {
-        super(root);
+        this(Collections.singletonList(root));
     }
 
     public DownloadTransfer(List<Path> roots) {
-        super(roots);
+        super(roots, new BandwidthThrottle(
+                Preferences.instance().getFloat("queue.download.bandwidth.bytes")));
     }
 
     public <T> DownloadTransfer(T dict, Session s) {
-        super(dict, s);
+        super(dict, s, new BandwidthThrottle(
+                Preferences.instance().getFloat("queue.download.bandwidth.bytes")));
     }
 
     @Override
@@ -65,17 +76,7 @@ public class DownloadTransfer extends Transfer {
     public <T> T getAsDictionary() {
         final Serializer dict = super.getSerializer();
         dict.setStringForKey(String.valueOf(KIND_DOWNLOAD), "Kind");
-        return dict.getSerialized();
-    }
-
-    /**
-     * Set download bandwidth
-     */
-    @Override
-    protected void init() {
-        log.debug("init");
-        this.bandwidth = new BandwidthThrottle(
-                Preferences.instance().getFloat("queue.download.bandwidth.bytes"));
+        return dict.<T>getSerialized();
     }
 
     @Override
@@ -83,7 +84,7 @@ public class DownloadTransfer extends Transfer {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Children for %s", parent));
         }
-        if(parent.attributes().isSymbolicLink() && new DownloadSymlinkResolver(roots).resolve(parent)) {
+        if(parent.attributes().isSymbolicLink() && new DownloadSymlinkResolver(this.getRoots()).resolve(parent)) {
             if(log.isDebugEnabled()) {
                 log.debug("Do not list children for symbolic link:" + parent);
             }
@@ -102,7 +103,7 @@ public class DownloadTransfer extends Transfer {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Filter transfer with action %s", action.toString()));
         }
-        final DownloadSymlinkResolver resolver = new DownloadSymlinkResolver(roots);
+        final DownloadSymlinkResolver resolver = new DownloadSymlinkResolver(this.getRoots());
         if(action.equals(TransferAction.ACTION_OVERWRITE)) {
             return new OverwriteFilter(resolver);
         }
@@ -140,7 +141,7 @@ public class DownloadTransfer extends Transfer {
                         }
                     }
                     // Prompt user to choose a filter
-                    TransferAction result = prompt.prompt();
+                    final TransferAction result = prompt.prompt();
                     return this.filter(result); //break out of loop
                 }
             }
@@ -171,12 +172,12 @@ public class DownloadTransfer extends Transfer {
     }
 
     @Override
-    protected void transfer(final Path file, final TransferOptions options) {
+    protected void transfer(final Path file, final TransferOptions options, final TransferStatus status) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Transfer file %s with options %s", file, options));
         }
         final Local local = file.getLocal();
-        final DownloadSymlinkResolver symlinkResolver = new DownloadSymlinkResolver(roots);
+        final DownloadSymlinkResolver symlinkResolver = new DownloadSymlinkResolver(this.getRoots());
         if(file.attributes().isSymbolicLink() && symlinkResolver.resolve(file)) {
             // Make relative symbolic link
             final String target = symlinkResolver.relativize(file.getAbsolute(),
@@ -185,15 +186,25 @@ public class DownloadTransfer extends Transfer {
                 log.debug(String.format("Create symbolic link from %s to %s", file.getLocal(), target));
             }
             file.getLocal().symlink(target);
-            file.status().setComplete(true);
+            status.setComplete();
         }
         else if(file.attributes().isFile()) {
-            file.download(bandwidth, new AbstractStreamListener() {
+            final QuarantineService quarantine = QuarantineServiceFactory.instance();
+            if(options.quarantine) {
+                // Set quarantine attributes
+                quarantine.setQuarantine(local,
+                        file.getHost().toURL(), file.toURL());
+            }
+            if(Preferences.instance().getBoolean("queue.download.wherefrom")) {
+                // Set quarantine attributes
+                quarantine.setWhereFrom(local, file.toURL());
+            }
+            file.download(this.getBandwidth(), new AbstractStreamListener() {
                 @Override
                 public void bytesReceived(long bytes) {
                     transferred += bytes;
                 }
-            }, false, options.quarantine);
+            }, status);
         }
         else if(file.attributes().isDirectory()) {
             local.mkdir(true);

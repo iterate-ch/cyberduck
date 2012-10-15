@@ -4,6 +4,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.transfer.SymlinkResolver;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.ui.DateFormatterFactory;
 
 import org.apache.commons.io.FilenameUtils;
@@ -32,7 +33,7 @@ public class RenameExistingFilter extends AbstractUploadFilter {
      * Rename existing file on server if there is a conflict.
      */
     @Override
-    public void prepare(final Path file) {
+    public TransferStatus prepare(final Path file) {
         Path renamed = file;
         while(renamed.exists()) {
             String proposal = MessageFormat.format(Preferences.instance().getProperty("queue.upload.file.rename.format"),
@@ -45,6 +46,6 @@ public class RenameExistingFilter extends AbstractUploadFilter {
         if(!renamed.equals(file)) {
             file.rename(renamed);
         }
-        super.prepare(file);
+        return super.prepare(file);
     }
 }

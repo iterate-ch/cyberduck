@@ -3,6 +3,7 @@ package ch.cyberduck.core.transfer.move;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.transfer.TransferPathFilter;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.util.Map;
 
@@ -30,9 +31,10 @@ public class MoveTransferFilter extends TransferPathFilter {
     }
 
     @Override
-    public void prepare(final Path source) {
+    public TransferStatus prepare(final Path source) {
+        final TransferStatus status = new TransferStatus();
         if(source.attributes().isFile()) {
-            source.status().setLength(source.attributes().getSize());
+            status.setLength(source.attributes().getSize());
         }
         else if(source.attributes().isDirectory()) {
             final Path destination = files.get(source);
@@ -40,10 +42,11 @@ public class MoveTransferFilter extends TransferPathFilter {
                 destination.getSession().cache().put(destination.getReference(), AttributedList.<Path>emptyList());
             }
         }
+        return status;
     }
 
     @Override
-    public void complete(Path p) {
+    public void complete(Path p, final TransferStatus status) {
         //
     }
 }

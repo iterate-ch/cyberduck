@@ -1,4 +1,4 @@
-package ch.cyberduck.core;
+package ch.cyberduck.core.transfer;
 
 /*
  *  Copyright (c) 2005 David Kocher. All rights reserved.
@@ -18,12 +18,18 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.AttributedList;
+import ch.cyberduck.core.Cache;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathReference;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.ftp.FTPPath;
 import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.serializer.Serializer;
 import ch.cyberduck.core.synchronization.CombinedComparisionService;
 import ch.cyberduck.core.synchronization.Comparison;
-import ch.cyberduck.core.transfer.TransferPathFilter;
 
 import org.apache.commons.collections.map.AbstractLinkedMap;
 import org.apache.commons.collections.map.LRUMap;
@@ -41,11 +47,20 @@ public class SyncTransfer extends Transfer {
     private static Logger log = Logger.getLogger(SyncTransfer.class);
 
     public SyncTransfer(Path root) {
-        super(root);
+        super(root, new BandwidthThrottle(
+                Preferences.instance().getFloat("queue.upload.bandwidth.bytes")));
+        this.init();
     }
 
     public <T> SyncTransfer(T dict, Session s) {
-        super(dict, s);
+        super(dict, s, new BandwidthThrottle(
+                Preferences.instance().getFloat("queue.upload.bandwidth.bytes")));
+        this.init();
+    }
+
+    private void init() {
+        _delegateUpload = new UploadTransfer(this.getRoots());
+        _delegateDownload = new DownloadTransfer(this.getRoots());
     }
 
     @Override
@@ -66,15 +81,7 @@ public class SyncTransfer extends Transfer {
     private Transfer _delegateDownload;
 
     @Override
-    protected void init() {
-        log.debug("init");
-        _delegateUpload = new UploadTransfer(this.getRoots());
-        _delegateDownload = new DownloadTransfer(this.getRoots());
-    }
-
-    @Override
     protected void normalize() {
-        log.debug("normalize");
         _delegateUpload.normalize();
         _delegateDownload.normalize();
     }
@@ -126,7 +133,7 @@ public class SyncTransfer extends Transfer {
         this.action = action;
     }
 
-    public TransferAction getAction() {
+    public TransferAction getTransferAction() {
         return this.action;
     }
 
@@ -175,14 +182,15 @@ public class SyncTransfer extends Transfer {
                 = _delegateUpload.filter(TransferAction.ACTION_OVERWRITE);
 
         @Override
-        public void prepare(Path p) {
+        public TransferStatus prepare(Path p) {
             final Comparison compare = SyncTransfer.this.compare(p);
             if(compare.equals(Comparison.REMOTE_NEWER)) {
-                _delegateFilterDownload.prepare(p);
+                return _delegateFilterDownload.prepare(p);
             }
-            else if(compare.equals(Comparison.LOCAL_NEWER)) {
-                _delegateFilterUpload.prepare(p);
+            if(compare.equals(Comparison.LOCAL_NEWER)) {
+                return _delegateFilterUpload.prepare(p);
             }
+            return new TransferStatus();
         }
 
         @Override
@@ -200,13 +208,13 @@ public class SyncTransfer extends Transfer {
         }
 
         @Override
-        public void complete(Path p) {
+        public void complete(Path p, final TransferStatus status) {
             final Comparison compare = SyncTransfer.this.compare(p);
             if(compare.equals(Comparison.REMOTE_NEWER)) {
-                _delegateFilterDownload.complete(p);
+                _delegateFilterDownload.complete(p, status);
             }
             else if(compare.equals(Comparison.LOCAL_NEWER)) {
-                _delegateFilterUpload.complete(p);
+                _delegateFilterUpload.complete(p, status);
             }
             comparisons.remove(p.getReference());
             cache.remove(p.getReference());
@@ -269,10 +277,10 @@ public class SyncTransfer extends Transfer {
         else {
             if(path.attributes().isFile()) {
                 if(comparison.equals(Comparison.REMOTE_NEWER)) {
-                    skipped = this.getAction().equals(ACTION_UPLOAD);
+                    skipped = this.getTransferAction().equals(ACTION_UPLOAD);
                 }
                 else if(comparison.equals(Comparison.LOCAL_NEWER)) {
-                    skipped = this.getAction().equals(ACTION_DOWNLOAD);
+                    skipped = this.getTransferAction().equals(ACTION_DOWNLOAD);
                 }
             }
         }
@@ -344,16 +352,16 @@ public class SyncTransfer extends Transfer {
     }
 
     @Override
-    protected void transfer(final Path file, TransferOptions options) {
+    protected void transfer(final Path file, TransferOptions options, final TransferStatus status) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Transfer file %s with options %s", file, options));
         }
         final Comparison compare = this.compare(file);
         if(compare.equals(Comparison.REMOTE_NEWER)) {
-            _delegateDownload.transfer(file, options);
+            _delegateDownload.transfer(file, options, status);
         }
         else if(compare.equals(Comparison.LOCAL_NEWER)) {
-            _delegateUpload.transfer(file, options);
+            _delegateUpload.transfer(file, options, status);
         }
     }
 

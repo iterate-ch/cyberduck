@@ -1,9 +1,9 @@
 package ch.cyberduck.core.transfer.upload;
 
 import ch.cyberduck.core.AbstractPath;
-import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.transfer.AbstractSymlinkResolver;
 
 import java.util.List;

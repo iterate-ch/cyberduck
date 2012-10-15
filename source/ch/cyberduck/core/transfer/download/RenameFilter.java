@@ -1,8 +1,9 @@
 package ch.cyberduck.core.transfer.download;
 
-import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.local.LocalFactory;
 import ch.cyberduck.core.transfer.SymlinkResolver;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
@@ -19,7 +20,7 @@ public class RenameFilter extends AbstractDownloadFilter {
     }
 
     @Override
-    public void prepare(final Path file) {
+    public TransferStatus prepare(final Path file) {
         if(file.getLocal().exists()) {
             final String parent = file.getLocal().getParent().getAbsolute();
             final String filename = file.getName();
@@ -36,6 +37,6 @@ public class RenameFilter extends AbstractDownloadFilter {
                 log.info(String.format("Changed local name from %s to %s", filename, file.getLocal().getName()));
             }
         }
-        super.prepare(file);
+        return super.prepare(file);
     }
 }

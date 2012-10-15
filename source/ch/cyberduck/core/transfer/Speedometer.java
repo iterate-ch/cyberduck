@@ -1,4 +1,4 @@
-package ch.cyberduck.core;
+package ch.cyberduck.core.transfer;
 
 /*
  *  Copyright (c) 2007 David Kocher. All rights reserved.
@@ -20,8 +20,8 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.date.PeriodFormatter;
 import ch.cyberduck.core.date.RemainingPeriodFormatter;
-import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
+import ch.cyberduck.core.i18n.Locale;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;

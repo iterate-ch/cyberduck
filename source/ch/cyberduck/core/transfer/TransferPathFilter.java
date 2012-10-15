@@ -14,14 +14,16 @@ public abstract class TransferPathFilter implements PathFilter<Path> {
      * Must only be called if #accept for the file returns true
      *
      * @param p File
+     * @return Transfer status
      * @see PathFilter#accept(ch.cyberduck.core.AbstractPath)
      */
-    public abstract void prepare(Path p);
+    public abstract TransferStatus prepare(Path p);
 
     /**
      * Post processing of completed transfer.
      *
-     * @param p File
+     * @param p      File
+     * @param status Transfer status
      */
-    public abstract void complete(Path p);
+    public abstract void complete(Path p, TransferStatus status);
 }

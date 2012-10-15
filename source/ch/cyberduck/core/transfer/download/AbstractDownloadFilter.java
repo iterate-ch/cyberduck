@@ -1,11 +1,12 @@
 package ch.cyberduck.core.transfer.download;
 
-import ch.cyberduck.core.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.transfer.SymlinkResolver;
 import ch.cyberduck.core.transfer.TransferPathFilter;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.log4j.Logger;
 
@@ -42,7 +43,8 @@ public abstract class AbstractDownloadFilter extends TransferPathFilter {
     }
 
     @Override
-    public void prepare(final Path file) {
+    public TransferStatus prepare(final Path file) {
+        final TransferStatus status = new TransferStatus();
         if(file.attributes().getSize() == -1) {
             file.readSize();
         }
@@ -71,26 +73,27 @@ public abstract class AbstractDownloadFilter extends TransferPathFilter {
                     if(target.attributes().getSize() == -1) {
                         target.readSize();
                     }
-                    file.status().setLength(target.attributes().getSize());
+                    status.setLength(target.attributes().getSize());
                 }
             }
             else {
                 // Read file size
-                file.status().setLength(file.attributes().getSize());
+                status.setLength(file.attributes().getSize());
             }
         }
         if(!file.getLocal().getParent().exists()) {
             // Create download folder if missing
             file.getLocal().getParent().mkdir(true);
         }
+        return status;
     }
 
     /**
      * Update timestamp and permission
      */
     @Override
-    public void complete(final Path file) {
-        if(!file.status().isCanceled()) {
+    public void complete(final Path file, final TransferStatus status) {
+        if(!status.isCanceled()) {
             if(Preferences.instance().getBoolean("queue.download.changePermissions")) {
                 Permission permission = Permission.EMPTY;
                 if(Preferences.instance().getBoolean("queue.download.permissions.useDefault")) {
@@ -121,7 +124,7 @@ public abstract class AbstractDownloadFilter extends TransferPathFilter {
                     if(log.isInfoEnabled()) {
                         log.info(String.format("Updating permissions of %s to %s", file.getLocal(), permission));
                     }
-                    file.getLocal().writeUnixPermission(permission, false);
+                    file.getLocal().writeUnixPermission(permission);
                 }
             }
             if(Preferences.instance().getBoolean("queue.download.preserveDate")) {

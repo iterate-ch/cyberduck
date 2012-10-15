@@ -7,6 +7,7 @@ import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.transfer.SymlinkResolver;
 import ch.cyberduck.core.transfer.TransferPathFilter;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.log4j.Logger;
 
@@ -45,7 +46,8 @@ public abstract class AbstractUploadFilter extends TransferPathFilter {
     }
 
     @Override
-    public void prepare(final Path file) {
+    public TransferStatus prepare(final Path file) {
+        final TransferStatus status = new TransferStatus();
         if(file.attributes().isFile()) {
             if(file.getLocal().attributes().isSymbolicLink()) {
                 if(symlinkResolver.resolve(file)) {
@@ -54,12 +56,12 @@ public abstract class AbstractUploadFilter extends TransferPathFilter {
                 else {
                     // Will resolve the symbolic link when the file is requested.
                     final AbstractPath target = file.getLocal().getSymlinkTarget();
-                    file.status().setLength(target.attributes().getSize());
+                    status.setLength(target.attributes().getSize());
                 }
             }
             else {
                 // Read file size from filesystem
-                file.status().setLength(file.getLocal().attributes().getSize());
+                status.setLength(file.getLocal().attributes().getSize());
             }
         }
         if(file.attributes().isDirectory()) {
@@ -67,11 +69,12 @@ public abstract class AbstractUploadFilter extends TransferPathFilter {
                 file.getSession().cache().put(file.getReference(), AttributedList.<Path>emptyList());
             }
         }
+        return status;
     }
 
     @Override
-    public void complete(final Path file) {
-        if(!file.status().isCanceled()) {
+    public void complete(final Path file, final TransferStatus status) {
+        if(!status.isCanceled()) {
             if(file.getSession().isAclSupported()) {
                 // Currently handled in S3 only.
             }
@@ -79,7 +82,7 @@ public abstract class AbstractUploadFilter extends TransferPathFilter {
                 if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
                     Permission permission = file.attributes().getPermission();
                     if(!Permission.EMPTY.equals(permission)) {
-                        file.writeUnixPermission(permission, false);
+                        file.writeUnixPermission(permission);
                     }
                 }
             }

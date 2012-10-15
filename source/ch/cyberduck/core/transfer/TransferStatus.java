@@ -1,4 +1,4 @@
-package ch.cyberduck.core;
+package ch.cyberduck.core.transfer;
 
 /*
  *  Copyright (c) 2005 David Kocher. All rights reserved.
@@ -27,8 +27,8 @@ import org.apache.log4j.Logger;
  *
  * @version $Id$
  */
-public class Status {
-    private static final Logger log = Logger.getLogger(Status.class);
+public class TransferStatus {
+    private static final Logger log = Logger.getLogger(TransferStatus.class);
 
     public static final long KILO = 1024; //2^10
     public static final long MEGA = 1048576; // 2^20
@@ -59,11 +59,11 @@ public class Status {
      */
     private boolean complete = false;
 
-    public void setComplete(boolean complete) {
+    public void setComplete() {
         if(log.isInfoEnabled()) {
             log.info(String.format("Status set to complete (%s) with %d bytes", complete, this.getCurrent()));
         }
-        this.complete = complete;
+        this.complete = true;
     }
 
     public boolean isComplete() {
@@ -154,15 +154,5 @@ public class Status {
 
     public boolean isResume() {
         return resume;
-    }
-
-    /**
-     * Reset completion status.
-     */
-    public void reset() {
-        complete = false;
-        canceled = false;
-        resume = false;
-        current = 0L;
     }
 }
