@@ -18,9 +18,9 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.LocalFactory;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.PreferencesFactory;
+import ch.cyberduck.core.local.LocalFactory;
 import ch.cyberduck.ui.cocoa.foundation.FoundationKitFunctions;
 import ch.cyberduck.ui.cocoa.foundation.FoundationKitFunctionsLibrary;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
