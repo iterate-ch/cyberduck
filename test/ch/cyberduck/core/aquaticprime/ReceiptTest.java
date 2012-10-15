@@ -1,7 +1,7 @@
 package ch.cyberduck.core.aquaticprime;
 
 import ch.cyberduck.core.AbstractTestCase;
-import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.local.LocalFactory;
 
 import org.junit.Test;
 
@@ -9,7 +9,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class ReceiptTest extends AbstractTestCase {
 
