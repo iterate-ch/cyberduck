@@ -33,7 +33,7 @@ public abstract class FilesystemFactory extends Factory<Filesystem> {
     /**
      * Registered factories
      */
-    protected static final Map<Factory.Platform, FilesystemFactory> factories
+    private static final Map<Factory.Platform, FilesystemFactory> factories
             = new HashMap<Factory.Platform, FilesystemFactory>();
 
     public static void addFactory(Factory.Platform platform, FilesystemFactory f) {
