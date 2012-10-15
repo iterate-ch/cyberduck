@@ -26,7 +26,7 @@ public class WorkspaceIconServiceTest extends AbstractTestCase {
 
     @Test
     public void testSetProgress() throws Exception {
-        final WorkspaceIconService s = (WorkspaceIconService) IconServiceFactory.instance();
+        final WorkspaceIconService s = (WorkspaceIconService) IconServiceFactory.get();
         final Callable<Local> c = new Callable<Local>() {
             @Override
             public Local call() throws Exception {

@@ -21,7 +21,7 @@ public class LaunchServicesQuarantineServiceTest extends AbstractTestCase {
 
     @Test
     public void testSetQuarantine() throws Exception {
-        final QuarantineService q = QuarantineServiceFactory.instance();
+        final QuarantineService q = QuarantineServiceFactory.get();
         Callable<Local> c = new Callable<Local>() {
             @Override
             public Local call() throws Exception {
@@ -38,7 +38,7 @@ public class LaunchServicesQuarantineServiceTest extends AbstractTestCase {
 
     @Test
     public void testSetWhereFrom() throws Exception {
-        final QuarantineService q = QuarantineServiceFactory.instance();
+        final QuarantineService q = QuarantineServiceFactory.get();
         Callable<Local> c = new Callable<Local>() {
             @Override
             public Local call() throws Exception {
