@@ -22,7 +22,9 @@ package ch.cyberduck.core.threading;
 import ch.cyberduck.core.Collection;
 import ch.cyberduck.core.ConnectionCanceledException;
 import ch.cyberduck.core.ErrorListener;
+import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.ReachabilityFactory;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.i18n.Locale;
@@ -199,7 +201,8 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
 
     protected void diagnose() {
         List<BackgroundException> exceptions = this.getExceptions();
-        exceptions.get(exceptions.size() - 1).getHost().diagnose();
+        final Host host = exceptions.get(exceptions.size() - 1).getHost();
+        ReachabilityFactory.get().diagnose(host);
     }
 
     /**

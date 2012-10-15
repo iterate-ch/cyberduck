@@ -176,7 +176,7 @@ public class BookmarkController extends WindowController {
 
     @Action
     public void launchNetworkAssistant(final NSButton sender) {
-        host.diagnose();
+        ReachabilityFactory.get().diagnose(host);
     }
 
     @Outlet

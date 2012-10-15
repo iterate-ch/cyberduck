@@ -343,7 +343,7 @@ public class ConnectionController extends SheetController {
 
     @Action
     public void launchNetworkAssistant(final NSButton sender) {
-        Host.parse(urlLabel.stringValue()).diagnose();
+        ReachabilityFactory.get().diagnose(Host.parse(urlLabel.stringValue()));
     }
 
     @Outlet

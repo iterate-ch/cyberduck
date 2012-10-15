@@ -884,8 +884,4 @@ public class Host implements Serializable {
     public int hashCode() {
         return this.getUuid().hashCode();
     }
-
-    public void diagnose() {
-        ReachabilityFactory.get().diagnose(this);
-    }
 }
