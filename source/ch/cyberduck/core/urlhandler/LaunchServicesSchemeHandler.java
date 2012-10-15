@@ -45,10 +45,6 @@ public final class LaunchServicesSchemeHandler extends AbstractSchemeHandler {
     }
 
     private LaunchServicesSchemeHandler() {
-        //
-    }
-
-    static {
         Native.load("LaunchServicesSchemeHandler");
     }
 
@@ -74,7 +70,7 @@ public final class LaunchServicesSchemeHandler extends AbstractSchemeHandler {
      */
     @Override
     public Application getDefaultHandler(final Scheme scheme) {
-        return ApplicationFinderFactory.instance().find(this.getDefaultHandler(scheme.name()));
+        return ApplicationFinderFactory.get().find(this.getDefaultHandler(scheme.name()));
     }
 
     private native String getDefaultHandler(String scheme);
@@ -83,7 +79,7 @@ public final class LaunchServicesSchemeHandler extends AbstractSchemeHandler {
     public List<Application> getAllHandlers(final Scheme scheme) {
         List<Application> handlers = new ArrayList<Application>();
         for(String bundleIdentifier : this.getAllHandlers(scheme.name())) {
-            handlers.add(ApplicationFinderFactory.instance().find(bundleIdentifier));
+            handlers.add(ApplicationFinderFactory.get().find(bundleIdentifier));
         }
         return handlers;
     }
