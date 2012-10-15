@@ -18,7 +18,7 @@ package ch.cyberduck.core.ftp.parser;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Status;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.net.ftp.FTPFile;
@@ -84,13 +84,13 @@ public class LaxUnixFTPEntryParser extends CommonUnixFTPEntryParser {
                 try {
                     double size = Double.parseDouble(filesize);
                     if(filesizeIndicator.equalsIgnoreCase("K")) {
-                        size = size * Status.KILO;
+                        size = size * TransferStatus.KILO;
                     }
                     else if(filesizeIndicator.equalsIgnoreCase("M")) {
-                        size = size * Status.MEGA;
+                        size = size * TransferStatus.MEGA;
                     }
                     else if(filesizeIndicator.equalsIgnoreCase("G")) {
-                        size = size * Status.GIGA;
+                        size = size * TransferStatus.GIGA;
                     }
                     return this.parseFTPEntry(typeStr, usr, grp, (long) size, datestr, name, endtoken);
                 }

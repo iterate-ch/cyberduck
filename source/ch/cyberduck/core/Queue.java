@@ -19,6 +19,8 @@ package ch.cyberduck.core;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.transfer.Transfer;
+
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;

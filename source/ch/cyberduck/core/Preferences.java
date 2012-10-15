@@ -19,6 +19,7 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.core.transfer.TransferStatus;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -434,22 +435,22 @@ public abstract class Preferences {
          * Bandwidth throttle options
          */
         StringBuilder options = new StringBuilder();
-        options.append(5 * Status.KILO).append(",");
-        options.append(10 * Status.KILO).append(",");
-        options.append(20 * Status.KILO).append(",");
-        options.append(50 * Status.KILO).append(",");
-        options.append(100 * Status.KILO).append(",");
-        options.append(150 * Status.KILO).append(",");
-        options.append(200 * Status.KILO).append(",");
-        options.append(500 * Status.KILO).append(",");
-        options.append(1 * Status.MEGA).append(",");
-        options.append(2 * Status.MEGA).append(",");
-        options.append(5 * Status.MEGA).append(",");
-        options.append(10 * Status.MEGA).append(",");
-        options.append(15 * Status.MEGA).append(",");
-        options.append(20 * Status.MEGA).append(",");
-        options.append(50 * Status.MEGA).append(",");
-        options.append(100 * Status.MEGA).append(",");
+        options.append(5 * TransferStatus.KILO).append(",");
+        options.append(10 * TransferStatus.KILO).append(",");
+        options.append(20 * TransferStatus.KILO).append(",");
+        options.append(50 * TransferStatus.KILO).append(",");
+        options.append(100 * TransferStatus.KILO).append(",");
+        options.append(150 * TransferStatus.KILO).append(",");
+        options.append(200 * TransferStatus.KILO).append(",");
+        options.append(500 * TransferStatus.KILO).append(",");
+        options.append(1 * TransferStatus.MEGA).append(",");
+        options.append(2 * TransferStatus.MEGA).append(",");
+        options.append(5 * TransferStatus.MEGA).append(",");
+        options.append(10 * TransferStatus.MEGA).append(",");
+        options.append(15 * TransferStatus.MEGA).append(",");
+        options.append(20 * TransferStatus.MEGA).append(",");
+        options.append(50 * TransferStatus.MEGA).append(",");
+        options.append(100 * TransferStatus.MEGA).append(",");
         defaults.put("queue.bandwidth.options", options.toString());
 
         /**

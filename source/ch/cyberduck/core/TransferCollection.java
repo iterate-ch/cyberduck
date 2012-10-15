@@ -19,12 +19,13 @@ package ch.cyberduck.core;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.serializer.TransferReaderFactory;
-import ch.cyberduck.core.serializer.TransferWriterFactory;
-
-import org.apache.log4j.Logger;
 import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.local.LocalFactory;
+import ch.cyberduck.core.serializer.TransferReaderFactory;
+import ch.cyberduck.core.serializer.TransferWriterFactory;
+import ch.cyberduck.core.transfer.Transfer;
+
+import org.apache.log4j.Logger;
 
 /**
  * @version $Id$
@@ -111,7 +112,7 @@ public final class TransferCollection extends Collection<Transfer> {
 
     /**
      * @return Number of transfers in collection that are running
-     * @see ch.cyberduck.core.Transfer#isRunning()
+     * @see ch.cyberduck.core.transfer.Transfer#isRunning()
      */
     public int numberOfRunningTransfers() {
         int running = 0;
@@ -129,7 +130,7 @@ public final class TransferCollection extends Collection<Transfer> {
 
     /**
      * @return Number of transfers in collection that are queued
-     * @see ch.cyberduck.core.Transfer#isQueued()
+     * @see ch.cyberduck.core.transfer.Transfer#isQueued()
      */
     public int numberOfQueuedTransfers() {
         int queued = 0;

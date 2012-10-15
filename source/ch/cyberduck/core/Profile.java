@@ -19,6 +19,8 @@ package ch.cyberduck.core;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.local.Local;
+import ch.cyberduck.core.local.LocalFactory;
 import ch.cyberduck.core.serializer.Deserializer;
 import ch.cyberduck.core.serializer.DeserializerFactory;
 import ch.cyberduck.core.serializer.Serializer;
@@ -32,13 +34,11 @@ import org.apache.log4j.Logger;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.UUID;
-import ch.cyberduck.core.local.Local;
-import ch.cyberduck.core.local.LocalFactory;
 
 /**
  * @version $Id$
  */
-public class Profile extends Protocol implements Serializable {
+public final class Profile extends Protocol implements Serializable {
     private static final Logger log = Logger.getLogger(Profile.class);
 
     private Deserializer dict;
@@ -96,7 +96,7 @@ public class Profile extends Protocol implements Serializable {
                 && StringUtils.isNotBlank(this.getValue("Vendor"));
     }
 
-    private String getValue(String key) {
+    private String getValue(final String key) {
         final String value = dict.stringForKey(key);
         if(StringUtils.isBlank(value)) {
             log.debug("No value for key:" + key);
@@ -201,7 +201,7 @@ public class Profile extends Protocol implements Serializable {
      * @param icon Base64 encoded image information
      * @return Path to file
      */
-    private String write(String icon) {
+    private String write(final String icon) {
         if(StringUtils.isBlank(icon)) {
             return null;
         }

@@ -23,6 +23,7 @@ import ch.cyberduck.core.dav.DAVPath;
 import ch.cyberduck.core.ftp.FTPPath;
 import ch.cyberduck.core.gdocs.GDPath;
 import ch.cyberduck.core.gstorage.GSPath;
+import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.s3.S3Path;
 import ch.cyberduck.core.sftp.SFTPPath;
 
@@ -30,8 +31,6 @@ import org.apache.log4j.Logger;
 
 import java.util.HashMap;
 import java.util.Map;
-import ch.cyberduck.core.local.Local;
-import ch.cyberduck.core.local.LocalFactory;
 
 public abstract class PathFactory<S extends Session> {
     private static final Logger log = Logger.getLogger(PathFactory.class);

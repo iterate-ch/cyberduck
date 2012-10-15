@@ -19,9 +19,10 @@ package ch.cyberduck.core;
  * dkocher@cyberduck.ch
  */
 
-import org.apache.log4j.Logger;
 import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.local.LocalFactory;
+
+import org.apache.log4j.Logger;
 
 /**
  * @version $Id$
