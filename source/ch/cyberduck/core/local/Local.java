@@ -463,8 +463,7 @@ public abstract class Local extends AbstractPath {
         }
     }
 
-    @Override
-    public void copy(final AbstractPath copy) {
+    public void copy(final Local copy) {
         if(copy.equals(this)) {
             log.warn(String.format("%s and %s are identical. Not copied.", this.getName(), copy.getName()));
         }

@@ -24,7 +24,16 @@ import ch.cyberduck.core.Native;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.ui.cocoa.application.NSWorkspace;
-import ch.cyberduck.ui.cocoa.foundation.*;
+import ch.cyberduck.ui.cocoa.foundation.NSArray;
+import ch.cyberduck.ui.cocoa.foundation.NSDate;
+import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
+import ch.cyberduck.ui.cocoa.foundation.NSDistributedNotificationCenter;
+import ch.cyberduck.ui.cocoa.foundation.NSEnumerator;
+import ch.cyberduck.ui.cocoa.foundation.NSFileManager;
+import ch.cyberduck.ui.cocoa.foundation.NSNotification;
+import ch.cyberduck.ui.cocoa.foundation.NSNumber;
+import ch.cyberduck.ui.cocoa.foundation.NSObject;
+import ch.cyberduck.ui.cocoa.foundation.NSString;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -389,7 +398,7 @@ public class FinderLocal extends Local {
     private static final Object workspace = new Object();
 
     @Override
-    public void writeUnixPermission(final Permission permission, boolean recursive) {
+    public void writeUnixPermission(final Permission permission) {
         synchronized(workspace) {
             boolean success = NSFileManager.defaultManager().setAttributes_ofItemAtPath_error(
                     NSDictionary.dictionaryWithObjectsForKeys(
