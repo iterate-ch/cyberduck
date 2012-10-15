@@ -1,4 +1,4 @@
-package ch.cyberduck.core;
+package ch.cyberduck.core.transfer;
 
 /*
  *  Copyright (c) 2007 David Kocher. All rights reserved.

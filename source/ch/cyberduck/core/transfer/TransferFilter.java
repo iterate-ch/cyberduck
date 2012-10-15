@@ -1,4 +1,4 @@
-package ch.cyberduck.core;
+package ch.cyberduck.core.transfer;
 
 /*
  *  Copyright (c) 2007 David Kocher. All rights reserved.
@@ -17,8 +17,6 @@ package ch.cyberduck.core;
  *  Bug fixes, suggestions and comments should be sent to:
  *  dkocher@cyberduck.ch
  */
-
-import ch.cyberduck.core.transfer.Transfer;
 
 /**
  * @version $Id$
