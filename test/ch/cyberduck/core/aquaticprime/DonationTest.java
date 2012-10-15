@@ -10,7 +10,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertFalse;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class DonationTest extends AbstractTestCase {
 
@@ -21,7 +21,7 @@ public class DonationTest extends AbstractTestCase {
 
     @Test
     public void testVerify() throws Exception {
-        final Local f = LocalFactory.createLocal(System.getProperty("java.io.tmpdir"), "f");
+        final Local f = LocalFactory.createLocal(System.getProperty("java.io.tmpdir"), "f.cyberducklicense");
         Donation r = new Donation(f);
         assertFalse(r.verify());
         f.touch();
