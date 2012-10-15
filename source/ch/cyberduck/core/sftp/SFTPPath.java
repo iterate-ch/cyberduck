@@ -333,8 +333,6 @@ public class SFTPPath extends Path {
             SFTPv3FileAttributes attr = new SFTPv3FileAttributes();
             attr.gid = new Integer(group);
             this.writeAttributes(attr);
-            if(this.attributes().isDirectory()) {
-            }
         }
         catch(IOException e) {
             this.error("Cannot change group", e);
