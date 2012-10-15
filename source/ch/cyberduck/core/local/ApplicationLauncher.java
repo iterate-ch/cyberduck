@@ -18,11 +18,16 @@ package ch.cyberduck.core.local;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.editor.Application;
+
 /**
  * @version $Id$
  */
 public interface ApplicationLauncher {
-    void open(Local file);
+
+    boolean open(Local file);
+
+    boolean open(Local file, Application application);
 
     void bounce(Local file);
 }

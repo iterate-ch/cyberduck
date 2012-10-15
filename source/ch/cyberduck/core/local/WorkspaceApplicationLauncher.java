@@ -18,6 +18,7 @@ package ch.cyberduck.core.local;
  * dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.editor.Application;
 import ch.cyberduck.ui.cocoa.application.NSWorkspace;
 import ch.cyberduck.ui.cocoa.foundation.NSDistributedNotificationCenter;
 import ch.cyberduck.ui.cocoa.foundation.NSNotification;
@@ -48,11 +49,25 @@ public final class WorkspaceApplicationLauncher implements ApplicationLauncher {
     private static final Object workspace = new Object();
 
     @Override
-    public void open(final Local file) {
+    public boolean open(final Local file) {
         synchronized(workspace) {
             if(!NSWorkspace.sharedWorkspace().openFile(file.getAbsolute())) {
                 log.warn(String.format("Error opening file %s", file.getAbsolute()));
+                return false;
             }
+            return true;
+        }
+    }
+
+    @Override
+    public boolean open(final Local file, final Application application) {
+        synchronized(workspace) {
+            if(!NSWorkspace.sharedWorkspace().openFile(file.getAbsolute(),
+                    NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(application.getIdentifier()))) {
+                log.warn(String.format("Error opening file %s with application %s", file.getAbsolute(), application));
+                return false;
+            }
+            return true;
         }
     }
 
