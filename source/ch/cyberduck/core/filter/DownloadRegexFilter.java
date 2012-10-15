@@ -24,6 +24,9 @@ public class DownloadRegexFilter implements PathFilter<Path> {
         }
         if(Preferences.instance().getBoolean("queue.download.skip.enable")) {
             if(pattern.matcher(file.getName()).matches()) {
+                if(log.isDebugEnabled()) {
+                    log.debug(String.format("Skip %s excluded with regex", file.getAbsolute()));
+                }
                 return false;
             }
         }
