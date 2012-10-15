@@ -32,7 +32,8 @@ public abstract class DeserializerFactory<T> extends Factory {
     /**
      * Registered factories
      */
-    protected static final Map<Factory.Platform, DeserializerFactory> factories = new HashMap<Factory.Platform, DeserializerFactory>();
+    private static final Map<Factory.Platform, DeserializerFactory> factories
+            = new HashMap<Factory.Platform, DeserializerFactory>();
 
     public static void addFactory(Factory.Platform platform, DeserializerFactory f) {
         factories.put(platform, f);
