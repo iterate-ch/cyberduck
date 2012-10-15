@@ -28,7 +28,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSNotification;
 import ch.cyberduck.ui.cocoa.foundation.NSNotificationCenter;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.resources.IconCache;
-import ch.cyberduck.ui.cocoa.util.HyperlinkAttributedStringFactory;
+import ch.cyberduck.ui.cocoa.HyperlinkAttributedStringFactory;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -37,6 +37,8 @@ import org.rococoa.ID;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import ch.cyberduck.core.local.Local;
+import ch.cyberduck.core.local.LocalFactory;
 
 /**
  * @version $Id$

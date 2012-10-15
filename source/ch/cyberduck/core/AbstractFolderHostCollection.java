@@ -25,6 +25,8 @@ import ch.cyberduck.core.serializer.HostWriterFactory;
 import ch.cyberduck.core.serializer.Reader;
 
 import org.apache.log4j.Logger;
+import ch.cyberduck.core.local.Local;
+import ch.cyberduck.core.local.LocalFactory;
 
 /**
  * @version $Id$

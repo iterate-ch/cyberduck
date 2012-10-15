@@ -20,8 +20,8 @@ package ch.cyberduck.core.fs.kfs;
  */
 
 import ch.cyberduck.core.AbstractPath;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.local.Local;
+import ch.cyberduck.core.local.LocalFactory;
 import ch.cyberduck.core.NSObjectPathReference;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFactory;

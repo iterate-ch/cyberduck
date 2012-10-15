@@ -23,6 +23,8 @@ import ch.cyberduck.ui.DateFormatterFactory;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import ch.cyberduck.core.local.Local;
+import ch.cyberduck.core.local.LocalFactory;
 
 /**
  * @version $Id$

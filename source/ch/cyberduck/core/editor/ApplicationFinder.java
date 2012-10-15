@@ -1,6 +1,6 @@
 package ch.cyberduck.core.editor;
 
-import ch.cyberduck.core.Local;
+import ch.cyberduck.core.local.Local;
 
 import java.util.List;
 

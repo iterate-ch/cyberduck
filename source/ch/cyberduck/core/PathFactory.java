@@ -30,6 +30,8 @@ import org.apache.log4j.Logger;
 
 import java.util.HashMap;
 import java.util.Map;
+import ch.cyberduck.core.local.Local;
+import ch.cyberduck.core.local.LocalFactory;
 
 public abstract class PathFactory<S extends Session> {
     private static final Logger log = Logger.getLogger(PathFactory.class);

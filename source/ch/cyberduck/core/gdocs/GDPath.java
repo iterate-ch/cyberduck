@@ -72,6 +72,8 @@ import com.google.gdata.util.AuthenticationException;
 import com.google.gdata.util.ContentType;
 import com.google.gdata.util.NotImplementedException;
 import com.google.gdata.util.ServiceException;
+import ch.cyberduck.core.local.Local;
+import ch.cyberduck.core.local.LocalFactory;
 
 public class GDPath extends Path {
     private static Logger log = Logger.getLogger(GDPath.class);

@@ -18,7 +18,7 @@ package ch.cyberduck.core.editor;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Local;
+import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.TransferAction;
 import ch.cyberduck.ui.Controller;

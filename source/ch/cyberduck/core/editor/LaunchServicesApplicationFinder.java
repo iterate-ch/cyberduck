@@ -1,7 +1,7 @@
 package ch.cyberduck.core.editor;
 
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.local.Local;
+import ch.cyberduck.core.local.LocalFactory;
 import ch.cyberduck.core.Native;
 import ch.cyberduck.ui.cocoa.application.NSWorkspace;
 import ch.cyberduck.ui.cocoa.foundation.NSBundle;

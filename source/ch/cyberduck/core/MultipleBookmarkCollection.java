@@ -20,6 +20,8 @@ package ch.cyberduck.core;
  */
 
 import org.apache.log4j.Logger;
+import ch.cyberduck.core.local.Local;
+import ch.cyberduck.core.local.LocalFactory;
 
 /**
  * @version $Id$

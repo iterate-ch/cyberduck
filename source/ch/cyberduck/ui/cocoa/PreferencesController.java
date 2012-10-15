@@ -19,13 +19,25 @@ package ch.cyberduck.ui.cocoa;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AbstractCollectionListener;
+import ch.cyberduck.core.BookmarkCollection;
+import ch.cyberduck.core.CollectionListener;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Permission;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.ProtocolFactory;
 import ch.cyberduck.core.editor.Application;
 import ch.cyberduck.core.editor.ApplicationFinderFactory;
 import ch.cyberduck.core.editor.EditorFactory;
+import ch.cyberduck.core.formatter.SizeFormatterFactory;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.local.FinderLocal;
+import ch.cyberduck.core.local.Local;
+import ch.cyberduck.core.local.LocalFactory;
 import ch.cyberduck.core.sparkle.Updater;
+import ch.cyberduck.core.TransferAction;
+import ch.cyberduck.core.urlhandler.SchemeHandlerFactory;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.foundation.NSAppleScript;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
@@ -38,9 +50,7 @@ import ch.cyberduck.ui.cocoa.foundation.NSNotificationCenter;
 import ch.cyberduck.ui.cocoa.foundation.NSRange;
 import ch.cyberduck.ui.cocoa.resources.IconCache;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
-import ch.cyberduck.ui.cocoa.urlhandler.URLSchemeHandlerConfiguration;
 import ch.cyberduck.ui.cocoa.view.BookmarkCell;
-import ch.cyberduck.core.formatter.SizeFormatterFactory;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -52,6 +62,7 @@ import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -1670,24 +1681,22 @@ public final class PreferencesController extends ToolbarWindowController {
     }
 
     private void configureDefaultProtocolHandlerCombobox(NSPopUpButton defaultProtocolHandlerCombobox, Protocol protocol) {
-        final String defaultHandler = URLSchemeHandlerConfiguration.instance().getDefaultHandlerForURLScheme(protocol.getScheme().toString());
+        final Application defaultHandler = SchemeHandlerFactory.instance().getDefaultHandler(protocol.getScheme());
         if(null == defaultHandler) {
             defaultProtocolHandlerCombobox.addItemWithTitle(Locale.localizedString("Unknown"));
             defaultProtocolHandlerCombobox.setEnabled(false);
             return;
         }
-        log.debug("Default Protocol Handler for " + protocol + ":" + defaultHandler);
-        final String[] bundleIdentifiers = URLSchemeHandlerConfiguration.instance().getAllHandlersForURLScheme(protocol.getScheme().toString());
-        for(String bundleIdentifier : bundleIdentifiers) {
-            final Application handler = ApplicationFinderFactory.instance().find(bundleIdentifier);
-            if(handler != null) {
-                defaultProtocolHandlerCombobox.addItemWithTitle(handler.getName());
-                final NSMenuItem item = defaultProtocolHandlerCombobox.lastItem();
-                item.setImage(IconCache.instance().iconForApplication(handler.getIdentifier(), 16));
-                item.setRepresentedObject(handler.getIdentifier());
-                if(handler.getIdentifier().equals(defaultHandler)) {
-                    defaultProtocolHandlerCombobox.selectItem(item);
-                }
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Default Protocol Handler for %s:%s", protocol, defaultHandler));
+        }
+        for(Application handler : SchemeHandlerFactory.instance().getAllHandlers(protocol.getScheme())) {
+            defaultProtocolHandlerCombobox.addItemWithTitle(handler.getName());
+            final NSMenuItem item = defaultProtocolHandlerCombobox.lastItem();
+            item.setImage(IconCache.instance().iconForApplication(handler.getIdentifier(), 16));
+            item.setRepresentedObject(handler.getIdentifier());
+            if(handler.getIdentifier().equals(defaultHandler.getIdentifier())) {
+                defaultProtocolHandlerCombobox.selectItem(item);
             }
         }
     }
@@ -1706,8 +1715,10 @@ public final class PreferencesController extends ToolbarWindowController {
     @Action
     public void defaultFTPHandlerComboboxClicked(NSPopUpButton sender) {
         String bundle = sender.selectedItem().representedObject();
-        URLSchemeHandlerConfiguration.instance().setDefaultHandlerForURLScheme(
-                new String[]{Protocol.FTP.getScheme().name(), Protocol.FTP_TLS.getScheme().toString()}, bundle);
+        SchemeHandlerFactory.instance().setDefaultHandler(
+                Arrays.asList(Protocol.FTP.getScheme(), Protocol.FTP_TLS.getScheme()),
+                new Application(bundle, null)
+        );
     }
 
     @Outlet
@@ -1724,8 +1735,8 @@ public final class PreferencesController extends ToolbarWindowController {
     @Action
     public void defaultSFTPHandlerComboboxClicked(NSPopUpButton sender) {
         String bundle = sender.selectedItem().representedObject();
-        URLSchemeHandlerConfiguration.instance().setDefaultHandlerForURLScheme(
-                Protocol.SFTP.getScheme().toString(), bundle
+        SchemeHandlerFactory.instance().setDefaultHandler(
+                Arrays.asList(Protocol.SFTP.getScheme()), new Application(bundle, null)
         );
     }
 

@@ -23,6 +23,8 @@ import ch.cyberduck.core.serializer.TransferReaderFactory;
 import ch.cyberduck.core.serializer.TransferWriterFactory;
 
 import org.apache.log4j.Logger;
+import ch.cyberduck.core.local.Local;
+import ch.cyberduck.core.local.LocalFactory;
 
 /**
  * @version $Id$

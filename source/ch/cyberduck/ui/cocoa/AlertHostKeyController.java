@@ -20,8 +20,8 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.ConnectionCanceledException;
 import ch.cyberduck.core.HostKeyControllerFactory;
-import ch.cyberduck.core.Local;
-import ch.cyberduck.core.LocalFactory;
+import ch.cyberduck.core.local.Local;
+import ch.cyberduck.core.local.LocalFactory;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.Session;

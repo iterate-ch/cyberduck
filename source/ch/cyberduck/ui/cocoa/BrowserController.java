@@ -25,12 +25,25 @@ import ch.cyberduck.core.editor.Editor;
 import ch.cyberduck.core.editor.EditorFactory;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.local.Local;
+import ch.cyberduck.core.local.LocalFactory;
 import ch.cyberduck.core.sftp.SFTPSession;
 import ch.cyberduck.core.ssl.SSLSession;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.threading.DefaultMainAction;
 import ch.cyberduck.core.threading.MainAction;
+import ch.cyberduck.core.CopyTransfer;
+import ch.cyberduck.core.DownloadTransfer;
+import ch.cyberduck.core.MoveTransfer;
+import ch.cyberduck.core.Speedometer;
+import ch.cyberduck.core.SyncTransfer;
+import ch.cyberduck.core.Transfer;
+import ch.cyberduck.core.TransferAction;
+import ch.cyberduck.core.TransferOptions;
+import ch.cyberduck.core.UploadTransfer;
+import ch.cyberduck.core.transfer.TransferPrompt;
+import ch.cyberduck.core.urlhandler.SchemeHandlerFactory;
 import ch.cyberduck.ui.PathPasteboard;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.delegate.ArchiveMenuDelegate;
@@ -45,7 +58,6 @@ import ch.cyberduck.ui.cocoa.quicklook.QuickLookFactory;
 import ch.cyberduck.ui.cocoa.resources.IconCache;
 import ch.cyberduck.ui.cocoa.threading.BrowserBackgroundAction;
 import ch.cyberduck.ui.cocoa.threading.WindowMainAction;
-import ch.cyberduck.ui.cocoa.urlhandler.URLSchemeHandlerConfiguration;
 import ch.cyberduck.ui.cocoa.view.BookmarkCell;
 import ch.cyberduck.ui.cocoa.view.OutlineCell;
 import ch.cyberduck.ui.growl.Growl;
@@ -4517,13 +4529,13 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             item.setLabel(Locale.localizedString(TOOLBAR_WEBVIEW));
             item.setPaletteLabel(Locale.localizedString("Open in Web Browser"));
             item.setToolTip(Locale.localizedString("Open in Web Browser"));
-            final String browser = URLSchemeHandlerConfiguration.instance().getDefaultHandlerForURLScheme("http");
+            final Application browser = SchemeHandlerFactory.instance().getDefaultHandler(Scheme.http);
             if(null == browser) {
                 item.setEnabled(false);
                 item.setImage(IconCache.iconNamed("notfound.tiff", 32));
             }
             else {
-                item.setImage(IconCache.instance().iconForApplication(browser, 32));
+                item.setImage(IconCache.instance().iconForApplication(browser.getIdentifier(), 32));
             }
             item.setTarget(this.id());
             item.setAction(Foundation.selector("openBrowserButtonClicked:"));

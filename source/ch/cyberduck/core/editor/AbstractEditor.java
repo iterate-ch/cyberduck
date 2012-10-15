@@ -28,6 +28,9 @@ import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.text.MessageFormat;
+import ch.cyberduck.core.local.Local;
+import ch.cyberduck.core.local.LocalFactory;
+import ch.cyberduck.core.transfer.*;
 
 /**
  * @version $Id$

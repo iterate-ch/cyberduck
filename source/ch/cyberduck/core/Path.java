@@ -57,6 +57,9 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 import com.ibm.icu.text.Normalizer;
+import ch.cyberduck.core.local.Local;
+import ch.cyberduck.core.local.LocalFactory;
+import ch.cyberduck.core.transfer.*;
 
 /**
  * @version $Id$
@@ -82,7 +85,7 @@ public abstract class Path extends AbstractPath implements Serializable {
     /**
      * Transfer status
      */
-    private Status status;
+    private TransferStatus status;
 
     /**
      * Attributes denoting this path
@@ -160,7 +163,7 @@ public abstract class Path extends AbstractPath implements Serializable {
             this.attributes = new PathAttributes(attributesObj);
         }
         if(dict.stringForKey("Complete") != null) {
-            this.status().setComplete(true);
+            this.status().setComplete();
         }
     }
 
@@ -455,9 +458,9 @@ public abstract class Path extends AbstractPath implements Serializable {
      *
      * @return Current cached file transfer status
      */
-    public Status status() {
+    public TransferStatus status() {
         if(null == status) {
-            status = new Status();
+            status = new TransferStatus();
         }
         return status;
     }

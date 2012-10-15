@@ -20,7 +20,7 @@ package ch.cyberduck.ui.cocoa.serializer;
 
 import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.Local;
+import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.Serializable;
 import ch.cyberduck.core.Transfer;

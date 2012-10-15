@@ -389,7 +389,7 @@ public class FinderLocal extends Local {
     private static final Object workspace = new Object();
 
     @Override
-    public void writeUnixPermission(final Permission permission) {
+    public void writeUnixPermission(final Permission permission, boolean recursive) {
         synchronized(workspace) {
             boolean success = NSFileManager.defaultManager().setAttributes_ofItemAtPath_error(
                     NSDictionary.dictionaryWithObjectsForKeys(

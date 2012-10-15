@@ -22,6 +22,7 @@ import ch.cyberduck.core.*;
 import ch.cyberduck.core.aquaticprime.Donation;
 import ch.cyberduck.core.aquaticprime.License;
 import ch.cyberduck.core.aquaticprime.LicenseFactory;
+import ch.cyberduck.core.editor.Application;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.importer.CrossFtpBookmarkCollection;
 import ch.cyberduck.core.importer.FetchBookmarkCollection;
@@ -31,11 +32,16 @@ import ch.cyberduck.core.importer.FlowBookmarkCollection;
 import ch.cyberduck.core.importer.InterarchyBookmarkCollection;
 import ch.cyberduck.core.importer.ThirdpartyBookmarkCollection;
 import ch.cyberduck.core.importer.TransmitBookmarkCollection;
+import ch.cyberduck.core.local.Local;
+import ch.cyberduck.core.local.LocalFactory;
 import ch.cyberduck.core.serializer.HostReaderFactory;
 import ch.cyberduck.core.serializer.ProtocolReaderFactory;
 import ch.cyberduck.core.sparkle.Updater;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.core.threading.DefaultMainAction;
+import ch.cyberduck.core.DownloadTransfer;
+import ch.cyberduck.core.UploadTransfer;
+import ch.cyberduck.core.urlhandler.SchemeHandlerFactory;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.delegate.ArchiveMenuDelegate;
 import ch.cyberduck.ui.cocoa.delegate.BookmarkMenuDelegate;
@@ -55,7 +61,6 @@ import ch.cyberduck.ui.cocoa.foundation.NSNotification;
 import ch.cyberduck.ui.cocoa.foundation.NSNotificationCenter;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 import ch.cyberduck.ui.cocoa.resources.IconCache;
-import ch.cyberduck.ui.cocoa.urlhandler.URLSchemeHandlerConfiguration;
 import ch.cyberduck.ui.growl.Growl;
 
 import org.apache.commons.lang.StringUtils;
@@ -516,7 +521,8 @@ public class MainController extends BundleController implements NSApplication.De
                                 null);
                         alert.setAlertStyle(NSAlert.NSInformationalAlertStyle);
                         if(this.alert(alert) == SheetCallback.DEFAULT_OPTION) {
-                            f.copy(LocalFactory.createLocal(Preferences.instance().getProperty("application.support.path"), f.getName()));
+                            f.copy(LocalFactory.createLocal(Preferences.instance().getProperty("application.support.path"),
+                                    f.getName()));
                             for(BrowserController c : MainController.getBrowsers()) {
                                 c.removeDonateWindowTitle();
                             }
@@ -941,8 +947,9 @@ public class MainController extends BundleController implements NSApplication.De
         }
         if(Preferences.instance().getBoolean("defaulthandler.reminder")
                 && Preferences.instance().getInteger("uses") > 0) {
-            if(!URLSchemeHandlerConfiguration.instance().isDefaultHandlerForURLScheme(
-                    new String[]{Protocol.FTP.getScheme().toString(), Protocol.FTP_TLS.getScheme().toString(), Protocol.SFTP.getScheme().toString()})) {
+            if(!SchemeHandlerFactory.instance().isDefaultHandler(
+                    Arrays.asList(Protocol.FTP.getScheme(), Protocol.FTP_TLS.getScheme(), Protocol.SFTP.getScheme()),
+                    new Application(NSBundle.mainBundle().infoDictionary().objectForKey("CFBundleIdentifier").toString(), null))) {
                 final NSAlert alert = NSAlert.alert(
                         Locale.localizedString("Set Cyberduck as default application for FTP and SFTP locations?", "Configuration"),
                         Locale.localizedString("As the default application, Cyberduck will open when you click on FTP or SFTP links in other applications, such as your web browser. You can change this setting in the Preferences later.", "Configuration"),
@@ -958,9 +965,9 @@ public class MainController extends BundleController implements NSApplication.De
                     Preferences.instance().setProperty("defaulthandler.reminder", false);
                 }
                 if(choice == SheetCallback.DEFAULT_OPTION) {
-                    URLSchemeHandlerConfiguration.instance().setDefaultHandlerForURLScheme(
-                            new String[]{Protocol.FTP.getScheme().toString(), Protocol.FTP_TLS.getScheme().toString(), Protocol.SFTP.getScheme().toString()},
-                            NSBundle.mainBundle().infoDictionary().objectForKey("CFBundleIdentifier").toString()
+                    SchemeHandlerFactory.instance().setDefaultHandler(
+                            Arrays.asList(Protocol.FTP.getScheme(), Protocol.FTP_TLS.getScheme(), Protocol.SFTP.getScheme()),
+                            new Application(NSBundle.mainBundle().infoDictionary().objectForKey("CFBundleIdentifier").toString(), null)
                     );
                 }
             }
