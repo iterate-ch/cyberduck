@@ -23,8 +23,6 @@
 		4716C5F50872BA9900938886 /* Command.nib in Resources */ = {isa = PBXBuildFile; fileRef = 4716C5EF0872BA9800938886 /* Command.nib */; };
 		4718C1EF107A9F12006FDEFA /* SystemConfigurationReachability.h in Headers */ = {isa = PBXBuildFile; fileRef = 4718C1ED107A9F12006FDEFA /* SystemConfigurationReachability.h */; };
 		4718C1F0107A9F12006FDEFA /* SystemConfigurationReachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 4718C1EE107A9F12006FDEFA /* SystemConfigurationReachability.m */; };
-		4718C202107AA41F006FDEFA /* URLSchemeHandlerConfiguration.h in Headers */ = {isa = PBXBuildFile; fileRef = 4718C1FF107AA41F006FDEFA /* URLSchemeHandlerConfiguration.h */; };
-		4718C204107AA41F006FDEFA /* URLSchemeHandlerConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = 4718C201107AA41F006FDEFA /* URLSchemeHandlerConfiguration.m */; };
 		4718C207107AA445006FDEFA /* SystemConfigurationProxy.h in Headers */ = {isa = PBXBuildFile; fileRef = 4718C205107AA445006FDEFA /* SystemConfigurationProxy.h */; };
 		4718C208107AA445006FDEFA /* SystemConfigurationProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 4718C206107AA445006FDEFA /* SystemConfigurationProxy.m */; };
 		471B4909102C66600059687D /* Growl.h in Headers */ = {isa = PBXBuildFile; fileRef = 471B4905102C66600059687D /* Growl.h */; };
@@ -230,6 +228,8 @@
 		47E72E13162865000002F049 /* NSAppleEventDescriptor-Extensions.m in Sources */ = {isa = PBXBuildFile; fileRef = 47E72E0C162865000002F049 /* NSAppleEventDescriptor-Extensions.m */; };
 		47E72E14162865000002F049 /* ODBEditor.m in Sources */ = {isa = PBXBuildFile; fileRef = 47E72E0D162865000002F049 /* ODBEditor.m */; };
 		47E987600D689A280077733F /* S3.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47E9875E0D689A280077733F /* S3.strings */; };
+		47EA2451162B5CE0002E23E2 /* LaunchServicesSchemeHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = 47EA244F162B5CE0002E23E2 /* LaunchServicesSchemeHandler.h */; };
+		47EA2452162B5CE0002E23E2 /* LaunchServicesSchemeHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 47EA2450162B5CE0002E23E2 /* LaunchServicesSchemeHandler.m */; };
 		47EBC1311328D01C00E9E6B3 /* mirror.switch.ch – FTP.duck in CopyFiles */ = {isa = PBXBuildFile; fileRef = 47EBC12F1328D00200E9E6B3 /* mirror.switch.ch – FTP.duck */; };
 		47F0B7D3087AD1B100439978 /* Status.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47F0B7D2087AD1AE00439978 /* Status.strings */; };
 		47F102A81628C0F600923FDE /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47F102A71628C0F600923FDE /* Foundation.framework */; };
@@ -545,8 +545,6 @@
 		47181E9F0E17D1E500568D80 /* el */ = {isa = PBXFileReference; lastKnownFileType = text; name = el; path = el.lproj/License.txt; sourceTree = "<group>"; };
 		4718C1ED107A9F12006FDEFA /* SystemConfigurationReachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SystemConfigurationReachability.h; sourceTree = "<group>"; };
 		4718C1EE107A9F12006FDEFA /* SystemConfigurationReachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SystemConfigurationReachability.m; sourceTree = "<group>"; };
-		4718C1FF107AA41F006FDEFA /* URLSchemeHandlerConfiguration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = URLSchemeHandlerConfiguration.h; sourceTree = "<group>"; };
-		4718C201107AA41F006FDEFA /* URLSchemeHandlerConfiguration.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = URLSchemeHandlerConfiguration.m; sourceTree = "<group>"; };
 		4718C205107AA445006FDEFA /* SystemConfigurationProxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SystemConfigurationProxy.h; sourceTree = "<group>"; };
 		4718C206107AA445006FDEFA /* SystemConfigurationProxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SystemConfigurationProxy.m; sourceTree = "<group>"; };
 		471B4905102C66600059687D /* Growl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Growl.h; sourceTree = "<group>"; };
@@ -1232,7 +1230,7 @@
 		47BCF18D13BB4EC700D26E4C /* container-migration.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "container-migration.plist"; sourceTree = "<group>"; };
 		47BE1F8912369DF100E758FE /* CDTransmitImporter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CDTransmitImporter.h; path = importer/CDTransmitImporter.h; sourceTree = "<group>"; };
 		47BE1F8A12369DF100E758FE /* CDTransmitImporter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CDTransmitImporter.m; path = importer/CDTransmitImporter.m; sourceTree = "<group>"; };
-		47BEDB030B92960400141EB4 /* libURLSchemeHandlerConfiguration.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libURLSchemeHandlerConfiguration.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		47BEDB030B92960400141EB4 /* libLaunchServicesSchemeHandler.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libLaunchServicesSchemeHandler.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		47BEDBD20B9296C800141EB4 /* ApplicationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ApplicationServices.framework; path = /System/Library/Frameworks/ApplicationServices.framework; sourceTree = "<absolute>"; };
 		47C4D6CB08798D0C007A1D39 /* cs */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = cs; path = cs.lproj/Command.nib; sourceTree = "<group>"; };
 		47C4D6CC08798D10007A1D39 /* nl */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = nl; path = nl.lproj/Command.nib; sourceTree = "<group>"; };
@@ -1462,6 +1460,8 @@
 		47E72E0C162865000002F049 /* NSAppleEventDescriptor-Extensions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSAppleEventDescriptor-Extensions.m"; sourceTree = "<group>"; };
 		47E72E0D162865000002F049 /* ODBEditor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ODBEditor.m; sourceTree = "<group>"; };
 		47E9875F0D689A280077733F /* en */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = en; path = en.lproj/S3.strings; sourceTree = "<group>"; };
+		47EA244F162B5CE0002E23E2 /* LaunchServicesSchemeHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LaunchServicesSchemeHandler.h; sourceTree = "<group>"; };
+		47EA2450162B5CE0002E23E2 /* LaunchServicesSchemeHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LaunchServicesSchemeHandler.m; sourceTree = "<group>"; };
 		47EBC12F1328D00200E9E6B3 /* mirror.switch.ch – FTP.duck */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = "mirror.switch.ch – FTP.duck"; sourceTree = "<group>"; };
 		47EC858E0AF0929E0057AC1F /* zh_CN */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = zh_CN; path = zh_CN.lproj/Alert.nib; sourceTree = "<group>"; };
 		47EC858F0AF0929E0057AC1F /* tr */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = tr; path = tr.lproj/Alert.nib; sourceTree = "<group>"; };
@@ -1667,7 +1667,7 @@
 				4739EFB00856990900405FD3 /* libProxy.dylib */,
 				4739EFC10856991300405FD3 /* libLocal.dylib */,
 				4762DAC509FC42EC0034C662 /* libDiagnostics.dylib */,
-				47BEDB030B92960400141EB4 /* libURLSchemeHandlerConfiguration.dylib */,
+				47BEDB030B92960400141EB4 /* libLaunchServicesSchemeHandler.dylib */,
 				478ECD180DAD5743008A5B1F /* libQuickLook.dylib */,
 				478CFE820F9932B3000560EF /* libPrime.dylib */,
 				477A104D0FD08DBA00BAD4AD /* librococoa.dylib */,
@@ -1728,15 +1728,6 @@
 			path = bookmarks;
 			sourceTree = "<group>";
 		};
-		4718C1FE107AA41F006FDEFA /* urlhandler */ = {
-			isa = PBXGroup;
-			children = (
-				4718C1FF107AA41F006FDEFA /* URLSchemeHandlerConfiguration.h */,
-				4718C201107AA41F006FDEFA /* URLSchemeHandlerConfiguration.m */,
-			);
-			path = urlhandler;
-			sourceTree = "<group>";
-		};
 		471B4904102C66600059687D /* growl */ = {
 			isa = PBXGroup;
 			children = (
@@ -1788,6 +1779,7 @@
 		474152DA06C4F08A00AC0BD2 /* core */ = {
 			isa = PBXGroup;
 			children = (
+				47EA2444162B5C44002E23E2 /* urlhandler */,
 				47F102BA1628D5CE00923FDE /* local */,
 				4797D27F1628296900340E1C /* editor */,
 				47BE1F8712369DE600E758FE /* importer */,
@@ -1815,7 +1807,6 @@
 			isa = PBXGroup;
 			children = (
 				47121FF61611F94000E2547D /* main.m */,
-				4718C1FE107AA41F006FDEFA /* urlhandler */,
 				4798434E072B0DAA00FA3CDB /* view */,
 			);
 			path = cocoa;
@@ -2120,6 +2111,15 @@
 			name = importer;
 			sourceTree = "<group>";
 		};
+		47EA2444162B5C44002E23E2 /* urlhandler */ = {
+			isa = PBXGroup;
+			children = (
+				47EA244F162B5CE0002E23E2 /* LaunchServicesSchemeHandler.h */,
+				47EA2450162B5CE0002E23E2 /* LaunchServicesSchemeHandler.m */,
+			);
+			path = urlhandler;
+			sourceTree = "<group>";
+		};
 		47F102BA1628D5CE00923FDE /* local */ = {
 			isa = PBXGroup;
 			children = (
@@ -2238,7 +2238,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4718C202107AA41F006FDEFA /* URLSchemeHandlerConfiguration.h in Headers */,
+				47EA2451162B5CE0002E23E2 /* LaunchServicesSchemeHandler.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2484,9 +2484,9 @@
 			productReference = 4797D27A1628276C00340E1C /* libLaunchServicesApplicationFinder.dylib */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
-		47BEDAF60B92960400141EB4 /* libURLSchemeHandlerConfiguration */ = {
+		47BEDAF60B92960400141EB4 /* libLaunchServicesSchemeHandler */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 47BEDB010B92960400141EB4 /* Build configuration list for PBXNativeTarget "libURLSchemeHandlerConfiguration" */;
+			buildConfigurationList = 47BEDB010B92960400141EB4 /* Build configuration list for PBXNativeTarget "libLaunchServicesSchemeHandler" */;
 			buildPhases = (
 				47BEDAF70B92960400141EB4 /* Headers */,
 				47BEDAF90B92960400141EB4 /* Sources */,
@@ -2497,10 +2497,10 @@
 			);
 			dependencies = (
 			);
-			name = libURLSchemeHandlerConfiguration;
+			name = libLaunchServicesSchemeHandler;
 			productInstallPath = /usr/local/lib;
 			productName = keychainLib;
-			productReference = 47BEDB030B92960400141EB4 /* libURLSchemeHandlerConfiguration.dylib */;
+			productReference = 47BEDB030B92960400141EB4 /* libLaunchServicesSchemeHandler.dylib */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
 		47F102AD1628D57500923FDE /* libLaunchServicesQuarantineService */ = {
@@ -2588,10 +2588,10 @@
 				4739EFA30856990900405FD3 /* libProxy */,
 				4739EFB10856991200405FD3 /* libLocal */,
 				4762DAB809FC42EC0034C662 /* libDiagnostics */,
-				47BEDAF60B92960400141EB4 /* libURLSchemeHandlerConfiguration */,
 				478ECD000DAD5743008A5B1F /* libQuickLook */,
 				478CFE760F9932B3000560EF /* libPrime */,
 				477A10400FD08DBA00BAD4AD /* libRococoa */,
+				47BEDAF60B92960400141EB4 /* libLaunchServicesSchemeHandler */,
 				4797D26E1628276C00340E1C /* libLaunchServicesApplicationFinder */,
 				47F102AD1628D57500923FDE /* libLaunchServicesQuarantineService */,
 			);
@@ -2949,7 +2949,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4718C204107AA41F006FDEFA /* URLSchemeHandlerConfiguration.m in Sources */,
+				47EA2452162B5CE0002E23E2 /* LaunchServicesSchemeHandler.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3024,7 +3024,7 @@
 		};
 		47BEDCEF0B92A23B00141EB4 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 47BEDAF60B92960400141EB4 /* libURLSchemeHandlerConfiguration */;
+			target = 47BEDAF60B92960400141EB4 /* libLaunchServicesSchemeHandler */;
 			targetProxy = 47BEDCEE0B92A23B00141EB4 /* PBXContainerItemProxy */;
 		};
 		47F102DA1628D61A00923FDE /* PBXTargetDependency */ = {
@@ -4480,7 +4480,7 @@
 				DYLIB_CURRENT_VERSION = 1;
 				LD_DYLIB_INSTALL_NAME = "";
 				MACH_O_TYPE = mh_dylib;
-				PRODUCT_NAME = libURLSchemeHandlerConfiguration;
+				PRODUCT_NAME = libLaunchServicesSchemeHandler;
 			};
 			name = Debug;
 		};
@@ -4533,7 +4533,7 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				MACH_O_TYPE = mh_dylib;
-				PRODUCT_NAME = libURLSchemeHandlerConfiguration;
+				PRODUCT_NAME = libLaunchServicesSchemeHandler;
 			};
 			name = Release;
 		};
@@ -4695,7 +4695,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		47BEDB010B92960400141EB4 /* Build configuration list for PBXNativeTarget "libURLSchemeHandlerConfiguration" */ = {
+		47BEDB010B92960400141EB4 /* Build configuration list for PBXNativeTarget "libLaunchServicesSchemeHandler" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				47BEDB020B92960400141EB4 /* Release */,
