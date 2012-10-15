@@ -189,7 +189,7 @@ public class DownloadTransfer extends Transfer {
             status.setComplete();
         }
         else if(file.attributes().isFile()) {
-            final QuarantineService quarantine = QuarantineServiceFactory.instance();
+            final QuarantineService quarantine = QuarantineServiceFactory.get();
             if(options.quarantine) {
                 // Set quarantine attributes
                 quarantine.setQuarantine(local,

@@ -16,24 +16,19 @@ public abstract class QuarantineServiceFactory extends Factory<QuarantineService
     /**
      * Registered factories
      */
-    protected static final Map<Factory.Platform, QuarantineServiceFactory> factories
+    private static final Map<Factory.Platform, QuarantineServiceFactory> factories
             = new HashMap<Factory.Platform, QuarantineServiceFactory>();
 
     public static void addFactory(Factory.Platform platform, QuarantineServiceFactory f) {
         factories.put(platform, f);
     }
 
-    private static QuarantineService service;
-
-    public static QuarantineService instance() {
-        if(null == service) {
-            if(!factories.containsKey(NATIVE_PLATFORM)) {
-                log.warn(String.format("No implementation for %s", NATIVE_PLATFORM));
-                return new DisabledQuarantineService();
-            }
-            service = factories.get(NATIVE_PLATFORM).create();
+    public static QuarantineService get() {
+        if(!factories.containsKey(NATIVE_PLATFORM)) {
+            log.warn(String.format("No implementation for %s", NATIVE_PLATFORM));
+            return new DisabledQuarantineService();
         }
-        return service;
+        return factories.get(NATIVE_PLATFORM).create();
     }
 
     private static final class DisabledQuarantineService implements QuarantineService {
