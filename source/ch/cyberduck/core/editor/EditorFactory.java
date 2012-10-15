@@ -20,9 +20,9 @@ package ch.cyberduck.core.editor;
 
 import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.FactoryException;
-import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.local.Local;
 import ch.cyberduck.ui.Controller;
 
 import org.apache.log4j.Logger;
@@ -41,7 +41,7 @@ public abstract class EditorFactory extends Factory<Editor> {
     /**
      * Registered factories
      */
-    protected static final Map<Factory.Platform, EditorFactory> factories
+    private static final Map<Factory.Platform, EditorFactory> factories
             = new HashMap<Factory.Platform, EditorFactory>();
 
     public static void addFactory(Factory.Platform platform, EditorFactory f) {

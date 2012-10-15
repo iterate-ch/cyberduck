@@ -7,14 +7,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public abstract class ApplicationFinderFactory extends Factory<ApplicationFinder> {
 
     /**
      * Registered factories
      */
-    protected static final Map<Factory.Platform, ApplicationFinderFactory> factories
+    private static final Map<Factory.Platform, ApplicationFinderFactory> factories
             = new HashMap<Factory.Platform, ApplicationFinderFactory>();
 
     public static void addFactory(Factory.Platform platform, ApplicationFinderFactory f) {
