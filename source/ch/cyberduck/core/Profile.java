@@ -134,7 +134,11 @@ public final class Profile extends Protocol implements Serializable {
 
     @Override
     public String getProvider() {
-        return this.getValue("Vendor");
+        final String v = this.getValue("Vendor");
+        if(StringUtils.isBlank(v)) {
+            return parent.getProvider();
+        }
+        return v;
     }
 
     @Override
