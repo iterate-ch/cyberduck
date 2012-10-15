@@ -23,8 +23,8 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.local.LocalFactory;
+import ch.cyberduck.core.serializer.impl.PlistDeserializer;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
-import ch.cyberduck.ui.cocoa.serializer.PlistDeserializer;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
