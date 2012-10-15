@@ -29,7 +29,7 @@ public abstract class PathReferenceFactory extends Factory<PathReference> {
     /**
      * Registered factories
      */
-    protected static final Map<Platform, PathReferenceFactory> factories
+    private static final Map<Platform, PathReferenceFactory> factories
             = new HashMap<Platform, PathReferenceFactory>();
 
     public static void addFactory(Platform platform, PathReferenceFactory f) {
