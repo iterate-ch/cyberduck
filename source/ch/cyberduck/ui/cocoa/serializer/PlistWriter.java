@@ -20,14 +20,14 @@ package ch.cyberduck.ui.cocoa.serializer;
 
 import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.Host;
-import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.Serializable;
-import ch.cyberduck.core.Transfer;
+import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.serializer.HostWriterFactory;
 import ch.cyberduck.core.serializer.ProtocolWriterFactory;
 import ch.cyberduck.core.serializer.TransferWriterFactory;
 import ch.cyberduck.core.serializer.Writer;
+import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 import ch.cyberduck.ui.cocoa.foundation.NSMutableArray;
 

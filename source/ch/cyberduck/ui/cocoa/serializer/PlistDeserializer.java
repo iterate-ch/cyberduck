@@ -42,12 +42,12 @@ public class PlistDeserializer implements Deserializer<NSDictionary> {
 
     private static class Factory extends DeserializerFactory<NSDictionary> {
         @Override
-        protected Deserializer create() {
+        protected Deserializer<NSDictionary> create() {
             return new PlistDeserializer(NSMutableDictionary.dictionary());
         }
 
         @Override
-        protected Deserializer create(NSDictionary dict) {
+        protected Deserializer<NSDictionary> create(NSDictionary dict) {
             return new PlistDeserializer(dict);
         }
     }

@@ -18,9 +18,16 @@ package ch.cyberduck.ui.cocoa.serializer;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.Session;
+import ch.cyberduck.core.SessionFactory;
 import ch.cyberduck.core.serializer.Reader;
 import ch.cyberduck.core.serializer.TransferReaderFactory;
+import ch.cyberduck.core.transfer.CopyTransfer;
+import ch.cyberduck.core.transfer.DownloadTransfer;
+import ch.cyberduck.core.transfer.SyncTransfer;
+import ch.cyberduck.core.transfer.Transfer;
+import ch.cyberduck.core.transfer.UploadTransfer;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
