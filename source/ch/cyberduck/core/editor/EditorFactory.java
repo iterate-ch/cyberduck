@@ -102,7 +102,7 @@ public abstract class EditorFactory extends Factory<Editor> {
      *         Preferences or com.apple.TextEdit if not installed.
      */
     public Application getDefaultEditor() {
-        return ApplicationFinderFactory.instance().find(
+        return ApplicationFinderFactory.get().find(
                 Preferences.instance().getProperty("editor.bundleIdentifier"));
     }
 
@@ -115,7 +115,7 @@ public abstract class EditorFactory extends Factory<Editor> {
         if(Preferences.instance().getBoolean("editor.alwaysUseDefault")) {
             return this.getDefaultEditor();
         }
-        final ApplicationFinder finder = ApplicationFinderFactory.instance();
+        final ApplicationFinder finder = ApplicationFinderFactory.get();
         // The default application set by launch services to open files of the given type
         final Application editor = finder.find(file);
         if(null == editor) {
@@ -136,7 +136,7 @@ public abstract class EditorFactory extends Factory<Editor> {
             log.debug(String.format("Find installed editors for file %s", file));
         }
         final List<Application> editors = new ArrayList<Application>(
-                ApplicationFinderFactory.instance().findAll(file));
+                ApplicationFinderFactory.get().findAll(file));
         // Add the application set as the default editor in the Preferences to be always
         // included in the list of available editors.
         final Application defaultEditor = this.getDefaultEditor();
