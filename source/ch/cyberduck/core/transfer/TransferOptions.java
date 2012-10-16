@@ -45,4 +45,16 @@ public final class TransferOptions {
      */
     public boolean quarantine =
             Preferences.instance().getBoolean("queue.download.quarantine");
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder();
+        sb.append("TransferOptions");
+        sb.append("{resumeRequested=").append(resumeRequested);
+        sb.append(", reloadRequested=").append(reloadRequested);
+        sb.append(", closeSession=").append(closeSession);
+        sb.append(", quarantine=").append(quarantine);
+        sb.append('}');
+        return sb.toString();
+    }
 }
