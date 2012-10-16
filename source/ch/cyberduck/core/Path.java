@@ -59,8 +59,6 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
-import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
 
 import com.ibm.icu.text.Normalizer;
 
@@ -69,6 +67,11 @@ import com.ibm.icu.text.Normalizer;
  */
 public abstract class Path extends AbstractPath implements Serializable {
     private static final Logger log = Logger.getLogger(Path.class);
+
+    /**
+     * To lookup a copy of the path in the cache.
+     */
+    private PathReference reference;
 
     /**
      * The absolute remote path
@@ -91,65 +94,30 @@ public abstract class Path extends AbstractPath implements Serializable {
     private PathAttributes attributes;
 
     /**
-     * A compiled representation of a regular expression.
-     */
-    private Pattern TEXT_FILETYPE_PATTERN = null;
-
-    /**
      *
      */
     private static final int CHUNKSIZE = Preferences.instance().getInteger("connection.chunksize");
-
-    public Pattern getTextFiletypePattern() {
-        final String regex = Preferences.instance().getProperty("filetype.text.regex");
-        if(null == TEXT_FILETYPE_PATTERN ||
-                !TEXT_FILETYPE_PATTERN.pattern().equals(regex)) {
-            try {
-                TEXT_FILETYPE_PATTERN = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
-            }
-            catch(PatternSyntaxException e) {
-                log.warn(e.getMessage());
-            }
-        }
-        return TEXT_FILETYPE_PATTERN;
-    }
-
-    /**
-     * A compiled representation of a regular expression.
-     */
-    private Pattern BINARY_FILETYPE_PATTERN;
-
-    public Pattern getBinaryFiletypePattern() {
-        final String regex = Preferences.instance().getProperty("filetype.binary.regex");
-        if(null == BINARY_FILETYPE_PATTERN ||
-                !BINARY_FILETYPE_PATTERN.pattern().equals(regex)) {
-            try {
-                BINARY_FILETYPE_PATTERN = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
-            }
-            catch(PatternSyntaxException e) {
-                log.warn(e.getMessage());
-            }
-        }
-        return BINARY_FILETYPE_PATTERN;
-    }
 
     protected <T> Path(T serialized) {
         final Deserializer dict = DeserializerFactory.createDeserializer(serialized);
         String pathObj = dict.stringForKey("Remote");
         if(pathObj != null) {
-            this.setPath(pathObj);
+            this.path = pathObj;
         }
         String localObj = dict.stringForKey("Local");
         if(localObj != null) {
-            this.setLocal(LocalFactory.createLocal(localObj));
+            this.local = LocalFactory.createLocal(localObj);
         }
         String symlinkObj = dict.stringForKey("Symlink");
         if(symlinkObj != null) {
-            this.setSymlinkTarget(symlinkObj);
+            this.symlink = symlinkObj;
         }
         final Object attributesObj = dict.objectForKey("Attributes");
         if(attributesObj != null) {
             this.attributes = new PathAttributes(attributesObj);
+        }
+        else {
+            this.attributes = new PathAttributes(Path.FILE_TYPE);
         }
     }
 
@@ -180,7 +148,7 @@ public abstract class Path extends AbstractPath implements Serializable {
      */
     public Path(final String parent, final String name, final int type) {
         this.setPath(parent, name);
-        this.attributes().setType(type);
+        this.attributes = new PathAttributes(type);
     }
 
     /**
@@ -191,7 +159,7 @@ public abstract class Path extends AbstractPath implements Serializable {
      */
     public Path(final String path, final int type) {
         this.setPath(path);
-        this.attributes().setType(type);
+        this.attributes = new PathAttributes(type);
     }
 
     /**
@@ -204,8 +172,7 @@ public abstract class Path extends AbstractPath implements Serializable {
      */
     public Path(final String parent, final Local local) {
         this.setPath(parent, local);
-        this.attributes().setType(
-                local.attributes().isDirectory() ? DIRECTORY_TYPE : FILE_TYPE);
+        this.attributes = new PathAttributes(local.attributes().isDirectory() ? DIRECTORY_TYPE : FILE_TYPE);
     }
 
     /**
@@ -318,7 +285,7 @@ public abstract class Path extends AbstractPath implements Serializable {
                 n.append(DELIMITER);
             }
             else if(normalized.startsWith("\\\\")) {
-                ;
+                //
             }
             else if(absolute) {
                 // convert to absolute path
@@ -403,11 +370,6 @@ public abstract class Path extends AbstractPath implements Serializable {
     }
 
     /**
-     * To lookup a copy of the path in the cache.
-     */
-    protected PathReference reference;
-
-    /**
      * Default implementation returning a reference to self. You can override this
      * if you need a different strategy to compare hashcode and equality for caching
      * in a model.
@@ -424,16 +386,17 @@ public abstract class Path extends AbstractPath implements Serializable {
         return reference;
     }
 
-    public void setReference(PathReference<Path> reference) {
+    public void setReference(final PathReference<Path> reference) {
         this.reference = reference;
     }
 
     @Override
     public PathAttributes attributes() {
-        if(null == attributes) {
-            attributes = new PathAttributes();
-        }
         return attributes;
+    }
+
+    public void setAttributes(final PathAttributes attributes) {
+        this.attributes = attributes;
     }
 
     /**

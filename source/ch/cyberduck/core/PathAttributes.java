@@ -121,10 +121,11 @@ public class PathAttributes extends Attributes implements Serializable {
     /**
      * HTTP headers.
      */
-    private Map<String, String> metadata = Collections.emptyMap();
+    private Map<String, String> metadata;
 
-    public PathAttributes() {
-        super();
+    public PathAttributes(int filetype) {
+        metadata = Collections.emptyMap();
+        type = filetype;
     }
 
     public <T> PathAttributes(final T serialized) {
@@ -150,6 +151,7 @@ public class PathAttributes extends Attributes implements Serializable {
         if(duplicateObj != null) {
             duplicate = Boolean.valueOf(duplicateObj);
         }
+        metadata = Collections.emptyMap();
     }
 
     @Override
