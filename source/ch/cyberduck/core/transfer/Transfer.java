@@ -58,6 +58,9 @@ public abstract class Transfer implements Serializable {
      */
     private List<Path> roots;
 
+    /**
+     * Transfer status determined by filters
+     */
     private Map<Path, TransferStatus> status;
 
     /**
@@ -181,12 +184,6 @@ public abstract class Transfer implements Serializable {
             for(Object rootDict : rootsObj) {
                 final Path root = PathFactory.createPath(session, rootDict);
                 roots.add(root);
-                final Deserializer<T> statusDict = DeserializerFactory.createDeserializer(rootDict);
-                final TransferStatus transferStatus = new TransferStatus();
-                if(statusDict.stringForKey("Complete") != null) {
-                    transferStatus.setComplete();
-                }
-                status.put(root, transferStatus);
             }
         }
         Object sizeObj = dict.stringForKey("Size");
@@ -213,7 +210,7 @@ public abstract class Transfer implements Serializable {
     public Serializer getSerializer() {
         final Serializer dict = SerializerFactory.createSerializer();
         dict.setObjectForKey(session.getHost(), "Host");
-        dict.setListForKey(this.roots, "Roots");
+        dict.setListForKey(roots, "Roots");
         dict.setStringForKey(String.valueOf(this.getSize()), "Size");
         dict.setStringForKey(String.valueOf(this.getTransferred()), "Current");
         if(timestamp != null) {
@@ -244,7 +241,7 @@ public abstract class Transfer implements Serializable {
 
     protected void fireTransferWillStart() {
         if(log.isDebugEnabled()) {
-            log.debug("fireTransferWillStart:" + this);
+            log.debug(String.format("Transfer %s starts now", this.getName()));
         }
         canceled = false;
         running = true;
@@ -256,7 +253,7 @@ public abstract class Transfer implements Serializable {
 
     public void fireTransferQueued() {
         if(log.isDebugEnabled()) {
-            log.debug("fireTransferQueued:" + this);
+            log.debug(String.format("Transfer %s queued", this.getName()));
         }
         for(Session s : this.getSessions()) {
             Growl.instance().notify("Transfer queued", s.getHost().getHostname());
@@ -751,16 +748,10 @@ public abstract class Transfer implements Serializable {
     }
 
     /**
-     * @return True if the bytes transferred equal the size of the queue and
-     *         the bytes transfered is > 0
+     * @return True if the bytes transferred equal the size of the queue
      */
     public boolean isComplete() {
-        for(Path root : roots) {
-            if(!status.get(root).isComplete()) {
-                return false;
-            }
-        }
-        return true;
+        return size == transferred;
     }
 
     /**
