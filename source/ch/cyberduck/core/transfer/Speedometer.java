@@ -114,7 +114,7 @@ public class Speedometer {
                         // Remaining time in milliseconds
                         long remaining = new BigDecimal((transfer.getSize() - transfer.getTransferred()) / speed).setScale(0, RoundingMode.UP).longValue();
                         // Display in seconds
-                        b.append(sizeFormatter.format(new BigDecimal(remaining).divide(new BigDecimal(1000L), RoundingMode.UP).longValue()));
+                        b.append(periodFormatter.format(new BigDecimal(remaining).divide(new BigDecimal(1000L), RoundingMode.UP).longValue()));
                     }
                 }
                 b.append(")");
