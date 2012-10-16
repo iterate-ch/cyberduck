@@ -18,22 +18,15 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
 
 public class AttributesTest extends AbstractTestCase {
 
-    private PathAttributes attributes;
-
-    @Before
-    public void configure() {
-        this.attributes = new PathAttributes();
-    }
-
     @Test
     public void testClone() throws Exception {
+        PathAttributes attributes = new PathAttributes(Path.FILE_TYPE);
         PathAttributes clone = new PathAttributes(attributes.getAsDictionary());
 
         assertEquals(clone.getPermission(), attributes.getPermission());
@@ -42,7 +35,7 @@ public class AttributesTest extends AbstractTestCase {
 
     @Test
     public void testSetGetType() throws Exception {
-        attributes.setType(Path.FILE_TYPE | Path.SYMBOLIC_LINK_TYPE);
+        PathAttributes attributes = new PathAttributes(Path.FILE_TYPE | Path.SYMBOLIC_LINK_TYPE);
         assertTrue(attributes.isFile());
         assertTrue(attributes.isSymbolicLink());
         assertFalse(attributes.isDirectory());
