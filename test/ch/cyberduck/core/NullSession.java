@@ -23,16 +23,16 @@ public class NullSession extends Session {
 
     @Override
     protected void connect() throws IOException {
-        throw new UnsupportedOperationException();
+        //
     }
 
     @Override
     protected void login(final LoginController controller, final Credentials credentials) throws IOException {
-        throw new UnsupportedOperationException();
+        //
     }
 
     @Override
     public void close() {
-        throw new UnsupportedOperationException();
+        //
     }
 }
