@@ -2559,10 +2559,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         if(this.getSession().getHost().getCredentials().isAnonymousLogin()) {
             return false;
         }
-        if(selected.attributes().isFile()) {
-            return true;
-        }
-        return false;
+        return selected.attributes().isFile();
     }
 
     @Action
@@ -3472,7 +3469,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
             @Override
             public void run() {
                 if(getSession().cache().isCached(directory.getReference())) {
-                    //Reset the readable attribute
+                    // Reset the readable attribute
                     directory.children().attributes().setReadable(true);
                 }
                 // Get the directory listing in the background
@@ -3757,7 +3754,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         return this.unmount(new Runnable() {
             @Override
             public void run() {
-                ;
+                //
             }
         });
     }
@@ -3874,11 +3871,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 }
 
                 @Override
-                public void cleanup() {
-                    ;
-                }
-
-                @Override
                 public String getActivity() {
                     return MessageFormat.format(Locale.localizedString("Disconnecting {0}", "Status"),
                             session.getHost().getHostname());
@@ -3950,7 +3942,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                                    }, new Runnable() {
                                        @Override
                                        public void run() {
-                                           ;
+                                           //
                                        }
                                    }
             )) {
