@@ -22,6 +22,7 @@ import ch.cyberduck.core.Native;
 import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.local.LocalFactory;
 import ch.cyberduck.ui.cocoa.application.NSWorkspace;
+import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSBundle;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 import ch.cyberduck.ui.cocoa.foundation.NSEnumerator;
@@ -236,7 +237,12 @@ public final class LaunchServicesApplicationFinder implements ApplicationFinder 
     @Override
     public boolean isOpen(final Application application) {
         synchronized(workspace) {
-            final NSEnumerator apps = NSWorkspace.sharedWorkspace().launchedApplications().objectEnumerator();
+            final NSArray launched = NSWorkspace.sharedWorkspace().launchedApplications();
+            if(null == launched) {
+                log.error("Unable to determine launched applications");
+                return false;
+            }
+            final NSEnumerator apps = launched.objectEnumerator();
             NSObject next;
             while(((next = apps.nextObject()) != null)) {
                 NSDictionary app = Rococoa.cast(next, NSDictionary.class);
