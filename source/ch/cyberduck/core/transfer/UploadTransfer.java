@@ -162,14 +162,14 @@ public class UploadTransfer extends Transfer {
                 }
                 if(upload.exists()) {
                     if(upload.getLocal().attributes().isDirectory()) {
-                        if(0 == this.children(upload).size()) {
+                        if(this.children(upload).isEmpty()) {
                             // Do not prompt for existing empty directories
                             continue;
                         }
                     }
                     // Prompt user to choose a filter
                     TransferAction result = prompt.prompt();
-                    return this.filter(prompt, result); //break out of loop
+                    return this.filter(prompt, result);
                 }
             }
             // No files exist yet therefore it is most straightforward to use the overwrite action

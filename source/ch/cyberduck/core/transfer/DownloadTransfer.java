@@ -121,25 +121,16 @@ public class DownloadTransfer extends Transfer {
         }
         if(action.equals(TransferAction.ACTION_CALLBACK)) {
             for(Path download : this.getRoots()) {
-                if(!this.check()) {
-                    return null;
-                }
                 if(download.getLocal().exists()) {
                     if(download.getLocal().attributes().isDirectory()) {
-                        if(0 == download.getLocal().children().size()) {
+                        if(this.children(download).isEmpty()) {
                             // Do not prompt for existing empty directories
-                            continue;
-                        }
-                    }
-                    if(download.getLocal().attributes().isFile()) {
-                        if(download.getLocal().attributes().getSize() == 0) {
-                            // Do not prompt for zero sized files
                             continue;
                         }
                     }
                     // Prompt user to choose a filter
                     final TransferAction result = prompt.prompt();
-                    return this.filter(prompt, result); //break out of loop
+                    return this.filter(prompt, result);
                 }
             }
             // No files exist yet therefore it is most straightforward to use the overwrite action
