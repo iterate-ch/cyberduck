@@ -19,7 +19,19 @@ package ch.cyberduck.core.cloudfront;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.ConnectionCanceledException;
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.ErrorListener;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LoginCanceledException;
+import ch.cyberduck.core.LoginController;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.ProgressListener;
+import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.Session;
+import ch.cyberduck.core.SessionFactory;
+import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.http.HttpSession;
@@ -460,7 +472,7 @@ public class CloudFrontDistributionConfiguration extends HttpSession implements 
                 new Host(Protocol.S3_SSL, Protocol.S3_SSL.getDefaultHostname(), host.getCredentials()));
         if(session.getHost().getCredentials().validate(session.getHost().getProtocol())) {
             List<String> buckets = new ArrayList<String>();
-            for(Path bucket : session.mount().list()) {
+            for(Path bucket : session.mount().children()) {
                 buckets.add(bucket.getName());
             }
             Collections.sort(buckets);
