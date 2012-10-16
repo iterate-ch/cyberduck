@@ -19,7 +19,6 @@ package ch.cyberduck.core.transfer;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AbstractStreamListener;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
@@ -31,7 +30,6 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.filter.UploadRegexFilter;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.local.Local;
-import ch.cyberduck.core.local.LocalFactory;
 import ch.cyberduck.core.serializer.Serializer;
 import ch.cyberduck.core.transfer.normalizer.UploadRootPathsNormalizer;
 import ch.cyberduck.core.transfer.symlink.UploadSymlinkResolver;
@@ -114,14 +112,8 @@ public class UploadTransfer extends Transfer {
             }
             else {
                 final AttributedList<Path> children = new AttributedList<Path>();
-                for(AbstractPath child : parent.getLocal().children(filter)) {
-                    final Local local = LocalFactory.createLocal(child.getAbsolute());
-                    Path upload = PathFactory.createPath(session, parent.getAbsolute(), local);
-                    if(upload.exists()) {
-                        upload = session.cache().lookup(upload.getReference());
-                        upload.setLocal(local);
-                    }
-                    children.add(upload);
+                for(Local local : parent.getLocal().children(filter)) {
+                    children.add(PathFactory.createPath(session, parent.getAbsolute(), local));
                 }
                 this.cache().put(parent.getReference(), children);
             }
