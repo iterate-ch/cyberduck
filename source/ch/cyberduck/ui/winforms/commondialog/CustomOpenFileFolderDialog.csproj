@@ -88,10 +88,10 @@
   -->
   <PropertyGroup>
     <ProgramFiles32>$(MSBuildExtensionsPath32)\..</ProgramFiles32>
-    <VCIncludePath Condition="'$(VCIncludePath)' == ''">$(ProgramFiles32)\Microsoft Visual Studio 10.0\VC\atlmfc\include;$(ProgramFiles32)\\Microsoft Visual Studio 10.0\VC\include</VCIncludePath>
+    <VCIncludePath Condition="'$(VCIncludePath)' == ''">$(ProgramFiles32)\Microsoft Visual Studio 11.0\VC\atlmfc\include;$(ProgramFiles32)\\Microsoft Visual Studio 11.0\VC\include</VCIncludePath>
     <Win32Resource>$(IntermediateOutputPath)\res1.res</Win32Resource>
   </PropertyGroup>
   <Target Name="BeforeBuild" DependsOnTargets="GetFrameworkPaths;PrepareForBuild">
-    <Exec Command="&quot;C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\Bin\rc.exe&quot; /i &quot;$(VCIncludePath)&quot; /i &quot;C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\include&quot; /r /fo &quot;$(IntermediateOutputPath)\res1.res&quot; res1.rc" />
+      <Exec Command="&quot;C:\Program Files (x86)\Windows Kits\8.0\bin\x86\rc.exe&quot; /i &quot;C:\Program Files (x86)\Windows Kits\8.0\Include\um&quot; /i &quot;C:\Program Files (x86)\Windows Kits\8.0\Include\shared&quot; /i &quot;$(VCIncludePath)&quot; /i &quot;$(FrameworkSDKDir)\include&quot; /r /fo &quot;$(IntermediateOutputPath)\res1.res&quot; res1.rc" />
   </Target>
 </Project>
