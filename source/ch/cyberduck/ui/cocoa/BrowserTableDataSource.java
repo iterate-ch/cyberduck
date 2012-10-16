@@ -213,7 +213,7 @@ public abstract class BrowserTableDataSource extends ProxyController implements 
             }
             if(identifier.equals(SIZE_COLUMN)) {
                 return tableViewCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(
-                        SizeFormatterFactory.instance().format(item.attributes().getSize()),
+                        SizeFormatterFactory.get().format(item.attributes().getSize()),
                         TableCellAttributes.browserFontRightAlignment()));
             }
             if(identifier.equals(MODIFIED_COLUMN)) {

@@ -1848,7 +1848,7 @@ public class InfoController extends ToolbarWindowController {
 
     private void updateSize(long size) {
         sizeField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
-                SizeFormatterFactory.instance().format(size, true),
+                SizeFormatterFactory.get().format(size, true),
                 TRUNCATE_MIDDLE_ATTRIBUTES));
     }
 

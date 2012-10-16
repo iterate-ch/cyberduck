@@ -47,7 +47,7 @@ public abstract class AbstractPathTableDelegate extends AbstractTableDelegate<Pa
     @Override
     public String tooltip(Path p) {
         return p.getAbsolute() + "\n"
-                + SizeFormatterFactory.instance().format(p.attributes().getSize()) + "\n"
+                + SizeFormatterFactory.get().format(p.attributes().getSize()) + "\n"
                 + UserDateFormatterFactory.get().getLongFormat(p.attributes().getModificationDate());
     }
 

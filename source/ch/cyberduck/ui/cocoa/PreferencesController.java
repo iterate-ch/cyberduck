@@ -1762,7 +1762,7 @@ public final class PreferencesController extends ToolbarWindowController {
         final StringTokenizer options = new StringTokenizer(Preferences.instance().getProperty("queue.bandwidth.options"), ",");
         while(options.hasMoreTokens()) {
             final String bytes = options.nextToken();
-            this.defaultDownloadThrottleCombobox.addItemWithTitle(SizeFormatterFactory.instance().format(Integer.parseInt(bytes)) + "/s");
+            this.defaultDownloadThrottleCombobox.addItemWithTitle(SizeFormatterFactory.get().format(Integer.parseInt(bytes)) + "/s");
             this.defaultDownloadThrottleCombobox.lastItem().setRepresentedObject(bytes);
         }
         if(-1 == bandwidth) {
@@ -1796,7 +1796,7 @@ public final class PreferencesController extends ToolbarWindowController {
         final StringTokenizer options = new StringTokenizer(Preferences.instance().getProperty("queue.bandwidth.options"), ",");
         while(options.hasMoreTokens()) {
             final String bytes = options.nextToken();
-            this.defaultUploadThrottleCombobox.addItemWithTitle(SizeFormatterFactory.instance().format(Integer.parseInt(bytes)) + "/s");
+            this.defaultUploadThrottleCombobox.addItemWithTitle(SizeFormatterFactory.get().format(Integer.parseInt(bytes)) + "/s");
             this.defaultUploadThrottleCombobox.lastItem().setRepresentedObject(bytes);
         }
         if(-1 == bandwidth) {

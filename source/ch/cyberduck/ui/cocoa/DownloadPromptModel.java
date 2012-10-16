@@ -76,7 +76,7 @@ public class DownloadPromptModel extends TransferPromptModel {
         if(null == cached) {
             if(identifier.equals(TransferPromptModel.SIZE_COLUMN)) {
                 return tableViewCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(
-                        SizeFormatterFactory.instance().format(item.getLocal().attributes().getSize()),
+                        SizeFormatterFactory.get().format(item.getLocal().attributes().getSize()),
                         TableCellAttributes.browserFontRightAlignment()));
             }
             if(identifier.equals(TransferPromptModel.WARNING_COLUMN)) {

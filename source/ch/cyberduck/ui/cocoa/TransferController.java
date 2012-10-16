@@ -298,7 +298,7 @@ public final class TransferController extends WindowController implements NSTool
         final StringTokenizer options = new StringTokenizer(Preferences.instance().getProperty("queue.bandwidth.options"), ",");
         while(options.hasMoreTokens()) {
             final String bytes = options.nextToken();
-            this.bandwidthPopup.addItemWithTitle(SizeFormatterFactory.instance().format(Integer.parseInt(bytes)) + "/s");
+            this.bandwidthPopup.addItemWithTitle(SizeFormatterFactory.get().format(Integer.parseInt(bytes)) + "/s");
             this.bandwidthPopup.lastItem().setRepresentedObject(bytes);
         }
         this.bandwidthPopup.menu().setDelegate((this.bandwidthPopupDelegate = new BandwidthMenuDelegate()).id());

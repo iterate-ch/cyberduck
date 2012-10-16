@@ -11,11 +11,11 @@ public final class SizeFormatterFactory {
         //
     }
 
-    public static SizeFormatter instance() {
-        return SizeFormatterFactory.instance(Preferences.instance().getBoolean("browser.filesize.decimal"));
+    public static SizeFormatter get() {
+        return SizeFormatterFactory.get(Preferences.instance().getBoolean("browser.filesize.decimal"));
     }
 
-    public static SizeFormatter instance(final boolean decimal) {
+    public static SizeFormatter get(final boolean decimal) {
         if(decimal) {
             return new ch.cyberduck.core.formatter.DecimalSizeFormatter();
         }

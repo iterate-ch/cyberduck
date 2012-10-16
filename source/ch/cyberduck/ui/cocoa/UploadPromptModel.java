@@ -87,7 +87,7 @@ public class UploadPromptModel extends TransferPromptModel {
             }
             if(identifier.equals(TransferPromptModel.SIZE_COLUMN)) {
                 return tableViewCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(
-                        SizeFormatterFactory.instance().format(item.attributes().getSize()),
+                        SizeFormatterFactory.get().format(item.attributes().getSize()),
                         TableCellAttributes.browserFontRightAlignment()));
             }
             return super.objectValueForItem(item, identifier);

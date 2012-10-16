@@ -259,7 +259,7 @@ public abstract class TransferPromptController extends SheetController implement
                     }
                     else {
                         localSizeField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
-                                SizeFormatterFactory.instance().format(p.getLocal().attributes().getSize()),
+                                SizeFormatterFactory.get().format(p.getLocal().attributes().getSize()),
                                 TRUNCATE_MIDDLE_ATTRIBUTES));
                     }
                     if(p.getLocal().attributes().getModificationDate() == -1) {
@@ -278,7 +278,7 @@ public abstract class TransferPromptController extends SheetController implement
                     }
                     else {
                         remoteSizeField.setAttributedStringValue(NSAttributedString.attributedStringWithAttributes(
-                                SizeFormatterFactory.instance().format(p.attributes().getSize()),
+                                SizeFormatterFactory.get().format(p.attributes().getSize()),
                                 TRUNCATE_MIDDLE_ATTRIBUTES));
                     }
                     if(p.attributes().getModificationDate() == -1) {

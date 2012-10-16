@@ -70,7 +70,7 @@ public class SyncPromptModel extends TransferPromptModel {
             if(identifier.equals(SIZE_COLUMN)) {
                 Comparison compare = ((SyncTransfer) transfer).compare(item);
                 return tableViewCache.put(item, identifier, NSAttributedString.attributedStringWithAttributes(
-                        SizeFormatterFactory.instance().format(
+                        SizeFormatterFactory.get().format(
                                 compare.equals(Comparison.REMOTE_NEWER) ? item.attributes().getSize() : item.getLocal().attributes().getSize()),
                         TableCellAttributes.browserFontRightAlignment()));
             }
