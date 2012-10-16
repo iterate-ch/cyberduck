@@ -20,6 +20,7 @@ package ch.cyberduck.core.transfer;
 
 import ch.cyberduck.core.date.PeriodFormatter;
 import ch.cyberduck.core.date.RemainingPeriodFormatter;
+import ch.cyberduck.core.formatter.SizeFormatter;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
 import ch.cyberduck.core.i18n.Locale;
 
@@ -45,8 +46,15 @@ public class Speedometer {
 
     private boolean overall = false;
 
-    private PeriodFormatter formatter
-            = new RemainingPeriodFormatter();
+    /**
+     * Formatter for remaining time
+     */
+    private PeriodFormatter periodFormatter = new RemainingPeriodFormatter();
+
+    /**
+     * Formatter for file size
+     */
+    private SizeFormatter sizeFormatter = SizeFormatterFactory.get();
 
     private Transfer transfer;
 
@@ -83,8 +91,8 @@ public class Speedometer {
     public String getProgress() {
         final StringBuilder b = new StringBuilder(
                 MessageFormat.format(Locale.localizedString("{0} of {1}"),
-                        SizeFormatterFactory.instance().format(transfer.getTransferred(), !transfer.isComplete()),
-                        SizeFormatterFactory.instance().format(transfer.getSize()))
+                        sizeFormatter.format(transfer.getTransferred(), !transfer.isComplete()),
+                        sizeFormatter.format(transfer.getSize()))
         );
         if(transfer.isRunning()) {
             final double speed = this.getSpeed();
@@ -98,7 +106,7 @@ public class Speedometer {
                     if(transfer.getSize() > 0) {
                         b.append(", ");
                     }
-                    b.append(SizeFormatterFactory.instance(true).format(
+                    b.append(SizeFormatterFactory.get(true).format(
                             new BigDecimal(speed * 1000).setScale(0, RoundingMode.UP).longValue()));
                     b.append("/sec");
                     if(transfer.getTransferred() < transfer.getSize()) {
@@ -106,7 +114,7 @@ public class Speedometer {
                         // Remaining time in milliseconds
                         long remaining = new BigDecimal((transfer.getSize() - transfer.getTransferred()) / speed).setScale(0, RoundingMode.UP).longValue();
                         // Display in seconds
-                        b.append(formatter.format(new BigDecimal(remaining).divide(new BigDecimal(1000L), RoundingMode.UP).longValue()));
+                        b.append(sizeFormatter.format(new BigDecimal(remaining).divide(new BigDecimal(1000L), RoundingMode.UP).longValue()));
                     }
                 }
                 b.append(")");
