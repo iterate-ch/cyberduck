@@ -210,7 +210,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
     protected void setPathFilter(final String search) {
         if(log.isDebugEnabled()) {
-            log.debug("setPathFilter:" + search);
+            log.debug(String.format("Set path filter to %s", search));
         }
         if(StringUtils.isBlank(search)) {
             this.searchField.setStringValue(StringUtils.EMPTY);
@@ -339,7 +339,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
     private void reloadBrowserImpl(final List<Path> changed, final List<Path> selected, boolean scroll) {
         if(log.isDebugEnabled()) {
-            log.debug("reloadData:" + selected);
+            log.debug(String.format("Reload data with selected files %s", selected));
         }
         for(Path p : changed) {
             session.cache().invalidate(p.getParent().getReference());
@@ -361,12 +361,12 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
     private void selectRow(PathReference reference, boolean expand, boolean scroll) {
         if(log.isDebugEnabled()) {
-            log.debug("selectRow:" + reference);
+            log.debug(String.format("Select row with reference %s", reference));
         }
         final NSTableView browser = this.getSelectedBrowserView();
         int row = this.getSelectedBrowserModel().indexOf(browser, reference);
         if(log.isDebugEnabled()) {
-            log.debug("selectRow:" + row);
+            log.debug(String.format("Select row at index :%d", row));
         }
         if(-1 == row) {
             return;
@@ -382,7 +382,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
 
     protected void setSelectedPaths(List<Path> selected) {
         if(log.isDebugEnabled()) {
-            log.debug("setSelectedPaths:" + selected);
+            log.debug(String.format("Set selected paths to %s", selected));
         }
         this.selected = selected;
         this.validateToolbar();
@@ -411,7 +411,9 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     }
 
     private void deselectAll() {
-        log.debug("deselectAll");
+        if(log.isDebugEnabled()) {
+            log.debug("Deselect all files in browser");
+        }
         final NSTableView browser = this.getSelectedBrowserView();
         if(null == browser) {
             return;
@@ -795,7 +797,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
      * @param open Should open the bookmarks
      */
     public void toggleBookmarks(final boolean open) {
-        log.debug("bookmarkSwitchClicked:" + open);
         this.bookmarkSwitchView.setSelected_forSegment(open, SWITCH_BOOKMARK_VIEW);
         if(open) {
             // Display bookmarks
@@ -1129,7 +1130,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
      */
     @Override
     public boolean acceptsPreviewPanelControl(QLPreviewPanel panel) {
-        log.debug("acceptsPreviewPanelControl");
         return true;
     }
 
@@ -1142,7 +1142,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
      */
     @Override
     public void beginPreviewPanelControl(QLPreviewPanel panel) {
-        log.debug("beginPreviewPanelControl");
         QuickLookFactory.instance().willBeginQuickLook();
     }
 
@@ -1155,7 +1154,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
      */
     @Override
     public void endPreviewPanelControl(QLPreviewPanel panel) {
-        log.debug("endPreviewPanelControl");
         QuickLookFactory.instance().didEndQuickLook();
     }
 
@@ -1235,13 +1233,17 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 if(event != null) {
                     if(NSEvent.NSLeftMouseDragged == event.type()) {
                         if(!Preferences.instance().getBoolean("browser.view.autoexpand")) {
-                            log.debug("Returning false to #outlineViewShouldExpandItem while dragging because browser.view.autoexpand == false");
+                            if(log.isDebugEnabled()) {
+                                log.debug("Returning false to #outlineViewShouldExpandItem while dragging because browser.view.autoexpand == false");
+                            }
                             // See tickets #98 and #633
                             return false;
                         }
                         final NSInteger draggingColumn = view.columnAtPoint(view.convertPoint_fromView(event.locationInWindow(), null));
                         if(draggingColumn.intValue() != 0) {
-                            log.debug("Returning false to #outlineViewShouldExpandItem for column:" + draggingColumn);
+                            if(log.isDebugEnabled()) {
+                                log.debug("Returning false to #outlineViewShouldExpandItem for column:" + draggingColumn);
+                            }
                             // See ticket #60
                             return false;
                         }
@@ -3449,7 +3451,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
      */
     public void setWorkdir(final Path directory, final List<Path> selected) {
         if(log.isDebugEnabled()) {
-            log.debug("setWorkdir:" + directory);
+            log.debug(String.format("Set working directory to %s", directory.getAbsolute()));
         }
         if(null == directory) {
             // Clear the browser view if no working directory is given
@@ -3782,7 +3784,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
      */
     public boolean unmount(final SheetCallback callback, final Runnable disconnected) {
         if(log.isDebugEnabled()) {
-            log.debug("unmount:" + session);
+            log.debug(String.format("Unmount session %s", session));
         }
         if(this.isConnected() || this.isActivityRunning()) {
             if(Preferences.instance().getBoolean("browser.confirmDisconnect")) {
