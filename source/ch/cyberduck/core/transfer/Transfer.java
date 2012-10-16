@@ -422,16 +422,16 @@ public abstract class Transfer implements Serializable {
     }
 
     /**
-     * @param p       File
+     * @param file    File
      * @param filter  Filter to apply to exclude files from transfer
      * @param options Quarantine option
      * @param status  Transfer status
      */
-    protected void transfer(final Path p, final TransferPathFilter filter,
-                            final TransferOptions options, final TransferStatus status) {
+    private void transfer(final Path file, final TransferPathFilter filter,
+                          final TransferOptions options, final TransferStatus status) {
         if(!status.isSelected()) {
             if(log.isInfoEnabled()) {
-                log.info(String.format("Skip %s not selected in prompt", p.getAbsolute()));
+                log.info(String.format("Skip %s not selected in prompt", file.getAbsolute()));
             }
             status.setComplete();
             return;
@@ -439,17 +439,17 @@ public abstract class Transfer implements Serializable {
         if(!this.check()) {
             return;
         }
-        if(filter.accept(p)) {
+        if(filter.accept(file)) {
             // Notification
-            this.fireWillTransferPath(p);
+            this.fireWillTransferPath(file);
             // Transfer
-            this.transfer(p, options, status);
-            if(p.attributes().isFile()) {
+            this.transfer(file, options, status);
+            if(file.attributes().isFile()) {
                 // Post process of file
-                filter.complete(p, status);
+                filter.complete(file, status);
             }
             // Notification
-            this.fireDidTransferPath(p);
+            this.fireDidTransferPath(file);
         }
         else {
             status.setComplete();
@@ -457,9 +457,9 @@ public abstract class Transfer implements Serializable {
         if(!this.check()) {
             return;
         }
-        if(p.attributes().isDirectory()) {
+        if(file.attributes().isDirectory()) {
             boolean failure = false;
-            final AttributedList<Path> children = this.children(p);
+            final AttributedList<Path> children = this.children(file);
             if(!children.attributes().isReadable()) {
                 failure = true;
             }
@@ -472,12 +472,12 @@ public abstract class Transfer implements Serializable {
                 this.status.remove(child);
             }
             // Post process of directory
-            filter.complete(p, status);
+            filter.complete(file, status);
             // Set completion status
             if(!failure) {
                 status.setComplete();
             }
-            this.cache().remove(p.getReference());
+            this.cache().remove(file.getReference());
         }
     }
 
@@ -488,7 +488,7 @@ public abstract class Transfer implements Serializable {
      * @param options Quarantine option
      * @param status  Transfer status
      */
-    protected abstract void transfer(final Path file, TransferOptions options, final TransferStatus status);
+    protected abstract void transfer(Path file, TransferOptions options, TransferStatus status);
 
     /**
      * @param prompt  Callback
