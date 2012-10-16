@@ -22,10 +22,8 @@ import ch.cyberduck.core.Native;
 import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.local.LocalFactory;
 import ch.cyberduck.ui.cocoa.application.NSWorkspace;
-import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSBundle;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
-import ch.cyberduck.ui.cocoa.foundation.NSEnumerator;
 import ch.cyberduck.ui.cocoa.foundation.NSObject;
 
 import org.apache.commons.collections.map.AbstractLinkedMap;
@@ -33,7 +31,6 @@ import org.apache.commons.collections.map.LRUMap;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.rococoa.Rococoa;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -228,33 +225,6 @@ public final class LaunchServicesApplicationFinder implements ApplicationFinder 
         synchronized(workspace) {
             return NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(
                     application.getIdentifier()) != null;
-        }
-    }
-
-    /**
-     * @return True if the editor application is running
-     */
-    @Override
-    public boolean isOpen(final Application application) {
-        synchronized(workspace) {
-            final NSArray launched = NSWorkspace.sharedWorkspace().launchedApplications();
-            if(null == launched) {
-                log.error("Unable to determine launched applications");
-                return false;
-            }
-            final NSEnumerator apps = launched.objectEnumerator();
-            NSObject next;
-            while(((next = apps.nextObject()) != null)) {
-                NSDictionary app = Rococoa.cast(next, NSDictionary.class);
-                final NSObject identifier = app.objectForKey("NSApplicationBundleIdentifier");
-                if(identifier.toString().equals(application.getIdentifier())) {
-                    if(log.isDebugEnabled()) {
-                        log.debug(String.format("Found open application %s", application.getIdentifier()));
-                    }
-                    return true;
-                }
-            }
-            return false;
         }
     }
 }

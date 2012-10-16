@@ -44,10 +44,4 @@ public interface ApplicationFinder {
     boolean isInstalled(Application application);
 
     Application find(String application);
-
-    /**
-     * @param application Bundle identifier
-     * @return True if the application is launched
-     */
-    boolean isOpen(Application application);
 }
