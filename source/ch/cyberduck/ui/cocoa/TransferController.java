@@ -28,6 +28,7 @@ import ch.cyberduck.core.TransferCollection;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
+import ch.cyberduck.core.local.ApplicationBadgeLabelerFactory;
 import ch.cyberduck.core.local.ApplicationLauncherFactory;
 import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
@@ -762,11 +763,10 @@ public final class TransferController extends WindowController implements NSTool
                         if(Preferences.instance().getBoolean("queue.dock.badge")) {
                             int count = TransferCollection.defaultCollection().numberOfRunningTransfers();
                             if(0 == count) {
-                                NSApplication.sharedApplication().dockTile().setBadgeLabel(StringUtils.EMPTY);
+                                ApplicationBadgeLabelerFactory.get().badge(StringUtils.EMPTY);
                             }
                             else {
-                                NSApplication.sharedApplication().dockTile().setBadgeLabel(
-                                        String.valueOf(count));
+                                ApplicationBadgeLabelerFactory.get().badge(String.valueOf(count));
                             }
                         }
                     }
