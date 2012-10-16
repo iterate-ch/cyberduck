@@ -12,7 +12,7 @@ import java.util.concurrent.Callable;
 import static org.junit.Assert.*;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class FinderLocalTest extends AbstractTestCase {
 
@@ -47,6 +47,15 @@ public class FinderLocalTest extends AbstractTestCase {
 
     @Test
     public void testTrash() throws Exception {
+        Local l = new FinderLocal(System.getProperty("java.io.tmpdir"), UUID.randomUUID().toString());
+        l.touch();
+        assertTrue(l.exists());
+        l.trash();
+        assertFalse(l.exists());
+    }
+
+    @Test
+    public void testTrashRepeated() throws Exception {
         this.repeat(new Callable<Local>() {
             @Override
             public Local call() throws Exception {
