@@ -434,11 +434,6 @@ public abstract class Transfer implements Serializable {
     }
 
     /**
-     * The current path being transferred
-     */
-    private Path _current = null;
-
-    /**
      * @param p       File
      * @param filter  Filter to apply to exclude files from transfer
      * @param options Quarantine option
@@ -460,7 +455,7 @@ public abstract class Transfer implements Serializable {
             // Notification
             this.fireWillTransferPath(p);
             // Transfer
-            transfer(p, options, status);
+            this.transfer(p, options, status);
             if(p.attributes().isFile()) {
                 // Post process of file
                 filter.complete(p, status);
@@ -517,11 +512,9 @@ public abstract class Transfer implements Serializable {
                 return;
             }
         }
-
         if(!this.check()) {
             return;
         }
-
         // Determine the filter to match files against
         final TransferAction action = this.action(options.resumeRequested, options.reloadRequested);
         if(log.isDebugEnabled()) {
@@ -534,13 +527,10 @@ public abstract class Transfer implements Serializable {
             this.cancel();
             return;
         }
-
         this.clear(options);
-
         if(!this.check()) {
             return;
         }
-
         // Get the transfer filter from the concrete transfer class
         final TransferPathFilter filter = this.filter(prompt, action);
         if(null == filter) {
@@ -548,22 +538,17 @@ public abstract class Transfer implements Serializable {
             this.cancel();
             return;
         }
-
         // Reset the cached size of the transfer and progress value
         this.reset();
-
         // Calculate information about the files in advance to give progress information
         for(Path next : roots) {
             this.prepare(next, filter);
         }
-
         // Transfer all files sequentially
         for(Path next : roots) {
             this.transfer(next, filter, options, status.get(next));
         }
-
         this.clear(options);
-
         if(options.closeSession) {
             for(Session s : this.getSessions()) {
                 this.close(s);
@@ -587,17 +572,14 @@ public abstract class Transfer implements Serializable {
         if(!this.isSelected(p)) {
             return;
         }
+        final TransferStatus s;
         // Only prepare the path it will be actually transferred
         if(filter.accept(p)) {
             if(log.isInfoEnabled()) {
                 log.info(String.format("Accepted in %s transfer", p.getAbsolute()));
             }
             session.message(MessageFormat.format(Locale.localizedString("Prepare {0}", "Status"), p.getName()));
-            final TransferStatus s = filter.prepare(p);
-            if(log.isDebugEnabled()) {
-                log.debug(String.format("Determined transfer status %s for %s", s, p.getAbsolute()));
-            }
-            status.put(p, s);
+            s = filter.prepare(p);
             // Add transfer length to total bytes
             size += s.getLength();
             if(s.isResume()) {
@@ -605,6 +587,14 @@ public abstract class Transfer implements Serializable {
                 transferred += p.attributes().getSize();
             }
         }
+        else {
+            // Empty transfer status for files not accepted by filter
+            s = new TransferStatus();
+        }
+        if(log.isDebugEnabled()) {
+            log.debug(String.format("Determined transfer status %s for %s", s, p.getAbsolute()));
+        }
+        status.put(p, s);
         if(p.attributes().isDirectory()) {
             // Call recursively for all children
             for(Path child : this.children(p)) {
@@ -619,7 +609,7 @@ public abstract class Transfer implements Serializable {
      */
     protected boolean check() {
         if(log.isDebugEnabled()) {
-            log.debug(String.format("Check conection for transfer %s", this.getName()));
+            log.debug(String.format("Check connection for transfer %s", this.getName()));
         }
         // Bail out if canceled
         if(this.isCanceled()) {
@@ -726,7 +716,7 @@ public abstract class Transfer implements Serializable {
 
     protected boolean open(final Session session) {
         try {
-            log.debug("Checking connnection");
+            log.debug(String.format("Checking connnection for %s", session));
             // We manually open the connection here first as otherwise
             // every transfer will try again if it should fail
             session.check();
@@ -745,9 +735,9 @@ public abstract class Transfer implements Serializable {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Reset status for %s", this.getName()));
         }
-        this.transferred = 0;
-        this.size = 0;
-        this.reset = true;
+        transferred = 0;
+        size = 0;
+        reset = true;
     }
 
     /**
@@ -761,7 +751,7 @@ public abstract class Transfer implements Serializable {
      * @return The number of roots
      */
     public int numberOfRoots() {
-        return this.roots.size();
+        return roots.size();
     }
 
     /**
@@ -769,7 +759,7 @@ public abstract class Transfer implements Serializable {
      *         the bytes transfered is > 0
      */
     public boolean isComplete() {
-        for(Path root : this.roots) {
+        for(Path root : roots) {
             if(!status.get(root).isComplete()) {
                 return false;
             }
