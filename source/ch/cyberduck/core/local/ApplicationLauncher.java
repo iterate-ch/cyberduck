@@ -29,5 +29,7 @@ public interface ApplicationLauncher {
 
     boolean open(Local file, Application application);
 
+    boolean open(Local file, Application application, String args);
+
     void bounce(Local file);
 }
