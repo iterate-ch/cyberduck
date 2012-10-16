@@ -39,6 +39,13 @@ public class LaunchServicesApplicationFinderTest extends AbstractTestCase {
     @Test
     public void testIsOpen() throws Exception {
         final ApplicationFinder f = ApplicationFinderFactory.get();
+        assertTrue(f.isOpen(new Application("com.apple.finder", null)));
+        assertFalse(f.isOpen(new Application("com.apple.Finder", null)));
+    }
+
+    @Test
+    public void testIsOpenRepeated() throws Exception {
+        final ApplicationFinder f = ApplicationFinderFactory.get();
         this.repeat(new Callable<Object>() {
             @Override
             public Object call() throws Exception {
