@@ -575,10 +575,8 @@ public abstract class Transfer implements Serializable {
             s = filter.prepare(p);
             // Add transfer length to total bytes
             size += s.getLength();
-            if(s.isResume()) {
-                // Add skipped bytes
-                transferred += p.attributes().getSize();
-            }
+            // Add skipped bytes
+            transferred += s.getCurrent();
         }
         else {
             // Empty transfer status for files not accepted by filter
