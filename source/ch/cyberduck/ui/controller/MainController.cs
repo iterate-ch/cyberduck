@@ -41,6 +41,8 @@ using ch.cyberduck.core.local;
 using ch.cyberduck.core.serializer;
 using ch.cyberduck.ui;
 using org.apache.log4j;
+using org.apache.log4j.helpers;
+using org.apache.log4j.xml;
 using Path = System.IO.Path;
 using Rendezvous = Ch.Cyberduck.Core.Rendezvous;
 using ThreadPool = ch.cyberduck.core.threading.ThreadPool;
@@ -206,6 +208,7 @@ namespace Ch.Cyberduck.Ui.Controller
             // we do not save the log file in the roaming profile
             var fileName = Path.Combine(Preferences.instance().getProperty("application.support.path"), "cyberduck.log");
 
+            DOMConfigurator.configure(DOMConfigurator.instancehelper_getClass(new DOMConfigurator()).getClassLoader().getResource(Preferences.instance().getProperty("logging.config")));
             Logger root = Logger.getRootLogger();
             root.removeAllAppenders();
 

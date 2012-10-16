@@ -274,7 +274,8 @@ namespace Ch.Cyberduck.Ui.Controller
 
             base.setDefaults();
 
-            defaults.put("logging", "error");
+            defaults.put("logging.config", "log4j-windows.xml");
+            defaults.put("logging", "error");            
 
             //disable reminder for procotol handler registration
             defaults.put("defaulthandler.reminder", false.ToString());

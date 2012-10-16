@@ -167,6 +167,7 @@ public abstract class Preferences {
         /**
          * The logging level (debug, info, warn, error)
          */
+        defaults.put("logging.config", "log4j-cocoa.xml");
         defaults.put("logging", "error");
 
         java.util.logging.Logger rootLogger = LogManager.getLogManager().getLogger("");
