@@ -5,8 +5,9 @@ import ch.cyberduck.ui.cocoa.foundation.NSString;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import java.util.Collections;
+
+import static org.junit.Assert.*;
 
 /**
  * @version $Id$
@@ -28,18 +29,21 @@ public class AttributedListTest extends AbstractTestCase {
     @Test
     public void testFilter() throws Exception {
         AttributedList<Path> list = new AttributedList<Path>();
-        assertTrue(list.add(new NullPath("/a", Path.DIRECTORY_TYPE)));
+        final NullPath a = new NullPath("/a", Path.DIRECTORY_TYPE);
+        assertTrue(list.add(a));
         assertTrue(list.filter(new NullComparator(), new PathFilter() {
             @Override
             public boolean accept(final AbstractPath file) {
                 return !file.getName().equals("a");
             }
         }).isEmpty());
+        assertEquals(Collections.<Path>singletonList(a), list.attributes().getHidden());
         assertFalse(list.filter(new NullComparator(), new PathFilter() {
             @Override
             public boolean accept(final AbstractPath file) {
                 return !file.getName().equals("b");
             }
         }).isEmpty());
+        assertEquals(Collections.emptyList(), list.attributes().getHidden());
     }
 }

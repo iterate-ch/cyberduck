@@ -20,7 +20,6 @@ package ch.cyberduck.core;
 
 import org.apache.log4j.Logger;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
@@ -41,8 +40,8 @@ public class AttributedList<E extends AbstractPath> extends CopyOnWriteArrayList
     /**
      * Metadata of file listing
      */
-    private Attributes<E> attributes
-            = new Attributes<E>();
+    private AttributedListAttributes<E> attributes
+            = new AttributedListAttributes<E>();
 
     /**
      * Initialize an attributed list with default attributes
@@ -63,126 +62,11 @@ public class AttributedList<E extends AbstractPath> extends CopyOnWriteArrayList
     }
 
     /**
-     * Container for file listing attributes, such as a sorting comparator and filter
-     *
-     * @see PathFilter
-     * @see ch.cyberduck.ui.BrowserComparator
-     */
-    public final class Attributes<E> {
-
-        /**
-         * Sort the file listing using this comparator.
-         */
-        private Comparator<E> comparator;
-
-        /**
-         * The filter to apply to the directory listing excluding files from display.
-         */
-        private PathFilter filter;
-
-        /**
-         * Hidden attribute holds a list of hidden files.
-         */
-        private List<E> hidden = new ArrayList<E>();
-
-        /**
-         * The cached version should be superseded
-         * with an updated listing.
-         */
-        private boolean invalid = false;
-
-        /**
-         * File listing is not readable; permission issue
-         */
-        private boolean readable = true;
-
-        /**
-         * Initialize with default values
-         *
-         * @see NullComparator
-         * @see NullPathFilter
-         */
-        public Attributes() {
-            this(new NullComparator<E>(), new NullPathFilter());
-        }
-
-        /**
-         * @param comparator Sorting comparator
-         * @param filter     Collection filter
-         */
-        public Attributes(Comparator<E> comparator, PathFilter filter) {
-            this.comparator = comparator;
-            this.filter = filter;
-        }
-
-        public Comparator<E> getComparator() {
-            return comparator;
-        }
-
-        public void setComparator(Comparator<E> comparator) {
-            this.comparator = comparator;
-        }
-
-        public PathFilter getFilter() {
-            return filter;
-        }
-
-        public void setFilter(PathFilter filter) {
-            this.filter = filter;
-        }
-
-        /**
-         * @param child Hidden element
-         */
-        public void addHidden(E child) {
-            hidden.add(child);
-        }
-
-        /**
-         * @return Hidden elements
-         */
-        public List<E> getHidden() {
-            return hidden;
-        }
-
-        public void setReadable(boolean readable) {
-            this.readable = readable;
-        }
-
-        /**
-         * @return True if the readable attribute is set to <code>Boolean.TRUE</code>.
-         */
-        public boolean isReadable() {
-            return readable;
-        }
-
-        /**
-         * Mark cached listing as superseded
-         *
-         * @param dirty Flag
-         */
-        public void setInvalid(boolean dirty) {
-            this.invalid = dirty;
-            if(dirty) {
-                // Reset readable attribute.
-                readable = true;
-            }
-        }
-
-        /**
-         * @return true if the listing should be superseded
-         */
-        public boolean isInvalid() {
-            return invalid;
-        }
-    }
-
-    /**
      * Metadata of the list.
      *
      * @return File attributes
      */
-    public Attributes<E> attributes() {
+    public AttributedListAttributes<E> attributes() {
         return attributes;
     }
 
@@ -247,11 +131,11 @@ public class AttributedList<E extends AbstractPath> extends CopyOnWriteArrayList
     public AttributedList<E> filter(final Comparator comparator, final PathFilter filter) {
         boolean needsSorting = false;
         if(null != comparator) {
-            needsSorting = !this.attributes().getComparator().equals(comparator);
+            needsSorting = !attributes.getComparator().equals(comparator);
         }
         boolean needsFiltering = false;
         if(null != filter) {
-            needsFiltering = !this.attributes().getFilter().equals(filter);
+            needsFiltering = !attributes.getFilter().equals(filter);
         }
         if(needsSorting) {
             // Do not sort when the list has not been filtered yet
@@ -259,24 +143,24 @@ public class AttributedList<E extends AbstractPath> extends CopyOnWriteArrayList
                 this.sort(comparator);
             }
             // Saving last sorting comparator
-            this.attributes().setComparator(comparator);
+            attributes.setComparator(comparator);
         }
         if(needsFiltering) {
             // Add previously hidden files to children
-            final List<E> hidden = this.attributes().getHidden();
+            final List<E> hidden = attributes.getHidden();
             this.addAll(hidden);
             // Clear the previously set of hidden files
             hidden.clear();
             for(E child : this) {
                 if(!filter.accept(child)) {
                     // Child not accepted by filter; add to cached hidden files
-                    this.attributes().addHidden(child);
+                    attributes.addHidden(child);
                     // Remove hidden file from current file listing
                     this.remove(child);
                 }
             }
             // Saving last filter
-            this.attributes().setFilter(filter);
+            attributes.setFilter(filter);
             // Sort again because the list has changed
             this.sort(comparator);
         }
@@ -289,6 +173,7 @@ public class AttributedList<E extends AbstractPath> extends CopyOnWriteArrayList
     @Override
     public void clear() {
         references.clear();
+        attributes.clear();
         super.clear();
     }
 }
