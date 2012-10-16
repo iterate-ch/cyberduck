@@ -33,13 +33,13 @@ import ch.cyberduck.core.local.QuarantineService;
 import ch.cyberduck.core.local.QuarantineServiceFactory;
 import ch.cyberduck.core.serializer.Serializer;
 import ch.cyberduck.core.transfer.download.CompareFilter;
-import ch.cyberduck.core.transfer.download.DownloadRootPathsNormalizer;
-import ch.cyberduck.core.transfer.download.DownloadSymlinkResolver;
 import ch.cyberduck.core.transfer.download.OverwriteFilter;
 import ch.cyberduck.core.transfer.download.RenameExistingFilter;
 import ch.cyberduck.core.transfer.download.RenameFilter;
 import ch.cyberduck.core.transfer.download.ResumeFilter;
 import ch.cyberduck.core.transfer.download.SkipFilter;
+import ch.cyberduck.core.transfer.normalizer.DownloadRootPathsNormalizer;
+import ch.cyberduck.core.transfer.symlink.DownloadSymlinkResolver;
 
 import org.apache.log4j.Logger;
 
@@ -60,18 +60,13 @@ public class DownloadTransfer extends Transfer {
     }
 
     public DownloadTransfer(List<Path> roots) {
-        super(roots, new BandwidthThrottle(
+        super(new DownloadRootPathsNormalizer().normalize(roots), new BandwidthThrottle(
                 Preferences.instance().getFloat("queue.download.bandwidth.bytes")));
     }
 
     public <T> DownloadTransfer(T dict, Session s) {
         super(dict, s, new BandwidthThrottle(
                 Preferences.instance().getFloat("queue.download.bandwidth.bytes")));
-    }
-
-    @Override
-    public void setRoots(final List<Path> roots) {
-        super.setRoots(new DownloadRootPathsNormalizer().normalize(roots));
     }
 
     @Override

@@ -1,9 +1,8 @@
-package ch.cyberduck.core.transfer.upload;
+package ch.cyberduck.core.transfer.normalizer;
 
 import ch.cyberduck.core.Collection;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.i18n.Locale;
-import ch.cyberduck.core.transfer.RootPathsNormalizer;
 
 import org.apache.log4j.Logger;
 
@@ -12,9 +11,9 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
-public class UploadRootPathsNormalizer implements RootPathsNormalizer {
+public class UploadRootPathsNormalizer implements RootPathsNormalizer<List<Path>> {
     private static final Logger log = Logger.getLogger(UploadRootPathsNormalizer.class);
 
     @Override

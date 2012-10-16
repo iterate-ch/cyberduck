@@ -1,6 +1,15 @@
-package ch.cyberduck.core.transfer.upload;
+package ch.cyberduck.core.transfer.symlink;
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.AbstractPath;
+import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.Attributes;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.NullAttributes;
+import ch.cyberduck.core.NullLocal;
+import ch.cyberduck.core.NullPath;
+import ch.cyberduck.core.NullSession;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.local.Local;
 
 import org.junit.Test;

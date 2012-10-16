@@ -1,9 +1,8 @@
-package ch.cyberduck.core.transfer.download;
+package ch.cyberduck.core.transfer.normalizer;
 
 import ch.cyberduck.core.Collection;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.i18n.Locale;
-import ch.cyberduck.core.transfer.RootPathsNormalizer;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
@@ -14,9 +13,9 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
-public class DownloadRootPathsNormalizer implements RootPathsNormalizer {
+public class DownloadRootPathsNormalizer implements RootPathsNormalizer<List<Path>> {
     private static final Logger log = Logger.getLogger(DownloadRootPathsNormalizer.class);
 
     @Override

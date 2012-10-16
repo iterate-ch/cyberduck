@@ -4,8 +4,8 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.date.UserDateFormatterFactory;
-import ch.cyberduck.core.transfer.SymlinkResolver;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;

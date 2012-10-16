@@ -1,11 +1,11 @@
-package ch.cyberduck.core.transfer;
+package ch.cyberduck.core.transfer.symlink;
 
 import ch.cyberduck.core.Path;
 
 import org.apache.commons.lang.StringUtils;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public abstract class AbstractSymlinkResolver implements SymlinkResolver {
 

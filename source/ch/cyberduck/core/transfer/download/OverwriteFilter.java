@@ -1,6 +1,6 @@
 package ch.cyberduck.core.transfer.download;
 
-import ch.cyberduck.core.transfer.SymlinkResolver;
+import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
 
 /**
  * @version $Id$

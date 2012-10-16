@@ -38,6 +38,7 @@ import org.apache.log4j.Logger;
 
 import java.io.IOException;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -152,23 +153,22 @@ public abstract class Transfer implements Serializable {
     }
 
     /**
-     * @param items List of files to add to transfer
+     * @param roots List of files to add to transfer
      */
-    public Transfer(final List<Path> items, final BandwidthThrottle bandwidth) {
-        this.setRoots(items);
+    public Transfer(final List<Path> roots, final BandwidthThrottle bandwidth) {
+        this.roots = roots;
         this.status = new HashMap<Path, TransferStatus>();
-        for(Path root : roots) {
+        for(Path root : this.roots) {
             this.status.put(root, new TransferStatus());
         }
         this.session = this.getRoot().getSession();
-        // Intialize bandwidth setting
         this.bandwidth = bandwidth;
     }
 
-    public <T> Transfer(final T dict, final Session s, final BandwidthThrottle bandwidth) {
-        this.session = s;
+    public <T> Transfer(final T serialized, final Session session, final BandwidthThrottle bandwidth) {
+        this.session = session;
         this.bandwidth = bandwidth;
-        this.init(dict);
+        this.init(serialized);
     }
 
     @Override
@@ -176,7 +176,7 @@ public abstract class Transfer implements Serializable {
         final Deserializer dict = DeserializerFactory.createDeserializer(serialized);
         final List rootsObj = dict.listForKey("Roots");
         if(rootsObj != null) {
-            roots = new Collection<Path>();
+            roots = new ArrayList<Path>();
             status = new HashMap<Path, TransferStatus>();
             for(Object rootDict : rootsObj) {
                 final Path root = PathFactory.createPath(session, rootDict);
@@ -349,10 +349,6 @@ public abstract class Transfer implements Serializable {
      */
     public List<Path> getRoots() {
         return this.roots;
-    }
-
-    protected void setRoots(final List<Path> roots) {
-        this.roots = roots;
     }
 
     public List<Session> getSessions() {

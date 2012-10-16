@@ -1,4 +1,4 @@
-package ch.cyberduck.core.transfer;
+package ch.cyberduck.core.transfer.symlink;
 
 import ch.cyberduck.core.Path;
 

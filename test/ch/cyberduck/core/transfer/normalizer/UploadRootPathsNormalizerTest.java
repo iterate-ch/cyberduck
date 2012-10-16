@@ -1,4 +1,4 @@
-package ch.cyberduck.core.transfer.download;
+package ch.cyberduck.core.transfer.normalizer;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.NSObjectPathReference;
@@ -18,7 +18,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * @version $Id$
  */
-public class DownloadRootPathsNormalizerTest extends AbstractTestCase {
+public class UploadRootPathsNormalizerTest extends AbstractTestCase {
 
     @BeforeClass
     public static void register() {
@@ -27,10 +27,20 @@ public class DownloadRootPathsNormalizerTest extends AbstractTestCase {
 
     @Test
     public void testNormalize() throws Exception {
-        DownloadRootPathsNormalizer n = new DownloadRootPathsNormalizer();
+        UploadRootPathsNormalizer n = new UploadRootPathsNormalizer();
         final List<Path> list = new ArrayList<Path>();
-        list.add(new NullPath("/a", Path.DIRECTORY_TYPE));
-        list.add(new NullPath("/a/b", Path.FILE_TYPE));
+        list.add(new NullPath("/a", Path.DIRECTORY_TYPE) {
+            @Override
+            public Local getLocal() {
+                return new NullLocal(null, "/f/a");
+            }
+        });
+        list.add(new NullPath("/a", Path.FILE_TYPE) {
+            @Override
+            public Local getLocal() {
+                return new NullLocal(null, "/f/a/b");
+            }
+        });
         final List<Path> normalized = n.normalize(list);
         assertEquals(1, normalized.size());
         assertEquals(new NullPath("/a", Path.DIRECTORY_TYPE), normalized.get(0));
@@ -38,37 +48,23 @@ public class DownloadRootPathsNormalizerTest extends AbstractTestCase {
 
     @Test
     public void testNameClash() throws Exception {
-        DownloadRootPathsNormalizer n = new DownloadRootPathsNormalizer();
+        UploadRootPathsNormalizer n = new UploadRootPathsNormalizer();
         final List<Path> list = new ArrayList<Path>();
-        list.add(new NullPath("/f/a", Path.FILE_TYPE) {
-            private Local local = new NullLocal(null, this.getName()) {
-                @Override
-                public boolean exists() {
-                    return false;
-                }
-            };
-
+        list.add(new NullPath("/a", Path.FILE_TYPE) {
             @Override
             public Local getLocal() {
-                return local;
+                return new NullLocal(null, "/f/a");
             }
         });
-        list.add(new NullPath("/g/a", Path.FILE_TYPE) {
-            private Local local = new NullLocal(null, this.getName()) {
-                @Override
-                public boolean exists() {
-                    return false;
-                }
-            };
-
+        list.add(new NullPath("/a", Path.FILE_TYPE) {
             @Override
             public Local getLocal() {
-                return local;
+                return new NullLocal(null, "/g/a");
             }
         });
         final List<Path> normalized = n.normalize(list);
         assertEquals(2, normalized.size());
-        assertEquals(new NullLocal(null, "/a"), normalized.get(0).getLocal());
-        assertEquals(new NullLocal(null, "/a-1"), normalized.get(1).getLocal());
+        assertEquals(new NullPath("/a", Path.FILE_TYPE), normalized.get(0));
+        assertEquals(new NullPath("/a-1", Path.FILE_TYPE), normalized.get(1));
     }
 }

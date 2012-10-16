@@ -4,6 +4,7 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.synchronization.CombinedComparisionService;
 import ch.cyberduck.core.synchronization.Comparison;
 import ch.cyberduck.core.synchronization.ComparisonService;
+import ch.cyberduck.core.transfer.symlink.UploadSymlinkResolver;
 
 import org.apache.log4j.Logger;
 

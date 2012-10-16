@@ -33,14 +33,14 @@ import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.local.LocalFactory;
 import ch.cyberduck.core.serializer.Serializer;
+import ch.cyberduck.core.transfer.normalizer.UploadRootPathsNormalizer;
+import ch.cyberduck.core.transfer.symlink.UploadSymlinkResolver;
 import ch.cyberduck.core.transfer.upload.CompareFilter;
 import ch.cyberduck.core.transfer.upload.OverwriteFilter;
 import ch.cyberduck.core.transfer.upload.RenameExistingFilter;
 import ch.cyberduck.core.transfer.upload.RenameFilter;
 import ch.cyberduck.core.transfer.upload.ResumeFilter;
 import ch.cyberduck.core.transfer.upload.SkipFilter;
-import ch.cyberduck.core.transfer.upload.UploadRootPathsNormalizer;
-import ch.cyberduck.core.transfer.upload.UploadSymlinkResolver;
 
 import org.apache.log4j.Logger;
 
@@ -62,7 +62,7 @@ public class UploadTransfer extends Transfer {
     }
 
     public UploadTransfer(List<Path> roots) {
-        super(roots, new BandwidthThrottle(
+        super(new UploadRootPathsNormalizer().normalize(roots), new BandwidthThrottle(
                 Preferences.instance().getFloat("queue.upload.bandwidth.bytes")));
     }
 
@@ -76,11 +76,6 @@ public class UploadTransfer extends Transfer {
         final Serializer dict = super.getSerializer();
         dict.setStringForKey(String.valueOf(KIND_UPLOAD), "Kind");
         return dict.<T>getSerialized();
-    }
-
-    @Override
-    public void setRoots(final List<Path> roots) {
-        super.setRoots(new UploadRootPathsNormalizer().normalize(roots));
     }
 
     /**

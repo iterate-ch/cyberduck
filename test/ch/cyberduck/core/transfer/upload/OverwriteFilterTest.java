@@ -3,14 +3,14 @@ package ch.cyberduck.core.transfer.upload;
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.NullPath;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.transfer.NullSymlinkResolver;
+import ch.cyberduck.core.transfer.symlink.NullSymlinkResolver;
 
 import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class OverwriteFilterTest extends AbstractTestCase {
 

@@ -1,9 +1,8 @@
-package ch.cyberduck.core.transfer.download;
+package ch.cyberduck.core.transfer.symlink;
 
 import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.transfer.AbstractSymlinkResolver;
 
 import java.util.List;
 

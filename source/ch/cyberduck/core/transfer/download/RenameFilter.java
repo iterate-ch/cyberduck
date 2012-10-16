@@ -2,8 +2,8 @@ package ch.cyberduck.core.transfer.download;
 
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.local.LocalFactory;
-import ch.cyberduck.core.transfer.SymlinkResolver;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;

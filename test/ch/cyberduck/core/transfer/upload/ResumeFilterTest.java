@@ -5,8 +5,8 @@ import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.NullPath;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.local.Local;
-import ch.cyberduck.core.transfer.NullSymlinkResolver;
 import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.transfer.symlink.NullSymlinkResolver;
 
 import org.junit.Test;
 

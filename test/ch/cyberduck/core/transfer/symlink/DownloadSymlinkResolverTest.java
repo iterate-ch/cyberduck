@@ -1,4 +1,4 @@
-package ch.cyberduck.core.transfer.download;
+package ch.cyberduck.core.transfer.symlink;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.NSObjectPathReference;
