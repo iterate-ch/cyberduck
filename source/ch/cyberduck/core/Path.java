@@ -971,7 +971,7 @@ public abstract class Path extends AbstractPath implements Serializable {
     }
 
     /**
-     * Check for file existance. The default implementation does a directory listing of the parent folder.
+     * Check for file existence. The default implementation does a directory listing of the parent folder.
      *
      * @return True if the path exists or is cached.
      */
@@ -980,16 +980,7 @@ public abstract class Path extends AbstractPath implements Serializable {
         if(this.isRoot()) {
             return true;
         }
-        final Path parent = this.getParent();
-        if(this.getSession().isUnixPermissionsSupported()) {
-            if(parent.attributes().getPermission().equals(Permission.EMPTY)) {
-                parent.readUnixPermission();
-                if(!parent.attributes().getPermission().isReadable()) {
-                    return false;
-                }
-            }
-        }
-        return parent.children().contains(this.getReference());
+        return this.getParent().children().contains(this.getReference());
     }
 
     /**
