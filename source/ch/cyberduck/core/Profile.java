@@ -48,12 +48,7 @@ public final class Profile extends Protocol implements Serializable {
      */
     private Protocol parent;
 
-    public <T> Profile(T dict) {
-        this.init(dict);
-    }
-
-    @Override
-    public <T> void init(T serialized) {
+    public <T> Profile(final T serialized) {
         dict = DeserializerFactory.createDeserializer(serialized);
         final String protocol = this.getValue("Protocol");
         if(StringUtils.isBlank(protocol)) {

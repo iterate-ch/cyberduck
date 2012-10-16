@@ -75,12 +75,7 @@ public class Permission implements Serializable {
         }
     };
 
-    public <T> Permission(T dict) {
-        this.init(dict);
-    }
-
-    @Override
-    public <T> void init(T serialized) {
+    public <T> Permission(final T serialized) {
         final Deserializer dict = DeserializerFactory.createDeserializer(serialized);
         final String maskObj = dict.stringForKey("Mask");
         if(maskObj != null) {

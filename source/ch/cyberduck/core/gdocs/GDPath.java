@@ -32,6 +32,7 @@ import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.serializer.Deserializer;
+import ch.cyberduck.core.serializer.DeserializerFactory;
 import ch.cyberduck.core.serializer.Serializer;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -112,25 +113,10 @@ public class GDPath extends Path {
         return new Factory();
     }
 
-    @Override
-    protected <T> void init(Deserializer<T> dict) {
-        String resourceIdObj = dict.stringForKey("ResourceId");
-        if(resourceIdObj != null) {
-            this.setResourceId(resourceIdObj);
-        }
-        String exportUriObj = dict.stringForKey("ExportUri");
-        if(exportUriObj != null) {
-            this.setExportUri(exportUriObj);
-        }
-        String documentTypeObj = dict.stringForKey("DocumentType");
-        if(documentTypeObj != null) {
-            this.setDocumentType(documentTypeObj);
-        }
-        super.init(dict);
-    }
+    private final GDSession session;
 
     @Override
-    protected <S> S getAsDictionary(final Serializer dict) {
+    protected <S> S getAsDictionary(Serializer dict) {
         if(resourceId != null) {
             dict.setStringForKey(resourceId, "ResourceId");
         }
@@ -142,8 +128,6 @@ public class GDPath extends Path {
         }
         return super.getAsDictionary(dict);
     }
-
-    private final GDSession session;
 
     protected GDPath(GDSession s, String parent, String name, int type) {
         super(parent, name, type);
@@ -160,9 +144,22 @@ public class GDPath extends Path {
         this.session = s;
     }
 
-    protected <T> GDPath(GDSession s, T dict) {
-        super(dict);
+    protected <T> GDPath(GDSession s, T serialized) {
+        super(serialized);
         this.session = s;
+        final Deserializer dict = DeserializerFactory.createDeserializer(serialized);
+        String resourceIdObj = dict.stringForKey("ResourceId");
+        if(resourceIdObj != null) {
+            this.resourceId = resourceIdObj;
+        }
+        String exportUriObj = dict.stringForKey("ExportUri");
+        if(exportUriObj != null) {
+            this.exportUri = exportUriObj;
+        }
+        String documentTypeObj = dict.stringForKey("DocumentType");
+        if(documentTypeObj != null) {
+            this.documentType = documentTypeObj;
+        }
     }
 
     /**

@@ -28,10 +28,4 @@ public interface Serializable {
      * @return Native dictionary format
      */
     <T> T getAsDictionary();
-
-    /**
-     * @param serialized Native dictionary format
-     * @param <T>        The serialized object type
-     */
-    <T> void init(T serialized);
 }

@@ -222,17 +222,9 @@ public class Host implements Serializable {
     }
 
     /**
-     * @param dict A valid bookmark dictionary
-     */
-    public <T> Host(T dict) {
-        this.init(dict);
-    }
-
-    /**
      * @param serialized A valid bookmark dictionary
      */
-    @Override
-    public <T> void init(T serialized) {
+    public <T> Host(T serialized) {
         final Deserializer dict = DeserializerFactory.createDeserializer(serialized);
         Object uuidObj = dict.stringForKey("UUID");
         if(uuidObj != null) {

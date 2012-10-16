@@ -133,17 +133,8 @@ public abstract class Path extends AbstractPath implements Serializable {
         return BINARY_FILETYPE_PATTERN;
     }
 
-    protected <T> Path(T dict) {
-        this.init(dict);
-    }
-
-    @Override
-    public <T> void init(T serialized) {
-        final Deserializer<T> dict = DeserializerFactory.createDeserializer(serialized);
-        this.init(dict);
-    }
-
-    protected <T> void init(Deserializer<T> dict) {
+    protected <T> Path(T serialized) {
+        final Deserializer dict = DeserializerFactory.createDeserializer(serialized);
         String pathObj = dict.stringForKey("Remote");
         if(pathObj != null) {
             this.setPath(pathObj);
@@ -156,16 +147,16 @@ public abstract class Path extends AbstractPath implements Serializable {
         if(symlinkObj != null) {
             this.setSymlinkTarget(symlinkObj);
         }
-        final T attributesObj = dict.objectForKey("Attributes");
+        final Object attributesObj = dict.objectForKey("Attributes");
         if(attributesObj != null) {
             this.attributes = new PathAttributes(attributesObj);
         }
     }
 
     @Override
-    public <S> S getAsDictionary() {
+    public <T> T getAsDictionary() {
         final Serializer dict = SerializerFactory.createSerializer();
-        return (S) this.getAsDictionary(dict);
+        return this.getAsDictionary(dict);
     }
 
     protected <S> S getAsDictionary(Serializer dict) {

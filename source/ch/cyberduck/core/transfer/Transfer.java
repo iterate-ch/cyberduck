@@ -171,11 +171,6 @@ public abstract class Transfer implements Serializable {
     public <T> Transfer(final T serialized, final Session session, final BandwidthThrottle bandwidth) {
         this.session = session;
         this.bandwidth = bandwidth;
-        this.init(serialized);
-    }
-
-    @Override
-    public <T> void init(T serialized) {
         final Deserializer dict = DeserializerFactory.createDeserializer(serialized);
         final List rootsObj = dict.listForKey("Roots");
         if(rootsObj != null) {
