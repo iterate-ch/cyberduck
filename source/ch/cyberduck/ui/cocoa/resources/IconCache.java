@@ -18,10 +18,10 @@ package ch.cyberduck.ui.cocoa.resources;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.local.Local;
-import ch.cyberduck.core.local.LocalFactory;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.local.Local;
+import ch.cyberduck.core.local.LocalFactory;
 import ch.cyberduck.ui.cocoa.application.NSGraphics;
 import ch.cyberduck.ui.cocoa.application.NSImage;
 import ch.cyberduck.ui.cocoa.application.NSWorkspace;
@@ -178,7 +178,7 @@ public final class IconCache {
     }
 
     private NSImage iconForFolder(final NSImage badge, final Integer size) {
-        final String name = String.format("NSFolder%s", badge.name());
+        final String name = String.format("NSFolder-%s", badge.name());
         NSImage folder = this.iconForName(name, size);
         if(null == folder) {
             folder = this.badge(badge, this.convert(FOLDER_ICON, size));
@@ -319,6 +319,7 @@ public final class IconCache {
     public NSImage iconForPath(final Path item, final Integer size, final boolean overlay) {
         if(item.attributes().isSymbolicLink()) {
             final NSImage badge = this.iconForName("aliasbadge.tiff", size);
+            badge.setName("aliasbadge");
             if(item.attributes().isDirectory()) {
                 return this.iconForFolder(badge, size);
             }
@@ -339,16 +340,19 @@ public final class IconCache {
             if(overlay) {
                 if(!item.attributes().getPermission().isExecutable()) {
                     final NSImage badge = this.iconForName("privatefolderbadge.tiff", size);
+                    badge.setName("privatefolderbadge");
                     return this.iconForFolder(badge, size);
                 }
                 if(!item.attributes().getPermission().isReadable()) {
                     if(item.attributes().getPermission().isWritable()) {
                         final NSImage badge = this.iconForName("dropfolderbadge.tiff", size);
+                        badge.setName("dropfolderbadge");
                         return this.iconForFolder(badge, size);
                     }
                 }
                 if(!item.attributes().getPermission().isWritable()) {
                     final NSImage badge = this.iconForName("readonlyfolderbadge.tiff", size);
+                    badge.setName("readonlyfolderbadge");
                     return this.iconForFolder(badge, size);
                 }
             }
