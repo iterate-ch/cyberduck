@@ -78,7 +78,7 @@ public abstract class KeychainX509TrustManager extends AbstractX509TrustManager 
             }
             return;
         }
-        if(KeychainFactory.instance().isTrusted(this.getHostname(), certs)) {
+        if(KeychainFactory.get().isTrusted(this.getHostname(), certs)) {
             if(log.isInfoEnabled()) {
                 log.info(String.format("Certificate for %s trusted in Keychain", this.getHostname()));
             }
@@ -156,7 +156,7 @@ public abstract class KeychainX509TrustManager extends AbstractX509TrustManager 
                     }
                 }
             }
-            X509Certificate cert = KeychainFactory.instance().chooseCertificate(list.toArray(new String[list.size()]),
+            X509Certificate cert = KeychainFactory.get().chooseCertificate(list.toArray(new String[list.size()]),
                     this.getHostname(),
                     MessageFormat.format(Locale.localizedString("Select the certificate to use when connecting to {0}."), this.getHostname()));
             if(null == cert) {

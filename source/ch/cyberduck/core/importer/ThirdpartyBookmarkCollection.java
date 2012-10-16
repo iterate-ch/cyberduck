@@ -134,7 +134,7 @@ public abstract class ThirdpartyBookmarkCollection extends AbstractHostCollectio
             log.debug("Create new bookmark from import: " + bookmark);
         }
         // Save password if any to Keychain
-        KeychainFactory.instance().save(bookmark);
+        KeychainFactory.get().save(bookmark);
         // Reset password in memory
         bookmark.getCredentials().setPassword(null);
         return super.add(bookmark);

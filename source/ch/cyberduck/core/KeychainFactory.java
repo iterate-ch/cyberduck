@@ -36,7 +36,7 @@ public abstract class KeychainFactory extends Factory<AbstractKeychain> {
         factories.put(platform, f);
     }
 
-    public static AbstractKeychain instance() {
+    public static AbstractKeychain get() {
         if(!factories.containsKey(NATIVE_PLATFORM)) {
             throw new FactoryException(String.format("No implementation for %s", NATIVE_PLATFORM));
         }

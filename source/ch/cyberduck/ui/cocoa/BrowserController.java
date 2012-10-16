@@ -2223,7 +2223,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
                 log.warn("No accepted certificates found");
                 return;
             }
-            KeychainFactory.instance().displayCertificates(
+            KeychainFactory.get().displayCertificates(
                     certificates.toArray(new X509Certificate[certificates.size()]));
         }
     }

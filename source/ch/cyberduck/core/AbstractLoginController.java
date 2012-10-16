@@ -61,7 +61,7 @@ public abstract class AbstractLoginController implements LoginController {
             // Lookup password if missing. Always lookup password for public key authentication. See #5754.
             if(StringUtils.isNotBlank(credentials.getUsername())) {
                 if(Preferences.instance().getBoolean("connection.login.useKeychain")) {
-                    final String saved = KeychainFactory.instance().find(host);
+                    final String saved = KeychainFactory.get().find(host);
                     if(StringUtils.isBlank(saved)) {
                         if(!credentials.isPublicKeyAuthentication()) {
                             reason.append(Locale.localizedString(
@@ -111,7 +111,7 @@ public abstract class AbstractLoginController implements LoginController {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Login success to host %s as %s", host.getHostname(), host.getCredentials().getUsername()));
         }
-        KeychainFactory.instance().save(host);
+        KeychainFactory.get().save(host);
     }
 
     @Override

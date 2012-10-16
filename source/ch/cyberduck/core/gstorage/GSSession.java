@@ -19,7 +19,16 @@ package ch.cyberduck.core.gstorage;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.Acl;
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.KeychainFactory;
+import ch.cyberduck.core.LoginController;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.Session;
+import ch.cyberduck.core.SessionFactory;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.i18n.Locale;
@@ -133,9 +142,9 @@ public class GSSession extends S3Session implements DistributionConfiguration {
         final ProviderCredentials provider = this.getProviderCredentials(credentials);
         if(provider instanceof OAuth2Credentials) {
             final OAuth2Credentials oauth = (OAuth2Credentials) provider;
-            final String acccesstoken = KeychainFactory.instance().getPassword(this.getHost().getProtocol().getScheme(),
+            final String acccesstoken = KeychainFactory.get().getPassword(this.getHost().getProtocol().getScheme(),
                     this.getHost().getPort(), URI.create(OAuthConstants.GSOAuth2_10.Endpoints.Token).getHost(), "Google OAuth2 Access Token");
-            final String refreshtoken = KeychainFactory.instance().getPassword(this.getHost().getProtocol().getScheme(),
+            final String refreshtoken = KeychainFactory.get().getPassword(this.getHost().getProtocol().getScheme(),
                     this.getHost().getPort(), URI.create(OAuthConstants.GSOAuth2_10.Endpoints.Token).getHost(), "Google OAuth2 Refresh Token");
             if(StringUtils.isEmpty(acccesstoken) || StringUtils.isEmpty(refreshtoken)) {
                 final String url = ((OAuth2Credentials) provider).generateBrowserUrlToAuthorizeNativeApplication(
@@ -172,9 +181,9 @@ public class GSSession extends S3Session implements DistributionConfiguration {
                 final OAuth2Tokens tokens = oauth.getOAuth2Tokens();
 
                 // Save for future use
-                KeychainFactory.instance().addPassword(this.getHost().getProtocol().getScheme(),
+                KeychainFactory.get().addPassword(this.getHost().getProtocol().getScheme(),
                         this.getHost().getPort(), URI.create(OAuthConstants.GSOAuth2_10.Endpoints.Token).getHost(), "Google OAuth2 Access Token", tokens.getAccessToken());
-                KeychainFactory.instance().addPassword(this.getHost().getProtocol().getScheme(),
+                KeychainFactory.get().addPassword(this.getHost().getProtocol().getScheme(),
                         this.getHost().getPort(), URI.create(OAuthConstants.GSOAuth2_10.Endpoints.Token).getHost(), "Google OAuth2 Refresh Token", tokens.getRefreshToken());
 
                 // Save expiry

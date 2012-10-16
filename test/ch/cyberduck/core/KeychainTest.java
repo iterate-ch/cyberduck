@@ -17,7 +17,7 @@ public class KeychainTest extends AbstractTestCase {
 
     @Test
     public void testFind() throws Exception {
-        PasswordStore k = KeychainFactory.instance();
+        PasswordStore k = KeychainFactory.get();
         assertNull(k.getPassword("cyberduck.ch", "u"));
         assertNull(k.getPassword(Scheme.http, 80, "cyberduck.ch", "u"));
     }
