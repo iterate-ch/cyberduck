@@ -14,7 +14,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import ch.ethz.ssh2.crypto.Base64;
-import ch.ethz.ssh2.crypto.PEMDecryptException;
 import ch.ethz.ssh2.crypto.cipher.AES;
 import ch.ethz.ssh2.crypto.cipher.CBCMode;
 
@@ -176,7 +175,8 @@ public class PuTTYKey {
      * Converts this key into OpenSSH format.
      *
      * @return A multi-line string that can be written back to a file.
-     * @throws PEMDecryptException If the passphrase is wrong
+     * @throws ch.ethz.ssh2.crypto.PEMDecryptException
+     *          If the passphrase is wrong
      */
     public String toOpenSSH(String passphrase) throws IOException {
         if("ssh-rsa".equals(this.getAlgorithm())) {
