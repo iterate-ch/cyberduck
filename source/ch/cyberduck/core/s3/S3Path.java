@@ -669,9 +669,6 @@ public class S3Path extends CloudPath {
                               final TransferStatus status, final StorageObject object)
             throws IOException, ServiceException {
 
-        // No Content-Range support
-        status.setResume(false);
-
         InputStream in = null;
         ResponseOutputStream<StorageObject> out = null;
         MessageDigest digest = null;
@@ -755,7 +752,6 @@ public class S3Path extends CloudPath {
         }
         if(null == multipart) {
             log.info("No pending multipart upload found");
-            status.setResume(false);
 
             // Initiate multipart upload with metadata
             Map<String, Object> metadata = object.getModifiableMetadata();

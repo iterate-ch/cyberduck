@@ -421,8 +421,6 @@ public class CFPath extends CloudPath {
     }
 
     private ResponseOutputStream<String> write(final TransferStatus status, final String md5sum) throws IOException {
-        // No Content-Range support
-        status.setResume(false);
         final HashMap<String, String> metadata = new HashMap<String, String>();
         // Default metadata for new files
         for(String m : Preferences.instance().getList("cf.metadata.default")) {
