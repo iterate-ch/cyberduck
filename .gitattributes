@@ -1797,8 +1797,6 @@ lib/1.7.0u10.jre/Contents/MacOS/libjli.dylib -text
 lib/ActiveButtons.dll -text
 lib/ActiveButtons.pdb -text
 lib/AutomaticUpdater.dll -text
-lib/AutomaticUpdater.pdb -text
-lib/AutomaticUpdater.xml -text
 lib/ExceptionReporter.WinForms.dll -text
 lib/ExceptionReporter.WinForms.xml -text
 lib/Growl.Connector.dll -text
