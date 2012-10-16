@@ -5,7 +5,7 @@
         <Changes/>
         <InheritPrevRegistry/>
         <Files dir="basedir">
-            <File source="_BUILDPATH_\update\Updater.exe"/>
+            <File source="update\Updater.exe"/>
         </Files>
     </AddVersion>
 </Versions>
