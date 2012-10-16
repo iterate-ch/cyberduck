@@ -73,6 +73,6 @@ public class BackgroundActionRegistry extends AbstractActionRegistry<BackgroundA
     }
 
     public BackgroundActionRegistry() {
-        ;
+        //
     }
 }
