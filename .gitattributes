@@ -2564,6 +2564,7 @@ source/ch/cyberduck/core/Rendezvous.cs -text
 source/ch/cyberduck/core/SerializableDictionary.cs -text
 source/ch/cyberduck/core/StructureMapBootstrapper.cs -text
 source/ch/cyberduck/core/SystemConfigurationReachability.m -text
+source/ch/cyberduck/core/TcpReachability.cs -text
 source/ch/cyberduck/core/URLSchemeHandlerConfiguration.cs -text
 source/ch/cyberduck/core/Utils.cs -text
 source/ch/cyberduck/core/VirtualFileDataObject.cs -text
@@ -2583,6 +2584,7 @@ source/ch/cyberduck/core/editor/RegistryApplicationFinder.cs -text
 source/ch/cyberduck/core/editor/WatchEditor.cs -text
 source/ch/cyberduck/core/importer/CDTransmitImporter.h -text
 source/ch/cyberduck/core/importer/CDTransmitImporter.m -text
+source/ch/cyberduck/core/local/WindowsApplicationLauncher.cs -text
 source/ch/cyberduck/core/s3/S3Path.java -text
 source/ch/cyberduck/core/s3/S3Session.java -text
 source/ch/cyberduck/core/sparkle/Updater.java -text
@@ -2672,7 +2674,6 @@ source/ch/cyberduck/ui/controller/Renderers.cs -text
 source/ch/cyberduck/ui/controller/SettingsDictionary.cs -text
 source/ch/cyberduck/ui/controller/SyncPromptController.cs -text
 source/ch/cyberduck/ui/controller/SyncPromptModel.cs -text
-source/ch/cyberduck/ui/controller/TcpReachability.cs -text
 source/ch/cyberduck/ui/controller/TransferController.cs -text
 source/ch/cyberduck/ui/controller/TransferPromptController.cs -text
 source/ch/cyberduck/ui/controller/TransferPromptModel.cs -text

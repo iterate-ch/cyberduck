@@ -23,6 +23,7 @@ using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Ui.Controller;
 using ch.cyberduck.core;
 using ch.cyberduck.core.i18n;
+using ch.cyberduck.core.local;
 using Path = System.IO.Path;
 
 namespace Ch.Cyberduck.Ui.Winforms
@@ -46,9 +47,11 @@ namespace Ch.Cyberduck.Ui.Winforms
             creditsRichTextBox.SelectAll();
             creditsRichTextBox.SelectionFont = new Font(Font.FontFamily, 9);
             creditsRichTextBox.DeselectAll();
-            creditsRichTextBox.LinkClicked += (sender, e) => Utils.StartProcess(e.LinkText);
+            creditsRichTextBox.LinkClicked +=
+                (sender, e) => ApplicationLauncherFactory.get().open(LocalFactory.createLocal(e.LinkText));
 
-            ackButton.Click += delegate { Utils.StartProcess("Acknowledgments.rtf"); };
+            ackButton.Click +=
+                delegate { ApplicationLauncherFactory.get().open(LocalFactory.createLocal("Acknowledgments.rtf")); };
         }
 
         public string AssemblyTitle

@@ -28,10 +28,11 @@ using StructureMap;
 using ch.cyberduck.core;
 using ch.cyberduck.core.cdn;
 using ch.cyberduck.core.cloud;
+using ch.cyberduck.core.date;
 using ch.cyberduck.core.formatter;
+using ch.cyberduck.core.local;
 using ch.cyberduck.core.s3;
 using ch.cyberduck.core.transfer;
-using ch.cyberduck.ui;
 using ch.cyberduck.ui.action;
 using ch.cyberduck.ui.controller.threading;
 using java.lang;
@@ -435,7 +436,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                 _controller.getSession().getHost().getProtocol().getProvider());
                             break;
                     }
-                    Utils.StartProcess(site.ToString());
+                    ApplicationLauncherFactory.get().open(LocalFactory.createLocal(site.ToString()));
                 };
         }
 
@@ -1066,7 +1067,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     else
                     {
                         View.Modified =
-                            DateFormatterFactory.instance().getLongFormat(file.attributes().getModificationDate());
+                            UserDateFormatterFactory.get().getLongFormat(file.attributes().getModificationDate());
                     }
                     if (-1 == file.attributes().getCreationDate())
                     {
@@ -1075,7 +1076,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     else
                     {
                         View.FileCreated =
-                            DateFormatterFactory.instance().getLongFormat(file.attributes().getModificationDate());
+                            UserDateFormatterFactory.get().getLongFormat(file.attributes().getModificationDate());
                     }
                 }
                 View.FileOwner = count > 1

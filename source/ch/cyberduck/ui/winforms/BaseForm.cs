@@ -27,6 +27,7 @@ using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Winforms.Taskdialog;
 using ch.cyberduck.core.i18n;
+using ch.cyberduck.core.local;
 
 namespace Ch.Cyberduck.Ui.Winforms
 {
@@ -52,54 +53,54 @@ namespace Ch.Cyberduck.Ui.Winforms
 
             // not checking if there are any subscribers might result in 'Object reference not set to an instance...'
             Shown += delegate
-            {
-                VoidHandler shownEvent = ViewShownEvent;
-                if (null != shownEvent) ViewShownEvent();
-            };
+                {
+                    VoidHandler shownEvent = ViewShownEvent;
+                    if (null != shownEvent) ViewShownEvent();
+                };
 
             FormClosed += delegate
-            {
-                VoidHandler closedEvent = ViewClosedEvent;
-                if (null != closedEvent) ViewClosedEvent();
-            };
+                {
+                    VoidHandler closedEvent = ViewClosedEvent;
+                    if (null != closedEvent) ViewClosedEvent();
+                };
 
             Load += delegate
-            {
-                if (!DesignMode)
                 {
-                    LocalizeTexts();
-                    EventHandler localizationCompleted = LocalizationCompleted;
-                    if (null != localizationCompleted) LocalizationCompleted(this, EventArgs.Empty);
-                }
-            };
+                    if (!DesignMode)
+                    {
+                        LocalizeTexts();
+                        EventHandler localizationCompleted = LocalizationCompleted;
+                        if (null != localizationCompleted) LocalizationCompleted(this, EventArgs.Empty);
+                    }
+                };
 
             ValuesLoaded += delegate
-            {
-                if (PositionSizeRestoredEvent != null)
                 {
-                    PositionSizeRestoredEvent();
-                }
-            };
+                    if (PositionSizeRestoredEvent != null)
+                    {
+                        PositionSizeRestoredEvent();
+                    }
+                };
 
             FormClosing += delegate(object sender, FormClosingEventArgs args)
-            {
-                if (!_releaseWhenClose && args.CloseReason == CloseReason.UserClosing)
                 {
-                    //Log.debug("Cancel close event");
-                    args.Cancel = true;
-                    Hide();
-                    return;
-                }
-                FormClosingEventHandler closingEvent = ViewClosingEvent;
-                if (null != closingEvent) ViewClosingEvent(sender, args);
-            };
+                    if (!_releaseWhenClose && args.CloseReason == CloseReason.UserClosing)
+                    {
+                        //Log.debug("Cancel close event");
+                        args.Cancel = true;
+                        Hide();
+                        return;
+                    }
+                    FormClosingEventHandler closingEvent = ViewClosingEvent;
+                    if (null != closingEvent) ViewClosingEvent(sender, args);
+                };
 
             Disposed += delegate
-            {
-                Application.Idle -= OnApplicationIdle;
-                VoidHandler disposedEvent = ViewDisposedEvent;
-                if (null != disposedEvent) ViewDisposedEvent();
-            };
+                {
+                    Application.Idle -= OnApplicationIdle;
+                    VoidHandler disposedEvent = ViewDisposedEvent;
+                    if (null != disposedEvent) ViewDisposedEvent();
+                };
 
             Application.Idle += OnApplicationIdle;
 
@@ -138,7 +139,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         /// </summary>
         public virtual string[] BundleNames
         {
-            get { return new string[] { }; }
+            get { return new string[] {}; }
         }
 
         /// <summary>
@@ -157,7 +158,8 @@ namespace Ch.Cyberduck.Ui.Winforms
         {
             //BringToFront();
             TaskDialog dialog = new TaskDialog();
-            dialog.HelpDelegate = delegate(string url) { Utils.StartProcess(url); };
+            dialog.HelpDelegate =
+                delegate(string url) { ApplicationLauncherFactory.get().open(LocalFactory.createLocal(url)); };
             DialogResult result = dialog.MessageBox(this,
                                                     title,
                                                     message,
@@ -179,7 +181,8 @@ namespace Ch.Cyberduck.Ui.Winforms
         {
             //BringToFront();
             TaskDialog dialog = new TaskDialog();
-            dialog.HelpDelegate = delegate(string url) { Utils.StartProcess(url); };
+            dialog.HelpDelegate =
+                delegate(string url) { ApplicationLauncherFactory.get().open(LocalFactory.createLocal(url)); };
             DialogResult result = dialog.ShowCommandBox(this, title,
                                                         mainInstruction,
                                                         content,
@@ -212,7 +215,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public new bool Visible
         {
-            get { return ((Control)this).Visible; }
+            get { return ((Control) this).Visible; }
             set
             {
                 if (value)
@@ -327,7 +330,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         private void persistentFormLoad(object sender, EventArgs e)
         {
             // Create PersistenceHandler and load values from it
-            PersistenceHandler = new PersistentFormHandler(GetType(), (int)FormWindowState.Normal, Bounds);
+            PersistenceHandler = new PersistentFormHandler(GetType(), (int) FormWindowState.Normal, Bounds);
             //handlerReady = true;
 
             // Set size and location
@@ -338,8 +341,8 @@ namespace Ch.Cyberduck.Ui.Winforms
                 Location = new Point();
 
             // Set state
-            WindowState = Enum.IsDefined(typeof(FormWindowState), PersistenceHandler.WindowState)
-                              ? (FormWindowState)PersistenceHandler.WindowState
+            WindowState = Enum.IsDefined(typeof (FormWindowState), PersistenceHandler.WindowState)
+                              ? (FormWindowState) PersistenceHandler.WindowState
                               : FormWindowState.Normal;
 
             // Notify that values are loaded and ready for getting.
@@ -372,7 +375,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             }
 
             // Set common things
-            PersistenceHandler.WindowState = (int)WindowState;
+            PersistenceHandler.WindowState = (int) WindowState;
             PersistenceHandler.WindowBounds = WindowState == FormWindowState.Normal ? Bounds : RestoreBounds;
 
             // Notify that values will be stored now, so time to store values.
@@ -454,21 +457,21 @@ namespace Ch.Cyberduck.Ui.Winforms
                     o is RadioButton ||
                     o is Form)
                 {
-                    Control c = (Control)o;
+                    Control c = (Control) o;
                     c.Text = LookupInMultipleBundles(c.Text, BundleNames);
                     continue;
                 }
 
                 if (o is ToolStripItem)
                 {
-                    ToolStripItem i = (ToolStripItem)o;
+                    ToolStripItem i = (ToolStripItem) o;
                     i.Text = LookupInMultipleBundles(i.Text.Replace("&", String.Empty), BundleNames);
                     continue;
                 }
 
                 if (o is ListView)
                 {
-                    ObjectListView lv = (ObjectListView)o;
+                    ObjectListView lv = (ObjectListView) o;
                     foreach (OLVColumn column in lv.AllColumns)
                     {
                         column.Text = LookupInMultipleBundles(column.Text, BundleNames);
@@ -481,14 +484,14 @@ namespace Ch.Cyberduck.Ui.Winforms
             FieldInfo fieldInfo = GetType().GetField("components",
                                                      BindingFlags.Instance |
                                                      BindingFlags.NonPublic);
-            IContainer comp = (IContainer)fieldInfo.GetValue(this);
+            IContainer comp = (IContainer) fieldInfo.GetValue(this);
             if (null != comp)
             {
                 foreach (var o in RecurseObjects(comp.Components))
                 {
                     if (o is MenuItem)
                     {
-                        MenuItem m = (MenuItem)o;
+                        MenuItem m = (MenuItem) o;
                         m.Text = LookupInMultipleBundles(m.Text.Replace("&", String.Empty), BundleNames);
                     }
                 }
@@ -499,7 +502,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                 {
                     if (o is MenuItem)
                     {
-                        MenuItem m = (MenuItem)o;
+                        MenuItem m = (MenuItem) o;
                         m.Text = LookupInMultipleBundles(m.Text.Replace("&", String.Empty), BundleNames);
                     }
                 }
@@ -519,7 +522,7 @@ namespace Ch.Cyberduck.Ui.Winforms
         protected static Bitmap GetIcon(string iconIdentifier)
         {
             object obj = ResourcesBundle.ResourceManager.GetObject(iconIdentifier, ResourcesBundle.Culture);
-            return (Bitmap)obj;
+            return (Bitmap) obj;
         }
     }
 }

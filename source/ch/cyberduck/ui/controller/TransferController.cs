@@ -30,7 +30,7 @@ using ch.cyberduck.core.transfer;
 using java.util;
 using org.apache.log4j;
 using Locale = ch.cyberduck.core.i18n.Locale;
-using Queue = ch.cyberduck.core.Queue;
+using Queue = ch.cyberduck.core.transfer.Queue;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -465,7 +465,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     Path path = (Path) transfer.getRoots().get(i);
                     Local l = path.getLocal();
-                    if (l.open())
+                    if (ApplicationLauncherFactory.get().open(l))
                     {
                         break;
                     }

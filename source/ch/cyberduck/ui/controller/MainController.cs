@@ -27,6 +27,7 @@ using System.Threading;
 using System.Windows.Forms;
 using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Core.Editor;
+using Ch.Cyberduck.Core.Local;
 using Ch.Cyberduck.Ui.Growl;
 using Ch.Cyberduck.Ui.Winforms;
 using Ch.Cyberduck.Ui.Winforms.Serializer;
@@ -197,6 +198,7 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             ProtocolFactory.register();
             EditorFactory.register();
+            WindowsApplicationLauncher.register();
         }
 
         private static void ConfigureLogging()
@@ -272,7 +274,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     }
                     else if ("cyberduckprofile".Equals(f.getExtension()))
                     {
-                        Protocol profile = (Protocol) ProtocolReaderFactory.instance().read(f);
+                        Protocol profile = (Protocol) ProtocolReaderFactory.get().read(f);
                         if (null == profile)
                         {
                             return;
@@ -291,7 +293,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     }
                     else if ("duck".Equals(f.getExtension()))
                     {
-                        Host bookmark = (Host) HostReaderFactory.instance().read(f);
+                        Host bookmark = (Host) HostReaderFactory.get().read(f);
                         if (null == bookmark)
                         {
                             return;

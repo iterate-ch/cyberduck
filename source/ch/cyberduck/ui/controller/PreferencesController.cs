@@ -1326,7 +1326,7 @@ namespace Ch.Cyberduck.Ui.Controller
             foreach (Application editor in Utils.ConvertFromJavaList<Application>(EditorFactory.instance().getEditors())
                 )
             {
-                if (ApplicationFinderFactory.instance().isInstalled(editor))
+                if (ApplicationFinderFactory.get().isInstalled(editor))
                 {
                     editors.Add(new KeyValueIconTriple<Application, string>(editor, editor.getName(),
                                                                             editor.getName()));
@@ -1338,7 +1338,7 @@ namespace Ch.Cyberduck.Ui.Controller
             }
             if (!defaultEditorAdded)
             {
-                if (defaultEditor != null && ApplicationFinderFactory.instance().isInstalled(defaultEditor))
+                if (defaultEditor != null && ApplicationFinderFactory.get().isInstalled(defaultEditor))
                 {
                     editors.Insert(0,
                                    new KeyValueIconTriple<Application, string>(defaultEditor,

@@ -22,6 +22,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using Ch.Cyberduck.Core;
 using ch.cyberduck.core;
+using ch.cyberduck.core.editor;
 using ch.cyberduck.core.local;
 using org.apache.commons.io;
 using org.apache.log4j;
@@ -83,24 +84,6 @@ namespace Ch.Cyberduck.Ui.Controller
             ;
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns>True if application was found to open the file with</returns>
-        public override bool open()
-        {
-            if (Log.isDebugEnabled())
-            {
-                Log.debug("open():" + getAbsolute());
-            }
-            return Utils.StartProcess(getAbsolute());
-        }
-
-        public override void bounce()
-        {
-            ;
-        }
-
         public static string kind(string extension)
         {
             Shell32.SHFILEINFO shinfo = new Shell32.SHFILEINFO();
@@ -148,7 +131,8 @@ namespace Ch.Cyberduck.Ui.Controller
             if (exists())
             {
                 //select first file downloaded. We could just open the containing folder alternatively.
-                return Utils.StartProcess("explorer.exe", "/select, " + getAbsolute());
+                return ApplicationLauncherFactory.get().open(new Application("explorer.exe", null),
+                                                             "/select, " + getAbsolute());
             }
             return false;
         }

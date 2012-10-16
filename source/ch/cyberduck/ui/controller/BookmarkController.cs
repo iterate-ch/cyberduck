@@ -234,7 +234,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_OpenWebUrl()
         {
-            Utils.StartProcess(_host.getWebURL());
+            ApplicationLauncherFactory.get().open(LocalFactory.createLocal(_host.getWebURL()));
         }
 
         private void View_ChangedEncodingEvent()
@@ -407,12 +407,12 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_OpenUrl()
         {
-            Utils.StartProcess(_host.toURL());
+            ApplicationLauncherFactory.get().open(LocalFactory.createLocal(_host.toURL()));
         }
 
         private void View_OpenDownloadFolderEvent()
         {
-            Utils.StartProcess(_host.getDownloadFolder().getAbsolute());
+            ApplicationLauncherFactory.get().open(LocalFactory.createLocal(_host.getDownloadFolder().getAbsolute()));
         }
 
         private void View_ChangedAnonymousCheckboxEvent()
@@ -691,7 +691,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
             public override void run()
             {
-                _reachable = _host.isReachable();
+                _reachable = ReachabilityFactory.get().isReachable(_host);
             }
 
             public override void cleanup()

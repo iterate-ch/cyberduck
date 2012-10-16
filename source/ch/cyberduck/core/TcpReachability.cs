@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -13,19 +13,20 @@
 // GNU General Public License for more details.
 // 
 // Bug fixes, suggestions and comments should be sent to:
-// yves@langisch.ch
+// yves@cyberduck.ch
 // 
+
 using System;
 using System.Net.Sockets;
 using ch.cyberduck.core;
 
-namespace Ch.Cyberduck.Ui.Controller
+namespace Ch.Cyberduck.Core
 {
     public class TcpReachability : Reachability
     {
         public bool isReachable(Host h)
         {
-            if (!ch.cyberduck.core.Preferences.instance().getBoolean("connection.hostname.check"))
+            if (!Preferences.instance().getBoolean("connection.hostname.check"))
             {
                 return true;
             }

@@ -482,7 +482,8 @@ namespace Ch.Cyberduck.Ui.Controller
                                        host.getHostname(),
                                        Convert.ToString(host.getPort()), tempFile);
 
-            Utils.StartProcess(Preferences.instance().getProperty("terminal.command.ssh"), ssh);
+
+            ApplicationLauncherFactory.get().open(new Application(Preferences.instance().getProperty("terminal.command.ssh"), null), ssh);
         }
 
         private void View_SetComparator(BrowserComparator comparator)
@@ -693,7 +694,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     foreach (string file in data.GetFileDropList())
                     {
                         _bookmarkModel.Source.add(_bookmarkModel.Source.indexOf(destination),
-                                                  HostReaderFactory.instance().read(LocalFactory.createLocal(file)));
+                                                  HostReaderFactory.get().read(LocalFactory.createLocal(file)));
                     }
                 }
                 if (e.DropTargetLocation == DropTargetLocation.BelowItem)
@@ -702,14 +703,14 @@ namespace Ch.Cyberduck.Ui.Controller
                     foreach (string file in data.GetFileDropList())
                     {
                         _bookmarkModel.Source.add(_bookmarkModel.Source.indexOf(destination) + 1,
-                                                  HostReaderFactory.instance().read(LocalFactory.createLocal(file)));
+                                                  HostReaderFactory.get().read(LocalFactory.createLocal(file)));
                     }
                 }
                 if (e.DropTargetLocation == DropTargetLocation.Background)
                 {
                     foreach (string file in data.GetFileDropList())
                     {
-                        _bookmarkModel.Source.add(HostReaderFactory.instance().read(LocalFactory.createLocal(file)));
+                        _bookmarkModel.Source.add(HostReaderFactory.get().read(LocalFactory.createLocal(file)));
                     }
                 }
             }
@@ -853,7 +854,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                                         dropFolder,
                                                         filename);
                                             HostWriterFactory
-                                                .instance()
+                                                .get()
                                                 .
                                                 write(
                                                     host,
@@ -1255,7 +1256,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             foreach (Path selected in SelectedPaths)
             {
-                Utils.StartProcess(selected.toHttpURL());
+                ApplicationLauncherFactory.get().open(LocalFactory.createLocal(selected.toHttpURL()));
             }
         }
 

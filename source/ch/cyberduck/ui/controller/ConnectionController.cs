@@ -196,7 +196,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_OpenUrl()
         {
-            Utils.StartProcess(View.URL);
+            ApplicationLauncherFactory.get().open(LocalFactory.createLocal(View.URL));
         }
 
         private void View_ChangedAnonymousCheckboxEvent()
@@ -496,7 +496,7 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 if (!String.IsNullOrEmpty(_hostname))
                 {
-                    _reachable = new Host(_hostname).isReachable();
+                    ReachabilityFactory.get().isReachable(new Host(_hostname));
                 }
                 else
                 {

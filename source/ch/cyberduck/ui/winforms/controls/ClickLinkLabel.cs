@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010-2011 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -19,8 +19,8 @@
 using System;
 using System.ComponentModel;
 using System.Windows.Forms;
-using Ch.Cyberduck.Core;
 using ch.cyberduck.core.i18n;
+using ch.cyberduck.core.local;
 
 namespace Ch.Cyberduck.Ui.Winforms.Controls
 {
@@ -50,7 +50,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Controls
         {
             if (e.Button == MouseButtons.Left)
             {
-                Utils.StartProcess(Text);
+                ApplicationLauncherFactory.get().open(LocalFactory.createLocal(Text));
             }
             base.OnLinkClicked(e);
         }

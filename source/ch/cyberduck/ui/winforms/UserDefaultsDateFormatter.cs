@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -15,13 +15,14 @@
 // Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
 // 
+
 using System;
+using ch.cyberduck.core.date;
 using ch.cyberduck.core.i18n;
-using ch.cyberduck.ui;
 
 namespace Ch.Cyberduck.Ui.Winforms
 {
-    internal class UserDefaultsDateFormatter : AbstractDateFormatter
+    internal class UserDefaultsDateFormatter : AbstractUserDateFormatter
     {
         public override string getLongFormat(long milliseconds, bool natural)
         {
@@ -63,7 +64,7 @@ namespace Ch.Cyberduck.Ui.Winforms
 
         public static void Register()
         {
-            DateFormatterFactory.addFactory(ch.cyberduck.core.Factory.NATIVE_PLATFORM, new Factory());
+            UserDateFormatterFactory.addFactory(ch.cyberduck.core.Factory.NATIVE_PLATFORM, new Factory());
         }
 
         public static DateTime ConvertJavaMiliSecondToDateTime(long javaMS)
@@ -74,7 +75,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             return dt;
         }
 
-        private class Factory : DateFormatterFactory
+        private class Factory : UserDateFormatterFactory
         {
             protected override object create()
             {

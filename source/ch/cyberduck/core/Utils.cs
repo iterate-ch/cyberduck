@@ -18,13 +18,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using Microsoft.Win32;
-using ch.cyberduck.core;
 using ch.cyberduck.core.editor;
 using ch.cyberduck.core.local;
 using java.nio.charset;
@@ -69,25 +66,6 @@ namespace Ch.Cyberduck.Core
         public static readonly bool IsWin7OrLater = OperatingSystemVersion.Current >= OSVersionInfo.Win7;
 
         private static readonly Logger Log = Logger.getLogger(typeof (Utils).FullName);
-
-        public static bool StartProcess(string filename, string args)
-        {
-            try
-            {
-                Process.Start(filename, args);
-                return true;
-            }
-            catch (Win32Exception e)
-            {
-                Log.error(String.Format("StartProcess: {0},{1}", e.Message, e.NativeErrorCode));
-                return false;
-            }
-        }
-
-        public static bool StartProcess(string filename)
-        {
-            return StartProcess(filename, null);
-        }
 
         public static bool IsBlank(string value)
         {
@@ -284,7 +262,7 @@ namespace Ch.Cyberduck.Core
 
             foreach (string exe in progs.Distinct())
             {
-                Application application = ApplicationFinderFactory.instance().find(exe);
+                Application application = ApplicationFinderFactory.get().find(exe);
                 if (null != application)
                 {
                     map.Add(new KeyValuePair<string, string>(application.getName(), exe));

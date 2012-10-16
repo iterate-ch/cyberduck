@@ -23,9 +23,9 @@ using Ch.Cyberduck.Ui.Controller.Threading;
 using Ch.Cyberduck.Ui.Winforms.Controls;
 using StructureMap;
 using ch.cyberduck.core;
+using ch.cyberduck.core.date;
 using ch.cyberduck.core.io;
 using ch.cyberduck.core.transfer;
-using ch.cyberduck.ui;
 using java.lang;
 using java.util;
 using java.util.concurrent;
@@ -148,7 +148,7 @@ namespace Ch.Cyberduck.Ui.Controller
                 Date timestamp = _transfer.getTimestamp();
                 if (null != timestamp)
                 {
-                    _messageText = DateFormatterFactory.instance().getLongFormat(timestamp.getTime());
+                    _messageText = UserDateFormatterFactory.get().getLongFormat(timestamp.getTime());
                 }
             }
             if (null != _messageText)
@@ -170,7 +170,7 @@ namespace Ch.Cyberduck.Ui.Controller
             View.ProgressText = _meter.getProgress();
         }
 
-        private class TransferAdapter : ch.cyberduck.core.TransferAdapter
+        private class TransferAdapter : ch.cyberduck.core.transfer.TransferAdapter
         {
             private const long Delay = 0;
             private const long Period = 200; //in milliseconds
