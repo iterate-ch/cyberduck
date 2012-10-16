@@ -53,5 +53,4 @@ public class DownloadSymlinkResolver extends AbstractSymlinkResolver {
     private boolean findTarget(final AbstractPath target, final Path root) {
         return target.equals(root) || target.isChild(root);
     }
-
 }
