@@ -26,12 +26,12 @@ import ch.cyberduck.core.PathReference;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.core.io.MD5ChecksumCompute;
 import ch.cyberduck.core.io.RepeatableFileInputStream;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.jets3t.service.utils.ServiceUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -41,7 +41,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
-import java.security.NoSuchAlgorithmException;
 import java.util.Comparator;
 
 import com.ibm.icu.text.Normalizer;
@@ -194,13 +193,11 @@ public abstract class Local extends AbstractPath {
         public String getChecksum() {
             if(this.isFile()) {
                 try {
-                    return ServiceUtils.toHex(ServiceUtils.computeMD5Hash(Local.this.getInputStream()));
+                    return new MD5ChecksumCompute().compute(Local.this.getInputStream());
                 }
-                catch(NoSuchAlgorithmException e) {
-                    log.error(String.format("MD5 failed for %s:%s", path, e.getMessage()));
-                }
-                catch(IOException e) {
-                    log.error(String.format("MD5 failed for %s:%s", path, e.getMessage()));
+                catch(FileNotFoundException e) {
+                    log.error(e.getMessage());
+                    return null;
                 }
             }
             return null;
