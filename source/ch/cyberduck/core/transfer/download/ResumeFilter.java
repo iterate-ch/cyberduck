@@ -30,10 +30,14 @@ public class ResumeFilter extends AbstractDownloadFilter {
     @Override
     public TransferStatus prepare(final Path file) {
         final TransferStatus status = super.prepare(file);
-        if(file.attributes().isFile()) {
-            if(file.getLocal().exists()) {
-                status.setResume(file.getLocal().attributes().getSize() > 0);
-                status.setCurrent(file.getLocal().attributes().getSize());
+        if(file.getSession().isDownloadResumable()) {
+            if(file.attributes().isFile()) {
+                if(file.getLocal().exists()) {
+                    if(file.attributes().getSize() > 0) {
+                        status.setResume(true);
+                        status.setCurrent(file.getLocal().attributes().getSize());
+                    }
+                }
             }
         }
         return status;

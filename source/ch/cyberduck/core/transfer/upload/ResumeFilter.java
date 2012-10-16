@@ -19,16 +19,12 @@ public class ResumeFilter extends AbstractUploadFilter {
     @Override
     public TransferStatus prepare(final Path file) {
         final TransferStatus status = super.prepare(file);
-        if(file.attributes().isFile()) {
-            if(file.exists()) {
-                // Do not trust cached value which is from last directory listing
-                // and possibly outdated. Fix #3284.
-                file.readSize();
-                if(file.getLocal().attributes().getSize() == file.attributes().getSize()) {
-                    // No need to resume completed transfers
-                    status.setComplete();
-                }
-                else {
+        if(file.getSession().isUploadResumable()) {
+            if(file.attributes().isFile()) {
+                if(file.exists()) {
+                    // Do not trust cached value which is from last directory listing
+                    // and possibly outdated. Fix #3284.
+                    file.readSize();
                     if(file.attributes().getSize() > 0) {
                         status.setResume(true);
                         status.setCurrent(file.attributes().getSize());
