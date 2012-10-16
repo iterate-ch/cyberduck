@@ -18,9 +18,9 @@
 
 using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Windows.Forms;
 using ch.cyberduck.core.i18n;
-using ch.cyberduck.core.local;
 
 namespace Ch.Cyberduck.Ui.Winforms.Controls
 {
@@ -50,7 +50,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Controls
         {
             if (e.Button == MouseButtons.Left)
             {
-                ApplicationLauncherFactory.get().open(LocalFactory.createLocal(Text));
+                Process.Start(Text);
             }
             base.OnLinkClicked(e);
         }

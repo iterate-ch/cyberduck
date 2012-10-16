@@ -1256,7 +1256,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             foreach (Path selected in SelectedPaths)
             {
-                ApplicationLauncherFactory.get().open(LocalFactory.createLocal(selected.toHttpURL()));
+                System.Diagnostics.Process.Start(selected.toHttpURL());
             }
         }
 

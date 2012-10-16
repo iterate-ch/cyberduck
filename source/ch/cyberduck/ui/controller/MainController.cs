@@ -279,7 +279,8 @@ namespace Ch.Cyberduck.Ui.Controller
                         {
                             return;
                         }
-                        if(profile.isEnabled()) {
+                        if (profile.isEnabled())
+                        {
                             profile.register();
                             Host host = new Host(profile, profile.getDefaultHostname(), profile.getDefaultPort());
                             NewBrowser().AddBookmark(host);

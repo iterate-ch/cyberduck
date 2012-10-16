@@ -17,6 +17,7 @@
 // 
 
 using System;
+using System.Diagnostics;
 using System.Drawing;
 using System.Reflection;
 using Ch.Cyberduck.Core;
@@ -48,7 +49,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             creditsRichTextBox.SelectionFont = new Font(Font.FontFamily, 9);
             creditsRichTextBox.DeselectAll();
             creditsRichTextBox.LinkClicked +=
-                (sender, e) => ApplicationLauncherFactory.get().open(LocalFactory.createLocal(e.LinkText));
+                (sender, e) => Process.Start(e.LinkText);
 
             ackButton.Click +=
                 delegate { ApplicationLauncherFactory.get().open(LocalFactory.createLocal("Acknowledgments.rtf")); };

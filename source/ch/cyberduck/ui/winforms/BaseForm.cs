@@ -19,6 +19,7 @@
 using System;
 using System.Collections;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing;
 using System.Reflection;
 using System.Windows.Forms;
@@ -27,7 +28,6 @@ using Ch.Cyberduck.Core;
 using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Winforms.Taskdialog;
 using ch.cyberduck.core.i18n;
-using ch.cyberduck.core.local;
 
 namespace Ch.Cyberduck.Ui.Winforms
 {
@@ -159,7 +159,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             //BringToFront();
             TaskDialog dialog = new TaskDialog();
             dialog.HelpDelegate =
-                delegate(string url) { ApplicationLauncherFactory.get().open(LocalFactory.createLocal(url)); };
+                delegate(string url) { Process.Start(url); };
             DialogResult result = dialog.MessageBox(this,
                                                     title,
                                                     message,
@@ -182,7 +182,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             //BringToFront();
             TaskDialog dialog = new TaskDialog();
             dialog.HelpDelegate =
-                delegate(string url) { ApplicationLauncherFactory.get().open(LocalFactory.createLocal(url)); };
+                delegate(string url) { Process.Start(url); };
             DialogResult result = dialog.ShowCommandBox(this, title,
                                                         mainInstruction,
                                                         content,

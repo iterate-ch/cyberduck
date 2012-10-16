@@ -31,6 +31,7 @@ using java.lang;
 using org.apache.log4j;
 using org.spearce.jgit.transport;
 using Object = System.Object;
+using Process = System.Diagnostics.Process;
 using String = System.String;
 
 namespace Ch.Cyberduck.Ui.Controller
@@ -196,7 +197,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_OpenUrl()
         {
-            ApplicationLauncherFactory.get().open(LocalFactory.createLocal(View.URL));
+            Process.Start(View.URL);
         }
 
         private void View_ChangedAnonymousCheckboxEvent()

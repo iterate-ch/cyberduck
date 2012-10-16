@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -13,8 +13,9 @@
 // GNU General Public License for more details.
 // 
 // Bug fixes, suggestions and comments should be sent to:
-// yves@langisch.ch
+// yves@cyberduck.ch
 // 
+
 using System.Xml;
 using ch.cyberduck.core;
 using ch.cyberduck.core.local;
@@ -85,7 +86,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Serializer
             }
         }
 
-        private class TransferFactory : TransferWriterFactory
+        private class ProtocolFactory : ProtocolWriterFactory
         {
             protected override object create()
             {
@@ -93,7 +94,7 @@ namespace Ch.Cyberduck.Ui.Winforms.Serializer
             }
         }
 
-        private class ProtocolFactory : ProtocolWriterFactory
+        private class TransferFactory : TransferWriterFactory
         {
             protected override object create()
             {

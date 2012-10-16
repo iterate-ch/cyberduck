@@ -30,7 +30,6 @@ using ch.cyberduck.core.cdn;
 using ch.cyberduck.core.cloud;
 using ch.cyberduck.core.date;
 using ch.cyberduck.core.formatter;
-using ch.cyberduck.core.local;
 using ch.cyberduck.core.s3;
 using ch.cyberduck.core.transfer;
 using ch.cyberduck.ui.action;
@@ -41,6 +40,7 @@ using org.apache.commons.lang;
 using org.apache.log4j;
 using Locale = ch.cyberduck.core.i18n.Locale;
 using Object = System.Object;
+using Process = System.Diagnostics.Process;
 using String = System.String;
 using StringBuilder = System.Text.StringBuilder;
 
@@ -436,7 +436,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                 _controller.getSession().getHost().getProtocol().getProvider());
                             break;
                     }
-                    ApplicationLauncherFactory.get().open(LocalFactory.createLocal(site.ToString()));
+                    Process.Start(site.ToString());
                 };
         }
 

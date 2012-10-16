@@ -20,6 +20,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Reflection;
@@ -959,11 +960,7 @@ namespace Ch.Cyberduck.Ui.Winforms
             ActiveButton button = new ActiveButton();
             button.Text = " " + Locale.localizedString("Get a donation key!", "License") + " ";
             button.Click +=
-                delegate
-                    {
-                        ApplicationLauncherFactory.get().open(
-                            LocalFactory.createLocal(Preferences.instance().getProperty("website.donate")));
-                    };
+                delegate { Process.Start(Preferences.instance().getProperty("website.donate")); };
             menu.Items.Add(button);
         }
 
@@ -1129,7 +1126,7 @@ namespace Ch.Cyberduck.Ui.Winforms
                         {
                             for (int i = 0; i < pair1.Value.Count; i++)
                             {
-                                ApplicationLauncherFactory.get().open(LocalFactory.createLocal(pair1.Value[i]));
+                                Process.Start(pair1.Value[i]);
                             }
                         };
                     foreach (string url in pair.Value)
@@ -1589,19 +1586,13 @@ namespace Ch.Cyberduck.Ui.Winforms
                          ApplicationLauncherFactory.get().open(LocalFactory.createLocal("Acknowledgments.rtf")),
                          () => true);
             Commands.Add(new ToolStripItem[] {cyberduckHelpToolStripMenuItem}, new[] {helpMainMenuItem},
-                         (sender, args) =>
-                         ApplicationLauncherFactory.get().open(
-                             LocalFactory.createLocal(Preferences.instance().getProperty("website.help"))),
+                         (sender, args) => Process.Start(Preferences.instance().getProperty("website.help")),
                          () => true);
             Commands.Add(new ToolStripItem[] {cyberduckHelpToolStripMenuItem}, new[] {donateMainMenuItem},
-                         (sender, args) =>
-                         ApplicationLauncherFactory.get().open(
-                             LocalFactory.createLocal(Preferences.instance().getProperty("website.donate"))),
+                         (sender, args) => Process.Start(Preferences.instance().getProperty("website.donate")),
                          () => true);
             Commands.Add(new ToolStripItem[] {reportABugToolStripMenuItem}, new[] {bugMainMenuItem},
-                         (sender, args) =>
-                         ApplicationLauncherFactory.get().open(
-                             LocalFactory.createLocal(Preferences.instance().getProperty("website.bug"))),
+                         (sender, args) => Process.Start(Preferences.instance().getProperty("website.bug")),
                          () => true);
             Commands.Add(new ToolStripItem[] {aboutCyberduckToolStripMenuItem}, new[] {aboutMainMenuItem},
                          (sender, args) => new AboutBox().ShowDialog(), () => true);

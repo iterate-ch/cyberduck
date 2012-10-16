@@ -17,12 +17,12 @@
 // 
 
 using System;
+using System.Diagnostics;
 using System.Reflection;
 using System.Windows.Forms;
 using StructureMap;
 using ch.cyberduck.core;
 using ch.cyberduck.core.i18n;
-using ch.cyberduck.core.local;
 
 namespace Ch.Cyberduck.Ui.Controller
 {
@@ -47,8 +47,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     Preferences.instance().getProperty("donate.reminder"));
             if (DialogResult.OK == View.ShowDialog())
             {
-                ApplicationLauncherFactory.get().open(
-                    LocalFactory.createLocal(Preferences.instance().getProperty("website.donate")));
+                Process.Start(Preferences.instance().getProperty("website.donate"));
             }
             if (View.NeverShowDonation)
             {

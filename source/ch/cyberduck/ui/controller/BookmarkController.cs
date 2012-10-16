@@ -34,6 +34,7 @@ using java.lang;
 using org.apache.log4j;
 using Exception = System.Exception;
 using Object = java.lang.Object;
+using Process = System.Diagnostics.Process;
 using String = System.String;
 using TimeZone = java.util.TimeZone;
 
@@ -234,7 +235,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_OpenWebUrl()
         {
-            ApplicationLauncherFactory.get().open(LocalFactory.createLocal(_host.getWebURL()));
+            Process.Start(_host.getWebURL());
         }
 
         private void View_ChangedEncodingEvent()
@@ -407,7 +408,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_OpenUrl()
         {
-            ApplicationLauncherFactory.get().open(LocalFactory.createLocal(_host.toURL()));
+            Process.Start(_host.toURL());
         }
 
         private void View_OpenDownloadFolderEvent()
