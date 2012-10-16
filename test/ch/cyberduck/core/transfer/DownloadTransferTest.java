@@ -4,9 +4,11 @@ import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.NSObjectPathReference;
+import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.NullPath;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.sftp.SFTPSession;
 
 import org.junit.BeforeClass;
@@ -14,8 +16,7 @@ import org.junit.Test;
 
 import java.util.Collections;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.*;
 
 /**
  * @version $Id$
@@ -38,6 +39,42 @@ public class DownloadTransferTest extends AbstractTestCase {
         assertEquals(t.getBandwidth(), serialized.getBandwidth());
         assertEquals(4L, serialized.getSize());
         assertEquals(3L, serialized.getTransferred());
+        assertFalse(serialized.isComplete());
+    }
+
+    @Test
+    public void testSerializeComplete() throws Exception {
+        Transfer t = new DownloadTransfer(new NullPath("/t", Path.DIRECTORY_TYPE) {
+            @Override
+            public Local getLocal() {
+                return new NullLocal(null, "t") {
+                    @Override
+                    public boolean exists() {
+                        return true;
+                    }
+                };
+            }
+        }) {
+            @Override
+            protected void fireWillTransferPath(Path path) {
+                assertEquals(new NullPath("/t", Path.DIRECTORY_TYPE), path);
+            }
+
+            @Override
+            protected void fireDidTransferPath(Path path) {
+                assertEquals(new NullPath("/t", Path.DIRECTORY_TYPE), path);
+            }
+        };
+        t.start(new TransferPrompt() {
+            @Override
+            public TransferAction prompt() {
+                return TransferAction.ACTION_OVERWRITE;
+            }
+        }, new TransferOptions());
+        assertTrue(t.isComplete());
+        final DownloadTransfer serialized = new DownloadTransfer(t.getAsDictionary(), new SFTPSession(new Host(Protocol.SFTP, "t")));
+        assertNotSame(t, serialized);
+        assertTrue(serialized.isComplete());
     }
 
     @Test
