@@ -266,7 +266,11 @@ namespace Ch.Cyberduck.Ui.Controller
             String input = View.Hostname;
             if (ProtocolFactory.isURL(input))
             {
-                _host.init(Host.parse(input).getAsDictionary());
+                Host parsed = Host.parse(input);
+                _host.setProtocol(parsed.getProtocol());
+                _host.setPort(parsed.getPort());
+                _host.setHostname(parsed.getHostname());
+                _host.setDefaultPath(parsed.getDefaultPath());
             }
             else
             {

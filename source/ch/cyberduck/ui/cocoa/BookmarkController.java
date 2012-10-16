@@ -34,7 +34,6 @@ import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.ui.cocoa.application.*;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSData;
-import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 import ch.cyberduck.ui.cocoa.foundation.NSEnumerator;
 import ch.cyberduck.ui.cocoa.foundation.NSNotification;
 import ch.cyberduck.ui.cocoa.foundation.NSNotificationCenter;
@@ -661,7 +660,11 @@ public class BookmarkController extends WindowController {
     public void hostFieldDidChange(final NSNotification sender) {
         String input = hostField.stringValue();
         if(ProtocolFactory.isURL(input)) {
-            host.init(Host.parse(input).<NSDictionary>getAsDictionary());
+            final Host parsed = Host.parse(input);
+            host.setProtocol(parsed.getProtocol());
+            host.setPort(parsed.getPort());
+            host.setHostname(parsed.getHostname());
+            host.setDefaultPath(parsed.getDefaultPath());
         }
         else {
             host.setHostname(input);
