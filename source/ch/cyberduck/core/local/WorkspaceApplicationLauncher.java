@@ -61,11 +61,6 @@ public final class WorkspaceApplicationLauncher implements ApplicationLauncher {
 
     @Override
     public boolean open(final Local file, final Application application) {
-        return this.open(file, application, null);
-    }
-
-    @Override
-    public boolean open(final Local file, final Application application, final String args) {
         synchronized(workspace) {
             if(!NSWorkspace.sharedWorkspace().openFile(file.getAbsolute(),
                     NSWorkspace.sharedWorkspace().absolutePathForAppBundleWithIdentifier(application.getIdentifier()))) {
@@ -74,6 +69,11 @@ public final class WorkspaceApplicationLauncher implements ApplicationLauncher {
             }
             return true;
         }
+    }
+
+    @Override
+    public boolean open(final Application application, final String args) {
+        throw new UnsupportedOperationException();
     }
 
     /**
