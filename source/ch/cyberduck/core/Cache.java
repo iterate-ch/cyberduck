@@ -22,7 +22,6 @@ import org.apache.commons.collections.map.LRUMap;
 import org.apache.log4j.Logger;
 
 import java.util.Collections;
-import java.util.ConcurrentModificationException;
 import java.util.Map;
 
 /**
@@ -91,7 +90,7 @@ public class Cache {
     /**
      * @param reference Absolute path
      * @return An empty list if no cached file listing is available
-     * @throws ConcurrentModificationException
+     * @throws java.util.ConcurrentModificationException
      *          If the caller is iterating of the cache himself
      *          and requests a new filter here.
      */
