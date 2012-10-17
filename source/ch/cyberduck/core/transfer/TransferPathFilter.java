@@ -22,8 +22,9 @@ public abstract class TransferPathFilter implements PathFilter<Path> {
     /**
      * Post processing of completed transfer.
      *
-     * @param p      File
-     * @param status Transfer status
+     * @param p       File
+     * @param options Options
+     * @param status  Transfer status
      */
-    public abstract void complete(Path p, TransferStatus status);
+    public abstract void complete(Path p, TransferOptions options, TransferStatus status);
 }

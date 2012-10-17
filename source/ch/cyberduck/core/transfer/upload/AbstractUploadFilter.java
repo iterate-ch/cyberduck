@@ -5,6 +5,7 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPathFilter;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
@@ -106,7 +107,7 @@ public abstract class AbstractUploadFilter extends TransferPathFilter {
     }
 
     @Override
-    public void complete(final Path file, final TransferStatus status) {
+    public void complete(final Path file, final TransferOptions options, final TransferStatus status) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Complete %s with status %s", file.getAbsolute(), status));
         }

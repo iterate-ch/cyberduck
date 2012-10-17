@@ -218,13 +218,13 @@ public class SyncTransfer extends Transfer {
                 }
 
                 @Override
-                public void complete(final Path p, final TransferStatus status) {
+                public void complete(final Path p, final TransferOptions options, final TransferStatus status) {
                     final Comparison compare = SyncTransfer.this.compare(p);
                     if(compare.equals(Comparison.REMOTE_NEWER)) {
-                        _delegateFilterDownload.complete(p, status);
+                        _delegateFilterDownload.complete(p, options, status);
                     }
                     else if(compare.equals(Comparison.LOCAL_NEWER)) {
-                        _delegateFilterUpload.complete(p, status);
+                        _delegateFilterUpload.complete(p, options, status);
                     }
                     comparisons.remove(p.getReference());
                     cache.remove(p.getReference());

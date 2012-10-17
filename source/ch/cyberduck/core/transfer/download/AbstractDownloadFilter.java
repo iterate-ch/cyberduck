@@ -4,6 +4,9 @@ import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.local.Local;
+import ch.cyberduck.core.local.QuarantineService;
+import ch.cyberduck.core.local.QuarantineServiceFactory;
+import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPathFilter;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.SymlinkResolver;
@@ -92,9 +95,21 @@ public abstract class AbstractDownloadFilter extends TransferPathFilter {
      * Update timestamp and permission
      */
     @Override
-    public void complete(final Path file, final TransferStatus status) {
+    public void complete(final Path file, final TransferOptions options, final TransferStatus status) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Complete %s with status %s", file.getAbsolute(), status));
+        }
+        if(status.isComplete()) {
+            final QuarantineService quarantine = QuarantineServiceFactory.get();
+            if(options.quarantine) {
+                // Set quarantine attributes
+                quarantine.setQuarantine(file.getLocal(),
+                        file.getHost().toURL(), file.toURL());
+            }
+            if(Preferences.instance().getBoolean("queue.download.wherefrom")) {
+                // Set quarantine attributes
+                quarantine.setWhereFrom(file.getLocal(), file.toURL());
+            }
         }
         if(!status.isCanceled()) {
             if(Preferences.instance().getBoolean("queue.download.changePermissions")) {

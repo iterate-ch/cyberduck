@@ -2,6 +2,7 @@ package ch.cyberduck.core.transfer.copy;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.DownloadSymlinkResolver;
 import ch.cyberduck.core.transfer.upload.AbstractUploadFilter;
@@ -59,8 +60,8 @@ public class CopyTransferFilter extends AbstractUploadFilter {
     }
 
     @Override
-    public void complete(Path source, final TransferStatus status) {
+    public void complete(final Path source, final TransferOptions options, final TransferStatus status) {
         final Path destination = files.get(source);
-        super.complete(destination, status);
+        super.complete(destination, options, status);
     }
 }

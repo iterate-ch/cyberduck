@@ -2,6 +2,7 @@ package ch.cyberduck.core.transfer.move;
 
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPathFilter;
 import ch.cyberduck.core.transfer.TransferStatus;
 
@@ -49,7 +50,7 @@ public class MoveTransferFilter extends TransferPathFilter {
     }
 
     @Override
-    public void complete(Path file, final TransferStatus status) {
+    public void complete(final Path file, final TransferOptions options, final TransferStatus status) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Complete %s with status %s", file.getAbsolute(), status));
         }

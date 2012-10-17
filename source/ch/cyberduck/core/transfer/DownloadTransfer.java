@@ -29,8 +29,6 @@ import ch.cyberduck.core.local.ApplicationLauncher;
 import ch.cyberduck.core.local.ApplicationLauncherFactory;
 import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.local.LocalFactory;
-import ch.cyberduck.core.local.QuarantineService;
-import ch.cyberduck.core.local.QuarantineServiceFactory;
 import ch.cyberduck.core.serializer.Serializer;
 import ch.cyberduck.core.transfer.download.CompareFilter;
 import ch.cyberduck.core.transfer.download.OverwriteFilter;
@@ -177,16 +175,6 @@ public class DownloadTransfer extends Transfer {
             status.setComplete();
         }
         else if(file.attributes().isFile()) {
-            final QuarantineService quarantine = QuarantineServiceFactory.get();
-            if(options.quarantine) {
-                // Set quarantine attributes
-                quarantine.setQuarantine(local,
-                        file.getHost().toURL(), file.toURL());
-            }
-            if(Preferences.instance().getBoolean("queue.download.wherefrom")) {
-                // Set quarantine attributes
-                quarantine.setWhereFrom(local, file.toURL());
-            }
             file.download(this.getBandwidth(), new AbstractStreamListener() {
                 @Override
                 public void bytesReceived(long bytes) {

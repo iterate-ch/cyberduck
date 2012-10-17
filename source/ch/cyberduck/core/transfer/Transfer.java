@@ -446,7 +446,7 @@ public abstract class Transfer implements Serializable {
             this.transfer(file, options, status);
             if(file.attributes().isFile()) {
                 // Post process of file
-                filter.complete(file, status);
+                filter.complete(file, options, status);
             }
             // Notification
             this.fireDidTransferPath(file);
@@ -472,7 +472,7 @@ public abstract class Transfer implements Serializable {
                 this.status.remove(child);
             }
             // Post process of directory
-            filter.complete(file, status);
+            filter.complete(file, options, status);
             // Set completion status
             if(!failure) {
                 status.setComplete();
