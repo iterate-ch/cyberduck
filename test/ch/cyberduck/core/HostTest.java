@@ -18,6 +18,8 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.local.LocalFactory;
+
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -265,5 +267,13 @@ public class HostTest extends AbstractTestCase {
         assertEquals("http://localhost/file", path.toHttpURL());
         host.setWebURL("http://127.0.0.1/~dkocher");
         assertEquals("http://127.0.0.1/~dkocher/file", path.toHttpURL());
+    }
+
+    @Test
+    public void testDownloadFolder() {
+        Host host = new Host("localhost");
+        assertEquals("~/Downloads", host.getDownloadFolder().getAbbreviatedPath());
+        host.setDownloadFolder(LocalFactory.createLocal("/t"));
+        assertEquals("/t", host.getDownloadFolder().getAbbreviatedPath());
     }
 }

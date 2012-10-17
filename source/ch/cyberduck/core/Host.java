@@ -139,7 +139,7 @@ public class Host implements Serializable {
     /**
      * The custom download folder
      */
-    private String downloadFolder;
+    private Local downloadFolder;
 
     /**
      * The timezone the server is living in
@@ -293,7 +293,7 @@ public class Host implements Serializable {
         }
         Object downloadObj = dict.stringForKey("Download Folder");
         if(downloadObj != null) {
-            this.setDownloadFolder(downloadObj.toString());
+            this.setDownloadFolder(LocalFactory.createLocal(downloadObj.toString()));
         }
         Object timezoneObj = dict.stringForKey("Timezone");
         if(timezoneObj != null) {
@@ -640,12 +640,13 @@ public class Host implements Serializable {
     }
 
     /**
-     * Sets the name for this host
-     * Also reverts the nickname if no custom nickname is set
+     * Sets the name for this host. Also reverts the nickname if no custom nickname is set.
+     * <p/>
+     * Configures credentials according to new hostname.
      *
      * @param hostname Server
      */
-    public void setHostname(String hostname) {
+    public void setHostname(final String hostname) {
         this.hostname = hostname.trim();
         this.punycode = null;
         this.credentials.configure(this.getProtocol(), this.getHostname());
@@ -654,7 +655,7 @@ public class Host implements Serializable {
     /**
      * @param port The port number to connect to or -1 to use the default port for this protocol
      */
-    public void setPort(int port) {
+    public void setPort(final int port) {
         this.port = port;
         if(-1 == port) {
             this.port = this.getProtocol().getDefaultPort();
@@ -673,19 +674,19 @@ public class Host implements Serializable {
      *
      * @param encoding Control connection encoding
      */
-    public void setEncoding(String encoding) {
+    public void setEncoding(final String encoding) {
         this.encoding = encoding;
     }
 
     /**
-     * @return The character encoding to be used when connecting
-     *         to this server or null if the default encoding should be used
+     * @return The character encoding to be used when connecting to this server or null
+     *         if the default encoding should be used
      */
     public String getEncoding() {
-        return this.encoding;
+        return encoding;
     }
 
-    public void setFTPConnectMode(FTPConnectMode connectMode) {
+    public void setFTPConnectMode(final FTPConnectMode connectMode) {
         this.connectMode = connectMode;
     }
 
@@ -694,7 +695,7 @@ public class Host implements Serializable {
      *         to this server or null if the default connect mode should be used
      */
     public FTPConnectMode getFTPConnectMode() {
-        return this.connectMode;
+        return connectMode;
     }
 
     /**
@@ -703,7 +704,7 @@ public class Host implements Serializable {
      *
      * @param n null to use the default value or -1 if no limit
      */
-    public void setMaxConnections(Integer n) {
+    public void setMaxConnections(final Integer n) {
         this.maxConnections = n;
     }
 
@@ -712,7 +713,7 @@ public class Host implements Serializable {
      *         if the default should be used
      */
     public Integer getMaxConnections() {
-        return this.maxConnections;
+        return maxConnections;
     }
 
     /**
@@ -720,11 +721,11 @@ public class Host implements Serializable {
      *
      * @param folder Absolute path
      */
-    public void setDownloadFolder(String folder) {
+    public void setDownloadFolder(final Local folder) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Set download folder for bookmark %s to %s", this.getHostname(), folder));
         }
-        this.downloadFolder = LocalFactory.createLocal(folder).getAbbreviatedPath();
+        downloadFolder = folder;
     }
 
     /**
@@ -733,17 +734,17 @@ public class Host implements Serializable {
      * @return Absolute path
      */
     public Local getDownloadFolder() {
-        if(null == this.downloadFolder) {
+        if(null == downloadFolder) {
             return LocalFactory.createLocal(Preferences.instance().getProperty("queue.download.folder"));
         }
-        return LocalFactory.createLocal(this.downloadFolder);
+        return downloadFolder;
     }
 
     /**
      * @return True if no custom download location is set
      */
     public boolean isDefaultDownloadFolder() {
-        return null == this.downloadFolder;
+        return null == downloadFolder;
     }
 
     /**
@@ -752,7 +753,7 @@ public class Host implements Serializable {
      *
      * @param timezone Timezone of server
      */
-    public void setTimezone(TimeZone timezone) {
+    public void setTimezone(final TimeZone timezone) {
         this.timezone = timezone;
     }
 
@@ -766,7 +767,7 @@ public class Host implements Serializable {
     /**
      * @param comment Notice
      */
-    public void setComment(String comment) {
+    public void setComment(final String comment) {
         this.comment = comment;
     }
 
@@ -807,10 +808,10 @@ public class Host implements Serializable {
 
     public void setWebURL(final String url) {
         if(this.getDefaultWebURL().equals(url)) {
-            this.webURL = null;
+            webURL = null;
             return;
         }
-        this.webURL = url;
+        webURL = url;
     }
 
     /**
@@ -842,15 +843,20 @@ public class Host implements Serializable {
      * protocol://user@host:port
      *
      * @return The URL of the remote host including user login hostname and port
+     * @see #toURL(boolean)
      */
     public String toURL() {
         return this.toURL(true);
     }
 
-    public String toURL(boolean credentials) {
+    /**
+     * @param includeUsername Prepend username to host
+     * @return URL
+     */
+    public String toURL(final boolean includeUsername) {
         StringBuilder url = new StringBuilder(this.getProtocol().getScheme().toString());
         url.append("://");
-        if(credentials
+        if(includeUsername
                 && StringUtils.isNotEmpty(this.getCredentials().getUsername())) {
             url.append(this.getCredentials().getUsername()).append("@");
         }

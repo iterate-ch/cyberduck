@@ -165,7 +165,7 @@ public class FilezillaBookmarkCollection extends XmlBookmarkCollection {
                 current.setComment(elementText);
             }
             else if(name.equals("LocalDir")) {
-                current.setDownloadFolder(elementText);
+                current.setDownloadFolder(LocalFactory.createLocal(elementText));
             }
             else if(name.equals("RemoteDir")) {
                 if(StringUtils.isNotBlank(elementText)) {

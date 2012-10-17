@@ -468,11 +468,8 @@ public class BookmarkController extends WindowController {
         if(downloadPathPopup.menu().itemWithTitle(f.getDisplayName()) == null) {
             downloadPathPopup.menu().addItemWithTitle_action_keyEquivalent(f.getDisplayName(), action, StringUtils.EMPTY);
             downloadPathPopup.lastItem().setTarget(this.id());
-            downloadPathPopup.lastItem().setImage(
-                    IconCache.instance().iconForPath(f, 16)
-            );
-            downloadPathPopup.lastItem().setRepresentedObject(
-                    f.getAbsolute());
+            downloadPathPopup.lastItem().setImage(IconCache.instance().iconForPath(f, 16));
+            downloadPathPopup.lastItem().setRepresentedObject(f.getAbsolute());
             if(host.getDownloadFolder().equals(f)) {
                 downloadPathPopup.selectItem(downloadPathPopup.lastItem());
             }
@@ -493,7 +490,7 @@ public class BookmarkController extends WindowController {
                     Foundation.selector("downloadPathPanelDidEnd:returnCode:contextInfo:"), null);
         }
         else {
-            host.setDownloadFolder(sender.representedObject());
+            host.setDownloadFolder(LocalFactory.createLocal(sender.representedObject()));
             this.itemChanged();
         }
     }
@@ -502,7 +499,7 @@ public class BookmarkController extends WindowController {
         if(returncode == SheetCallback.DEFAULT_OPTION) {
             NSArray selected = sheet.filenames();
             if((selected.lastObject()) != null) {
-                host.setDownloadFolder(selected.lastObject().toString());
+                host.setDownloadFolder(LocalFactory.createLocal(selected.lastObject().toString()));
             }
         }
         downloadPathPopup.itemAtIndex(new NSInteger(0)).setTitle(host.getDownloadFolder().getDisplayName());
