@@ -42,8 +42,6 @@ public abstract class Worker<T> {
         throw new UnsupportedOperationException();
     }
 
-    ;
-
     public abstract void cleanup(T result);
 
     public String getActivity() {
