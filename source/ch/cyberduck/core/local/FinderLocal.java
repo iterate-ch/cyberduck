@@ -364,24 +364,6 @@ public class FinderLocal extends Local {
         return attributes;
     }
 
-    /**
-     * @return The file type for the extension of this file provided by launch services
-     *         if the path is a file.
-     */
-    @Override
-    public String kind() {
-        String suffix = this.getExtension();
-        if(StringUtils.isEmpty(suffix)) {
-            return super.kind();
-        }
-        // Native file type mapping
-        final String kind = kind(suffix);
-        if(StringUtils.isEmpty(kind)) {
-            return super.kind();
-        }
-        return kind;
-    }
-
     @Override
     public AbstractPath getSymlinkTarget() {
         if(!loadNative()) {
@@ -390,8 +372,6 @@ public class FinderLocal extends Local {
         return LocalFactory.createLocal((Local) this.getParent(),
                 NSFileManager.defaultManager().destinationOfSymbolicLinkAtPath_error(this.getAbsolute(), null));
     }
-
-    public static native String kind(String extension);
 
     private static final Object workspace = new Object();
 

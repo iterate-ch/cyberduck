@@ -18,7 +18,7 @@
 
 #include <stdio.h>
 
-#import <Local.h>
+#import <FinderLocal.h>
 #import <ApplicationServices/ApplicationServices.h>
 #import <Foundation/Foundation.h>
 
@@ -47,24 +47,6 @@ jstring convertToJString(JNIEnv *env, NSString *nsString)
 	const char *unichars = [nsString UTF8String];
 
 	return (*env)->NewStringUTF(env, unichars);
-}
-
-JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_local_FinderLocal_kind(JNIEnv *env, jobject this, jstring extension)
-{
-	NSString *kind = nil;
-	OSStatus status = LSCopyKindStringForTypeInfo(kLSUnknownType, kLSUnknownCreator,
-		(CFStringRef)convertToNSString(env, extension), (CFStringRef *)&kind);
-    if(noErr == status) {
-        jstring result = (*env)->NewStringUTF(env, [kind UTF8String]);
-        if(kind) {
-            [kind release];
-        }
-        return result;
-    }
-	else {
-        jstring result = (*env)->NewStringUTF(env, [NSLocalizedString(@"Unknown", @"") UTF8String]);
-        return result;
-	}
 }
 
 JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_local_FinderLocal_resolveAlias(JNIEnv *env, jobject this, jstring absolute)

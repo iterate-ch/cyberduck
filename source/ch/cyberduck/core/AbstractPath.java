@@ -19,6 +19,7 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.core.local.FileDescriptorFactory;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
@@ -231,7 +232,30 @@ public abstract class AbstractPath {
         return false;
     }
 
-    public abstract String kind();
+    /**
+     * @return The file type for the extension of this file.
+     */
+    public String kind() {
+        if(this.attributes().isSymbolicLink()) {
+            if(this.attributes().isFile()) {
+                return Locale.localizedString("Symbolic Link (File)");
+            }
+            if(this.attributes().isDirectory()) {
+                return Locale.localizedString("Symbolic Link (Folder)");
+            }
+        }
+        if(this.attributes().isFile()) {
+            final String type = FileDescriptorFactory.get().getKind(this.getName());
+            if(StringUtils.isBlank(type)) {
+                return Locale.localizedString("Unknown");
+            }
+            return type;
+        }
+        if(this.attributes().isDirectory()) {
+            return Locale.localizedString("Folder");
+        }
+        return Locale.localizedString("Unknown");
+    }
 
     /**
      * @return The target of the symbolic link if this path denotes a symbolic link, null otherwise.

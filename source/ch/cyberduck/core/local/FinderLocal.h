@@ -23,14 +23,6 @@ extern "C" {
 JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_local_FinderLocal_resolveAlias
   (JNIEnv *, jobject, jstring);
 
-/*
- * Class:     ch_cyberduck_core_local_FinderLocal
- * Method:    kind
- * Signature: (Ljava/lang/String;)Ljava/lang/String;
- */
-JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_local_FinderLocal_kind
-  (JNIEnv *, jclass, jstring);
-
 #ifdef __cplusplus
 }
 #endif

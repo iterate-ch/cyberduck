@@ -623,28 +623,6 @@ public abstract class Path extends AbstractPath implements Serializable {
     }
 
     /**
-     * @return the file type for the extension of this file provided by launch services
-     */
-    @Override
-    public String kind() {
-        if(this.attributes().isSymbolicLink()) {
-            if(this.attributes().isFile()) {
-                return Locale.localizedString("Symbolic Link (File)");
-            }
-            if(this.attributes().isDirectory()) {
-                return Locale.localizedString("Symbolic Link (Folder)");
-            }
-        }
-        if(this.attributes().isFile()) {
-            return this.getLocal().kind();
-        }
-        if(this.attributes().isDirectory()) {
-            return Locale.localizedString("Folder");
-        }
-        return Locale.localizedString("Unknown");
-    }
-
-    /**
      * @return The session this path uses to send commands
      */
     public abstract Session getSession();
