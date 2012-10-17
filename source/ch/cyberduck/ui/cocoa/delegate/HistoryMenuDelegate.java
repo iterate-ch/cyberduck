@@ -45,7 +45,7 @@ import java.util.Date;
 /**
  * @version $Id$
  */
-public abstract class HistoryMenuDelegate extends CollectionMenuDelegate {
+public abstract class HistoryMenuDelegate extends CollectionMenuDelegate<Host> {
     private static Logger log = Logger.getLogger(HistoryMenuDelegate.class);
 
     protected static final NSDictionary TIMESTAMP_FONT_ATTRIBUTES = NSDictionary.dictionaryWithObjectsForKeys(
@@ -55,8 +55,11 @@ public abstract class HistoryMenuDelegate extends CollectionMenuDelegate {
                     NSAttributedString.ParagraphStyleAttributeName)
     );
 
+    private HistoryCollection collection;
+
     public HistoryMenuDelegate() {
         super(HistoryCollection.defaultCollection());
+        collection = HistoryCollection.defaultCollection();
     }
 
     @Override
@@ -66,9 +69,9 @@ public abstract class HistoryMenuDelegate extends CollectionMenuDelegate {
             // and menu:updateItem:atIndex:shouldCancel: is not called.
             return new NSInteger(-1);
         }
-        if(this.collection().size() > 0) {
+        if(collection.size() > 0) {
             // The number of history plus a delimiter and the 'Clear' menu
-            return new NSInteger(this.collection().size() * 2 + 2);
+            return new NSInteger(collection.size() * 2 + 2);
         }
         return new NSInteger(1);
     }
@@ -81,7 +84,7 @@ public abstract class HistoryMenuDelegate extends CollectionMenuDelegate {
         if(cancel) {
             return false;
         }
-        final int size = this.collection().size();
+        final int size = collection.size();
         if(size == 0) {
             item.setTitle(Locale.localizedString("No recently connected servers available"));
             item.setTarget(null);
@@ -93,7 +96,7 @@ public abstract class HistoryMenuDelegate extends CollectionMenuDelegate {
         }
         else if(index.intValue() < size * 2) {
             boolean label = index.intValue() % 2 == 0;
-            Host h = this.collection().get(index.intValue() / 2);
+            Host h = collection.get(index.intValue() / 2);
             if(label) {
                 item.setTitle(h.getNickname());
                 item.setAction(this.getDefaultAction());
@@ -135,12 +138,12 @@ public abstract class HistoryMenuDelegate extends CollectionMenuDelegate {
     public void historyMenuItemClicked(NSMenuItem sender) {
         log.debug("historyMenuItemClicked:" + sender);
         BrowserController controller = MainController.newDocument();
-        controller.mount(this.collection().lookup(sender.representedObject()));
+        controller.mount(collection.lookup(sender.representedObject()));
     }
 
     public void clearMenuItemClicked(NSMenuItem sender) {
         // Delete all bookmark files
-        this.collection().clear();
+        collection.clear();
     }
 
     @Override

@@ -19,9 +19,8 @@ package ch.cyberduck.ui.cocoa.delegate;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractHostCollection;
+import ch.cyberduck.core.Collection;
 import ch.cyberduck.core.CollectionListener;
-import ch.cyberduck.core.Host;
 import ch.cyberduck.ui.cocoa.application.NSMenu;
 
 import org.rococoa.cocoa.foundation.NSInteger;
@@ -29,17 +28,13 @@ import org.rococoa.cocoa.foundation.NSInteger;
 /**
  * @version $Id$
  */
-public abstract class CollectionMenuDelegate extends AbstractMenuDelegate implements CollectionListener<Host> {
+public abstract class CollectionMenuDelegate<T> extends AbstractMenuDelegate implements CollectionListener<T> {
 
-    private AbstractHostCollection collection;
+    private Collection<T> collection;
 
-    public CollectionMenuDelegate(AbstractHostCollection c) {
+    public CollectionMenuDelegate(Collection<T> c) {
         this.collection = c;
         this.collection.addListener(this);
-    }
-
-    protected AbstractHostCollection collection() {
-        return this.collection;
     }
 
     @Override
@@ -49,25 +44,25 @@ public abstract class CollectionMenuDelegate extends AbstractMenuDelegate implem
             // and menu:updateItem:atIndex:shouldCancel: is not called.
             return new NSInteger(-1);
         }
-        if(this.collection().size() > 0) {
+        if(collection.size() > 0) {
             // The number of history plus a delimiter and the 'Clear' menu
-            return new NSInteger(this.collection().size());
+            return new NSInteger(collection.size());
         }
         return new NSInteger(1);
     }
 
     @Override
-    public void collectionItemAdded(Host item) {
+    public void collectionItemAdded(T item) {
         this.setNeedsUpdate(true);
     }
 
     @Override
-    public void collectionItemRemoved(Host item) {
+    public void collectionItemRemoved(T item) {
         this.setNeedsUpdate(true);
     }
 
     @Override
-    public void collectionItemChanged(Host item) {
+    public void collectionItemChanged(T item) {
         this.setNeedsUpdate(true);
     }
 

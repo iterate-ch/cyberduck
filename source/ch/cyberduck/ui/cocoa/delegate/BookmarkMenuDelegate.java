@@ -34,11 +34,14 @@ import org.rococoa.cocoa.foundation.NSInteger;
 /**
  * @version $Id$
  */
-public class BookmarkMenuDelegate extends CollectionMenuDelegate {
+public class BookmarkMenuDelegate extends CollectionMenuDelegate<Host> {
     private static Logger log = Logger.getLogger(BookmarkMenuDelegate.class);
+
+    private BookmarkCollection collection;
 
     public BookmarkMenuDelegate() {
         super(BookmarkCollection.defaultCollection());
+        collection = BookmarkCollection.defaultCollection();
     }
 
     private static final int BOOKMARKS_INDEX = 8;
@@ -64,7 +67,7 @@ public class BookmarkMenuDelegate extends CollectionMenuDelegate {
          * ----------------
          * ...
          */
-        return new NSInteger(this.collection().size() + BOOKMARKS_INDEX + 3);
+        return new NSInteger(collection.size() + BOOKMARKS_INDEX + 3);
     }
 
     @Override
@@ -78,7 +81,7 @@ public class BookmarkMenuDelegate extends CollectionMenuDelegate {
             item.setImage(IconCache.iconNamed("rendezvous.tiff", 16));
         }
         if(index.intValue() > BOOKMARKS_INDEX + 2) {
-            Host h = this.collection().get(index.intValue() - (BOOKMARKS_INDEX + 3));
+            Host h = collection.get(index.intValue() - (BOOKMARKS_INDEX + 3));
             item.setTitle(h.getNickname());
             item.setTarget(this.id());
             item.setImage(IconCache.iconNamed(h.getProtocol().icon(), 16));
@@ -91,7 +94,7 @@ public class BookmarkMenuDelegate extends CollectionMenuDelegate {
     public void bookmarkMenuItemClicked(final NSMenuItem sender) {
         log.debug("bookmarkMenuItemClicked:" + sender);
         BrowserController controller = MainController.newDocument();
-        controller.mount(this.collection().lookup(sender.representedObject()));
+        controller.mount(collection.lookup(sender.representedObject()));
     }
 
     @Override

@@ -35,16 +35,19 @@ import org.rococoa.cocoa.foundation.NSInteger;
 /**
  * @version $Id$
  */
-public abstract class RendezvousMenuDelegate extends CollectionMenuDelegate {
+public abstract class RendezvousMenuDelegate extends CollectionMenuDelegate<Host> {
     private static Logger log = Logger.getLogger(RendezvousMenuDelegate.class);
+
+    private RendezvousCollection collection;
 
     public RendezvousMenuDelegate() {
         super(RendezvousCollection.defaultCollection());
+        collection = RendezvousCollection.defaultCollection();
     }
 
     @Override
     public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, NSInteger index, boolean cancel) {
-        if(this.collection().size() == 0) {
+        if(collection.size() == 0) {
             item.setTitle(Locale.localizedString("No Bonjour services available"));
             item.setTarget(null);
             item.setAction(null);
@@ -52,7 +55,7 @@ public abstract class RendezvousMenuDelegate extends CollectionMenuDelegate {
             item.setEnabled(false);
         }
         else {
-            final Host h = this.collection().get(index.intValue());
+            final Host h = collection.get(index.intValue());
             item.setTitle(h.getNickname());
             item.setTarget(this.id());
             item.setEnabled(true);
@@ -66,7 +69,7 @@ public abstract class RendezvousMenuDelegate extends CollectionMenuDelegate {
     public void rendezvousMenuClicked(NSMenuItem sender) {
         log.debug("rendezvousMenuClicked:" + sender);
         BrowserController controller = MainController.newDocument();
-        controller.mount(this.collection().lookup(sender.representedObject()));
+        controller.mount(collection.lookup(sender.representedObject()));
     }
 
     @Override
