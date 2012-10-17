@@ -15,38 +15,22 @@ extern "C" {
 #define ch_cyberduck_core_local_FinderLocal_SYMBOLIC_LINK_TYPE 4L
 #undef ch_cyberduck_core_local_FinderLocal_VOLUME_TYPE
 #define ch_cyberduck_core_local_FinderLocal_VOLUME_TYPE 8L
-	/*
-	 * Class:     ch_cyberduck_core_local_FinderLocal
-	 * Method:    kind
-	 * Signature: (Ljava/lang/String;)Ljava/lang/String;
-	 */
-	JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_local_FinderLocal_kind
-	(JNIEnv *, jobject, jstring);
-	
-	/*
-	 * Class:     ch_cyberduck_core_local_FinderLocal
-	 * Method:    setQuarantine
-	 * Signature: (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
-	 */
-	JNIEXPORT void JNICALL Java_ch_cyberduck_core_local_FinderLocal_setQuarantine
-	(JNIEnv *, jobject, jstring, jstring, jstring);
-	
-	/*
-	 * Class:     ch_cyberduck_core_local_FinderLocal
-	 * Method:    setWhereFrom
-	 * Signature: (Ljava/lang/String;Ljava/lang/String;)V
-	 */
-	JNIEXPORT void JNICALL Java_ch_cyberduck_core_local_FinderLocal_setWhereFrom
-	(JNIEnv *, jobject, jstring, jstring);
+/*
+ * Class:     ch_cyberduck_core_local_FinderLocal
+ * Method:    resolveAlias
+ * Signature: (Ljava/lang/String;)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_local_FinderLocal_resolveAlias
+  (JNIEnv *, jobject, jstring);
 
-	/*
-	 * Class:     ch_cyberduck_core_local_FinderLocal
-	 * Method:    resolveAlias
-	 * Signature: (Ljava/lang/String;)Ljava/lang/String;
-	 */
-    JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_local_FinderLocal_resolveAlias
-    (JNIEnv *, jobject, jstring);
-    
+/*
+ * Class:     ch_cyberduck_core_local_FinderLocal
+ * Method:    kind
+ * Signature: (Ljava/lang/String;)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_ch_cyberduck_core_local_FinderLocal_kind
+  (JNIEnv *, jclass, jstring);
+
 #ifdef __cplusplus
 }
 #endif
