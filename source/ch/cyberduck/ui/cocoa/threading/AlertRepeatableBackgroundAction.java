@@ -32,6 +32,7 @@ import ch.cyberduck.ui.cocoa.ListDataSource;
 import ch.cyberduck.ui.cocoa.Outlet;
 import ch.cyberduck.ui.cocoa.SheetCallback;
 import ch.cyberduck.ui.cocoa.SheetController;
+import ch.cyberduck.ui.cocoa.TableColumnFactory;
 import ch.cyberduck.ui.cocoa.WindowController;
 import ch.cyberduck.ui.cocoa.application.NSAlert;
 import ch.cyberduck.ui.cocoa.application.NSButton;
@@ -51,7 +52,6 @@ import org.rococoa.cocoa.CGFloat;
 import org.rococoa.cocoa.foundation.NSInteger;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -136,15 +136,6 @@ public abstract class AlertRepeatableBackgroundAction extends RepeatableBackgrou
                 final SheetController c = new AlertSheetController();
                 c.beginSheet();
             }
-        }
-    }
-
-    private static final class TableColumnFactory extends HashMap<String, NSTableColumn> {
-        private NSTableColumn create(String identifier) {
-            if(!this.containsKey(identifier)) {
-                this.put(identifier, NSTableColumn.tableColumnWithIdentifier(identifier));
-            }
-            return this.get(identifier);
         }
     }
 

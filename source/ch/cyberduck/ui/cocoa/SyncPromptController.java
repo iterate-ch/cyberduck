@@ -35,6 +35,9 @@ import org.rococoa.Foundation;
  */
 public class SyncPromptController extends TransferPromptController {
 
+    private final TableColumnFactory tableColumnsFactory
+            = new TableColumnFactory();
+
     public SyncPromptController(final WindowController parent, final Transfer transfer) {
         super(parent, transfer);
     }

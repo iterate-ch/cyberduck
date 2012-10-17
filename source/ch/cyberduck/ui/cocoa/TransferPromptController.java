@@ -51,7 +51,6 @@ import org.rococoa.cocoa.foundation.NSInteger;
 import org.rococoa.cocoa.foundation.NSUInteger;
 
 import java.text.MessageFormat;
-import java.util.HashMap;
 
 /**
  * @version $Id$
@@ -71,6 +70,9 @@ public abstract class TransferPromptController extends SheetController implement
         }
         throw new IllegalArgumentException(transfer.toString());
     }
+
+    private final TableColumnFactory tableColumnsFactory
+            = new TableColumnFactory();
 
     public TransferPromptController(final WindowController parent, final Transfer transfer) {
         super(parent);
@@ -183,19 +185,6 @@ public abstract class TransferPromptController extends SheetController implement
     private static final NSAttributedString UNKNOWN_STRING = NSAttributedString.attributedStringWithAttributes(
             Locale.localizedString("Unknown"),
             TRUNCATE_MIDDLE_ATTRIBUTES);
-
-    protected final TableColumnFactory tableColumnsFactory = new TableColumnFactory();
-
-    protected static class TableColumnFactory extends HashMap<String, NSTableColumn> {
-        private static final long serialVersionUID = -1455753054446012489L;
-
-        protected NSTableColumn create(String identifier) {
-            if(!this.containsKey(identifier)) {
-                this.put(identifier, NSTableColumn.tableColumnWithIdentifier(identifier));
-            }
-            return this.get(identifier);
-        }
-    }
 
     // Setting appearance attributes
     final NSLayoutManager layoutManager = NSLayoutManager.layoutManager();

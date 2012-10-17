@@ -41,7 +41,6 @@ import org.rococoa.cocoa.foundation.NSInteger;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -144,17 +143,6 @@ public final class ActivityController extends WindowController {
     }
 
     private final TableColumnFactory tableColumnsFactory = new TableColumnFactory();
-
-    private static final class TableColumnFactory extends HashMap<String, NSTableColumn> {
-        private static final long serialVersionUID = -2861187853086923598L;
-
-        private NSTableColumn create(String identifier) {
-            if(!this.containsKey(identifier)) {
-                this.put(identifier, NSTableColumn.tableColumnWithIdentifier(identifier));
-            }
-            return this.get(identifier);
-        }
-    }
 
     @Outlet
     private NSTableView table;

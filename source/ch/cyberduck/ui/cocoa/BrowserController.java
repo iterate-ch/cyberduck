@@ -1408,17 +1408,6 @@ public class BrowserController extends WindowController implements NSToolbar.Del
     private final TableColumnFactory browserOutlineColumnsFactory = new TableColumnFactory();
     private final TableColumnFactory bookmarkTableColumnFactory = new TableColumnFactory();
 
-    private static class TableColumnFactory extends HashMap<String, NSTableColumn> {
-        private static final long serialVersionUID = 7925372062613505899L;
-
-        private NSTableColumn create(String identifier) {
-            if(!this.containsKey(identifier)) {
-                this.put(identifier, NSTableColumn.tableColumnWithIdentifier(identifier));
-            }
-            return this.get(identifier);
-        }
-    }
-
     protected void _updateBrowserColumns(NSTableView table) {
         table.removeTableColumn(table.tableColumnWithIdentifier(BrowserTableDataSource.SIZE_COLUMN));
         if(Preferences.instance().getBoolean("browser.columnSize")) {

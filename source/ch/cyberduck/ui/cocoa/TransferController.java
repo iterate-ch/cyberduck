@@ -462,17 +462,6 @@ public final class TransferController extends WindowController implements NSTool
 
     private final TableColumnFactory tableColumnsFactory = new TableColumnFactory();
 
-    private static class TableColumnFactory extends HashMap<String, NSTableColumn> {
-        private static final long serialVersionUID = 766139884741077738L;
-
-        private NSTableColumn create(String identifier) {
-            if(!this.containsKey(identifier)) {
-                this.put(identifier, NSTableColumn.tableColumnWithIdentifier(identifier));
-            }
-            return this.get(identifier);
-        }
-    }
-
     @Outlet
     private NSTableView transferTable;
     private TransferTableDataSource transferTableModel;
