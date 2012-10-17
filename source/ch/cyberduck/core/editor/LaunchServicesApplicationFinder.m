@@ -18,7 +18,7 @@
 
 #include <stdio.h>
 
-#import <Local.h>
+#import <LaunchServicesApplicationFinder.h>
 #import <ApplicationServices/ApplicationServices.h>
 #import <Foundation/Foundation.h>
 
