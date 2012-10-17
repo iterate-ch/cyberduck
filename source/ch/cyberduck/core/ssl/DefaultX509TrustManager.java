@@ -32,7 +32,7 @@ import java.security.cert.X509Certificate;
 /**
  * @version $Id$
  */
-public class DefaultX509TrustManager implements X509TrustManager {
+public final class DefaultX509TrustManager implements X509TrustManager {
     private static Logger log = Logger.getLogger(DefaultX509TrustManager.class);
 
     private X509TrustManager standardTrustManager;
