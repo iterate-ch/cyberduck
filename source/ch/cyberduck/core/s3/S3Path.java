@@ -1102,33 +1102,25 @@ public class S3Path extends CloudPath {
         });
         final List<Path> versions = new ArrayList<Path>();
         int i = 0;
-        for(BaseVersionOrDeleteMarker object : versionOrDeleteMarkers) {
-            if(object.isLatest()) {
+        for(BaseVersionOrDeleteMarker marker : versionOrDeleteMarkers) {
+            if((marker.isDeleteMarker() && marker.isLatest())
+                    || !marker.isLatest()) {
                 // Latest version already in default listing
-                continue;
-            }
-            if(object.isDeleteMarker()) {
-                continue;
-            }
-            final S3Path path = (S3Path) PathFactory.createPath(this.getSession(),
-                    bucket, object.getKey(), FILE_TYPE);
-            path.setParent(this);
-            final S3Version version = (S3Version) object;
-            // Versioning is enabled if non null.
-            path.attributes().setVersionId(version.getVersionId());
-            path.attributes().setRevision(++i);
-            path.attributes().setDuplicate(true);
-            if(0 == version.getSize()) {
-                final StorageObject details = path.getDetails();
-                if(details.isDirectoryPlaceholder()) {
-                    // No need for versioning delimiters
-                    continue;
+                final S3Path path = (S3Path) PathFactory.createPath(this.getSession(),
+                        bucket, marker.getKey(), FILE_TYPE);
+                path.setParent(this);
+                // Versioning is enabled if non null.
+                path.attributes().setVersionId(marker.getVersionId());
+                path.attributes().setRevision(++i);
+                path.attributes().setDuplicate(true);
+                path.attributes().setModificationDate(marker.getLastModified().getTime());
+                if(marker instanceof S3Version) {
+                    path.attributes().setSize(((S3Version) marker).getSize());
+                    path.attributes().setETag(((S3Version) marker).getEtag());
+                    path.attributes().setStorageClass(((S3Version) marker).getStorageClass());
                 }
+                versions.add(path);
             }
-            path.attributes().setSize(version.getSize());
-            path.attributes().setModificationDate(version.getLastModified().getTime());
-            path.attributes().setStorageClass(version.getStorageClass());
-            versions.add(path);
         }
         return versions;
     }
