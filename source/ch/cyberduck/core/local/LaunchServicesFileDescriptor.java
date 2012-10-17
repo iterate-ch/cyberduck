@@ -20,10 +20,11 @@ package ch.cyberduck.core.local;
 
 import ch.cyberduck.core.Native;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public final class LaunchServicesFileDescriptor implements FileDescriptor {
 
@@ -43,11 +44,11 @@ public final class LaunchServicesFileDescriptor implements FileDescriptor {
     }
 
     @Override
-    public String getKind(Local file) {
-        if(StringUtils.isBlank(file.getExtension())) {
+    public String getKind(String filename) {
+        if(StringUtils.isBlank(FilenameUtils.getExtension(filename))) {
             return null;
         }
-        return this.kind(file.getExtension());
+        return this.kind(FilenameUtils.getExtension(filename));
     }
 
     private native String kind(String extension);

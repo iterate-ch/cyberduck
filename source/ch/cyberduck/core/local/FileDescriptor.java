@@ -19,13 +19,12 @@ package ch.cyberduck.core.local;
  */
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public interface FileDescriptor {
 
     /**
-     * @param file File
-     * @return Description of file type
+     * @param filename@return Description of file type
      */
-    String getKind(Local file);
+    String getKind(String filename);
 }
