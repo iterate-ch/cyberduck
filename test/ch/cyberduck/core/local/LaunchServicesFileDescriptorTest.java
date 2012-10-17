@@ -26,7 +26,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class LaunchServicesFileDescriptorTest extends AbstractTestCase {
 
@@ -38,6 +38,6 @@ public class LaunchServicesFileDescriptorTest extends AbstractTestCase {
 
     @Test
     public void testGetKind() throws Exception {
-        assertEquals("Plain text document", FileDescriptorFactory.get().getKind(LocalFactory.createLocal("/tmp/t.txt")));
+        assertEquals("Plain text document", FileDescriptorFactory.get().getKind("/tmp/t.txt"));
     }
 }
