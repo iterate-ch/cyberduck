@@ -67,7 +67,7 @@ public abstract class AbstractHostCollection extends Collection<Host> implements
      * @param h Bookmark
      * @return User comment for bookmark or null
      */
-    public String getComment(Host h) {
+    public String getComment(final Host h) {
         if(StringUtils.isNotBlank(h.getComment())) {
             return StringUtils.remove(StringUtils.remove(h.getComment(), CharUtils.LF), CharUtils.CR);
         }
@@ -88,7 +88,7 @@ public abstract class AbstractHostCollection extends Collection<Host> implements
     }
 
     @Override
-    public boolean add(Host host) {
+    public boolean add(final Host host) {
         if(this.contains(host)) {
             log.warn(String.format("Reset UUID of duplicate in collection for %s", host));
             host.setUuid(null);
@@ -162,7 +162,7 @@ public abstract class AbstractHostCollection extends Collection<Host> implements
      * @param uuid Identifier of bookmark
      * @return Null if not found
      */
-    public Host lookup(String uuid) {
+    public Host lookup(final String uuid) {
         for(Host bookmark : this) {
             if(bookmark.getUuid().equals(uuid)) {
                 return bookmark;

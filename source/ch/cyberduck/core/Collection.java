@@ -57,7 +57,7 @@ public class Collection<E> extends ArrayList<E> implements CollectionListener<E>
      * Mark collection as loaded and notify listeners.
      */
     public void load() {
-        this.loaded = true;
+        loaded = true;
         this.collectionLoaded();
     }
 
@@ -160,7 +160,7 @@ public class Collection<E> extends ArrayList<E> implements CollectionListener<E>
             log.debug("Do not notify changes of locked collection");
             return;
         }
-        for(CollectionListener<E> listener : listeners.toArray(new CollectionListener[listeners.size()])) {
+        for(CollectionListener<E> listener : listeners) {
             listener.collectionLoaded();
         }
     }
@@ -171,7 +171,7 @@ public class Collection<E> extends ArrayList<E> implements CollectionListener<E>
             log.debug("Do not notify changes of locked collection");
             return;
         }
-        for(CollectionListener<E> listener : listeners.toArray(new CollectionListener[listeners.size()])) {
+        for(CollectionListener<E> listener : listeners) {
             listener.collectionItemAdded(item);
         }
     }
@@ -182,7 +182,7 @@ public class Collection<E> extends ArrayList<E> implements CollectionListener<E>
             log.debug("Do not notify changes of locked collection");
             return;
         }
-        for(CollectionListener<E> listener : listeners.toArray(new CollectionListener[listeners.size()])) {
+        for(CollectionListener<E> listener : listeners) {
             listener.collectionItemRemoved(item);
         }
     }
@@ -193,7 +193,7 @@ public class Collection<E> extends ArrayList<E> implements CollectionListener<E>
             log.debug("Do not notify changes of locked collection");
             return;
         }
-        for(CollectionListener<E> listener : listeners.toArray(new CollectionListener[listeners.size()])) {
+        for(CollectionListener<E> listener : listeners) {
             listener.collectionItemChanged(item);
         }
     }
@@ -203,21 +203,21 @@ public class Collection<E> extends ArrayList<E> implements CollectionListener<E>
     }
 
     /**
-     * @return True while loading
+     * @return True while loading and the collection is locked.
      */
     public boolean isLocked() {
         return locked.isLocked();
     }
 
     /**
-     *
+     * Acquire lock to write to collection
      */
     protected void lock() {
         locked.lock();
     }
 
     /**
-     *
+     * Release exclusive lock on collection
      */
     protected void unlock() {
         locked.unlock();
