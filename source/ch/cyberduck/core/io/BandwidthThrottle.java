@@ -36,7 +36,7 @@ import org.apache.log4j.Logger;
  *
  * @version $Id$
  */
-public class BandwidthThrottle {
+public final class BandwidthThrottle {
     private static Logger log = Logger.getLogger(BandwidthThrottle.class);
 
     /**

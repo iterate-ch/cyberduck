@@ -35,7 +35,7 @@ import java.util.Set;
 /**
  * @version $Id$
  */
-public class Acl extends HashMap<Acl.User, Set<Acl.Role>> {
+public final class Acl extends HashMap<Acl.User, Set<Acl.Role>> {
     private static final long serialVersionUID = 372192161904802600L;
 
     public static final Acl EMPTY = new Acl();

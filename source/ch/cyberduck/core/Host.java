@@ -42,7 +42,7 @@ import com.ibm.icu.text.StringPrepParseException;
 /**
  * @version $Id$
  */
-public class Host implements Serializable {
+public final class Host implements Serializable {
     private static final Logger log = Logger.getLogger(Host.class);
     /**
      * The protocol identifier. Must be one of <code>sftp</code>, <code>ftp</code> or <code>ftps</code>
