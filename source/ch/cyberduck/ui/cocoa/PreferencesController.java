@@ -32,7 +32,7 @@ import ch.cyberduck.core.editor.ApplicationFinderFactory;
 import ch.cyberduck.core.editor.EditorFactory;
 import ch.cyberduck.core.formatter.SizeFormatterFactory;
 import ch.cyberduck.core.i18n.Locale;
-import ch.cyberduck.core.local.FinderLocal;
+import ch.cyberduck.core.local.FileDescriptorFactory;
 import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.local.LocalFactory;
 import ch.cyberduck.core.sparkle.Updater;
@@ -1966,7 +1966,7 @@ public final class PreferencesController extends ToolbarWindowController {
                 Preferences.instance().getProperty("google.docs.export.document.formats"), ",");
         while(formats.hasMoreTokens()) {
             String format = formats.nextToken();
-            final String description = FinderLocal.kind(format);
+            final String description = FileDescriptorFactory.get().getKind(format);
             final String suffix = String.format(" (.%s)", format);
             final StringBuilder title = new StringBuilder(description);
             if(!description.endsWith(suffix)) {
@@ -1998,7 +1998,7 @@ public final class PreferencesController extends ToolbarWindowController {
                 Preferences.instance().getProperty("google.docs.export.spreadsheet.formats"), ",");
         while(formats.hasMoreTokens()) {
             String format = formats.nextToken();
-            final String title = String.format("%s (.%s)", FinderLocal.kind(format), format);
+            final String title = String.format("%s (.%s)", FileDescriptorFactory.get().getKind(format), format);
             this.spreadsheetExportFormatPopup.addItemWithTitle(title);
             this.spreadsheetExportFormatPopup.lastItem().setRepresentedObject(format);
             if(format.equals(Preferences.instance().getProperty("google.docs.export.spreadsheet"))) {
@@ -2025,7 +2025,7 @@ public final class PreferencesController extends ToolbarWindowController {
                 Preferences.instance().getProperty("google.docs.export.presentation.formats"), ",");
         while(formats.hasMoreTokens()) {
             String format = formats.nextToken();
-            final String title = String.format("%s (.%s)", FinderLocal.kind(format), format);
+            final String title = String.format("%s (.%s)", FileDescriptorFactory.get().getKind(format), format);
             this.presentationExportFormatPopup.addItemWithTitle(title);
             this.presentationExportFormatPopup.lastItem().setRepresentedObject(format);
             if(format.equals(Preferences.instance().getProperty("google.docs.export.presentation"))) {
