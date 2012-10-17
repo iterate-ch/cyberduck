@@ -1056,7 +1056,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     Log.warn("No accepted certificates found");
                     return;
                 }
-                KeychainFactory.instance().displayCertificates(certificates);
+                KeychainFactory.get().displayCertificates(certificates);
             }
         }
 

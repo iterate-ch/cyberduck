@@ -1429,7 +1429,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void UpdateSize(long size)
         {
-            View.FileSize = SizeFormatterFactory.instance().format(size, true);
+            View.FileSize = SizeFormatterFactory.get().format(size, true);
         }
 
         private class ChecksumBackgroundAction : InfoBackgroundAction

@@ -1126,7 +1126,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                                                                             RemoveEmptyEntries))
             {
                 list.Add(new KeyValuePair<float, string>(Convert.ToInt32(option.Trim()),
-                                                         (SizeFormatterFactory.instance().format(
+                                                         (SizeFormatterFactory.get().format(
                                                              Convert.ToInt32(option.Trim())) + "/s")));
             }
             View.PopulateDefaultUploadThrottleList(list);
@@ -1144,7 +1144,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                                                                             RemoveEmptyEntries))
             {
                 list.Add(new KeyValuePair<float, string>(Convert.ToInt32(option.Trim()),
-                                                         (SizeFormatterFactory.instance().format(
+                                                         (SizeFormatterFactory.get().format(
                                                              Convert.ToInt32(option.Trim())) + "/s")));
             }
             View.PopulateDefaultDownloadThrottleList(list);

@@ -118,7 +118,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public string GetSizeAsString(object size)
         {
-            return SizeFormatterFactory.instance().format((long) size);
+            return SizeFormatterFactory.get().format((long) size);
         }
 
         public object GetIcon(Path path)

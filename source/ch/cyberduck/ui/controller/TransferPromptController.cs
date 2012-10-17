@@ -153,7 +153,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     else
                     {
                         View.LocalFileSize =
-                            SizeFormatterFactory.instance().format(selected.getLocal().attributes().getSize());
+                            SizeFormatterFactory.get().format(selected.getLocal().attributes().getSize());
                     }
                     if (selected.getLocal().attributes().getModificationDate() == -1)
                     {
@@ -173,7 +173,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     }
                     else
                     {
-                        View.RemoteFileSize = SizeFormatterFactory.instance().format(selected.attributes().getSize());
+                        View.RemoteFileSize = SizeFormatterFactory.get().format(selected.attributes().getSize());
                     }
                     if (selected.attributes().getModificationDate() == -1)
                     {

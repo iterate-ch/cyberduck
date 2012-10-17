@@ -465,7 +465,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     return;
                 }
                 Protocol protocol = View.SelectedProtocol;
-                View.Password = KeychainFactory.instance().getPassword(protocol.getScheme(),
+                View.Password = KeychainFactory.get().getPassword(protocol.getScheme(),
                                                                        Integer.parseInt(View.Port),
                                                                        View.Hostname,
                                                                        View.Username);

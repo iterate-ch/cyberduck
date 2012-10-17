@@ -125,7 +125,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public override string Size
         {
-            get { return SizeFormatterFactory.instance().format(Path.attributes().getSize()); }
+            get { return SizeFormatterFactory.get().format(Path.attributes().getSize()); }
             set { }
         }
 
@@ -154,7 +154,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         public override string Size
         {
-            get { return SizeFormatterFactory.instance().format(Path.attributes().getSize()); }
+            get { return SizeFormatterFactory.get().format(Path.attributes().getSize()); }
             set { }
         }
 
