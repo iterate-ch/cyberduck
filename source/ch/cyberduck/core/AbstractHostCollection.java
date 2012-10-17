@@ -153,7 +153,7 @@ public abstract class AbstractHostCollection extends Collection<Host> implements
     }
 
     protected void sort() {
-        ;//
+        //
     }
 
     /**
@@ -205,7 +205,7 @@ public abstract class AbstractHostCollection extends Collection<Host> implements
         // Not persistent by default
     }
 
-    public void load(Collection<Host> c) {
+    protected void load(Collection<Host> c) {
         this.addAll(c);
         this.collectionLoaded();
     }

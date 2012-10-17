@@ -108,7 +108,7 @@ public class FolderBookmarkCollection extends AbstractFolderHostCollection {
      * @param c Existing collection
      */
     @Override
-    public void load(Collection<Host> c) {
+    protected void load(Collection<Host> c) {
         super.load(c);
         // Create index for imported collection
         this.index();
