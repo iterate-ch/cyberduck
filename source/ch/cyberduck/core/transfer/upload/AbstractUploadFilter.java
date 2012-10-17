@@ -47,6 +47,39 @@ public abstract class AbstractUploadFilter extends TransferPathFilter {
 
     @Override
     public TransferStatus prepare(final Path file) {
+        if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
+            if(file.exists()) {
+                // Do not overwrite permissions for existing file.
+                if(file.getSession().isUnixPermissionsSupported()) {
+                    file.readUnixPermission();
+                }
+                // Do not overwrite ACL for existing file.
+                if(file.getSession().isAclSupported()) {
+                    file.readAcl();
+                }
+            }
+            else {
+                if(file.getSession().isUnixPermissionsSupported()) {
+                    if(Preferences.instance().getBoolean("queue.upload.permissions.useDefault")) {
+                        if(file.attributes().isFile()) {
+                            file.attributes().setPermission(new Permission(
+                                    Preferences.instance().getInteger("queue.upload.permissions.file.default")));
+                        }
+                        else if(file.attributes().isDirectory()) {
+                            file.attributes().setPermission(new Permission(
+                                    Preferences.instance().getInteger("queue.upload.permissions.folder.default")));
+                        }
+                    }
+                    else {
+                        // Read permissions from local file
+                        file.attributes().setPermission(file.getLocal().attributes().getPermission());
+                    }
+                }
+                if(file.getSession().isAclSupported()) {
+                    // ACL set on object creation with default from Preferences
+                }
+            }
+        }
         final TransferStatus status = new TransferStatus();
         if(file.attributes().isFile()) {
             if(file.getLocal().attributes().isSymbolicLink()) {
@@ -78,9 +111,6 @@ public abstract class AbstractUploadFilter extends TransferPathFilter {
             log.debug(String.format("Complete %s with status %s", file.getAbsolute(), status));
         }
         if(!status.isCanceled()) {
-            if(file.getSession().isAclSupported()) {
-                // Currently handled in S3 only.
-            }
             if(file.getSession().isUnixPermissionsSupported()) {
                 if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
                     Permission permission = file.attributes().getPermission();

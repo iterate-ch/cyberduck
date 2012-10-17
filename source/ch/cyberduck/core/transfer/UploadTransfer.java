@@ -24,7 +24,6 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Cache;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFactory;
-import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.filter.UploadRegexFilter;
@@ -203,34 +202,6 @@ public class UploadTransfer extends Transfer {
     protected void transfer(final Path file, final TransferOptions options, final TransferStatus status) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Transfer file %s with options %s", file, options));
-        }
-        if(session.isUnixPermissionsSupported()) {
-            if(Preferences.instance().getBoolean("queue.upload.changePermissions")) {
-                if(file.exists()) {
-                    // Do not overwrite permissions for existing file.
-                    if(file.attributes().getPermission().equals(Permission.EMPTY)) {
-                        file.readUnixPermission();
-                    }
-                }
-                else {
-                    if(Preferences.instance().getBoolean("queue.upload.permissions.useDefault")) {
-                        if(file.attributes().isFile()) {
-                            file.attributes().setPermission(new Permission(
-                                    Preferences.instance().getInteger("queue.upload.permissions.file.default")));
-                        }
-                        else if(file.attributes().isDirectory()) {
-                            file.attributes().setPermission(new Permission(
-                                    Preferences.instance().getInteger("queue.upload.permissions.folder.default")));
-                        }
-                    }
-                    else {
-                        if(file.getLocal().exists()) {
-                            // Read permissions from local file
-                            file.attributes().setPermission(file.getLocal().attributes().getPermission());
-                        }
-                    }
-                }
-            }
         }
         final UploadSymlinkResolver symlinkResolver = new UploadSymlinkResolver(this.getRoots());
         if(file.getLocal().attributes().isSymbolicLink() && symlinkResolver.resolve(file)) {
