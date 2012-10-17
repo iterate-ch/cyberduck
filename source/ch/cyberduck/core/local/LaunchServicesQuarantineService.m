@@ -18,7 +18,7 @@
 
 #include <stdio.h>
 
-#import <Local.h>
+#import <LaunchServicesQuarantineService.h>
 #import <ApplicationServices/ApplicationServices.h>
 #import <Foundation/Foundation.h>
 
