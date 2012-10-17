@@ -1,7 +1,7 @@
 package ch.cyberduck.core;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public class NullAttributes extends Attributes {
 
@@ -52,7 +52,7 @@ public class NullAttributes extends Attributes {
 
     @Override
     public boolean isSymbolicLink() {
-        throw new UnsupportedOperationException();
+        return false;
     }
 
     @Override
