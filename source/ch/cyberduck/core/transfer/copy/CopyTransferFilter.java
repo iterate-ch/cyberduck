@@ -7,8 +7,6 @@ import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.symlink.DownloadSymlinkResolver;
 import ch.cyberduck.core.transfer.upload.AbstractUploadFilter;
 
-import org.apache.log4j.Logger;
-
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -16,7 +14,6 @@ import java.util.Map;
  * @version $Id$
  */
 public class CopyTransferFilter extends AbstractUploadFilter {
-    private static final Logger log = Logger.getLogger(CopyTransferFilter.class);
 
     private final Map<Path, Path> files;
 
