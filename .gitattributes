@@ -2549,8 +2549,6 @@ source/ch/cyberduck/ResourcesBundle.resx -text
 source/ch/cyberduck/core/Commands.cs -text
 source/ch/cyberduck/core/CrashReporter.cs -text
 source/ch/cyberduck/core/DragDropLib.cs -text
-source/ch/cyberduck/core/Editor.cs -text
-source/ch/cyberduck/core/EditorFactory.cs -text
 source/ch/cyberduck/core/GlobalKeyboardHook.cs -text
 source/ch/cyberduck/core/HostnameVerifier.cs -text
 source/ch/cyberduck/core/ListAdapter.cs -text
