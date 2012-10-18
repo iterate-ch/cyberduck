@@ -18,8 +18,8 @@ package ch.cyberduck.core.editor;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Native;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.library.Native;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.ui.Controller;
 

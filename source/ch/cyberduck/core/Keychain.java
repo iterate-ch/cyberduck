@@ -18,6 +18,8 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.library.Native;
+
 import org.apache.log4j.Logger;
 
 import java.io.ByteArrayInputStream;

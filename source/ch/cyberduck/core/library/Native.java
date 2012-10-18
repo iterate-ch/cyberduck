@@ -1,4 +1,4 @@
-package ch.cyberduck.core;
+package ch.cyberduck.core.library;
 
 /*
  *  Copyright (c) 2009 David Kocher. All rights reserved.

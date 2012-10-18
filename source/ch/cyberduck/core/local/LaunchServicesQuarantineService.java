@@ -18,7 +18,7 @@ package ch.cyberduck.core.local;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Native;
+import ch.cyberduck.core.library.Native;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;

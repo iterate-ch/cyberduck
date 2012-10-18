@@ -18,8 +18,8 @@ package ch.cyberduck.core.urlhandler;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Native;
 import ch.cyberduck.core.Scheme;
+import ch.cyberduck.core.library.Native;
 import ch.cyberduck.core.local.Application;
 import ch.cyberduck.core.local.ApplicationFinderFactory;
 

@@ -18,8 +18,8 @@ package ch.cyberduck.core.local;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Native;
 import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.core.library.Native;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;

@@ -18,8 +18,8 @@ package ch.cyberduck.ui.growl;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.Native;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.library.Native;
 
 /**
  * @version $Id$
