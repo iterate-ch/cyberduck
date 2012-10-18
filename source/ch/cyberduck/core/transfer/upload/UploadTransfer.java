@@ -54,16 +54,16 @@ public class UploadTransfer extends Transfer {
 
     private UploadRegexFilter filter = new UploadRegexFilter();
 
-    public UploadTransfer(Path root) {
+    public UploadTransfer(final Path root) {
         this(Collections.singletonList(root));
     }
 
-    public UploadTransfer(List<Path> roots) {
+    public UploadTransfer(final List<Path> roots) {
         super(new UploadRootPathsNormalizer().normalize(roots), new BandwidthThrottle(
                 Preferences.instance().getFloat("queue.upload.bandwidth.bytes")));
     }
 
-    public <T> UploadTransfer(T dict, Session s) {
+    public <T> UploadTransfer(final T dict, final Session s) {
         super(dict, s, new BandwidthThrottle(
                 Preferences.instance().getFloat("queue.upload.bandwidth.bytes")));
     }

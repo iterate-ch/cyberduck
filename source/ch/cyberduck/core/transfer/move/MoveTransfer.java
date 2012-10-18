@@ -58,7 +58,7 @@ public class MoveTransfer extends Transfer {
         this.files = files;
     }
 
-    public <T> MoveTransfer(T dict, Session s) {
+    public <T> MoveTransfer(final T dict, final Session s) {
         super(dict, s, new BandwidthThrottle(
                 Preferences.instance().getFloat("queue.download.bandwidth.bytes")));
     }

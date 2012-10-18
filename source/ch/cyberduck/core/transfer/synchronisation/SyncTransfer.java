@@ -54,13 +54,13 @@ import java.util.Set;
 public class SyncTransfer extends Transfer {
     private static Logger log = Logger.getLogger(SyncTransfer.class);
 
-    public SyncTransfer(Path root) {
+    public SyncTransfer(final Path root) {
         super(root, new BandwidthThrottle(
                 Preferences.instance().getFloat("queue.upload.bandwidth.bytes")));
         this.init();
     }
 
-    public <T> SyncTransfer(T dict, Session s) {
+    public <T> SyncTransfer(final T dict, final Session s) {
         super(dict, s, new BandwidthThrottle(
                 Preferences.instance().getFloat("queue.upload.bandwidth.bytes")));
         this.init();
