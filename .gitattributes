@@ -2928,6 +2928,7 @@ test/ch/cyberduck/core/serializer/impl/Dropbox.cyberduckprofile -text
 test/ch/cyberduck/core/sftp/openssh/config -text
 test/ch/cyberduck/core/ssl/\*.cyberduck.ch[!!-~](OXxlRDVcWqdPEvFm).cer -text
 test/ch/cyberduck/ui/controller/PersistentFormHandlerTest.cs -text
+test/org/kohsuke/putty/PuTTYKeyTest.java -text
 th.lproj/Alert.nib/classes.nib -text
 th.lproj/Alert.nib/info.nib -text
 th.lproj/Alert.nib/keyedobjects.nib -text
