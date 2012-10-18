@@ -12,10 +12,10 @@ import java.math.BigInteger;
  *
  * @author Kohsuke Kawaguchi
  */
-class KeyReader {
+public class KeyReader {
     private final DataInput di;
 
-    KeyReader(byte[] key) {
+    public KeyReader(byte[] key) {
         this.di = new DataInputStream(new ByteArrayInputStream(key));
     }
 
