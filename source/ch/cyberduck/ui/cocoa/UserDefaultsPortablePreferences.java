@@ -70,7 +70,7 @@ public class UserDefaultsPortablePreferences extends UserDefaultsPreferences {
     public void save() {
         Local f = LocalFactory.createLocal(NSBundle.mainBundle().objectForInfoDictionaryKey(
                 "application.preferences.path").toString());
-        f.getParent().mkdir(true);
+        f.getParent().mkdir();
         this.dict.writeToFile(f.getAbsolute());
     }
 }
