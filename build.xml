@@ -227,7 +227,6 @@
                 </batchtest>
                 <sysproperty key="java.library.path" value="${build}/${configuration}"/>
                 <sysproperty key="jna.library.path" value="${build}/${configuration}"/>
-                <sysproperty key="jna.boot.library.path" value="${lib}"/>
             </junit>
         </jacoco:coverage>
         <junitreport todir="${build.unittests.reports}/html">
