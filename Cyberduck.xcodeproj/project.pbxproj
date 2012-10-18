@@ -207,14 +207,14 @@
 		4792113912F6F8FA00E35E16 /* Sparkle.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4792112812F6F4FD00E35E16 /* Sparkle.framework */; };
 		479450BD162FF74F00FC7FF9 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 29B97325FDCFA39411CA2CEA /* Foundation.framework */; };
 		4797D2751628276C00340E1C /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47BEDBD20B9296C800141EB4 /* ApplicationServices.framework */; };
-		4797D2891628296900340E1C /* LaunchServicesApplicationFinder.h in Headers */ = {isa = PBXBuildFile; fileRef = 4797D2831628296900340E1C /* LaunchServicesApplicationFinder.h */; };
-		4797D28B1628296900340E1C /* LaunchServicesApplicationFinder.m in Sources */ = {isa = PBXBuildFile; fileRef = 4797D2851628296900340E1C /* LaunchServicesApplicationFinder.m */; };
 		4797D28E162829F800340E1C /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 474522C51076B68E00823467 /* ApplicationServices.framework */; };
 		47993F7811699F12000271A8 /* Transfer.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47993F5711699F12000271A8 /* Transfer.strings */; };
 		47993F7C11699F40000271A8 /* Transfer.nib in Resources */ = {isa = PBXBuildFile; fileRef = 47993F7B11699F40000271A8 /* Transfer.nib */; };
 		479C422A097AB2BB00DDE88A /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 479C4229097AB2BB00DDE88A /* Credits.rtf */; };
 		47A88FBB0B931D9C00DB9D87 /* Configuration.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47A88FB90B931D9C00DB9D87 /* Configuration.strings */; };
 		47AA19690AF09F810059C736 /* Error.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47AA19670AF09F810059C736 /* Error.strings */; };
+		47AE2FDA1630470D0091E874 /* LaunchServicesApplicationFinder.h in Headers */ = {isa = PBXBuildFile; fileRef = 47AE2FD81630470D0091E874 /* LaunchServicesApplicationFinder.h */; };
+		47AE2FDB1630470D0091E874 /* LaunchServicesApplicationFinder.m in Sources */ = {isa = PBXBuildFile; fileRef = 47AE2FD91630470D0091E874 /* LaunchServicesApplicationFinder.m */; };
 		47B6074A0DA420880068282C /* Keychain.strings in Resources */ = {isa = PBXBuildFile; fileRef = 47B6072E0DA420880068282C /* Keychain.strings */; };
 		47BCF18E13BB4EC700D26E4C /* container-migration.plist in Resources */ = {isa = PBXBuildFile; fileRef = 47BCF18D13BB4EC700D26E4C /* container-migration.plist */; };
 		47BE1F8B12369DF100E758FE /* CDTransmitImporter.h in Headers */ = {isa = PBXBuildFile; fileRef = 47BE1F8912369DF100E758FE /* CDTransmitImporter.h */; };
@@ -1095,8 +1095,6 @@
 		47911A170B84C4E8001A29AE /* Acknowledgments.rtf */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; path = Acknowledgments.rtf; sourceTree = "<group>"; };
 		4792112812F6F4FD00E35E16 /* Sparkle.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Sparkle.framework; path = lib/Sparkle.framework; sourceTree = "<group>"; };
 		4797D27A1628276C00340E1C /* libLaunchServicesApplicationFinder.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libLaunchServicesApplicationFinder.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
-		4797D2831628296900340E1C /* LaunchServicesApplicationFinder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LaunchServicesApplicationFinder.h; sourceTree = "<group>"; };
-		4797D2851628296900340E1C /* LaunchServicesApplicationFinder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LaunchServicesApplicationFinder.m; sourceTree = "<group>"; };
 		479814C907280B2B00FA3CDB /* no */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = no; path = no.lproj/Localizable.strings; sourceTree = "<group>"; };
 		479814CA07280B2B00FA3CDB /* no */ = {isa = PBXFileReference; lastKnownFileType = text; name = no; path = no.lproj/License.txt; sourceTree = "<group>"; };
 		479814CB07280B2B00FA3CDB /* no */ = {isa = PBXFileReference; fileEncoding = 10; lastKnownFileType = text.plist.strings; lineEnding = 0; name = no; path = no.lproj/InfoPlist.strings; sourceTree = "<group>"; };
@@ -1197,6 +1195,8 @@
 		47AC356C0DA1025000CC1426 /* CTGradient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CTGradient.m; sourceTree = "<group>"; };
 		47AC356D0DA1025000CC1426 /* CTGradientView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CTGradientView.h; sourceTree = "<group>"; };
 		47AC356E0DA1025000CC1426 /* CTGradientView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CTGradientView.m; sourceTree = "<group>"; };
+		47AE2FD81630470D0091E874 /* LaunchServicesApplicationFinder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LaunchServicesApplicationFinder.h; sourceTree = "<group>"; };
+		47AE2FD91630470D0091E874 /* LaunchServicesApplicationFinder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LaunchServicesApplicationFinder.m; sourceTree = "<group>"; };
 		47B347400DACAF3200A51452 /* lv */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = lv; path = lv.lproj/Browser.nib; sourceTree = "<group>"; };
 		47B347420DACAF3200A51452 /* lv */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = lv; path = lv.lproj/Login.nib; sourceTree = "<group>"; };
 		47B347440DACAF3200A51452 /* lv */ = {isa = PBXFileReference; lastKnownFileType = wrapper.nib; name = lv; path = lv.lproj/Main.nib; sourceTree = "<group>"; };
@@ -2075,8 +2075,6 @@
 				47E72E0B162865000002F049 /* Editor.m */,
 				47E72E0C162865000002F049 /* NSAppleEventDescriptor-Extensions.m */,
 				47E72E0D162865000002F049 /* ODBEditor.m */,
-				4797D2831628296900340E1C /* LaunchServicesApplicationFinder.h */,
-				4797D2851628296900340E1C /* LaunchServicesApplicationFinder.m */,
 			);
 			path = editor;
 			sourceTree = "<group>";
@@ -2139,6 +2137,8 @@
 		47F102BA1628D5CE00923FDE /* local */ = {
 			isa = PBXGroup;
 			children = (
+				47AE2FD81630470D0091E874 /* LaunchServicesApplicationFinder.h */,
+				47AE2FD91630470D0091E874 /* LaunchServicesApplicationFinder.m */,
 				47C57EBB162F479900A272BC /* LaunchServicesFileDescriptor.h */,
 				47C57EBC162F479900A272BC /* LaunchServicesFileDescriptor.m */,
 				47C57EAA162F45F200A272BC /* FinderLocal.h */,
@@ -2248,7 +2248,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4797D2891628296900340E1C /* LaunchServicesApplicationFinder.h in Headers */,
+				47AE2FDA1630470D0091E874 /* LaunchServicesApplicationFinder.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2995,7 +2995,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4797D28B1628296900340E1C /* LaunchServicesApplicationFinder.m in Sources */,
+				47AE2FDB1630470D0091E874 /* LaunchServicesApplicationFinder.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
