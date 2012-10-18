@@ -2625,6 +2625,7 @@ source/ch/cyberduck/ui/controller/BrowserController.cs -text
 source/ch/cyberduck/ui/controller/ConnectionController.cs -text
 source/ch/cyberduck/ui/controller/Controller.cs -text
 source/ch/cyberduck/ui/controller/CreateFileController.cs -text
+source/ch/cyberduck/ui/controller/CreateSymlinkController.cs -text
 source/ch/cyberduck/ui/controller/DataProtector.cs -text
 source/ch/cyberduck/ui/controller/DonationController.cs -text
 source/ch/cyberduck/ui/controller/DownloadPromptController.cs -text
@@ -2644,6 +2645,7 @@ source/ch/cyberduck/ui/controller/IBookmarkView.cs -text
 source/ch/cyberduck/ui/controller/IBrowserView.cs -text
 source/ch/cyberduck/ui/controller/IConnectionView.cs -text
 source/ch/cyberduck/ui/controller/ICreateFilePromptView.cs -text
+source/ch/cyberduck/ui/controller/ICreateSymlinkPromptView.cs -text
 source/ch/cyberduck/ui/controller/IDonationView.cs -text
 source/ch/cyberduck/ui/controller/IDuplicateFilePromptView.cs -text
 source/ch/cyberduck/ui/controller/IErrorView.cs -text
@@ -2712,6 +2714,9 @@ source/ch/cyberduck/ui/winforms/ConnectionForm.resx -text
 source/ch/cyberduck/ui/winforms/CreateFilePromptForm.Designer.cs -text
 source/ch/cyberduck/ui/winforms/CreateFilePromptForm.cs -text
 source/ch/cyberduck/ui/winforms/CreateFilePromptForm.resx -text
+source/ch/cyberduck/ui/winforms/CreateSymlinkPromptForm.Designer.cs -text
+source/ch/cyberduck/ui/winforms/CreateSymlinkPromptForm.cs -text
+source/ch/cyberduck/ui/winforms/CreateSymlinkPromptForm.resx -text
 source/ch/cyberduck/ui/winforms/DonationForm.Designer.cs -text
 source/ch/cyberduck/ui/winforms/DonationForm.cs -text
 source/ch/cyberduck/ui/winforms/DonationForm.resx -text
