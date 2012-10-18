@@ -577,7 +577,7 @@ public class MainController extends BundleController implements NSApplication.De
                     MainController.newDocument().addBookmark(host);
                     // Register in application support
                     final Local profiles = LocalFactory.createLocal(Preferences.instance().getProperty("application.support.path"), "Profiles");
-                    profiles.mkdir(true);
+                    profiles.mkdir();
                     f.copy(LocalFactory.createLocal(profiles, f.getName()));
                 }
             }

@@ -291,7 +291,7 @@ namespace Ch.Cyberduck.Ui.Controller
                             Local profiles =
                                 LocalFactory.createLocal(Preferences.instance().getProperty("application.support.path"),
                                                          "Profiles");
-                            profiles.mkdir(true);
+                            profiles.mkdir();
                             f.copy(LocalFactory.createLocal(profiles, f.getName()));
                         }
                     }
