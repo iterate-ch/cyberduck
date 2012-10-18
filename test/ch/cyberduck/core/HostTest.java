@@ -276,4 +276,31 @@ public class HostTest extends AbstractTestCase {
         host.setDownloadFolder(LocalFactory.createLocal("/t"));
         assertEquals("/t", host.getDownloadFolder().getAbbreviatedPath());
     }
+
+    @Test
+    public void testToUrl() {
+        assertEquals("sftp://user@localhost", new Host(Protocol.SFTP, "localhost", new Credentials("user", "p") {
+            @Override
+            public String getUsernamePlaceholder() {
+                return null;
+            }
+
+            @Override
+            public String getPasswordPlaceholder() {
+                return null;
+            }
+        }).toURL(true));
+        assertEquals("sftp://localhost", new Host(Protocol.SFTP, "localhost", new Credentials("user", "p") {
+            @Override
+            public String getUsernamePlaceholder() {
+                return null;
+            }
+
+            @Override
+            public String getPasswordPlaceholder() {
+                return null;
+            }
+        }).toURL(false));
+        assertEquals("sftp://localhost:222", new Host(Protocol.SFTP, "localhost", 222).toURL(false));
+    }
 }
