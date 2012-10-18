@@ -86,7 +86,7 @@ public abstract class AbstractDownloadFilter extends TransferPathFilter {
         }
         if(!file.getLocal().getParent().exists()) {
             // Create download folder if missing
-            file.getLocal().getParent().mkdir(true);
+            file.getLocal().getParent().mkdir();
         }
         return status;
     }

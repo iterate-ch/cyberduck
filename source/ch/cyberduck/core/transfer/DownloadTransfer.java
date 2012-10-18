@@ -183,7 +183,7 @@ public class DownloadTransfer extends Transfer {
             }, status);
         }
         else if(file.attributes().isDirectory()) {
-            local.mkdir(true);
+            local.mkdir();
         }
     }
 
