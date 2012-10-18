@@ -205,6 +205,7 @@
 		47911A180B84C4E8001A29AE /* Acknowledgments.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 47911A170B84C4E8001A29AE /* Acknowledgments.rtf */; };
 		4792112912F6F4FD00E35E16 /* Sparkle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4792112812F6F4FD00E35E16 /* Sparkle.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		4792113912F6F8FA00E35E16 /* Sparkle.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4792112812F6F4FD00E35E16 /* Sparkle.framework */; };
+		479450BD162FF74F00FC7FF9 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 29B97325FDCFA39411CA2CEA /* Foundation.framework */; };
 		4797D2751628276C00340E1C /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 47BEDBD20B9296C800141EB4 /* ApplicationServices.framework */; };
 		4797D2891628296900340E1C /* LaunchServicesApplicationFinder.h in Headers */ = {isa = PBXBuildFile; fileRef = 4797D2831628296900340E1C /* LaunchServicesApplicationFinder.h */; };
 		4797D28B1628296900340E1C /* LaunchServicesApplicationFinder.m in Sources */ = {isa = PBXBuildFile; fileRef = 4797D2851628296900340E1C /* LaunchServicesApplicationFinder.m */; };
@@ -1586,6 +1587,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				479450BD162FF74F00FC7FF9 /* Foundation.framework in Frameworks */,
 				4797D28E162829F800340E1C /* ApplicationServices.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
