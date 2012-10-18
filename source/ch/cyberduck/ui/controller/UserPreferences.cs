@@ -256,6 +256,8 @@ namespace Ch.Cyberduck.Ui.Controller
                 Environment.SpecialFolder.ApplicationData), "FlashFXP", "3", "Sites.dat"));
             defaults.put("bookmark.import.flashfxp4.location", Path.Combine(Environment.GetFolderPath(
                 Environment.SpecialFolder.ApplicationData), "FlashFXP", "4", "Sites.dat"));
+            defaults.put("bookmark.import.flashfxp4.common.location", Path.Combine(Environment.GetFolderPath(
+                Environment.SpecialFolder.CommonApplicationData), "FlashFXP", "4", "Sites.dat"));
             defaults.put("bookmark.import.wsftp.location", Path.Combine(Environment.GetFolderPath(
                 Environment.SpecialFolder.ApplicationData), "Ipswitch", "WS_FTP", "Sites"));
             defaults.put("bookmark.import.fireftp.location", Path.Combine(Environment.GetFolderPath(

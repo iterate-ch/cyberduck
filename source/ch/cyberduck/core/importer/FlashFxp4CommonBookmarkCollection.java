@@ -26,21 +26,21 @@ import ch.cyberduck.core.local.LocalFactory;
 /**
  * @version $Id$
  */
-public class FlashFxp4BookmarkCollection extends FlashFxpBookmarkCollection {
-    private static final long serialVersionUID = 2932890508346376727L;
+public class FlashFxp4CommonBookmarkCollection extends FlashFxpBookmarkCollection {
+    private static final long serialVersionUID = 7232850508346376727L;
 
     @Override
     public String getBundleIdentifier() {
-        return "com.flashfxp4";
+        return "com.flashfxp4.common";
     }
 
     @Override
     public String getName() {
-        return "FlashFXP 4";
+        return "FlashFXP 4 - Common";
     }
 
     @Override
     public Local getFile() {
-        return LocalFactory.createLocal(Preferences.instance().getProperty("bookmark.import.flashfxp4.location"));
+        return LocalFactory.createLocal(Preferences.instance().getProperty("bookmark.import.flashfxp4.common.location"));
     }
 }
