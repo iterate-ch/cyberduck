@@ -19,17 +19,15 @@ package ch.cyberduck.core;
  */
 
 import ch.cyberduck.core.local.Local;
-import ch.cyberduck.core.local.LocalFactory;
 
 import org.apache.commons.lang.StringUtils;
-import org.spearce.jgit.transport.OpenSshConfig;
 
 /**
  * Stores the login credentials
  *
  * @version $Id$
  */
-public abstract class Credentials {
+public class Credentials {
 
     /**
      * The login name
@@ -50,41 +48,6 @@ public abstract class Credentials {
      * If the credentials should be stored in the Keychain upon successful login
      */
     private boolean keychained;
-
-    /**
-     * Configure default credentials from system settings.
-     *
-     * @param protocol Protocol
-     */
-    public void configure(final Protocol protocol, final String hostname) {
-        if(protocol.equals(Protocol.SFTP)) {
-            // Update this host credentials from the OpenSSH configuration file in ~/.ssh/config
-            if(!this.isPublicKeyAuthentication()) {
-                final OpenSshConfig.Host entry = OpenSshConfig.create().lookup(hostname);
-                if(StringUtils.isNotBlank(entry.getUser())) {
-                    this.setUsername(entry.getUser());
-                }
-                if(null != entry.getIdentityFile()) {
-                    this.setIdentity(LocalFactory.createLocal(entry.getIdentityFile().getAbsolutePath()));
-                }
-                else {
-                    // No custom public key authentication configuration
-                    if(Preferences.instance().getBoolean("ssh.authentication.publickey.default.enable")) {
-                        final Local rsa = LocalFactory.createLocal(Preferences.instance().getProperty("ssh.authentication.publickey.default.rsa"));
-                        if(rsa.exists()) {
-                            this.setIdentity(rsa);
-                        }
-                        else {
-                            final Local dsa = LocalFactory.createLocal(Preferences.instance().getProperty("ssh.authentication.publickey.default.dsa"));
-                            if(dsa.exists()) {
-                                this.setIdentity(dsa);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
 
     /**
      * Default credentials from Preferences
@@ -206,9 +169,13 @@ public abstract class Credentials {
         return protocol.validate(this);
     }
 
-    public abstract String getUsernamePlaceholder();
+    public String getUsernamePlaceholder() {
+        return null;
+    }
 
-    public abstract String getPasswordPlaceholder();
+    public String getPasswordPlaceholder() {
+        return null;
+    }
 
     @Override
     public boolean equals(Object o) {

@@ -20,6 +20,7 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.BookmarkCollection;
 import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.CredentialsConfiguratorFactory;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.KeychainFactory;
 import ch.cyberduck.core.Path;
@@ -55,7 +56,6 @@ import org.rococoa.Foundation;
 import org.rococoa.ID;
 import org.rococoa.Rococoa;
 import org.rococoa.cocoa.foundation.NSInteger;
-import org.spearce.jgit.transport.OpenSshConfig;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -202,29 +202,21 @@ public class ConnectionController extends SheetController {
     private void updateIdentity() {
         final Protocol protocol = ProtocolFactory.forName(protocolPopup.selectedItem().representedObject());
         pkCheckbox.setEnabled(protocol.equals(Protocol.SFTP));
-        if(protocol.equals(Protocol.SFTP)) {
-            if(StringUtils.isNotEmpty(hostField.stringValue())) {
-                final OpenSshConfig.Host entry = OpenSshConfig.create().lookup(hostField.stringValue());
-                if(null != entry.getIdentityFile()) {
-                    if(pkCheckbox.state() == NSCell.NSOffState) {
-                        // No previously manually selected key
-                        pkLabel.setStringValue(LocalFactory.createLocal(
-                                entry.getIdentityFile().getAbsolutePath()).getAbbreviatedPath());
-                        pkCheckbox.setState(NSCell.NSOnState);
-                    }
-                }
-                else {
-                    pkCheckbox.setState(NSCell.NSOffState);
-                    pkLabel.setStringValue(Locale.localizedString("No private key selected"));
-                }
-                if(StringUtils.isNotBlank(entry.getUser())) {
-                    usernameField.setStringValue(entry.getUser());
-                }
+        if(StringUtils.isNotEmpty(hostField.stringValue())) {
+            final Credentials credentials = new Credentials(null, null);
+            CredentialsConfiguratorFactory.get(protocol).configure(credentials, hostField.stringValue());
+            if(credentials.isPublicKeyAuthentication()) {
+                // No previously manually selected key
+                pkLabel.setStringValue(credentials.getIdentity().getAbbreviatedPath());
+                pkCheckbox.setState(NSCell.NSOnState);
             }
-        }
-        else {
-            pkCheckbox.setState(NSCell.NSOffState);
-            pkLabel.setStringValue(Locale.localizedString("No private key selected"));
+            else {
+                pkCheckbox.setState(NSCell.NSOffState);
+                pkLabel.setStringValue(Locale.localizedString("No private key selected"));
+            }
+            if(StringUtils.isNotBlank(credentials.getUsername())) {
+                usernameField.setStringValue(credentials.getUsername());
+            }
         }
     }
 

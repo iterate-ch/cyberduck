@@ -68,17 +68,7 @@ public final class Host implements Serializable {
     /**
      * The credentials to authenticate with
      */
-    private Credentials credentials = new Credentials() {
-        @Override
-        public String getUsernamePlaceholder() {
-            return Host.this.getProtocol().getUsernamePlaceholder();
-        }
-
-        @Override
-        public String getPasswordPlaceholder() {
-            return Host.this.getProtocol().getPasswordPlaceholder();
-        }
-    };
+    private Credentials credentials = new HostCredentials();
 
     /**
      * The credentials to authenticate with for the CDN
@@ -534,7 +524,7 @@ public final class Host implements Serializable {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Set protocol bookmark %s to %s", this.getHostname(), this.protocol));
         }
-        this.credentials.configure(this.protocol, this.getHostname());
+        CredentialsConfiguratorFactory.get(this.protocol).configure(this.credentials, this.hostname);
     }
 
     /**
@@ -649,7 +639,7 @@ public final class Host implements Serializable {
     public void setHostname(final String hostname) {
         this.hostname = hostname.trim();
         this.punycode = null;
-        this.credentials.configure(this.getProtocol(), this.getHostname());
+        CredentialsConfiguratorFactory.get(this.protocol).configure(this.credentials, this.hostname);
     }
 
     /**
@@ -658,7 +648,7 @@ public final class Host implements Serializable {
     public void setPort(final int port) {
         this.port = port;
         if(-1 == port) {
-            this.port = this.getProtocol().getDefaultPort();
+            this.port = this.protocol.getDefaultPort();
         }
     }
 
@@ -881,5 +871,17 @@ public final class Host implements Serializable {
     @Override
     public int hashCode() {
         return this.getUuid().hashCode();
+    }
+
+    private final class HostCredentials extends Credentials {
+        @Override
+        public String getUsernamePlaceholder() {
+            return getProtocol().getUsernamePlaceholder();
+        }
+
+        @Override
+        public String getPasswordPlaceholder() {
+            return getProtocol().getPasswordPlaceholder();
+        }
     }
 }

@@ -37,8 +37,6 @@
 
 package org.spearce.jgit.transport;
 
-import ch.cyberduck.core.local.LocalFactory;
-
 import org.apache.log4j.Logger;
 import org.spearce.jgit.errors.InvalidPatternException;
 import org.spearce.jgit.fnmatch.FileNameMatcher;
@@ -63,35 +61,17 @@ public class OpenSshConfig {
     private static Logger log = Logger.getLogger(OpenSshConfig.class);
 
     /**
-     * Obtain the user's configuration data.
-     * <p/>
-     * The configuration file is always returned to the caller, even if no file
-     * exists in the user's home directory at the time the call was made. Lookup
-     * requests are cached and are automatically updated if the user modifies
-     * the configuration file since the last time it was cached.
-     *
-     * @return a caching reader of the user's configuration file.
-     */
-    public static OpenSshConfig create() {
-        final File home = new File(LocalFactory.createLocal("~").getAbsolute());
-        final File config = new File(new File(home, ".ssh"), "config");
-        final OpenSshConfig osc = new OpenSshConfig(home, config);
-        osc.refresh();
-        return osc;
-    }
-
-    /**
      * The user's home directory, as key files may be relative to here.
      */
-    private final File home;
+    private final File home = new File(System.getProperty("user.home"));
 
     /**
      * The .ssh/config file we read and monitor for updates.
      */
-    private final File configFile;
+    private final File configuration;
 
     /**
-     * Modification time of {@link #configFile} when {@link #hosts} loaded.
+     * Modification time of {@link #configuration} when {@link #hosts} loaded.
      */
     private long lastModified;
 
@@ -100,10 +80,17 @@ public class OpenSshConfig {
      */
     private Map<String, Host> hosts;
 
-    protected OpenSshConfig(final File h, final File cfg) {
-        home = h;
-        configFile = cfg;
-        hosts = Collections.emptyMap();
+    /**
+     * Obtain the user's configuration data.
+     * <p/>
+     * The configuration file is always returned to the caller, even if no file
+     * exists in the user's home directory at the time the call was made. Lookup
+     * requests are cached and are automatically updated if the user modifies
+     * the configuration file since the last time it was cached.
+     */
+    public OpenSshConfig(final File configuration) {
+        this.configuration = configuration;
+        this.hosts = Collections.emptyMap();
     }
 
     /**
@@ -134,10 +121,6 @@ public class OpenSshConfig {
             log.debug("Found host match in SSH config:" + e.getValue());
             h.copyFrom(e.getValue());
         }
-
-        if(h.hostName == null) {
-            h.hostName = hostName;
-        }
         if(h.port == 0) {
             h.port = -1;
         }
@@ -146,10 +129,10 @@ public class OpenSshConfig {
     }
 
     private synchronized Map<String, Host> refresh() {
-        final long mtime = configFile.lastModified();
+        final long mtime = configuration.lastModified();
         if(mtime != lastModified) {
             try {
-                final FileInputStream in = new FileInputStream(configFile);
+                final FileInputStream in = new FileInputStream(configuration);
                 try {
                     hosts = parse(in);
                 }

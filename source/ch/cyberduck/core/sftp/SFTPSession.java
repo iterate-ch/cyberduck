@@ -18,20 +18,7 @@ package ch.cyberduck.core.sftp;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.BookmarkCollection;
-import ch.cyberduck.core.ConnectionCanceledException;
-import ch.cyberduck.core.Credentials;
-import ch.cyberduck.core.Host;
-import ch.cyberduck.core.HostKeyControllerFactory;
-import ch.cyberduck.core.LoginCanceledException;
-import ch.cyberduck.core.LoginController;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathFactory;
-import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.Protocol;
-import ch.cyberduck.core.Resolver;
-import ch.cyberduck.core.Session;
-import ch.cyberduck.core.SessionFactory;
+import ch.cyberduck.core.*;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.local.Local;
 
@@ -39,7 +26,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.kohsuke.putty.PuTTYKey;
-import org.spearce.jgit.transport.OpenSshConfig;
 
 import java.io.BufferedReader;
 import java.io.CharArrayWriter;
@@ -163,7 +149,7 @@ public class SFTPSession extends Session {
         }
         this.fireConnectionWillOpenEvent();
 
-        connection = new Connection(this.getHostname(), host.getPort(), this.getUserAgent());
+        connection = new Connection(HostnameConfiguratorFactory.get(host.getProtocol()).lookup(host.getHostname()), host.getPort(), this.getUserAgent());
         connection.addConnectionMonitor(new ConnectionMonitor() {
             @Override
             public void connectionLost(Throwable reason) {
@@ -186,23 +172,9 @@ public class SFTPSession extends Session {
         this.fireConnectionDidOpenEvent();
     }
 
-    /**
-     * @return Resolves any alias given in ~/.ssh/config
-     */
-    private String getHostname() {
-        final String alias = OpenSshConfig.create().lookup(host.getHostname()).getHostName();
-        if(host.getHostname().equals(alias)) {
-            return host.getHostname(true);
-        }
-        if(log.isInfoEnabled()) {
-            log.info("Using hostname alias from ~/.ssh/config:" + alias);
-        }
-        return alias;
-    }
-
     @Override
     protected Resolver getResolver() {
-        return new Resolver(this.getHostname());
+        return new Resolver(HostnameConfiguratorFactory.get(host.getProtocol()).lookup(host.getHostname()));
     }
 
     @Override
