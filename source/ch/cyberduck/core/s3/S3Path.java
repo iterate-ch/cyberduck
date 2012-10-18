@@ -560,7 +560,6 @@ public class S3Path extends CloudPath {
 
     private StorageObject createObjectDetails() throws IOException {
         final StorageObject object = new StorageObject(this.getKey());
-        final String container = this.getContainerName();
         object.setContentType(this.getLocal().getMimeType());
         if(Preferences.instance().getBoolean("s3.upload.metadata.md5")) {
             this.getSession().message(MessageFormat.format(
