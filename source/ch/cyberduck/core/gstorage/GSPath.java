@@ -24,7 +24,6 @@ import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.s3.S3Path;
-import ch.cyberduck.core.s3.S3Session;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -48,19 +47,19 @@ import java.util.Set;
 public class GSPath extends S3Path {
     private static Logger log = Logger.getLogger(GSPath.class);
 
-    public GSPath(S3Session s, String parent, String name, int type) {
+    public GSPath(GSSession s, String parent, String name, int type) {
         super(s, parent, name, type);
     }
 
-    public GSPath(S3Session s, String path, int type) {
+    public GSPath(GSSession s, String path, int type) {
         super(s, path, type);
     }
 
-    public GSPath(S3Session s, String parent, Local file) {
+    public GSPath(GSSession s, String parent, Local file) {
         super(s, parent, file);
     }
 
-    public <T> GSPath(S3Session s, T dict) {
+    public <T> GSPath(GSSession s, T dict) {
         super(s, dict);
     }
 
