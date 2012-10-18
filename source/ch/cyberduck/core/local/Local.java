@@ -30,7 +30,6 @@ import ch.cyberduck.core.io.MD5ChecksumCompute;
 import ch.cyberduck.core.io.RepeatableFileInputStream;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import java.io.File;
@@ -256,7 +255,11 @@ public abstract class Local extends AbstractPath {
     @Override
     public void touch() {
         try {
-            if(!new File(path).createNewFile()) {
+            final File file = new File(path);
+            if(!file.getParentFile().mkdirs()) {
+                log.warn(String.format("Create directory %s failed", path));
+            }
+            if(!file.createNewFile()) {
                 log.warn(String.format("Create file %s failed", path));
             }
         }
@@ -271,20 +274,8 @@ public abstract class Local extends AbstractPath {
     }
 
     @Override
-    public void mkdir(boolean recursive) {
-        if(recursive) {
-            if(!new File(path).mkdirs()) {
-                log.warn(String.format("Create directories %s failed", path));
-            }
-        }
-        else {
-            this.mkdir();
-        }
-    }
-
-    @Override
     public void mkdir() {
-        if(!new File(path).mkdir()) {
+        if(!new File(path).mkdirs()) {
             log.warn(String.format("Create directory %s failed", path));
         }
     }
@@ -353,21 +344,6 @@ public abstract class Local extends AbstractPath {
     public AttributedList<Local> children(final Comparator<? extends AbstractPath> comparator,
                                           final PathFilter<? extends AbstractPath> filter) {
         return this.list().filter(comparator, filter);
-    }
-
-    /**
-     * @return Human readable localized description of file type
-     */
-    @Override
-    public String kind() {
-        if(this.attributes().isDirectory()) {
-            return Locale.localizedString("Folder");
-        }
-        final String extension = this.getExtension();
-        if(StringUtils.isEmpty(extension)) {
-            return Locale.localizedString("Unknown");
-        }
-        return Locale.localizedString("File");
     }
 
     @Override
