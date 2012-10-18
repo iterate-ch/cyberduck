@@ -47,23 +47,23 @@ public class BackgroundActionRegistry extends AbstractActionRegistry<BackgroundA
     }
 
     /**
-     * Actions addded are automatically removed when canceled or stopped.
+     * Actions added are automatically removed when canceled or stopped.
      *
      * @param action Action to run in background
-     * @return True if not already present in the list.
+     * @return True
      */
     @Override
     public boolean add(final BackgroundAction action) {
         action.addListener(new BackgroundActionListener() {
-            public void start(BackgroundAction action) {
+            public void start(final BackgroundAction action) {
                 current = action;
             }
 
-            public void cancel(BackgroundAction action) {
+            public void cancel(final BackgroundAction action) {
                 remove(action);
             }
 
-            public void stop(BackgroundAction action) {
+            public void stop(final BackgroundAction action) {
                 current = null;
                 action.removeListener(this);
                 remove(action);
