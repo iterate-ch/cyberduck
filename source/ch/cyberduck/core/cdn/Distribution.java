@@ -20,6 +20,7 @@ package ch.cyberduck.core.cdn;
 
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.URIEncoder;
 import ch.cyberduck.core.i18n.Locale;
 
 import org.apache.commons.lang.StringUtils;
@@ -450,7 +451,7 @@ public class Distribution {
     public String getOrigin(Path file) {
         StringBuilder url = new StringBuilder().append(this.getMethod().getProtocol()).append(this.getOrigin());
         if(!file.isContainer()) {
-            url.append(Path.DELIMITER).append(Path.encode(file.getKey()));
+            url.append(Path.DELIMITER).append(URIEncoder.encode(file.getKey()));
         }
         try {
             return new URI(url.toString()).normalize().toString();
@@ -523,7 +524,7 @@ public class Distribution {
         }
         StringBuilder b = new StringBuilder(base);
         if(StringUtils.isNotEmpty(file.getKey())) {
-            b.append(Path.DELIMITER).append(Path.encode(file.getKey()));
+            b.append(Path.DELIMITER).append(URIEncoder.encode(file.getKey()));
         }
         try {
             return new URI(b.toString()).normalize().toString();
@@ -592,7 +593,7 @@ public class Distribution {
         StringBuilder b = new StringBuilder();
         b.append(this.getMethod().getProtocol()).append(cname).append(this.getMethod().getContext());
         if(StringUtils.isNotEmpty(file.getKey())) {
-            b.append(Path.DELIMITER).append(Path.encode(file.getKey()));
+            b.append(Path.DELIMITER).append(URIEncoder.encode(file.getKey()));
         }
         try {
             return new URI(b.toString()).normalize().toString();

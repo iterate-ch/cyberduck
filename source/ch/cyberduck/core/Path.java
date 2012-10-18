@@ -48,17 +48,14 @@ import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URLEncoder;
 import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.StringTokenizer;
 
 import com.ibm.icu.text.Normalizer;
 
@@ -941,33 +938,6 @@ public abstract class Path extends AbstractPath implements Serializable {
     }
 
     /**
-     * URL encode a path
-     *
-     * @param p Absolute path
-     * @return URI encoded
-     * @see URLEncoder#encode(String, String)
-     */
-    public static String encode(final String p) {
-        try {
-            StringBuilder b = new StringBuilder();
-            StringTokenizer t = new StringTokenizer(p, "/");
-            if(!t.hasMoreTokens()) {
-                return p;
-            }
-            while(t.hasMoreTokens()) {
-                b.append(DELIMITER).append(URLEncoder.encode(t.nextToken(), "UTF-8"));
-            }
-            // Becuase URLEncoder uses <code>application/x-www-form-urlencoded</code> we have to replace these
-            // for proper URI percented encoding.
-            return b.toString().replace("+", "%20").replace("*", "%2A").replace("%7E", "~");
-        }
-        catch(UnsupportedEncodingException e) {
-            log.error(e.getMessage());
-            return null;
-        }
-    }
-
-    /**
      * URL pointing to the resource using the protocol of the current session.
      *
      * @return Null if there is a encoding failure
@@ -983,7 +953,7 @@ public abstract class Path extends AbstractPath implements Serializable {
      */
     public String toURL(final boolean credentials) {
         // Do not use java.net.URL because it doesn't know about custom protocols
-        return String.format("%s%s", this.getHost().toURL(credentials), encode(this.getAbsolute()));
+        return String.format("%s%s", this.getHost().toURL(credentials), URIEncoder.encode(this.getAbsolute()));
     }
 
     /**
@@ -1019,10 +989,10 @@ public abstract class Path extends AbstractPath implements Serializable {
         String documentRoot = this.getHost().getDefaultPath();
         if(StringUtils.isNotBlank(documentRoot)) {
             if(path.contains(documentRoot)) {
-                return encode(normalize(path.substring(path.indexOf(documentRoot) + documentRoot.length()), true));
+                return URIEncoder.encode(normalize(path.substring(path.indexOf(documentRoot) + documentRoot.length()), true));
             }
         }
-        return encode(normalize(path, true));
+        return URIEncoder.encode(normalize(path, true));
     }
 
     /**
