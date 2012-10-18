@@ -166,7 +166,7 @@ namespace Ch.Cyberduck.Ui.Controller
                                 selected.getLocal().attributes().getModificationDate());
                     }
 
-                    View.RemoteFileUrl = selected.getHost().toURL() + selected.getAbsolute();
+                    View.RemoteFileUrl = selected.toURL(false);
                     if (selected.attributes().getSize() == -1)
                     {
                         View.RemoteFileSize = UnknownString;
