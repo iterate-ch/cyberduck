@@ -21,7 +21,6 @@ package ch.cyberduck.core.sftp;
 import ch.cyberduck.core.AbstractPath;
 import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.core.Permission;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Protocol;
@@ -56,50 +55,24 @@ import ch.ethz.ssh2.SFTPv3FileHandle;
 public class SFTPPath extends Path {
     private static Logger log = Logger.getLogger(SFTPPath.class);
 
-    private static class Factory extends PathFactory<SFTPSession> {
-        @Override
-        protected Path create(SFTPSession session, String path, int type) {
-            return new SFTPPath(session, path, type);
-        }
-
-        @Override
-        protected Path create(SFTPSession session, String parent, String name, int type) {
-            return new SFTPPath(session, parent, name, type);
-        }
-
-        @Override
-        protected Path create(SFTPSession session, String parent, Local file) {
-            return new SFTPPath(session, parent, file);
-        }
-
-        @Override
-        protected <T> Path create(SFTPSession session, T dict) {
-            return new SFTPPath(session, dict);
-        }
-    }
-
-    public static PathFactory factory() {
-        return new Factory();
-    }
-
     private final SFTPSession session;
 
-    protected SFTPPath(SFTPSession s, String parent, String name, int type) {
+    public SFTPPath(SFTPSession s, String parent, String name, int type) {
         super(parent, name, type);
         this.session = s;
     }
 
-    protected SFTPPath(SFTPSession s, String path, int type) {
+    public SFTPPath(SFTPSession s, String path, int type) {
         super(path, type);
         this.session = s;
     }
 
-    protected SFTPPath(SFTPSession s, String parent, Local file) {
+    public SFTPPath(SFTPSession s, String parent, Local file) {
         super(parent, file);
         this.session = s;
     }
 
-    protected <T> SFTPPath(SFTPSession s, T dict) {
+    public <T> SFTPPath(SFTPSession s, T dict) {
         super(dict);
         this.session = s;
     }

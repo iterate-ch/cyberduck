@@ -69,50 +69,24 @@ import com.rackspacecloud.client.cloudfiles.FilesObjectMetaData;
 public class CFPath extends CloudPath {
     private static Logger log = Logger.getLogger(CFPath.class);
 
-    private static class Factory extends PathFactory<CFSession> {
-        @Override
-        protected Path create(CFSession session, String path, int type) {
-            return new CFPath(session, path, type);
-        }
-
-        @Override
-        protected Path create(CFSession session, String parent, String name, int type) {
-            return new CFPath(session, parent, name, type);
-        }
-
-        @Override
-        protected Path create(CFSession session, String parent, Local file) {
-            return new CFPath(session, parent, file);
-        }
-
-        @Override
-        protected <T> Path create(CFSession session, T dict) {
-            return new CFPath(session, dict);
-        }
-    }
-
-    public static PathFactory factory() {
-        return new Factory();
-    }
-
     private final CFSession session;
 
-    protected CFPath(CFSession s, String parent, String name, int type) {
+    public CFPath(CFSession s, String parent, String name, int type) {
         super(parent, name, type);
         this.session = s;
     }
 
-    protected CFPath(CFSession s, String path, int type) {
+    public CFPath(CFSession s, String path, int type) {
         super(path, type);
         this.session = s;
     }
 
-    protected CFPath(CFSession s, String parent, Local file) {
+    public CFPath(CFSession s, String parent, Local file) {
         super(parent, file);
         this.session = s;
     }
 
-    protected <T> CFPath(CFSession s, T dict) {
+    public <T> CFPath(CFSession s, T dict) {
         super(dict);
         this.session = s;
     }

@@ -99,50 +99,24 @@ import java.util.concurrent.ThreadFactory;
 public class S3Path extends CloudPath {
     private static Logger log = Logger.getLogger(S3Path.class);
 
-    private static class Factory extends PathFactory<S3Session> {
-        @Override
-        protected Path create(S3Session session, String path, int type) {
-            return new S3Path(session, path, type);
-        }
-
-        @Override
-        protected Path create(S3Session session, String parent, String name, int type) {
-            return new S3Path(session, parent, name, type);
-        }
-
-        @Override
-        protected Path create(S3Session session, String parent, Local file) {
-            return new S3Path(session, parent, file);
-        }
-
-        @Override
-        protected <T> Path create(S3Session session, T dict) {
-            return new S3Path(session, dict);
-        }
-    }
-
-    public static PathFactory factory() {
-        return new Factory();
-    }
-
     private final S3Session session;
 
-    protected S3Path(S3Session s, String parent, String name, int type) {
+    public S3Path(S3Session s, String parent, String name, int type) {
         super(parent, name, type);
         this.session = s;
     }
 
-    protected S3Path(S3Session s, String path, int type) {
+    public S3Path(S3Session s, String path, int type) {
         super(path, type);
         this.session = s;
     }
 
-    protected S3Path(S3Session s, String parent, Local file) {
+    public S3Path(S3Session s, String parent, Local file) {
         super(parent, file);
         this.session = s;
     }
 
-    protected <T> S3Path(S3Session s, T dict) {
+    public <T> S3Path(S3Session s, T dict) {
         super(dict);
         this.session = s;
     }

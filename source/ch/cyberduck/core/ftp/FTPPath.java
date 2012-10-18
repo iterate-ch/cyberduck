@@ -64,50 +64,24 @@ import java.util.regex.Pattern;
 public class FTPPath extends Path {
     private static Logger log = Logger.getLogger(FTPPath.class);
 
-    private static class Factory extends PathFactory<FTPSession> {
-        @Override
-        protected Path create(FTPSession session, String path, int type) {
-            return new FTPPath(session, path, type);
-        }
-
-        @Override
-        protected Path create(FTPSession session, String parent, String name, int type) {
-            return new FTPPath(session, parent, name, type);
-        }
-
-        @Override
-        protected Path create(FTPSession session, String parent, Local file) {
-            return new FTPPath(session, parent, file);
-        }
-
-        @Override
-        protected <T> Path create(FTPSession session, T dict) {
-            return new FTPPath(session, dict);
-        }
-    }
-
-    public static PathFactory factory() {
-        return new Factory();
-    }
-
     private final FTPSession session;
 
-    protected FTPPath(FTPSession s, String parent, String name, int type) {
+    public FTPPath(FTPSession s, String parent, String name, int type) {
         super(parent, name, type);
         this.session = s;
     }
 
-    protected FTPPath(FTPSession s, String path, int type) {
+    public FTPPath(FTPSession s, String path, int type) {
         super(path, type);
         this.session = s;
     }
 
-    protected FTPPath(FTPSession s, String parent, Local file) {
+    public FTPPath(FTPSession s, String parent, Local file) {
         super(parent, file);
         this.session = s;
     }
 
-    protected <T> FTPPath(FTPSession s, T dict) {
+    public <T> FTPPath(FTPSession s, T dict) {
         super(dict);
         this.session = s;
     }

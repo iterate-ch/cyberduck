@@ -25,7 +25,6 @@ import ch.cyberduck.core.AttributedList;
 import ch.cyberduck.core.Credentials;
 import ch.cyberduck.core.MappingMimeTypeService;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.StreamListener;
 import ch.cyberduck.core.i18n.Locale;
@@ -87,32 +86,6 @@ import com.google.gdata.util.ServiceException;
 public class GDPath extends Path {
     private static Logger log = Logger.getLogger(GDPath.class);
 
-    private static class Factory extends PathFactory<GDSession> {
-        @Override
-        protected Path create(GDSession session, String path, int type) {
-            return new GDPath(session, path, type);
-        }
-
-        @Override
-        protected Path create(GDSession session, String parent, String name, int type) {
-            return new GDPath(session, parent, name, type);
-        }
-
-        @Override
-        protected Path create(GDSession session, String parent, Local file) {
-            return new GDPath(session, parent, file);
-        }
-
-        @Override
-        protected <T> Path create(GDSession session, T dict) {
-            return new GDPath(session, dict);
-        }
-    }
-
-    public static PathFactory factory() {
-        return new Factory();
-    }
-
     private final GDSession session;
 
     @Override
@@ -129,22 +102,22 @@ public class GDPath extends Path {
         return super.getAsDictionary(dict);
     }
 
-    protected GDPath(GDSession s, String parent, String name, int type) {
+    public GDPath(GDSession s, String parent, String name, int type) {
         super(parent, name, type);
         this.session = s;
     }
 
-    protected GDPath(GDSession s, String path, int type) {
+    public GDPath(GDSession s, String path, int type) {
         super(path, type);
         this.session = s;
     }
 
-    protected GDPath(GDSession s, String parent, Local file) {
+    public GDPath(GDSession s, String parent, Local file) {
         super(parent, file);
         this.session = s;
     }
 
-    protected <T> GDPath(GDSession s, T serialized) {
+    public <T> GDPath(GDSession s, T serialized) {
         super(serialized);
         this.session = s;
         final Deserializer dict = DeserializerFactory.createDeserializer(serialized);

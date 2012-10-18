@@ -61,50 +61,24 @@ import com.googlecode.sardine.DavResource;
 public class DAVPath extends HttpPath {
     private static Logger log = Logger.getLogger(DAVPath.class);
 
-    private static class Factory extends PathFactory<DAVSession> {
-        @Override
-        protected Path create(DAVSession session, String path, int type) {
-            return new DAVPath(session, path, type);
-        }
-
-        @Override
-        protected Path create(DAVSession session, String parent, String name, int type) {
-            return new DAVPath(session, parent, name, type);
-        }
-
-        @Override
-        protected Path create(DAVSession session, String parent, Local file) {
-            return new DAVPath(session, parent, file);
-        }
-
-        @Override
-        protected <T> Path create(DAVSession session, T dict) {
-            return new DAVPath(session, dict);
-        }
-    }
-
-    public static PathFactory factory() {
-        return new Factory();
-    }
-
     private final DAVSession session;
 
-    protected DAVPath(DAVSession s, String parent, String name, int type) {
+    public DAVPath(DAVSession s, String parent, String name, int type) {
         super(parent, name, type);
         this.session = s;
     }
 
-    protected DAVPath(DAVSession s, String path, int type) {
+    public DAVPath(DAVSession s, String path, int type) {
         super(path, type);
         this.session = s;
     }
 
-    protected DAVPath(DAVSession s, String parent, Local file) {
+    public DAVPath(DAVSession s, String parent, Local file) {
         super(parent, file);
         this.session = s;
     }
 
-    protected <T> DAVPath(DAVSession s, T dict) {
+    public <T> DAVPath(DAVSession s, T dict) {
         super(dict);
         this.session = s;
     }

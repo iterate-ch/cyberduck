@@ -21,8 +21,6 @@ package ch.cyberduck.core.gstorage;
 
 import ch.cyberduck.core.Acl;
 import ch.cyberduck.core.DescriptiveUrl;
-import ch.cyberduck.core.Path;
-import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.s3.S3Path;
@@ -50,45 +48,19 @@ import java.util.Set;
 public class GSPath extends S3Path {
     private static Logger log = Logger.getLogger(GSPath.class);
 
-    private static class Factory extends PathFactory<GSSession> {
-        @Override
-        protected Path create(GSSession session, String path, int type) {
-            return new GSPath(session, path, type);
-        }
-
-        @Override
-        protected Path create(GSSession session, String parent, String name, int type) {
-            return new GSPath(session, parent, name, type);
-        }
-
-        @Override
-        protected Path create(GSSession session, String parent, Local file) {
-            return new GSPath(session, parent, file);
-        }
-
-        @Override
-        protected <T> Path create(GSSession session, T dict) {
-            return new GSPath(session, dict);
-        }
-    }
-
-    public static PathFactory factory() {
-        return new Factory();
-    }
-
-    protected GSPath(S3Session s, String parent, String name, int type) {
+    public GSPath(S3Session s, String parent, String name, int type) {
         super(s, parent, name, type);
     }
 
-    protected GSPath(S3Session s, String path, int type) {
+    public GSPath(S3Session s, String path, int type) {
         super(s, path, type);
     }
 
-    protected GSPath(S3Session s, String parent, Local file) {
+    public GSPath(S3Session s, String parent, Local file) {
         super(s, parent, file);
     }
 
-    protected <T> GSPath(S3Session s, T dict) {
+    public <T> GSPath(S3Session s, T dict) {
         super(s, dict);
     }
 
