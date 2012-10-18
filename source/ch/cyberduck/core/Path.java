@@ -571,14 +571,7 @@ public abstract class Path extends AbstractPath implements Serializable {
      * @return The local alias of this path
      */
     public Local getLocal() {
-        if(null == this.local) {
-            return getDefaultLocal();
-        }
-        return this.local;
-    }
-
-    private Local getDefaultLocal() {
-        return LocalFactory.createLocal(this.getHost().getDownloadFolder(), this.getName());
+        return local;
     }
 
     /**
