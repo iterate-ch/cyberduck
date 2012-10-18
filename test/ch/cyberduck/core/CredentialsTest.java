@@ -58,27 +58,4 @@ public class CredentialsTest extends AbstractTestCase {
         assertTrue(c.validate(Protocol.WEBDAV));
         assertTrue(c.validate(Protocol.SFTP));
     }
-
-    @Test
-    public void testNoConfigure() throws Exception {
-        Credentials c = new DefaultCredentials("user", " ");
-        c.setIdentity(new NullLocal(null, "t"));
-        c.configure(Protocol.SFTP, "t");
-        assertEquals("t", c.getIdentity().getName());
-    }
-
-    @Test
-    public void testConfigureKnownHost() throws Exception {
-        Credentials c = new DefaultCredentials("user", " ");
-        c.configure(Protocol.SFTP, "version.cyberduck.ch");
-        assertNotNull(c.getIdentity());
-    }
-
-    @Test
-    public void testConfigureDefaultKey() throws Exception {
-        Credentials c = new DefaultCredentials("user", " ");
-        c.configure(Protocol.SFTP, "t");
-        // ssh.authentication.publickey.default.enable
-        assertNull(c.getIdentity());
-    }
 }
