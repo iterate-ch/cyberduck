@@ -40,14 +40,14 @@ public final class SystemConfigurationReachability implements Reachability {
     }
 
     @Override
-    public boolean isReachable(Host host) {
+    public boolean isReachable(final Host host) {
         if(!Preferences.instance().getBoolean("connection.hostname.check")) {
             return true;
         }
         return this.isReachable(this.toURL(host));
     }
 
-    private String toURL(Host host) {
+    private String toURL(final Host host) {
         StringBuilder url = new StringBuilder(host.getProtocol().getScheme().toString());
         url.append("://");
         url.append(host.getHostname(true));
@@ -63,7 +63,7 @@ public final class SystemConfigurationReachability implements Reachability {
      * @see Host#toURL
      */
     @Override
-    public void diagnose(Host host) {
+    public void diagnose(final Host host) {
         this.diagnose(host.toURL());
     }
 
