@@ -76,7 +76,7 @@ public abstract class AbstractController implements Controller {
     @Override
     public <T> Future<T> background(final BackgroundAction<T> runnable) {
         if(log.isDebugEnabled()) {
-            log.debug("background:" + runnable);
+            log.debug(String.format("Run action %s in background", runnable));
         }
         runnable.init();
         actions.add(runnable);
@@ -89,7 +89,7 @@ public abstract class AbstractController implements Controller {
                 synchronized(runnable.lock()) {
                     final ActionOperationBatcher autorelease = ActionOperationBatcherFactory.get();
                     if(log.isDebugEnabled()) {
-                        log.debug("Acquired lock for background runnable:" + runnable);
+                        log.debug(String.format("Acquired lock for background runnable %s", runnable));
                     }
                     try {
                         if(runnable.prepare()) {
@@ -98,7 +98,7 @@ public abstract class AbstractController implements Controller {
                         }
                     }
                     catch(Exception e) {
-                        log.error("Exception running background task:" + e.getMessage(), e);
+                        log.error(String.format("Exception running background task %s", e.getMessage()), e);
                     }
                     finally {
                         // Increase the run counter
@@ -111,12 +111,12 @@ public abstract class AbstractController implements Controller {
                                     runnable.cleanup();
                                 }
                                 catch(Exception e) {
-                                    log.error("Exception running cleanup task:" + e.getMessage(), e);
+                                    log.error(String.format("Exception running cleanup task %s", e.getMessage()), e);
                                 }
                             }
                         });
                         if(log.isDebugEnabled()) {
-                            log.debug("Releasing lock for background runnable:" + runnable);
+                            log.debug(String.format("Releasing lock for background runnable %s", runnable));
                         }
                         autorelease.operate();
                     }
