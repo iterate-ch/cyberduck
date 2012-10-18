@@ -19,6 +19,7 @@ package ch.cyberduck.core.local;
  */
 
 import ch.cyberduck.core.Native;
+import ch.cyberduck.core.i18n.Locale;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
@@ -26,7 +27,7 @@ import org.apache.commons.lang.StringUtils;
 /**
  * @version $Id$
  */
-public final class LaunchServicesFileDescriptor implements FileDescriptor {
+public final class LaunchServicesFileDescriptor extends AbstractFileDescriptor {
 
     public static void register() {
         FileDescriptorFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
@@ -44,11 +45,15 @@ public final class LaunchServicesFileDescriptor implements FileDescriptor {
     }
 
     @Override
-    public String getKind(String filename) {
+    public String getKind(final String filename) {
         if(StringUtils.isBlank(FilenameUtils.getExtension(filename))) {
-            return null;
+            return Locale.localizedString("Unknown");
         }
-        return this.kind(FilenameUtils.getExtension(filename));
+        final String kind = this.kind(FilenameUtils.getExtension(filename));
+        if(StringUtils.isBlank(kind)) {
+            return Locale.localizedString("Unknown");
+        }
+        return kind;
     }
 
     private native String kind(String extension);

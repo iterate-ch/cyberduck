@@ -19,25 +19,21 @@ package ch.cyberduck.core.local;
  */
 
 import ch.cyberduck.core.AbstractPath;
+import ch.cyberduck.core.i18n.Locale;
 
 /**
- * @version $Id$
+ * @version $Id:$
  */
-public interface FileDescriptor {
+public abstract class AbstractFileDescriptor implements FileDescriptor {
 
-    /**
-     * Human readable localized description of file type
-     *
-     * @param file Filename
-     * @return Description of file type
-     */
-    String getKind(AbstractPath file);
-
-    /**
-     * Human readable localized description of file type
-     *
-     * @param filename Filename
-     * @return Description of file type
-     */
-    String getKind(String filename);
+    @Override
+    public String getKind(final AbstractPath file) {
+        if(file.attributes().isFile()) {
+            return this.getKind(file.getName());
+        }
+        if(file.attributes().isDirectory()) {
+            return Locale.localizedString("Folder");
+        }
+        return Locale.localizedString("Unknown");
+    }
 }
