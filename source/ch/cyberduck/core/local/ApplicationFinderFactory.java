@@ -29,9 +29,6 @@ import java.util.Map;
  */
 public abstract class ApplicationFinderFactory extends Factory<ApplicationFinder> {
 
-    /**
-     * Registered factories
-     */
     private static final Map<Factory.Platform, ApplicationFinderFactory> factories
             = new HashMap<Factory.Platform, ApplicationFinderFactory>();
 
