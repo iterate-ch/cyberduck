@@ -81,8 +81,7 @@ public abstract class AbstractEditor implements Editor {
         final String version = path.attributes().getVersionId();
         final String localName = StringUtils.isEmpty(version) ? edited.getName() :
                 String.format("%s-%s", version, edited.getName());
-        final Local local = LocalFactory.createLocal(folder, localName);
-        edited.setLocal(local);
+        edited.setLocal(LocalFactory.createLocal(folder, localName));
     }
 
     /**
