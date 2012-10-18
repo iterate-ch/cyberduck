@@ -473,7 +473,7 @@ public abstract class Session implements TranscriptListener {
      * @throws IOException I/O failure
      */
     protected void noop() throws IOException {
-        ;
+        //
     }
 
     /**
