@@ -23,9 +23,13 @@ import java.net.URLEncoder;
 import java.util.StringTokenizer;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public final class URIEncoder {
+
+    private URIEncoder() {
+        //
+    }
 
     /**
      * URL encode a path
