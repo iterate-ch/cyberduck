@@ -23,8 +23,8 @@ import ch.cyberduck.core.AbstractHostCollection;
 import ch.cyberduck.core.Host;
 import ch.cyberduck.core.KeychainFactory;
 import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.editor.ApplicationFinderFactory;
 import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.core.local.ApplicationFinderFactory;
 import ch.cyberduck.core.local.Local;
 
 import org.apache.commons.lang.StringUtils;

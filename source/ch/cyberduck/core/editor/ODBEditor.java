@@ -20,6 +20,7 @@ package ch.cyberduck.core.editor;
 
 import ch.cyberduck.core.Native;
 import ch.cyberduck.core.Path;
+import ch.cyberduck.core.local.Application;
 import ch.cyberduck.ui.Controller;
 
 import org.apache.log4j.Logger;

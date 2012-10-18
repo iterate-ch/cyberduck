@@ -2,8 +2,8 @@ package ch.cyberduck.core.urlhandler;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.Scheme;
-import ch.cyberduck.core.editor.Application;
-import ch.cyberduck.core.editor.LaunchServicesApplicationFinder;
+import ch.cyberduck.core.local.Application;
+import ch.cyberduck.core.local.LaunchServicesApplicationFinder;
 
 import org.junit.BeforeClass;
 import org.junit.Test;

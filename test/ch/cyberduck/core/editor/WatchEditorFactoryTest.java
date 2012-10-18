@@ -2,6 +2,8 @@ package ch.cyberduck.core.editor;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.NullLocal;
+import ch.cyberduck.core.local.Application;
+import ch.cyberduck.core.local.LaunchServicesApplicationFinder;
 
 import org.junit.BeforeClass;
 import org.junit.Test;

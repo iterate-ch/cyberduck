@@ -22,6 +22,9 @@ import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.FactoryException;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.local.Application;
+import ch.cyberduck.core.local.ApplicationFinder;
+import ch.cyberduck.core.local.ApplicationFinderFactory;
 import ch.cyberduck.core.local.Local;
 import ch.cyberduck.ui.Controller;
 

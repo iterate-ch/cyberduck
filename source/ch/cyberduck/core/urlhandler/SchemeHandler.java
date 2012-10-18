@@ -1,12 +1,12 @@
 package ch.cyberduck.core.urlhandler;
 
 import ch.cyberduck.core.Scheme;
-import ch.cyberduck.core.editor.Application;
+import ch.cyberduck.core.local.Application;
 
 import java.util.List;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
 public interface SchemeHandler {
 

@@ -23,7 +23,7 @@ import ch.cyberduck.core.AbstractTestCase;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @version $Id$
@@ -38,6 +38,6 @@ public class LaunchServicesFileDescriptorTest extends AbstractTestCase {
 
     @Test
     public void testGetKind() throws Exception {
-        assertEquals("Plain text document", FileDescriptorFactory.get().getKind("/tmp/t.txt"));
+        assertTrue(FileDescriptorFactory.get().getKind("/tmp/t.txt").startsWith("Plain"));
     }
 }

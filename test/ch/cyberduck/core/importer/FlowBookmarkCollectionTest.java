@@ -2,7 +2,7 @@ package ch.cyberduck.core.importer;
 
 import ch.cyberduck.core.AbstractTestCase;
 import ch.cyberduck.core.NullKeychain;
-import ch.cyberduck.core.editor.LaunchServicesApplicationFinder;
+import ch.cyberduck.core.local.LaunchServicesApplicationFinder;
 import ch.cyberduck.core.local.LocalFactory;
 
 import org.junit.BeforeClass;

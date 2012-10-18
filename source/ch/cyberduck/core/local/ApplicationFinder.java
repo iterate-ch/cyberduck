@@ -1,4 +1,4 @@
-package ch.cyberduck.core.editor;
+package ch.cyberduck.core.local;
 
 /*
  * Copyright (c) 2012 David Kocher. All rights reserved.
@@ -17,8 +17,6 @@ package ch.cyberduck.core.editor;
  * Bug fixes, suggestions and comments should be sent to:
  * dkocher@cyberduck.ch
  */
-
-import ch.cyberduck.core.local.Local;
 
 import java.util.List;
 

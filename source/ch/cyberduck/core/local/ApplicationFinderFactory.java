@@ -1,4 +1,4 @@
-package ch.cyberduck.core.editor;
+package ch.cyberduck.core.local;
 
 /*
  * Copyright (c) 2012 David Kocher. All rights reserved.

@@ -2,7 +2,7 @@ package ch.cyberduck.core.urlhandler;
 
 import ch.cyberduck.core.Factory;
 import ch.cyberduck.core.Scheme;
-import ch.cyberduck.core.editor.Application;
+import ch.cyberduck.core.local.Application;
 
 import org.apache.log4j.Logger;
 

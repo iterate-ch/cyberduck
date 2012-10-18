@@ -18,7 +18,6 @@ package ch.cyberduck.core.local;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.editor.Application;
 import ch.cyberduck.ui.cocoa.application.NSWorkspace;
 import ch.cyberduck.ui.cocoa.foundation.NSDistributedNotificationCenter;
 import ch.cyberduck.ui.cocoa.foundation.NSNotification;

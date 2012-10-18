@@ -20,8 +20,8 @@ package ch.cyberduck.core.urlhandler;
 
 import ch.cyberduck.core.Native;
 import ch.cyberduck.core.Scheme;
-import ch.cyberduck.core.editor.Application;
-import ch.cyberduck.core.editor.ApplicationFinderFactory;
+import ch.cyberduck.core.local.Application;
+import ch.cyberduck.core.local.ApplicationFinderFactory;
 
 import java.util.ArrayList;
 import java.util.List;

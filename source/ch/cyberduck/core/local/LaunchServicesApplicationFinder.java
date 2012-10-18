@@ -1,4 +1,4 @@
-package ch.cyberduck.core.editor;
+package ch.cyberduck.core.local;
 
 /*
  * Copyright (c) 2012 David Kocher. All rights reserved.
@@ -19,8 +19,6 @@ package ch.cyberduck.core.editor;
  */
 
 import ch.cyberduck.core.Native;
-import ch.cyberduck.core.local.Local;
-import ch.cyberduck.core.local.LocalFactory;
 import ch.cyberduck.ui.cocoa.application.NSWorkspace;
 import ch.cyberduck.ui.cocoa.foundation.NSBundle;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;

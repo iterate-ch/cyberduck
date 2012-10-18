@@ -21,6 +21,7 @@ package ch.cyberduck.core.editor;
 import ch.cyberduck.core.FactoryException;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.local.Application;
 import ch.cyberduck.ui.Controller;
 
 import java.util.ArrayList;
