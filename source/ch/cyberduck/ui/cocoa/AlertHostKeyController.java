@@ -20,12 +20,12 @@ package ch.cyberduck.ui.cocoa;
 
 import ch.cyberduck.core.ConnectionCanceledException;
 import ch.cyberduck.core.HostKeyControllerFactory;
-import ch.cyberduck.core.local.Local;
-import ch.cyberduck.core.local.LocalFactory;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.Session;
 import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.core.local.Local;
+import ch.cyberduck.core.local.LocalFactory;
 import ch.cyberduck.core.sftp.HostKeyController;
 import ch.cyberduck.core.sftp.MemoryHostKeyVerifier;
 import ch.cyberduck.ui.Controller;
@@ -90,7 +90,7 @@ public class AlertHostKeyController extends MemoryHostKeyVerifier {
     @Override
     protected KnownHosts getDatabase() {
         if(!file.exists()) {
-            file.touch(true);
+            file.touch();
         }
         if(file.attributes().getPermission().isReadable()) {
             try {
