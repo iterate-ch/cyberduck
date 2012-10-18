@@ -18,19 +18,14 @@ package ch.cyberduck.ui.cocoa;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.DescriptiveUrl;
-import ch.cyberduck.ui.cocoa.application.AppKitFunctions;
 import ch.cyberduck.ui.cocoa.application.NSAlert;
 import ch.cyberduck.ui.cocoa.application.NSFont;
 import ch.cyberduck.ui.cocoa.application.NSView;
-import ch.cyberduck.ui.cocoa.application.NSWorkspace;
 import ch.cyberduck.ui.cocoa.foundation.NSArray;
 import ch.cyberduck.ui.cocoa.foundation.NSAttributedString;
 import ch.cyberduck.ui.cocoa.foundation.NSBundle;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
-import ch.cyberduck.ui.cocoa.foundation.NSURL;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 /**
@@ -97,26 +92,6 @@ public abstract class BundleController extends ProxyController {
     }
 
     protected abstract String getBundleName();
-
-    public static void openUrl(DescriptiveUrl url) {
-        openUrl(url.getUrl());
-    }
-
-    /**
-     * Open URL with default web browser.
-     *
-     * @param url HTTP URL
-     */
-    public static void openUrl(String url) {
-        if(StringUtils.isNotBlank(url)) {
-            if(!NSWorkspace.sharedWorkspace().openURL(NSURL.URLWithString(url))) {
-                AppKitFunctions.instance.NSBeep();
-            }
-        }
-        else {
-            AppKitFunctions.instance.NSBeep();
-        }
-    }
 
     protected int alert(final NSAlert alert) {
         return alert.runModal();

@@ -127,7 +127,7 @@ public abstract class AlertRepeatableBackgroundAction extends RepeatableBackgrou
                         if(null != failure.getPath()) {
                             site.append("/").append(failure.getPath().getSession().getHost().getProtocol().getProvider());
                         }
-                        openUrl(site.toString());
+                        controller.openUrl(site.toString());
                     }
                 };
                 c.beginSheet();

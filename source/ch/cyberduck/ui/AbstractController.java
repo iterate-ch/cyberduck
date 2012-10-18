@@ -18,6 +18,8 @@ package ch.cyberduck.ui;
  *  dkocher@cyberduck.ch
  */
 
+import ch.cyberduck.core.DescriptiveUrl;
+import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.core.threading.ActionOperationBatcher;
 import ch.cyberduck.core.threading.ActionOperationBatcherFactory;
 import ch.cyberduck.core.threading.BackgroundAction;
@@ -139,5 +141,18 @@ public abstract class AbstractController implements Controller {
             timerPool = Executors.newScheduledThreadPool(1);
         }
         return timerPool;
+    }
+
+    public void openUrl(final DescriptiveUrl url) {
+        openUrl(url.getUrl());
+    }
+
+    /**
+     * Open URL with default web browser.
+     *
+     * @param url HTTP URL
+     */
+    public void openUrl(String url) {
+        BrowserLauncherFactory.get().open(url);
     }
 }

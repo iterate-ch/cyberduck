@@ -1,8 +1,7 @@
 package ch.cyberduck.ui.cocoa.delegate;
 
 /*
- * Copyright (c) 2002-2010 David Kocher. All rights reserved.
- *
+ * Copyright (c) 2012 David Kocher. All rights reserved.
  * http://cyberduck.ch/
  *
  * This program is free software; you can redistribute it and/or modify
@@ -21,7 +20,7 @@ package ch.cyberduck.ui.cocoa.delegate;
 
 import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.Path;
-import ch.cyberduck.ui.cocoa.BundleController;
+import ch.cyberduck.core.local.BrowserLauncherFactory;
 import ch.cyberduck.ui.cocoa.application.NSEvent;
 
 import java.util.ArrayList;
@@ -53,7 +52,7 @@ public abstract class OpenURLMenuDelegate extends URLMenuDelegate {
     @Override
     public void handle(final List<String> selected) {
         for(String url : selected) {
-            BundleController.openUrl(url);
+            BrowserLauncherFactory.get().open(url);
         }
     }
 }
