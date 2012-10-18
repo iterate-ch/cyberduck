@@ -426,7 +426,6 @@ public class FinderLocal extends Local {
                         NSArray.arrayWithObject(this.getName()))) {
                     log.warn(String.format("Failed to move %s to Trash", this.getAbsolute()));
                 }
-
             }
         }
     }
