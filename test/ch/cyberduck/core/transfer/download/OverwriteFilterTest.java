@@ -23,6 +23,7 @@ public class OverwriteFilterTest extends AbstractTestCase {
     public void testAccept() throws Exception {
         OverwriteFilter f = new OverwriteFilter(new NullSymlinkResolver());
         final NullPath p = new NullPath("a", Path.FILE_TYPE);
+        p.setLocal(new NullLocal(null, "a"));
         p.attributes().setSize(8L);
         assertTrue(f.accept(p));
     }
@@ -47,6 +48,7 @@ public class OverwriteFilterTest extends AbstractTestCase {
     public void testPrepare() throws Exception {
         OverwriteFilter f = new OverwriteFilter(new NullSymlinkResolver());
         final NullPath p = new NullPath("a", Path.FILE_TYPE);
+        p.setLocal(new NullLocal(null, "a"));
         p.attributes().setSize(8L);
         final TransferStatus status = f.prepare(p);
         assertEquals(8L, status.getLength(), 0L);

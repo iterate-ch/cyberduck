@@ -29,9 +29,24 @@ public class OverwriteFilterTest extends AbstractTestCase {
     public void testAccept() throws Exception {
         OverwriteFilter f = new OverwriteFilter(new NullSymlinkResolver());
         // Local file does not exist
-        assertFalse(f.accept(new NullPath("a", Path.FILE_TYPE)));
-        assertFalse(f.accept(new NullPath("a", Path.DIRECTORY_TYPE)));
+        assertFalse(f.accept(new NullPath("a", Path.FILE_TYPE) {
+            @Override
+            public Local getLocal() {
+                return new NullLocal(null, "t");
+            }
+        }));
         assertFalse(f.accept(new NullPath("a", Path.DIRECTORY_TYPE) {
+            @Override
+            public Local getLocal() {
+                return new NullLocal(null, "t");
+            }
+        }));
+        assertFalse(f.accept(new NullPath("a", Path.DIRECTORY_TYPE) {
+            @Override
+            public Local getLocal() {
+                return new NullLocal(null, "t");
+            }
+
             @Override
             public boolean exists() {
                 return true;
@@ -64,6 +79,7 @@ public class OverwriteFilterTest extends AbstractTestCase {
     public void testPermissionsNoChange() throws Exception {
         OverwriteFilter f = new OverwriteFilter(new NullSymlinkResolver());
         final NullPath file = new NullPath("/t", Path.FILE_TYPE);
+        file.setLocal(new NullLocal(null, "a"));
         assertFalse(f.prepare(file).isComplete());
         Preferences.instance().setProperty("queue.upload.changePermissions", false);
         assertEquals(Acl.EMPTY, file.attributes().getAcl());
@@ -79,6 +95,7 @@ public class OverwriteFilterTest extends AbstractTestCase {
                 return true;
             }
         };
+        file.setLocal(new NullLocal(null, "a"));
         assertFalse(f.prepare(file).isComplete());
         Preferences.instance().setProperty("queue.upload.changePermissions", true);
         assertEquals(Acl.EMPTY, file.attributes().getAcl());
@@ -126,6 +143,7 @@ public class OverwriteFilterTest extends AbstractTestCase {
                 return true;
             }
         };
+        file.setLocal(new NullLocal(null, "a"));
         assertFalse(f.prepare(file).isComplete());
         Preferences.instance().setProperty("queue.upload.changePermissions", true);
         Preferences.instance().setProperty("queue.upload.permissions.useDefault", false);

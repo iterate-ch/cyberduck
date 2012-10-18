@@ -94,6 +94,7 @@ public class ResumeFilterTest extends AbstractTestCase {
     public void testPrepareDirectory() throws Exception {
         ResumeFilter f = new ResumeFilter(new NullSymlinkResolver());
         Path p = new NullPath("a", Path.DIRECTORY_TYPE);
+        p.setLocal(new NullLocal(null, "a"));
         final TransferStatus status = f.prepare(p);
         assertFalse(status.isResume());
     }

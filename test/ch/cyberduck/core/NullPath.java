@@ -1,7 +1,6 @@
 package ch.cyberduck.core;
 
 import ch.cyberduck.core.io.BandwidthThrottle;
-import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.transfer.TransferStatus;
 
 import java.io.IOException;
@@ -78,10 +77,5 @@ public class NullPath extends Path {
     @Override
     public void rename(final AbstractPath renamed) {
         throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Local getLocal() {
-        return new NullLocal(null, this.getName());
     }
 }

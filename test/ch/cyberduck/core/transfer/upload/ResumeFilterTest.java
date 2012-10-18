@@ -38,6 +38,7 @@ public class ResumeFilterTest extends AbstractTestCase {
     public void testPrepare() throws Exception {
         ResumeFilter f = new ResumeFilter(new NullSymlinkResolver());
         final NullPath t = new NullPath("t", Path.FILE_TYPE);
+        t.setLocal(new NullLocal(null, "t"));
         t.attributes().setSize(7L);
         final TransferStatus status = f.prepare(t);
         assertTrue(status.isResume());

@@ -1,6 +1,7 @@
 package ch.cyberduck.core.transfer.upload;
 
 import ch.cyberduck.core.AbstractTestCase;
+import ch.cyberduck.core.NullLocal;
 import ch.cyberduck.core.NullPath;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.transfer.symlink.NullSymlinkResolver;
@@ -23,6 +24,7 @@ public class RenameFilterTest extends AbstractTestCase {
                 return this.getName().equals("t");
             }
         };
+        t.setLocal(new NullLocal(null, "t"));
         f.prepare(t);
         assertNotSame("t", t.getName());
     }

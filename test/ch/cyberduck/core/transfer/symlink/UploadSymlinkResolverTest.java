@@ -29,13 +29,16 @@ public class UploadSymlinkResolverTest extends AbstractTestCase {
     public void testNoSymbolicLink() throws Exception {
         UploadSymlinkResolver resolver = new UploadSymlinkResolver(Collections.<Path>emptyList());
         NullPath p = new NullPath("a", Path.FILE_TYPE);
+        p.setLocal(new NullLocal(null, "a"));
         assertFalse(resolver.resolve(p));
     }
 
     @Test
     public void testResolve() throws Exception {
         final ArrayList<Path> files = new ArrayList<Path>();
-        files.add(new NullPath("/a", Path.DIRECTORY_TYPE));
+        final NullPath a = new NullPath("/a", Path.DIRECTORY_TYPE);
+        a.setLocal(new NullLocal(null, "a"));
+        files.add(a);
         UploadSymlinkResolver resolver = new UploadSymlinkResolver(files);
         assertTrue(resolver.resolve(new NullPath("/a/b", Path.FILE_TYPE | Path.SYMBOLIC_LINK_TYPE) {
             @Override
@@ -68,7 +71,7 @@ public class UploadSymlinkResolverTest extends AbstractTestCase {
                 };
             }
         }));
-        assertFalse(resolver.resolve(new NullPath("/a/b", Path.FILE_TYPE | Path.SYMBOLIC_LINK_TYPE) {
+        final NullPath ab = new NullPath("/a/b", Path.FILE_TYPE | Path.SYMBOLIC_LINK_TYPE) {
             @Override
             public Session getSession() {
                 return new NullSession(new Host("t")) {
@@ -98,6 +101,8 @@ public class UploadSymlinkResolverTest extends AbstractTestCase {
                     }
                 };
             }
-        }));
+        };
+        ab.setLocal(new NullLocal(null, "a"));
+        assertFalse(resolver.resolve(ab));
     }
 }
