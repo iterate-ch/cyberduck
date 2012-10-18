@@ -1,4 +1,4 @@
-package ch.cyberduck.core.transfer;
+package ch.cyberduck.core.transfer.synchronisation;
 
 /*
  *  Copyright (c) 2005 David Kocher. All rights reserved.
@@ -30,6 +30,14 @@ import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.serializer.Serializer;
 import ch.cyberduck.core.synchronization.CombinedComparisionService;
 import ch.cyberduck.core.synchronization.Comparison;
+import ch.cyberduck.core.transfer.Transfer;
+import ch.cyberduck.core.transfer.TransferAction;
+import ch.cyberduck.core.transfer.TransferOptions;
+import ch.cyberduck.core.transfer.TransferPathFilter;
+import ch.cyberduck.core.transfer.TransferPrompt;
+import ch.cyberduck.core.transfer.TransferStatus;
+import ch.cyberduck.core.transfer.download.DownloadTransfer;
+import ch.cyberduck.core.transfer.upload.UploadTransfer;
 
 import org.apache.commons.collections.map.AbstractLinkedMap;
 import org.apache.commons.collections.map.LRUMap;
@@ -353,7 +361,7 @@ public class SyncTransfer extends Transfer {
     }
 
     @Override
-    protected void transfer(final Path file, TransferOptions options, final TransferStatus status) {
+    public void transfer(final Path file, TransferOptions options, final TransferStatus status) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Transfer file %s with options %s", file, options));
         }
@@ -367,7 +375,7 @@ public class SyncTransfer extends Transfer {
     }
 
     @Override
-    protected void clear(final TransferOptions options) {
+    public void clear(final TransferOptions options) {
         _delegateDownload.clear(options);
         _delegateUpload.clear(options);
         comparisons.clear();
@@ -375,7 +383,7 @@ public class SyncTransfer extends Transfer {
     }
 
     @Override
-    protected void reset() {
+    public void reset() {
         _delegateDownload.reset();
         _delegateUpload.reset();
 

@@ -1,4 +1,4 @@
-package ch.cyberduck.core.transfer;
+package ch.cyberduck.core.transfer.synchronization;
 
 /*
  * Copyright (c) 2012 David Kocher. All rights reserved.
@@ -25,19 +25,20 @@ import ch.cyberduck.core.NullPath;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.sftp.SFTPSession;
+import ch.cyberduck.core.transfer.Transfer;
+import ch.cyberduck.core.transfer.TransferAction;
+import ch.cyberduck.core.transfer.synchronisation.SyncTransfer;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import java.util.Collections;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotSame;
 
 /**
- * @version $Id:$
+ * @version $Id$
  */
-public class CopyTransferTest extends AbstractTestCase {
+public class SyncTransferTest extends AbstractTestCase {
 
     @BeforeClass
     public static void register() {
@@ -46,24 +47,31 @@ public class CopyTransferTest extends AbstractTestCase {
 
     @Test
     public void testSerialize() throws Exception {
-        Transfer t = new CopyTransfer(Collections.<Path, Path>singletonMap(new NullPath("t", Path.FILE_TYPE), new NullPath("d", Path.FILE_TYPE)));
-        t.size = 4L;
-        t.transferred = 3L;
-        final CopyTransfer serialized = new CopyTransfer(t.getAsDictionary(), new SFTPSession(new Host(Protocol.SFTP, "t")));
+        Transfer t = new SyncTransfer(new NullPath("t", Path.FILE_TYPE));
+//        t.size = 4L;
+//        t.transferred = 3L;
+        final SyncTransfer serialized = new SyncTransfer(t.getAsDictionary(), new SFTPSession(new Host(Protocol.SFTP, "t")));
         assertNotSame(t, serialized);
         assertEquals(t.getRoots(), serialized.getRoots());
         assertEquals(t.getBandwidth(), serialized.getBandwidth());
-        assertEquals(4L, serialized.getSize());
-        assertEquals(3L, serialized.getTransferred());
+//        assertEquals(4L, serialized.getSize());
+//        assertEquals(3L, serialized.getTransferred());
     }
 
     @Test
-    public void testAction() throws Exception {
-
+    public void testFilter() throws Exception {
+        final NullPath p = new NullPath("t", Path.FILE_TYPE);
+        Transfer t = new SyncTransfer(p);
+        t.filter(null, TransferAction.ACTION_OVERWRITE);
     }
 
     @Test
     public void testChildren() throws Exception {
+
+    }
+
+    @Test
+    public void testIsSkipped() throws Exception {
 
     }
 }

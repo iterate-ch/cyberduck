@@ -25,8 +25,8 @@ import ch.cyberduck.core.PathKindDetector;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.SessionFactory;
 import ch.cyberduck.core.i18n.Locale;
-import ch.cyberduck.core.transfer.DownloadTransfer;
 import ch.cyberduck.core.transfer.Transfer;
+import ch.cyberduck.core.transfer.download.DownloadTransfer;
 import ch.cyberduck.ui.cocoa.application.NSAlert;
 import ch.cyberduck.ui.cocoa.application.NSTextField;
 

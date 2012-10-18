@@ -36,7 +36,7 @@ import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPrompt;
 import ch.cyberduck.core.transfer.TransferStatus;
-import ch.cyberduck.core.transfer.UploadTransfer;
+import ch.cyberduck.core.transfer.upload.UploadTransfer;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;

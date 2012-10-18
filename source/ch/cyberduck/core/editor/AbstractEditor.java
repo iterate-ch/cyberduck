@@ -28,12 +28,12 @@ import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.local.LocalFactory;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.core.threading.BackgroundAction;
-import ch.cyberduck.core.transfer.DownloadTransfer;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPrompt;
-import ch.cyberduck.core.transfer.UploadTransfer;
+import ch.cyberduck.core.transfer.download.DownloadTransfer;
+import ch.cyberduck.core.transfer.upload.UploadTransfer;
 
 import org.apache.log4j.Logger;
 

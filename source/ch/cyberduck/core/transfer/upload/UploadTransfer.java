@@ -1,4 +1,4 @@
-package ch.cyberduck.core.transfer;
+package ch.cyberduck.core.transfer.upload;
 
 /*
  * Copyright (c) 2002-2010 David Kocher. All rights reserved.
@@ -30,14 +30,14 @@ import ch.cyberduck.core.filter.UploadRegexFilter;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.serializer.Serializer;
+import ch.cyberduck.core.transfer.Transfer;
+import ch.cyberduck.core.transfer.TransferAction;
+import ch.cyberduck.core.transfer.TransferOptions;
+import ch.cyberduck.core.transfer.TransferPathFilter;
+import ch.cyberduck.core.transfer.TransferPrompt;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.normalizer.UploadRootPathsNormalizer;
 import ch.cyberduck.core.transfer.symlink.UploadSymlinkResolver;
-import ch.cyberduck.core.transfer.upload.CompareFilter;
-import ch.cyberduck.core.transfer.upload.OverwriteFilter;
-import ch.cyberduck.core.transfer.upload.RenameExistingFilter;
-import ch.cyberduck.core.transfer.upload.RenameFilter;
-import ch.cyberduck.core.transfer.upload.ResumeFilter;
-import ch.cyberduck.core.transfer.upload.SkipFilter;
 
 import org.apache.log4j.Logger;
 
@@ -72,7 +72,7 @@ public class UploadTransfer extends Transfer {
     public <T> T getAsDictionary() {
         final Serializer dict = super.getSerializer();
         dict.setStringForKey(String.valueOf(KIND_UPLOAD), "Kind");
-        return dict.<T>getSerialized();
+        return dict.getSerialized();
     }
 
     /**
@@ -199,7 +199,7 @@ public class UploadTransfer extends Transfer {
 
 
     @Override
-    protected void transfer(final Path file, final TransferOptions options, final TransferStatus status) {
+    public void transfer(final Path file, final TransferOptions options, final TransferStatus status) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Transfer file %s with options %s", file, options));
         }

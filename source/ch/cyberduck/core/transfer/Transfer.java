@@ -66,7 +66,7 @@ public abstract class Transfer implements Serializable {
     /**
      * The sum of the file length of all files in the <code>queue</code>
      */
-    protected long size = 0;
+    private long size = 0;
 
     /**
      * The number bytes already transferred of the files in the <code>queue</code>
@@ -488,7 +488,7 @@ public abstract class Transfer implements Serializable {
      * @param options Quarantine option
      * @param status  Transfer status
      */
-    protected abstract void transfer(Path file, TransferOptions options, TransferStatus status);
+    public abstract void transfer(Path file, TransferOptions options, TransferStatus status);
 
     /**
      * @param prompt  Callback
@@ -617,7 +617,7 @@ public abstract class Transfer implements Serializable {
      *
      * @param options Transfer options
      */
-    protected void clear(final TransferOptions options) {
+    public void clear(final TransferOptions options) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Clear cache with options %s", options));
         }
@@ -717,7 +717,7 @@ public abstract class Transfer implements Serializable {
     /**
      * Recalculate the size of the <code>queue</code>
      */
-    protected void reset() {
+    public void reset() {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Reset status for %s", this.getName()));
         }

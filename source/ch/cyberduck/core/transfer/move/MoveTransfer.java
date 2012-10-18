@@ -1,4 +1,4 @@
-package ch.cyberduck.core.transfer;
+package ch.cyberduck.core.transfer.move;
 
 /*
  * Copyright (c) 2002-2011 David Kocher. All rights reserved.
@@ -26,7 +26,12 @@ import ch.cyberduck.core.Session;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.serializer.Serializer;
-import ch.cyberduck.core.transfer.move.MoveTransferFilter;
+import ch.cyberduck.core.transfer.Transfer;
+import ch.cyberduck.core.transfer.TransferAction;
+import ch.cyberduck.core.transfer.TransferOptions;
+import ch.cyberduck.core.transfer.TransferPathFilter;
+import ch.cyberduck.core.transfer.TransferPrompt;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.normalizer.CopyRootPathsNormalizer;
 
 import org.apache.log4j.Logger;
@@ -98,7 +103,7 @@ public class MoveTransfer extends Transfer {
     }
 
     @Override
-    protected void transfer(final Path file, final TransferOptions options, final TransferStatus status) {
+    public void transfer(final Path file, final TransferOptions options, final TransferStatus status) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Transfer file %s with options %s", file, options));
         }

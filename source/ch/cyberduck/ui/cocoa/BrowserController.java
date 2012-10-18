@@ -33,17 +33,17 @@ import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.core.threading.BackgroundAction;
 import ch.cyberduck.core.threading.DefaultMainAction;
 import ch.cyberduck.core.threading.MainAction;
-import ch.cyberduck.core.transfer.CopyTransfer;
-import ch.cyberduck.core.transfer.DownloadTransfer;
-import ch.cyberduck.core.transfer.MoveTransfer;
-import ch.cyberduck.core.transfer.Speedometer;
-import ch.cyberduck.core.transfer.SyncTransfer;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAction;
 import ch.cyberduck.core.transfer.TransferAdapter;
 import ch.cyberduck.core.transfer.TransferOptions;
 import ch.cyberduck.core.transfer.TransferPrompt;
-import ch.cyberduck.core.transfer.UploadTransfer;
+import ch.cyberduck.core.transfer.TransferSpeedometer;
+import ch.cyberduck.core.transfer.copy.CopyTransfer;
+import ch.cyberduck.core.transfer.download.DownloadTransfer;
+import ch.cyberduck.core.transfer.move.MoveTransfer;
+import ch.cyberduck.core.transfer.synchronisation.SyncTransfer;
+import ch.cyberduck.core.transfer.upload.UploadTransfer;
 import ch.cyberduck.core.urlhandler.SchemeHandlerFactory;
 import ch.cyberduck.ui.PathPasteboard;
 import ch.cyberduck.ui.cocoa.application.*;
@@ -2938,7 +2938,7 @@ public class BrowserController extends WindowController implements NSToolbar.Del
         });
         if(browser) {
             transfer.addListener(new TransferAdapter() {
-                private Speedometer meter = new Speedometer(transfer);
+                private TransferSpeedometer meter = new TransferSpeedometer(transfer);
 
                 /**
                  * Timer to update the progress indicator

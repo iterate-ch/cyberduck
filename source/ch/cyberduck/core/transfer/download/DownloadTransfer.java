@@ -1,4 +1,4 @@
-package ch.cyberduck.core.transfer;
+package ch.cyberduck.core.transfer.download;
 
 /*
  *  Copyright (c) 2005 David Kocher. All rights reserved.
@@ -30,12 +30,12 @@ import ch.cyberduck.core.local.ApplicationLauncherFactory;
 import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.local.LocalFactory;
 import ch.cyberduck.core.serializer.Serializer;
-import ch.cyberduck.core.transfer.download.CompareFilter;
-import ch.cyberduck.core.transfer.download.OverwriteFilter;
-import ch.cyberduck.core.transfer.download.RenameExistingFilter;
-import ch.cyberduck.core.transfer.download.RenameFilter;
-import ch.cyberduck.core.transfer.download.ResumeFilter;
-import ch.cyberduck.core.transfer.download.SkipFilter;
+import ch.cyberduck.core.transfer.Transfer;
+import ch.cyberduck.core.transfer.TransferAction;
+import ch.cyberduck.core.transfer.TransferOptions;
+import ch.cyberduck.core.transfer.TransferPathFilter;
+import ch.cyberduck.core.transfer.TransferPrompt;
+import ch.cyberduck.core.transfer.TransferStatus;
 import ch.cyberduck.core.transfer.normalizer.DownloadRootPathsNormalizer;
 import ch.cyberduck.core.transfer.symlink.DownloadSymlinkResolver;
 
@@ -71,7 +71,7 @@ public class DownloadTransfer extends Transfer {
     public <T> T getAsDictionary() {
         final Serializer dict = super.getSerializer();
         dict.setStringForKey(String.valueOf(KIND_DOWNLOAD), "Kind");
-        return dict.<T>getSerialized();
+        return dict.getSerialized();
     }
 
     @Override
@@ -158,7 +158,7 @@ public class DownloadTransfer extends Transfer {
     }
 
     @Override
-    protected void transfer(final Path file, final TransferOptions options, final TransferStatus status) {
+    public void transfer(final Path file, final TransferOptions options, final TransferStatus status) {
         if(log.isDebugEnabled()) {
             log.debug(String.format("Transfer file %s with options %s", file, options));
         }

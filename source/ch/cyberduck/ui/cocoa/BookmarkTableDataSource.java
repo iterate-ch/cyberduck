@@ -34,7 +34,7 @@ import ch.cyberduck.core.local.LocalFactory;
 import ch.cyberduck.core.serializer.HostReaderFactory;
 import ch.cyberduck.core.serializer.HostWriterFactory;
 import ch.cyberduck.core.transfer.Transfer;
-import ch.cyberduck.core.transfer.UploadTransfer;
+import ch.cyberduck.core.transfer.upload.UploadTransfer;
 import ch.cyberduck.ui.cocoa.application.NSApplication;
 import ch.cyberduck.ui.cocoa.application.NSDraggingInfo;
 import ch.cyberduck.ui.cocoa.application.NSDraggingSource;

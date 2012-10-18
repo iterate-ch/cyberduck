@@ -25,10 +25,10 @@ import ch.cyberduck.core.date.UserDateFormatterFactory;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.io.BandwidthThrottle;
 import ch.cyberduck.core.threading.DefaultMainAction;
-import ch.cyberduck.core.transfer.Speedometer;
 import ch.cyberduck.core.transfer.Transfer;
 import ch.cyberduck.core.transfer.TransferAdapter;
 import ch.cyberduck.core.transfer.TransferListener;
+import ch.cyberduck.core.transfer.TransferSpeedometer;
 import ch.cyberduck.ui.cocoa.application.NSCell;
 import ch.cyberduck.ui.cocoa.application.NSColor;
 import ch.cyberduck.ui.cocoa.application.NSFont;
@@ -69,7 +69,7 @@ public class ProgressController extends BundleController {
     /**
      * Keeping track of the current transfer rate
      */
-    private Speedometer meter;
+    private TransferSpeedometer meter;
 
     /**
      * The current connection status message
@@ -80,7 +80,7 @@ public class ProgressController extends BundleController {
 
     public ProgressController(final Transfer transfer) {
         this.transfer = transfer;
-        this.meter = new Speedometer(transfer);
+        this.meter = new TransferSpeedometer(transfer);
         this.init();
     }
 
