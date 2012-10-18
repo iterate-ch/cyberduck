@@ -18,7 +18,20 @@ package ch.cyberduck.core.sftp;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.BookmarkCollection;
+import ch.cyberduck.core.ConnectionCanceledException;
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.HostKeyControllerFactory;
+import ch.cyberduck.core.HostnameConfiguratorFactory;
+import ch.cyberduck.core.LoginCanceledException;
+import ch.cyberduck.core.LoginController;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathFactory;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.Resolver;
+import ch.cyberduck.core.Session;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.local.Local;
 
@@ -50,17 +63,6 @@ import ch.ethz.ssh2.crypto.PEMDecryptException;
  */
 public class SFTPSession extends Session {
     private static Logger log = Logger.getLogger(SFTPSession.class);
-
-    private static class Factory extends SessionFactory {
-        @Override
-        protected Session create(Host h) {
-            return new SFTPSession(h);
-        }
-    }
-
-    public static SessionFactory factory() {
-        return new Factory();
-    }
 
     private Connection connection;
 

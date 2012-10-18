@@ -26,8 +26,6 @@ import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Protocol;
-import ch.cyberduck.core.Session;
-import ch.cyberduck.core.SessionFactory;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.cloud.CloudSession;
@@ -63,20 +61,6 @@ import com.rackspacecloud.client.cloudfiles.FilesException;
 public class CFSession extends CloudSession implements DistributionConfiguration {
     private static Logger log = Logger.getLogger(CFSession.class);
 
-    private static class Factory extends SessionFactory {
-        @Override
-        protected Session create(Host h) {
-            return new CFSession(h);
-        }
-    }
-
-    public static SessionFactory factory() {
-        return new Factory();
-    }
-
-    /**
-     * Cloudfiles
-     */
     private FilesClient client;
 
     public CFSession(Host h) {

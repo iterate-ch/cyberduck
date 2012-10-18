@@ -25,8 +25,6 @@ import ch.cyberduck.core.Host;
 import ch.cyberduck.core.LoginCanceledException;
 import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.Preferences;
-import ch.cyberduck.core.Session;
-import ch.cyberduck.core.SessionFactory;
 import ch.cyberduck.core.http.HttpSession;
 import ch.cyberduck.core.i18n.Locale;
 
@@ -59,17 +57,6 @@ import com.googlecode.sardine.impl.SardineImpl;
  */
 public class DAVSession extends HttpSession {
     private static Logger log = Logger.getLogger(DAVSession.class);
-
-    private static class Factory extends SessionFactory {
-        @Override
-        protected Session create(Host h) {
-            return new DAVSession(h);
-        }
-    }
-
-    public static SessionFactory factory() {
-        return new Factory();
-    }
 
     private SardineImpl client;
 

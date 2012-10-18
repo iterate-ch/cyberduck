@@ -19,7 +19,19 @@ package ch.cyberduck.core.s3;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.*;
+import ch.cyberduck.core.Acl;
+import ch.cyberduck.core.ConnectionCanceledException;
+import ch.cyberduck.core.Credentials;
+import ch.cyberduck.core.ErrorListener;
+import ch.cyberduck.core.Host;
+import ch.cyberduck.core.LoginController;
+import ch.cyberduck.core.LoginControllerFactory;
+import ch.cyberduck.core.Path;
+import ch.cyberduck.core.PathFactory;
+import ch.cyberduck.core.Preferences;
+import ch.cyberduck.core.ProgressListener;
+import ch.cyberduck.core.Protocol;
+import ch.cyberduck.core.TranscriptListener;
 import ch.cyberduck.core.analytics.AnalyticsProvider;
 import ch.cyberduck.core.analytics.QloudstatAnalyticsProvider;
 import ch.cyberduck.core.cdn.Distribution;
@@ -80,20 +92,9 @@ import java.util.Map;
 public class S3Session extends CloudSession {
     private static Logger log = Logger.getLogger(S3Session.class);
 
-    private static class Factory extends SessionFactory {
-        @Override
-        protected Session create(Host h) {
-            return new S3Session(h);
-        }
-    }
-
-    public static SessionFactory factory() {
-        return new Factory();
-    }
-
     private RequestEntityRestStorageService client;
 
-    protected S3Session(Host h) {
+    public S3Session(Host h) {
         super(h);
     }
 

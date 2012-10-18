@@ -30,8 +30,6 @@ import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.Proxy;
 import ch.cyberduck.core.ProxyFactory;
 import ch.cyberduck.core.ResolveCanceledException;
-import ch.cyberduck.core.Session;
-import ch.cyberduck.core.SessionFactory;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.core.ssl.CustomTrustSSLProtocolSocketFactory;
 import ch.cyberduck.core.ssl.SSLSession;
@@ -76,17 +74,6 @@ import com.google.gdata.util.common.base.StringUtil;
  */
 public class GDSession extends SSLSession {
     private static org.apache.log4j.Logger log = org.apache.log4j.Logger.getLogger(GDSession.class);
-
-    private static class Factory extends SessionFactory {
-        @Override
-        protected Session create(Host h) {
-            return new GDSession(h);
-        }
-    }
-
-    public static SessionFactory factory() {
-        return new Factory();
-    }
 
     private DocsService client;
 

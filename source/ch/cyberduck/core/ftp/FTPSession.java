@@ -30,8 +30,6 @@ import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Protocol;
 import ch.cyberduck.core.ProxyFactory;
-import ch.cyberduck.core.Session;
-import ch.cyberduck.core.SessionFactory;
 import ch.cyberduck.core.ftp.parser.CompositeFileEntryParser;
 import ch.cyberduck.core.ftp.parser.LaxUnixFTPEntryParser;
 import ch.cyberduck.core.ftp.parser.RumpusFTPEntryParser;
@@ -67,17 +65,6 @@ import java.util.TimeZone;
  */
 public class FTPSession extends SSLSession {
     private static Logger log = Logger.getLogger(FTPSession.class);
-
-    private static class Factory extends SessionFactory {
-        @Override
-        protected Session create(Host h) {
-            return new FTPSession(h);
-        }
-    }
-
-    public static SessionFactory factory() {
-        return new Factory();
-    }
 
     private FTPClient client;
 

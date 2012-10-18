@@ -1,21 +1,21 @@
 package ch.cyberduck.core;
 
 /*
- *  Copyright (c) 2005 David Kocher. All rights reserved.
- *  http://cyberduck.ch/
+ * Copyright (c) 2012 David Kocher. All rights reserved.
+ * http://cyberduck.ch/
  *
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
  *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- *  Bug fixes, suggestions and comments should be sent to:
- *  dkocher@cyberduck.ch
+ * Bug fixes, suggestions and comments should be sent to:
+ * dkocher@cyberduck.ch
  */
 
 import ch.cyberduck.core.cf.CFSession;
@@ -48,25 +48,60 @@ public abstract class SessionFactory {
                 }
                 switch(p.getType()) {
                     case ftp:
-                        factories.put(p, FTPSession.factory());
+                        factories.put(p, new SessionFactory() {
+                            @Override
+                            protected Session create(Host h) {
+                                return new FTPSession(h);
+                            }
+                        });
                         break;
                     case sftp:
-                        factories.put(p, SFTPSession.factory());
+                        factories.put(p, new SessionFactory() {
+                            @Override
+                            protected Session create(Host h) {
+                                return new SFTPSession(h);
+                            }
+                        });
                         break;
                     case dav:
-                        factories.put(p, DAVSession.factory());
+                        factories.put(p, new SessionFactory() {
+                            @Override
+                            protected Session create(Host h) {
+                                return new DAVSession(h);
+                            }
+                        });
                         break;
                     case s3:
-                        factories.put(p, S3Session.factory());
+                        factories.put(p, new SessionFactory() {
+                            @Override
+                            protected Session create(Host h) {
+                                return new S3Session(h);
+                            }
+                        });
                         break;
                     case googlestorage:
-                        factories.put(p, GSSession.factory());
+                        factories.put(p, new SessionFactory() {
+                            @Override
+                            protected Session create(Host h) {
+                                return new GSSession(h);
+                            }
+                        });
                         break;
                     case googledrive:
-                        factories.put(p, GDSession.factory());
+                        factories.put(p, new SessionFactory() {
+                            @Override
+                            protected Session create(Host h) {
+                                return new GDSession(h);
+                            }
+                        });
                         break;
                     case swift:
-                        factories.put(p, CFSession.factory());
+                        factories.put(p, new SessionFactory() {
+                            @Override
+                            protected Session create(Host h) {
+                                return new CFSession(h);
+                            }
+                        });
                         break;
                     default:
                         throw new FactoryException(String.format("No factory for protocol %s", p));

@@ -27,8 +27,6 @@ import ch.cyberduck.core.LoginController;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.Preferences;
 import ch.cyberduck.core.Protocol;
-import ch.cyberduck.core.Session;
-import ch.cyberduck.core.SessionFactory;
 import ch.cyberduck.core.cdn.Distribution;
 import ch.cyberduck.core.cdn.DistributionConfiguration;
 import ch.cyberduck.core.i18n.Locale;
@@ -89,18 +87,7 @@ public class GSSession extends S3Session implements DistributionConfiguration {
     private Map<String, Distribution> distributionStatus
             = new HashMap<String, Distribution>();
 
-    private static class Factory extends SessionFactory {
-        @Override
-        protected Session create(Host h) {
-            return new GSSession(h);
-        }
-    }
-
-    public static SessionFactory factory() {
-        return new Factory();
-    }
-
-    protected GSSession(Host h) {
+    public GSSession(Host h) {
         super(h);
     }
 
