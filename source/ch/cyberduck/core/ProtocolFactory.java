@@ -21,7 +21,7 @@ package ch.cyberduck.core;
 
 import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.local.LocalFactory;
-import ch.cyberduck.core.serializer.ProtocolReaderFactory;
+import ch.cyberduck.core.serializer.ProfileReaderFactory;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
@@ -71,7 +71,7 @@ public final class ProtocolFactory {
                     return "cyberduckprofile".equals(FilenameUtils.getExtension(file.getName()));
                 }
             })) {
-                final Profile protocol = ProtocolReaderFactory.get().read(profile);
+                final Profile protocol = ProfileReaderFactory.get().read(profile);
                 if(null == protocol) {
                     continue;
                 }

@@ -36,7 +36,7 @@ import ch.cyberduck.core.local.ApplicationLauncherFactory;
 import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.local.LocalFactory;
 import ch.cyberduck.core.serializer.HostReaderFactory;
-import ch.cyberduck.core.serializer.ProtocolReaderFactory;
+import ch.cyberduck.core.serializer.ProfileReaderFactory;
 import ch.cyberduck.core.sparkle.Updater;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.core.threading.DefaultMainAction;
@@ -568,7 +568,7 @@ public class MainController extends BundleController implements NSApplication.De
                 return true;
             }
             else if("cyberduckprofile".equals(f.getExtension())) {
-                final Protocol profile = ProtocolReaderFactory.get().read(f);
+                final Protocol profile = ProfileReaderFactory.get().read(f);
                 if(null == profile) {
                     return false;
                 }

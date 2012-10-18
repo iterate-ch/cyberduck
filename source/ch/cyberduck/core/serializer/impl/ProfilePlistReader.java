@@ -20,23 +20,23 @@ package ch.cyberduck.core.serializer.impl;
  */
 
 import ch.cyberduck.core.Profile;
-import ch.cyberduck.core.serializer.ProtocolReaderFactory;
+import ch.cyberduck.core.serializer.ProfileReaderFactory;
 import ch.cyberduck.core.serializer.Reader;
 import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
 
 /**
  * @version $Id$
  */
-public class ProtocolPlistReader extends PlistReader<Profile> {
+public class ProfilePlistReader extends PlistReader<Profile> {
 
     public static void register() {
-        ProtocolReaderFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
+        ProfileReaderFactory.addFactory(Factory.NATIVE_PLATFORM, new Factory());
     }
 
-    private static class Factory extends ProtocolReaderFactory {
+    private static class Factory extends ProfileReaderFactory {
         @Override
         public Reader<Profile> create() {
-            return new ProtocolPlistReader();
+            return new ProfilePlistReader();
         }
     }
 

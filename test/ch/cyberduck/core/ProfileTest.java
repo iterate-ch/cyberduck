@@ -1,7 +1,7 @@
 package ch.cyberduck.core;
 
 import ch.cyberduck.core.local.LocalFactory;
-import ch.cyberduck.core.serializer.ProtocolReaderFactory;
+import ch.cyberduck.core.serializer.ProfileReaderFactory;
 
 import org.junit.Test;
 
@@ -14,7 +14,7 @@ public class ProfileTest extends AbstractTestCase {
 
     @Test
     public void testEquals() throws Exception {
-        final Profile profile = ProtocolReaderFactory.get().read(
+        final Profile profile = ProfileReaderFactory.get().read(
                 LocalFactory.createLocal("profiles/Eucalyptus Walrus S3.cyberduckprofile")
         );
         assertEquals(Protocol.S3_SSL, profile.getProtocol());
@@ -26,7 +26,7 @@ public class ProfileTest extends AbstractTestCase {
 
     @Test
     public void testProvider() throws Exception {
-        final Profile profile = ProtocolReaderFactory.get().read(
+        final Profile profile = ProfileReaderFactory.get().read(
                 LocalFactory.createLocal("profiles/HP Cloud Object Storage.cyberduckprofile")
         );
         assertEquals(Protocol.SWIFT, profile.getProtocol());

@@ -23,7 +23,7 @@ import ch.cyberduck.core.local.FinderLocal;
 import ch.cyberduck.core.serializer.impl.HostPlistReader;
 import ch.cyberduck.core.serializer.impl.PlistDeserializer;
 import ch.cyberduck.core.serializer.impl.PlistSerializer;
-import ch.cyberduck.core.serializer.impl.ProtocolPlistReader;
+import ch.cyberduck.core.serializer.impl.ProfilePlistReader;
 import ch.cyberduck.core.serializer.impl.TransferPlistReader;
 import ch.cyberduck.core.threading.AutoreleaseActionOperationBatcher;
 import ch.cyberduck.ui.cocoa.UserDefaultsPreferences;
@@ -73,7 +73,7 @@ public class AbstractTestCase {
         PlistSerializer.register();
         HostPlistReader.register();
         TransferPlistReader.register();
-        ProtocolPlistReader.register();
+        ProfilePlistReader.register();
         ProtocolFactory.register();
     }
 

@@ -29,18 +29,18 @@ import java.util.Map;
 /**
  * @version $Id$
  */
-public abstract class ProtocolWriterFactory extends Factory<Writer<Profile>> {
+public abstract class ProfileReaderFactory extends Factory<Reader<Profile>> {
 
     /**
      * Registered factories
      */
-    private static final Map<Platform, ProtocolWriterFactory> factories = new HashMap<Platform, ProtocolWriterFactory>();
+    private static final Map<Platform, ProfileReaderFactory> factories = new HashMap<Platform, ProfileReaderFactory>();
 
-    public static void addFactory(Platform platform, ProtocolWriterFactory f) {
+    public static void addFactory(Platform platform, ProfileReaderFactory f) {
         factories.put(platform, f);
     }
 
-    public static Writer<Profile> get() {
+    public static Reader<Profile> get() {
         if(!factories.containsKey(NATIVE_PLATFORM)) {
             throw new FactoryException(String.format("No implementation for %s", NATIVE_PLATFORM));
         }

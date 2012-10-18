@@ -24,7 +24,7 @@ import ch.cyberduck.core.Profile;
 import ch.cyberduck.core.Serializable;
 import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.serializer.HostWriterFactory;
-import ch.cyberduck.core.serializer.ProtocolWriterFactory;
+import ch.cyberduck.core.serializer.ProfileWriterFactory;
 import ch.cyberduck.core.serializer.TransferWriterFactory;
 import ch.cyberduck.core.serializer.Writer;
 import ch.cyberduck.core.transfer.Transfer;
@@ -57,7 +57,7 @@ public class PlistWriter<S extends Serializable> implements Writer<S> {
         }
     }
 
-    private static class ProtocolFactory extends ProtocolWriterFactory {
+    private static class ProtocolFactory extends ProfileWriterFactory {
         @Override
         public Writer<Profile> create() {
             return new PlistWriter<Profile>();
