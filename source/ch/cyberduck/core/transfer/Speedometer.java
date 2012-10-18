@@ -34,6 +34,11 @@ import java.text.MessageFormat;
 public class Speedometer {
 
     /**
+     * Formatter for file size
+     */
+    private SizeFormatter sizeFormatter = SizeFormatterFactory.get();
+
+    /**
      * The time to start counting bytes transferred
      */
     private long timestamp
@@ -51,30 +56,13 @@ public class Speedometer {
      */
     private PeriodFormatter periodFormatter = new RemainingPeriodFormatter();
 
-    /**
-     * Formatter for file size
-     */
-    private SizeFormatter sizeFormatter = SizeFormatterFactory.get();
-
-    private Transfer transfer;
-
-    public Speedometer(Transfer transfer) {
-        this.transfer = transfer;
-    }
-
-    /**
-     * Returns the data transfer rate. The rate should depend on the transfer
-     * rate timestamp.
-     *
-     * @return The bytes being processed per millisecond
-     */
-    protected double getSpeed() {
+    protected double getSpeed(final long transferred) {
         // Number of seconds data was actually transferred
         final long elapsed = System.currentTimeMillis() - timestamp;
         if(elapsed > 0) {
-            final long differential = transfer.getTransferred() - last;
+            final long differential = transferred - last;
             // Remember for next iteration
-            last = transfer.getTransferred();
+            last = transferred;
             if(!overall) {
                 timestamp = System.currentTimeMillis();
             }
@@ -84,35 +72,31 @@ public class Speedometer {
         return 0L;
     }
 
-    /**
-     * @return Progress information string with bytes transferred
-     *         including a percentage and estimated time remaining
-     */
-    public String getProgress() {
+    public String getProgress(final boolean running, final long size, final long transferred) {
         final StringBuilder b = new StringBuilder(
                 MessageFormat.format(Locale.localizedString("{0} of {1}"),
-                        sizeFormatter.format(transfer.getTransferred(), !transfer.isComplete()),
-                        sizeFormatter.format(transfer.getSize()))
+                        sizeFormatter.format(transferred, running),
+                        sizeFormatter.format(size))
         );
-        if(transfer.isRunning()) {
-            final double speed = this.getSpeed();
-            if(transfer.getSize() > 0 || speed > 0) {
+        if(running) {
+            final double speed = this.getSpeed(transferred);
+            if(size > 0 || speed > 0) {
                 b.append(" (");
-                if(transfer.getSize() > 0) {
-                    b.append(transfer.getSize() == 0 ? 0 : (int) ((double) transfer.getTransferred() / transfer.getSize() * 100));
+                if(size > 0) {
+                    b.append(size == 0 ? 0 : (int) ((double) transferred / size * 100));
                     b.append("%");
                 }
                 if(speed > 0) {
-                    if(transfer.getSize() > 0) {
+                    if(size > 0) {
                         b.append(", ");
                     }
                     b.append(SizeFormatterFactory.get(true).format(
                             new BigDecimal(speed * 1000).setScale(0, RoundingMode.UP).longValue()));
                     b.append("/sec");
-                    if(transfer.getTransferred() < transfer.getSize()) {
+                    if(transferred < size) {
                         b.append(", ");
                         // Remaining time in milliseconds
-                        long remaining = new BigDecimal((transfer.getSize() - transfer.getTransferred()) / speed).setScale(0, RoundingMode.UP).longValue();
+                        long remaining = new BigDecimal((size - transferred) / speed).setScale(0, RoundingMode.UP).longValue();
                         // Display in seconds
                         b.append(periodFormatter.format(new BigDecimal(remaining).divide(new BigDecimal(1000L), RoundingMode.UP).longValue()));
                     }
@@ -123,8 +107,8 @@ public class Speedometer {
         return b.toString();
     }
 
-    public void reset() {
+    public void reset(long transferred) {
         timestamp = System.currentTimeMillis();
-        last = transfer.getTransferred();
+        last = transferred;
     }
 }
