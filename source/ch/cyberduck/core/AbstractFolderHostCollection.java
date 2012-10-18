@@ -46,7 +46,7 @@ public abstract class AbstractFolderHostCollection extends AbstractHostCollectio
      */
     public AbstractFolderHostCollection(Local f) {
         this.folder = f;
-        this.folder.mkdir(true);
+        this.folder.mkdir();
     }
 
     @Override

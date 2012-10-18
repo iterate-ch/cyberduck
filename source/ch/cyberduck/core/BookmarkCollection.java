@@ -67,7 +67,7 @@ public class BookmarkCollection extends AbstractHostCollection {
      */
     public BookmarkCollection(Local file) {
         this.file = file;
-        this.file.getParent().mkdir(true);
+        this.file.getParent().mkdir();
     }
 
     @Override

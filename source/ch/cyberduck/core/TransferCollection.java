@@ -83,7 +83,7 @@ public final class TransferCollection extends Collection<Transfer> {
     private void save(Local f) {
         log.debug("save");
         if(Preferences.instance().getBoolean("queue.save")) {
-            f.getParent().mkdir(true);
+            f.getParent().mkdir();
             TransferWriterFactory.get().write(this, f);
         }
     }
