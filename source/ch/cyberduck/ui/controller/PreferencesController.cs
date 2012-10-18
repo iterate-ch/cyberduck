@@ -27,6 +27,7 @@ using ch.cyberduck.core;
 using ch.cyberduck.core.editor;
 using ch.cyberduck.core.formatter;
 using ch.cyberduck.core.io;
+using ch.cyberduck.core.local;
 using ch.cyberduck.core.transfer;
 using java.util;
 using java.util.regex;
@@ -1085,7 +1086,9 @@ namespace Ch.Cyberduck.Ui.Controller
             foreach (string s in formats.Split(','))
             {
                 string ext = "." + s;
-                f.Add(new KeyValuePair<string, string>(s, String.Format("{0} ({1})", FileDescriptorFactory.get().getKind(ext), ext)));
+                f.Add(new KeyValuePair<string, string>(s,
+                                                       String.Format("{0} ({1})",
+                                                                     FileDescriptorFactory.get().getKind(ext), ext)));
             }
             View.PopulateSpreadsheetExportFormats(f);
         }
@@ -1097,7 +1100,9 @@ namespace Ch.Cyberduck.Ui.Controller
             foreach (string s in formats.Split(','))
             {
                 string ext = "." + s;
-                f.Add(new KeyValuePair<string, string>(s, String.Format("{0} ({1})", FileDescriptorFactory.get().getKind(ext), ext)));
+                f.Add(new KeyValuePair<string, string>(s,
+                                                       String.Format("{0} ({1})",
+                                                                     FileDescriptorFactory.get().getKind(ext), ext)));
             }
             View.PopulatePresentationExportFormats(f);
         }
@@ -1109,7 +1114,9 @@ namespace Ch.Cyberduck.Ui.Controller
             foreach (string s in formats.Split(','))
             {
                 string ext = "." + s;
-                f.Add(new KeyValuePair<string, string>(s, String.Format("{0} ({1})", FileDescriptorFactory.get().getKind(ext), ext)));
+                f.Add(new KeyValuePair<string, string>(s,
+                                                       String.Format("{0} ({1})",
+                                                                     FileDescriptorFactory.get().getKind(ext), ext)));
             }
             View.PopulateDocumentExportFormats(f);
         }

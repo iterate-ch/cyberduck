@@ -1,5 +1,5 @@
 ﻿// 
-// Copyright (c) 2010 Yves Langisch. All rights reserved.
+// Copyright (c) 2010-2012 Yves Langisch. All rights reserved.
 // http://cyberduck.ch/
 // 
 // This program is free software; you can redistribute it and/or modify
@@ -15,9 +15,11 @@
 // Bug fixes, suggestions and comments should be sent to:
 // yves@cyberduck.ch
 // 
+
+using Ch.Cyberduck.Ui.Controller;
 using NUnit.Framework;
 
-namespace Ch.Cyberduck.Ui.Controller
+namespace Ch.Cyberduck.Core.Local
 {
     [TestFixture]
     public class LocalImplTest

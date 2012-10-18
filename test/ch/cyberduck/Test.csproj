@@ -75,7 +75,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ui\controller\LocalImplTest.cs" />
+    <Compile Include="core\local\LocalImplTest.cs" />
     <Compile Include="ui\controller\PersistentFormHandlerTest.cs" />
   </ItemGroup>
   <ItemGroup>

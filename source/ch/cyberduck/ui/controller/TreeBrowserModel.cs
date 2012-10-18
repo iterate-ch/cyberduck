@@ -23,6 +23,7 @@ using Ch.Cyberduck.Ui.Winforms;
 using ch.cyberduck.core;
 using ch.cyberduck.core.formatter;
 using ch.cyberduck.core.i18n;
+using ch.cyberduck.core.local;
 
 namespace Ch.Cyberduck.Ui.Controller
 {

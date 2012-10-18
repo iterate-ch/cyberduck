@@ -20,18 +20,17 @@ using System;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
-using Ch.Cyberduck.Core;
+using Ch.Cyberduck.Ui.Controller;
 using ch.cyberduck.core;
-using ch.cyberduck.core.editor;
 using ch.cyberduck.core.local;
 using org.apache.commons.io;
 using org.apache.log4j;
 using File = java.io.File;
 using Path = System.IO.Path;
 
-namespace Ch.Cyberduck.Ui.Controller
+namespace Ch.Cyberduck.Core.Local
 {
-    public class LocalImpl : Local
+    public class LocalImpl : ch.cyberduck.core.local.Local
     {
         protected const int ErrorAccessDenied = 5;
         protected const int ErrorFileNotFound = 2;
@@ -44,7 +43,8 @@ namespace Ch.Cyberduck.Ui.Controller
             ;
         }
 
-        public LocalImpl(Local parent, string name) : base(parent, name)
+        public LocalImpl(ch.cyberduck.core.local.Local parent, string name)
+            : base(parent, name)
         {
             ;
         }
@@ -94,17 +94,6 @@ namespace Ch.Cyberduck.Ui.Controller
                 return Convert.ToString(shinfo.szTypeName.Trim());
             }
             return null;
-        }
-
-        public override string kind()
-        {
-            // Native file type mapping
-            String kind = LocalImpl.kind(getExtension());
-            if (string.IsNullOrEmpty(kind))
-            {
-                return base.kind();
-            }
-            return kind;
         }
 
         public override Attributes attributes()
@@ -208,22 +197,22 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private class Factory : LocalFactory
         {
-            protected override Local create(Local parent, string name)
+            protected override ch.cyberduck.core.local.Local create(ch.cyberduck.core.local.Local parent, string name)
             {
                 return new LocalImpl(parent, name);
             }
 
-            protected override Local create(string parent, string name)
+            protected override ch.cyberduck.core.local.Local create(string parent, string name)
             {
                 return new LocalImpl(parent, name);
             }
 
-            protected override Local create(string path)
+            protected override ch.cyberduck.core.local.Local create(string path)
             {
                 return new LocalImpl(path);
             }
 
-            protected override Local create(File path)
+            protected override ch.cyberduck.core.local.Local create(File path)
             {
                 return new LocalImpl(path);
             }
@@ -236,9 +225,10 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private class FileInfoAttributes : LocalAttributes
         {
-            private Local file;
+            private ch.cyberduck.core.local.Local file;
 
-            public FileInfoAttributes(Local l) : base(l)
+            public FileInfoAttributes(ch.cyberduck.core.local.Local l)
+                : base(l)
             {
                 file = l;
             }

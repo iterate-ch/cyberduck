@@ -37,18 +37,24 @@ using ch.cyberduck.core.sftp;
 using ch.cyberduck.core.ssl;
 using ch.cyberduck.core.threading;
 using ch.cyberduck.core.transfer;
+using ch.cyberduck.core.transfer.copy;
+using ch.cyberduck.core.transfer.download;
+using ch.cyberduck.core.transfer.move;
+using ch.cyberduck.core.transfer.synchronisation;
+using ch.cyberduck.core.transfer.upload;
 using ch.cyberduck.ui;
 using java.lang;
 using java.security.cert;
 using java.util;
 using org.apache.log4j;
-using Application = ch.cyberduck.core.editor.Application;
+using Application = ch.cyberduck.core.local.Application;
 using Collection = ch.cyberduck.core.Collection;
 using DataObject = System.Windows.Forms.DataObject;
 using Exception = System.Exception;
 using Locale = ch.cyberduck.core.i18n.Locale;
 using Object = System.Object;
 using Path = ch.cyberduck.core.Path;
+using Process = System.Diagnostics.Process;
 using String = System.String;
 using StringBuilder = System.Text.StringBuilder;
 using Timer = System.Threading.Timer;
@@ -483,7 +489,8 @@ namespace Ch.Cyberduck.Ui.Controller
                                        Convert.ToString(host.getPort()), tempFile);
 
 
-            ApplicationLauncherFactory.get().open(new Application(Preferences.instance().getProperty("terminal.command.ssh"), null), ssh);
+            ApplicationLauncherFactory.get().open(
+                new Application(Preferences.instance().getProperty("terminal.command.ssh"), null), ssh);
         }
 
         private void View_SetComparator(BrowserComparator comparator)
@@ -1256,7 +1263,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             foreach (Path selected in SelectedPaths)
             {
-                System.Diagnostics.Process.Start(selected.toHttpURL());
+                Process.Start(selected.toHttpURL());
             }
         }
 
@@ -3476,7 +3483,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
             public ProgressTransferAdapter(BrowserController controller, Transfer transfer)
             {
-                _meter = new Speedometer(transfer);
+                _meter = new Speedometer();
                 _controller = controller;
                 _timer = new Timer(timerCallback, null, Timeout.Infinite, Period);
                 _transfer = transfer;
@@ -3484,24 +3491,29 @@ namespace Ch.Cyberduck.Ui.Controller
 
             private void timerCallback(object state)
             {
-                _controller.Invoke(delegate { _controller.View.StatusLabel = _meter.getProgress(); });
+                _controller.Invoke(
+                    delegate
+                        {
+                            _controller.View.StatusLabel = _meter.getProgress(_transfer.isRunning(), _transfer.getSize(),
+                                                                              _transfer.getTransferred());
+                        });
             }
 
             public override void willTransferPath(Path path)
             {
-                _meter.reset();
+                _meter.reset(_transfer.getTransferred());
                 _timer.Change(Delay, Period);
             }
 
             public override void didTransferPath(Path path)
             {
                 _timer.Change(Timeout.Infinite, Period);
-                _meter.reset();
+                _meter.reset(_transfer.getTransferred());
             }
 
             public override void bandwidthChanged(BandwidthThrottle bandwidth)
             {
-                _meter.reset();
+                _meter.reset(_transfer.getTransferred());
             }
 
             public override void transferDidEnd()
@@ -3513,16 +3525,24 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 private readonly BrowserController _controller;
                 private readonly Speedometer _meter;
+                private readonly Transfer _transfer;
 
-                public ProgressTimerRunnable(BrowserController controller, Speedometer meter)
+                public ProgressTimerRunnable(BrowserController controller, Speedometer meter, Transfer transfer)
                 {
                     _controller = controller;
                     _meter = meter;
+                    _transfer = transfer;
                 }
 
                 public void run()
                 {
-                    AsyncDelegate mainAction = delegate { _controller.View.StatusLabel = _meter.getProgress(); };
+                    AsyncDelegate mainAction =
+                        delegate
+                            {
+                                _controller.View.StatusLabel = _meter.getProgress(_transfer.isRunning(),
+                                                                                  _transfer.getSize(),
+                                                                                  _transfer.getTransferred());
+                            };
                     _controller.Invoke(mainAction);
                 }
             }

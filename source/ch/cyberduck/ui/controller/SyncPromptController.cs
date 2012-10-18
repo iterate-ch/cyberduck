@@ -20,6 +20,7 @@ using System.Collections.Generic;
 using Ch.Cyberduck.Ui.Controller;
 using ch.cyberduck.core;
 using ch.cyberduck.core.transfer;
+using ch.cyberduck.core.transfer.synchronisation;
 
 namespace ch.cyberduck.ui.controller
 {

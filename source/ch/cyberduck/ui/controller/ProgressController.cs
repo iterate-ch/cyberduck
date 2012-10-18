@@ -26,6 +26,10 @@ using ch.cyberduck.core;
 using ch.cyberduck.core.date;
 using ch.cyberduck.core.io;
 using ch.cyberduck.core.transfer;
+using ch.cyberduck.core.transfer.copy;
+using ch.cyberduck.core.transfer.download;
+using ch.cyberduck.core.transfer.synchronisation;
+using ch.cyberduck.core.transfer.upload;
 using java.lang;
 using java.util;
 using java.util.concurrent;
@@ -55,7 +59,7 @@ namespace Ch.Cyberduck.Ui.Controller
         {
             _transfer = transfer;
             View = ObjectFactory.GetInstance<IProgressView>();
-            _meter = new Speedometer(transfer);
+            _meter = new Speedometer();
             Init();
         }
 
@@ -167,7 +171,8 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void SetProgressText()
         {
-            View.ProgressText = _meter.getProgress();
+            View.ProgressText = _meter.getProgress(_transfer.isRunning(), _transfer.getSize(),
+                                                   _transfer.getTransferred());
         }
 
         private class TransferAdapter : ch.cyberduck.core.transfer.TransferAdapter
@@ -222,7 +227,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
             public override void willTransferPath(Path path)
             {
-                _controller._meter.reset();
+                _controller._meter.reset(_controller._transfer.getTransferred());
                 _progressTimer = getTimerPool().scheduleAtFixedRate(new ProgressTimerRunnable(_controller),
                                                                     Delay, Period, TimeUnit.MILLISECONDS);
             }
@@ -234,12 +239,12 @@ namespace Ch.Cyberduck.Ui.Controller
                 {
                     canceled = _progressTimer.cancel(false);
                 }
-                _controller._meter.reset();
+                _controller._meter.reset(_controller._transfer.getTransferred());
             }
 
             public override void bandwidthChanged(BandwidthThrottle bandwidth)
             {
-                _controller._meter.reset();
+                _controller._meter.reset(_controller._transfer.getTransferred());
             }
 
             private class ProgressTimerRunnable : Runnable

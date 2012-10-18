@@ -27,6 +27,7 @@ using ch.cyberduck.core.formatter;
 using ch.cyberduck.core.io;
 using ch.cyberduck.core.local;
 using ch.cyberduck.core.transfer;
+using ch.cyberduck.core.transfer.synchronisation;
 using java.util;
 using org.apache.log4j;
 using Locale = ch.cyberduck.core.i18n.Locale;

@@ -21,7 +21,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using Ch.Cyberduck.Ui.Controller;
-using ch.cyberduck.core.editor;
+using ch.cyberduck.core.local;
 using org.apache.log4j;
 using Path = ch.cyberduck.core.Path;
 

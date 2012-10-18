@@ -30,6 +30,7 @@ using ch.cyberduck.core.cdn;
 using ch.cyberduck.core.cloud;
 using ch.cyberduck.core.date;
 using ch.cyberduck.core.formatter;
+using ch.cyberduck.core.local;
 using ch.cyberduck.core.s3;
 using ch.cyberduck.core.transfer;
 using ch.cyberduck.ui.action;
@@ -52,10 +53,10 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private readonly BrowserController _controller;
         private readonly string _multipleFilesString = "(" + Locale.localizedString("Multiple files") + ")";
+        private readonly FileDescriptor descriptor = FileDescriptorFactory.get();
         private BindingList<UserAndRoleEntry> _acl = new BindingList<UserAndRoleEntry>();
         private IList<Path> _files;
         private BindingList<CustomHeaderEntry> _metadata = new BindingList<CustomHeaderEntry>();
-        private readonly FileDescriptor descriptor = FileDescriptorFactory.get();
 
         private InfoController(BrowserController controller, IList<Path> files)
         {

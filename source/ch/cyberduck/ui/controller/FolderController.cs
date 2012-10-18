@@ -63,7 +63,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
             public override void run()
             {
-                _folder.mkdir(false);
+                _folder.mkdir();
             }
 
             public override void cleanup()

@@ -26,6 +26,9 @@ using ch.cyberduck.core.date;
 using ch.cyberduck.core.formatter;
 using ch.cyberduck.core.i18n;
 using ch.cyberduck.core.transfer;
+using ch.cyberduck.core.transfer.download;
+using ch.cyberduck.core.transfer.synchronisation;
+using ch.cyberduck.core.transfer.upload;
 using ch.cyberduck.ui.controller;
 using org.apache.log4j;
 

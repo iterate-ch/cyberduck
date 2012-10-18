@@ -19,7 +19,7 @@
 using System.Collections.Generic;
 using Ch.Cyberduck.Ui.Winforms.Controls;
 using ch.cyberduck.core;
-using ch.cyberduck.core.editor;
+using ch.cyberduck.core.local;
 
 namespace Ch.Cyberduck.Ui.Controller
 {

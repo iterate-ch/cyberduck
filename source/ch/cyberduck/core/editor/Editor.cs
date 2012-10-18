@@ -20,6 +20,7 @@ using Ch.Cyberduck.Ui.Controller;
 using Ch.Cyberduck.Ui.Controller.Threading;
 using ch.cyberduck.core;
 using ch.cyberduck.core.editor;
+using ch.cyberduck.core.local;
 using ch.cyberduck.core.threading;
 using org.apache.log4j;
 

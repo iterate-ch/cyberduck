@@ -466,9 +466,9 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
                 Protocol protocol = View.SelectedProtocol;
                 View.Password = KeychainFactory.get().getPassword(protocol.getScheme(),
-                                                                       Integer.parseInt(View.Port),
-                                                                       View.Hostname,
-                                                                       View.Username);
+                                                                  Integer.parseInt(View.Port),
+                                                                  View.Hostname,
+                                                                  View.Username);
             }
         }
 
@@ -479,7 +479,7 @@ namespace Ch.Cyberduck.Ui.Controller
 
         private void View_ChangedBrowserDownloadPathEvent()
         {
-            _host.setDownloadFolder(View.SelectedDownloadFolder);
+            _host.setDownloadFolder(LocalFactory.createLocal(View.SelectedDownloadFolder));
             ItemChanged();
             Update();
         }

@@ -29,7 +29,6 @@ using ch.cyberduck.core.local;
 using ch.cyberduck.core.threading;
 using java.lang;
 using org.apache.log4j;
-using org.spearce.jgit.transport;
 using Object = System.Object;
 using Process = System.Diagnostics.Process;
 using String = System.String;
@@ -303,9 +302,9 @@ namespace Ch.Cyberduck.Ui.Controller
                 }
                 Protocol protocol = View.SelectedProtocol;
                 View.Password = KeychainFactory.get().getPassword(protocol.getScheme(),
-                                                                       Integer.parseInt(View.Port),
-                                                                       View.Hostname,
-                                                                       View.Username);
+                                                                  Integer.parseInt(View.Port),
+                                                                  View.Hostname,
+                                                                  View.Username);
             }
         }
 
@@ -411,36 +410,25 @@ namespace Ch.Cyberduck.Ui.Controller
         private void UpdateIdentity()
         {
             View.PkCheckboxEnabled = View.SelectedProtocol == Protocol.SFTP;
-            if (View.SelectedProtocol == Protocol.SFTP)
+            if (Utils.IsNotBlank(View.Hostname))
             {
-                if (Utils.IsNotBlank(View.Hostname))
+                Credentials credentials = new Credentials(null, null);
+                CredentialsConfiguratorFactory.get(View.SelectedProtocol).configure(credentials, View.Hostname);
+                if (credentials.isPublicKeyAuthentication())
                 {
-                    OpenSshConfig.Host entry = OpenSshConfig.create().lookup(View.Hostname);
-                    if (null != entry.getIdentityFile())
-                    {
-                        if (!View.PkCheckboxState)
-                        {
-                            // No previously manually selected key
-                            View.PkCheckboxState = true;
-                            View.PkLabel =
-                                LocalFactory.createLocal(entry.getIdentityFile().getAbsolutePath()).getAbbreviatedPath();
-                        }
-                    }
-                    else
-                    {
-                        View.PkCheckboxState = false;
-                        View.PkLabel = Locale.localizedString("No private key selected");
-                    }
-                    if (Utils.IsNotBlank(entry.getUser()))
-                    {
-                        View.Username = entry.getUser();
-                    }
+                    // No previously manually selected key
+                    View.PkCheckboxState = true;
+                    View.PkLabel = credentials.getIdentity().getAbbreviatedPath();
                 }
-            }
-            else
-            {
-                View.PkCheckboxState = false;
-                View.PkLabel = Locale.localizedString("No private key selected");
+                else
+                {
+                    View.PkCheckboxState = false;
+                    View.PkLabel = Locale.localizedString("No private key selected");
+                }
+                if (Utils.IsNotBlank(credentials.getUsername()))
+                {
+                    View.Username = credentials.getUsername();
+                }
             }
         }
 
