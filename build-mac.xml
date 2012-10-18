@@ -23,6 +23,8 @@
 
 <project name="Cyberduck for Mac" basedir=".">
 
+    <import file="build.xml"/>
+
     <property name="build.deploy" location="${build}/${configuration}"/>
 
     <property name="app.bundle" value="${build.deploy}/${app.name}.app"/>
@@ -214,7 +216,7 @@
     </target>
 
     <target name="lipo">
-        <echo message="Remove ${arch} slice from ${binary}"/>
+        <echo message="Remove ${arch} slice from ${binaries}"/>
         <apply executable="/usr/bin/lipo" failonerror="false" dest="${app.bundle}"
                parallel="false" spawn="false" force="true">
             <fileset dir="${app.bundle}" includes="${binaries}"/>
