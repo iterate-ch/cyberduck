@@ -22,15 +22,17 @@ public class CompareFilter extends AbstractDownloadFilter {
 
     @Override
     public boolean accept(final Path file) {
-        final Comparison comparison = compareService.compare(file);
-        switch(comparison) {
-            case LOCAL_NEWER:
-            case EQUAL:
-                return false;
-            case REMOTE_NEWER:
-                return super.accept(file);
+        if(super.accept(file)) {
+            final Comparison comparison = compareService.compare(file);
+            switch(comparison) {
+                case LOCAL_NEWER:
+                case EQUAL:
+                    return false;
+                case REMOTE_NEWER:
+                    return super.accept(file);
+            }
+            log.warn(String.format("Invalid comparison result %s", comparison));
         }
-        log.warn(String.format("Invalid comparison result %s", comparison));
         return false;
     }
 }
