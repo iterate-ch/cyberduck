@@ -40,6 +40,7 @@ import ch.cyberduck.core.serializer.ProtocolReaderFactory;
 import ch.cyberduck.core.sparkle.Updater;
 import ch.cyberduck.core.threading.AbstractBackgroundAction;
 import ch.cyberduck.core.threading.DefaultMainAction;
+import ch.cyberduck.core.transfer.TransferCollection;
 import ch.cyberduck.core.transfer.download.DownloadTransfer;
 import ch.cyberduck.core.transfer.upload.UploadTransfer;
 import ch.cyberduck.core.urlhandler.SchemeHandlerFactory;
