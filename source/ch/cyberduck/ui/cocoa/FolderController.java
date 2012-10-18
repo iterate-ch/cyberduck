@@ -59,7 +59,7 @@ public class FolderController extends FileController {
 
             @Override
             public void run() {
-                folder.mkdir(false);
+                folder.mkdir();
             }
 
             @Override
