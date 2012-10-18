@@ -166,7 +166,7 @@ public abstract class RepeatableBackgroundAction extends AbstractBackgroundActio
     }
 
     /**
-     * To be overriden in concrete subclass
+     * To be overridden in concrete subclass
      *
      * @return The session if any or null if invalid
      */
