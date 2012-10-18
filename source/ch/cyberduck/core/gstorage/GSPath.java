@@ -20,10 +20,11 @@ package ch.cyberduck.core.gstorage;
  */
 
 import ch.cyberduck.core.Acl;
-import ch.cyberduck.core.local.Local;
+import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.PathFactory;
 import ch.cyberduck.core.i18n.Locale;
+import ch.cyberduck.core.local.Local;
 import ch.cyberduck.core.s3.S3Path;
 import ch.cyberduck.core.s3.S3Session;
 

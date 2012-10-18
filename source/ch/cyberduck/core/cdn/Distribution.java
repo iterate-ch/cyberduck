@@ -18,7 +18,7 @@ package ch.cyberduck.core.cdn;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractPath;
+import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.i18n.Locale;
 
@@ -560,16 +560,16 @@ public class Distribution {
      * @param file File in origin container
      * @return Both CNAME and original URL
      */
-    public List<AbstractPath.DescriptiveUrl> getURLs(Path file) {
-        List<AbstractPath.DescriptiveUrl> urls = this.getCnameURL(file);
-        urls.add(new AbstractPath.DescriptiveUrl(this.getURL(file),
+    public List<DescriptiveUrl> getURLs(Path file) {
+        List<DescriptiveUrl> urls = this.getCnameURL(file);
+        urls.add(new DescriptiveUrl(this.getURL(file),
                 MessageFormat.format(Locale.localizedString("{0} URL"), Locale.localizedString(method.toString(), "S3"))));
         if(StringUtils.isNotBlank(this.getSslUrl())) {
-            urls.add(new AbstractPath.DescriptiveUrl(this.getSslUrl(file),
+            urls.add(new DescriptiveUrl(this.getSslUrl(file),
                     MessageFormat.format(Locale.localizedString("{0} URL"), Locale.localizedString(method.toString(), "S3")) + " (SSL)"));
         }
         if(StringUtils.isNotBlank(this.getStreamingUrl())) {
-            urls.add(new AbstractPath.DescriptiveUrl(this.getStreamingUrl(file),
+            urls.add(new DescriptiveUrl(this.getStreamingUrl(file),
                     MessageFormat.format(Locale.localizedString("{0} URL"), Locale.localizedString(method.toString(), "S3")) + " (Streaming)"));
         }
         return urls;
@@ -579,10 +579,10 @@ public class Distribution {
      * @param file File in origin container
      * @return CNAME to distribution
      */
-    public List<AbstractPath.DescriptiveUrl> getCnameURL(Path file) {
-        List<AbstractPath.DescriptiveUrl> urls = new ArrayList<AbstractPath.DescriptiveUrl>();
+    public List<DescriptiveUrl> getCnameURL(Path file) {
+        List<DescriptiveUrl> urls = new ArrayList<DescriptiveUrl>();
         for(String cname : this.getCNAMEs()) {
-            urls.add(new AbstractPath.DescriptiveUrl(this.getCnameURL(cname, file),
+            urls.add(new DescriptiveUrl(this.getCnameURL(cname, file),
                     MessageFormat.format(Locale.localizedString("{0} URL"), Locale.localizedString(method.toString(), "S3"))));
         }
         return urls;

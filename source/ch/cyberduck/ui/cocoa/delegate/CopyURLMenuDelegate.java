@@ -19,7 +19,7 @@ package ch.cyberduck.ui.cocoa.delegate;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractPath;
+import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.ui.cocoa.application.NSEvent;
 import ch.cyberduck.ui.cocoa.application.NSPasteboard;
@@ -52,8 +52,8 @@ public abstract class CopyURLMenuDelegate extends URLMenuDelegate {
     protected abstract List<Path> getSelected();
 
     @Override
-    protected List<AbstractPath.DescriptiveUrl> getURLs(Path selected) {
-        return new ArrayList<AbstractPath.DescriptiveUrl>(selected.getURLs());
+    protected List<DescriptiveUrl> getURLs(Path selected) {
+        return new ArrayList<DescriptiveUrl>(selected.getURLs());
     }
 
     @Override

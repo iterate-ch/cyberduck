@@ -19,7 +19,7 @@ package ch.cyberduck.ui.cocoa.delegate;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.AbstractPath;
+import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.i18n.Locale;
 import ch.cyberduck.ui.cocoa.Action;
@@ -77,7 +77,7 @@ public abstract class URLMenuDelegate extends AbstractMenuDelegate {
         return new NSInteger(urls * 2);
     }
 
-    protected abstract List<AbstractPath.DescriptiveUrl> getURLs(Path selected);
+    protected abstract List<DescriptiveUrl> getURLs(Path selected);
 
     @Override
     public boolean menuUpdateItemAtIndex(NSMenu menu, NSMenuItem item, NSInteger index, boolean cancel) {
@@ -98,8 +98,8 @@ public abstract class URLMenuDelegate extends AbstractMenuDelegate {
         else {
             final StringBuilder builder = new StringBuilder();
             for(Iterator<Path> iter = selected.iterator(); iter.hasNext(); ) {
-                List<AbstractPath.DescriptiveUrl> urls = this.getURLs(iter.next());
-                AbstractPath.DescriptiveUrl url = urls.get(index.intValue() / 2);
+                List<DescriptiveUrl> urls = this.getURLs(iter.next());
+                DescriptiveUrl url = urls.get(index.intValue() / 2);
                 builder.append(url.getUrl());
                 if(iter.hasNext()) {
                     builder.append("\n");
@@ -113,7 +113,7 @@ public abstract class URLMenuDelegate extends AbstractMenuDelegate {
                 item.setAction(Foundation.selector("menuItemClicked:"));
                 item.setImage(IconCache.iconNamed("site.tiff", 16));
                 Iterator<Path> iter = selected.iterator();
-                AbstractPath.DescriptiveUrl url = this.getURLs(iter.next()).get(index.intValue() / 2);
+                DescriptiveUrl url = this.getURLs(iter.next()).get(index.intValue() / 2);
                 item.setRepresentedObject(s);
                 item.setTitle(url.getHelp());
             }

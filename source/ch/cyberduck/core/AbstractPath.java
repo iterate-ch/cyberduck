@@ -18,9 +18,6 @@ package ch.cyberduck.core;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.i18n.Locale;
-import ch.cyberduck.core.local.FileDescriptorFactory;
-
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -233,31 +230,6 @@ public abstract class AbstractPath {
     }
 
     /**
-     * @return The file type for the extension of this file.
-     */
-    public String kind() {
-        if(this.attributes().isSymbolicLink()) {
-            if(this.attributes().isFile()) {
-                return Locale.localizedString("Symbolic Link (File)");
-            }
-            if(this.attributes().isDirectory()) {
-                return Locale.localizedString("Symbolic Link (Folder)");
-            }
-        }
-        if(this.attributes().isFile()) {
-            final String type = FileDescriptorFactory.get().getKind(this.getName());
-            if(StringUtils.isBlank(type)) {
-                return Locale.localizedString("Unknown");
-            }
-            return type;
-        }
-        if(this.attributes().isDirectory()) {
-            return Locale.localizedString("Folder");
-        }
-        return Locale.localizedString("Unknown");
-    }
-
-    /**
      * @return The target of the symbolic link if this path denotes a symbolic link, null otherwise.
      * @see ch.cyberduck.core.PathAttributes#isSymbolicLink
      */
@@ -277,42 +249,9 @@ public abstract class AbstractPath {
     public abstract void symlink(String target);
 
     /**
-     * Create a new empty file.
-     *
-     * @param recursive Create intermediate directories as required.  If this option is
-     *                  not specified, the full path prefix of each operand must already exist
-     */
-    public void touch(final boolean recursive) {
-        if(!this.exists()) {
-            if(recursive) {
-                if(!this.getParent().exists()) {
-                    this.getParent().mkdir(recursive);
-                }
-            }
-            this.touch();
-        }
-    }
-
-    /**
      * Create a new folder.
      */
     public abstract void mkdir();
-
-    /**
-     * Create a new folder.
-     *
-     * @param recursive Create intermediate directories as required.  If this option is
-     *                  not specified, the full path prefix of each operand must already exist
-     */
-    public void mkdir(final boolean recursive) {
-        if(recursive) {
-            final AbstractPath parent = this.getParent();
-            if(!parent.exists()) {
-                parent.mkdir(recursive);
-            }
-        }
-        this.mkdir();
-    }
 
     /**
      * @param permission@see Session#isUnixPermissionsSupported()
@@ -332,50 +271,7 @@ public abstract class AbstractPath {
     public abstract void delete();
 
     /**
-     * @return True if the directory contains no children items
-     */
-    public boolean isEmpty() {
-        return this.children().size() == 0;
-    }
-
-    /**
      * @param renamed Must be an absolute path
      */
     public abstract void rename(AbstractPath renamed);
-
-    public static class DescriptiveUrl {
-        private String url = StringUtils.EMPTY;
-
-        private String help = StringUtils.EMPTY;
-
-        public DescriptiveUrl(final String url) {
-            this(url, Locale.localizedString("Open in Web Browser"));
-        }
-
-        public DescriptiveUrl(final String url, final String help) {
-            this.url = url;
-            this.help = help;
-        }
-
-        public String getUrl() {
-            return url;
-        }
-
-        public String getHelp() {
-            return help;
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if(obj instanceof DescriptiveUrl) {
-                return this.getUrl().equals(((DescriptiveUrl) obj).getUrl());
-            }
-            return false;
-        }
-
-        @Override
-        public int hashCode() {
-            return this.getUrl().hashCode();
-        }
-    }
 }

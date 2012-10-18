@@ -18,9 +18,10 @@ package ch.cyberduck.core.cloud;
  *  dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.core.local.Local;
+import ch.cyberduck.core.DescriptiveUrl;
 import ch.cyberduck.core.Path;
 import ch.cyberduck.core.http.HttpPath;
+import ch.cyberduck.core.local.Local;
 
 import org.apache.commons.lang.StringUtils;
 

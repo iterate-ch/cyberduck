@@ -524,15 +524,15 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 for (int i = 0; i < SelectedPath.getURLs().size(); i++)
                 {
-                    AbstractPath.DescriptiveUrl descUrl =
-                        (AbstractPath.DescriptiveUrl) SelectedPath.getURLs().toArray()[i];
+                    DescriptiveUrl descUrl =
+                        (DescriptiveUrl) SelectedPath.getURLs().toArray()[i];
                     KeyValuePair<String, List<String>> entry =
                         new KeyValuePair<string, List<string>>(descUrl.getHelp(), new List<string>());
                     items.Add(entry);
 
                     foreach (Path path in selected)
                     {
-                        entry.Value.Add(((AbstractPath.DescriptiveUrl) path.getURLs().toArray()[i]).getUrl());
+                        entry.Value.Add(((DescriptiveUrl) path.getURLs().toArray()[i]).getUrl());
                     }
                 }
             }
@@ -554,8 +554,8 @@ namespace Ch.Cyberduck.Ui.Controller
             {
                 for (int i = 0; i < SelectedPath.getHttpURLs().size(); i++)
                 {
-                    AbstractPath.DescriptiveUrl descUrl =
-                        (AbstractPath.DescriptiveUrl) SelectedPath.getHttpURLs().toArray()[i];
+                    DescriptiveUrl descUrl =
+                        (DescriptiveUrl) SelectedPath.getHttpURLs().toArray()[i];
                     KeyValuePair<String, List<String>> entry =
                         new KeyValuePair<string, List<string>>(descUrl.getHelp(), new List<string>());
                     items.Add(entry);
@@ -563,7 +563,7 @@ namespace Ch.Cyberduck.Ui.Controller
                     foreach (Path path in selected)
                     {
                         entry.Value.Add(
-                            ((AbstractPath.DescriptiveUrl) path.getHttpURLs().toArray()[i]).getUrl());
+                            ((DescriptiveUrl) path.getHttpURLs().toArray()[i]).getUrl());
                     }
                 }
             }
