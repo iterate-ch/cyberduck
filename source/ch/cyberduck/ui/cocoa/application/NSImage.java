@@ -19,7 +19,12 @@ package ch.cyberduck.ui.cocoa.application;
  * dkocher@cyberduck.ch
  */
 
-import ch.cyberduck.ui.cocoa.foundation.*;
+import ch.cyberduck.ui.cocoa.foundation.NSArray;
+import ch.cyberduck.ui.cocoa.foundation.NSCopying;
+import ch.cyberduck.ui.cocoa.foundation.NSData;
+import ch.cyberduck.ui.cocoa.foundation.NSDictionary;
+import ch.cyberduck.ui.cocoa.foundation.NSObject;
+import ch.cyberduck.ui.cocoa.foundation.NSURL;
 
 import org.rococoa.ObjCClass;
 import org.rococoa.cocoa.CGFloat;
@@ -171,6 +176,7 @@ public abstract class NSImage extends NSObject implements NSCopying {
      * <i>native declaration : :81</i>
      */
     public abstract NSImage initByReferencingURL(NSURL url);
+
     /**
      * Original signature : <code>id initWithPasteboard(NSPasteboard*)</code><br>
      * <i>native declaration : :86</i>
@@ -251,7 +257,7 @@ public abstract class NSImage extends NSObject implements NSCopying {
      * Original signature : <code>public abstract  void setBackgroundColor(NSColor*)</code><br>
      * <i>native declaration : :100</i>
      */
-    public abstract void setBackgroundColor(com.sun.jna.Pointer aColor);
+    public abstract void setBackgroundColor(NSColor aColor);
 
     /**
      * Original signature : <code>NSColor* backgroundColor()</code><br>
@@ -294,6 +300,7 @@ public abstract class NSImage extends NSObject implements NSCopying {
      * <i>native declaration : :107</i>
      */
     public abstract boolean matchesOnMultipleResolution();
+
     /**
      * <i>native declaration : :115</i><br>
      * Conversion Error : /// Original signature : <code>public abstract  void drawInRect(null, null, null, CGFloat)</code><br>
@@ -315,12 +322,13 @@ public abstract class NSImage extends NSObject implements NSCopying {
      * Original signature : <code>NSData* TIFFRepresentation()</code><br>
      * <i>native declaration : :118</i>
      */
-    public abstract com.sun.jna.Pointer TIFFRepresentation();
+    public abstract NSData TIFFRepresentation();
+
     /**
      * Original signature : <code>NSArray* representations()</code><br>
      * <i>native declaration : :121</i>
      */
-    public abstract com.sun.jna.Pointer representations();
+    public abstract NSArray representations();
 
     /**
      * Original signature : <code>public abstract  void addRepresentations(NSArray*)</code><br>
@@ -421,6 +429,7 @@ public abstract class NSImage extends NSObject implements NSCopying {
      * <i>native declaration : :169</i>
      */
     public abstract NSObject alignmentRect();
+
     /**
      * The 'template' property is metadata that allows clients to be smarter about image processing.  An image should be marked as a template if it is basic glpyh-like black and white art that is intended to be processed into derived images for use on screen.<br>
      * NSButtonCell applies effects to images based on the state of the button.  For example, images are shaded darker when the button is pressed.  If a template image is set on a cell, the cell can apply more sophisticated effects.  For example, it may be processed into an image that looks engraved when drawn into a cell whose interiorBackgroundStyle is NSBackgroundStyleRaised, like on a textured button.<br>
