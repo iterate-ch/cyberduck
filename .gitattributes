@@ -2562,7 +2562,6 @@ source/ch/cyberduck/core/SerializableDictionary.cs -text
 source/ch/cyberduck/core/StructureMapBootstrapper.cs -text
 source/ch/cyberduck/core/SystemConfigurationReachability.m -text
 source/ch/cyberduck/core/TcpReachability.cs -text
-source/ch/cyberduck/core/URLSchemeHandlerConfiguration.cs -text
 source/ch/cyberduck/core/Utils.cs -text
 source/ch/cyberduck/core/VirtualFileDataObject.cs -text
 source/ch/cyberduck/core/aquaticprime/LicenseImpl.cs -text
@@ -2588,6 +2587,7 @@ source/ch/cyberduck/core/sparkle/Updater.java -text
 source/ch/cyberduck/core/ssl/AbstractX509TrustManager.java -text
 source/ch/cyberduck/core/ssl/SSLSession.java -text
 source/ch/cyberduck/core/urlhandler/LaunchServicesSchemeHandler.m -text
+source/ch/cyberduck/core/urlhandler/URLSchemeHandlerConfiguration.cs -text
 source/ch/cyberduck/properties/Settings.Designer.cs -text
 source/ch/cyberduck/properties/Settings.cs -text
 source/ch/cyberduck/properties/Settings.settings -text
