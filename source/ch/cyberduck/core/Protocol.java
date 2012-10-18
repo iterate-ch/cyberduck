@@ -816,6 +816,11 @@ public abstract class Protocol {
         }
 
         @Override
+        public Type getType() {
+            return Type.googlestorage;
+        }
+
+        @Override
         public String disk() {
             return "google";
         }
